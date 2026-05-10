@@ -77,7 +77,7 @@ If credentials are present, dispatch `al-dev-ticket-agent`:
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-ticket-agent
+  subagent_type: al-dev-shared:al-dev-ticket-agent
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
@@ -149,7 +149,7 @@ Dispatch:
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-support-agent
+  subagent_type: al-dev-shared:al-dev-support-agent
   description: "BC support research: <60-char query summary>"
 
 Prompt: <assembled prompt envelope above>

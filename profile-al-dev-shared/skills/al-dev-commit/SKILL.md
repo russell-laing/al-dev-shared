@@ -132,7 +132,7 @@ Hold as **PROJECT_GITMOJI_STYLE**.
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-commit-agent
+  subagent_type: al-dev-shared:al-dev-commit-agent
   description: "Commit analysis: analyse staged changes"
 
 Prompt:
@@ -261,7 +261,7 @@ GROUP_2:
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-commit-agent
+  subagent_type: al-dev-shared:al-dev-commit-agent
   description: "Commit execution: [N] commits"
 
 Prompt:

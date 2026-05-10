@@ -104,7 +104,7 @@ See profile-claude-al-dev/freshdesk-readonly-setup.md for details.
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-ticket-agent
+  subagent_type: al-dev-shared:al-dev-ticket-agent
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
@@ -163,7 +163,7 @@ If yes, dispatch `al-dev-ticket-agent` again (download phase):
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-ticket-agent
+  subagent_type: al-dev-shared:al-dev-ticket-agent
   description: "Download attachments for Freshdesk #[TICKET_ID]"
 
 Prompt:

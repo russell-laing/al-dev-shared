@@ -46,7 +46,7 @@ app.json name field.
 
 ```text
 Agent tool:
-  subagent_type: profile-claude-al-dev:al-dev-release-notes-agent
+  subagent_type: al-dev-shared:al-dev-release-notes-agent
   description: "Generate release notes [VERSION]: [start]..[end]"
 
 Prompt:
