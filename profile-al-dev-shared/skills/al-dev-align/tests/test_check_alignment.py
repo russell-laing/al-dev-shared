@@ -10,6 +10,7 @@ spec.loader.exec_module(mod)
 strip_frontmatter = mod.strip_frontmatter
 is_in_code_fence = mod.is_in_code_fence
 parse_forbidden_tokens = mod.parse_forbidden_tokens
+_extract_token = mod._extract_token
 
 
 class TestStripFrontmatter:
@@ -80,6 +81,35 @@ class TestIsInCodeFence:
         assert not is_in_code_fence(0, lines)
 
 
+class TestExtractToken:
+    def test_strips_backticks(self):
+        assert _extract_token("`CLAUDE.md`") == "CLAUDE.md"
+
+    def test_strips_bold_markers(self):
+        assert _extract_token("**bold**") == "bold"
+
+    def test_strips_tool_suffix(self):
+        assert _extract_token("ask_user tool") == "ask_user"
+
+    def test_strips_in_task_tool_suffix(self):
+        assert _extract_token("agent_type: explore in task tool") == "agent_type: explore"
+
+    def test_truncates_at_in_middle(self):
+        assert _extract_token("something in production") == "something"
+
+    def test_truncates_before_angle_bracket(self):
+        assert _extract_token("al-mcp-server-<tool>") == "al-mcp-server-"
+
+    def test_strips_curly_quotes(self):
+        assert _extract_token("\u201cquoted\u201d") == "quoted"
+
+    def test_short_result_returns_none(self):
+        assert _extract_token("`a`") is None
+
+    def test_empty_returns_none(self):
+        assert _extract_token("") is None
+
+
 SAMPLE_HARNESS_CONCEPTS = """\
 | Concept | Description | Claude Code | Copilot CLI |
 |---|---|---|---|
@@ -117,7 +147,7 @@ class TestParseForbiddenTokens:
     def test_strips_in_task_tool_suffix(self):
         tokens = parse_forbidden_tokens(SAMPLE_HARNESS_CONCEPTS)
         # "agent_type: "explore" in task tool" -> "agent_type: explore"
-        assert any("agent_type" in t for t in tokens)
+        assert "agent_type: explore" in tokens
 
     def test_extracts_mcp_prefix_before_angle_bracket(self):
         tokens = parse_forbidden_tokens(SAMPLE_HARNESS_CONCEPTS)
