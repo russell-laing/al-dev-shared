@@ -82,6 +82,10 @@ class TestIsInCodeFence:
         lines = ["```\n", "code\n", "```\n"]
         assert not is_in_code_fence(0, lines)
 
+    def test_tilde_fence_detected_as_code_block(self):
+        lines = ["~~~\n", "code\n", "~~~\n"]
+        assert is_in_code_fence(1, lines)
+
 
 class TestExtractToken:
     def test_strips_backticks(self):
@@ -206,6 +210,16 @@ class TestClassifyHit:
         lines = ["Don't use CLAUDE.md.\n"]
         result = classify_hit(0, lines)
         assert result["context_type"] == "prohibition_rule"
+
+    def test_dont_unicode_apostrophe_line(self):
+        lines = ["Don\u2019t use CLAUDE.md.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prohibition_rule"
+
+    def test_line_inside_tilde_fence_is_code_block(self):
+        lines = ["~~~\n", "use CLAUDE.md here\n", "~~~\n"]
+        result = classify_hit(1, lines)
+        assert result["context_type"] == "code_block"
 
 
 class TestScanFile:

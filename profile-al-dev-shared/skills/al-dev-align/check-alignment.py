@@ -117,10 +117,11 @@ def strip_frontmatter(lines: list[str]) -> list[str]:
 
 
 def is_in_code_fence(line_idx: int, lines: list[str]) -> bool:
-    """Return True if line_idx falls inside an open ``` fence."""
+    """Return True if line_idx falls inside an open ``` or ~~~ fence."""
     in_fence = False
     for i in range(line_idx):
-        if lines[i].strip().startswith("```"):
+        stripped = lines[i].strip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
             in_fence = not in_fence
     return in_fence
 
@@ -131,7 +132,7 @@ def classify_hit(line_idx: int, lines: list[str]) -> dict:
     if is_in_code_fence(line_idx, lines) or line.startswith("    "):
         return {"context_type": "code_block", "autofixable": False, "severity": "warning"}
     line_lower = line.lower()
-    if any(kw in line_lower for kw in ["never", "do not", "must not", "don't"]):
+    if any(kw in line_lower for kw in ["never", "do not", "must not", "don't", "don\u2019t"]):
         return {
             "context_type": "prohibition_rule",
             "autofixable": False,
