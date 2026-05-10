@@ -11,6 +11,8 @@ strip_frontmatter = mod.strip_frontmatter
 is_in_code_fence = mod.is_in_code_fence
 parse_forbidden_tokens = mod.parse_forbidden_tokens
 _extract_token = mod._extract_token
+classify_hit = mod.classify_hit
+scan_file = mod.scan_file
 
 
 class TestStripFrontmatter:
@@ -160,3 +162,84 @@ class TestParseForbiddenTokens:
     def test_empty_table_returns_only_hardcoded(self):
         tokens = parse_forbidden_tokens("no table here")
         assert tokens == mod.HARDCODED_TOKENS
+
+
+class TestClassifyHit:
+    def test_prose_line_is_error_and_autofixable(self):
+        lines = ["Use CLAUDE.md as your guide.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prose"
+        assert result["severity"] == "error"
+        assert result["autofixable"] is True
+
+    def test_line_inside_code_fence_is_warning_not_autofixable(self):
+        lines = ["```\n", "use CLAUDE.md here\n", "```\n"]
+        result = classify_hit(1, lines)
+        assert result["context_type"] == "code_block"
+        assert result["severity"] == "warning"
+        assert result["autofixable"] is False
+
+    def test_indented_line_is_code_block(self):
+        lines = ["    CLAUDE.md is set here\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "code_block"
+        assert result["autofixable"] is False
+
+    def test_prohibition_rule_line(self):
+        lines = ["Never use CLAUDE.md directly.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prohibition_rule"
+        assert result["severity"] == "manual_review"
+        assert result["autofixable"] is False
+
+    def test_do_not_line(self):
+        lines = ["Do not reference CLAUDE.md.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prohibition_rule"
+
+    def test_must_not_line(self):
+        lines = ["You must not use CLAUDE.md.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prohibition_rule"
+
+    def test_dont_contraction_line(self):
+        lines = ["Don't use CLAUDE.md.\n"]
+        result = classify_hit(0, lines)
+        assert result["context_type"] == "prohibition_rule"
+
+
+class TestScanFile:
+    def test_finds_token_in_prose(self):
+        lines = ["---\n", "name: test\n", "---\n", "Open CLAUDE.md to configure.\n"]
+        hits = scan_file("skills/foo/SKILL.md", lines, {"CLAUDE.md"})
+        assert len(hits) == 1
+        assert hits[0]["token"] == "CLAUDE.md"
+        assert hits[0]["line"] == 4  # 1-indexed; frontmatter preserved as blanks
+        assert hits[0]["file"] == "skills/foo/SKILL.md"
+
+    def test_returns_empty_for_clean_file(self):
+        lines = ["---\n", "name: test\n", "---\n", "Use the project instructions file.\n"]
+        hits = scan_file("skills/foo/SKILL.md", lines, {"CLAUDE.md"})
+        assert hits == []
+
+    def test_hit_in_code_fence_has_warning_severity(self):
+        lines = ["```\n", "cp CLAUDE.md dest\n", "```\n"]
+        hits = scan_file("agents/foo.md", lines, {"CLAUDE.md"})
+        assert len(hits) == 1
+        assert hits[0]["severity"] == "warning"
+        assert hits[0]["autofixable"] is False
+
+    def test_multiple_tokens_on_same_line_produces_multiple_hits(self):
+        lines = ["Use CLAUDE.md and AGENTS.md together.\n"]
+        hits = scan_file("skills/x/SKILL.md", lines, {"CLAUDE.md", "AGENTS.md"})
+        assert len(hits) == 2
+
+    def test_context_field_contains_token(self):
+        lines = ["Open CLAUDE.md now.\n"]
+        hits = scan_file("skills/x/SKILL.md", lines, {"CLAUDE.md"})
+        assert "CLAUDE.md" in hits[0]["context"]
+
+    def test_context_type_field_is_present(self):
+        lines = ["Reference CLAUDE.md here.\n"]
+        hits = scan_file("skills/x/SKILL.md", lines, {"CLAUDE.md"})
+        assert "context_type" in hits[0]

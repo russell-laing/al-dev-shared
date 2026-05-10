@@ -125,5 +125,45 @@ def is_in_code_fence(line_idx: int, lines: list[str]) -> bool:
     return in_fence
 
 
+def classify_hit(line_idx: int, lines: list[str]) -> dict:
+    """Classify a token hit by context type, severity, and autofixability."""
+    line = lines[line_idx]
+    if is_in_code_fence(line_idx, lines) or line.startswith("    "):
+        return {"context_type": "code_block", "autofixable": False, "severity": "warning"}
+    line_lower = line.lower()
+    if any(kw in line_lower for kw in ["never", "do not", "must not", "don't"]):
+        return {
+            "context_type": "prohibition_rule",
+            "autofixable": False,
+            "severity": "manual_review",
+        }
+    return {"context_type": "prose", "autofixable": True, "severity": "error"}
+
+
+def scan_file(rel_path: str, raw_lines: list[str], forbidden_tokens: set[str]) -> list[dict]:
+    """Scan a file's body for forbidden tokens and return classified hits."""
+    body = strip_frontmatter(raw_lines)
+    hits: list[dict] = []
+    for i, raw_line in enumerate(body):
+        line_text = raw_line.rstrip("\n")
+        for token in forbidden_tokens:
+            if not token or token not in line_text:
+                continue
+            classification = classify_hit(i, body)
+            pos = line_text.find(token)
+            start = max(0, pos - 20)
+            end = min(len(line_text), pos + len(token) + 20)
+            hits.append(
+                {
+                    "file": rel_path,
+                    "line": i + 1,
+                    "token": token,
+                    "context": line_text[start:end],
+                    **classification,
+                }
+            )
+    return hits
+
+
 if __name__ == "__main__":
     print("{}")
