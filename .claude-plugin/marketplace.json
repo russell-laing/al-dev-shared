@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "al-dev-shared",
+  "owner": {
+    "name": "Russell Laing"
+  },
+  "plugins": [
+    {
+      "name": "al-dev-shared",
+      "source": ".",
+      "description": "Shared AL/BC skills, knowledge, and markdown guidelines."
+    }
+  ]
+}

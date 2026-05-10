@@ -1,0 +1,14 @@
+{
+  "name": "al-dev-shared",
+  "owner": {
+    "name": "Russell Laing"
+  },
+  "plugins": [
+    {
+      "name": "al-dev-shared",
+      "source": ".",
+      "version": "1.0.0",
+      "description": "Shared AL/BC skills, knowledge, and markdown guidelines."
+    }
+  ]
+}

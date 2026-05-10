@@ -1,0 +1,234 @@
+---
+name: al-dev-investigate
+description: >-
+  Structured root cause investigation for bugs and unexpected
+  behaviour. Spawns parallel investigation agents to test
+  competing hypotheses, then synthesises confirmed/rejected
+  findings to findings file. Use before /al-dev-plan when the
+  root cause is unclear. Triggers on: "investigate why", "find
+  root cause", "what is causing", "bug not fixed",
+  "recurring issue".
+argument-hint: "[symptom or bug description]"
+---
+
+# Skill: /al-dev-investigate
+
+Root cause investigation — answers "why is this happening?" before
+`/al-dev-plan` answers "how do we fix it?".
+
+---
+
+## When to Use
+
+| Situation | Use |
+| --- | --- |
+| Root cause of a bug is unclear | ✅ |
+| A previously deployed fix has stopped working | ✅ |
+| Multiple competing hypotheses exist | ✅ |
+| `/al-dev-plan` was run to find reasons, not solutions | ✅ |
+| You need a clear solution to design | ❌ Use `/al-dev-plan` |
+| General codebase questions | ❌ Use `/al-dev-explore` |
+
+---
+
+## Implementation
+
+### Step 1 — Load Context
+
+Read in this order:
+
+1. Latest ticket context (glob):
+   `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)`
+   (if it exists) — symptom, affected data
+2. `.dev/project-context.md` (if it exists) — relevant objects,
+   established patterns
+3. Latest explore findings (glob):
+   `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)`
+   (if it exists) — prior exploration
+
+If a ticket is referenced but `ticket-context.md` is missing,
+suggest `/al-dev-ticket <id>` first.
+
+Extract from the user's args or ticket:
+
+- **Symptom**: What is the user observing?
+  (wrong field value, error, missing data)
+- **Conditions**: Under what circumstances?
+  (after posting, on Copy Document, for certain items only)
+- **Affected data**: Specific records if mentioned
+  (order number, item, reference)
+
+---
+
+### Step 2 — Formulate Hypotheses
+
+Before spawning agents, list 2–4 initial hypotheses inline.
+
+Each hypothesis must be:
+
+- **Specific**: not "event subscriber issue" but "subscriber exits
+  early when Item Nominal Weight = 0"
+- **Testable**: a code path or data state must be able to confirm
+  or reject it
+- **Bounded**: points to a specific codeunit, table, or event
+
+Example hypothesis set for a "Total Kg overstated" bug:
+
+```text
+H1: Nominal Weight = 0 on the affected item — subscriber exits
+    early without recalculating Total Kg
+H2: Copy Document copies stale Total Kg — EventSubscribers fires
+    on copy but not on posting
+H3: Upgrade tag already applied but data fix not re-run —
+    one-time correction did not cover this scenario
+H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
+    fully-invoiced lines included in aggregation
+```
+
+---
+
+### Step 3 — Spawn Parallel Investigation Agents
+
+Spawn 2 Explore agents in parallel, assigning 2 hypotheses each:
+
+```text
+Agent tool:
+  subagent_type: Explore
+  description: "Investigate H1 and H2: [brief label]"
+
+Prompt:
+  "You are investigating a bug in an AL/Business Central extension.
+   Confirm or reject these two hypotheses by reading the code.
+   For each hypothesis, find the exact code path that supports or
+   contradicts it. Do not propose solutions — only investigate.
+
+   Bug symptom: [SYMPTOM]
+   Conditions: [CONDITIONS]
+
+   Project context:
+   [paste relevant sections from project-context.md if available]
+
+   HYPOTHESIS H1: [full text]
+   Test by reading: [specific files / objects to check]
+
+   HYPOTHESIS H2: [full text]
+   Test by reading: [specific files / objects to check]
+
+   For EACH hypothesis report:
+
+   VERDICT: CONFIRMED | REJECTED | INCONCLUSIVE
+   EVIDENCE: [file path, line number, code snippet]
+   REASONING: [1-2 sentences]
+   GAPS: [what cannot be verified from local code alone]"
+```
+
+**Agent 1:** H1 and H2 with their test targets.
+**Agent 2:** H3 and H4 with their test targets.
+
+Both agents run in parallel (single message, two Agent tool calls).
+
+---
+
+### Step 4 — Synthesise Findings
+
+Read both agents' results and write
+`.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md`:
+
+```markdown
+# Investigation: [Symptom] — [Date]
+
+**Ticket:** [FDxxxxx if applicable]
+**Repos involved:** [repos where relevant code was found]
+
+## Verdict
+
+| Hypothesis | Status | Confidence |
+| --- | --- | --- |
+| H1: [text] | ✅ CONFIRMED | High |
+| H2: [text] | ❌ REJECTED | High |
+| H3: [text] | ⚠️ INCONCLUSIVE | — |
+| H4: [text] | ❌ REJECTED | Medium |
+
+## Root Cause
+
+[1–3 sentences. State which confirmed hypothesis is the actual
+cause. If inconclusive, state what data is needed to resolve it.]
+
+## Evidence
+
+### H1 — CONFIRMED
+
+**File:** `src/codeunit/Cod50741.al:336`
+
+~~~al
+if Item."ACAKAU01 Nominal Weight" = 0 then
+    exit;  // exits without recalculating Total Kg
+~~~
+
+**Why this matters:** [explanation]
+
+### H2 — REJECTED
+
+**Evidence:** `EventSubscribers.codeunit.al:172` only fires on
+`OnAfterCopySalesLine`, not during posting. Posting path confirmed
+in `Cod50741.al:471`.
+
+## Gaps
+
+- [Anything not verifiable from local code]
+- [BC base app behaviour requiring external reference]
+
+## Affected Repositories
+
+| Repo | Role | Fix needed? |
+| --- | --- | --- |
+| MM_Kembla_Core | Root cause lives here | ✅ Yes |
+| MM_Kembla_Price_App | Symptom visible here | ❌ No code change |
+
+## Next Steps
+
+[Exactly one of:]
+
+- Root cause confirmed in this repo →
+  `/al-dev-plan [fix description]`
+- Fix needed in another repo →
+  `/al-dev-handoff [path to target repo]`
+- Inconclusive — specific data needed →
+  [exact query or check to run]
+
+```
+
+---
+
+### Step 5 — Present to User
+
+```text
+Investigation complete → .dev/YYYY-MM-DD-al-dev-explore-findings.md
+
+Root cause: [1–2 sentences]
+
+Hypotheses tested: 4
+  ✅ Confirmed: H1 — [brief label]
+  ❌ Rejected: H2, H4
+  ⚠️ Inconclusive: H3 — [what is needed]
+
+Fix required in: [repo name]
+
+Next:
+  Fix is in this repo → /al-dev-plan [fix description]
+  Fix is in another repo → /al-dev-handoff [path to target repo]
+  More data needed → [specific check]
+```
+
+---
+
+## Notes
+
+- Creates date-prefixed `.dev/YYYY-MM-DD-al-dev-explore-findings.md`
+  each run (one file per investigation date)
+- If all hypotheses are rejected, formulate 2 new hypotheses and
+  repeat from Step 3 — do not give up after one round
+- For bugs spanning 2 repos, identify which repo owns the fix and
+  suggest `/al-dev-handoff` to migrate context
+- When ticket context exists, always read it before formulating
+  hypotheses — it often contains the key data point

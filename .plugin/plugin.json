@@ -1,0 +1,10 @@
+{
+  "name": "al-dev-shared",
+  "version": "1.0.0",
+  "author": {
+    "name": "Russell Laing"
+  },
+  "keywords": ["al", "business-central", "bc", "dynamics-365"],
+  "category": "development",
+  "skills": "skills/"
+}
