@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "al-dev-shared",
-      "source": ".",
+      "source": "./profile-al-dev-shared",
       "description": "Shared AL/BC skills, knowledge, and markdown guidelines."
     }
   ]
