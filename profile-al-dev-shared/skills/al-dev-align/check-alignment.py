@@ -166,5 +166,88 @@ def scan_file(rel_path: str, raw_lines: list[str], forbidden_tokens: set[str]) -
     return hits
 
 
+def parse_concepts_from_harness_md(text: str) -> set[str]:
+    """Extract concept names (column 1) from the vocabulary table in harness-concepts.md."""
+    concepts: set[str] = set()
+    in_table = False
+    header_passed = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if "| Concept |" in stripped and "Description" in stripped:
+            in_table = True
+            header_passed = False
+            continue
+        if not in_table:
+            continue
+        if stripped.startswith("|---") or stripped.startswith("| ---"):
+            header_passed = True
+            continue
+        if not stripped.startswith("|"):
+            in_table = False
+            continue
+        if not header_passed:
+            continue
+        parts = [p.strip() for p in stripped.split("|")]
+        if len(parts) >= 2:
+            concept = re.sub(r"\*\*", "", parts[1]).strip()
+            if concept:
+                concepts.add(concept)
+    return concepts
+
+
+def parse_mapping_table(text: str) -> set[str]:
+    """Parse concept names from the '## Harness Mapping' table in CLAUDE.md / AGENTS.md."""
+    concepts: set[str] = set()
+    in_section = False
+    for line in text.splitlines():
+        if line.startswith("## Harness Mapping"):
+            in_section = True
+            continue
+        if in_section and line.startswith("## "):
+            break
+        if not in_section:
+            continue
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        if stripped.startswith("|---") or stripped.startswith("| ---"):
+            continue
+        parts = [p.strip() for p in stripped.split("|")]
+        if len(parts) >= 2:
+            concept = re.sub(r"\*\*", "", parts[1])
+            concept = re.sub(r"`", "", concept).strip()
+            if concept and concept.lower() != "concept":
+                concepts.add(concept)
+    return concepts
+
+
+def compute_coverage_gaps(
+    concepts: set[str],
+    claude_mapping: set[str],
+    copilot_mapping: set[str],
+) -> tuple[list[dict], list[dict]]:
+    """Return (missing, orphaned) coverage gap lists."""
+    missing: list[dict] = []
+    for concept in sorted(concepts):
+        missing_in = []
+        if concept not in claude_mapping:
+            missing_in.append("claude")
+        if concept not in copilot_mapping:
+            missing_in.append("copilot")
+        if missing_in:
+            missing.append({"concept": concept, "missing_in": missing_in})
+
+    orphaned: list[dict] = []
+    for concept in sorted((claude_mapping | copilot_mapping) - concepts):
+        present_in = []
+        if concept in claude_mapping:
+            present_in.append("claude")
+        if concept in copilot_mapping:
+            present_in.append("copilot")
+        orphaned.append({"concept": concept, "present_in": present_in})
+
+    return missing, orphaned
+
+
 if __name__ == "__main__":
     print("{}")

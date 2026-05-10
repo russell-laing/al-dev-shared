@@ -13,6 +13,9 @@ parse_forbidden_tokens = mod.parse_forbidden_tokens
 _extract_token = mod._extract_token
 classify_hit = mod.classify_hit
 scan_file = mod.scan_file
+parse_concepts_from_harness_md = mod.parse_concepts_from_harness_md
+parse_mapping_table = mod.parse_mapping_table
+compute_coverage_gaps = mod.compute_coverage_gaps
 
 
 class TestStripFrontmatter:
@@ -257,3 +260,119 @@ class TestScanFile:
         lines = ["Reference CLAUDE.md here.\n"]
         hits = scan_file("skills/x/SKILL.md", lines, {"CLAUDE.md"})
         assert "context_type" in hits[0]
+
+
+HARNESS_CONCEPTS_FULL = """\
+## Generic Concept Vocabulary
+
+| Concept | Description | Claude Code | Copilot CLI |
+|---|---|---|---|
+| **project instructions file** | File desc | `CLAUDE.md` | `AGENTS.md` |
+| **USER_GATE** | Blocking gate | `AskUserQuestion` tool | `ask_user` tool |
+| **explore agent** | Fast agent | `subagent_type: Explore` | `agent_type: "explore"` in task tool |
+"""
+
+CLAUDE_MD_WITH_MAPPING = """\
+# Project Instructions
+
+Some intro text.
+
+## Harness Mapping
+
+| Concept | Claude Code Value |
+|---|---|
+| **project instructions file** | `CLAUDE.md` |
+| **USER_GATE** | `AskUserQuestion` tool |
+
+## Other Section
+
+More content.
+"""
+
+AGENTS_MD_WITH_MAPPING = """\
+## Harness Mapping
+
+| Concept | Copilot CLI Value |
+|---|---|
+| **project instructions file** | `AGENTS.md` |
+
+## Next Section
+"""
+
+
+class TestParseConceptsFromHarnessMd:
+    def test_extracts_concept_names(self):
+        concepts = parse_concepts_from_harness_md(HARNESS_CONCEPTS_FULL)
+        assert "project instructions file" in concepts
+        assert "USER_GATE" in concepts
+        assert "explore agent" in concepts
+
+    def test_strips_bold_markers(self):
+        concepts = parse_concepts_from_harness_md(HARNESS_CONCEPTS_FULL)
+        assert "**project instructions file**" not in concepts
+
+    def test_returns_empty_set_for_no_table(self):
+        concepts = parse_concepts_from_harness_md("No table here.")
+        assert concepts == set()
+
+
+class TestParseMappingTable:
+    def test_extracts_concepts_from_harness_mapping_section(self):
+        concepts = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        assert "project instructions file" in concepts
+        assert "USER_GATE" in concepts
+
+    def test_stops_at_next_heading(self):
+        concepts = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        assert "Other Section" not in concepts
+
+    def test_skips_separator_rows(self):
+        concepts = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        assert "---" not in concepts
+
+    def test_skips_header_row(self):
+        concepts = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        assert "Concept" not in concepts
+
+    def test_strips_bold_and_backticks(self):
+        concepts = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        assert "**project instructions file**" not in concepts
+
+    def test_returns_empty_set_when_no_section(self):
+        concepts = parse_mapping_table("# No mapping here\nContent.\n")
+        assert concepts == set()
+
+
+class TestComputeCoverageGaps:
+    def test_missing_concept_appears_in_missing_list(self):
+        concepts = {"project instructions file", "USER_GATE"}
+        claude = {"project instructions file"}
+        copilot = {"project instructions file"}
+        missing, orphaned = compute_coverage_gaps(concepts, claude, copilot)
+        assert any(m["concept"] == "USER_GATE" for m in missing)
+
+    def test_missing_in_field_lists_correct_harnesses(self):
+        concepts = {"USER_GATE"}
+        claude = set()
+        copilot = {"USER_GATE"}
+        missing, _ = compute_coverage_gaps(concepts, claude, copilot)
+        gap = next(m for m in missing if m["concept"] == "USER_GATE")
+        assert gap["missing_in"] == ["claude"]
+        assert "copilot" not in gap["missing_in"]
+
+    def test_no_gaps_when_all_covered(self):
+        concepts = {"project instructions file"}
+        claude = {"project instructions file"}
+        copilot = {"project instructions file"}
+        missing, orphaned = compute_coverage_gaps(concepts, claude, copilot)
+        assert missing == []
+        assert orphaned == []
+
+    def test_orphaned_row_not_in_concepts(self):
+        concepts = {"USER_GATE"}
+        claude = {"USER_GATE", "old concept"}
+        copilot = {"USER_GATE"}
+        _, orphaned = compute_coverage_gaps(concepts, claude, copilot)
+        assert any(o["concept"] == "old concept" for o in orphaned)
+        orphan = next(o for o in orphaned if o["concept"] == "old concept")
+        assert "claude" in orphan["present_in"]
