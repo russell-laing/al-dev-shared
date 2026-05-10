@@ -41,6 +41,20 @@ class TestStripFrontmatter:
         result = strip_frontmatter(lines)
         assert result == lines
 
+    def test_empty_list_returns_empty(self):
+        result = strip_frontmatter([])
+        assert result == []
+
+    def test_unclosed_frontmatter_returns_unchanged(self):
+        lines = ["---\n", "key: val\n", "# Never closed\n"]
+        result = strip_frontmatter(lines)
+        assert result == lines
+
+    def test_file_with_only_opening_dash_returns_unchanged(self):
+        lines = ["---\n"]
+        result = strip_frontmatter(lines)
+        assert result == lines
+
 
 class TestIsInCodeFence:
     def test_line_before_fence_is_not_in_fence(self):

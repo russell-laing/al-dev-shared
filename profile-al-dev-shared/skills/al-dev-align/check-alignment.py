@@ -33,20 +33,25 @@ EXCLUDED_RELPATHS = {"knowledge/harness-concepts.md"}
 def strip_frontmatter(lines: list[str]) -> list[str]:
     """Replace frontmatter lines with blank strings, preserving line count.
 
-    A file has frontmatter only if its first line is exactly '---'.
-    Frontmatter ends at the next '---' line.
+    A file has frontmatter only if its first line is exactly '---' and a
+    matching closing '---' line exists. If no closing delimiter is found,
+    the file is treated as having no frontmatter and returned unchanged.
     """
     if not lines or lines[0].rstrip("\n") != "---":
         return lines
     result: list[str] = [""]  # replace opening ---
     i = 1
+    found_close = False
     while i < len(lines):
         if lines[i].rstrip("\n") == "---":
             result.append("")  # replace closing ---
             i += 1
+            found_close = True
             break
         result.append("")
         i += 1
+    if not found_close:
+        return lines  # no closing delimiter — treat as no frontmatter
     result.extend(lines[i:])
     return result
 
