@@ -255,14 +255,12 @@ high-priority issues to address.
 After writing, run the validator:
 
 ```bash
-VALIDATOR=$(find ~/.claude/plugins \
-  -name "validate-code-review.py" \
-  -path "*/develop/*" 2>/dev/null | head -1)
+VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-develop/validate-code-review.py"
 PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md \
   2>/dev/null | sort | tail -1)
 REVIEW=$(ls .dev/*-al-dev-develop-code-review.md \
   2>/dev/null | sort | tail -1)
-[ -n "$VALIDATOR" ] && [ -n "$PLAN" ] && \
+[ -f "$VALIDATOR" ] && [ -n "$PLAN" ] && \
   [ -n "$REVIEW" ] && python3 "$VALIDATOR" \
   "$REVIEW" "$PLAN" || echo \
   "Validator not found — skipping"
@@ -293,7 +291,7 @@ Compilation: [Success / Not verified]
 Ready to proceed to testing?
 ```
 
-Use AskUserQuestion with options:
+USER_GATE — ask the user with options:
 - Approve - Proceed to testing
 - Review Issues - Show high-priority issues in detail
 - Fix Issues First - Address high-priority issues now

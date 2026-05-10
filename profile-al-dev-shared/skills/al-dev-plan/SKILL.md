@@ -249,13 +249,12 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 After writing the solution plan file, run the validator:
 
 ```bash
-VALIDATOR=$(find ~/.claude/plugins -name "validate-plan.py" \
-  -path "*/plan/*" 2>/dev/null | head -1)
+VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-plan/validate-plan.py"
 REQ=$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null \
   | sort | tail -1)
 PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
   | sort | tail -1)
-[ -n "$VALIDATOR" ] && [ -n "$REQ" ] && [ -n "$PLAN" ] && \
+[ -f "$VALIDATOR" ] && [ -n "$REQ" ] && [ -n "$PLAN" ] && \
   python3 "$VALIDATOR" "$PLAN" "$REQ" \
   || echo "Validator not found or files missing — skipping"
 ```
@@ -290,7 +289,7 @@ Selected Approach [X] because [key rationale].
 Ready to proceed to development?
 ```
 
-Use AskUserQuestion with options:
+USER_GATE — ask the user with options:
 - Approve - Proceed to development
 - Refine - Adjust plan (what needs changing?)
 - Review Alternatives - Show me other architect approaches

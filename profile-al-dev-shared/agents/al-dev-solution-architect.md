@@ -65,17 +65,17 @@ Note: Solution plan filename uses pattern:
 
 3. **Research phase** (only for MEDIUM/COMPLEX features):
    - **Base app exploration:** Use
-     `mcp__plugin_profile-claude-al-dev_al-mcp-server__*` tools directly
+     `al-mcp-server MCP tool: *` tools directly
      - When extending base tables: use `al_get_object_definition`
      - When subscribing to events: use `al_find_references`
      - When unsure about base app: use `al_search_objects`
    - **BC expert consultation:** Use
-     `mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__*`
+     `bc-code-intelligence MCP tool: *`
      tools directly
      - Architecture decisions: `ask_bc_expert` with specific question
      - Pattern questions: `find_bc_knowledge` for best practices
    - **Official patterns:** Use
-     `mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__*` tools directly
+     `microsoft-docs MCP tool: *` tools directly
      - Search docs: `microsoft_docs_search` for AL/BC documentation
    - **For SIMPLE features:** Skip research, use project context only
 
@@ -95,7 +95,7 @@ Note: Solution plan filename uses pattern:
 8. **Write output** - Create `.dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md`
    including Testability Architecture section
 
-**CRITICAL:** Step 6 is mandatory for ALL solutions. See "Testable Architecture Standards" in CLAUDE.md for patterns and examples. test-engineer will review this section for completeness.
+**CRITICAL:** Step 6 is mandatory for ALL solutions. See "Testable Architecture Standards" in the project instructions file for patterns and examples. test-engineer will review this section for completeness.
 
 8. **Update project context** - Append new patterns/objects learned to `.dev/project-context.md`
 
@@ -107,11 +107,11 @@ Note: Solution plan filename uses pattern:
 
 ### AL MCP Server (Use FIRST for base app exploration)
 ```
-mcp__plugin_profile-claude-al-dev_al-mcp-server__al_get_object_definition
-mcp__plugin_profile-claude-al-dev_al-mcp-server__al_find_references
-mcp__plugin_profile-claude-al-dev_al-mcp-server__al_search_objects
-mcp__plugin_profile-claude-al-dev_al-mcp-server__al_get_object_summary
-mcp__plugin_profile-claude-al-dev_al-mcp-server__al_search_object_members
+al-mcp-server MCP tool: al_get_object_definition
+al-mcp-server MCP tool: al_find_references
+al-mcp-server MCP tool: al_search_objects
+al-mcp-server MCP tool: al_get_object_summary
+al-mcp-server MCP tool: al_search_object_members
 ```
 
 **ALWAYS use when:**
@@ -127,7 +127,7 @@ mcp__plugin_profile-claude-al-dev_al-mcp-server__al_search_object_members
 **Example usage:**
 ```
 1. Read requirements: "Add credit limit to Customer"
-2. Call: mcp__plugin_profile-claude-al-dev_al-mcp-server__al_get_object_definition
+2. Call: al-mcp-server MCP tool: al_get_object_definition
    with object_type="Table", object_name="Customer"
 3. Review existing fields to avoid conflicts
 4. Design extension fields based on base table structure
@@ -135,9 +135,9 @@ mcp__plugin_profile-claude-al-dev_al-mcp-server__al_search_object_members
 
 ### BC Code Intelligence MCP (Use for architecture/patterns)
 ```
-mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__ask_bc_expert
-mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__find_bc_knowledge
-mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__list_specialists
+bc-code-intelligence MCP tool: ask_bc_expert
+bc-code-intelligence MCP tool: find_bc_knowledge
+bc-code-intelligence MCP tool: list_specialists
 ```
 
 **Use when:**
@@ -149,7 +149,7 @@ mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__list_specialists
 **Example usage:**
 ```
 1. Design question: "How should I extend sales posting?"
-2. Call: mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__ask_bc_expert
+2. Call: bc-code-intelligence MCP tool: ask_bc_expert
    - question: "Best practice for validating sales orders before posting"
 3. Get recommendation: Use OnBeforePost event subscriber
 4. Incorporate into solution design
@@ -157,8 +157,8 @@ mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__list_specialists
 
 ### Microsoft Docs MCP (Use for official documentation)
 ```
-mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__microsoft_docs_search
-mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__microsoft_docs_fetch
+microsoft-docs MCP tool: microsoft_docs_search
+microsoft-docs MCP tool: microsoft_docs_fetch
 ```
 
 **Use when:**
@@ -169,7 +169,7 @@ mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__microsoft_docs_fetch
 **Example usage:**
 ```
 1. Unsure about table extension syntax
-2. Call: mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__microsoft_docs_search
+2. Call: microsoft-docs MCP tool: microsoft_docs_search
    - query: "AL table extension field syntax"
 3. Get official documentation
 4. Use correct syntax in code templates
@@ -214,9 +214,9 @@ Feature: Validate credit limit on sales posting
 Complexity: MEDIUM (5 files)
 
 MCP Usage:
-1. mcp__plugin_profile-claude-al-dev_al-mcp-server__al_find_references
+1. al-mcp-server MCP tool: al_find_references
    (Codeunit, "Sales-Post") → Find OnBeforePostSalesDoc event
-2. mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__ask_bc_expert
+2. bc-code-intelligence MCP tool: ask_bc_expert
    → "Best practice for sales posting validation"
    → Response: Use event subscriber, exit early for performance
 3. Design solution based on findings
@@ -228,13 +228,13 @@ Feature: Approval workflow with email notifications
 Complexity: COMPLEX (12 files)
 
 MCP Usage:
-1. mcp__plugin_profile-claude-al-dev_al-mcp-server__al_search_objects
+1. al-mcp-server MCP tool: al_search_objects
    ("approval") → Find existing approval infrastructure
-2. mcp__plugin_profile-claude-al-dev_al-mcp-server__al_get_object_definition
+2. al-mcp-server MCP tool: al_get_object_definition
    (Table, "Approval Entry") → Understand approval data structure
-3. mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__ask_bc_expert
+3. bc-code-intelligence MCP tool: ask_bc_expert
    → question: "Email integration patterns in BC"
-4. mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__microsoft_docs_search
+4. microsoft-docs MCP tool: microsoft_docs_search
    ("BC email setup") → Get official email configuration docs
 5. Design comprehensive solution
 ```
@@ -279,7 +279,7 @@ MCP Usage:
 - Show procedure signatures (name, params, return type only - NO code)
 
 ### Testability Architecture (MANDATORY)
-[See "Testability Architecture Standards" in CLAUDE.md for required elements]
+[See "Testability Architecture Standards" in the project instructions file for required elements]
 - Dependencies list (DB, time, HTTP, files, random)
 - Required interfaces with method signatures
 - Injection points (where deps passed as params)
@@ -339,7 +339,7 @@ OBJ:PageExt|[Name]|modify|[Purpose]|[Controls added]|[Deps]|[Notes]
 
 ## Testability Architecture Standards
 
-See CLAUDE.md section "Testable Architecture Standards" for comprehensive guidance. The solution plan MUST include a "Testability Architecture" section with:
+See the project instructions file section "Testable Architecture Standards" for comprehensive guidance. The solution plan MUST include a "Testability Architecture" section with:
 
 1. **External Dependencies** - ALL dependencies listed (DB tables, system time, HTTP, files, random)
 2. **Required Interfaces** - Complete method signatures for each dependency

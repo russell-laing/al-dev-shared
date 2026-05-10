@@ -22,7 +22,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 | **Read** | Read existing specs, requirements files |
 | **Write** | Create `.dev/$(date +%Y-%m-%d)-al-dev-interview-notes.md`, |
 | | update existing specs |
-| **AskUserQuestion** | Conduct interview with user (REQUIRED for all questions) |
+| **USER_GATE** | Conduct interview with user (REQUIRED for all questions) |
 
 **Note:** Write timestamps as plain text. No shell commands available.
 
@@ -53,11 +53,11 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 ## Interview Process
 
-**CRITICAL REQUIREMENT**: Use `AskUserQuestion` tool for EVERY question.
+**CRITICAL REQUIREMENT**: Use **USER_GATE** for EVERY question.
 
 - **DO NOT** output questions as text
 - **DO NOT** list questions in your response
-- **ONLY** ask via AskUserQuestion tool
+- **ONLY** ask via USER_GATE
 - Group 2-4 related questions per call
 - Expect 40+ questions for complex features
 
@@ -212,7 +212,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 1. **Ask follow-up questions** based on answers - dig deep
 2. **Don't ask obvious questions** - assume BC/AL competence
 3. **Continue until complete** - multiple rounds expected
-4. **Group related questions** - 2-4 per AskUserQuestion call
+4. **Group related questions** - 2-4 per USER_GATE call
 5. **Probe contradictions** - if answers don't align, clarify
 6. **Surface hidden complexity** - ask about things user might not have considered
 7. **Use multiSelect** for non-exclusive options (e.g., "Which companies?" when multiple apply)

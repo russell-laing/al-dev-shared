@@ -66,4 +66,4 @@ Reviewer re-reviews
 
 ## Stall Prevention
 
-If the same finding appears 3+ times across iterations with no progress, escalate to user. See Loop Governance in CLAUDE.md.
+If the same finding appears 3+ times across iterations with no progress, escalate to user. See Loop Governance in the project instructions file.

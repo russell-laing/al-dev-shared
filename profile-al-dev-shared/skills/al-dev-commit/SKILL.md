@@ -21,37 +21,42 @@ stop condition.
 
 ## Step 1 — Guard: Verify Project Context
 
+Check for the project instructions file (project instructions file, AGENTS.md,
+or equivalent for your harness):
+
 ```bash
-ls CLAUDE.md 2>/dev/null
+ls project instructions file AGENTS.md 2>/dev/null | head -1
 ```
 
-If `CLAUDE.md` is **absent**:
+If no project instructions file is found:
 
-Tell the user: "No `CLAUDE.md` found in this repository.
+Tell the user: "No project instructions file found in this repository.
 Project context is required to generate correct commit
 messages. Would you like me to create it now via
 `/al-dev-init-context`? (yes / no)"
 
 - **yes** — invoke the `al-dev-init-context` skill via the
   Skill tool (not a subagent), wait for it to complete, then
-  proceed to Step 2 to load the newly created `CLAUDE.md`
+  proceed to Step 2 to load the newly created project
+  instructions file
 - **init-context fails** — stop with: "Could not create
-  `CLAUDE.md` automatically. Please run
+  the project instructions file automatically. Please run
   `/al-dev-init-context` or create it manually, then re-run
   `/al-dev-commit`."
-- **no** — stop with: "Please create `CLAUDE.md` manually or
-  run `/al-dev-init-context`, then re-run `/al-dev-commit`."
+- **no** — stop with: "Please create the project
+  instructions file manually or run `/al-dev-init-context`,
+  then re-run `/al-dev-commit`."
 
 ---
 
 ## Step 2 — Load Project Context
 
-Read the following files in order (later values override earlier):
+Load the project instructions file from your harness's standard
+locations (earlier files provide defaults, later files override):
 
-1. `~/claude-configs/CLAUDE.md` — global defaults (if present)
-1. `~/claude-configs/profile-claude-al-dev/CLAUDE.md` — AL
-   profile defaults (if present)
-1. `./CLAUDE.md` — project-specific overrides (required)
+1. Global defaults location (if present, per harness mapping)
+2. AL profile defaults location (if present, per harness mapping)
+3. `./[project instructions file]` — project-specific (required)
 
 Extract and hold in working memory:
 
@@ -132,7 +137,7 @@ Hold as **PROJECT_GITMOJI_STYLE**.
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-commit-agent
+  agent: al-dev-shared:al-dev-commit-agent
   description: "Commit analysis: analyse staged changes"
 
 Prompt:
@@ -261,7 +266,7 @@ GROUP_2:
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-commit-agent
+  agent: al-dev-shared:al-dev-commit-agent
   description: "Commit execution: [N] commits"
 
 Prompt:

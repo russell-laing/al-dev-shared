@@ -63,21 +63,21 @@ If either shows blank (not `set`), stop and tell the user:
 ```text
 Missing Freshdesk credentials.
 
-Add to ~/.claude/settings.json (never committed):
+Add to your harness settings file (never committed):
 
   "env": {
     "FRESHDESK_API_KEY": "your-api-key",
     "FRESHDESK_DOMAIN": "yoursubdomain.freshdesk.com"
   }
 
-Restart Claude Code after saving.
+Restart your AI coding agent session after saving.
 ```
 
 If credentials are present, dispatch `al-dev-ticket-agent`:
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-agent
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
@@ -149,7 +149,7 @@ Dispatch:
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-support-agent
+  agent: al-dev-shared:al-dev-support-agent
   description: "BC support research: <60-char query summary>"
 
 Prompt: <assembled prompt envelope above>

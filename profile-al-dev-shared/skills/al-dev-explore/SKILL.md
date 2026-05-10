@@ -69,9 +69,10 @@ Classify the user's question type to guide the agent:
 Spawn an Explore subagent via the Agent tool:
 
 ```text
-Agent tool:
-  subagent_type: Explore
-  description: "Explore: [user's question]"
+Spawn an explore agent:
+  purpose: Explore [user's question]
+  prompt: [user's question in full]
+  output: structured findings summary
 
 Prompt:
   "Answer this question about the codebase: [USER_QUESTION]

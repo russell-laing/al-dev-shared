@@ -92,9 +92,10 @@ H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
 Spawn 2 Explore agents in parallel, assigning 2 hypotheses each:
 
 ```text
-Agent tool:
-  subagent_type: Explore
-  description: "Investigate H1 and H2: [brief label]"
+Spawn an explore agent:
+  purpose: Investigate H1 and H2: [brief label]
+  prompt: [hypothesis investigation prompt]
+  output: confirmed/rejected findings with evidence
 
 Prompt:
   "You are investigating a bug in an AL/Business Central extension.

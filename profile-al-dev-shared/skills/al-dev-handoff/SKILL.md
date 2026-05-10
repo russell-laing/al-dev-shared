@@ -35,8 +35,8 @@ table:
 - If ambiguous: ask the user for the full path
 
 ```bash
-ls "[target-repo-path]/.claude" 2>/dev/null || \
-  ls "[target-repo-path]/src" 2>/dev/null || \
+ls "[target-repo-path]/src" 2>/dev/null || \
+  ls "[target-repo-path]/app.json" 2>/dev/null || \
   echo "Path not found — verify target repo path"
 ```
 
@@ -121,7 +121,7 @@ Read `explore-findings.md` and write
 ```markdown
 # Handoff Prompt — [date]
 
-Paste this into a new Claude Code session opened in [target repo name].
+Paste this into a new session in your AI coding harness, opened in [target repo name].
 
 ---
 

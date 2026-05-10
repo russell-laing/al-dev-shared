@@ -23,7 +23,7 @@ RED → GREEN → REFACTOR → (repeat)
 ⛔ **NEVER** implement logic before user confirms test FAILS (RED phase)
 ⛔ **NEVER** skip approval gates between phases
 ⛔ **NEVER** batch multiple cycles - one test at a time
-⛔ **ALWAYS** use AskUserQuestion at phase gates (BLOCKING)
+⛔ **ALWAYS** use USER_GATE at phase gates (BLOCKING)
 
 ---
 
@@ -99,7 +99,7 @@ Create a test that fails because the production code doesn't exist yet.
    # Console shows summary only (e.g., "Passed: 0, Failed: 1")
    ```
 
-7. **⛔ HARD STOP - Use AskUserQuestion:**
+7. **⛔ HARD STOP - Use USER_GATE:**
    ```markdown
    RED Phase Complete: [TestName]
 
@@ -193,7 +193,7 @@ Write minimal production code to make the test pass.
    # Console shows summary only (e.g., "Passed: 1, Failed: 0")
    ```
 
-5. **⛔ HARD STOP - Use AskUserQuestion:**
+5. **⛔ HARD STOP - Use USER_GATE:**
    ```markdown
    GREEN Phase Complete: [TestName]
 
@@ -216,7 +216,7 @@ Write minimal production code to make the test pass.
 1. Ask user for error message
 2. Analyze failure
 3. Fix production code
-4. Re-ask AskUserQuestion for GREEN phase
+4. Re-ask USER_GATE for GREEN phase
 5. Repeat until test PASSES
 
 **Do NOT move to REFACTOR until test PASSES.**
@@ -292,7 +292,7 @@ Improve code quality without changing behavior.
    # Console shows summary (e.g., "Passed: 10, Failed: 0")
    ```
 
-4. **⛔ HARD STOP - Use AskUserQuestion:**
+4. **⛔ HARD STOP - Use USER_GATE:**
    ```markdown
    REFACTOR Phase Complete
 

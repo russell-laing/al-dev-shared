@@ -135,9 +135,10 @@ high-volume or batch-processing.
 ### Step 2 — Spawn Performance Analysis Agent
 
 ```text
-Agent tool:
-  subagent_type: Explore
-  description: "Perf scan: [scope description]"
+Spawn an explore agent:
+  purpose: Perf scan: [scope description]
+  prompt: [performance analysis prompt]
+  output: performance findings with file:line references
 
 Prompt:
   "Scan these AL codeunit files for performance anti-patterns.

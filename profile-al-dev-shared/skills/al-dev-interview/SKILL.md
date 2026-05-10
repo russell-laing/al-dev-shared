@@ -99,11 +99,10 @@ Only after the interview conversation is complete:
 3. Validate the output:
 
    ```bash
-   VALIDATOR=$(find ~/.claude/plugins -name "validate-requirements.py" \
-     -path "*/interview/*" 2>/dev/null | head -1)
+   VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-interview/validate-requirements.py"
    REQFILE=$(ls -t .dev/*-al-dev-interview-requirements.md 2>/dev/null \
      | head -1)
-   [ -n "$VALIDATOR" ] && [ -n "$REQFILE" ] && \
+   [ -f "$VALIDATOR" ] && [ -n "$REQFILE" ] && \
      python3 "$VALIDATOR" "$REQFILE" || \
      echo "Validator not found — skipping"
    ```

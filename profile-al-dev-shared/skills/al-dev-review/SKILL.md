@@ -179,7 +179,7 @@ EOF
 
 ```text
 Agent tool:
-  subagent_type: al-dev-session-analyst
+  agent: al-dev-session-analyst
   description: "Session analysis: [basename of JSONL file]"
 
 Prompt:

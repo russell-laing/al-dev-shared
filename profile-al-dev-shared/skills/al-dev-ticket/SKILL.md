@@ -87,15 +87,15 @@ If either shows blank (not `set`), stop and tell the user:
 ```text
 Missing Freshdesk credentials.
 
-Add to ~/.claude/settings.json (global user settings, never committed):
+Add to your harness settings file (global user settings, never committed):
 
   "env": {
     "FRESHDESK_API_KEY": "your-api-key",
     "FRESHDESK_DOMAIN": "yoursubdomain.freshdesk.com"
   }
 
-Restart Claude Code after saving.
-See profile-claude-al-dev/freshdesk-readonly-setup.md for details.
+Restart your AI coding agent session after saving.
+See your harness profile's Freshdesk setup guide for details.
 ```
 
 ---
@@ -104,7 +104,7 @@ See profile-claude-al-dev/freshdesk-readonly-setup.md for details.
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-agent
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
@@ -163,7 +163,7 @@ If yes, dispatch `al-dev-ticket-agent` again (download phase):
 
 ```text
 Agent tool:
-  subagent_type: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-agent
   description: "Download attachments for Freshdesk #[TICKET_ID]"
 
 Prompt:

@@ -209,10 +209,9 @@ Not covered (if applicable):
 After writing, run the validator:
 
 ```bash
-VALIDATOR=$(find ~/.claude/plugins -name "validate-test-plan.py" \
-  -path "*/test/*" 2>/dev/null | head -1)
+VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-test/validate-test-plan.py"
 TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
-[ -n "$VALIDATOR" ] && [ -n "$TEST_PLAN" ] && \
+[ -f "$VALIDATOR" ] && [ -n "$TEST_PLAN" ] && \
   python3 "$VALIDATOR" "$TEST_PLAN" \
   || echo "Validator not found — skipping"
 ```
@@ -236,7 +235,7 @@ Test plan -> .dev/<date>-al-dev-test-test-plan.md
 Ready for deployment?
 ```
 
-Use AskUserQuestion with options:
+USER_GATE — ask the user with options:
 - Approve - Tests are adequate
 - Add More Tests - What scenarios should I add?
 - Review Failures - Show me problematic tests

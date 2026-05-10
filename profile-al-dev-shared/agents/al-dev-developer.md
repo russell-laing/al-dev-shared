@@ -117,20 +117,20 @@ TDD's value comes from seeing the RED phase fail.
 ✅ **REQUIRED FLOW:**
 ```
 1. Write test code ONLY
-2. ⛔ HARD STOP — Use AskUserQuestion
+2. ⛔ HARD STOP — Use USER_GATE
 3. User deploys to BC, runs test, reports FAIL
 4. ONLY THEN write production code
-5. ⛔ HARD STOP — Use AskUserQuestion
+5. ⛔ HARD STOP — Use USER_GATE
 6. User deploys to BC, runs test, reports PASS
 7. ONLY THEN refactor (if needed)
-8. ⛔ HARD STOP — Use AskUserQuestion
+8. ⛔ HARD STOP — Use USER_GATE
 9. User runs all tests, reports ALL PASS
 10. Move to next test
 ```
 
 ### How to Implement HARD STOPS
 
-At each TDD phase gate, you MUST use AskUserQuestion to block:
+At each TDD phase gate, you MUST use USER_GATE to block:
 
 **After RED phase (test written):**
 ```
@@ -142,7 +142,7 @@ Bash: bc-test -o .dev/test-results-red.txt
 # Or: bc-test 50200 -o .dev/test-results-red.txt
 
 # Agent verifies test FAILED, then asks user
-AskUserQuestion:
+USER_GATE:
   question: |
     RED Phase Complete. Test executed and FAILED
     as expected. Detailed results in
@@ -184,7 +184,7 @@ Bash: bc-test -o .dev/test-results-green.txt
 # Or: bc-test 50200 -o .dev/test-results-green.txt
 
 # Agent verifies test PASSED, then asks user
-AskUserQuestion:
+USER_GATE:
   question: |
     GREEN Phase Complete. Test executed and
     PASSED. Detailed results in
@@ -221,7 +221,7 @@ Bash: bc-test -o .dev/test-results-refactor.txt
 # bc-test 50200-50210 -o .dev/test-results-refactor.txt
 
 # Agent verifies all tests PASSED, then asks user
-AskUserQuestion:
+USER_GATE:
   question: |
     REFACTOR Complete. All tests executed and
     PASSED. Detailed results in
@@ -249,9 +249,9 @@ AskUserQuestion:
 
 | After Phase | Must Use | User Must Confirm | Only Then |
 |-------------|----------|-------------------|-----------|
-| RED (test written) | AskUserQuestion | "Test FAILED" | Write production code |
-| GREEN (code written) | AskUserQuestion | "Test PASSED" | Refactor |
-| REFACTOR (improved) | AskUserQuestion | "All tests PASS" | Next test |
+| RED (test written) | USER_GATE | "Test FAILED" | Write production code |
+| GREEN (code written) | USER_GATE | "Test PASSED" | Refactor |
+| REFACTOR (improved) | USER_GATE | "All tests PASS" | Next test |
 
 **If you skip any gate, you violate TDD. Stop immediately.**
 
@@ -261,7 +261,7 @@ Non-negotiable process gates:
 
 | Token | Gate | Action |
 | --- | --- | --- |
-| `TDD_CYCLE_GATE` | After each RED-GREEN-REFACTOR cycle | Hard stop — use AskUserQuestion, wait for user approval |
+| `TDD_CYCLE_GATE` | After each RED-GREEN-REFACTOR cycle | Hard stop — use USER_GATE, wait for user approval |
 | `BUILD_VERIFY_GATE` | After implementation complete | Run `al-compile` — must pass before reporting done |
 | `PLAN_READ_GATE` | Before writing any code | Must read solution plan first |
 | `FIX_ITERATION_LIMIT` | After 5 failed compile fix attempts | Stop and escalate to user |
@@ -327,26 +327,26 @@ TaskCreate: "TDD REFACTOR: Validate credit limit within limit"
    - Add MINIMAL production stubs (compilation only)
    - Compile, publish, and run test (`bc-test`)
    - Verify test FAILS
-   - ⛔ **STOP** → AskUserQuestion → User reviews
+   - ⛔ **STOP** → USER_GATE → User reviews
 3. **GREEN Phase:**
    - Implement ACTUAL production logic
    - Implement real repositories/services
    - Compile, publish, and run test (`bc-test`)
    - Verify test PASSES
-   - ⛔ **STOP** → AskUserQuestion → User reviews
+   - ⛔ **STOP** → USER_GATE → User reviews
 4. **REFACTOR Phase:**
    - Extract helpers, add docs, optimize
    - No behavior changes
    - Compile, publish, and run ALL tests (`bc-test`)
    - Verify ALL tests PASS
-   - ⛔ **STOP** → AskUserQuestion → User reviews
+   - ⛔ **STOP** → USER_GATE → User reviews
 5. **Document cycle** in
    `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md`
 6. **Repeat** for next test
 
 **See `tdd-workflow.md` for:**
 - Complete phase-by-phase instructions
-- AskUserQuestion templates for each gate
+- USER_GATE templates for each gate
 - Code examples for RED/GREEN/REFACTOR
 - Error handling for TDD violations
 - TDD log format and documentation standards
@@ -357,15 +357,15 @@ TaskCreate: "TDD REFACTOR: Validate credit limit within limit"
 - ⛔ NEVER skip verification gates
 - ⛔ NEVER batch multiple cycles
 - ✅ ALWAYS document each cycle in tdd-log.md
-- ✅ ALWAYS use AskUserQuestion at gates (BLOCKING)
+- ✅ ALWAYS use USER_GATE at gates (BLOCKING)
 
 - Follow code templates provided
 - Don't deviate unless absolutely necessary
 
 ### Write Clean AL Code
-- Follow AL coding standards from profile CLAUDE.md
+- Follow AL coding standards from the project instructions file
 - **Follow Testable Architecture Standards from
-  CLAUDE.md (CRITICAL)**
+  the project instructions file (CRITICAL)**
 - Use dependency injection — accept interfaces,
   never create dependencies internally
 - Separate pure functions from impure operations

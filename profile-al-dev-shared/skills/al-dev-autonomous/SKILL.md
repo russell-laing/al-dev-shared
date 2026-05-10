@@ -424,7 +424,7 @@ These errors likely require architectural review or a
 change to the solution plan approach.
 ```
 
-Use AskUserQuestion with options:
+USER_GATE — ask the user with options:
 
 - Show full error detail for all 5 logs
 - Assign manual fix with more context
@@ -467,14 +467,12 @@ Unverified risks: [describe any NOT VERIFIED entries]
 After writing, run the validator:
 
 ```bash
-VALIDATOR=$(find ~/.claude/plugins \
-  -name "validate-code-review.py" \
-  -path "*/develop/*" 2>/dev/null | head -1)
+VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-autonomous/validate-code-review.py"
 PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md \
   2>/dev/null | sort | tail -1)
 REVIEW=$(ls .dev/*-al-dev-autonomous-code-review.md \
   2>/dev/null | sort | tail -1)
-[ -n "$VALIDATOR" ] && [ -n "$PLAN" ] && \
+[ -f "$VALIDATOR" ] && [ -n "$PLAN" ] && \
   [ -n "$REVIEW" ] && python3 "$VALIDATOR" \
   "$REVIEW" "$PLAN" || echo \
   "Validator not found — skipping"
@@ -516,7 +514,7 @@ Lint report → .dev/[date]-al-dev-lint-lint-report.md
 Ready to proceed to testing?
 ```
 
-Use AskUserQuestion with options:
+USER_GATE — ask the user with options:
 
 - Approve — Proceed to testing
 - Review Issues — Show high-priority issues in detail
