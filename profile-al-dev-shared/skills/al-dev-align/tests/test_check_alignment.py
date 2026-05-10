@@ -11,6 +11,7 @@ strip_frontmatter = mod.strip_frontmatter
 is_in_code_fence = mod.is_in_code_fence
 parse_forbidden_tokens = mod.parse_forbidden_tokens
 _extract_token = mod._extract_token
+_iter_vocabulary_table_rows = mod._iter_vocabulary_table_rows
 classify_hit = mod.classify_hit
 scan_file = mod.scan_file
 parse_concepts_from_harness_md = mod.parse_concepts_from_harness_md
@@ -342,6 +343,11 @@ class TestParseMappingTable:
         concepts = parse_mapping_table("# No mapping here\nContent.\n")
         assert concepts == set()
 
+    def test_extracts_from_agents_md_format(self):
+        concepts = parse_mapping_table(AGENTS_MD_WITH_MAPPING)
+        assert "project instructions file" in concepts
+        assert "USER_GATE" not in concepts  # not present in AGENTS_MD_WITH_MAPPING fixture
+
 
 class TestComputeCoverageGaps:
     def test_missing_concept_appears_in_missing_list(self):
@@ -376,3 +382,18 @@ class TestComputeCoverageGaps:
         assert any(o["concept"] == "old concept" for o in orphaned)
         orphan = next(o for o in orphaned if o["concept"] == "old concept")
         assert "claude" in orphan["present_in"]
+
+    def test_missing_in_both_harnesses(self):
+        concepts = {"USER_GATE"}
+        missing, _ = compute_coverage_gaps(concepts, set(), set())
+        assert missing[0]["missing_in"] == ["claude", "copilot"]
+
+    def test_end_to_end_with_fixtures(self):
+        """Integration: concepts vs both harness mapping fixtures."""
+        concepts = parse_concepts_from_harness_md(HARNESS_CONCEPTS_FULL)
+        claude_mapping = parse_mapping_table(CLAUDE_MD_WITH_MAPPING)
+        copilot_mapping = parse_mapping_table(AGENTS_MD_WITH_MAPPING)
+        missing, orphaned = compute_coverage_gaps(concepts, claude_mapping, copilot_mapping)
+        # explore agent is in vocabulary but missing from both mapping fixtures
+        assert any(m["concept"] == "explore agent" for m in missing)
+        assert orphaned == []

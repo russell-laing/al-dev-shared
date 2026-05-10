@@ -52,17 +52,11 @@ def _extract_token(cell: str) -> str | None:
     return s if len(s) >= 2 else None
 
 
-def parse_forbidden_tokens(harness_concepts_text: str) -> set[str]:
-    """Derive forbidden tokens from the vocabulary table in harness-concepts.md.
-
-    Reads columns 3 (Claude Code) and 4 (Copilot CLI) of the vocabulary table,
-    normalises each cell, and merges with HARDCODED_TOKENS.
-    """
-    tokens: set[str] = set(HARDCODED_TOKENS)
+def _iter_vocabulary_table_rows(text: str):
+    """Yield parsed column lists for each data row in the vocabulary table."""
     in_table = False
     header_passed = False
-
-    for line in harness_concepts_text.splitlines():
+    for line in text.splitlines():
         stripped = line.strip()
         if "| Concept |" in stripped and "Description" in stripped:
             in_table = True
@@ -78,15 +72,22 @@ def parse_forbidden_tokens(harness_concepts_text: str) -> set[str]:
             continue
         if not header_passed:
             continue
-        # Row format: | Concept | Description | Claude Code | Copilot CLI |
-        parts = [p.strip() for p in stripped.split("|")]
-        # parts[0]='', parts[1]=Concept, parts[2]=Desc, parts[3]=Claude, parts[4]=Copilot
+        yield [p.strip() for p in stripped.split("|")]
+
+
+def parse_forbidden_tokens(harness_concepts_text: str) -> set[str]:
+    """Derive forbidden tokens from the vocabulary table in harness-concepts.md.
+
+    Reads columns 3 (Claude Code) and 4 (Copilot CLI) of the vocabulary table,
+    normalises each cell, and merges with HARDCODED_TOKENS.
+    """
+    tokens: set[str] = set(HARDCODED_TOKENS)
+    for parts in _iter_vocabulary_table_rows(harness_concepts_text):
         for col_idx in (3, 4):
             if col_idx < len(parts):
                 token = _extract_token(parts[col_idx])
                 if token:
                     tokens.add(token)
-
     return tokens
 
 
@@ -169,25 +170,7 @@ def scan_file(rel_path: str, raw_lines: list[str], forbidden_tokens: set[str]) -
 def parse_concepts_from_harness_md(text: str) -> set[str]:
     """Extract concept names (column 1) from the vocabulary table in harness-concepts.md."""
     concepts: set[str] = set()
-    in_table = False
-    header_passed = False
-    for line in text.splitlines():
-        stripped = line.strip()
-        if "| Concept |" in stripped and "Description" in stripped:
-            in_table = True
-            header_passed = False
-            continue
-        if not in_table:
-            continue
-        if stripped.startswith("|---") or stripped.startswith("| ---"):
-            header_passed = True
-            continue
-        if not stripped.startswith("|"):
-            in_table = False
-            continue
-        if not header_passed:
-            continue
-        parts = [p.strip() for p in stripped.split("|")]
+    for parts in _iter_vocabulary_table_rows(text):
         if len(parts) >= 2:
             concept = re.sub(r"\*\*", "", parts[1]).strip()
             if concept:
