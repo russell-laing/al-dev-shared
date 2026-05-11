@@ -25,6 +25,27 @@ the investigation.
 
 ## Implementation
 
+### Step 0.5 — Advisory Alignment Check
+
+Run the alignment check in advisory mode (non-blocking):
+
+```bash
+SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
+if [ -f "$SCRIPT" ]; then
+  python3 "$SCRIPT" --mode advisory
+fi
+```
+
+If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning before handoff:
+
+```
+⚠️  Alignment advisory: N issue(s) found in shared files. Consider running /al-dev-align before handing off.
+```
+
+Continue to Step 1 regardless — this check is advisory only.
+
+---
+
 ### Step 1 — Identify Target Repository
 
 From user args or `.dev/explore-findings.md` "Affected Repositories"

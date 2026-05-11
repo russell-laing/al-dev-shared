@@ -133,6 +133,27 @@ Hold as **PROJECT_GITMOJI_STYLE**.
 
 ---
 
+## Step 5.5 — Advisory Alignment Check
+
+Run the alignment check in advisory mode (non-blocking):
+
+```bash
+SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
+if [ -f "$SCRIPT" ]; then
+  python3 "$SCRIPT" --mode advisory
+fi
+```
+
+If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning:
+
+```
+⚠️  Alignment advisory: N issue(s) found. Run /al-dev-align to inspect and fix.
+```
+
+Continue to Step 6 regardless — this check is advisory only.
+
+---
+
 ## Step 6 — Dispatch Analysis Agent
 
 ```text
