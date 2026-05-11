@@ -1,8 +1,15 @@
 """Tests for check-alignment.py"""
 import importlib.util
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import textwrap
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "check-alignment.py"
+SCRIPT_PATH = str(SCRIPT)
 spec = importlib.util.spec_from_file_location("check_alignment", SCRIPT)
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
@@ -397,3 +404,109 @@ class TestComputeCoverageGaps:
         # explore agent is in vocabulary but missing from both mapping fixtures
         assert any(m["concept"] == "explore agent" for m in missing)
         assert orphaned == []
+
+
+class TestCLI:
+    def _run(self, args: list[str], *, plugin_root: str = "") -> subprocess.CompletedProcess:
+        env = os.environ.copy()
+        if plugin_root:
+            env["AL_DEV_SHARED_PLUGIN_ROOT"] = plugin_root
+        return subprocess.run(
+            [sys.executable, SCRIPT_PATH, *args],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+    def test_exit_2_when_harness_concepts_missing(self, tmp_path):
+        result = self._run(
+            ["--claude-profile", str(tmp_path), "--copilot-profile", str(tmp_path)],
+            plugin_root=str(tmp_path),
+        )
+        assert result.returncode == 2
+
+    def test_exit_0_when_all_clean(self, tmp_path):
+        # Set up a minimal valid plugin root
+        skills_dir = tmp_path / "skills" / "test-skill"
+        skills_dir.mkdir(parents=True)
+        (skills_dir / "SKILL.md").write_text("---\nname: test\n---\nUse the project instructions file.\n")
+        (tmp_path / "knowledge").mkdir()
+        harness_concepts = (
+            "| Concept | Description | Claude Code | Copilot CLI |\n"
+            "|---|---|---|---|\n"
+            "| **project instructions file** | desc | `CLAUDE.md` | `AGENTS.md` |\n"
+        )
+        (tmp_path / "knowledge" / "harness-concepts.md").write_text(harness_concepts)
+        mapping_table = (
+            "## Harness Mapping\n\n"
+            "| Concept | Value |\n"
+            "|---|---|\n"
+            "| **project instructions file** | `CLAUDE.md` |\n\n"
+            "## End\n"
+        )
+        (tmp_path / "CLAUDE.md").write_text(mapping_table)
+        (tmp_path / "AGENTS.md").write_text(mapping_table)
+        result = self._run(
+            ["--claude-profile", str(tmp_path), "--copilot-profile", str(tmp_path)],
+            plugin_root=str(tmp_path),
+        )
+        assert result.returncode == 0
+        data = json.loads(result.stdout)
+        assert data["forbidden_tokens"] == []
+        assert data["missing_mappings"] == []
+
+    def test_exit_1_enforce_when_issues_found(self, tmp_path):
+        skills_dir = tmp_path / "skills" / "bad-skill"
+        skills_dir.mkdir(parents=True)
+        (skills_dir / "SKILL.md").write_text("---\nname: bad\n---\nOpen CLAUDE.md here.\n")
+        (tmp_path / "knowledge").mkdir()
+        harness_concepts = (
+            "| Concept | Description | Claude Code | Copilot CLI |\n"
+            "|---|---|---|---|\n"
+            "| **project instructions file** | desc | `CLAUDE.md` | `AGENTS.md` |\n"
+        )
+        (tmp_path / "knowledge" / "harness-concepts.md").write_text(harness_concepts)
+        (tmp_path / "CLAUDE.md").write_text("## Harness Mapping\n\n| Concept | Value |\n|---|---|\n| **project instructions file** | x |\n")
+        (tmp_path / "AGENTS.md").write_text("## Harness Mapping\n\n| Concept | Value |\n|---|---|\n| **project instructions file** | x |\n")
+        result = self._run(
+            ["--mode", "enforce", "--claude-profile", str(tmp_path), "--copilot-profile", str(tmp_path)],
+            plugin_root=str(tmp_path),
+        )
+        assert result.returncode == 1
+        data = json.loads(result.stdout)
+        assert len(data["forbidden_tokens"]) >= 1
+
+    def test_exit_0_advisory_even_with_issues(self, tmp_path):
+        skills_dir = tmp_path / "skills" / "bad-skill"
+        skills_dir.mkdir(parents=True)
+        (skills_dir / "SKILL.md").write_text("---\nname: bad\n---\nOpen CLAUDE.md here.\n")
+        (tmp_path / "knowledge").mkdir()
+        harness_concepts = (
+            "| Concept | Description | Claude Code | Copilot CLI |\n"
+            "|---|---|---|---|\n"
+            "| **project instructions file** | desc | `CLAUDE.md` | `AGENTS.md` |\n"
+        )
+        (tmp_path / "knowledge" / "harness-concepts.md").write_text(harness_concepts)
+        (tmp_path / "CLAUDE.md").write_text("## Harness Mapping\n\n| Concept | Value |\n|---|---|\n| **project instructions file** | x |\n")
+        (tmp_path / "AGENTS.md").write_text("## Harness Mapping\n\n| Concept | Value |\n|---|---|\n| **project instructions file** | x |\n")
+        result = self._run(
+            ["--mode", "advisory", "--claude-profile", str(tmp_path), "--copilot-profile", str(tmp_path)],
+            plugin_root=str(tmp_path),
+        )
+        assert result.returncode == 0
+
+    def test_output_is_valid_json(self, tmp_path):
+        (tmp_path / "knowledge").mkdir()
+        (tmp_path / "knowledge" / "harness-concepts.md").write_text(
+            "| Concept | Description | Claude Code | Copilot CLI |\n|---|---|---|---|\n"
+        )
+        (tmp_path / "CLAUDE.md").write_text("")
+        (tmp_path / "AGENTS.md").write_text("")
+        result = self._run(
+            ["--claude-profile", str(tmp_path), "--copilot-profile", str(tmp_path)],
+            plugin_root=str(tmp_path),
+        )
+        data = json.loads(result.stdout)
+        assert "forbidden_tokens" in data
+        assert "missing_mappings" in data
+        assert "orphaned_mappings" in data

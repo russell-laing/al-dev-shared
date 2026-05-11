@@ -232,5 +232,109 @@ def compute_coverage_gaps(
     return missing, orphaned
 
 
+def find_scan_files(plugin_root: Path) -> list[tuple[Path, str]]:
+    """Return (absolute_path, relative_path) pairs for all files to scan."""
+    results: list[tuple[Path, str]] = []
+    for pattern in SCAN_PATTERNS:
+        for filepath in plugin_root.glob(pattern):
+            rel = filepath.relative_to(plugin_root).as_posix()
+            if rel not in EXCLUDED_RELPATHS:
+                results.append((filepath, rel))
+    return results
+
+
+def run_checks(
+    plugin_root: Path,
+    claude_profile: Path,
+    copilot_profile: Path,
+) -> dict:
+    """Run all alignment checks and return the result dict."""
+    harness_concepts_path = plugin_root / "knowledge" / "harness-concepts.md"
+    if not harness_concepts_path.exists():
+        raise FileNotFoundError(
+            f"harness-concepts.md not found at {harness_concepts_path}"
+        )
+
+    harness_text = harness_concepts_path.read_text(encoding="utf-8")
+    forbidden_tokens = parse_forbidden_tokens(harness_text)
+    concepts = parse_concepts_from_harness_md(harness_text)
+
+    all_hits: list[dict] = []
+    for filepath, rel in find_scan_files(plugin_root):
+        raw_lines = filepath.read_text(encoding="utf-8").splitlines(keepends=True)
+        all_hits.extend(scan_file(rel, raw_lines, forbidden_tokens))
+
+    claude_md = claude_profile / "CLAUDE.md"
+    agents_md = copilot_profile / "AGENTS.md"
+    claude_mapping = (
+        parse_mapping_table(claude_md.read_text(encoding="utf-8"))
+        if claude_md.exists()
+        else set()
+    )
+    copilot_mapping = (
+        parse_mapping_table(agents_md.read_text(encoding="utf-8"))
+        if agents_md.exists()
+        else set()
+    )
+
+    missing, orphaned = compute_coverage_gaps(concepts, claude_mapping, copilot_mapping)
+
+    return {
+        "forbidden_tokens": all_hits,
+        "missing_mappings": missing,
+        "orphaned_mappings": orphaned,
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Check alignment between al-dev-shared and harness profile repos."
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["advisory", "enforce"],
+        default="enforce",
+        help="advisory exits 0 even with issues; enforce exits 1 on issues.",
+    )
+    parser.add_argument(
+        "--claude-profile",
+        default=str(Path.home() / "claude-configs" / "profile-claude-al-dev"),
+        metavar="PATH",
+    )
+    parser.add_argument(
+        "--copilot-profile",
+        default=str(Path.home() / "copilot-configs" / "profile-copilot-al-dev"),
+        metavar="PATH",
+    )
+    args = parser.parse_args()
+
+    env_root = os.environ.get("AL_DEV_SHARED_PLUGIN_ROOT", "").strip()
+    if env_root:
+        plugin_root = Path(env_root).expanduser().resolve()
+    else:
+        # Script is at skills/al-dev-align/check-alignment.py inside plugin root
+        plugin_root = Path(__file__).resolve().parent.parent.parent
+
+    claude_profile = Path(args.claude_profile).expanduser().resolve()
+    copilot_profile = Path(args.copilot_profile).expanduser().resolve()
+
+    try:
+        result = run_checks(plugin_root, claude_profile, copilot_profile)
+    except Exception as exc:  # noqa: BLE001
+        print(json.dumps({"error": str(exc)}, indent=2))
+        sys.exit(2)
+
+    print(json.dumps(result, indent=2))
+
+    has_issues = bool(
+        result["forbidden_tokens"]
+        or result["missing_mappings"]
+        or result["orphaned_mappings"]
+    )
+    if has_issues and args.mode == "enforce":
+        sys.exit(1)
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-    print("{}")
+    main()
