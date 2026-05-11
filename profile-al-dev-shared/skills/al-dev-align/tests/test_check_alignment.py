@@ -509,3 +509,18 @@ class TestCLI:
         assert "forbidden_tokens" in data
         assert "missing_mappings" in data
         assert "orphaned_mappings" in data
+
+
+class TestSkillFile:
+    SKILL_MD = Path(__file__).parent.parent / "SKILL.md"
+
+    def test_skill_md_exists(self):
+        assert self.SKILL_MD.exists(), "SKILL.md must exist"
+
+    def test_skill_md_has_name_frontmatter(self):
+        text = self.SKILL_MD.read_text()
+        assert "name: al-dev-align" in text
+
+    def test_skill_md_has_description(self):
+        text = self.SKILL_MD.read_text()
+        assert "description:" in text
