@@ -93,9 +93,9 @@ When a quality reviewer finds a bug class in one task, it MUST add that class
 to an explicit "watch list" carried into every subsequent task review in the
 same session. Append to the review prompt:
 
-  "Previously found in this session: [list bug classes]. Check all new bash
-   command blocks for stdout capture; check all new JSON output paths for
-   completeness."
+> "Previously found in this session: [list bug classes]. Check all new bash
+> command blocks for stdout capture; check all new JSON output paths for
+> completeness."
 
 This prevents the same class of bug being found twice across two sequential
 review cycles.
