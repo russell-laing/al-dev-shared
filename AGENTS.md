@@ -117,3 +117,16 @@ self-consistency pass:
 
 Unresolved contradictions at plan-review time cost 3× more to fix during
 execution than at authoring time.
+
+## Tiered Code Review Protocol
+
+Per-task reviews check task-scope correctness. A **mid-point integration
+review** must be scheduled at the halfway task (e.g. after Task 4 of 7) to
+review the whole module assembled so far — not just the latest additions.
+
+Integration review checklist additions (beyond per-task scope):
+- [ ] All regex patterns tested against the full token set, not just the
+      tokens introduced in the current task
+- [ ] Deduplication / set-membership logic verified end-to-end across all
+      scan functions added to date
+- [ ] CLI flag names consistent across all `argparse` definitions added so far
