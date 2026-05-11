@@ -124,9 +124,10 @@ Per-task reviews check task-scope correctness. A **mid-point integration
 review** must be scheduled at the halfway task (e.g. after Task 4 of 7) to
 review the whole module assembled so far — not just the latest additions.
 
-Integration review checklist additions (beyond per-task scope):
-- [ ] All regex patterns tested against the full token set, not just the
-      tokens introduced in the current task
-- [ ] Deduplication / set-membership logic verified end-to-end across all
-      scan functions added to date
-- [ ] CLI flag names consistent across all `argparse` definitions added so far
+Integration review checklist additions (beyond per-task scope) — adapt to project type:
+- [ ] All patterns/rules tested against the full input set, not just inputs
+      introduced in the current task
+- [ ] Deduplication / membership logic verified end-to-end across all
+      functions added to date
+- [ ] Interface names (flags, field names, API parameters) consistent across
+      all definitions added so far
