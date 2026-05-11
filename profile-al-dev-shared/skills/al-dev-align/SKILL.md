@@ -47,7 +47,7 @@ Stop.
 
 If `ALIGN_EXIT` is 2:
 
-Attempt to parse `$ALIGN_OUTPUT` as JSON. If it is valid JSON, report the `"error"` field:
+Attempt to parse `$ALIGN_OUTPUT` as JSON. If it is valid JSON, report the `"error"` field; otherwise report `$ALIGN_OUTPUT` verbatim:
 
 ```
 Alignment check failed with a configuration error:
@@ -167,7 +167,7 @@ Do not auto-delete orphaned rows.
 After applying all fixes, re-run the script:
 
 ```bash
-python3 "$SCRIPT" --mode enforce
+ALIGN_OUTPUT=$(python3 "$SCRIPT" --mode enforce)
 ALIGN_EXIT=$?
 ```
 
