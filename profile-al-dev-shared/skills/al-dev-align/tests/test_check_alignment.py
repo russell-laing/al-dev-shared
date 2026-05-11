@@ -4,8 +4,6 @@ import json
 import os
 import subprocess
 import sys
-import tempfile
-import textwrap
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "check-alignment.py"
@@ -454,6 +452,7 @@ class TestCLI:
         data = json.loads(result.stdout)
         assert data["forbidden_tokens"] == []
         assert data["missing_mappings"] == []
+        assert data["orphaned_mappings"] == []
 
     def test_exit_1_enforce_when_issues_found(self, tmp_path):
         skills_dir = tmp_path / "skills" / "bad-skill"
