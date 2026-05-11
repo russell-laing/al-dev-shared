@@ -134,7 +134,8 @@ Integration review checklist additions (beyond per-task scope) — adapt to proj
 
 ## Known Environment Issues
 
-**Python 3.13 / libexpat conflict (macOS)**
+### Python 3.13 / libexpat conflict (macOS)
+
 `pytest` may fail with a libexpat dynamic-library conflict under Python 3.13
 on macOS. Workaround: run tests inline:
 
@@ -144,10 +145,10 @@ import importlib.util
 spec = importlib.util.spec_from_file_location('mod', 'path/to/script.py')
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
-assert mod.some_function() == expected_value, 'Test failed'
+assert mod.some_function() == <expected_value>, 'Test failed'
 print('PASS')
 "
 ```
 
-Until the environment is repaired, use this pattern for all Python test
-verification in al-dev-shared sessions.
+If `pytest` fails with a libexpat conflict, use this pattern as a fallback
+for Python test verification in al-dev-shared sessions.
