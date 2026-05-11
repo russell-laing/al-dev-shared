@@ -99,3 +99,21 @@ same session. Append to the review prompt:
 
 This prevents the same class of bug being found twice across two sequential
 review cycles.
+
+## Plan Self-Review Requirement
+
+Before submitting any plan for execution, the plan author MUST perform a
+self-consistency pass:
+
+1. **Token audit:** If the plan prohibits harness-specific tokens in output
+   files, scan all *plan-specified file content* for those same tokens. Any
+   occurrence in a code block example counts as a violation of the plan's own
+   rule and must be resolved (genericise the example or add an explicit
+   exception with reasoning) before execution begins.
+
+2. **Constraint propagation check:** For every "must not contain X" rule in
+   a spec, verify that no task step directs an agent to write content that
+   contains X.
+
+Unresolved contradictions at plan-review time cost 3× more to fix during
+execution than at authoring time.
