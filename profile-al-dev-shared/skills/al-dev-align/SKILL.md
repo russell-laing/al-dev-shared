@@ -56,7 +56,7 @@ Alignment check failed with a configuration error:
 Possible causes:
 - AL_DEV_SHARED_PLUGIN_ROOT is not set or points to wrong directory
 - harness-concepts.md is missing from knowledge/
-- Harness profile paths are wrong (use --claude-profile / --copilot-profile to override)
+- Harness profile paths are wrong (use --profile-a / --profile-b flags to override)
 ```
 
 Stop.
@@ -87,11 +87,11 @@ Forbidden tokens found in shared files:
 Harness mapping gaps:
 
   Missing mappings (concept exists in harness-concepts.md but has no row in a mapping table):
-    - "USER_GATE": missing in [claude, copilot]
-    - "explore agent": missing in [copilot]
+    - "USER_GATE": missing in [harness-a, harness-b]
+    - "explore agent": missing in [harness-b]
 
   Orphaned mappings (row exists in a mapping table but concept is not in harness-concepts.md):
-    - "old concept": present in [claude]  <- may be intentional
+    - "old concept": present in [harness-a]  <- may be intentional
 ```
 
 ---
