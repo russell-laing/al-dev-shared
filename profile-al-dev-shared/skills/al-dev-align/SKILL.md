@@ -23,11 +23,11 @@ if [ ! -f "$SCRIPT" ]; then
   echo "Script not found at $SCRIPT — is AL_DEV_SHARED_PLUGIN_ROOT set?"
   exit 1
 fi
-python3 "$SCRIPT" --mode enforce
+ALIGN_OUTPUT=$(python3 "$SCRIPT" --mode enforce)
 ALIGN_EXIT=$?
 ```
 
-Capture the JSON output and exit code.
+`ALIGN_OUTPUT` holds the JSON; `ALIGN_EXIT` holds the exit code.
 
 ---
 
@@ -47,7 +47,7 @@ Stop.
 
 If `ALIGN_EXIT` is 2:
 
-Report the `"error"` field from the JSON output:
+Attempt to parse `$ALIGN_OUTPUT` as JSON. If it is valid JSON, report the `"error"` field:
 
 ```
 Alignment check failed with a configuration error:

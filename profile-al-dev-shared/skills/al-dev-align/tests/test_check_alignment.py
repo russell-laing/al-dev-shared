@@ -524,3 +524,23 @@ class TestSkillFile:
     def test_skill_md_has_description(self):
         text = self.SKILL_MD.read_text()
         assert "description:" in text
+
+    def test_skill_md_references_plugin_root(self):
+        text = self.SKILL_MD.read_text()
+        assert "AL_DEV_SHARED_PLUGIN_ROOT" in text, \
+            "SKILL.md must reference AL_DEV_SHARED_PLUGIN_ROOT to locate the script"
+
+    def test_skill_md_has_user_gate(self):
+        text = self.SKILL_MD.read_text()
+        assert "USER_GATE" in text, \
+            "SKILL.md must include a USER_GATE before auto-fixing"
+
+    def test_skill_md_has_all_seven_steps(self):
+        text = self.SKILL_MD.read_text()
+        for i in range(1, 8):
+            assert f"## Step {i}" in text, f"SKILL.md missing Step {i}"
+
+    def test_skill_md_captures_json_output(self):
+        text = self.SKILL_MD.read_text()
+        assert "ALIGN_OUTPUT" in text, \
+            "SKILL.md must capture JSON output in a variable (ALIGN_OUTPUT)"
