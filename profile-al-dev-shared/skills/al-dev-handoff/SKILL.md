@@ -36,10 +36,10 @@ if [ -f "$SCRIPT" ]; then
 fi
 ```
 
-If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning before handoff:
+If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning before handoff (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```
-⚠️  Alignment advisory: N issue(s) found in shared files. Consider running /al-dev-align before handing off.
+⚠️  Alignment advisory: N issue(s) found in shared files. Run /al-dev-align to inspect and fix before handing off.
 ```
 
 Continue to Step 1 regardless — this check is advisory only.

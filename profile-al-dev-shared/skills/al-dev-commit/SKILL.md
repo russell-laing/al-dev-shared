@@ -144,7 +144,7 @@ if [ -f "$SCRIPT" ]; then
 fi
 ```
 
-If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning:
+If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```
 ⚠️  Alignment advisory: N issue(s) found. Run /al-dev-align to inspect and fix.
