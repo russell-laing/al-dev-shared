@@ -56,7 +56,7 @@ Alignment check failed with a configuration error:
 Possible causes:
 - AL_DEV_SHARED_PLUGIN_ROOT is not set or points to wrong directory
 - harness-concepts.md is missing from knowledge/
-- Harness profile paths are wrong (use --profile-a / --profile-b flags to override)
+- Harness profile paths are wrong (use `--claude-profile` / `--copilot-profile` flags to override)
 ```
 
 Stop.

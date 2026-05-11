@@ -64,7 +64,7 @@ def _iter_vocabulary_table_rows(text: str):
             continue
         if not in_table:
             continue
-        if stripped.startswith("|---") or stripped.startswith("| ---"):
+        if re.match(r'^\|\s*[-:]+', stripped):
             header_passed = True
             continue
         if not stripped.startswith("|"):
@@ -151,19 +151,25 @@ def scan_file(rel_path: str, raw_lines: list[str], forbidden_tokens: set[str]) -
         for token in forbidden_tokens:
             if not token or token not in line_text:
                 continue
-            classification = classify_hit(i, body)
-            pos = line_text.find(token)
-            start = max(0, pos - 20)
-            end = min(len(line_text), pos + len(token) + 20)
-            hits.append(
-                {
-                    "file": rel_path,
-                    "line": i + 1,
-                    "token": token,
-                    "context": line_text[start:end],
-                    **classification,
-                }
-            )
+            start = 0
+            while True:
+                pos = line_text.find(token, start)
+                if pos == -1:
+                    break
+                context_start = max(0, pos - 40)
+                context_end = min(len(line_text), pos + len(token) + 40)
+                context = line_text[context_start:context_end].strip()
+                classification = classify_hit(i, body)
+                hits.append(
+                    {
+                        "file": rel_path,
+                        "line": i + 1,
+                        "token": token,
+                        "context": context,
+                        **classification,
+                    }
+                )
+                start = pos + len(token)
     return hits
 
 

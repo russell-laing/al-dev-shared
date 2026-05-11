@@ -267,6 +267,12 @@ class TestScanFile:
         hits = scan_file("skills/x/SKILL.md", lines, {"CLAUDE.md"})
         assert "context_type" in hits[0]
 
+    def test_same_token_twice_on_line_reports_both(self):
+        lines = ["Use CLAUDE.md and also CLAUDE.md here\n"]
+        hits = scan_file("f.md", lines, {"CLAUDE.md"})
+        assert len(hits) == 2
+        assert all(h["token"] == "CLAUDE.md" for h in hits)
+
 
 HARNESS_CONCEPTS_FULL = """\
 ## Generic Concept Vocabulary

@@ -32,11 +32,11 @@ Run the alignment check in advisory mode (non-blocking):
 ```bash
 SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
 if [ -f "$SCRIPT" ]; then
-  python3 "$SCRIPT" --mode advisory
+  ALIGN_ADVISORY=$(python3 "$SCRIPT" --mode advisory)
 fi
 ```
 
-If the output JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface them as a warning before handoff (N = `len(forbidden_tokens) + len(missing_mappings)`):
+If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning before handoff (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```
 ⚠️  Alignment advisory: N issue(s) found in shared files. Run /al-dev-align to inspect and fix before handing off.
