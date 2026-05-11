@@ -83,3 +83,19 @@ concrete Copilot CLI equivalents. Maintained here so `al-dev-align` can verify c
 | **MCP: al-mcp-server** | `al-mcp-server-<tool>` |
 | **MCP: bc-code-intelligence** | `bc-code-intelligence-mcp-<tool>` |
 | **MCP: microsoft-docs** | `microsoft_docs_mcp-<tool>` |
+
+---
+
+## Quality Review Conventions
+
+**Iterative task reviews (per-task scope):**
+When a quality reviewer finds a bug class in one task, it MUST add that class
+to an explicit "watch list" carried into every subsequent task review in the
+same session. Append to the review prompt:
+
+  "Previously found in this session: [list bug classes]. Check all new bash
+   command blocks for stdout capture; check all new JSON output paths for
+   completeness."
+
+This prevents the same class of bug being found twice across two sequential
+review cycles.
