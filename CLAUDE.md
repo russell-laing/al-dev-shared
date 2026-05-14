@@ -65,10 +65,8 @@ This command applies to AL projects *using* this plugin, not to this repo itself
 
 ## Commit Conventions
 
-- Gitmoji prefix on every commit (check `git log` for current style)
-- Freshdesk tickets as `#FD<number>` in the message body
-- No `Co-Authored-By` trailers
-- Use `git -C <path>` instead of `cd <path> && git`
+project-type: tool
+Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ---
 
