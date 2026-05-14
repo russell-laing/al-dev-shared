@@ -76,6 +76,51 @@ any diagram blocks.
 
 ---
 
+## Plan Task Verification Standard
+
+Every plan task must end with a verification step before its commit:
+
+1. **File persistence check:** `git status` shows expected file changes (not empty, no unexpected extras)
+2. **Forbidden pattern scan:** No forbidden patterns in changed files:
+   - `[date]` (e.g., `[2026-05-15]`) — indicates unrendered template
+   - `YYYY-MM-DD` (literal string, not date value) — unrendered date placeholder
+   - `TODO` or `TBD` — incomplete work
+   - `Co-Authored-By` — AI attribution in code comments (not git trailers)
+   - `claude:` or `copilot:` prefixed comments — harness-specific debugging left in
+3. **Acceptance criteria verification:** Each acceptance criterion stated in the task spec is met in actual file content
+4. **Failure recovery:** On verification failure:
+   - Re-execute the task with the specific failures embedded in context
+   - Cap at 3 total retries per task
+   - After 3 failures, escalate to user with a summary of what failed and why
+
+When dispatching subagents to execute plan tasks (both Claude Code and Copilot CLI),
+pass the above checklist in the dispatch prompt so subagents self-verify before returning.
+
+## Planning Routing
+
+For tasks that need a design decision:
+
+**SMALL/TRIVIAL** (single file, clear requirements, no alternatives):
+- Use `superpowers:writing-plans` directly if requirements are unambiguous
+- Skip the architect debate phase; the extra tokens and time aren't justified
+
+**MEDIUM** (4+ files, novel architecture, OR ambiguous requirements):
+- **Prefer** `/al-dev-plan` to run the competitive architect debate
+- This adds ~90–120 seconds and 20–40% token overhead vs `writing-plans` alone
+- Then use `superpowers:writing-plans` to convert the winning design into a task plan
+- **Why:** Adversarial review catches wrong-approach risks early; rework later is 3× more expensive
+
+**LARGE/COMPLEX** (multiple subsystems, major refactor, strategic decision):
+- **Always** use `/al-dev-plan` with mandatory architect debate
+- Do NOT use `writing-plans` alone for large scope
+- Consider escalating to user for requirements review before planning
+
+**Anti-pattern to avoid:**
+- Using `writing-plans` alone for MEDIUM+ work skips adversarial review and increases wrong-approach risk
+- If you're unsure whether a task is SMALL or MEDIUM, default to MEDIUM and use `al-dev-plan`
+
+---
+
 ## Quality Review Conventions
 
 **Iterative task reviews (per-task scope):**
