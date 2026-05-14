@@ -9,12 +9,12 @@ Referenced by `al-dev-commit-agent.md` and each project's `CLAUDE.md`.
 
 Every commit uses this format, regardless of project type:
 
-```
+```text
 <emoji> <type>(<scope>): <subject>
 ```
 
 | Field | Rule |
-|---|---|
+| --- | --- |
 | **emoji** | Required. Must match the canonical table below. Never free-hand. |
 | **type** | Required. Lowercase word from the canonical type list. |
 | **scope** | Required. Lowercase. Valid values depend on project type (see below). |
@@ -31,7 +31,7 @@ Every commit uses this format, regardless of project type:
 One emoji per type. Use only these. Choosing the wrong emoji for a type is a format violation.
 
 | Emoji | Type | When to use |
-|---|---|---|
+| --- | --- | --- |
 | ✨ | `feat` | New feature or capability |
 | 🐛 | `fix` | Bug fix |
 | 🚑️ | `hotfix` | Critical production fix |
@@ -60,6 +60,52 @@ One emoji per type. Use only these. Choosing the wrong emoji for a type is a for
 
 ---
 
+## Adopting This Spec in a Project
+
+When adding `project-type: <type>` to a project's `CLAUDE.md`, run this
+adoption check first:
+
+### Step 1 — Scan for existing commit instructions
+
+Search the project's `CLAUDE.md` (and any `AGENTS.md`) for sections or lines
+covering:
+
+- Commit message format or examples
+- Gitmoji or emoji conventions
+- Conventional commit type lists
+- Subject line length or mood rules
+- Co-Authored-By or AI attribution rules
+- Freshdesk / ticket reference format
+
+```bash
+grep -n -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" CLAUDE.md AGENTS.md 2>/dev/null
+```
+
+### Step 2 — Decide: remove or keep?
+
+For each hit, ask: **does this instruction duplicate or conflict with
+`commit-conventions.md`?**
+
+| Situation | Action |
+| --- | --- |
+| Exact duplicate of a rule in this spec | Remove it — defer to this spec |
+| Conflicting rule (e.g. different emoji for a type) | Remove it — this spec wins |
+| Project-specific scope list not in this spec | Keep it — it extends, not contradicts |
+| Freshdesk ticket format (`#FD<number>`) | Remove if identical to this spec |
+| Rule this spec doesn't cover | Keep it |
+
+### Step 3 — Add the project-type declaration
+
+After removing duplicates, add to the `CLAUDE.md`:
+
+```markdown
+## Commit Conventions
+project-type: <al|vault|tool>
+Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
+```
+
+---
+
 ## Project Types
 
 Every project declares its type in its `CLAUDE.md` as `project-type: <type>`.
@@ -72,7 +118,7 @@ Projects: client AL extensions (nzpg, mml, client-abc, etc.)
 
 **Body:** Required for `feat`, `fix`, `refactor`, `hotfix`. Optional for `chore`, `docs`, `style`.
 
-```
+```text
 <emoji> <type>(<scope>): <subject>
 
 WHY: <one sentence explaining motivation>
@@ -104,7 +150,7 @@ Projects: nzpg vault, mml vault, second-brain, client-abc vault.
 **Type guidance for vault:**
 
 | Action | Type |
-|---|---|
+| --- | --- |
 | Distil a draft into a permanent note | `distil` |
 | Add a new project, index, or template | `feat` |
 | Add vault-weave cross-links | `feat` |
@@ -141,7 +187,8 @@ A commit is atomic when reverting it leaves the repo in a fully valid, consisten
 ## Examples
 
 **AL — feature with body:**
-```
+
+```text
 ✨ feat(price): add base price override field
 
 WHY: Customers need to override calculated base price for promotional contracts without modifying the price formula.
@@ -154,26 +201,31 @@ CHANGED COMPONENTS
 ```
 
 **AL — chore (no body required):**
-```
+
+```text
 📦 chore(config): bump app version to 2.1.0
 ```
 
 **Vault — distillation:**
-```
+
+```text
 📘 distil(nzpg-core): SLA date revalidation
 ```
 
 **Vault — sweep pass:**
-```
+
+```text
 📦 chore(archive): vault-sweep archive/delete pass 2026-05-14
 ```
 
 **Tool — skill fix:**
-```
+
+```text
 🐛 fix(al-dev-align): handle Unicode apostrophe in prohibition check
 ```
 
 **Tool — new skill:**
-```
+
+```text
 ✨ feat(al-dev-commit): add advisory alignment check to commit workflow
 ```
