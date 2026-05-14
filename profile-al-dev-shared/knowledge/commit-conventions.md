@@ -67,8 +67,7 @@ adoption check first:
 
 ### Step 1 — Scan for existing commit instructions
 
-Search the project's `CLAUDE.md` (and any `AGENTS.md`) for sections or lines
-covering:
+Search the project's instruction files for sections or lines covering:
 
 - Commit message format or examples
 - Gitmoji or emoji conventions
@@ -77,9 +76,19 @@ covering:
 - Co-Authored-By or AI attribution rules
 - Freshdesk / ticket reference format
 
+Files to check:
+
 ```bash
-grep -n -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" CLAUDE.md AGENTS.md 2>/dev/null
+grep -rn -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" \
+  CLAUDE.md AGENTS.md .github/copilot-instructions.md 2>/dev/null
 ```
+
+> The `.github/copilot-instructions.md` file is the common Copilot commit
+> instruction file. It contains its own emoji-type table (5 types, uses `🔧`
+> for `chore` — conflicts with this spec's `📦`). Remove the "Commit Message
+> Format" section from it when adopting this spec; keep any project-specific
+> scope rules and atomic update checklists, as those extend rather than
+> duplicate this spec.
 
 ### Step 2 — Decide: remove or keep?
 
