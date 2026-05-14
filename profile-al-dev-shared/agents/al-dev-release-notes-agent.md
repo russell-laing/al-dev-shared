@@ -111,9 +111,10 @@ Poor candidates (use prose instead):
 - Single-field additions or removals
 - Simple bug fixes with an obvious description
 
-Follow the global Mermaid style guide (in session context):
-`flowchart TD` for processes, `sequenceDiagram` for system
-interactions. Subdued fills from the standard palette.
+Before writing any Mermaid diagram, read
+`$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md`
+and apply all rules from it. Use `flowchart TD` for processes,
+`sequenceDiagram` for system interactions.
 
 ---
 
