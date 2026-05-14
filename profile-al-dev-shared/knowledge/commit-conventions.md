@@ -238,3 +238,76 @@ CHANGED COMPONENTS
 ```text
 ✨ feat(al-dev-commit): add advisory alignment check to commit workflow
 ```
+
+---
+
+## Common Violations
+
+Violations observed in sessions and called out explicitly to prevent recurrence.
+
+### 1. Missing emoji prefix
+
+❌ **Wrong:**
+
+```text
+fix(report): Remove dead GLN columns
+```
+
+✅ **Correct:**
+
+```text
+🐛 fix(report): Remove dead GLN columns
+```
+
+The emoji is **Required**. The emoji must match the canonical type. Never omit it.
+
+---
+
+### 2. Freestyle body sections in AL commits
+
+❌ **Wrong (freestyle `## Changes` / `## Verification` sections):**
+
+```text
+🐛 fix(report): Remove dead GLN columns
+
+## Changes
+- Removed GlobalLocationNumber column from Sales Report
+
+## Verification
+- Compilation: SUCCESS
+```
+
+✅ **Correct (canonical AL body for `fix`):**
+
+```text
+🐛 fix(report): Remove dead GLN columns
+
+WHY: Removes deprecated field references blocking BC 28 upgrade.
+
+CHANGED COMPONENTS
+- SalesReport.Report.al [50920] [m]
+```
+
+The `WHY:` and `CHANGED COMPONENTS` blocks are **Required** for `feat`, `fix`,
+`refactor`, and `hotfix` in AL projects. Free-form section headers are never valid.
+
+---
+
+### 3. AI attribution footer
+
+❌ **Wrong:**
+
+```text
+🐛 fix(report): Remove dead GLN columns
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+```
+
+✅ **Correct:**
+
+```text
+🐛 fix(report): Remove dead GLN columns
+```
+
+The **No AI attribution** rule is explicit. Strip any `Co-Authored-By` or
+`Generated with` line before committing.
