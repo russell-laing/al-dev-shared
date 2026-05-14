@@ -340,9 +340,18 @@ corruption message and move to next group.
 
 ### Step 2 — Execute git commit
 
-Use the approved message verbatim. Do NOT append
-`Co-Authored-By` trailers, `Generated with Claude Code`
-footers, or any other attribution text.
+Before committing, scrub AI attribution from the approved message.
+Strip any lines matching these patterns (case-insensitive prefix):
+
+- `Co-Authored-By:`
+- `Generated with Claude Code`
+- `Generated with [any model name]`
+
+If any lines are stripped, include them in the execution output
+under `STRIPPED_ATTRIBUTIONS` so the user can audit what was
+removed. Never re-add them.
+
+After scrubbing, commit the cleaned message:
 
 ```bash
 git commit -m "<approved message>"
@@ -377,4 +386,8 @@ HOOK_FAILURES: NONE
 (or)
 HOOK_FAILURES:
   Group <N>: <raw hook output>
+STRIPPED_ATTRIBUTIONS: NONE
+(or)
+STRIPPED_ATTRIBUTIONS:
+  Group <N>: <stripped line>
 ```
