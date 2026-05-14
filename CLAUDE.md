@@ -68,6 +68,12 @@ This command applies to AL projects *using* this plugin, not to this repo itself
 project-type: tool
 Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
+## Diagram Guidance
+
+When writing Mermaid diagrams, read
+`profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating
+any diagram blocks.
+
 ---
 
 ## Quality Review Conventions

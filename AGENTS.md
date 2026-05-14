@@ -65,6 +65,12 @@ This command applies to AL projects *using* this plugin, not to this repo itself
 - No `Co-Authored-By` trailers
 - Use `git -C <path>` instead of `cd <path> && git`
 
+## Diagram Guidance
+
+When writing Mermaid diagrams, read
+`profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating
+any diagram blocks.
+
 ---
 
 ## Harness Mapping
