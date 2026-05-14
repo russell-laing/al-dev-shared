@@ -180,6 +180,8 @@ When all developers complete:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
+For per-task persistence/pattern/acceptance verification with retries, follow **Phase 4: Post-Task Verify** before entering the review gate.
+
 ---
 
 ## Phase 4A: Static Validation
@@ -256,6 +258,38 @@ HIGH issues: N (flagged in code review)
 If CRITICAL issues found: dispatch a developer with the
 specific violations. Wait for fixes. Re-run the relevant
 check before spawning the review team.
+
+---
+
+## Phase 4: Post-Task Verify
+
+After each developer subagent returns, before the commit gate:
+
+1. **Run the verification checklist** — check forbidden patterns, file persistence, acceptance criteria
+   - **Pattern scan (Claude Code):**
+     ```bash
+     rg '\[date\]|\bYYYY-MM-DD\b|TODO|TBD|Co-Authored-By|claude:|copilot:' <files> --color=never --no-heading --with-filename
+     ```
+   - **Pattern scan (Copilot CLI fallback):**
+     ```bash
+     git diff HEAD --unified=0 | grep -E '\[date\]|YYYY-MM-DD|TODO|TBD|Co-Authored-By|claude:|copilot:' || true
+     ```
+   - **File check:** `git status --short` to confirm expected files were modified
+   - **Acceptance check:** Manually inspect output files for stated criteria
+2. **If checklist passes** → proceed to commit
+3. **If checklist fails**:
+   - Claude Code: re-dispatch developer subagent using `write_agent` with:
+     - original task description
+     - `Failure context:` block (pattern matches, missing files, unmet criteria)
+     - `Fix only the listed failures; do not re-do items that passed`
+   - Copilot CLI: save `.dev/phase4-failure-<retry-count>.md`, then re-launch developer task with:
+     - original task description
+     - `Failure context:` block
+     - `Fix scope:` statement limiting scope to failed items
+     - exit criteria: checklist passes and failure log indicates PASS
+4. **Retry loop:** Max 3 retries per task. After 3 failures:
+   - Claude Code: escalate with task description + all 3 failure summaries + recommended next steps
+   - Copilot CLI: use `ask_user` to present failure summary and wait for decision (retry manually / skip task / abort plan)
 
 ---
 
