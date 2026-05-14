@@ -33,6 +33,27 @@ Root cause investigation — answers "why is this happening?" before
 
 ## Implementation
 
+### Step 0 — Target Confirmation
+
+Before acting on any findings file or context document:
+
+1. **Identify targets:**
+   - Findings reference: target name/path from findings
+   - Your request: target from user request
+   - Output path: where investigation output will be written
+2. **Validate match:**
+   ```
+   > **Target check:**
+   > - Findings reference: [extracted from findings]
+   > - Your request: [extracted from your message]
+   > - Output path: [absolute path where work will land]
+   >
+   > Do these match? If findings and request disagree, stop and confirm before proceeding.
+   ```
+3. **Decision:**
+   - If aligned → continue
+   - If mismatched → stop and wait for user confirmation
+
 ### Step 1 — Load Context
 
 Read in this order:
@@ -57,6 +78,14 @@ Extract from the user's args or ticket:
   (after posting, on Copy Document, for certain items only)
 - **Affected data**: Specific records if mentioned
   (order number, item, reference)
+
+**Tool output framing:** If ticket context or findings include output from external tools
+(codeburn, lint analyzers, third-party plugins):
+
+- Treat each tool-output claim as a **hypothesis**, not an established finding
+- Add each claim to the hypothesis list to test during investigation steps
+- Confirm claim vs actual codebase before including it in final findings report
+- If tool output contradicts code, flag contradiction and resolve which source is current
 
 ---
 
