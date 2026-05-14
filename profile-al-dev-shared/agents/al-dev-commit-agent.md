@@ -154,6 +154,56 @@ Subject line rules:
 - Never append `Co-Authored-By`, `Generated with Claude Code`,
   or any AI attribution footer to the commit message
 
+### Step 6.5 — Validate and correct drafted messages
+
+Run these checks against every drafted message before returning.
+Auto-correct where possible; add a `WARNINGS` entry for anything
+that cannot be auto-corrected.
+
+**Emoji check (auto-correct):**
+
+- Is a leading emoji present on the subject line?
+- Does the emoji match the canonical type (e.g. `fix` → `🐛`,
+  `feat` → `✨`, `refactor` → `♻️`)?
+
+If the emoji is absent or wrong, replace it with the correct
+canonical emoji from the table in Step 6. This is an auto-fix —
+do not leave the message without the correct emoji.
+
+**AI attribution strip (auto-correct):**
+
+Scan every line of every drafted message for:
+- Lines starting with `Co-Authored-By:`
+- Lines containing `Generated with Claude Code`
+- Lines containing `Generated with [any model name]`
+
+Remove any such lines before returning. Record stripped lines in
+the `WARNINGS` block so they are visible to the user.
+
+**AL body structure check (warn only):**
+
+If any file in the group ends in `.al`, the project uses AL
+conventions. For any message where `type` is `feat`, `fix`,
+`refactor`, or `hotfix`:
+
+- Is a `WHY:` block present?
+- Is a `CHANGED COMPONENTS` block present with at least one
+  file entry?
+
+If either is missing, add to `WARNINGS`:
+
+```text
+BODY_MISSING: Group <N> — AL commit type '<type>' requires
+'<missing block>'. Add it before approving this message.
+```
+
+**Subject line sanity (warn only):**
+
+- Total subject line length ≤ 72 characters
+- Subject does not end with a period
+
+Add a `WARNINGS` entry for any violation; do not block the group.
+
 ### Step 7 — Return analysis output
 
 ```text
