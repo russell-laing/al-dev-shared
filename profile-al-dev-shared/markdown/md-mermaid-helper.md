@@ -1,7 +1,3 @@
----
-applyTo: "**/*.{md,mmd}"
----
-
 # Mermaid Diagram Rules
 
 1. No HTML tags in node labels. Plain text or quoted labels only.
