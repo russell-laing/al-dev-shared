@@ -79,6 +79,60 @@ Do not surface this decision to the user.
    architects start from real object knowledge, not
    assumptions.
 
+## Phase 1.5: Verify External Claims
+
+If the request references a findings file, codeburn output, lint report,
+or any third-party analysis, verify the claims before forwarding to architects:
+
+1. **File path verification:** For each file path mentioned in findings:
+   - Confirm the file exists at that exact path with `test -f <path>`
+   - Spot-check content: open the file and verify the described issue/content is present
+   - If path doesn't exist → mark as **unverified**, note the missing path
+   - If content differs from description → mark as **partially verified**, note the discrepancy
+2. **Symbol/API verification:** For each function, procedure, field, or table mentioned:
+   - Use AL MCP (`al-mcp-server-al_search_objects` or `al-mcp-server-al_find_references`) to confirm the symbol exists
+   - Cross-harness fallback: `grep -r "symbol_name" src/ --include="*.al"`
+   - If not found → mark as **unverified**
+   - If found but context differs → mark as **partially verified**
+3. **Build evidence summary** as Markdown table:
+
+   | Claim | Type | Status | Evidence |
+   | --- | --- | --- | --- |
+   | "File X has problem Y" | file+issue | ✅ Verified | File exists, issue confirmed at line Z |
+   | "Function Q is slow" | performance | ⚠️ Unverified | Function exists but no profiling data provided |
+   | "Table R has no indexes" | schema | ✅ Verified | Grep confirms table R, no index definitions found |
+
+4. **Communicate findings to architects** under `**External findings status:**`
+   - ✅ Verified — treat as design input
+   - ⚠️ Unverified — treat as hypothesis to test, not requirement
+   - ⚠️ Partially verified — details differ; assume claims are approximate
+5. **Decision threshold:**
+   - ≥75% verified → proceed
+   - 50–74% verified → proceed with explicit caveat in prompt
+   - <50% verified → gate with `ask_user` decision (proceed as hypotheses / re-run investigation / proceed anyway)
+
+## Step 0: Target Confirmation (Phase 1.5.5)
+
+Before acting on any findings file or context document:
+
+1. **Identify targets:**
+   - Findings reference: Extract the target name/path from the document
+   - Your request: Extract target from user message (skill, repo, file, or project)
+   - Output path: Absolute path where work will land
+2. **Validate match:**
+   ```
+   > **Target check:**
+   > - Findings reference: [extracted from findings]
+   > - Your request: [extracted from your message]
+   > - Output path: [absolute path where work will land]
+   >
+   > Do these match? If findings and request disagree, stop and confirm before proceeding.
+   ```
+3. **Decision:**
+   - If all align → continue
+   - If findings/request disagree → flag mismatch and wait
+   - If mismatch is fundamental → stop and escalate to user
+
 ## Phase 2: Spawn Architect Team (2-3 agents)
 
 Before spawning, derive 2-3 meaningfully different starting
@@ -130,9 +184,21 @@ Design considerations:
 6. Upgrade considerations
 
 Your assigned approach: [specific approach for this architect]
-
-Be prepared to debate trade-offs with other architects.
 ```
+
+## Architect Output Requirements
+
+Each architect must produce THREE outputs (not one):
+
+1. **Proposal** — complete solution design (recommended approach)
+2. **Critique** — specific critique of ONE other approach from briefing
+   - Must name concrete failure modes
+   - Must identify observable condition or code-level breakage
+3. **Falsification** — one realistic condition where YOUR approach fails
+   - State design limits honestly
+
+Architects without all three outputs are excluded from Phase 3 synthesis.
+Quality bar: critiques/falsifications must be substantive enough to force re-evaluation of a design.
 
 ## Phase 3: Facilitate Debate
 
