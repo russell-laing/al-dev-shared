@@ -97,6 +97,10 @@ Follow AL best practices:
 Object IDs: [range from plan]
 Naming prefix: [from plan or project-context.md]
 Project patterns: [from project-context.md if available]
+
+IMPORTANT: Do NOT run git commit. Your role is to implement
+and verify compilation only. Commits are handled separately
+by /al-dev-commit after user approval.
 ```
 
 Spawn developers as **al-dev-developer** agents. If parallel,
@@ -297,4 +301,8 @@ USER_GATE — ask the user with options:
 - Fix Issues First - Address high-priority issues now
 - Refine - Adjust implementation
 - Stop - Cancel development
+
+After user approves, remind them: "Run `/al-dev-commit` to stage
+and commit the implemented changes using the validated commit
+workflow."
 
