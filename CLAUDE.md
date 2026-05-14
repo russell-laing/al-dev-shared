@@ -119,6 +119,8 @@ For tasks that need a design decision:
 - Using `writing-plans` alone for MEDIUM+ work skips adversarial review and increases wrong-approach risk
 - If you're unsure whether a task is SMALL or MEDIUM, default to MEDIUM and use `al-dev-plan`
 
+Shared parity reference: `profile-al-dev-shared/knowledge/verification-and-planning.md`.
+
 ---
 
 ## Quality Review Conventions

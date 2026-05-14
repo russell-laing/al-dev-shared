@@ -138,6 +138,9 @@ Integration review checklist additions (beyond per-task scope) — adapt to proj
 - [ ] Interface names (flags, field names, API parameters) consistent across
       all definitions added so far
 
+Shared parity reference: `profile-al-dev-shared/knowledge/verification-and-planning.md`.
+Use it to keep Claude Code and Copilot CLI verification/planning behavior aligned.
+
 ## Known Environment Issues
 
 ### Python 3.13 / libexpat conflict (macOS)
