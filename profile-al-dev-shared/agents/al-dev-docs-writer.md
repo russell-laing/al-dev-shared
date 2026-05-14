@@ -187,8 +187,10 @@ Apply based on `AUDIENCE` from the dispatch prompt:
 
 For `functional` and `user` audiences, include a diagram where it
 genuinely aids understanding. When in doubt, include one.
-Follow `markdown/md-mermaid-helper.md`:
-use `flowchart TD` for processes,
+
+Before generating any mermaid diagram, read
+`$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md`
+and apply all rules from it. Use `flowchart TD` for processes,
 `sequenceDiagram` for system interactions.
 
 ## RTM Rules

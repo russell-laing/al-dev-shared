@@ -123,6 +123,10 @@ Ensure the `.dev/` directory exists:
 mkdir -p .dev
 ```
 
+If a mermaid diagram would aid the customer reply (e.g., to visualize
+a process or system flow), read `$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md`
+before generating it.
+
 Write the file with this structure:
 
 ```markdown

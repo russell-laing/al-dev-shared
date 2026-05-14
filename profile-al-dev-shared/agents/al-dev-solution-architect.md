@@ -50,6 +50,13 @@ Note: Solution plan filename uses pattern:
 
 **Red flags:** ASCII art for simple changes, migration plans for field additions, documenting standard BC patterns.
 
+## Diagram Standards
+
+For MEDIUM and COMPLEX solutions where diagrams are included: before generating any
+mermaid diagram, read `$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md`
+and apply all rules from it. Use mermaid flowcharts or sequence diagrams only when
+they significantly clarify the architecture.
+
 ## Workflow
 
 1. **Read project context FIRST** - Check if `.dev/project-context.md` exists

@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.mmd"
+applyTo: "**/*.{md,mmd}"
 ---
 
 # Mermaid Diagram Rules
