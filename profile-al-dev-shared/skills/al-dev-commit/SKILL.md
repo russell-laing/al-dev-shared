@@ -291,6 +291,7 @@ Proceed to execution? (yes / no)
 ```
 
 User response:
+
 - `yes` → continue to Step 10
 - `no` → stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
