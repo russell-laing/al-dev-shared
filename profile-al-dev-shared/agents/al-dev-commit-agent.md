@@ -75,6 +75,34 @@ git diff --cached --name-only --diff-filter=D
 
 Collect into `DELETIONS` section.
 
+### Step 4.5 — Build staged-file sets (NUL-safe)
+
+Use one canonical extension set for OOXML policy checks:
+
+```bash
+OOXML_EXTENSIONS_REGEX='\.(docx|xlsx|pptx|odt)$'
+```
+
+Build staged-file sets without word-splitting:
+
+```bash
+STAGED_AL=()
+STAGED_DOCX=()
+STAGED_OOXML=()
+
+while IFS= read -r -d '' f; do
+  case "$f" in
+    *.al) STAGED_AL+=("$f") ;;
+  esac
+  case "$f" in
+    *.docx) STAGED_DOCX+=("$f") ;;
+  esac
+  case "$f" in
+    *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
+  esac
+done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
+```
+
 ### Step 5 — Propose commit groups
 
 Group staged files into **deployable atomic commit units**:
