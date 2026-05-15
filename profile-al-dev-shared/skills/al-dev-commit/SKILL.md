@@ -274,7 +274,7 @@ After all groups are confirmed or skipped, proceed to Step 10.
 
 ## Step 9.5 — Mixed `.al` + `.docx` acknowledgement gate
 
-Inspect analysis `WARNINGS` for a `MIXED_AL_DOCX` entry.
+Inspect the analysis agent output `WARNINGS` block for a `MIXED_AL_DOCX` entry.
 
 If present, show:
 
@@ -292,7 +292,7 @@ Proceed to execution? (yes / no)
 
 User response:
 - `yes` → continue to Step 10
-- `no` → stop; leave staged files unchanged
+- `no` → stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
 If no `MIXED_AL_DOCX` warning exists, continue directly to Step 10.
 
