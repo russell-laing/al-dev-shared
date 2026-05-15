@@ -232,6 +232,39 @@ BODY_MISSING: Group <N> — AL commit type '<type>' requires
 
 Add a `WARNINGS` entry for any violation; do not block the group.
 
+### Step 6.7 — `.gitattributes` OOXML advisory (warn only)
+
+If `STAGED_OOXML` is non-empty, inspect `.gitattributes`:
+
+```bash
+GITATTR="$REPO/.gitattributes"
+MISSING_BINARY_PATTERNS=()
+
+if [ "${#STAGED_OOXML[@]}" -gt 0 ]; then
+  if [ ! -f "$GITATTR" ]; then
+    MISSING_BINARY_PATTERNS+=("*.docx binary" "*.xlsx binary" "*.pptx binary" "*.odt binary")
+  else
+    grep -Eq '^\*\.docx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.docx binary")
+    grep -Eq '^\*\.xlsx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.xlsx binary")
+    grep -Eq '^\*\.pptx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.pptx binary")
+    grep -Eq '^\*\.odt[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.odt binary")
+  fi
+fi
+```
+
+If `MISSING_BINARY_PATTERNS` is non-empty, add one `WARNINGS` item that lists each missing line and states this is advisory only.
+
+### Step 6.8 — Mixed `.al` + `.docx` risk flag
+
+If both `STAGED_AL` and `STAGED_DOCX` are non-empty, add a `WARNINGS` entry:
+
+```text
+MIXED_AL_DOCX: This staged set contains both .al and .docx files.
+AL files: <comma-separated list>
+DOCX files: <comma-separated list>
+Verify each .docx was saved from Microsoft Word and run OOXML ZIP validation before execute.
+```
+
 ### Step 7 — Return analysis output
 
 ```text
