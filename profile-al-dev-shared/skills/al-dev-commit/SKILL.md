@@ -272,6 +272,32 @@ After all groups are confirmed or skipped, proceed to Step 10.
 
 ---
 
+## Step 9.5 — Mixed `.al` + `.docx` acknowledgement gate
+
+Inspect analysis `WARNINGS` for a `MIXED_AL_DOCX` entry.
+
+If present, show:
+
+```text
+⚠️  MIXED AL + DOCX STAGING DETECTED
+
+This commit plan includes both `.al` source files and `.docx` layout files.
+High-risk pattern: automated tool rewrites of Word layouts can produce malformed OOXML.
+
+Confirm all `.docx` files were edited and saved in Microsoft Word (not scripted),
+and that OOXML ZIP validation has passed.
+
+Proceed to execution? (yes / no)
+```
+
+User response:
+- `yes` → continue to Step 10
+- `no` → stop; leave staged files unchanged
+
+If no `MIXED_AL_DOCX` warning exists, continue directly to Step 10.
+
+---
+
 ## Step 10 — Dispatch Execution Agent
 
 Construct the approved plan from Step 9:
