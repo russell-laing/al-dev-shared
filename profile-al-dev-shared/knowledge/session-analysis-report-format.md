@@ -97,6 +97,13 @@ entry if findings were found — shows the report is balanced, not a pure defect
 
 ---
 
+## 6. Next Steps (optional)
+
+Brief bulleted list of follow-up actions, investigation ideas, or workflow improvements.
+Include only when there is a clear next action after the review.
+
+---
+
 ## Zero-Finding Report
 
 If no issues are found, the full report collapses to:
