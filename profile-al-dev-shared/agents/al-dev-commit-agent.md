@@ -399,6 +399,45 @@ If this check fails: **do NOT commit.** Files are already restored
 by `git checkout-index --force`. Record `HOOK_FAILURE` with the
 corruption message and move to next group.
 
+### Step 1.5 — OOXML ZIP integrity gate (hard block)
+
+Before any `git commit`, validate all staged OOXML files:
+
+```bash
+CORRUPT_OOXML=()
+
+while IFS= read -r -d '' f; do
+  case "$f" in
+    *.docx|*.xlsx|*.pptx|*.odt)
+      ABS="$REPO/$f"
+      RESULT=$(python3 - "$ABS" <<'PY'
+import sys, zipfile
+path = sys.argv[1]
+try:
+    with zipfile.ZipFile(path) as z:
+        bad = z.testzip()
+        if bad is not None:
+            print(f"BAD_ENTRY:{bad}")
+            raise SystemExit(1)
+    print("OK")
+except Exception as e:
+    print(f"ERROR:{e}")
+    raise SystemExit(1)
+PY
+      2>&1) || CORRUPT_OOXML+=("$f :: $RESULT")
+      ;;
+  esac
+done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
+
+if [ "${#CORRUPT_OOXML[@]}" -gt 0 ]; then
+  echo "COMMIT BLOCKED: One or more staged OOXML files failed ZIP integrity validation."
+  printf '%s\n' "${CORRUPT_OOXML[@]}"
+  exit 1
+fi
+```
+
+If this check fails, **do not commit**. Report the corrupt files to the user and stop.
+
 ### Step 2 — Execute git commit
 
 Before committing, scrub AI attribution from the approved message.
