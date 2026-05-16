@@ -295,7 +295,7 @@ After each developer subagent returns, before the commit gate:
 
 ## Phase 5: Spawn Review Team
 
-Spawn 4 reviewers in parallel as a single batch.
+Spawn 3 reviewers in parallel as a single batch.
 
 **al-dev-security-reviewer:** Review all code for permission
 issues, data exposure risks, authentication gaps.
@@ -308,10 +308,6 @@ organization, event patterns.
 N+1 patterns, SetLoadFields usage, loop efficiency, record
 variable scoping.
 
-**al-dev-test-coverage-reviewer:** Review for testability,
-interfaces for mocking, event extensibility, test scenario
-coverage vs solution plan.
-
 Each reviewer reads ALL implemented AL files.
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
@@ -322,7 +318,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 When all reviewers complete:
 
-1. Read all four review outputs
+1. Read all three review outputs
 2. Cross-reference overlapping findings — issues raised by
    multiple reviewers are higher priority
 3. Resolve contradictions using your own judgement
@@ -529,7 +525,7 @@ Autonomous verification:
 ✅ Labels: consistent with plan [or: N discrepancies flagged]
 ✅ Compilation clean (N of 5 attempts)
 
-Review findings (4 specialist reviewers):
+Review findings (3 specialist reviewers):
 [N] critical issues found and fixed
 [N] high-priority issues for your decision
 [N] minor suggestions documented

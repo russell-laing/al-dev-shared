@@ -2,8 +2,8 @@
 name: al-dev-develop
 description: >-
   Implement an AL/BC solution using parallel developers
-  and 4-specialist review (security, AL expert, performance,
-  test coverage). Use when implementing a planned feature,
+  and 3-specialist review (security, AL expert, performance).
+  Use when implementing a planned feature,
   generating AL code, or building from a solution plan.
   Requires a solution plan. Prefer over ad-hoc
   implementation for anything beyond a trivial fix.
@@ -13,7 +13,7 @@ argument-hint: "[optional: specific module or scope override]"
 # Develop Skill
 
 Implement an AL/BC solution using parallel developers
-and 4-specialist review. You do NOT write code yourself.
+and 3-specialist review. You do NOT write code yourself.
 
 ## Prerequisites
 
@@ -124,7 +124,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 ## Phase 5: Spawn Review Team
 
-When all developers complete, spawn 4 reviewers in parallel
+When all developers complete, spawn 3 reviewers in parallel
 as a single batch:
 
 **al-dev-security-reviewer:**
@@ -140,13 +140,6 @@ patterns.
 Review for query efficiency, N+1 patterns, SetLoadFields
 usage, loop efficiency, record variable scoping.
 
-**al-dev-test-coverage-reviewer:**
-Review for testability (dependency injection present?),
-interfaces for mocking, event extensibility, test scenario
-coverage. Compare to the latest solution plan
-(.dev/*-al-dev-plan-solution-plan.md) testability
-requirements.
-
 Each reviewer reads ALL implemented AL files.
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
@@ -155,7 +148,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 When all reviewers complete:
 
-1. Read all four review outputs
+1. Read all three review outputs
 2. Cross-reference overlapping findings — if Security
    and Performance both flag the same code, that finding
    is higher priority than one raised by a single reviewer
@@ -277,7 +270,7 @@ Fix any issues before presenting to the user.
 ```text
 Implementation complete -> [list AL files created]
 
-Review findings (4 specialist reviewers):
+Review findings (3 specialist reviewers):
 [N] critical issues found and fixed
 [N] high-priority issues for your decision
 [N] minor suggestions documented

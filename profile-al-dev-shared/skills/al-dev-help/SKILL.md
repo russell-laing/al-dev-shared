@@ -59,8 +59,7 @@ Available Skills:
 | /al-dev-explore       | Fast codebase exploration with persistent output     |
 | /al-dev-interview     | Deep requirements gathering through structured dialog |
 | /al-dev-plan          | Competitive solution design (2-3 architects debate)  |
-| /al-dev-develop       | Parallel implementation + 4-specialist code review   |
-| /al-dev-test          | Comprehensive test suite with 4 parallel engineers   |
+| /al-dev-develop       | Parallel implementation + 3-specialist code review   |
 | /al-dev-release-notes | End-user release notes from git diff                 |
 ```
 
@@ -76,8 +75,7 @@ Available Skills (lazy-loaded, invoked with /):
 |-----------------------|-------------------------------------------------------|
 | /al-dev-interview     | Deep requirements gathering through structured dialog |
 | /al-dev-plan          | Competitive solution design (2-3 architects debate)   |
-| /al-dev-develop       | Parallel implementation + 4-specialist code review    |
-| /al-dev-test          | Comprehensive test suite with 4 parallel engineers    |
+| /al-dev-develop       | Parallel implementation + 3-specialist code review    |
 | /al-dev-release-notes | End-user release notes from git diff                  |
 | /al-dev-fix           | Lightweight bug fix without approval gates            |
 | /al-dev-commit        | Atomic commit workflow with gitmoji + CC messages     |
@@ -103,11 +101,6 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | security-reviewer         | Security, permissions, data access review       |
 | al-expert-reviewer        | AL patterns, naming, BC best practices          |
 | performance-reviewer      | Query efficiency, N+1, resource usage           |
-| test-coverage-reviewer    | Test adequacy and missing scenarios             |
-| unit-test-engineer        | Unit test development                           |
-| integration-test-engineer | Cross-object integration tests                  |
-| scenario-test-engineer    | End-to-end scenario test development            |
-| edge-case-test-engineer   | Boundary and error case test development        |
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |
 | python-script-engineer    | Python scripts for AL tooling                   |
@@ -135,7 +128,6 @@ The user described what they want to do. Recommend the right workflow.
 | Requirements unclear, exploring ideas | `/al-dev-interview` |
 | Need architecture, multiple objects | `/al-dev-plan` |
 | Have a plan, ready to implement | `/al-dev-develop` |
-| Implementation done, need tests | `/al-dev-test` |
 | Feature complete, need docs | `/al-dev-document` |
 | Freshdesk ticket for context | `/al-dev-ticket <id>` first |
 | First time in this project | `/al-dev-init-context` first |
@@ -149,7 +141,6 @@ Scan for these artifacts (presence/absence informs the recommendation):
 - `.dev/01-requirements.md` — requirements gathered
 - `.dev/02-solution-plan.md` — solution designed
 - `.dev/03-code-review.md` — implementation reviewed
-- `.dev/05-test-plan.md` — tests written
 
 Apply these refinements:
 
@@ -159,8 +150,6 @@ Apply these refinements:
   suggest `/al-dev-plan`
 - `02-solution-plan.md` exists → skip `/al-dev-plan`,
   suggest `/al-dev-develop`
-- `03-code-review.md` exists but no `05-test-plan.md` → suggest
-  `/al-dev-test`
 
 **Step 3: Output recommendation:**
 
@@ -178,7 +167,6 @@ Suggested sequence:
   1. /al-dev-interview "credit limit validation"  -- gather requirements
   2. /al-dev-plan                                 -- design solution
   3. /al-dev-develop                              -- implement + review
-  4. /al-dev-test                                 -- if business-critical
 
 Or skip to /al-dev-plan directly if requirements are already clear.
 ```
@@ -197,8 +185,7 @@ Or skip to /al-dev-plan directly if requirements are already clear.
 | `project-context.md` only | Describe your goal and run `/al-dev-help <description>` |
 | `01-requirements.md` present | Run `/al-dev-plan` to design the solution |
 | `02-solution-plan.md` present | Run `/al-dev-develop` to implement |
-| `03-code-review.md` present | Run `/al-dev-test` if coverage matters |
-| `05-test-plan.md` present | Run `/al-dev-document` for reference documentation |
+| `03-code-review.md` present | Run `/al-dev-document` for reference documentation |
 
 **Step 3: Output:**
 
@@ -209,12 +196,11 @@ Current project state:
   .dev/01-requirements.md   ✅ found (12 REQ: tokens)
   .dev/02-solution-plan.md  ✅ found
   .dev/03-code-review.md    ❌ not found
-  .dev/05-test-plan.md      ❌ not found
 
 Recommendation: Run /al-dev-develop to implement the solution plan.
 
 The plan exists — the next step is parallel implementation
-followed by 4-specialist code review.
+followed by 3-specialist code review.
 ```
 
 **Step 4: Always append the quick-reference table:**
@@ -225,7 +211,6 @@ Quick reference:
   /al-dev-interview     -- structured requirements gathering
   /al-dev-plan          -- competitive architecture design
   /al-dev-develop       -- parallel implementation + code review
-  /al-dev-test          -- 4-engineer parallel test suite
   /al-dev-document      -- generate technical documentation
   /al-dev-ticket <id>   -- load Freshdesk ticket context
   /al-dev-init-context  -- initialize project context (one-time)

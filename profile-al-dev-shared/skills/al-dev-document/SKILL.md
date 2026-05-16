@@ -84,13 +84,11 @@ Determine what needs documenting:
 1. Find implemented AL files
 2. Read .dev/01-requirements.md — note how many REQ: tokens are present
 3. Read .dev/02-solution-plan.md if available (for context)
-4. Check for test results (.dev/05-test-plan.md)
-5. Determine inferred RTM status from .dev/ files present:
+4. Determine inferred RTM status from .dev/ files present:
    - only 01-requirements.md → DEFINED
    - 02-solution-plan.md present → IN-PROGRESS
    - 03-code-review.md present → IMPLEMENTED
-   - 05-test-plan.md present → VERIFIED
-6. Identify target audience (developers, users, admins)
+5. Identify target audience (developers, users, admins)
 ```
 
 ### Step 2: Spawn Docs-Writer Teammate (10-30 min)
@@ -110,7 +108,6 @@ Audience context:
 Context available:
 - Requirements: .dev/01-requirements.md (parse REQ: tokens for RTM)
 - Solution plan: .dev/02-solution-plan.md
-- Test plan: .dev/05-test-plan.md (if exists)
 - Code review: .dev/03-code-review.md (if exists)
 
 RTM instructions:
@@ -349,8 +346,7 @@ Consider including:
 - Implementation is incomplete (document after coding)
 - Quick prototype (not worth documentation overhead)
 
-**Timing:** Usually run after `/al-dev-develop` and optionally after
-`/al-dev-test`.
+**Timing:** Usually run after `/al-dev-develop`.
 
 ---
 
