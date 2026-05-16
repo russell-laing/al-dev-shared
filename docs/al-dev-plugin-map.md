@@ -16,16 +16,15 @@ flowchart TD
     %% Entry points
     Ticket("al-dev-ticket") -->|ticket-context.md| Support("al-dev-support")
     Investigate("al-dev-investigate")
-    FixDirect("al-dev-fix")
+    FixDirect("al-dev-fix") -->|AL code| Commit("al-dev-commit")
     
     %% Investigation path branches
     Investigate -->|explore-findings.md| Decision1{Needs<br/>full plan?}
     Decision1 -->|Yes| Plan("al-dev-plan")
-    Decision1 -->|No| Fix("al-dev-fix")
+    Decision1 -->|No| FixDirect
     
     %% Main development spine
     Plan -->|solution-plan.md| Develop("al-dev-develop")
-    Fix -->|AL code| Commit("al-dev-commit")
     Develop -->|code-review.md| Commit
     
     %% Complexity gate within plan
@@ -235,16 +234,16 @@ This section is a placeholder for personal gap analysis. Fill in as you review t
 
 ### Agents used by only one skill
 
-- 
+-
 
 ### Skills with no dedicated agent (skill does the work itself)
 
-- 
+-
 
 ### Potential shared agents not yet extracted
 
-- 
+-
 
 ### Extension opportunities
 
-- 
+-
