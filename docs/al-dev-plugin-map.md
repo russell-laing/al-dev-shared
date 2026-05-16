@@ -39,7 +39,7 @@ flowchart TD
     style Investigate fill:#f3e5f5
     style Plan fill:#fff3e0
     style Develop fill:#fff3e0
-    style Fix fill:#e8f5e9
+    style FixDirect fill:#e8f5e9
     style Commit fill:#e8f5e9
     style Git fill:#c8e6c9
     style Reply fill:#c8e6c9
