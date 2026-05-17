@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-18 (al-dev-align moved to .claude/skills/; explore and review-panel patterns added)  
+**Last updated:** 2026-05-18 (al-dev-autonomous merged into al-dev-develop --autonomous; al-dev-align moved to .claude/skills/)  
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /al-dev-align moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
@@ -30,9 +30,7 @@ flowchart TD
 
     %% Main development spine
     Plan -->|solution-plan.md| Develop("al-dev-develop")
-    Plan -->|solution-plan.md| Autonomous("al-dev-autonomous")
     Develop -->|code-review.md| Commit
-    Autonomous -->|code-review.md| Commit
 
     %% Complexity gate within plan
     Note["Trivial requests<br/>route to /fix"] -.-> Plan
@@ -50,7 +48,6 @@ flowchart TD
     style Interview fill:#e8f5e9
     style Plan fill:#fff3e0
     style Develop fill:#fff3e0
-    style Autonomous fill:#fff3e0
     style FixDirect fill:#e8f5e9
     style Commit fill:#e8f5e9
     style Git fill:#c8e6c9
@@ -238,51 +235,6 @@ flowchart LR
     style Agent1 fill:#80cbc4
     style Agent2 fill:#80cbc4
     style Output1 fill:#26a69a
-```
-
-### /al-dev-autonomous
-
-**Extends al-dev-develop** with pre-generation signature verification (Phase 1A) and static validation (Phase 4A) before the review team runs.
-
-```mermaid
-flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Read plan +<br/>verify signatures"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Output0(["signatures.md"])
-    Output0 --> Phase2["Phase 2<br/>Implement"]
-    Phase2 --> DevAgent["al-dev-developer ×1-3<br/>parallel"]
-    DevAgent --> Phase3["Phase 3<br/>Static validation"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["static-validation.md"])
-    Output1 --> Phase4["Phase 4<br/>Review<br/>in parallel"]
-
-    Phase4 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase4 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase4 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
-
-    SecReview --> Phase5["Phase 5<br/>Compile + lint"]
-    ExpertReview --> Phase5
-    PerfReview --> Phase5
-
-    Phase5 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output2(["code-review.md"])
-    Output2 --> End([End])
-
-    style Phase1 fill:#fff8e1
-    style Phase2 fill:#fff8e1
-    style Phase3 fill:#fff8e1
-    style Phase4 fill:#fff8e1
-    style Phase5 fill:#fff8e1
-    style SkillWork1 fill:#ffe082
-    style SkillWork2 fill:#ffe082
-    style SkillWork3 fill:#ffe082
-    style DevAgent fill:#ffd54f
-    style SecReview fill:#ffca28
-    style ExpertReview fill:#ffca28
-    style PerfReview fill:#ffca28
-    style Output0 fill:#fbc02d
-    style Output1 fill:#fbc02d
-    style Output2 fill:#fbc02d
 ```
 
 ### /al-dev-explore
@@ -513,7 +465,7 @@ flowchart LR
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-release-notes-agent** — used only by /al-dev-release-notes
 - **al-dev-commit-agent** — used only by /al-dev-commit (dispatched twice per invocation)
-- **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked internally by /al-dev-develop and /al-dev-autonomous in their compile-verify phases (not shown in drill-downs)
+- **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked internally by /al-dev-develop in its compile-verify phase (not shown in drill-down)
 - **commit-learn-verifier** — used only by /commit-learn
 
 ### Skills with no dedicated agent (skill does the work itself)
@@ -525,22 +477,20 @@ flowchart LR
 ### Potential shared agents not yet extracted
 
 - **Explore subagent** — independently invoked by /al-dev-investigate (×2 parallel), /al-dev-explore (×1), /al-dev-perf (×1); each skill defines its own spawn invocation
-- **al-dev-developer** — spawned by /al-dev-fix (×1), /al-dev-develop (×2-3), /al-dev-autonomous (×1-3); usage pattern varies by context
+- **al-dev-developer** — spawned by /al-dev-fix (×1), /al-dev-develop (×2-3); usage pattern varies by context
 - **al-dev-solution-architect** — spawned by /al-dev-plan (×2-3 for competitive debate) and /al-dev-fix (×1 for quick analysis); different usage patterns
-- **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — identical parallel composition in /al-dev-develop and /al-dev-autonomous; defined independently in both
+- **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — parallel composition in /al-dev-develop; canonical definition in `knowledge/review-panel-pattern.md`
 - **al-dev-ticket-agent** — invoked by both /al-dev-ticket (primary) and /al-dev-support (as a prerequisite step)
 
 ### Architectural suggestions
 
-**Connect: /al-dev-develop and /al-dev-autonomous — three-reviewer panel** ← highest leverage  
-Observation: Both skills spawn the identical three-reviewer panel (security + expert + performance in parallel) independently. Adding a fourth reviewer or renaming one requires two edits.  
-Suggestion: Document the canonical review panel pattern in `knowledge/review-panel-pattern.md`; reference it from both skills' Phase 3/Phase 4 sections.  
-Trade-off: Small upfront authoring cost; prevents drift when the panel composition changes.
+**Connect: /al-dev-develop — three-reviewer panel** ← implemented  
+Observation: The three-reviewer panel (security + expert + performance in parallel) is now documented in `knowledge/review-panel-pattern.md` and referenced from /al-dev-develop Phase 5. Previously defined independently in both /al-dev-develop and /al-dev-autonomous.  
+Status: Done — /al-dev-autonomous archived; single canonical panel definition.
 
-**Merge: /al-dev-autonomous → /al-dev-develop option**  
-Observation: /al-dev-autonomous is structurally /al-dev-develop plus two pre-flight phases: signature verification (Phase 1A) and static validation (Phase 4A). Users must choose between two near-identical skills with nearly identical names.  
-Suggestion: Add `--verify-signatures` as an invocation option to /al-dev-develop; archive /al-dev-autonomous. The pre-flight phases activate when the flag is passed.  
-Trade-off: Reduces the skill list from 18 to 17; /al-dev-develop's description becomes slightly broader.
+**Merge: /al-dev-autonomous → /al-dev-develop --autonomous** ← implemented  
+Observation: /al-dev-autonomous phases (1A signature verification, 4A static validation, 5-attempt compile loop) merged into /al-dev-develop as an `--autonomous` flag. /al-dev-autonomous archived to `archived/skills/`.  
+Status: Done — skill list reduced from 18 to 17.
 
 **Connect: /al-dev-explore and /al-dev-perf — shared exploration backbone**  
 Observation: Both follow an identical structure — skill reads context → spawn Explore subagent ×1 → write `.dev/` analysis file. The only difference is the analytical lens (general vs. performance).  

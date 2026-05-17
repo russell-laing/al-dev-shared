@@ -5,8 +5,10 @@ description: >-
   and 3-specialist review (security, AL expert, performance).
   Use when implementing a planned feature,
   generating AL code, or building from a solution plan.
-  Requires a solution plan. Prefer over ad-hoc
-  implementation for anything beyond a trivial fix.
+  Requires a solution plan. Pass --autonomous to activate
+  signature verification, static validation, and a
+  self-healing compile loop (replaces /al-dev-autonomous).
+  Prefer over ad-hoc implementation for anything beyond a trivial fix.
 argument-hint: "[optional: specific module or scope override]"
 ---
 
@@ -30,6 +32,17 @@ Per the Phase 0 Read Protocol in
 
 ## Phase 1: Read Context
 
+**Autonomous mode detection:**
+Check `$ARGUMENTS` for `--autonomous`. If present:
+- After Step 3 below, run Phase 1A (Signature Verification) before
+  proceeding to Phase 2
+- After Phase 4 (Verify on Completion), run Phase 4A (Static Validation)
+  before spawning the review team
+- In Phase 8, use the 5-attempt compile-verify loop instead of the
+  single compile pass
+- In Phase 9, use the extended code review template (includes autonomous
+  verification results section)
+
 If `$ARGUMENTS` is provided, treat it as a scope override
 (e.g. "data-model-only", "UI layer", "integration module").
 Apply that scope when partitioning work in Phase 2 — skip
@@ -45,6 +58,61 @@ modules outside the specified scope.
    - Validation rules
    - Testability requirements
    - Object ID ranges
+
+## Phase 1A: Signature Verification (--autonomous only)
+
+Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
+
+Before dispatching any developer, verify every external procedure
+signature via the AL symbols MCP.
+
+For each external procedure identified in Phase 1, run the
+appropriate MCP query:
+
+```text
+al_get_object_definition — for base objects being extended:
+  confirms field names, IDs, and trigger signatures
+
+al_search_object_members — for event signatures and methods:
+  locates exact event publisher signatures with var parameters
+
+al_find_references — to detect existing similar extensions:
+  avoids duplicate subscriber registration
+```
+
+Verify for each procedure:
+
+- Exact procedure name (case-sensitive)
+- Parameter list: names, types, var vs value modifier
+- Return type if applicable
+
+Write verified signatures to:
+`.dev/$(date +%Y-%m-%d)-al-dev-autonomous-signatures.md`
+
+Use this format:
+
+```markdown
+## Verified Signatures
+
+### [ObjectType] [ObjectName].[ProcedureName]
+- Parameters: [ParamName: Type; var ParamName: Type]
+- Return: [Type or void]
+- Source: al_search_object_members / al_get_object_definition
+- Verified: [ISO timestamp]
+
+### NOT VERIFIED: [ProcedureName]
+- Reason: [not found in MCP / ambiguous match]
+- Risk: Developer must not guess this signature
+```
+
+If any procedure is NOT VERIFIED, include this block in the
+developer spawn prompt:
+
+```text
+⚠️ Unverified signatures — do NOT guess these:
+- [ProcedureName]: [reason not verified]
+STOP and report back if you need to call this procedure.
+```
 
 ## Phase 2: Partition Work
 
@@ -122,6 +190,80 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
+## Phase 4A: Static Validation (--autonomous only)
+
+Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
+
+Run these checks on all newly created AL files before the
+review team is spawned. Fix CRITICAL issues by dispatching
+a developer before proceeding.
+
+### Check 1: Object Name Length
+
+```bash
+grep -rn -E \
+  '^(table|page|codeunit|report|enum|interface|xmlport|query|permissionset)\s+[0-9]+\s+' \
+  --include="*.al" .
+```
+
+For each match, the object name is everything after the numeric
+ID. Count its characters. Flag any name exceeding 30 characters
+as a CRITICAL issue.
+
+### Check 2: Compile Guard Logic
+
+```bash
+grep -rn '#if\|#else\|#endif' --include="*.al" .
+```
+
+For each `#if` directive, read the surrounding block. Verify:
+
+- The condition matches the intended feature flag
+- Every `#if` has a matching `#endif`
+- The `#else` branch, if present, contains the correct fallback
+
+Flag any inverted condition or unmatched directive as CRITICAL.
+
+### Check 3: Label and Message Consistency
+
+```bash
+grep -rn "label\|Error(\|Message(\|FieldCaption" \
+  --include="*.al" . | head -50
+```
+
+Cross-reference against the solution plan's feature descriptions.
+Flag any label using different terminology than the plan as a HIGH issue.
+
+### Static Validation Report
+
+Write to:
+`.dev/$(date +%Y-%m-%d)-al-dev-autonomous-static-validation.md`
+
+```markdown
+## Static Validation Results
+
+### Object Name Lengths
+| Object | Name | Length | Status |
+| --- | --- | --- | --- |
+| table 50100 | ABCSomeName | 11 | ✅ |
+
+### Compile Guards
+| File | Line | Directive | Status |
+| --- | --- | --- | --- |
+
+### Label Consistency
+| File:Line | Label Text | Plan Term | Status |
+| --- | --- | --- | --- |
+
+### Summary
+CRITICAL issues: N (must fix before review)
+HIGH issues: N (flagged in code review)
+```
+
+If CRITICAL issues found: dispatch a developer with the specific
+violations. Wait for fixes. Re-run the relevant check before
+spawning the review team.
+
 ## Phase 5: Spawn Review Team
 
 > Canonical panel: `knowledge/review-panel-pattern.md`.
@@ -189,7 +331,8 @@ Do NOT present to user until critical issues are resolved.
 
 ## Phase 8: Compile + Lint Pass
 
-Follow `knowledge/compile-lint-procedure.md` in full.
+**Standard mode** (no `--autonomous`): Follow
+`knowledge/compile-lint-procedure.md` in full.
 
 Write lint report to:
 `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md`
@@ -209,6 +352,112 @@ Additional rules for this skill:
   re-spawn diagnostics-fixer.
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
+
+---
+
+**Autonomous mode** (`--autonomous` in `$ARGUMENTS`):
+
+Run the compile-verify loop. Track attempt count.
+
+### Setup
+
+Always initialize these at Phase 8 entry:
+
+```bash
+mkdir -p .dev
+ATTEMPT=1
+MAX_ATTEMPTS=5
+```
+
+### Compile Step
+
+```bash
+if command -v al-compile &>/dev/null; then
+  al-compile --output \
+    .dev/compile-errors-attempt-${ATTEMPT}.log
+else
+  al compile /project:. /packagecachepath:.alpackages \
+    /errorlog:.dev/compile-errors-attempt-${ATTEMPT}.log
+fi
+```
+
+### After Each Compile
+
+**If log is absent, empty, or contains no `Error` lines:**
+Compilation is clean. Record that it took N attempts.
+Proceed to Phase 9.
+
+**If only `Warning` lines (no `Error` lines):**
+Spawn `al-dev-diagnostics-fixer` once to resolve warnings.
+Do NOT count this as a failed attempt.
+After it completes, read its lint report to confirm clean
+compile, then proceed to Phase 9.
+
+**If `Error` lines found:**
+
+Parse the log. Extract per error: file path, line number,
+error code, message text. Group by file.
+
+Resolve the signatures file path before spawning:
+
+```bash
+SIGFILE=$(ls .dev/*-al-dev-autonomous-signatures.md \
+  2>/dev/null | sort | tail -1)
+```
+
+Spawn **al-dev-developer** with this prompt (substitute actual
+values of `ATTEMPT` and `SIGFILE` — do not paste literal variable names):
+
+```text
+Fix compilation errors in the AL project.
+This is attempt [ATTEMPT] of 5.
+
+Errors from .dev/compile-errors-attempt-[ATTEMPT].log:
+[paste full error list grouped by file]
+
+Verified signatures (use these exactly — do NOT alter):
+[paste relevant entries from [SIGFILE]]
+
+Context from solution plan for each erroring file:
+[paste relevant plan excerpt per file]
+
+Rules:
+- Fix ONLY the listed errors — do not refactor other code
+- If a signature error matches an "unverified" procedure,
+  use the AL symbols MCP NOW to get the correct signature
+  before fixing
+- Do NOT re-compile after fixing (the orchestrator compiles)
+- Report: [file:line] → [what changed] for each fix
+```
+
+Increment: `ATTEMPT=$((ATTEMPT + 1))`
+
+If `ATTEMPT <= MAX_ATTEMPTS`: return to Compile Step.
+
+### After 5 Failed Attempts
+
+Present to user:
+
+```text
+Compilation still failing after 5 attempts.
+
+Remaining errors (.dev/compile-errors-attempt-5.log):
+[list all remaining errors]
+
+Summary of fix attempts:
+- Attempt 1: [files changed, what was tried]
+- Attempt 2: [files changed, what was tried]
+...
+
+These errors likely require architectural review or a
+change to the solution plan approach.
+```
+
+USER_GATE — ask the user with options:
+
+- Show full error detail for all 5 logs
+- Assign manual fix with more context
+- Revise solution plan approach
 
 ## Phase 9: Validate and Write Code Review
 
@@ -268,6 +517,35 @@ REVIEW=$(ls .dev/*-al-dev-develop-code-review.md \
 
 Fix any issues before presenting to the user.
 
+**Autonomous mode addition** (`--autonomous`):
+Append this additional section to the code review:
+
+```markdown
+### Autonomous Verification Results
+
+#### Signature Verification
+| Procedure | Status | Source |
+| --- | --- | --- |
+| ObjectName.ProcedureName | ✅ Verified | al_search_object_members |
+| ObjectName.OtherProc | ⚠️ Not verified | Not found in MCP |
+
+Unverified risks: [describe any NOT VERIFIED entries]
+
+#### Static Validation
+| Check | Result |
+| --- | --- |
+| Object names (≤30 chars) | ✅ All valid / ❌ N fixed |
+| Compile guards (#if logic) | ✅ All correct / ❌ N fixed |
+| Label consistency | ✅ Matches plan / ⚠️ N flagged |
+
+#### Compile-Verify Loop
+- Attempts required: N of 5
+- Final status: ✅ Clean / ⚠️ N warnings remain
+```
+
+In autonomous mode, use the standard develop validator:
+`$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-develop/validate-code-review.py`
+
 ## Phase 10: Present to User for Approval
 
 ```text
@@ -289,6 +567,18 @@ Lint report -> .dev/[date]-al-dev-lint-lint-report.md
 Compilation: [Success / Not verified]
 
 Ready to proceed to testing?
+```
+
+**Autonomous mode:** add this block before "Review findings":
+
+```text
+Autonomous verification:
+✅ N external signatures verified via AL symbols MCP
+   [N unverified — see risks in code review]
+✅ Object names: all ≤30 chars [or: N violations fixed]
+✅ Compile guards: all correct [or: N inversions fixed]
+✅ Labels: consistent with plan [or: N discrepancies flagged]
+✅ Compilation clean (N of 5 attempts)
 ```
 
 USER_GATE — ask the user with options:
