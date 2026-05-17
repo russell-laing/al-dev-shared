@@ -173,7 +173,9 @@ Agents are not scanned separately. If a flagged skill is the sole caller of an a
 
 ### Output
 
-For each Move candidate, append to the `### Architectural suggestions` section of `docs/al-dev-plugin-map.md`:
+First, ensure `docs/al-dev-plugin-map.md` has a `### Architectural suggestions` section. If it does not exist, create it at the end of the document before appending.
+
+For each Move candidate, append inside the `### Architectural suggestions` section of `docs/al-dev-plugin-map.md`. For each signal, mark ✓ if present in the skill, ✗ if absent:
 
 ```markdown
 **Move: /skill-name → .claude/skills/**
@@ -183,7 +185,7 @@ Suggestion: Move `profile-al-dev-shared/skills/<skill-name>/` to `.claude/skills
 Trade-off: Skill remains available in this project; removed from the distributed plugin.
 ```
 
-If no candidates are found, append a `### Move candidates` subheading with a single line:
+If no candidates are found, append a `### Move candidates` subsection inside `### Architectural suggestions`:
 
 ```markdown
 ### Move candidates
