@@ -1,0 +1,15 @@
+skill: al-dev-fix
+scenarios:
+  - id: fix-typo-trivial
+    status: golden
+    user_prompt: "Fix the typo in the Caption: 'Custmer' should be 'Customer' on Customer Card field 50001."
+    expected_artifacts: []
+    must_not_invoke_agent: al-dev-shared:al-dev-solution-architect
+    notes: "TRIVIAL fix — should edit in place without spinning up planning agents."
+
+  - id: fix-investigation-required
+    status: golden
+    user_prompt: "Something keeps causing posting to fail intermittently with no error — fix it."
+    expected_artifacts:
+      - ".dev/*-investigation*.md"
+    notes: "Ambiguous root cause — should route to /al-dev-investigate first, or write an investigation file."

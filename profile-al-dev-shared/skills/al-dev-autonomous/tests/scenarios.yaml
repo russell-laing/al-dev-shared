@@ -1,0 +1,15 @@
+skill: al-dev-autonomous
+scenarios:
+  - id: autonomous-compile-clean
+    status: golden
+    user_prompt: "Autonomously implement the solution plan at .dev/2026-05-17-al-dev-plan-solution-plan.md and keep iterating until al-compile is clean."
+    expected_artifacts:
+      - ".dev/*-al-dev-develop-code-review.md"
+    must_invoke_agent: al-dev-shared:al-dev-developer
+    notes: "Smoke test of the autonomous loop. Plan fixture is pre-seeded."
+
+  - id: autonomous-requires-plan
+    status: golden
+    user_prompt: "Autonomously add tax exemption to the Sales Order."
+    expected_artifacts: []
+    notes: "No plan exists. Skill must refuse — no compile loop should start, no AL files written."

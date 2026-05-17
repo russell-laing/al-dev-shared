@@ -1,0 +1,23 @@
+skill: al-dev-develop
+scenarios:
+  - id: develop-implement-plan
+    status: golden
+    user_prompt: "Implement the solution plan at .dev/2026-05-17-al-dev-plan-solution-plan.md."
+    expected_artifacts:
+      - ".dev/*-al-dev-develop-code-review.md"
+    must_invoke_agent: al-dev-shared:al-dev-developer
+    notes: "Standard development path. Plan file is a fixture — harness pre-seeds it before run."
+
+  - id: develop-requires-plan
+    status: golden
+    user_prompt: "Implement a new tax-exemption feature."
+    expected_artifacts: []
+    notes: "No plan exists. Skill must refuse and direct the user to /al-dev-plan first; no AL files should be written."
+
+  - id: develop-uses-three-reviewers
+    status: golden
+    user_prompt: "Implement the solution plan at .dev/2026-05-17-al-dev-plan-solution-plan.md."
+    expected_artifacts:
+      - ".dev/*-al-dev-develop-code-review.md"
+    must_invoke_agent: al-dev-shared:al-dev-security-reviewer
+    notes: "Reviewer panel uses 3 specialists (security, expert, performance). Confirms the security reviewer is dispatched."
