@@ -79,6 +79,10 @@ Do not surface this decision to the user.
    architects start from real object knowledge, not
    assumptions.
 
+   If the MCP server is unavailable or returns no results
+   (e.g., no BC workspace is active), proceed directly to
+   Phase 2 using general AL knowledge. Do not stop.
+
 ## Phase 1.5: Verify External Claims
 
 If the request references a findings file, codeburn output, lint report,
