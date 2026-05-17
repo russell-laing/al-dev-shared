@@ -37,13 +37,13 @@ scenarios:
 | `scenarios[].status` | enum | yes | `golden` (curated) or `draft` (LLM-generated, unreviewed). |
 | `scenarios[].user_prompt` | string | yes | Natural-language input the harness will send to the skill. |
 | `scenarios[].expected_artifacts` | list[glob] | yes | Glob patterns the harness checks for after the run. Empty list `[]` means "explicitly no artifacts" — useful for trivial-routing tests. |
-| `scenarios[].must_invoke_agent` | string | no | Fully-qualified agent name (`<namespace>:<agent-name>`) the harness expects to see dispatched during the run. The orchestrator translates this to its harness-native dispatch shape when checking. |
-| `scenarios[].must_not_invoke_agent` | string | no | Fully-qualified agent name that must NOT appear in the dispatch trace. |
+| `scenarios[].must_invoke_agent` | string \| list[string] | no | Fully-qualified agent name(s) (`<namespace>:<agent-name>`) the harness expects to see dispatched during the run. Accepts a single string or a list — when a list is supplied, every named agent must appear in the dispatch trace. The orchestrator translates each name to its harness-native dispatch shape when checking. |
+| `scenarios[].must_not_invoke_agent` | string \| list[string] | no | Fully-qualified agent name(s) that must NOT appear in the dispatch trace. Accepts a single string or a list. |
 | `scenarios[].notes` | string | no | Free-text rationale. |
 
 ### Globs
 
-`expected_artifacts` entries are POSIX globs evaluated relative to the harness working directory. Use `*` for wildcards and `**` for recursive matches.
+`expected_artifacts` entries are globs evaluated relative to the **harness working directory** — the directory the harness `cd`s into before invoking the skill under test (typically a per-scenario sandbox under `.skill-test-runs/<scenario-id>/`). Use `*` for single-segment wildcards and `**` for recursive descent across nested directories. Patterns are matched with Python's `pathlib.Path.glob()` semantics (not POSIX shell globs), so `**` requires `pathlib` and matches zero or more path segments.
 
 ## `knowledge/skill-test-trigger-corpus.yaml`
 
