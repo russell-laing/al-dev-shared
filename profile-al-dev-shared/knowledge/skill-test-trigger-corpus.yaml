@@ -1,0 +1,66 @@
+# Description-trigger corpus for the skill-test harness.
+# Each entry is a natural-language prompt and the bare skill name that
+# should be routed when Claude sees only the active skills' `name` +
+# `description:` fields. Lowercase phrasing mimics how users actually
+# write. Expand this file when new mis-routes are discovered.
+
+corpus:
+  # --- al-dev-plan -------------------------------------------------------
+  - prompt: "design how i'd build a sales-tax exemption feature"
+    expected: al-dev-plan
+  - prompt: "plan a refactor of the posting routines"
+    expected: al-dev-plan
+  - prompt: "architect a permission-set redesign"
+    expected: al-dev-plan
+  - prompt: "how should i approach building an item-template subsystem"
+    expected: al-dev-plan
+  - prompt: "i want to add jobs integration to sales orders, design it"
+    expected: al-dev-plan
+
+  # --- al-dev-develop ----------------------------------------------------
+  - prompt: "implement the plan we just wrote"
+    expected: al-dev-develop
+  - prompt: "build out the codeunits from the solution plan in .dev/"
+    expected: al-dev-develop
+  - prompt: "write the al code for the plan"
+    expected: al-dev-develop
+  - prompt: "execute the implementation plan with review"
+    expected: al-dev-develop
+  - prompt: "scaffold the tables and pages from the design doc"
+    expected: al-dev-develop
+
+  # --- al-dev-autonomous -------------------------------------------------
+  - prompt: "implement the plan automatically and keep compiling until it builds"
+    expected: al-dev-autonomous
+  - prompt: "autonomous mode: build the feature and self-correct compile errors"
+    expected: al-dev-autonomous
+  - prompt: "just keep iterating on the code until al-compile is clean"
+    expected: al-dev-autonomous
+
+  # --- al-dev-fix --------------------------------------------------------
+  - prompt: "the customer page is throwing a permission error, fix it"
+    expected: al-dev-fix
+  - prompt: "patch the bug in the posting codeunit quickly"
+    expected: al-dev-fix
+  - prompt: "fast iteration: tweak the field length and recompile"
+    expected: al-dev-fix
+  - prompt: "small fix to a typo in a caption"
+    expected: al-dev-fix
+
+  # --- al-dev-commit -----------------------------------------------------
+  - prompt: "squash these commits before pushing"
+    expected: al-dev-commit
+  - prompt: "commit the staged changes with a sensible message"
+    expected: al-dev-commit
+  - prompt: "wrap up and commit, watch for scope creep in the diff"
+    expected: al-dev-commit
+  - prompt: "i'm done — commit what's staged"
+    expected: al-dev-commit
+
+  # --- expected to route elsewhere or to NONE ----------------------------
+  - prompt: "what is the current branch name"
+    expected: NONE
+  - prompt: "explain how the sales posting routine handles partial shipments"
+    expected: al-dev-explore
+  - prompt: "research a customer ticket about g/l setup"
+    expected: al-dev-support
