@@ -13,39 +13,50 @@ This diagram shows the three entry paths and how they connect through the main d
 
 ```mermaid
 flowchart TD
+    %% Pre-planning tributaries (optional)
+    Explore("al-dev-explore") -.->|explore-findings.md| Investigate
+    Explore -.->|explore-findings.md| Plan
+    Interview("al-dev-interview") -.->|interview-requirements.md| Plan
+
     %% Entry points
     Ticket("al-dev-ticket") -->|ticket-context.md| Support("al-dev-support")
     Investigate("al-dev-investigate")
     FixDirect("al-dev-fix") -->|AL code| Commit("al-dev-commit")
-    
+
     %% Investigation path branches
     Investigate -->|explore-findings.md| Decision1{Needs<br/>full plan?}
     Decision1 -->|Yes| Plan("al-dev-plan")
     Decision1 -->|No| FixDirect
-    
+
     %% Main development spine
     Plan -->|solution-plan.md| Develop("al-dev-develop")
     Plan -->|solution-plan.md| Autonomous("al-dev-autonomous")
     Develop -->|code-review.md| Commit
     Autonomous -->|code-review.md| Commit
-    
+
     %% Complexity gate within plan
     Note["Trivial requests<br/>route to /fix"] -.-> Plan
-    
+
     %% Outputs
     Commit --> Git(["✓ git commit"])
+    Git -.-> ReleaseNotes("al-dev-release-notes")
+    ReleaseNotes --> Notes(["✓ release notes"])
     Support --> Reply(["✓ customer reply"])
-    
+
     style Ticket fill:#e1f5ff
     style Support fill:#e1f5ff
     style Investigate fill:#f3e5f5
+    style Explore fill:#f3e5f5
+    style Interview fill:#e8f5e9
     style Plan fill:#fff3e0
     style Develop fill:#fff3e0
     style Autonomous fill:#fff3e0
     style FixDirect fill:#e8f5e9
     style Commit fill:#e8f5e9
     style Git fill:#c8e6c9
+    style Notes fill:#c8e6c9
     style Reply fill:#c8e6c9
+    style ReleaseNotes fill:#e3f2fd
     style Decision1 fill:#ffe0b2
 ```
 
