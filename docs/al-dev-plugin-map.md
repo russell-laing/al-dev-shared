@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-16 (synced all 18 active skills)  
+**Last updated:** 2026-05-18 (map accurate; Move candidate detected for /al-dev-align)  
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded.
 
 ---
@@ -540,6 +540,14 @@ Trade-off: Slightly more indirection; eliminates drift if the Explore subagent A
 Observation: Three skills (investigate, explore, perf) each independently author their Explore subagent invocation. A fourth skill using Explore would have no canonical template to follow.  
 Suggestion: `knowledge/explore-subagent-pattern.md` (from the Connect suggestion above) doubles as this canonical template. All three callers update their spawn directives to reference it.  
 Trade-off: One extra file in knowledge/; invocations stay locally readable with a pointer for updates.
+
+### Move candidates
+
+**Move: /al-dev-align → .claude/skills/**
+Observation: This skill's sole purpose is maintaining the plugin's own alignment with harness repos — it has no value to AL developers consuming the distributed plugin. It audits the plugin's internal consistency, not the user's AL code.
+Signals: internal path refs (✗), self-audit purpose (✓), no spawned agents (✓).
+Suggestion: Move `profile-al-dev-shared/skills/al-dev-align/` to `.claude/skills/al-dev-align/` and update the plugin map scope line to exclude it.
+Trade-off: Skill remains available in this project; removed from the distributed plugin so consumers don't see a maintenance-only skill that does nothing useful for them.
 
 ### Extension opportunities
 
