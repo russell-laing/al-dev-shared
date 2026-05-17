@@ -518,7 +518,8 @@ class TestCLI:
 
 
 class TestSkillFile:
-    SKILL_MD = Path(__file__).parent.parent / "SKILL.md"
+    # SKILL.md was moved to .claude/skills/ (project-local maintenance tool)
+    SKILL_MD = Path(__file__).parent.parent.parent.parent.parent / ".claude" / "skills" / "al-dev-align" / "SKILL.md"
 
     def test_skill_md_exists(self):
         assert self.SKILL_MD.exists(), "SKILL.md must exist"
