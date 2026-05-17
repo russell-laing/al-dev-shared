@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-18 (map accurate; Move candidate detected for /al-dev-align)  
-**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded.
+**Last updated:** 2026-05-18 (al-dev-align moved to .claude/skills/; explore and review-panel patterns added)  
+**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /al-dev-align moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
 
