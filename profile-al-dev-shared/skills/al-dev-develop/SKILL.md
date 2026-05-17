@@ -124,6 +124,9 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 ## Phase 5: Spawn Review Team
 
+> Canonical panel: `knowledge/review-panel-pattern.md`.
+> Role descriptions and synthesis steps are in that doc.
+
 When all developers complete, spawn 3 reviewers in parallel
 as a single batch:
 

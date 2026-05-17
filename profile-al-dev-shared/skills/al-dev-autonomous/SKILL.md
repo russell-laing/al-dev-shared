@@ -295,6 +295,9 @@ After each developer subagent returns, before the commit gate:
 
 ## Phase 5: Spawn Review Team
 
+> Canonical panel: `knowledge/review-panel-pattern.md`.
+> Role descriptions and synthesis steps are in that doc.
+
 Spawn 3 reviewers in parallel as a single batch.
 
 **al-dev-security-reviewer:** Review all code for permission
