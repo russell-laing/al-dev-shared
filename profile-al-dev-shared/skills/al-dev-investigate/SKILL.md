@@ -118,6 +118,9 @@ H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
 
 ### Step 3 — Spawn Parallel Investigation Agents
 
+> Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
+> Hypothesis-testing prompt structure is below; spawn ×2 in parallel.
+
 Spawn 2 Explore agents in parallel, assigning 2 hypotheses each:
 
 ```text

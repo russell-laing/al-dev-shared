@@ -134,6 +134,9 @@ high-volume or batch-processing.
 
 ### Step 2 — Spawn Performance Analysis Agent
 
+> Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
+> Performance-specific prompt content is below.
+
 ```text
 Spawn an explore agent:
   purpose: Perf scan: [scope description]
