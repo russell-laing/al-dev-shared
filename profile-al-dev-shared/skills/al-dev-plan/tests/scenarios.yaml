@@ -3,10 +3,9 @@ scenarios:
   - id: plan-new-feature
     status: golden
     user_prompt: "Design how I'd add a tax-exemption certificate validation feature to the Sales Order workflow."
-    expected_artifacts:
-      - ".dev/*-al-dev-plan-solution-plan.md"
+    expected_artifacts: []
     must_invoke_agent: al-dev-shared:al-dev-solution-architect
-    notes: "Common entry path; should produce a solution plan with 2-3 architect options."
+    notes: "Phase A smoke: verifies MEDIUM/COMPLEX routing dispatches architect agents. Artifact production (plan file) is a Phase B assertion."
 
   - id: plan-trivial-routing
     status: golden
