@@ -7,9 +7,9 @@ scenarios:
     must_not_invoke_agent: al-dev-shared:al-dev-solution-architect
     notes: "TRIVIAL fix — should edit in place without spinning up planning agents."
 
-  - id: fix-investigation-required
+  - id: fix-non-trivial-spawns-architect
     status: golden
     user_prompt: "Something keeps causing posting to fail intermittently with no error — fix it."
-    expected_artifacts:
-      - ".dev/*-investigation*.md"
-    notes: "Ambiguous root cause — should route to /al-dev-investigate first, or write an investigation file."
+    expected_artifacts: []
+    must_invoke_agent: al-dev-shared:al-dev-solution-architect
+    notes: "Ambiguous root cause. Per al-dev-fix SKILL.md, NON-TRIVIAL classification (matches Step 1 example 'Posting fails intermittently') spawns solution-architect for quick analysis before delegating to a developer."
