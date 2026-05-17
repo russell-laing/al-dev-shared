@@ -1,7 +1,7 @@
 # Review Panel Pattern
 
 The three-reviewer panel is the standard parallel review composition
-used by /al-dev-develop and /al-dev-autonomous. Spawn all three
+used by /al-dev-develop (with or without `--autonomous`). Spawn all three
 reviewers in a single batch (one message, three Agent tool calls).
 
 ## Composition

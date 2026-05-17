@@ -405,6 +405,15 @@ SIGFILE=$(ls .dev/*-al-dev-autonomous-signatures.md \
   2>/dev/null | sort | tail -1)
 ```
 
+If `SIGFILE` is empty (Phase 1A did not run or MCP was unavailable),
+omit the signatures section from the developer prompt and add this
+warning instead:
+
+```text
+⚠️ Signature file not found — MCP verification was not completed.
+Developers MUST verify signatures manually before fixing errors.
+```
+
 Spawn **al-dev-developer** with this prompt (substitute actual
 values of `ATTEMPT` and `SIGFILE` — do not paste literal variable names):
 
@@ -473,8 +482,8 @@ Use this structure:
 [What was built: objects, key functionality]
 
 ### Review Process
-4 specialized reviewers (security, AL expert, performance,
-test coverage) completed parallel review.
+3 specialized reviewers (security, AL expert, performance)
+completed parallel review.
 
 ### Critical Issues (All Resolved)
 - Issue: [description]
