@@ -66,6 +66,9 @@ Classify the user's question type to guide the agent:
 
 ### Step 2 — Spawn Explore Subagent
 
+> Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
+> Domain-specific prompt content is below.
+
 Spawn an Explore subagent via the Agent tool:
 
 ```text
