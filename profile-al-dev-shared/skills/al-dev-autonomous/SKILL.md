@@ -289,7 +289,7 @@ After each developer subagent returns, before the commit gate:
      - exit criteria: checklist passes and failure log indicates PASS
 4. **Retry loop:** Max 3 retries per task. After 3 failures:
    - Claude Code: escalate with task description + all 3 failure summaries + recommended next steps
-   - Copilot CLI: use `ask_user` to present failure summary and wait for decision (retry manually / skip task / abort plan)
+   - Copilot CLI: use USER_GATE to present failure summary and wait for decision (retry manually / skip task / abort plan)
 
 ---
 

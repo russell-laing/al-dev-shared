@@ -9,7 +9,7 @@ This guide is the shared reference for cross-harness parity between Claude Code 
 
 ## Cross-Harness Parity Checklist
 
-- [ ] Theme 1 verification standard is aligned in CLAUDE.md and AGENTS.md
+- [ ] Theme 1 verification standard is aligned in the project instructions file
 - [ ] al-dev-autonomous includes explicit post-task verify retry handling
 - [ ] al-dev-plan includes evidence-summary verification and threshold gating
 - [ ] al-dev-plan includes mandatory architect proposal/critique/falsification outputs
@@ -20,11 +20,11 @@ This guide is the shared reference for cross-harness parity between Claude Code 
 
 | Need | Claude Code | Copilot CLI |
 | --- | --- | --- |
-| user decision gate | conversational prompt / ask tool | `ask_user` |
+| user decision gate | conversational prompt / ask tool | USER_GATE |
 | subagent retry | `write_agent` | re-dispatch with updated prompt |
 | pattern scan | `rg` | `rg` or `git diff \| grep` |
 
 ## Usage
 
 - Reference this file when updating skill behavior across harnesses.
-- Prefer additive edits and avoid diverging behavior wording between CLAUDE.md and AGENTS.md.
+- Prefer additive edits and avoid diverging behavior wording across harness project instructions files.

@@ -90,7 +90,7 @@ or any third-party analysis, verify the claims before forwarding to architects:
    - If path doesn't exist → mark as **unverified**, note the missing path
    - If content differs from description → mark as **partially verified**, note the discrepancy
 2. **Symbol/API verification:** For each function, procedure, field, or table mentioned:
-   - Use AL MCP (`al-mcp-server-al_search_objects` or `al-mcp-server-al_find_references`) to confirm the symbol exists
+   - Use the AL MCP server (`al_search_objects` or `al_find_references`) to confirm the symbol exists
    - Cross-harness fallback: `grep -r "symbol_name" src/ --include="*.al"`
    - If not found → mark as **unverified**
    - If found but context differs → mark as **partially verified**
@@ -109,7 +109,7 @@ or any third-party analysis, verify the claims before forwarding to architects:
 5. **Decision threshold:**
    - ≥75% verified → proceed
    - 50–74% verified → proceed with explicit caveat in prompt
-   - <50% verified → gate with `ask_user` decision (proceed as hypotheses / re-run investigation / proceed anyway)
+   - <50% verified → gate with USER_GATE decision (proceed as hypotheses / re-run investigation / proceed anyway)
 
 ## Step 0: Target Confirmation (Phase 1.5.5)
 

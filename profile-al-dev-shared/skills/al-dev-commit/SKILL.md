@@ -21,12 +21,7 @@ stop condition.
 
 ## Step 1 — Guard: Verify Project Context
 
-Check for the project instructions file (project instructions file, AGENTS.md,
-or equivalent for your harness):
-
-```bash
-ls project instructions file AGENTS.md 2>/dev/null | head -1
-```
+Check whether the project instructions file exists in the current directory (use your harness's concrete filename).
 
 If no project instructions file is found:
 

@@ -1,7 +1,7 @@
 # Commit Conventions
 
 Authoritative spec for commit message format across all projects.
-Referenced by `al-dev-commit-agent.md` and each project's `CLAUDE.md`.
+Referenced by `al-dev-commit-agent.md` and each project's project instructions file.
 
 ---
 
@@ -62,7 +62,7 @@ One emoji per type. Use only these. Choosing the wrong emoji for a type is a for
 
 ## Adopting This Spec in a Project
 
-When adding `project-type: <type>` to a project's `CLAUDE.md`, run this
+When adding `project-type: <type>` to a project's project instructions file, run this
 adoption check first:
 
 ### Step 1 — Scan for existing commit instructions
@@ -80,7 +80,8 @@ Files to check:
 
 ```bash
 grep -rn -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" \
-  CLAUDE.md AGENTS.md .github/copilot-instructions.md 2>/dev/null
+  . --include="*.md" --exclude-dir=".git" 2>/dev/null \
+  | grep -v "commit-conventions"
 ```
 
 > The `.github/copilot-instructions.md` file is the common Copilot commit
@@ -105,7 +106,7 @@ For each hit, ask: **does this instruction duplicate or conflict with
 
 ### Step 3 — Add the project-type declaration
 
-After removing duplicates, add to the `CLAUDE.md`:
+After removing duplicates, add to the project instructions file:
 
 ```markdown
 ## Commit Conventions
@@ -117,13 +118,13 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ## Project Types
 
-Every project declares its type in its `CLAUDE.md` as `project-type: <type>`.
+Every project declares its type in its project instructions file as `project-type: <type>`.
 
 ### `al` — AL/Business Central Extensions
 
 Projects: client AL extensions (nzpg, mml, client-abc, etc.)
 
-**Scope:** Functional module name — e.g. `price`, `rebate`, `ui`, `config`, `docs`, `vendor`, `customer`. Match the module vocabulary in the project's CLAUDE.md.
+**Scope:** Functional module name — e.g. `price`, `rebate`, `ui`, `config`, `docs`, `vendor`, `customer`. Match the module vocabulary in the project's project instructions file.
 
 **Body:** Required for `feat`, `fix`, `refactor`, `hotfix`. Optional for `chore`, `docs`, `style`.
 

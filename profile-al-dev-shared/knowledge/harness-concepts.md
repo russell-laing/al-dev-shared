@@ -25,6 +25,7 @@ When writing skills for `al-dev-shared`:
 | **USER_GATE** | A blocking user-confirmation point; never continue past this without a user response | `AskUserQuestion` tool | `ask_user` tool |
 | **explore agent** | A fast parallel exploration agent | `subagent_type: Explore` | `agent_type: "explore"` in task tool |
 | **restart the agent** | Instruction to the user to start a new AI coding session | "Restart Claude Code" | "start a new Copilot CLI session" |
+| **Dispatch agent: X** | Dispatch a named agent; X is the fully-qualified agent name (namespace:agent) | `Agent` tool with `subagent_type: X` | `task` tool with `agent_type: X` |
 | **MCP: al-mcp-server** | AL symbol lookup, object definitions, references | `mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>` | `al-mcp-server-<tool>` |
 | **MCP: bc-code-intelligence** | BC knowledge, specialist consultation, code analysis | `mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>` | `bc-code-intelligence-mcp-<tool>` |
 | **MCP: microsoft-docs** | Microsoft documentation search and fetch | `mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>` | `microsoft_docs_mcp-<tool>` |
