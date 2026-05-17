@@ -148,3 +148,56 @@ git -C . commit -m "docs: sync plugin map with current plugin state"
 ```
 
 Report what changed and what was verified as already correct.
+
+---
+
+## Phase 7: Detect Move Candidates
+
+> **Skip if** `$ARGUMENTS` names a specific skill — this is a scoped accuracy-check run. Note: *"Move candidate scan skipped — run without arguments for full analysis."* and stop.
+
+Scan every active skill identified in Phase 1 for signals that it belongs in the project-local `.claude/skills/` directory rather than the distributed plugin. Report findings only — do not move any files.
+
+### Detection signals
+
+Score each active skill against these three signals:
+
+| Signal | What to check |
+|--------|---------------|
+| **Internal path references** | Skill body contains paths like `profile-al-dev-shared/`, `.claude/`, or repo-root filenames (e.g. `marketplace.json`) that only resolve inside this repo |
+| **Self-audit purpose** | Skill's stated purpose is maintaining or auditing the plugin itself — alignment checks, map reviews, design analysis — not serving AL developers |
+| **No spawned agents** | No `al-dev-shared:` agent type appears in the skill body |
+
+A skill scoring **2 or more signals** is a Move candidate.
+
+Agents are not scanned separately. If a flagged skill is the sole caller of an agent, note the agent as a side-effect consideration in the Suggestion field.
+
+### Output
+
+For each Move candidate, append to the `### Architectural suggestions` section of `docs/al-dev-plugin-map.md`:
+
+```markdown
+**Move: /skill-name → .claude/skills/**
+Observation: [Why this skill has no value to plugin consumers.]
+Signals: internal path refs (✓/✗), self-audit purpose (✓/✗), no spawned agents (✓/✗).
+Suggestion: Move `profile-al-dev-shared/skills/<skill-name>/` to `.claude/skills/<skill-name>/` and update the plugin map scope line to exclude it.
+Trade-off: Skill remains available in this project; removed from the distributed plugin.
+```
+
+If no candidates are found, append a `### Move candidates` subheading with a single line:
+
+```markdown
+### Move candidates
+
+None detected.
+```
+
+### Commit
+
+If one or more candidates were found:
+
+```bash
+git -C . add docs/al-dev-plugin-map.md
+git -C . commit -m "docs: add Move candidates to plugin map architectural suggestions"
+```
+
+If no candidates were found, skip the commit entirely.
