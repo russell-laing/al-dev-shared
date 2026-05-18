@@ -20,7 +20,7 @@ Review AL code for security vulnerabilities, permission issues, and data exposur
 
 ## Spawn Context
 
-You are spawned as part of a 4-reviewer team (security, AL expert, performance, test coverage) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
+You are spawned as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
 
 ---
 

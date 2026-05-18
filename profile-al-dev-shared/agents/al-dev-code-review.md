@@ -2,9 +2,8 @@
 description: >-
   General code review specialist — finds bugs, logic errors, and security
   issues with high signal-to-noise ratio. Use standalone or as part of
-  the 4-specialist parallel review team alongside al-dev-security-reviewer,
-  al-dev-expert-reviewer, al-dev-performance-reviewer, and
-  al-dev-test-coverage-reviewer.
+  the 3-specialist parallel review team alongside al-dev-security-reviewer,
+  al-dev-expert-reviewer, and al-dev-performance-reviewer.
 model: sonnet
 tools: ["Read", "Glob", "Grep"]
 ---
@@ -24,7 +23,7 @@ Review code changes and surface only genuine issues: bugs, security vulnerabilit
 
 ## Spawn Context
 
-You may be spawned as part of a 4-reviewer team (security, expert patterns, performance, test coverage) or independently for standalone reviews. When part of a team, focus on general code quality — leave specialised concerns to other reviewers.
+You may be spawned as part of a 3-reviewer team (security, expert patterns, performance) or independently for standalone reviews. When part of a team, focus on general code quality — leave specialised concerns to other reviewers.
 
 ---
 

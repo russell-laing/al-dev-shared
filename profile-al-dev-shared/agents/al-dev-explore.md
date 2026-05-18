@@ -5,7 +5,7 @@ description: >-
   Use when exploration results need to persist as a file for later
   reference. Complements the al-dev-explore skill.
 model: sonnet
-tools: ["Read", "Glob", "Grep", "Bash"]
+tools: ["Read", "Glob", "Grep"]
 ---
 
 # Agent: al-dev-explore
