@@ -40,6 +40,12 @@ Read `docs/al-dev-plugin-map.md` in full. As you read, build four working lists:
 4. **No-agent skills** — list skills whose drill-down contains only `(skill itself)`
    nodes (no dedicated agent spawned).
 
+5. **Pre-planning tributaries** — list skills that produce output files consumed
+   by `/al-dev-plan` or `/al-dev-investigate` before implementation begins (e.g.
+   `interview-requirements.md`, `explore-findings.md`). For each, note whether it
+   appears in the Layer 1 diagram as a dashed tributary arrow (`-.->`) rather than
+   a main-spine node.
+
 If an argument was passed, restrict analysis to that category
 (`atomise`, `connect`, `merge`, or `all` / no argument = `all`).
 
@@ -85,12 +91,39 @@ Trace the longest file handoff chains in Layer 1. Look for:
 - Outputs that are produced but never consumed by any downstream skill
   (orphaned outputs that could be useful if a skill consumed them).
 
+### Lens E — Pre-planning and Brainstorming Skills
+
+Pre-planning skills produce structured outputs that feed into the planning phase.
+They are optional but high-value tributaries to the main development spine.
+
+**Canonical pre-planning skills in this plugin:**
+
+- `/al-dev-interview` — requirements-gathering for AL/BC features. Analogous to
+  `superpowers:brainstorming` in the general superpowers skill set, but domain-
+  specific: conducts a structured BC/AL interview, pre-researches base app objects
+  via the AL symbols MCP, and produces a formal requirements document with
+  acceptance-criteria tokens (`interview-requirements.md`).
+- `/al-dev-explore` — fast codebase investigation producing `explore-findings.md`,
+  consumed by `/al-dev-investigate` and `/al-dev-plan`.
+
+For each pre-planning skill found in the inventory, ask:
+- Does it appear in the Layer 1 diagram as a dashed tributary (`-.->`) rather
+  than a main-spine node?
+- Is its output filename referenced in the Layer 1 handoff labels?
+- Is there a downstream skill that explicitly names it as an input?
+
+Flag any pre-planning skill that is active but absent from the Layer 1 diagram as
+an **Extend** candidate. Flag any skill that feeds a downstream step but whose
+output is unnamed in the diagram as a labelling gap.
+
 ---
 
 ## Step 3 — Draft Suggestions
 
 Write 3–6 high-quality suggestions. Skip patterns that don't yield a real
-improvement. Use these templates:
+improvement. Before writing a suggestion, check the current `## Observations`
+section — if a suggestion identical or equivalent to yours is already marked
+`← implemented`, skip it. Use these templates:
 
 ```
 **Atomise: /skill-name**
