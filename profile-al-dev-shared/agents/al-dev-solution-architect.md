@@ -23,7 +23,7 @@ Transform requirements into a complete solution plan that includes both architec
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dated requirements file | **Yes** | From /interview (glob pattern match) |
+| Dated requirements file | **Yes** (from /al-dev-plan) · Inline prompt (from /al-dev-fix) | From /interview (glob pattern match) — or inline analysis + fix approach when dispatched by /al-dev-fix |
 | `.dev/project-context.md` | No | Project memory (read FIRST if exists) |
 | MCP tools | No | BC Intelligence, MS Docs, AL Dependency |
 

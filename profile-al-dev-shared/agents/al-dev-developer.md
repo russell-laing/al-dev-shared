@@ -19,8 +19,8 @@ Write clean, correct AL code that implements the planned solution.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/*-al-dev-plan-solution-plan.md` | Yes | Implementation plan |
-| `.dev/*-al-dev-test-test-plan.md` | Yes | Test specs from test-engineer |
+| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** (from /al-dev-develop) · Inline prompt (from /al-dev-fix) | Implementation plan |
+| `.dev/*-al-dev-test-test-plan.md` | **Yes** (from /al-dev-develop) · Not used (from /al-dev-fix) | Test specs from test-engineer |
 | `.dev/project-context.md` | No | Project memory (saves exploration) |
 | `.dev/*-al-dev-develop-code-review.md` | No | Review findings when iterating |
 
