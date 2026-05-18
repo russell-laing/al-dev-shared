@@ -38,8 +38,8 @@ If `$ARGUMENTS` is `--agents`:
 - **Source document:** `docs/al-dev-agent-map.md` (not `docs/al-dev-plugin-map.md`)
 - **Rubber-duck reads:** `profile-al-dev-shared/agents/<name>.md` (not skills/)
 - **Plan task file paths:** reference agent file paths
-- **Suggestion vocabulary:** Trim, Remodel, Split, Inline, Align — in addition
-  to the existing Connect, Merge, Promote, Move, Extend types
+- **Suggestion vocabulary:** Trim, Remodel, Split, Inline, Align — these
+  replace Connect, Merge, Promote, Move, Extend for agent-map suggestions
 
 Everything else — the rubber-duck protocol, plan output format, verification
 checklist — stays identical.
@@ -48,7 +48,9 @@ checklist — stays identical.
 
 ## Phase 1: Extract Suggestions
 
-Read `docs/al-dev-plugin-map.md`. Collect every item from:
+If `$ARGUMENTS` is `--agents`, read `docs/al-dev-agent-map.md` and collect
+every item from `## Observations`. Otherwise read `docs/al-dev-plugin-map.md`
+and collect every item from:
 
 - `### Architectural suggestions` (Connect, Merge, Promote)
 - `### Move candidates`
@@ -56,8 +58,9 @@ Read `docs/al-dev-plugin-map.md`. Collect every item from:
 
 List each as: **type — subject — proposed change**.
 
-If `$ARGUMENTS` names a type (`connect`, `merge`, `move`, etc.), filter
-to that type only and note it.
+If `$ARGUMENTS` names a type (`connect`, `merge`, `trim`, etc.), filter to
+that type only and note it. If `$ARGUMENTS` is `--agents`, apply routing from
+the section above instead of a type filter.
 
 ---
 
@@ -146,7 +149,8 @@ activating three is a scope gap — rename or expand the scope in the plan.
 - What is the exact path of the agent file to delete?
 - Does any other skill reference this agent type? Confirm with:
   ```bash
-  grep -r "al-dev-shared:al-dev-<name>" profile-al-dev-shared/skills/ .claude/skills/
+  # Substitute the exact `name:` value from the agent frontmatter (not the filename)
+  grep -r "al-dev-shared:<agent-type-name>" profile-al-dev-shared/skills/ .claude/skills/
   ```
 
 **Align** — "fix mismatch between caller contract and agent documentation":
