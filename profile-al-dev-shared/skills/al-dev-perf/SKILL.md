@@ -130,6 +130,33 @@ find src/ -iname "*.codeunit.al" 2>/dev/null
 Load `.dev/project-context.md` to prioritise objects noted as
 high-volume or batch-processing.
 
+### Step 1b — Identify Entry-Point Metadata
+
+For each codeunit found in Step 1a, use the AL Symbols MCP
+(`al-mcp-server`) to classify it before spawning the analysis agent:
+
+- `al_get_object_summary` — check for OnRun() and codeunit type
+- `al_search_object_members` — detect event subscriber attributes
+
+| Indicator | Classification | Severity modifier |
+| --- | --- | --- |
+| Has `OnRun()` | Entry Point | +1 level |
+| Has `[EventSubscriber]` attribute | Hot Path | +1 level |
+| Name contains Batch/Process/Import/Post/Transfer/Run | Batch Processor | +1 level |
+| None of the above | Utility | none |
+
+If al-mcp-server is unavailable or returns no result for a codeunit,
+default to Utility (no modifier). Do not block the analysis.
+
+Produce a classification summary to pass into Step 2:
+
+```
+Codeunit classifications:
+- CreateJobV6.Codeunit.al → Entry Point (has OnRun)
+- BatchPostSales.Codeunit.al → Batch Processor (name heuristic)
+- StringHelper.Codeunit.al → Utility
+```
+
 ---
 
 ### Step 2 — Spawn Performance Analysis Agent
@@ -148,6 +175,14 @@ Prompt:
    Read each file fully, then report ALL findings.
 
    Files to analyse: [file paths from Step 1]
+
+   Codeunit classifications (from AL Symbols pre-research):
+   [paste the classification summary from Step 1b]
+
+   Severity escalation rule: For any P1–P7 finding in a codeunit
+   classified as Entry Point, Hot Path, or Batch Processor — escalate
+   its severity by one level (LOW→MEDIUM, MEDIUM→HIGH, HIGH→CRITICAL).
+   Reflect this in the SEVERITY field and explain it in the IMPACT field.
 
    Anti-patterns to find:
    P1 (CRITICAL) — Get(), FindFirst(), or FindSet() called
@@ -168,9 +203,15 @@ Prompt:
      Get() on the same key would work.
    P7 (LOW) — Count() called immediately before FindSet() on
      the same record variable.
+   P8 (MEDIUM baseline) — Full Table Scan: FindSet() with no prior
+     SetRange() or SetFilter() on a table likely to be large
+     (Sales Header/Line, Item, Customer, Vendor, any Ledger Entry
+     table, or any table whose name is a common plural noun).
+     Escalate to HIGH if the codeunit is Entry Point or Batch Processor.
+     Do NOT flag FindSet on small config/setup tables.
 
    For EACH finding report:
-   PATTERN: [P1–P7 ID]
+   PATTERN: [P1–P8 ID]
    SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
    FILE: [exact path]
    LINE: [line number]
@@ -214,7 +255,9 @@ Write `.dev/$(date +%Y-%m-%d)-al-dev-perf-perf-analysis.md`:
 
 ## Findings
 
-### 🔴 P1 — N+1 Query — `CreateJobV6.Codeunit.al:123`
+### 🔴 CreateJobV6.Codeunit.al — ⚡ Entry Point
+
+#### 🔴 P1 — N+1 Query — line 123
 
 ~~~al
 // Current (BAD):
@@ -230,9 +273,17 @@ until V6QuoteItem.Next() = 0;
 // or cache in a temporary record keyed on Item No.
 ~~~
 
-**Estimated impact:** High — once per quote item in batch operations
+**Estimated impact:** CRITICAL (escalated from HIGH) — Entry Point called by Job Queue; P1 hit on every quote item in batch processing
 
-[Repeat block for each finding, ordered by CRITICAL → LOW]
+[Repeat per codeunit; within each codeunit, repeat per finding ordered by CRITICAL → LOW]
+
+### 🟢 StringHelper.Codeunit.al — 🗃 Utility
+
+#### 🟢 P6 — SetRange + FindFirst — line 44
+
+[finding details...]
+
+**Estimated impact:** LOW — Utility procedure; low call frequency
 
 ## Recommended Fix Order
 
@@ -284,3 +335,9 @@ No critical issues found. Findings in perf-analysis.md.
   inside a loop with many iterations
 - For very large codebases, scope to specific codeunits first;
   use "scan all" only for smaller extensions
+- AL Symbols lookup (Step 1b) enriches severity by context; if symbols
+  are unavailable the skill falls back to equal-weight analysis
+- The +1 severity escalation applies once per finding — a LOW finding
+  in a Batch Processor becomes MEDIUM, not CRITICAL
+- P8 (full table scan) is most useful on tables > ~1000 rows; do not
+  flag config or setup tables
