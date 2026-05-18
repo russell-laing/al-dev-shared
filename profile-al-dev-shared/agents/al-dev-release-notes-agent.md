@@ -27,6 +27,23 @@ All inputs are provided in the dispatch prompt:
 - `PROJECT_CONTEXT` — pasted from `.dev/project-context.md`
   if it exists; empty string if not
 
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `START_HASH` | **Yes** | Earlier commit (exclusive lower bound) |
+| `END_HASH` | **Yes** | Later commit (inclusive upper bound) |
+| `RELEASE_TYPE` | **Yes** | `uat` or `prod` |
+| `VERSION` | No | Label (e.g. `v2.1.0`); short hash used if omitted |
+| `PROJECT_CONTEXT` | No | Content of `.dev/project-context.md` if it exists |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION>.md` | **Primary** — formatted release notes file |
+| Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
+
 ---
 
 ## Phase: extract-changes

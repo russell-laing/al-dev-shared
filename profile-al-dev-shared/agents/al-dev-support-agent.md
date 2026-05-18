@@ -17,6 +17,21 @@ Research a BC support query from multiple sources and compose
 a combined internal findings + draft customer reply file.
 Dispatched by `/al-dev-support`.
 
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
+| `QUERY_CONTEXT` | **Yes** | The customer's question or symptom |
+| `TICKET_FILE` | No | Path to ticket context file from `/al-dev-ticket`, or `NONE` |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `.dev/<date>-support-<slug>.md` | **Primary** — Internal findings + draft customer reply |
+| Return block | `FILE`, `QUERY_TYPE`, `BC_VERSION_SCOPE`, `SOURCES`, `SUMMARY` |
+
 ## Step 1 — Parse Prompt and Classify Query
 
 Extract from the dispatch prompt:
