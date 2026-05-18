@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-18 (second-pass analysis; 5 new suggestions added)  
+**Last updated:** 2026-05-18 (third-pass implementation; all suggestions resolved)  
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /al-dev-align moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
@@ -507,15 +507,11 @@ Status: Done — `knowledge/explore-subagent-pattern.md` created and referenced 
 **Promote: Explore subagent spawn pattern** ← implemented  
 Status: Done — `knowledge/explore-subagent-pattern.md` is the canonical template.
 
-**Connect: al-dev-solution-architect invocation patterns**  
-Observation: al-dev-solution-architect is spawned by two skills using structurally different patterns — /al-dev-plan uses it ×2-3 in parallel (competitive debate) and /al-dev-fix uses it ×1 (quick analysis). Both patterns live in-skill with no shared reference, unlike the three-reviewer panel which already has `knowledge/review-panel-pattern.md`.  
-Suggestion: Document both patterns in `knowledge/architect-invocation-patterns.md`; reference from /al-dev-plan and /al-dev-fix. Mirrors the precedent set by review-panel-pattern.md.  
-Trade-off: Small authoring cost; prevents drift when the architect agent definition changes and makes it easier to add a third skill that needs architect analysis.
+**Connect: al-dev-solution-architect invocation patterns** ← implemented  
+Status: Done — `knowledge/architect-invocation-patterns.md` created; referenced from /al-dev-plan Phase 2 and /al-dev-fix Step 2b.
 
-**Extend: /al-dev-support — integrated ticket lookup**  
-Observation: Support queries almost always begin by fetching a ticket. Users must manually invoke /al-dev-ticket then /al-dev-support. If a ticket ID is passed directly to /al-dev-support, the ticket-fetch phase could be folded in, reducing a two-step workflow to one.  
-Suggestion: Extend /al-dev-support to accept an optional `[ticket-id]` argument; if present, run the ticket-fetch phase inline before research. /al-dev-ticket remains useful for standalone ticket inspection.  
-Trade-off: Requires editing /al-dev-support SKILL.md; the two-step flow still works for users who prefer it.
+**Extend: /al-dev-support — integrated ticket lookup** ← already implemented  
+Status: Done (pre-existing) — /al-dev-support Step 1 already handles `FD-NNNN`/numeric ticket IDs inline; dispatches al-dev-ticket-agent before research. No change required.
 
 ### Move candidates
 
@@ -530,17 +526,11 @@ Status: Done — both appear as dashed tributary arrows feeding Investigate and 
 **Extend: Layer 1 — /al-dev-release-notes as post-commit output** ← implemented  
 Status: Done — /al-dev-release-notes appears as a dashed post-commit node after `✓ git commit`.
 
-**Extend: Layer 1 — /al-dev-perf as a pre-plan tributary**  
-Observation: /al-dev-perf produces `perf-analysis.md` but does not appear anywhere in the Layer 1 diagram. Like /al-dev-explore and /al-dev-interview, its output can inform /al-dev-plan (scope decisions around optimisation) or /al-dev-fix (targeted fix targets). It is a missing optional tributary.  
-Suggestion: Add /al-dev-perf as a dashed tributary in Layer 1, with `perf-analysis.md` feeding /al-dev-plan and /al-dev-fix alongside the existing explore-findings.md arrows.  
-Trade-off: Diagram-only change; closes a real gap in lifecycle documentation with zero code disruption.
+**Extend: Layer 1 — /al-dev-perf as a pre-plan tributary** ← implemented  
+Status: Done — /al-dev-perf added as dashed tributary in Layer 1, feeding /al-dev-plan and /al-dev-fix via `perf-analysis.md`.
 
-**Extend: Layer 1 — /al-dev-handoff as a post-commit exit path**  
-Observation: /al-dev-handoff packages context for cross-repo session migration and logically belongs at the end of the development spine (after /al-dev-commit), alongside /al-dev-release-notes. It does not appear in Layer 1 at all, making it invisible to users scanning the lifecycle diagram.  
-Suggestion: Add /al-dev-handoff as a dashed post-commit node in Layer 1, labelled `handoff-prompt.md`, alongside the /al-dev-release-notes branch.  
-Trade-off: Diagram-only update; improves discoverability with no code change.
+**Extend: Layer 1 — /al-dev-handoff as a post-commit exit path** ← implemented  
+Status: Done — /al-dev-handoff added as dashed post-commit node in Layer 1 alongside /al-dev-release-notes.
 
-**Extend: Layer 1 — lint → fix feedback loop**  
-Observation: /al-dev-lint produces `lint-report.md` but its output has no downstream connection in Layer 1. When lint surfaces violations the natural next step is /al-dev-fix; that path is implied but undocumented.  
-Suggestion: Add a dashed arrow from /al-dev-lint to /al-dev-fix in Layer 1, labelled `lint-report.md → fix violations`, to make the remediation path explicit.  
-Trade-off: Diagram-only change; guides new users to the correct next step after a lint run.
+**Extend: Layer 1 — lint → fix feedback loop** ← implemented  
+Status: Done — /al-dev-lint node added in Layer 1 (dashed off Develop), with dashed `lint-report.md` feedback arrow to /al-dev-fix.
