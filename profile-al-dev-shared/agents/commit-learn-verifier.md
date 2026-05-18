@@ -1,5 +1,7 @@
 ---
 description: Analyze file corruption incidents, propose and execute recovery strategies with fallback methods
+model: sonnet
+tools: ["Bash", "Read", "Write"]
 ---
 
 # Agent: commit-learn-verifier
@@ -13,6 +15,13 @@ Focused analyzer for commit integrity incidents. Examines file history, matches 
 - **Git history:** last 3-5 commits showing what edits were made
 - **Learnings.md:** current known patterns and strategies
 - **Incident log entry:** timestamp, error type (CORRUPTION/SYNTAX_ERROR)
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| Analysis report (text) | Root cause hypothesis, pattern match result, fallback strategy, recovery result |
+| Updated `learnings.md` | Recovery outcome recorded (success or failure); new guardrails if applicable |
 
 ## Analysis Process
 
