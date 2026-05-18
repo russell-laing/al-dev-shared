@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-18 (third-pass implementation; all suggestions resolved)  
+**Last updated:** 2026-05-19 (sync: al-dev-commit split into analysis/execute agents)  
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /al-dev-align moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
@@ -230,15 +230,15 @@ flowchart LR
 
 ### /al-dev-commit
 
-**Two-pass execution:** Analysis pass builds commit groups and messages; execution pass runs the commits with hook support.
+**Two-pass execution:** Analysis pass builds commit groups and messages; execution pass runs the commits with hook support. Each phase uses a distinct agent.
 
 ```mermaid
 flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Analysis pass"]
-    Phase1 --> Agent1["al-dev-commit-agent ×1"]
+    Phase1 --> Agent1["al-dev-commit-agent-analysis ×1"]
     Agent1 --> Interim["(commit groups<br/>+ messages)"]
     Interim --> Phase2["Phase 2<br/>Execution pass"]
-    Phase2 --> Agent2["al-dev-commit-agent ×1"]
+    Phase2 --> Agent2["al-dev-commit-agent-execute ×1"]
     Agent2 --> Output1(["(git commits)"])
     Output1 --> End([End])
     
@@ -476,7 +476,8 @@ flowchart LR
 - **al-dev-interview** (agent) — used only by /al-dev-interview
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-release-notes-agent** — used only by /al-dev-release-notes
-- **al-dev-commit-agent** — used only by /al-dev-commit (dispatched twice per invocation)
+- **al-dev-commit-agent-analysis** — used only by /al-dev-commit (dispatched in Phase 1; read-only)
+- **al-dev-commit-agent-execute** — used only by /al-dev-commit (dispatched in Phase 2; runs git commits)
 - **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked internally by /al-dev-develop in its compile-verify phase (not shown in drill-down)
 - **commit-learn-verifier** — used only by /commit-learn
 
