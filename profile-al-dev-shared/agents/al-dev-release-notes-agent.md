@@ -4,7 +4,11 @@ description: >-
   context, and write .dev/release-notes-<version>.md. Dispatched
   by the al-dev-release-notes skill.
 model: sonnet
-tools: ["Bash", "Write", "Read", "Glob"]
+tools: [
+  "Bash", "Write", "Read", "Glob",
+  "mcp__plugin_profile-claude-al-dev_al-mcp-server",
+  "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp"
+]
 ---
 
 # Agent: al-dev-release-notes-agent
