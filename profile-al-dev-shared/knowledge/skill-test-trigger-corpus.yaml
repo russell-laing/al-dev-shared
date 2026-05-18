@@ -29,13 +29,13 @@ corpus:
   - prompt: "scaffold the tables and pages from the design doc"
     expected: al-dev-develop
 
-  # --- al-dev-autonomous -------------------------------------------------
+  # --- al-dev-develop (--autonomous mode) --------------------------------
   - prompt: "implement the plan automatically and keep compiling until it builds"
-    expected: al-dev-autonomous
+    expected: al-dev-develop
   - prompt: "autonomous mode: build the feature and self-correct compile errors"
-    expected: al-dev-autonomous
+    expected: al-dev-develop
   - prompt: "just keep iterating on the code until al-compile is clean"
-    expected: al-dev-autonomous
+    expected: al-dev-develop
 
   # --- al-dev-fix --------------------------------------------------------
   - prompt: "the customer page is throwing a permission error, fix it"
