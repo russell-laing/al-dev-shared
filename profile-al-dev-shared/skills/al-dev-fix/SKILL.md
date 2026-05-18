@@ -122,6 +122,9 @@ For trivial fixes:
 
 ### Step 2b: Non-Trivial Fix (10-20 min)
 
+Follow the **Quick Analysis** pattern in
+`knowledge/architect-invocation-patterns.md`.
+
 ```text
 For non-trivial fixes:
 

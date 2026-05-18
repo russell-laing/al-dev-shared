@@ -139,6 +139,9 @@ Before acting on any findings file or context document:
 
 ## Phase 2: Spawn Architect Team (2-3 agents)
 
+Follow the **Competitive Debate** pattern in
+`knowledge/architect-invocation-patterns.md`.
+
 Before spawning, derive 2-3 meaningfully different starting
 approaches from the requirement itself. The goal is to prevent
 convergence — each architect should have a genuinely distinct
