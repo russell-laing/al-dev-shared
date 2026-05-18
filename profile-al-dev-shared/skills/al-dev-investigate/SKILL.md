@@ -89,6 +89,40 @@ Extract from the user's args or ticket:
 
 ---
 
+### Step 1.5 — Regression Timeline
+
+Before formulating hypotheses, capture the regression timeline.
+This is metadata for the investigation and a gate against
+"pre-existing" misdiagnosis.
+
+Extract or ask the user for:
+
+- **Last known good:** date/version when this last worked correctly
+  (or "unknown" if never confirmed working)
+- **First reported failure:** date/event of the first failure report
+- **Recently working?** yes / no / unknown
+
+If the user did not provide these and they are not in the ticket
+context, ASK before proceeding to Step 2. One combined question is
+fine ("When did this last work, and when did it first fail?").
+
+Carry these three captured values forward. They become required
+fields in the findings file (Step 4) — alongside one derived field
+("Implications for hypothesis prioritisation", which you fill in
+during Step 4 synthesis based on the captured timeline). They also
+influence hypothesis prioritisation during Step 2:
+
+- If **Recently working = yes**, prioritise change-timeline
+  hypotheses (recent deployments, platform updates, IP/cert
+  changes, dependency upgrades) over pre-existing-defect hypotheses
+- If **Recently working = no**: treat as a never-worked scenario.
+  De-prioritise change-timeline hypotheses; focus on design
+  defects, configuration gaps, or missing setup.
+- If **Recently working = unknown**, treat both hypothesis families
+  as equally likely
+
+---
+
 ### Step 2 — Formulate Hypotheses
 
 Before spawning agents, list 2–4 initial hypotheses inline.
@@ -165,7 +199,29 @@ Both agents run in parallel (single message, two Agent tool calls).
 ### Step 4 — Synthesise Findings
 
 Read both agents' results and write
-`.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md`:
+`.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md`. Include the
+regression timeline values captured in Step 1.5 when populating
+the findings template.
+
+> **Reconciliation Gate (required if Root Cause is labelled
+> "pre-existing" or "environmental"):**
+>
+> If you are about to write Root Cause as a pre-existing defect or
+> environmental cause, you MUST first reconcile with the Regression
+> Timeline above:
+>
+> - If **Recently working = yes**: a pre-existing label is a
+>   contradiction. Either (a) the defect was latent and a recent
+>   change triggered it — identify the trigger, OR (b) the Recently
+>   Working assessment was wrong — explain how. Do NOT submit
+>   "pre-existing" without one of these reconciliations.
+> - If **Recently working = no**: state the evidence that rules out
+>   a recent trigger before accepting pre-existing.
+> - If **Recently working = unknown**: state the evidence that rules
+>   out a recent trigger before accepting pre-existing.
+>
+> Write the reconciliation as a paragraph immediately under Root
+> Cause, prefixed `**Reconciliation:**`.
 
 ```markdown
 # Investigation: [Symptom] — [Date]
@@ -182,10 +238,19 @@ Read both agents' results and write
 | H3: [text] | ⚠️ INCONCLUSIVE | — |
 | H4: [text] | ❌ REJECTED | Medium |
 
+## Regression Timeline
+
+- **Last known good:** YYYY-MM-DD / version / "unknown"
+- **First reported failure:** YYYY-MM-DD / event
+- **Recently working?** yes | no | unknown
+- **Implications for hypothesis prioritisation:** [1 sentence]
+
 ## Root Cause
 
 [1–3 sentences. State which confirmed hypothesis is the actual
 cause. If inconclusive, state what data is needed to resolve it.]
+
+**Reconciliation:** [Required if Root Cause is pre-existing or environmental — see reconciliation gate above]
 
 ## Evidence
 
