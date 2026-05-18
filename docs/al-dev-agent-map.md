@@ -479,27 +479,27 @@ None detected. No agent scores 2+ inline signals (single caller + minimal body <
 
 ### Quality suggestions
 
-**Trim: al-dev-commit-agent-analysis**
+**Trim: al-dev-commit-agent-analysis** ← implemented
 Observation: Tools list includes `Glob`; system prompt body contains no Glob usage — all file discovery is performed via `git diff --cached --name-only` and related Bash commands.
 Suggestion: Remove `Glob` from the tools list in the agent frontmatter.
 Trade-off: Minimal — Glob was unused; tighter least-privilege posture for a declared read-only agent.
 
-**Trim: al-dev-commit-agent-execute**
+**Trim: al-dev-commit-agent-execute** ← implemented
 Observation: Tools list includes `Glob`; system prompt body contains no Glob usage — all file operations go through Bash (git, ruff, perl, curl).
 Suggestion: Remove `Glob` from the tools list in the agent frontmatter.
 Trade-off: Minimal — Glob was unused; consistent with the agent's stated constraint that "all fixes go through Bash."
 
-**Trim: al-dev-release-notes-agent**
+**Trim: al-dev-release-notes-agent** ← implemented
 Observation: Tools list includes `Glob`; system prompt body uses only `Bash` (git commands), `Write` (output file), `Read` (mermaid helper), and the two MCP servers. No Glob calls are described anywhere in the workflow.
 Suggestion: Remove `Glob` from the tools list in the agent frontmatter.
 Trade-off: Minimal — Glob was unused; tighter least-privilege for a focused output-writing agent.
 
-**Remodel: al-dev-explore**
+**Remodel: al-dev-explore** ← implemented
 Observation: Agent performs single-step codebase retrieval (grep patterns, glob searches, file reads) and returns a concise summary; currently assigned `sonnet`. The 42-line system prompt body describes straightforward search-and-summarize with no multi-file reasoning or complex synthesis.
 Suggestion: Change model to `haiku` — the task (keyword search, pattern matching, file reading, brief summary) is haiku-appropriate retrieval with no inference-heavy reasoning.
 Trade-off: Faster + cheaper per invocation; justified because exploration is tool-driven, not reasoning-heavy. Note: al-dev-explore has no automated callers — this applies when the agent is spawned directly.
 
-**Align: al-dev-code-review**
+**Align: al-dev-code-review** ← implemented
 Observation: Agent description reads "Use standalone or as part of the 3-specialist parallel review team alongside al-dev-security-reviewer, al-dev-expert-reviewer, and al-dev-performance-reviewer." No skill currently spawns this agent; /al-dev-develop uses only the three named specialists, not al-dev-code-review.
 Suggestion: Update the description to clarify that al-dev-code-review is for direct manual use (standalone general review), not part of the automated /al-dev-develop pipeline. Remove the "alongside" framing or add a note that it is standalone-only.
 Trade-off: Documentation-only change; prevents confusion when onboarding or extending /al-dev-develop — a developer reading the description would reasonably expect this agent to already be wired in.
