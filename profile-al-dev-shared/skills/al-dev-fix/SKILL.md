@@ -104,7 +104,30 @@ For trivial fixes:
    No re-iteration gate in this skill — if compilation fails,
    have the developer fix the error and re-run.
 
-5. Present fix to user:
+5. Pre-commit scope check — run `git status` and classify every
+   changed file against the original symptom. Populate each entry
+   below from the `git status` output — list every modified or new
+   file, classified as in- or out-of-scope:
+
+   ~~~text
+   **Scope diff:**
+
+   In scope (directly fixes the reported symptom):
+   - path/to/file1.al — [one-line reason]
+
+   Out of scope (encountered while fixing, not in original request):
+   - path/to/extra.al — [what was changed and why]
+   ~~~
+
+   **Decision rule:**
+
+   - If "Out of scope" is empty → proceed to step 6.
+   - If "Out of scope" has entries → STOP. Show the list to the
+     user and ask: "These are outside the original fix. Keep, revert,
+     or split into a separate commit?" Wait for per-item decisions
+     before presenting.
+
+6. Present fix to user:
    "Fix complete → [file path]
 
     Changed: [1-line description]
@@ -115,7 +138,7 @@ For trivial fixes:
 
     Ready to test?"
 
-6. Clean up (shut down developer)
+7. Clean up (shut down developer)
 ```
 
 **No approval gate - present fix directly.**
@@ -182,7 +205,30 @@ For non-trivial fixes:
    No re-iteration gate in this skill — if compilation fails,
    have the developer fix the error and re-run.
 
-8. Present fix to user:
+8. Pre-commit scope check — run `git status` and classify every
+   changed file against the original symptom. Populate each entry
+   below from the `git status` output — list every modified or new
+   file, classified as in- or out-of-scope:
+
+   ~~~text
+   **Scope diff:**
+
+   In scope (directly fixes the reported symptom):
+   - path/to/file1.al — [one-line reason]
+
+   Out of scope (encountered while fixing, not in original request):
+   - path/to/extra.al — [what was changed and why]
+   ~~~
+
+   **Decision rule:**
+
+   - If "Out of scope" is empty → proceed to step 9.
+   - If "Out of scope" has entries → STOP. Show the list to the
+     user and ask: "These are outside the original fix. Keep, revert,
+     or split into a separate commit?" Wait for per-item decisions
+     before presenting.
+
+9. Present fix to user:
    "Fix complete → [files changed]
 
     Root cause: [brief explanation]
@@ -199,7 +245,7 @@ For non-trivial fixes:
 
     Ready to test?"
 
-9. Clean up (shut down architect, developer)
+10. Clean up (shut down architect, developer)
 ```
 
 **Still no approval gate, but more context provided.**
@@ -217,6 +263,7 @@ You: Analyze complexity
     │   ├─→ Spawn 1 al-developer
     │   ├─→ Fix implemented
     │   ├─→ Verify compilation
+    │   ├─→ Scope check
     │   └─→ Present to user ✅
     │
     └─→ NON-TRIVIAL (complex, unclear)
@@ -225,6 +272,7 @@ You: Analyze complexity
         ├─→ Spawn al-developer with approach
         ├─→ Fix implemented
         ├─→ Verify compilation
+        ├─→ Scope check
         └─→ Present to user ✅
 ```
 
