@@ -4,7 +4,7 @@ description: >-
   symbols, answers structural questions about how code is organized.
   Use when exploration results need to persist as a file for later
   reference. Complements the al-dev-explore skill.
-model: sonnet
+model: haiku
 tools: ["Read", "Glob", "Grep"]
 ---
 
