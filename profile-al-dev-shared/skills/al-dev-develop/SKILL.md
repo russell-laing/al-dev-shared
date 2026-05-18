@@ -23,6 +23,44 @@ and 3-specialist review. You do NOT write code yourself.
 /plan). If missing, tell the user to run /plan first
 and stop.
 
+## Scope Expansion Gate
+
+While executing this skill, BEFORE you (or any dispatched
+developer agent) edit a file or change a line that is not
+explicitly named in the approved plan, you MUST:
+
+1. Stop — do not invoke the edit tool yet.
+2. List the proposed out-of-scope change(s) as numbered items:
+
+   ~~~text
+   **Proposed out-of-scope changes:**
+   1. [file:line] — [what would change and why]
+   2. [file:line] — [what would change and why]
+   ~~~
+
+3. Present to the user with this exact prompt:
+   "These changes are outside the approved plan. Approve, reject,
+   or defer each. Reply with item numbers (e.g., '1 approve, 2
+   defer')."
+4. Wait for per-item decision before resuming.
+
+**What counts as "out of scope":**
+
+- New file not listed in the plan
+- Edit to a procedure, field, or object not referenced in the
+  plan, even if it is in a file the plan does name
+- Fixing an "encountered" issue (lint warning, deprecated API,
+  unrelated bug) that the plan did not call out
+
+**What does NOT count as "out of scope":**
+
+- Cosmetic adjustments inside an in-scope edit (whitespace,
+  formatter output)
+- Importing a dependency required to implement an in-scope change
+
+This gate is passed verbatim into every developer agent dispatch
+in Phase 3 so the rule propagates to subagents.
+
 ## Phase 0: Check for Existing Progress
 
 Per the Phase 0 Read Protocol in
@@ -169,6 +207,22 @@ Project patterns: [from project-context.md if available]
 IMPORTANT: Do NOT run git commit. Your role is to implement
 and verify compilation only. Commits are handled separately
 by /al-dev-commit after user approval.
+
+SCOPE EXPANSION GATE: Before editing any file or line not
+explicitly named in the plan, you MUST stop — do not invoke
+the edit tool yet. Instead, list the
+proposed change(s) as numbered items in this format:
+
+  **Proposed out-of-scope changes:**
+  1. [file:line] — [what would change and why]
+
+Then present to the user: "These changes are outside the
+approved plan. Approve, reject, or defer each. Reply with
+item numbers (e.g., '1 approve, 2 defer')."
+
+Wait for per-item decision before resuming. Do NOT silently
+expand scope by fixing encountered lint warnings, deprecated
+APIs, or unrelated issues not named in the plan.
 ```
 
 Spawn developers as **al-dev-developer** agents. If parallel,
