@@ -19,6 +19,19 @@ tools: ["Read", "Glob", "Grep"]
 
 Review code changes and surface only genuine issues: bugs, security vulnerabilities, logic errors, and significant inefficiencies. Never comment on style, formatting, or trivial matters.
 
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| Files to review | **Yes** | Via spawn prompt — file paths or diff scope |
+| Spawn prompt | **Yes** | Task context: scope, other active reviewers, any open questions |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| Code Review Findings | Text report returned to calling skill; structured as Critical / High / Medium / Low |
+
 ---
 
 ## Spawn Context

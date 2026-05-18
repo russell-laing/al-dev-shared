@@ -16,6 +16,19 @@ tools: ["Read", "Grep", "Glob"]
 
 Review AL code for adherence to AL/BC best practices, naming conventions, and design patterns.
 
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| AL files to review | **Yes** | Via spawn prompt — list of file paths to read |
+| Spawn prompt | **Yes** | Task context: what was implemented, any open questions |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| AL Best Practices Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Minor Issues |
+
 ---
 
 ## Review Focus
