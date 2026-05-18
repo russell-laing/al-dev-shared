@@ -2,14 +2,14 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-18 (al-dev-autonomous merged into al-dev-develop --autonomous; al-dev-align moved to .claude/skills/)  
+**Last updated:** 2026-05-18 (all 2026-05-18 architectural suggestions implemented; observations cleaned up)  
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /al-dev-align moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
 
 ## Layer 1: Lifecycle Overview
 
-This diagram shows the three entry paths and how they connect through the main development spine.
+This diagram shows pre-planning tributaries (dashed, optional), the three main entry points, and the development spine through to post-commit output.
 
 ```mermaid
 flowchart TD
@@ -492,30 +492,24 @@ Status: Done — /al-dev-autonomous archived; single canonical panel definition.
 Observation: /al-dev-autonomous phases (1A signature verification, 4A static validation, 5-attempt compile loop) merged into /al-dev-develop as an `--autonomous` flag. /al-dev-autonomous archived to `archived/skills/`.  
 Status: Done — skill list reduced from 18 to 17.
 
-**Connect: /al-dev-explore and /al-dev-perf — shared exploration backbone**  
-Observation: Both follow an identical structure — skill reads context → spawn Explore subagent ×1 → write `.dev/` analysis file. The only difference is the analytical lens (general vs. performance).  
-Suggestion: Document a shared "focused exploration" pattern in `knowledge/explore-subagent-pattern.md` covering the canonical spawn template, context-loading steps, and output format. Both skills reference it; the domain focus is the only local customisation.  
-Trade-off: Slightly more indirection; eliminates drift if the Explore subagent API changes.
+**Connect: /al-dev-explore and /al-dev-perf — shared exploration backbone** ← implemented  
+Observation: Both skills share an identical spawn structure.  
+Status: Done — `knowledge/explore-subagent-pattern.md` created; al-dev-explore, al-dev-perf, and al-dev-investigate all reference it.
 
-**Promote: Explore subagent spawn pattern**  
-Observation: Three skills (investigate, explore, perf) each independently author their Explore subagent invocation. A fourth skill using Explore would have no canonical template to follow.  
-Suggestion: `knowledge/explore-subagent-pattern.md` (from the Connect suggestion above) doubles as this canonical template. All three callers update their spawn directives to reference it.  
-Trade-off: One extra file in knowledge/; invocations stay locally readable with a pointer for updates.
+**Promote: Explore subagent spawn pattern** ← implemented  
+Observation: Three skills independently authored their Explore subagent invocation.  
+Status: Done — `knowledge/explore-subagent-pattern.md` is the canonical template; all three callers reference it.
 
 ### Move candidates
 
-**Move: /al-dev-align → .claude/skills/**
-Observation: This skill's sole purpose is maintaining the plugin's own alignment with harness repos — it has no value to AL developers consuming the distributed plugin. It audits the plugin's internal consistency, not the user's AL code.
-Signals: internal path refs (✗), self-audit purpose (✓), no spawned agents (✓).
-Suggestion: Move `profile-al-dev-shared/skills/al-dev-align/` to `.claude/skills/al-dev-align/` and update the plugin map scope line to exclude it.
-Trade-off: Skill remains available in this project; removed from the distributed plugin so consumers don't see a maintenance-only skill that does nothing useful for them.
+**Move: /al-dev-align → .claude/skills/** ← implemented  
+Observation: Maintenance-only skill with no value to distributed plugin consumers.  
+Status: Done — SKILL.md moved to `.claude/skills/al-dev-align/`; Python script stays in plugin for path resolution.
 
 ### Extension opportunities
 
-**Extend: Layer 1 — /al-dev-explore and /al-dev-interview missing as pre-plan tributaries**  
-Observation: Both skills produce files consumed directly by the planning phase (explore-findings.md → investigate/plan, interview-requirements.md → plan), but neither appears in the Layer 1 lifecycle overview. The pre-planning phase is invisible in the diagram.  
-Suggestion: Add /al-dev-explore and /al-dev-interview as optional input nodes in Layer 1 — tributary arrows feeding into /al-dev-investigate and /al-dev-plan respectively, not on the main spine.
+**Extend: Layer 1 — /al-dev-explore and /al-dev-interview as pre-plan tributaries** ← implemented  
+Status: Done — both appear in Layer 1 as dashed tributary arrows feeding Investigate and Plan.
 
-**Extend: Layer 1 — /al-dev-release-notes missing as post-commit output**  
-Observation: The lifecycle ends at `al-dev-commit → ✓ git commit`. /al-dev-release-notes is a natural post-commit step (consumes git hashes, produces release notes) but is not connected to the lifecycle overview.  
-Suggestion: Add /al-dev-release-notes as an output node from the `✓ git commit` terminal in Layer 1.
+**Extend: Layer 1 — /al-dev-release-notes as post-commit output** ← implemented  
+Status: Done — /al-dev-release-notes appears in Layer 1 as a dashed post-commit node after `✓ git commit`.
