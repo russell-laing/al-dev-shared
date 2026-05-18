@@ -1,9 +1,9 @@
 ---
 description: >-
   General code review specialist — finds bugs, logic errors, and security
-  issues with high signal-to-noise ratio. Use standalone or as part of
-  the 3-specialist parallel review team alongside al-dev-security-reviewer,
-  al-dev-expert-reviewer, and al-dev-performance-reviewer.
+  issues with high signal-to-noise ratio. For standalone manual use only;
+  not part of the automated /al-dev-develop pipeline (which uses the
+  3-specialist team: security-reviewer, expert-reviewer, performance-reviewer).
 model: sonnet
 tools: ["Read", "Glob", "Grep"]
 ---
