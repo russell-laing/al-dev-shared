@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .worktrees/
 .superpowers/
+.dev/skill-test-runs/
+.dev/skill-test-plan.json
+*.html
