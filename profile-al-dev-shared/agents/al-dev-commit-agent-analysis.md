@@ -4,7 +4,7 @@ description: >-
   proposes commit groups, and drafts commit messages. Dispatched by
   al-dev-commit (analysis phase). Read-only — never modifies files.
 model: sonnet
-tools: ["Bash", "Read", "Glob"]
+tools: ["Bash", "Read"]
 ---
 
 # Agent: al-dev-commit-agent (Analysis Phase)

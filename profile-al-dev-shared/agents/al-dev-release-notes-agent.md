@@ -5,7 +5,7 @@ description: >-
   by the al-dev-release-notes skill.
 model: sonnet
 tools: [
-  "Bash", "Write", "Read", "Glob",
+  "Bash", "Write", "Read",
   "mcp__plugin_profile-claude-al-dev_al-mcp-server",
   "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp"
 ]

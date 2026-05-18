@@ -5,7 +5,7 @@ description: >-
   (execute phase). Never writes or edits source files directly — all fixes
   go through Bash.
 model: haiku
-tools: ["Bash", "Read", "Glob"]
+tools: ["Bash", "Read"]
 ---
 
 # Agent: al-dev-commit-agent (Execute Phase)
