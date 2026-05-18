@@ -60,20 +60,23 @@ If `$ARGUMENTS` is an agent name, focus only on that agent and skip the rest.
 
 ## Phase 3: Cross-Reference Callers
 
-For each active agent, grep every skill body for the agent's type name to
-determine which skills spawn it:
+For each active agent, use a two-pass grep to find all skills that spawn it.
+Skills may reference agents by qualified type name (`al-dev-shared:<name>`)
+or by short filename stem in prose — search both forms and union the results:
 
 ```bash
-# For most agents (al-dev-shared:al-dev-<name>)
-grep -rl "al-dev-shared:al-dev-<name>" \
+# Pass 1: qualified type name (used in subagent_type YAML blocks)
+grep -rl "al-dev-shared:<filename-without-.md>" \
   profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
 
-# For commit-learn-verifier specifically
-grep -rl "al-dev-shared:commit-learn-verifier" \
+# Pass 2: short name prose references
+grep -rl "<filename-without-.md>" \
   profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
 ```
 
-The agent's type name is `al-dev-shared:<filename-without-.md>`.
+Union the file lists from both passes to get the full caller set.
+
+If `$ARGUMENTS` names a specific agent, restrict both passes to that agent only.
 
 Record:
 - **Spawned by:** list of skill names (extract directory name from matching paths)
@@ -98,7 +101,8 @@ Verify:
 
 ### Layer 2 (Per-agent profiles)
 
-For each active agent, verify the `### al-dev-<name>` section:
+For each active agent, verify the `### <filename-without-.md>` section
+(e.g., `### al-dev-developer`, `### commit-learn-verifier`):
 - Model and tools list match the frontmatter
 - Spawned-by list matches Phase 3 results
 - Inputs/Outputs match Phase 2 findings (or "Not documented" if absent)
@@ -146,7 +150,7 @@ targeted edits to fix each discrepancy found in Phase 5.
 
 ## Layer 2: Per-Agent Profiles
 
-### al-dev-<name>
+### <filename-without-.md>
 
 **Description:** [first sentence from the agent description frontmatter]
 **Model:** sonnet/opus/haiku
@@ -170,7 +174,7 @@ targeted edits to fix each discrepancy found in Phase 5.
 After writing or updating, confirm:
 ```bash
 wc -l docs/al-dev-agent-map.md
-# Expected: 80+ lines for a full 16-agent roster
+# Expected: roughly (active agent count × 5) lines minimum
 ```
 
 Set `**Last updated:**` to today's date.
