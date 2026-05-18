@@ -39,7 +39,7 @@ fi
 If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning before handoff (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```
-⚠️  Alignment advisory: N issue(s) found in shared files. Run /al-dev-align to inspect and fix before handing off.
+⚠️  Alignment advisory: N issue(s) found in shared files. Run /align-harness-repos to inspect and fix before handing off.
 ```
 
 Continue to Step 1 regardless — this check is advisory only.

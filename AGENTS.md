@@ -76,7 +76,7 @@ any diagram blocks.
 ## Harness Mapping
 
 This table maps generic concept names (used in shared skills and agents) to their
-concrete Copilot CLI equivalents. Maintained here so `al-dev-align` can verify coverage.
+concrete Copilot CLI equivalents. Maintained here so `align-harness-repos` can verify coverage.
 
 | Concept | Copilot CLI Value |
 |---|---|

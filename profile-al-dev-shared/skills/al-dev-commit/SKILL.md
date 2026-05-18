@@ -142,7 +142,7 @@ fi
 If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```
-⚠️  Alignment advisory: N issue(s) found. Run /al-dev-align to inspect and fix.
+⚠️  Alignment advisory: N issue(s) found. Run /align-harness-repos to inspect and fix.
 ```
 
 Continue to Step 6 regardless — this check is advisory only.

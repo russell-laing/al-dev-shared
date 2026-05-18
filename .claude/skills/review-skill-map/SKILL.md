@@ -1,15 +1,15 @@
 ---
-name: review-plugin-map
+name: review-skill-map
 description: >-
   Review profile-al-dev-shared for accuracy and update docs/al-dev-plugin-map.md.
   Use whenever skills or agents are added, removed, or restructured in the plugin,
   or when you want to verify the map reflects the current state of the codebase.
-  Triggers on: "review plugin map", "update plugin map", "sync plugin map",
-  "is the plugin map accurate", "update the map", "check the map".
+  Triggers on: "review skill map", "update skill map", "sync skill map",
+  "is the skill map accurate", "update the map", "check the map".
 argument-hint: "[optional: skill name to focus on]"
 ---
 
-# Review Plugin Map
+# Review Skill Map
 
 Audit `profile-al-dev-shared` and update `docs/al-dev-plugin-map.md` so it
 accurately reflects the current active skills, agents, phases, and file handoffs.

@@ -1,5 +1,5 @@
 ---
-name: al-dev-align
+name: align-harness-repos
 description: >-
   Check alignment between al-dev-shared and harness repos. Audits for forbidden
   harness-specific tokens in shared skill/agent bodies and verifies harness
@@ -7,7 +7,7 @@ description: >-
 argument-hint: ""
 ---
 
-# Skill: /al-dev-align
+# Skill: /align-harness-repos
 
 Audit alignment between `al-dev-shared` and the two harness profile repos.
 Checks for forbidden harness-specific tokens in shared files, and verifies

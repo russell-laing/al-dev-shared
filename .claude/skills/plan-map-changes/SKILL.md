@@ -1,66 +1,80 @@
 ---
-name: plan-plugin-map-changes
+name: plan-map-changes
 description: >-
-  Use when the Observations section of docs/al-dev-plugin-map.md has
-  Architectural suggestions, Move candidates, or Extension opportunities
-  that need implementing. Rubber-ducks each suggestion against the live
-  codebase before any plan is written. Run /review-plugin-map first if
-  skills or agents have changed since the map was last updated.
-  Triggers on: "implement plugin map suggestions", "plan architectural
-  changes", "plan the suggestions", "create a plan for plugin map changes",
-  "implement the observations", "implement the plugin map".
-argument-hint: "[optional: connect | merge | trim | remodel | inline | align | all | --agents]"
+  Use when the Observations section of docs/al-dev-plugin-map.md or
+  docs/al-dev-agent-map.md has suggestions that need implementing.
+  Rubber-ducks each suggestion against the live codebase before any plan
+  is written. Run /review-skill-map and /review-agent-map first if
+  skills or agents have changed since the maps were last updated.
+  Triggers on: "implement skill map suggestions", "plan architectural
+  changes", "plan the suggestions", "create a plan for skill map changes",
+  "implement the observations", "implement the skill map",
+  "implement agent map suggestions", "plan agent map changes",
+  "implement the agent map".
+argument-hint: "[optional: connect | merge | trim | remodel | inline | align | all | --agents | --plugin-map]"
 ---
 
-# Plan Plugin Map Changes
+# Plan Map Changes
 
-Translates suggestions from `docs/al-dev-plugin-map.md` into a verified
-implementation plan. The rubber-ducking phase is **mandatory** — no plan
-task is written until the live codebase state behind each suggestion is
-confirmed. This prevents plans based on suggestion text that diverges from
-actual code.
+Translates suggestions from `docs/al-dev-plugin-map.md` and
+`docs/al-dev-agent-map.md` into a verified implementation plan. The
+rubber-ducking phase is **mandatory** — no plan task is written until the
+live codebase state behind each suggestion is confirmed. This prevents
+plans based on suggestion text that diverges from actual code.
 
 ---
 
 ## Prerequisites
 
-- `docs/al-dev-plugin-map.md` exists with an `## Observations` section
-- Run `/review-plugin-map` first if skills or agents have changed since
-  the map was last updated — stale suggestions produce wrong plans
-- The Observations section has at least one suggestion or candidate
+- `docs/al-dev-plugin-map.md` and/or `docs/al-dev-agent-map.md` exist
+  with an `## Observations` section
+- Run `/review-skill-map` and `/review-agent-map` first if skills or
+  agents have changed since the maps were last updated — stale suggestions
+  produce wrong plans
+- At least one Observations section has an open suggestion or candidate
 
 ---
 
 ## Argument Routing
 
-If `$ARGUMENTS` is `--agents`:
+**Default (no argument):** process both `docs/al-dev-plugin-map.md` and
+`docs/al-dev-agent-map.md`. Collect suggestions from all Observations
+sections and rubber-duck them together before writing a single unified plan.
 
-- **Source document:** `docs/al-dev-agent-map.md` (not `docs/al-dev-plugin-map.md`)
+**`--plugin-map`:** process only `docs/al-dev-plugin-map.md`. Suggestion
+vocabulary: Connect, Merge, Promote, Move, Extend.
+
+**`--agents`:** process only `docs/al-dev-agent-map.md`:
+- **Source document:** `docs/al-dev-agent-map.md`
 - **Rubber-duck reads:** `profile-al-dev-shared/agents/<name>.md` (not skills/)
 - **Plan task file paths:** reference agent file paths
-- **Suggestion vocabulary:** Trim, Remodel, Split, Inline, Align — these
-  replace Connect, Merge, Promote, Move, Extend for agent-map suggestions
+- **Suggestion vocabulary:** Trim, Remodel, Split, Inline, Align
 
 Everything else — the rubber-duck protocol, plan output format, verification
-checklist — stays identical.
+checklist — stays identical across all routing modes.
 
 ---
 
 ## Phase 1: Extract Suggestions
 
-If `$ARGUMENTS` is `--agents`, read `docs/al-dev-agent-map.md` and collect
-every item from `## Observations`. Otherwise read `docs/al-dev-plugin-map.md`
-and collect every item from:
+Apply the Argument Routing rules above to determine which documents to read.
 
+**From `docs/al-dev-plugin-map.md`** (default or `--plugin-map`), collect
+every open item from:
 - `### Architectural suggestions` (Connect, Merge, Promote)
 - `### Move candidates`
 - `### Extension opportunities`
 
-List each as: **type — subject — proposed change**.
+**From `docs/al-dev-agent-map.md`** (default or `--agents`), collect every
+open item from `## Observations` (Trim, Remodel, Split, Inline, Align).
 
-If `$ARGUMENTS` names a type (`connect`, `merge`, `trim`, etc.), filter to
-that type only and note it. If `$ARGUMENTS` is `--agents`, apply routing from
-the section above instead of a type filter.
+Skip any suggestion already marked `← implemented`, `← completed`, or
+`← already implemented`.
+
+List each collected item as: **type — subject — proposed change**.
+
+If `$ARGUMENTS` names a suggestion type (`connect`, `merge`, `trim`, etc.),
+filter to that type across whichever documents are in scope and note the filter.
 
 ---
 
