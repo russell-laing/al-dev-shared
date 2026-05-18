@@ -153,7 +153,7 @@ Continue to Step 6 regardless — this check is advisory only.
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-commit-agent
+  agent: al-dev-shared:al-dev-commit-agent-analysis
   description: "Commit analysis: analyse staged changes"
 
 Prompt:
@@ -309,7 +309,7 @@ GROUP_2:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-commit-agent
+  agent: al-dev-shared:al-dev-commit-agent-execute
   description: "Commit execution: [N] commits"
 
 Prompt:
