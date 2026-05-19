@@ -187,7 +187,31 @@ Error(StrSubstNo(SomeLabel, fieldValue));
 ```
 
 ### User-Facing Errors
-Wrap in Error() function with user-friendly message text. Avoid exposing internal IDs or technical details.
+
+User-facing error messages should be clear, actionable, and avoid internal technical
+details. The message should explain WHAT went wrong and HOW to fix it, not system
+internals.
+
+#### BAD: Internal error message
+
+```al
+if (PurchHeader.Status <> PurchHeader.Status::Open) then
+    Error('Cannot update PurchHeader with Status=' + Format(PurchHeader.Status));
+```
+
+#### GOOD: User-friendly error message
+
+```al
+if (PurchHeader.Status <> PurchHeader.Status::Open) then
+    Error('Purchase order must be Open to make changes. Status: %1',
+        Format(PurchHeader.Status));
+```
+
+The GOOD version:
+
+- Names the action that failed ("Purchase order must be in Open status")
+- Shows the current state ("Current status: X")
+- Is readable without understanding internal field names
 
 ### Handling Missing Information
 If implementation requires clarification from the user, stop and ask. Document what information is missing and why it matters.
