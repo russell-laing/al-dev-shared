@@ -143,7 +143,22 @@ If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mapp
 ⚠️  Alignment advisory: N issue(s) found. Run /align-harness-repos to inspect and fix.
 ```
 
-Continue to Step 6 regardless — both checks above are advisory only.
+Run knowledge quality check in advisory mode (non-blocking).
+
+```bash
+VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/scripts/validate-knowledge-quality.py"
+if [ -f "$VALIDATOR" ]; then
+  KNOWLEDGE_ADVISORY=$(python3 "$VALIDATOR" --path "$AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge" 2>&1)
+fi
+```
+
+If `$KNOWLEDGE_ADVISORY` contains "WARNINGS", surface a note:
+
+```
+⚠️  Knowledge quality: stub sections detected. Run /audit-knowledge-quality for full report.
+```
+
+Continue to Step 6 regardless — both alignment and knowledge checks above are advisory only.
 
 ---
 
