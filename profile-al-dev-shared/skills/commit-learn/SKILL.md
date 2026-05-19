@@ -35,8 +35,9 @@ Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" 
 
 For each unresolved incident, dispatch the verifier subagent:
 
+```text
 Agent tool:
-  subagent_type: commit-learn-verifier
+  agent: al-dev-shared:commit-learn-verifier
   description: "Analyze incident: [file path]"
 
 Prompt:
@@ -54,6 +55,7 @@ Prompt:
    - Proposed fallback strategy
    - Recovery plan steps
    - Expected result after recovery"
+```
 
 ### Step 3: Present analysis (read-only mode)
 
