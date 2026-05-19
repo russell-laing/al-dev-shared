@@ -319,6 +319,28 @@ Even complex features: Describe the design comprehensively, but don't write the 
 
 **Should have been:** 100-150 lines total
 
+**Why this plan is too large:**
+
+This 946-line plan violates SIMPLE proportionality in four ways:
+
+1. **Over-decomposed tasks:** Each task is 5-10 lines when SIMPLE tasks should be 1-2 lines (write test, run test, implement, commit). This plan has 50+ tasks where 10-12 would suffice.
+
+2. **Redundant detail:** Task descriptions repeat the same validation pattern 20+ times instead of explaining the pattern once and applying it.
+
+3. **Unnecessary architecture sections:** Plan includes "Infrastructure Setup," "Logging Framework," and "Monitoring Dashboard" sections that are out of scope for a simple feature. SIMPLE features don't need infrastructure design.
+
+4. **Gold-plating test coverage:** Plan requires 100+ test cases for a simple feature. SIMPLE tests should cover: happy path, one error case, one edge case. Total: 3-5 tests per function.
+
+**What went wrong in the planning process:**
+The planner treated this SIMPLE feature like a MEDIUM or COMPLEX feature, creating overhead that adds no value. This is over-planning — common when a planner defaults to "include everything possible" instead of "include only what's necessary."
+
+**How to avoid this:**
+
+- Count the required test cases BEFORE you plan (happy + error + edge = 3-5)
+- Count the required files BEFORE you plan (1-2 files for SIMPLE)
+- Review your task count: SIMPLE = 10-15 tasks, MEDIUM = 20-30, COMPLEX = 40+
+- If your plan is 5× the expected size, you're likely over-planning
+
 ---
 
 ### ✅ GOOD: SIMPLE Feature with Proportional Plan
