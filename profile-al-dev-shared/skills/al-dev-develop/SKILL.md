@@ -9,7 +9,7 @@ description: >-
   signature verification, static validation, and a
   self-healing compile loop (replaces /al-dev-autonomous).
   Prefer over ad-hoc implementation for anything beyond a trivial fix.
-argument-hint: "[optional: specific module or scope override]"
+argument-hint: "[--autonomous] [module or scope override]"
 ---
 
 # Develop Skill
@@ -72,9 +72,9 @@ Per the Phase 0 Read Protocol in
 
 **Autonomous mode detection:**
 Check `$ARGUMENTS` for `--autonomous`. If present:
-- After Step 3 below, run Phase 1A (Signature Verification) before
+- After Step 3 below, run Phase 1.5 (Signature Verification) before
   proceeding to Phase 2
-- After Phase 4 (Verify on Completion), run Phase 4A (Static Validation)
+- After Phase 4 (Verify on Completion), run Phase 4.5 (Static Validation)
   before spawning the review team
 - In Phase 8, use the 5-attempt compile-verify loop instead of the
   single compile pass
@@ -97,7 +97,7 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-## Phase 1A: Signature Verification (--autonomous only)
+## Phase 1.5: Signature Verification (--autonomous only)
 
 Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
 
@@ -244,7 +244,7 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
-## Phase 4A: Static Validation (--autonomous only)
+## Phase 4.5: Static Validation (--autonomous only)
 
 Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
 
@@ -459,7 +459,7 @@ SIGFILE=$(ls .dev/*-al-dev-autonomous-signatures.md \
   2>/dev/null | sort | tail -1)
 ```
 
-If `SIGFILE` is empty (Phase 1A did not run or MCP was unavailable),
+If `SIGFILE` is empty (Phase 1.5 did not run or MCP was unavailable),
 omit the signatures section from the developer prompt and add this
 warning instead:
 
@@ -527,42 +527,8 @@ USER_GATE — ask the user with options:
 YOU write the synthesis yourself. Write to:
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md`
 
-Use this structure:
-
-```markdown
-## Code Review: [Feature Name]
-
-### Implementation Summary
-[What was built: objects, key functionality]
-
-### Review Process
-3 specialized reviewers (security, AL expert, performance)
-completed parallel review.
-
-### Critical Issues (All Resolved)
-- Issue: [description]
-  Fix: [what was changed]
-  Verified by: [which reviewer re-checked]
-
-### Issues for User Decision
-
-**High Priority:**
-1. [Issue description]
-   - Severity: High
-   - Impact: [what happens if not fixed]
-   - Recommendation: [suggested fix]
-
-**Minor Issues:**
-1. [Issue description]
-   - Recommendation: [optional improvement]
-
-### Review Consensus
-[Overall quality assessment]
-
-### Recommendation
-Code is ready for [testing/deployment] with [N]
-high-priority issues to address.
-```
+Use the structure defined in `knowledge/code-review-template.md`.
+In autonomous mode (`--autonomous`), append the Autonomous Verification Results section from the same file.
 
 After writing, run the validator:
 
