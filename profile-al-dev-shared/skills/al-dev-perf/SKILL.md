@@ -41,7 +41,7 @@ find src/ -iname "*.codeunit.al" 2>/dev/null
 Load `.dev/project-context.md` to prioritise objects noted as
 high-volume or batch-processing.
 
-### Step 1.5 — Identify Entry-Point Metadata
+### Step 1a — Identify Entry-Point Metadata
 
 For each codeunit found in Step 1, use the AL Symbols MCP
 (`al-mcp-server`) to classify it before spawning the analysis agent:
@@ -88,7 +88,7 @@ Prompt:
    Files to analyse: [file paths from Step 1]
 
    Codeunit classifications (from AL Symbols pre-research):
-   [paste the classification summary from Step 1.5]
+   [paste the classification summary from Step 1a]
 
    Severity escalation rule: For any P1–P8 finding in a codeunit
    classified as Entry Point, Hot Path, or Batch Processor — escalate
@@ -209,7 +209,7 @@ No critical issues found. Findings in perf-analysis.md.
   inside a loop with many iterations
 - For very large codebases, scope to specific codeunits first;
   use "scan all" only for smaller extensions
-- AL Symbols lookup (Step 1.5) enriches severity by context; if symbols
+- AL Symbols lookup (Step 1a) enriches severity by context; if symbols
   are unavailable the skill falls back to equal-weight analysis
 - The +1 severity escalation applies once per finding — a LOW finding
   in a Batch Processor becomes MEDIUM, not CRITICAL
