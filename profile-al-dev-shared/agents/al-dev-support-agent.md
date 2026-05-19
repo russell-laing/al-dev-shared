@@ -5,7 +5,7 @@ description: >-
   /al-dev-support.
 model: sonnet
 tools: [
-  "WebSearch", "WebFetch", "Bash", "Write", "Read",
+  "WebSearch", "WebFetch", "Write", "Read",
   "mcp__plugin_profile-claude-al-dev_al-mcp-server",
   "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp"
 ]
