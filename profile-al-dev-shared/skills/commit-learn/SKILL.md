@@ -50,7 +50,7 @@ Prompt:
 
    Return:
    - Root cause hypothesis
-   - Matched pattern (if any) from learnings.md
+   - Matched pattern (if any) from `.dev/learnings.md`
    - Proposed fallback strategy
    - Recovery plan steps
    - Expected result after recovery"
