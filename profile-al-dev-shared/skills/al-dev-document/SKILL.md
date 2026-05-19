@@ -319,7 +319,7 @@ Consider including:
 ## Output Files
 
 **Docs-writer creates:**
-- `docs/[FeatureName].md` - Main documentation
+- `docs/Features/[FeatureName]-[AUDIENCE].md` - Main documentation
 
 **Optional additional outputs:**
 - `docs/diagrams/` - Architecture diagrams
@@ -340,7 +340,7 @@ Consider including:
 
 ---
 
-## When to Use /document
+## When to Use /al-dev-document
 
 **✅ Use /al-dev-document when:**
 - Feature implementation is complete
