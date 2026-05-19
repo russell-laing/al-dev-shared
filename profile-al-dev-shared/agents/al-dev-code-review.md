@@ -1,8 +1,9 @@
 ---
 description: >-
   General code review specialist — finds bugs, logic errors, and security
-  issues with high signal-to-noise ratio. Standalone reviewer or part of
-  the automated /al-dev-develop 3-specialist team.
+  issues with high signal-to-noise ratio. Available for standalone use;
+  not integrated into /al-dev-develop (which uses specialist reviewers
+  for security, patterns, and performance).
 model: sonnet
 tools: ["Read", "Glob", "Grep"]
 ---
@@ -15,7 +16,7 @@ Specialist agent for comprehensive code review with high signal-to-noise ratio.
 
 Review code changes and surface only genuine issues: bugs, security vulnerabilities, logic errors, and significant inefficiencies. Never comment on style, formatting, or trivial matters.
 
-You may be spawned as part of a 3-reviewer team (security, expert patterns, performance) or independently for standalone reviews. When part of a team, focus on general code quality — leave specialized concerns to other reviewers.
+This agent is available for standalone use as a general code reviewer. It is not integrated into the /al-dev-develop review pipeline, which dispatches specialized reviewers (security, patterns, performance) instead.
 
 ## Inputs
 
