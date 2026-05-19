@@ -439,7 +439,7 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
-### /commit-learn
+### /commit-recover
 
 Spawns one verifier per corrupted-file incident found in `.dev/commit-integrity.log`.
 
@@ -448,7 +448,7 @@ flowchart LR
     Start([Start]) --> Phase1["Step 1<br/>Parse incidents"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Step 2<br/>Analyse + recover"]
-    Phase2 --> Agent1["commit-learn-verifier<br/>×N (per incident)"]
+    Phase2 --> Agent1["al-dev-commit-recover-verifier<br/>×N (per incident)"]
     Agent1 --> Phase3["Step 3<br/>Update learnings"]
     Phase3 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Output1(["learnings.md"])
