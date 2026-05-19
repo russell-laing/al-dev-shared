@@ -37,7 +37,7 @@ For each unresolved incident, dispatch the verifier subagent:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:commit-recover-verifier
+  agent: al-dev-shared:al-dev-commit-recover-verifier
   description: "Analyze incident: [file path]"
 
 Prompt:
