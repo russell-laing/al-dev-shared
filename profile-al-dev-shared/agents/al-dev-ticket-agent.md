@@ -1,188 +1,101 @@
 ---
 description: >-
-  Fetch a Freshdesk ticket via API, write
-  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, and optionally
-  download attachments. Dispatched by the al-dev-ticket skill.
+  Fetch a Freshdesk ticket via API, write .dev/context file,
+  and optionally download attachments. Dispatched by the
+  al-dev-ticket skill.
 model: haiku
 tools: ["Bash", "Write"]
 ---
 
 # Agent: al-dev-ticket-agent
 
-Fetch a Freshdesk support ticket and write a structured brief
-to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`. Dispatched by
-`/al-dev-ticket` with phase-specific instructions in the prompt.
+Fetch Freshdesk ticket context and create structured documentation file.
 
-## Phases
+## Inputs
 
-The dispatch prompt specifies which phase to run.
+| Field | Type | Description |
+|-------|------|-------------|
+| TICKET_ID | string | Freshdesk ticket ID (e.g., 12345) |
+| FRESHDESK_API_KEY | string | Freshdesk API key (from global settings) |
+| FRESHDESK_DOMAIN | string | Freshdesk domain (e.g., company.freshdesk.com) |
 
----
+## Outputs
 
-## Phase: fetch
+| File | Description |
+|------|-------------|
+| `.dev/<date>-al-dev-ticket-ticket-context.md` | Structured ticket context with fields, comments, metadata |
 
-Fetch ticket `$TICKET_ID` and write
-`.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`.
-`TICKET_ID`, `FRESHDESK_API_KEY`, and `FRESHDESK_DOMAIN` are
-provided in the dispatch prompt or environment.
+## Workflow
 
-### Step 1 — Fetch ticket and conversations in parallel
+**Phase: fetch**
 
-**Call A — ticket details:**
+### Step 1: Fetch Ticket and Conversations
 
-```bash
-HTTP_STATUS_A=$(curl -s \
-  -o /tmp/fd_ticket.json \
-  -w "%{http_code}" \
-  -u "$FRESHDESK_API_KEY:X" \
-  "https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID\
-?include=requester,company,stats")
-```
+Fetch operations are sequential API calls (not parallel):
 
-**Call B — conversation thread:**
+1. **Get ticket metadata** via Freshdesk API:
+   ```bash
+   curl -s -u "$FRESHDESK_API_KEY:x" \
+     https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID
+   ```
+   Extract: ID, status, priority, subject, description, created date, updated date
 
-```bash
-HTTP_STATUS_B=$(curl -s \
-  -o /tmp/fd_conversations.json \
-  -w "%{http_code}" \
-  -u "$FRESHDESK_API_KEY:X" \
-  "https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID/conversations")
-```
+2. **Get ticket conversations** (comments):
+   ```bash
+   curl -s -u "$FRESHDESK_API_KEY:x" \
+     https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID/conversations
+   ```
+   Extract: author, timestamp, content, attachments
 
-**Error handling:**
+3. **Get ticket custom fields** if present in metadata
 
-```bash
-if [ "$HTTP_STATUS_A" = "401" ] || [ "$HTTP_STATUS_A" = "403" ]; then
-  echo "ERROR: bad_credentials"; exit 1
-fi
-if [ "$HTTP_STATUS_A" = "404" ]; then
-  echo "ERROR: ticket_not_found #$TICKET_ID"; exit 1
-fi
-```
+### Step 2: Write Context File
 
-**Parse ticket JSON from `/tmp/fd_ticket.json`:**
-
-```bash
-jq '{
-  id: .id,
-  subject: .subject,
-  description_text: (.description_text // ""),
-  status: .status,
-  priority: .priority,
-  type: .type,
-  custom_fields: .custom_fields,
-  requester_name: .requester.name,
-  requester_email: .requester.email,
-  company_name: .company.name,
-  created_at: .created_at,
-  updated_at: .updated_at,
-  resolved_at: .stats.resolved_at,
-  attachments: [
-    .attachments[]? |
-    {
-      name: .name,
-      size: .file_size,
-      content_type: .content_type,
-      url: .attachment_url
-    }
-  ]
-}' /tmp/fd_ticket.json
-```
-
-**Parse conversation JSON from `/tmp/fd_conversations.json`:**
-
-```bash
-jq '[.[] | {
-  direction: (if .incoming then "customer" else "agent" end),
-  body_text: .body_text,
-  created_at: .created_at,
-  attachments: [
-    .attachments[]? |
-    { name: .name, content_type: .content_type, url: .attachment_url }
-  ]
-}]' /tmp/fd_conversations.json
-```
-
-**Status and priority mapping:**
-
-| Status | Label | Priority | Label |
-| --- | --- | --- | --- |
-| 2 | Open | 1 | Low |
-| 3 | Pending | 2 | Medium |
-| 4 | Resolved | 3 | High |
-| 5 | Closed | 4 | Urgent |
-
-### Step 2 — Write .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
-
-Create `.dev/` directory if needed (`mkdir -p .dev`). Write:
+Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
 
 ```markdown
 # Freshdesk Ticket Context
 
-> Loaded by `/al-dev-ticket` skill. Use as background for
-> `/al-dev-interview` and `/al-dev-plan`.
-> This file is gitignored — do not commit.
+**Ticket ID:** [ID]
+**Status:** [Status]
+**Priority:** [Priority]
+**Created:** [Date]
+**Updated:** [Date]
 
-TICKET: #[ID]
-TITLE: [subject]
-STATUS: [status label] | PRIORITY: [priority label] | TYPE: [type]
-REQUESTER: [requester_name] ([requester_email])
-COMPANY: [company_name]
-CREATED: [created_at]
+## Subject
+[Ticket subject/title]
 
-DESCRIPTION:
-[description_text — preserve all technical detail]
+## Description
+[Original ticket description]
 
-CONVERSATION SUMMARY:
-[150-300 words. Cover: what the customer reported, any
-clarifications, agent decisions, and current state. Preserve
-technical specifics like field names, error messages, and version
-numbers. Structure as: initial report → key exchanges →
-current state.]
+## Comments
+[Author] — [Timestamp]
+[Comment content]
 
-CUSTOM FIELDS:
-[Non-empty fields only, as "Field Name: value" lines.
-Omit this section if all fields are empty.]
+[Repeat for each comment]
 
-ATTACHMENTS:
-[If attachments exist: list as "filename (size, type)" lines.
-Omit this section if no attachments.]
+## Custom Fields
+[If applicable: field name: value pairs]
+
+## Attachments
+[If applicable: filename, size, URL]
 ```
 
-### Step 3 — Return output
+### Step 3: Return Output
 
-```text
-TICKET_LOADED: #<id>
-TITLE: <subject>
-STATUS: <label> | PRIORITY: <label>
-SUMMARY: <2-3 sentence plain English summary>
-ATTACHMENTS: <count> | <name (size, type)> | ... (NONE if none)
-FILE: .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
+Return structured block:
+```
+TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
+TICKET_ID: [ID]
+STATUS: [Status]
+PRIORITY: [Priority]
+COMMENTS_COUNT: [N]
+ATTACHMENTS: [Count or "None"]
 ```
 
----
+## Notes
 
-## Phase: download-attachments
-
-Download attachments listed in the dispatch prompt to
-`.dev/attachments/`. The dispatch prompt provides ticket ID and
-a list of attachment names and URLs.
-
-```bash
-mkdir -p .dev/attachments
-```
-
-For each attachment in the list:
-
-```bash
-curl -s -L -o ".dev/attachments/<filename_underscored>" "<url>"
-```
-
-Replace spaces in filenames with underscores.
-
-Return:
-
-```text
-DOWNLOADS_COMPLETE: <count> files
-FILES: .dev/attachments/<name1>, .dev/attachments/<name2>
-```
+- Ticket operations are sequential (API rate limiting)
+- Authentication via Freshdesk API key (never commit keys)
+- Attachments are referenced by URL only (not downloaded by default)
+- Custom fields are included if present in the ticket
