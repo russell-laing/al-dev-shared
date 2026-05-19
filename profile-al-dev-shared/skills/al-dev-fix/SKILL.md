@@ -30,7 +30,7 @@ Quick iteration for bug fixes and small changes:
 ## How This Command Works (v3.0)
 
 **Your Role:** Engineering Manager (but streamlined)
-**Teammates:** Usually 1 al-developer, sometimes 1 solution-architect for complex fixes
+**Teammates:** Usually 1 al-dev-shared:al-dev-developer, sometimes 1 al-dev-shared:al-dev-solution-architect for complex fixes
 **You:** Quick analysis, delegate implementation, verify fix, present
 
 ### ❌ DON'T
@@ -79,7 +79,7 @@ Example: "Event subscriber not triggering"
 Example: "Performance degradation after upgrade"
 ```
 
-### Step 2a: Trivial Fix (2-5 min)
+### Step 2: Trivial Fix (2-5 min)
 
 ```text
 For trivial fixes:
@@ -88,7 +88,7 @@ For trivial fixes:
    - Use Grep/Read to locate the problem
    - Verify you understand the issue
 
-2. Spawn single al-developer:
+2. Spawn single al-dev-shared:al-dev-developer:
    "Fix [specific issue] in [file path].
 
     Issue: [description]
@@ -137,13 +137,11 @@ For trivial fixes:
     Lint: [✅ Clean / N unresolved items → lint-report.md]
 
     Ready to test?"
-
-7. Clean up (shut down developer)
 ```
 
 **No approval gate - present fix directly.**
 
-### Step 2b: Non-Trivial Fix (10-20 min)
+### Step 3: Non-Trivial Fix (10-20 min)
 
 Follow the **Quick Analysis** pattern in
 `knowledge/architect-invocation-patterns.md`.
@@ -151,19 +149,7 @@ Follow the **Quick Analysis** pattern in
 ```text
 For non-trivial fixes:
 
-1. Spawn solution-architect for quick analysis:
-   "Analyze this issue and provide quick fix approach:
-
-    Issue: [user's description]
-    Context: [relevant files/objects]
-
-    Provide:
-    1. Root cause hypothesis (2-3 sentences)
-    2. Recommended fix approach (bullet points)
-    3. Files that need changes
-    4. Risks/side effects to watch for
-
-    Keep it concise - 5 min analysis, not full solution plan."
+1. Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
 
 2. Review architect's analysis yourself:
    - Does root cause make sense?
@@ -188,7 +174,7 @@ For non-trivial fixes:
      one more pass, re-present once; if still unclear after
      that, ask the user to decide directly
 
-5. Spawn al-developer with confirmed approach:
+5. Spawn al-dev-shared:al-dev-developer with confirmed approach:
    "Implement fix based on this approach:
 
     Root cause: [from architect]
@@ -229,6 +215,7 @@ For non-trivial fixes:
      before presenting.
 
 9. Present fix to user:
+
    "Fix complete → [files changed]
 
     Root cause: [brief explanation]
@@ -244,8 +231,6 @@ For non-trivial fixes:
     Risks to watch: [from architect analysis]
 
     Ready to test?"
-
-10. Clean up (shut down architect, developer)
 ```
 
 **Still no approval gate, but more context provided.**
@@ -260,16 +245,16 @@ User: "/fix [issue]"
 You: Analyze complexity
     ↓
     ├─→ TRIVIAL (simple, obvious)
-    │   ├─→ Spawn 1 al-developer
+    │   ├─→ Spawn 1 al-dev-shared:al-dev-developer
     │   ├─→ Fix implemented
     │   ├─→ Verify compilation
     │   ├─→ Scope check
     │   └─→ Present to user ✅
     │
     └─→ NON-TRIVIAL (complex, unclear)
-        ├─→ Spawn solution-architect (5 min analysis)
+        ├─→ Spawn al-dev-shared:al-dev-solution-architect (5 min analysis)
         ├─→ Review approach yourself
-        ├─→ Spawn al-developer with approach
+        ├─→ Spawn al-dev-shared:al-dev-developer with approach
         ├─→ Fix implemented
         ├─→ Verify compilation
         ├─→ Scope check
