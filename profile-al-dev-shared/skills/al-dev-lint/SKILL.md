@@ -33,6 +33,8 @@ else
 fi
 ```
 
+**Note:** Use `al-compile` if available (preferred—faster and simpler). If `al-compile` is not in PATH, fall back to `al compile`. Both produce the same output log format.
+
 If the log is absent, empty, or contains no lines matching
 `Warning` or `Error`:
 
