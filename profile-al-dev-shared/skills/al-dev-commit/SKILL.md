@@ -4,6 +4,7 @@ description: >-
   Use when ready to commit staged changes — especially after
   development work where scope creep (unapproved field removals,
   extra file deletions, hallucinated changes) may have occurred.
+argument-hint: "[optional args]"
 ---
 
 # `/al-dev-commit` — Atomic Commit Workflow
