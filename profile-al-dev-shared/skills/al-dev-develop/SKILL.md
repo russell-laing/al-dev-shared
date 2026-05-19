@@ -23,6 +23,56 @@ and 3-specialist review. You do NOT write code yourself.
 /plan). If missing, tell the user to run /plan first
 and stop.
 
+## Glossary
+
+**Scope Expansion Gate:** A governance checkpoint enforced during
+development that prevents out-of-scope changes. Before editing any
+file or line not explicitly named in the approved solution plan, you
+must stop and present proposed changes to the user for per-item
+approval. Prevents scope creep and ensures the solution stays true
+to the plan.
+
+**Developer Spawn Prompt:** The structured prompt dispatched to each
+spawned `al-dev-developer` agent. Contains the module assignment,
+object list, object ID range, naming conventions, code patterns,
+and the Scope Expansion Gate rules. Ensures consistency across
+parallel developers.
+
+**Phase 0–10:** Semantic workflow layers of the /al-dev-develop skill.
+Phase 0 checks for resumed progress; Phases 1–4 read context and
+partition work; Phase 5 spawns developers; Phases 6–7 handle review;
+Phase 8 compiles and lints; Phase 9 writes the code review; Phase 10
+presents to user. Each phase is a checkpoint with specific inputs
+and outputs.
+
+**Phase 1.5 (Autonomous):** Optional signature verification phase
+activated by the `--autonomous` flag. Uses AL Symbols MCP to verify
+external procedure signatures before developers are spawned, reducing
+downstream compilation errors.
+
+**Phase 4.5 (Autonomous):** Optional static validation phase that
+runs after developer completion but before the review team is spawned.
+Checks object name lengths, compile guards, and label consistency
+against the solution plan.
+
+**Phase 8 Compile-Verify Loop:** Extended compilation strategy used
+in autonomous mode. Runs up to 5 sequential compile-fix-compile
+cycles with detailed error tracking per attempt. After each compile,
+parses errors, spawns a developer to fix them, and re-compiles.
+Stops after 5 failed attempts and escalates to the user.
+
+**Review Panel:** The three-specialist review team spawned in Phase 5:
+**al-dev-security-reviewer** (permission/auth/data exposure),
+**al-dev-expert-reviewer** (AL conventions/BC patterns), and
+**al-dev-performance-reviewer** (N+1/SetLoadFields/efficiency).
+Each reviewer reads all implemented AL files independently.
+
+**Autonomous Mode:** Optional hardened workflow activated by the
+`--autonomous` flag. Adds Phase 1.5 (signature verification),
+Phase 4.5 (static validation), and a 5-attempt compile loop in Phase 8.
+Produces verified signatures and validation reports before review,
+reducing review iteration.
+
 ## Scope Expansion Gate
 
 While executing this skill, BEFORE you (or any dispatched
