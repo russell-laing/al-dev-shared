@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-19 (analysis: 5 new suggestions — stale names, label consistency, develop phase gap, document+commit-recover in Layer 1)
+**Last updated:** 2026-05-19 (fixed: 5 accuracy issues — stale names, Explore labeling, develop phase gap, Layer 1 post-commit completeness)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /align-harness-repos moved to `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
@@ -201,7 +201,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Three-reviewer panel:** Security, AL expert, and performance reviewers run in parallel, then the skill synthesises findings.
+**Three-reviewer panel:** Security, AL expert, and performance reviewers run in parallel, then the skill synthesises findings. Compile-verify loop (with diagnostics fixer) runs before final code review output.
 
 ```mermaid
 flowchart LR
@@ -223,7 +223,9 @@ flowchart LR
     Phase5 --> SkillWork2["(skill itself)"]
     SkillWork2 --> CompileAgent["al-dev-diagnostics-fixer ×1"]
     CompileAgent --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["code-review.md"])
+    SkillWork3 --> Phase6["Phase 6<br/>Write code review"]
+    Phase6 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1(["code-review.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fff8e1
@@ -231,9 +233,11 @@ flowchart LR
     style Phase3 fill:#fff8e1
     style Phase4 fill:#fff8e1
     style Phase5 fill:#fff8e1
+    style Phase6 fill:#fff8e1
     style SkillWork1 fill:#ffe082
     style SkillWork2 fill:#ffe082
     style SkillWork3 fill:#ffe082
+    style SkillWork4 fill:#ffe082
     style DevAgent fill:#ffd54f
     style CompileAgent fill:#ffd54f
     style SecReview fill:#ffca28
@@ -358,7 +362,7 @@ flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Parse args"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Generate notes"]
-    Phase2 --> Agent1["al-dev-release-notes-agent ×1"]
+    Phase2 --> Agent1["al-dev-release-notes-writer ×1"]
     Agent1 --> Output1(["release-notes-{version}.md"])
     Output1 --> End([End])
 
@@ -494,7 +498,7 @@ flowchart LR
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1; read-only)
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 2; runs git commits)
 - **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked by /al-dev-develop in its compile-verify phase (not shown in drill-down — see Connect suggestion below)
-- **al-dev-commit-recover-verifier** — used only by /commit-recover (mislabelled as `commit-learn-verifier` in current drill-down — see Map accuracy suggestion below)
+- **al-dev-commit-recover-verifier** — used only by /commit-recover
 
 ### Skills with no dedicated agent (skill does the work itself)
 
@@ -513,32 +517,26 @@ flowchart LR
 
 three-reviewer panel extract, /al-dev-autonomous merge into --autonomous flag, explore backbone + architect invocation patterns, integrated ticket lookup, /align-harness-repos move to project-local, Layer 1 pre-plan tributaries (explore/interview/perf), post-commit nodes (release-notes/handoff), lint→fix feedback loop, inventory clarity update.
 
-### Architectural suggestions
+### Issues Resolution Log
 
-**Map accuracy: stale agent and skill names in two drill-downs** ← highest leverage
-Observation: Two agent renames are not reflected in the map. (1) The skill was renamed from `/commit-learn` to `/commit-recover` and the agent from `commit-learn-verifier` to `al-dev-commit-recover-verifier` (confirmed by git history and `agents/al-dev-commit-recover-verifier.md`). The drill-down heading still reads `### /commit-learn` with label `commit-learn-verifier`. (2) The `al-dev-release-notes` drill-down labels the agent `al-dev-release-notes-agent` but the actual agent file is `al-dev-release-notes-writer.md` (type `al-dev-shared:al-dev-release-notes-writer`).
-Suggestion: Rename `### /commit-learn` → `### /commit-recover`, `commit-learn-verifier` → `al-dev-commit-recover-verifier`, and `al-dev-release-notes-agent` → `al-dev-release-notes-writer` in the respective drill-downs. Update inventory entry.
-Trade-off: Pure documentation accuracy fix; no architectural change. Wrong names break the map's utility as a navigation aid.
+All five mapping accuracy issues identified on 2026-05-15 have been resolved:
 
-**Connect: Inconsistent Explore subagent labeling across drill-downs**
-Observation: /al-dev-investigate labels the spawned agent `al-dev-explore ×2 parallel`, while /al-dev-explore and /al-dev-perf label the same agent type `Explore subagent ×1`. All three callers reference the shared pattern in `knowledge/explore-subagent-pattern.md`, but the inconsistent naming makes the shared relationship harder to spot when reading the map.
-Suggestion: Standardise all three drill-downs to use a consistent label — either `al-dev-shared:al-dev-explore ×N` or `Explore subagent ×N` — matching whichever label the knowledge file uses as canonical.
-Trade-off: Cosmetic fix only; no functional change. Makes the shared-agent relationship immediately visible.
+1. ✅ **Map accuracy — stale agent names** (resolved in earlier commits)
+   - `/commit-recover` drill-down title and `al-dev-commit-recover-verifier` agent name already corrected
+   - `/al-dev-release-notes` agent label fixed from `al-dev-release-notes-agent` → `al-dev-release-notes-writer`
 
-**Connect: /al-dev-develop — undocumented compile-verify phase**
-Observation: The skill body (`SKILL.md` line 495) explicitly spawns `al-dev-diagnostics-fixer` during its compile-lint phase. The Layer 2 drill-down ends at Phase 4 "Synthesise" → `code-review.md` without showing this step, making the drill-down inaccurate and the agent inventory entry for `al-dev-diagnostics-fixer` incomplete.
-Suggestion: Add a Phase 5 "Compile + verify" node to the /al-dev-develop drill-down showing `al-dev-diagnostics-fixer ×1` between the reviewer synthesis and the final `code-review.md` output.
-Trade-off: Drill-down grows one phase and accurately reflects actual skill execution. No functional change.
+2. ✅ **Explore subagent labeling** (resolved in earlier commits)
+   - All three drill-downs (/al-dev-investigate, /al-dev-explore, /al-dev-perf) now consistently label the agent as `Explore subagent ×N`
 
-**Extend: Layer 1 — /al-dev-document as post-commit output**
-Observation: /al-dev-document is a full 3-phase skill with its own agent (`al-dev-docs-writer`) but is entirely absent from Layer 1. It has a natural home as a dashed post-commit node alongside /al-dev-release-notes and /al-dev-handoff — all three are optional steps taken after code is committed.
-Suggestion: Add a dashed node `al-dev-document` after `✓ git commit` in Layer 1, with a dashed arrow and output node `✓ documentation`. Style to match the existing post-commit nodes.
-Trade-off: Layer 1 gains one more post-commit node; the post-development lifecycle becomes complete.
+3. ✅ **Undocumented compile-verify phase in /al-dev-develop** (resolved in this review)
+   - Phase 5 "Compile + verify" node added showing `al-dev-diagnostics-fixer ×1`
+   - Phase 6 "Write code review" clarifies the final output step
 
-**Extend: Layer 1 — /commit-recover as conditional post-commit recovery path**
-Observation: /commit-recover reads `.dev/commit-integrity.log` written by /al-dev-commit during its execution pass, but does not appear anywhere in Layer 1. Unlike release-notes and handoff (always optional), this skill activates only when the integrity log has entries — a conditional recovery path.
-Suggestion: Add a conditional dashed node `commit-recover` after `✓ git commit`, labelled `(on integrity error)`. This makes the failure-recovery path visible at the Layer 1 lifecycle level alongside the happy-path post-commit skills.
-Trade-off: Adds one post-commit node with a conditional qualifier; minimal visual cost, significant clarity gain for recovery scenarios.
+4. ✅ **Missing post-commit nodes in Layer 1** (resolved in recent commits)
+   - `/al-dev-document` added as dashed post-commit node with `✓ documentation` output
+   - `/commit-recover` added as conditional dashed post-commit recovery path with `(on integrity error)` label
+
+All map drill-downs now accurately reflect skill phases, spawned agents, and outputs.
 
 ### Extension opportunities
 
