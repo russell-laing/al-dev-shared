@@ -2,6 +2,8 @@
 
 Referenced by: `al-dev-performance-reviewer` agent
 
+> **Foundation:** These examples illustrate patterns defined in `knowledge/perf-anti-patterns-prompt.md`. Read the taxonomy file first for severity levels, exclusion rules, and the complete pattern catalog. These examples are visual companions to the taxonomy.
+
 ## Common Performance Issues
 
 ### N+1 Query Pattern
@@ -15,13 +17,44 @@ repeat
 until rec.Next() = 0;
 ```
 
-**Good:**
+**Good (Batch Load Pattern):**
 ```al
-rec.FindSet();
-repeat
-  // Load all data first, then process in memory
-  // or use a JOIN/FILTER to reduce database calls
-until rec.Next() = 0;
+var
+    OrderList: Record "Sales Header";
+    LineList: Record "Sales Line";
+    OrderLines: Dictionary of [Integer, List of [Record "Sales Line"]];
+    LineKey: Integer;
+begin
+    // Load ALL related records in one query
+    LineList.SetLoadFields("Document No.", "Line No.", "Document Type", Amount);
+    LineList.FindSet();
+    repeat
+        if not OrderLines.ContainsKey(LineList."Line No.") then
+            OrderLines.Add(LineList."Line No.", new List of [Record "Sales Line"]);
+        OrderLines.Get(LineList."Line No.").Add(LineList);
+    until LineList.Next() = 0;
+    
+    // Process in memory — no more database queries
+    foreach LineKey in OrderLines.Keys do
+        ProcessOrderLines(OrderLines.Get(LineKey));
+end;
+```
+
+**Good (JOIN Pattern):**
+```al
+var
+    OrderHeader: Record "Sales Header";
+    OrderLine: Record "Sales Line";
+begin
+    // Use JOINs to avoid N+1 — one SQL query instead of 1 + N
+    OrderLine.SetLoadFields("Amount", "Unit Price", Quantity);
+    OrderLine.SetRange("Document Type", OrderHeader."Document Type"::"Order");
+    if OrderLine.FindSet() then
+        repeat
+            // Line data is already loaded; no additional Get() needed
+            ProcessOrderLine(OrderLine);
+        until OrderLine.Next() = 0;
+end;
 ```
 
 ### Inefficient FINDSET Usage
@@ -108,3 +141,35 @@ count := Rec.Count();
 for i := 1 to count do
   // Process i
 ```
+
+### Missing SetLoadFields
+
+**Bad (loads ALL columns):**
+```al
+var
+    Customer: Record Customer;  // ~50+ fields in table
+begin
+    Customer.SetRange("Last Sales Date", CalcDate('-30D', Today()), Today());
+    if Customer.FindSet() then
+        repeat
+            // Only need "No." and "Name"
+            LogCustomer(Customer."No.", Customer.Name);
+        until Customer.Next() = 0;
+end;
+```
+
+**Good (loads only needed columns):**
+```al
+var
+    Customer: Record Customer;
+begin
+    Customer.SetLoadFields("No.", Name);  // Only these columns from SQL
+    Customer.SetRange("Last Sales Date", CalcDate('-30D', Today()), Today());
+    if Customer.FindSet() then
+        repeat
+            LogCustomer(Customer."No.", Customer.Name);
+        until Customer.Next() = 0;
+end;
+```
+
+**Impact:** Without SetLoadFields, SQL reads all ~50 columns from the Customer table even though you only need 2. For tables with BLOBs or large memo fields, this adds measurable latency and memory pressure.

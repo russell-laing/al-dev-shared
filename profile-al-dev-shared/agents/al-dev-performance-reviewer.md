@@ -57,14 +57,19 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 - "This is CRITICAL because it will cause timeout on tables >100K rows"
 - "This is LOW because it's a one-time startup operation"
 
-### Common Performance Issues
+### Performance Patterns Reference
 
-For detailed code examples, see `knowledge/performance-review-examples.md`. Key patterns:
-- N+1 query loops
-- Inefficient FINDSET/CALCS
-- Missing table indexes
-- Blocking operations in triggers
-- Unnecessary loops
+**Primary reference:** `knowledge/perf-anti-patterns-prompt.md` — The complete taxonomy of 8 performance patterns with severity levels, exclusion rules, and trade-off guidance.
+
+**Code examples:** `knowledge/performance-review-examples.md` — Visual AL code examples for each pattern (before/after comparisons).
+
+**Key patterns to look for:**
+- N+1 query loops — queries inside loops
+- SetLoadFields optimization — loading only necessary columns
+- Inefficient FINDSET/CALCS — missing indexes, wrong sort keys
+- Missing table indexes — slow range filters on large tables
+- Blocking operations in triggers — synchronous work blocking user input
+- Unnecessary loops — Count() called each iteration instead of once
 
 ## Output Format
 
