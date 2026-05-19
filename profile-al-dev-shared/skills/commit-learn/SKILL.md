@@ -1,6 +1,6 @@
 ---
 name: commit-learn
-description: Analyze commit semantics and learn from code review feedback.
+description: Analyze and recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
 argument-hint: "[--auto-fix] [--file=path]"
 ---
 
@@ -25,18 +25,39 @@ Execute recovery: restores files with fallback strategies and creates repair com
 ```
 Analyze specific file only.
 
-## How It Works
+## Steps
 
-1. **Read incidents:** Parse `.dev/commit-integrity.log` for entries marked as "CORRUPTION" or "SYNTAX_ERROR"
-2. **For each incident:**
-   - Skip if already fully recovered (status = RESTORED and verified)
-   - Spawn **verifier subagent** with incident details
-   - Verifier analyzes git history and learnings.md
-   - Verifier proposes fallback strategy
-   - If `--auto-fix`: execute recovery and create repair commit
-3. **Update learnings:** Append successful recovery patterns to `.dev/learnings.md`
+### Step 1: Parse the integrity log
 
-## Output (Read-Only Mode)
+Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" or "SYNTAX_ERROR". Skip entries whose status is already RESTORED and verified.
+
+### Step 2: Analyze each incident with a verifier subagent
+
+For each unresolved incident, dispatch the verifier subagent:
+
+Agent tool:
+  subagent_type: commit-learn-verifier
+  description: "Analyze incident: [file path]"
+
+Prompt:
+  "Analyze this corruption incident and propose a recovery strategy.
+
+   Incident file path: [file path from log]
+   Baseline lines: [original line count from log]
+   Current lines: [wc -l output]
+   Git history (last 3-5 commits for this file): [git log output]
+   Known patterns from .dev/learnings.md: [learnings content]
+
+   Return:
+   - Root cause hypothesis
+   - Matched pattern (if any) from learnings.md
+   - Proposed fallback strategy
+   - Recovery plan steps
+   - Expected result after recovery"
+
+### Step 3: Present analysis (read-only mode)
+
+Display the verifier output for each incident:
 
 ```
 Commit Integrity Analysis
@@ -49,17 +70,28 @@ Incident 1: codeunit.al
 
   Verifier Analysis:
     Root Cause Hypothesis: Perl regex [[:space:]]+$ strips newlines
-    Pattern Found: Known pattern in learnings.md (2026-04-16)
+    Pattern Found: Known pattern in .dev/learnings.md (2026-04-16)
     Proposed Fallback: Use sed with [ \t]+$ instead
     Recovery Plan: Restore from HEAD~1, re-apply with sed
-    Expected Result: ✓ Syntax valid
+    Expected Result: Syntax valid
 
   Next Step: Run with --auto-fix to execute recovery
 
 Summary: 1 incident ready for recovery
 ```
 
-## Output (With --auto-fix)
+If `--auto-fix` was not passed, stop here and prompt the user to re-run with `--auto-fix`.
+
+### Step 4: Execute recovery (--auto-fix only)
+
+For each incident approved for recovery:
+
+1. Restore the file from `HEAD~1` using `git checkout HEAD~1 -- <file>`
+2. Re-apply the original change using the fallback strategy (e.g., `sed` instead of `perl`)
+3. Validate AL syntax
+4. Create a repair commit: `fix(commit-integrity): recover <file> from <pattern>`
+
+Display the recovery result:
 
 ```
 Commit Integrity Recovery
@@ -68,24 +100,31 @@ Commit Integrity Recovery
 Incident 1: codeunit.al
   Time: 2026-05-05T14:24:12Z
   Recovery Execution:
-    ✓ Restored file to HEAD~1 (89 lines)
-    ✓ Re-applied change with fallback strategy (sed)
-    ✓ Validated AL syntax: OK
-    ✓ Created repair commit: 🔧 fix(commit-integrity): recover codeunit.al from perl regex corruption
-    ✓ Updated learnings.md with recovery record
+    Restored file to HEAD~1 (89 lines)
+    Re-applied change with fallback strategy (sed)
+    Validated AL syntax: OK
+    Created repair commit: fix(commit-integrity): recover codeunit.al from perl regex corruption
+    Updated .dev/learnings.md with recovery record
 
 Summary: 1 incident recovered, learnings updated
 ```
+
+### Step 5: Update learnings
+
+Append successful recovery patterns to `.dev/learnings.md`:
+
+- Date, file, pattern matched, recovery method, success flag
+- Update running statistics (incidents, recovered, escalations)
 
 ## Internal Workflow
 
 **Triggered by:** `User: /commit-learn` or `/commit-learn --auto-fix`
 
-**Calls verifier subagent with:**
+**Verifier subagent receives:**
 - Incident file path
 - Baseline/current line count
 - Git history (last 3-5 commits for file)
-- Current learnings.md content
+- Current `.dev/learnings.md` content
 
 **Verifier returns:**
 - Root cause hypothesis
@@ -94,7 +133,7 @@ Summary: 1 incident recovered, learnings updated
 - Learning record (pattern, strategy, success rate)
 
 **Post-recovery:**
-- Create repair commit with gitmoji 🔧
-- Append to learnings.md:
+- Create repair commit with prefix `fix(commit-integrity):`
+- Append to `.dev/learnings.md`:
   - Date, file, pattern matched, recovery method, success
   - Update statistics (incidents, recovered, escalations)
