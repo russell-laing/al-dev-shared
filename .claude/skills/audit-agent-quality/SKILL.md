@@ -62,11 +62,14 @@ vague qualifiers; Low for minor style issues.
 
 Check:
 
+- Agent file name (without `.md`) matches the `al-dev-<name>` prefix convention
 - `description` field is present in frontmatter and is a single sentence
 - `model` field is present in frontmatter
 - `tools` field is present in frontmatter and contains only canonical names:
   `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `Agent`, `AskUserQuestion`,
   `WebSearch`, `WebFetch`, or `mcp__`-prefixed tool names
+- Frontmatter contains no skill-only fields (`argument-hint`, `triggers`) that
+  are invalid in agents
 - `## Inputs` and `## Outputs` tables are present, or a stated reason explains
   their absence
 - Phase/step headers are numbered consistently — not mixing "Phase N" and
@@ -74,8 +77,9 @@ Check:
 - Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
 
 Severity: High for missing `model` or `tools` frontmatter fields; Medium for
-missing Inputs/Outputs tables or non-canonical tool names; Low for numbering
-inconsistency or missing language tags.
+missing Inputs/Outputs tables, non-canonical tool names, a file name that does
+not match the `al-dev-<name>` convention, or skill-only fields in frontmatter;
+Low for numbering inconsistency or missing language tags.
 
 ### Lens 3 — Description Drift
 
@@ -94,7 +98,7 @@ Severity: Medium for a missing use case or absent output; Low for minor verb mis
 
 Check:
 
-- Section count in the system prompt body > 4 top-level sections
+- Section count in the system prompt body > 6 top-level sections
 - Any single section > 20 lines
 - `skip if...` or `only if...` conditions that are effectively always true
   given normal usage (dead branches with no realistic false path)
@@ -168,6 +172,11 @@ descending), then clean agents. Each agent section ends with `---`.
 Clean agents use exactly this format (no emoji): `### al-dev-<name> — No findings.`
 
 ### Scoped run (argument passed)
+
+The argument may include or omit the `al-dev-` prefix; normalize by stripping
+it if present and always prepend `al-dev-` when constructing the section heading.
+For example, both `al-dev-developer` and `developer` resolve to section heading
+`### al-dev-developer`.
 
 1. Read `docs/al-dev-agent-quality.md` if it exists.
 2. Locate the section for the named agent — from `### al-dev-<arg>` to just
