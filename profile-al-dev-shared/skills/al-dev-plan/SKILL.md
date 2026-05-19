@@ -18,6 +18,10 @@ Design a complete AL/BC solution by facilitating competitive
 debate between 2-3 solution architect agents, then synthesizing
 the winning approach. You do NOT design the solution yourself.
 
+## Phase Numbering Rationale
+
+The skill uses fractional phase numbers (Phase 0, Phase 0.5, Phase 1–7) to reflect semantic workflow layers rather than strict sequential numbering. Each fractional phase represents a distinct decision point or checkpoint within the broader workflow. This allows precise specification of where handoff points occur without forcing artificially sequential numbering.
+
 ## Phase 0: Check for Existing Progress
 
 Per the Phase 0 Read Protocol in
