@@ -1,6 +1,6 @@
 ---
 name: al-dev-lint
-description: Run ALCops analyzers and auto-fix AL code diagnostics.
+description: Run AL compile and auto-fix AL code diagnostics.
 argument-hint: "[optional: path to existing compile-errors.log]"
 ---
 

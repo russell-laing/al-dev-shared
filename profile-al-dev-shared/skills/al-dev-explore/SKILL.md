@@ -155,10 +155,11 @@ missing from `project-context.md`:
 
 ```text
 "These findings include [N] objects/patterns not yet in project-context.md.
- Update project-context.md to capture them? [Yes/No]"
+ Update project-context.md to capture them? [Yes/No]
+ If yes: append under a `## Recent Discoveries — [date]` section at the end of the file."
 ```
 
-If yes, append a "Recent Discoveries" entry to the relevant section.
+If yes, append under a `## Recent Discoveries — [date]` section at the end of the file.
 
 **If `project-context.md` does not exist and the project has AL files:**
 
@@ -176,7 +177,7 @@ Suggest a next command based on what was found.
 
 ```text
 Exploration complete →
-.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md
+.dev/2026-05-19-al-dev-explore-findings.md
 
 [ANSWER section, inline]
 

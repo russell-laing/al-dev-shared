@@ -27,7 +27,7 @@ continuing.
 
 ---
 
-## Phase 1b: Read Project Context
+## Phase 1.5: Read Project Context
 
 Check for `.dev/project-context.md`. If it exists, read these
 sections to pass to the agent:
@@ -63,7 +63,7 @@ Prompt:
    Follow the instructions in your agent definition exactly.
    Return output in this format:
 
-   RELEASE_NOTES_WRITTEN: .dev/YYYY-MM-DD-{app-id}-al-dev-release-notes-{short-hash}.md
+   RELEASE_NOTES_WRITTEN: .dev/YYYY-MM-DD-[app-id]-al-dev-release-notes-[short-hash].md
    VERSION: <version label>
    CHANGES: <N> (<X features, Y fixes, Z other>)
    SUMMARY: <2-3 sentence overview>

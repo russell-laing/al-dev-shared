@@ -32,10 +32,10 @@ Check the argument after `/al-dev-support`:
 | --- | --- |
 | Numeric or `FD-NNNN` | Freshdesk ticket — go to Step 2 |
 | Path (`/`, `./`, `~/`, or known extension) | File — go to Step 3 (file) |
-| No argument | Check branch — go to Step 1A |
+| No argument | Check branch — go to Step 1.5 |
 | Any other text | Free-text query — go to Step 3 (freetext) |
 
-### Step 1A — Branch Auto-Detect
+### Step 1.5 — Branch Auto-Detect
 
 ```bash
 git branch --show-current
