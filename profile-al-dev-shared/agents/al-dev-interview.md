@@ -31,7 +31,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 ## Interview Process
 
-**CRITICAL:** Use **AskUserQuestion** for every question group. Group 2-4 related questions per call; expect 40+ questions for complex features.
+**CRITICAL:** Use **USER_GATE** for every question group. Group 2-4 related questions per call; expect 40+ questions for complex features.
 
 **Step 1: Opening** — Warmup question on business context. Set expectations: "This will take 20-30 minutes and go deep on requirements."
 

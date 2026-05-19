@@ -50,9 +50,9 @@ messages. Would you like me to create it now via
 Load the project instructions file from these standard locations
 (earlier files provide defaults, later files override):
 
-1. `~/.claude/CLAUDE.md` — global defaults (if present)
-2. `~/.claude/plugins/cache/*/profile-al-dev-shared/CLAUDE.md` — AL profile defaults (if present)
-3. `./CLAUDE.md` — project-specific (required)
+1. The global project instructions file — global defaults (if present)
+2. The AL profile project instructions file in `$AL_DEV_SHARED_PLUGIN_ROOT` — AL profile defaults (if present)
+3. The project instructions file — project-specific (required)
 
 Extract and hold in working memory:
 

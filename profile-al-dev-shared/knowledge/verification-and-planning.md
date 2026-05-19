@@ -31,7 +31,7 @@ This guide is the shared reference for cross-harness parity between Claude Code 
 
 ## Write-Persistence Verification
 
-See `~/.claude/CLAUDE.md` → "File Editing Safety" → "Write-Persistence
+See the global project instructions file → "File Editing Safety" → "Write-Persistence
 Verification" for the project-wide rule. Skills that produce new
 artifact files (findings, plans, reports, contexts) MUST verify
 file existence after Write before reporting the artifact complete.

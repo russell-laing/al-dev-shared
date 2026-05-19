@@ -104,8 +104,5 @@ If available, search BC history for:
 
 For mermaid diagram references (if needed):
 ```bash
-MERMAID_HELPER=$(find ~/.claude/plugins -name "md-mermaid-helper.md" -type f 2>/dev/null | head -1)
-if [ -z "$MERMAID_HELPER" ]; then
-  MERMAID_HELPER="profile-al-dev-shared/markdown/md-mermaid-helper.md"
-fi
+MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
 ```
