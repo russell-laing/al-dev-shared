@@ -46,12 +46,12 @@ messages. Would you like me to create it now via
 
 ## Step 2 — Load Project Context
 
-Load the project instructions file from your harness's standard
-locations (earlier files provide defaults, later files override):
+Load the project instructions file from these standard locations
+(earlier files provide defaults, later files override):
 
-1. Global defaults location (if present, per harness mapping)
-2. AL profile defaults location (if present, per harness mapping)
-3. `./[project instructions file]` — project-specific (required)
+1. `~/.claude/CLAUDE.md` — global defaults (if present)
+2. `~/.claude/plugins/cache/*/profile-al-dev-shared/CLAUDE.md` — AL profile defaults (if present)
+3. `./CLAUDE.md` — project-specific (required)
 
 Extract and hold in working memory:
 
@@ -114,7 +114,7 @@ your changes, then run `/al-dev-commit` again."
 
 ---
 
-## Step 5 — Establish Gitmoji Style
+## Step 5 — Establish Gitmoji Style and Advisory Alignment Check
 
 Check the project's recent commit style:
 
@@ -126,11 +126,8 @@ Extract the emoji pattern (e.g., `✨ feat:`, `🐛 fix:`, `📝 docs:`).
 
 Hold as **PROJECT_GITMOJI_STYLE**.
 
----
-
-## Step 5.5 — Advisory Alignment Check
-
-Run the alignment check in advisory mode (non-blocking):
+Run the alignment check in advisory mode (non-blocking).
+`AL_DEV_SHARED_PLUGIN_ROOT` is set by the harness to the plugin root directory.
 
 ```bash
 SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
@@ -145,7 +142,7 @@ If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mapp
 ⚠️  Alignment advisory: N issue(s) found. Run /align-harness-repos to inspect and fix.
 ```
 
-Continue to Step 6 regardless — this check is advisory only.
+Continue to Step 6 regardless — both checks above are advisory only.
 
 ---
 
@@ -196,7 +193,7 @@ If **any deleted files** appear, display them prominently:
 
 Wait for user response:
 
-- **yes** — continue to Step 6
+- **yes** — continue to Step 8
 - **no** — run `git restore --staged <file>` for every deleted
   file, then **stop** (user must re-run `/al-dev-commit` after
   reviewing their staged files)
@@ -232,7 +229,7 @@ Confirm this plan? (yes / adjust / cancel)
 
 Wait for user response:
 
-- **yes** — continue to Step 7
+- **yes** — continue to Step 9
 - **adjust** — user provides revised groupings; update your
   working copy of the plan and re-present, then wait for
   confirmation again
@@ -263,13 +260,7 @@ Confirm? (yes / edit / skip / cancel-all)
 - **skip** — skip this group; leave its files staged
 - **cancel-all** — abort all remaining; leave all files staged
 
-After all groups are confirmed or skipped, proceed to Step 10.
-
----
-
-## Step 9.5 — Mixed `.al` + `.docx` acknowledgement gate
-
-Inspect the analysis agent output `WARNINGS` block for a `MIXED_AL_DOCX` entry.
+After all groups are confirmed or skipped, check the analysis agent output `WARNINGS` block for a `MIXED_AL_DOCX` entry.
 
 If present, show:
 
@@ -287,10 +278,10 @@ Proceed to execution? (yes / no)
 
 User response:
 
-- `yes` → continue to Step 10
-- `no` → stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
+- `yes` — proceed to Step 10
+- `no` — stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
-If no `MIXED_AL_DOCX` warning exists, continue directly to Step 10.
+If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 10.
 
 ---
 
