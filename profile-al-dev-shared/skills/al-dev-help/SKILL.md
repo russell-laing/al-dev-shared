@@ -40,28 +40,7 @@ Parse the user's argument:
 
 List capabilities filtered by argument.
 
-**For `commands`:**
-
-Glob `skills/*/SKILL.md` in the profile directory. For each file, read the
-`description` field from YAML frontmatter. Format as a table:
-
-```text
-Available Skills:
-
-| Skill                 | Description                                          |
-|-----------------------|------------------------------------------------------|
-| /al-dev-fix           | Lightweight bug fix without approval gates           |
-| /al-dev-commit        | Atomic commit workflow with gitmoji + CC messages    |
-| /al-dev-document      | Generate comprehensive technical documentation       |
-| /al-dev-init-context  | Initialize project context document (one-time setup) |
-| /al-dev-ticket        | Load Freshdesk ticket context for this session       |
-| /al-dev-help          | Contextual profile guidance (this skill)             |
-| /al-dev-explore       | Fast codebase exploration with persistent output     |
-| /al-dev-interview     | Deep requirements gathering through structured dialog |
-| /al-dev-plan          | Competitive solution design (2-3 architects debate)  |
-| /al-dev-develop       | Parallel implementation + 3-specialist code review   |
-| /al-dev-release-notes | End-user release notes from git diff                 |
-```
+**For `commands`:** Output the same table as `skills` mode (an alias for backwards compatibility).
 
 **For `skills`:**
 
@@ -103,7 +82,7 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | performance-reviewer      | Query efficiency, N+1, resource usage           |
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |
-| python-script-engineer    | Python scripts for AL tooling                   |
+| al-dev-script-engineer    | Python and shell scripts for AL tooling          |
 ```
 
 **For `all`:** Show all three tables in sequence.
@@ -138,17 +117,17 @@ The user described what they want to do. Recommend the right workflow.
 Scan for these artifacts (presence/absence informs the recommendation):
 
 - `.dev/project-context.md` — project initialized
-- `.dev/01-requirements.md` — requirements gathered
-- `.dev/02-solution-plan.md` — solution designed
-- `.dev/03-code-review.md` — implementation reviewed
+- `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)` — requirements gathered
+- `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)` — solution designed
+- `$(ls .dev/*-al-dev-develop-code-review.md 2>/dev/null | sort | tail -1)` — implementation reviewed
 
 Apply these refinements:
 
 - No `project-context.md` and project has AL files → suggest
   `/al-dev-init-context` before anything else
-- `01-requirements.md` exists → skip `/al-dev-interview`,
+- `*-al-dev-interview-requirements.md` exists → skip `/al-dev-interview`,
   suggest `/al-dev-plan`
-- `02-solution-plan.md` exists → skip `/al-dev-plan`,
+- `*-al-dev-plan-solution-plan.md` exists → skip `/al-dev-plan`,
   suggest `/al-dev-develop`
 
 **Step 3: Output recommendation:**
@@ -160,8 +139,8 @@ Why: Your request involves multiple objects and design decisions
      (MEDIUM complexity).
 
 Current state:
-  .dev/project-context.md  ✅ found
-  .dev/01-requirements.md  ❌ not found
+  .dev/project-context.md                         ✅ found
+  *-al-dev-interview-requirements.md              ❌ not found
 
 Suggested sequence:
   1. /al-dev-interview "credit limit validation"  -- gather requirements
@@ -183,19 +162,19 @@ Or skip to /al-dev-plan directly if requirements are already clear.
 | ------- | --------------- |
 | No `.dev/` directory | Run `/al-dev-init-context` to set up project context |
 | `project-context.md` only | Describe your goal and run `/al-dev-help <description>` |
-| `01-requirements.md` present | Run `/al-dev-plan` to design the solution |
-| `02-solution-plan.md` present | Run `/al-dev-develop` to implement |
-| `03-code-review.md` present | Run `/al-dev-document` for reference documentation |
+| `*-al-dev-interview-requirements.md` present | Run `/al-dev-plan` to design the solution |
+| `*-al-dev-plan-solution-plan.md` present | Run `/al-dev-develop` to implement |
+| `*-al-dev-develop-code-review.md` present | Run `/al-dev-document` for reference documentation |
 
 **Step 3: Output:**
 
 ```text
 Current project state:
 
-  .dev/project-context.md   ✅ found
-  .dev/01-requirements.md   ✅ found (12 REQ: tokens)
-  .dev/02-solution-plan.md  ✅ found
-  .dev/03-code-review.md    ❌ not found
+  .dev/project-context.md                              ✅ found
+  .dev/2026-05-19-al-dev-interview-requirements.md     ✅ found (12 REQ: tokens)
+  .dev/2026-05-19-al-dev-plan-solution-plan.md         ✅ found
+  .dev/2026-05-19-al-dev-develop-code-review.md        ❌ not found
 
 Recommendation: Run /al-dev-develop to implement the solution plan.
 
