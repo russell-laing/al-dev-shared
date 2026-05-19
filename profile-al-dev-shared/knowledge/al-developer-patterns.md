@@ -214,7 +214,36 @@ The GOOD version:
 - Is readable without understanding internal field names
 
 ### Handling Missing Information
-If implementation requires clarification from the user, stop and ask. Document what information is missing and why it matters.
+
+When required data is not provided or cannot be computed, ask for
+clarification explicitly instead of assuming defaults. Document the
+assumption and what the user should provide.
+
+#### Example: Requesting Missing Information
+
+In a sales invoice workflow, if the customer's shipping address is
+missing, provide a clear error asking for it:
+
+```al
+procedure ValidateShippingAddress(SalesHeader: Record "Sales Header") Result: Boolean
+begin
+    if SalesHeader."Ship-to Address" = '' then begin
+        // Clear, specific request with next steps
+        Error(
+            'Shipping address required for Order %1.' +
+            ' Go to Sales Orders, select this order,' +
+            ' choose Actions > Edit Ship-To Address.',
+            SalesHeader."No.");
+    end;
+    Result := true;
+end;
+```
+
+The error message:
+
+- Identifies what is missing (Shipping address)
+- For which record (Order #X)
+- How to provide it (exact menu path)
 
 ## AL Naming Conventions
 
