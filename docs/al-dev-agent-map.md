@@ -16,13 +16,13 @@
 | al-dev-explore | haiku | Read, Glob, Grep | (none found — skill uses built-in Explore type) |
 | al-dev-interview | sonnet | Read, Write, AskUserQuestion | /al-dev-interview |
 | al-dev-performance-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
-| al-dev-release-notes-agent | sonnet | Bash, Write, Read, Glob, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp | /al-dev-release-notes |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
 | al-dev-support-agent | sonnet | WebSearch, WebFetch, Bash, Write, Read, mcp:al-mcp-server, mcp:microsoft-docs | /al-dev-support |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket, /al-dev-support |
-| commit-learn-verifier | sonnet | Bash, Read, Write | /commit-learn |
+| al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 
 ---
 
