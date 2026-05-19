@@ -57,6 +57,13 @@ Do not surface this decision to the user.
 
 ## Phase 1: Gather Context
 
+**Input Validation Gate (run before any other step):**
+Check whether $ARGUMENTS contains a meaningful feature description.
+- If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Ask the user exactly one question:
+  > "What AL feature or fix should I plan? Please describe the requirement or paste a spec."
+- Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
+- Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
+
 1. Read user's request from $ARGUMENTS
 2. Check for dated requirements file (from /interview)
    - Use: `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null
