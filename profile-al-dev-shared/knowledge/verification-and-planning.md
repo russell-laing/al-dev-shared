@@ -172,6 +172,26 @@ Each architect MUST produce all three. Architects without all three are excluded
 - Example: "This approach requires all documents to fit in memory; if processing > 100MB of line items, memory pressure becomes a concern"
 - Example: "Event handling adds ~50ms per order in high-concurrency scenarios"
 
+#### Example: Architect Debate on Caching Strategy
+
+**Proposal (Architect A):**
+> "Use in-memory cache with 5-minute TTL. Pros: fast, simple. Cons: stale data risk if config changes during window."
+
+**Strong Critique (Architect B):**
+> "5-minute TTL is risky for multi-tenant scenarios where tenant A's config could pollute tenant B's cache if deletion happens mid-window. Proposal lacks tenant isolation strategy. Better: use Redis with event-driven invalidation so cache clears immediately when config changes."
+
+**Why that's a strong critique:** It identifies a specific failure case (tenant pollution), explains why it matters (correctness issue), and proposes a concrete alternative (Redis with invalidation).
+
+**Weak Critique (Architect C):**
+> "In-memory cache might not be performant enough."
+
+**Why it's weak:** "Might not" is vague (no concrete scenario). No data supporting the concern. No alternative proposed.
+
+**Falsification (You, the decision-maker):**
+> "Test case: In-memory cache with Event Subscriber that clears cache on config-change events. Tenant A creates config, Tenant B reads it (should miss cache). Tenant A deletes config, Tenant B reads again (should still miss). If this test passes with immediate invalidation, Architect A's proposal is falsified — we need Redis only if we cannot guarantee event-driven invalidation. Let's prototype event-driven invalidation first."
+
+**Why that's a strong falsification:** It proposes a testable scenario that would validate or invalidate the proposal. Testing beats philosophy.
+
 ### Quality Bar
 
 Critiques and falsifications must be substantive enough to force re-evaluation of a design. Weak outputs ("might be slow", "could be hard to maintain") do not meet the bar.
