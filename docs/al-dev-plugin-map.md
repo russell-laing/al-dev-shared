@@ -117,7 +117,7 @@ flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Form hypotheses"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Test hypotheses"]
-    Phase2 --> Agent1["al-dev-explore ×2<br/>parallel"]
+    Phase2 --> Agent1["Explore subagent ×2<br/>parallel"]
     Agent1 --> Phase3["Phase 3<br/>Synthesise findings"]
     Phase3 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Output1(["explore-findings.md"])
