@@ -211,17 +211,23 @@ flowchart LR
     ExpertReview --> Phase4
     PerfReview --> Phase4
 
-    Phase4 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["code-review.md"])
+    Phase4 --> Phase5["Phase 5<br/>Compile + verify"]
+    Phase5 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> CompileAgent["al-dev-diagnostics-fixer ×1"]
+    CompileAgent --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1(["code-review.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fff8e1
     style Phase2 fill:#fff8e1
     style Phase3 fill:#fff8e1
     style Phase4 fill:#fff8e1
+    style Phase5 fill:#fff8e1
     style SkillWork1 fill:#ffe082
     style SkillWork2 fill:#ffe082
+    style SkillWork3 fill:#ffe082
     style DevAgent fill:#ffd54f
+    style CompileAgent fill:#ffd54f
     style SecReview fill:#ffca28
     style ExpertReview fill:#ffca28
     style PerfReview fill:#ffca28
