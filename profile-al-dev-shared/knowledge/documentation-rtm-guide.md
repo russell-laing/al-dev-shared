@@ -127,6 +127,34 @@ and prevents saving if it does (ACC-002).
 3. Place the REQ-NNN ID **immediately after** the statement it traces to.
 4. Multiple references can appear on a single statement: `(REQ-001, REQ-002, ACC-002)`.
 
+### RTM Detail by Audience
+
+How much RTM detail to include depends on who will read the documentation.
+
+#### RTM Reference Example
+
+**Technical documentation with RTM references:**
+
+> **Requirement REQ-003:** "Sales order approval workflow must notify approver within 5 minutes of submission."
+>
+> **Implementation:** When a sales order is submitted with Status = Pending Approval, the system triggers an event subscriber that sends email to the approver (from Approver User table, configured in Sales & Receivables Setup). The notification includes the order number, total amount, and approval link.
+>
+> **Verification:** See Approval Workflow Tests (ref: REQ-003-v1, REQ-003-v2)
+
+Each sentence ties back to a specific requirement. Readers can trace from documentation to requirement to test coverage.
+
+#### User Perspective
+
+User-facing documentation de-emphasizes requirements and RTM details:
+
+**User Guide (less RTM detail):**
+> When your purchase order is ready for review, click "Submit for Approval." The approver will receive an email within a few minutes and can approve or reject the order using the link in the email. You'll be notified when the order is approved.
+
+**Technical Documentation (more RTM detail):**
+> PO approval flow: Status = Open → Submit → Status = Pending Approval (triggers event subscriber) → Approver receives notification email (within 5 min SLA per REQ-003) → Approver clicks link → Portal opens approval page → Approver clicks Approve → Status = Approved (triggers audit log per REQ-002)
+
+User guides omit the requirement IDs and SLA details; technical docs include them for traceability.
+
 ---
 
 ## RTM Table Formats
