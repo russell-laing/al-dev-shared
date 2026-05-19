@@ -25,7 +25,7 @@ the investigation.
 
 ## Implementation
 
-### Step 0.5 — Advisory Alignment Check
+### Step 1 — Advisory Alignment Check
 
 Run the alignment check in advisory mode (non-blocking):
 
@@ -43,11 +43,11 @@ If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mapp
 ⚠️  Alignment advisory: N issue(s) found in shared files. Run /align-harness-repos to inspect and fix before handing off.
 ```
 
-Continue to Step 1 regardless — this check is advisory only.
+Continue to Step 2 regardless — this check is advisory only.
 
 ---
 
-### Step 1 — Identify Target Repository
+### Step 2 — Identify Target Repository
 
 From user args or `.dev/explore-findings.md` "Affected Repositories"
 table:
@@ -64,7 +64,7 @@ ls "[target-repo-path]/src" 2>/dev/null || \
 
 ---
 
-### Step 2 — Inventory Context Files to Copy
+### Step 3 — Inventory Context Files to Copy
 
 List existing `.dev/` files:
 
@@ -90,7 +90,7 @@ Exclude: `compile-errors.log`, `test-results.txt`,
 
 ---
 
-### Step 3 — Copy the Files
+### Step 4 — Copy the Files
 
 ```bash
 TARGET="[target-repo-path]"
@@ -135,7 +135,7 @@ ls "$TARGET/.dev/"
 
 ---
 
-### Step 4 — Generate the Session Continuation Prompt
+### Step 5 — Generate the Session Continuation Prompt
 
 Read `explore-findings.md` and write
 `.dev/$(date +%Y-%m-%d)-al-dev-handoff-handoff-prompt.md`:
@@ -197,7 +197,7 @@ in the current (source) repo.
 
 ---
 
-### Step 5 — Present to User
+### Step 6 — Present to User
 
 ```text
 Handoff ready → [target-repo-path]/.dev/
