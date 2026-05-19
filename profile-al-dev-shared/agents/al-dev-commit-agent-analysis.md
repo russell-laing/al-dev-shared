@@ -23,7 +23,9 @@ All inputs arrive in the dispatch prompt:
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /al-dev-commit |
+| REPO | string | Project root directory (e.g., /path/to/project) |
+| PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
+| FD_TICKET | string (optional) | Freshdesk ticket number |
 | Staged git index | **Yes** | Read via `git diff --cached` commands |
 
 ## Outputs
@@ -39,16 +41,13 @@ All inputs arrive in the dispatch prompt:
 
 ## Phase: analysis
 
-Analyse staged changes, build per-file manifests, propose commit
-groups, and draft commit messages. All inputs arrive in the
-dispatch prompt:
+Analyse staged changes, build per-file manifests, propose commit groups, and draft commit messages.
 
-- `PROJECT_CONTEXT` — scopes, object ID prefix, naming patterns
-- `FD_TICKET` — Freshdesk ticket number or empty
+**Do not modify any files in this phase.**
 
-**Do not modify any files in analysis phase.**
+### Manifest Extraction (Steps 1–3)
 
-### Step 1 — List staged files
+#### Step 1 — List staged files
 
 > Never use `cd <path> && git <cmd>`. Use `git -C <path> <cmd>`.
 
@@ -90,7 +89,9 @@ Extraction patterns from diff lines:
 
 Non-AL files: emit a simple one-liner, no manifest block.
 
-### Step 4 — Detect staged deletions
+### Validation Checks (Steps 4–6)
+
+#### Step 4 — Detect staged deletions
 
 ```bash
 git diff --cached --name-only --diff-filter=D
@@ -98,7 +99,7 @@ git diff --cached --name-only --diff-filter=D
 
 Collect into `DELETIONS` section.
 
-### Step 4.5 — Build staged-file sets (NUL-safe)
+#### Step 5 — Build staged-file sets (NUL-safe)
 
 Use one canonical extension set for OOXML policy checks:
 
@@ -126,7 +127,7 @@ while IFS= read -r -d '' f; do
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
 ```
 
-### Step 5 — Propose commit groups
+#### Step 6 — Propose commit groups
 
 Group staged files into **deployable atomic commit units**:
 
@@ -140,7 +141,7 @@ Group staged files into **deployable atomic commit units**:
 1. **Single-commit default** — 1-3 files with a clear single
    purpose → propose one commit.
 
-### Step 6 — Draft commit messages
+#### Step 6a — Draft commit messages
 
 For each group, draft a message using this format:
 
@@ -205,7 +206,7 @@ Subject line rules:
 - Never append `Co-Authored-By`, `Generated with Claude Code`,
   or any AI attribution footer to the commit message
 
-### Step 6.5 — Validate and correct drafted messages
+#### Step 6b — Validate and correct drafted messages
 
 Run these checks against every drafted message before returning.
 Auto-correct where possible; add a `WARNINGS` entry for anything
@@ -255,7 +256,7 @@ BODY_MISSING: Group <N> — AL commit type '<type>' requires
 
 Add a `WARNINGS` entry for any violation; do not block the group.
 
-### Step 6.7 — `.gitattributes` OOXML advisory (warn only)
+#### Step 6c — `.gitattributes` OOXML advisory (warn only)
 
 If `STAGED_OOXML` is non-empty, inspect `.gitattributes`:
 
@@ -277,7 +278,7 @@ fi
 
 If `MISSING_BINARY_PATTERNS` is non-empty, add one `WARNINGS` item that lists each missing line and states this is advisory only.
 
-### Step 6.8 — Mixed `.al` + `.docx` risk flag
+#### Step 6d — Mixed `.al` + `.docx` risk flag
 
 If both `STAGED_AL` and `STAGED_DOCX` are non-empty, add a `WARNINGS` entry:
 
@@ -288,7 +289,9 @@ DOCX files: <comma-separated list>
 Verify each .docx was saved from Microsoft Word and run OOXML ZIP validation before execute.
 ```
 
-### Step 7 — Return analysis output
+### Return Format (Step 7)
+
+#### Step 7 — Return analysis output
 
 ```text
 MANIFESTS:
