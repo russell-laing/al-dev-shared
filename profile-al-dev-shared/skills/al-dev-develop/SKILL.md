@@ -546,35 +546,6 @@ REVIEW=$(ls .dev/*-al-dev-develop-code-review.md \
 
 Fix any issues before presenting to the user.
 
-**Autonomous mode addition** (`--autonomous`):
-Append this additional section to the code review:
-
-```markdown
-### Autonomous Verification Results
-
-#### Signature Verification
-| Procedure | Status | Source |
-| --- | --- | --- |
-| ObjectName.ProcedureName | ✅ Verified | al_search_object_members |
-| ObjectName.OtherProc | ⚠️ Not verified | Not found in MCP |
-
-Unverified risks: [describe any NOT VERIFIED entries]
-
-#### Static Validation
-| Check | Result |
-| --- | --- |
-| Object names (≤30 chars) | ✅ All valid / ❌ N fixed |
-| Compile guards (#if logic) | ✅ All correct / ❌ N fixed |
-| Label consistency | ✅ Matches plan / ⚠️ N flagged |
-
-#### Compile-Verify Loop
-- Attempts required: N of 5
-- Final status: ✅ Clean / ⚠️ N warnings remain
-```
-
-In autonomous mode, use the standard develop validator:
-`$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-develop/validate-code-review.py`
-
 ## Phase 10: Present to User for Approval
 
 ```text
