@@ -48,11 +48,14 @@ Before acting on any findings file or context document:
    > - Your request: [extracted from your message]
    > - Output path: [absolute path where work will land]
    >
-   > Do these match? If findings and request disagree, stop and confirm before proceeding.
+   > Do these match?
+   >
+   > **If all align:** Continue to Step 1.
+   >
+   > **If findings and request disagree:** STOP. Ask the user to confirm whether to:
+   > 1. Restart the investigation with clarified requirements, or
+   > 2. Proceed with the current scope despite the mismatch
    ```
-3. **Decision:**
-   - If aligned → continue
-   - If mismatched → stop and wait for user confirmation
 
 ### Step 1 — Load Context
 
