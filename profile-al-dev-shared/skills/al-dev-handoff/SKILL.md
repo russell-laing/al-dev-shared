@@ -30,6 +30,7 @@ the investigation.
 Run the alignment check in advisory mode (non-blocking):
 
 ```bash
+# AL_DEV_SHARED_PLUGIN_ROOT is set by the harness to the plugin root directory.
 SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
 if [ -f "$SCRIPT" ]; then
   ALIGN_ADVISORY=$(python3 "$SCRIPT" --mode advisory)
@@ -75,7 +76,7 @@ Copy these files if they exist:
 
 | Source (this repo) | Target (destination repo) |
 | --- | --- |
-| `$(ls .dev/*-al-dev-ticket-ticket… ...)` | `.dev/source-ticket-context.md` |
+| `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)` | `.dev/source-ticket-context.md` |
 | `$(ls .dev/*-al-dev-explore-… ...)` | `.dev/source-explore-findings.md` |
 | `.dev/project-context.md` | `.dev/source-project-context.md` |
 | `$(ls .dev/*-al-dev-plan-solution… ...)` | `.dev/source-solution-plan.md` |

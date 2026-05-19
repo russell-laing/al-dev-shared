@@ -69,8 +69,8 @@ The interview agent MUST:
    rush through categories. Each user answer should inform
    your next questions.
 
-5. **GATE: Only after you have asked questions across all
-   relevant categories AND received answers may you proceed
+5. **GATE: The interview agent must complete all categories
+   before signalling completion. Upon agent return, proceed
    to Phase 3.**
 
 ## Phase 3: Write Requirements (only after interview)
@@ -99,6 +99,7 @@ Only after the interview conversation is complete:
 3. Validate the output:
 
    ```bash
+   # AL_DEV_SHARED_PLUGIN_ROOT is set by the harness to the plugin root directory.
    VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-interview/validate-requirements.py"
    REQFILE=$(ls -t .dev/*-al-dev-interview-requirements.md 2>/dev/null \
      | head -1)
