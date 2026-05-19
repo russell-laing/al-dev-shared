@@ -12,118 +12,79 @@ argument-hint: "[skill-name]"
 
 # Skill: /audit-skill-quality
 
-Per-file quality audit of al-dev plugin skills. Reads each SKILL.md directly
-and writes a structured findings report to `docs/al-dev-skill-quality.md`.
+Per-file quality audit of al-dev plugin skills. Dispatches five parallel lens
+agents, aggregates their findings, and writes a structured report to
+`docs/al-dev-skill-quality.md`.
 
 If an argument is passed (e.g., `/audit-skill-quality al-dev-develop`), only
 that skill is audited and only its section is updated in the report.
 
 ---
 
-## Step 1 — Discover Skill Files
+## Phase 1 — Discover Skill Files
 
 ```bash
 find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills -name "SKILL.md" | sort
 ```
 
-Build a list of skill names from directory names
-(e.g., `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` → skill name `al-dev-develop`).
+Build a list of absolute paths (`file_list`). Derive skill names from the parent
+directory name (e.g., `.../skills/al-dev-develop/SKILL.md` → `al-dev-develop`).
 
-If an argument was passed, restrict to the single matching skill file only.
-
----
-
-## Step 2 — Apply Five Quality Lenses
-
-Read each SKILL.md in full. For each, run all five lenses and record every
-finding with four fields: **Lens**, **Severity**, **Observation**, **Fix**.
-
-Severity scale:
-- **High** — ambiguous enough to change behavior, or an outright contradiction
-- **Medium** — convention violation or moderate bloat that degrades maintainability
-- **Low** — minor drift, style, or clarity issue with limited behavioral impact
-
-### Lens 1 — Prompt Clarity
-
-Check for:
-
-- Instructions interpretable in more than one way — record the ambiguous sentence
-- Vague qualifiers with no operative definition: "as needed", "appropriate",
-  "reasonable", "if necessary"
-- `if X` branches with no `else` / `otherwise` clause (incomplete conditional)
-- Bash code blocks that are pseudo-code rather than runnable commands (unrecognised
-  binary names, unexplained `<placeholder>` syntax, variables defined nowhere)
-- Steps that reference undefined placeholders or variables
-
-Severity: High for ambiguity that changes observable behavior; Medium for
-vague qualifiers; Low for minor style issues.
-
-### Lens 2 — Structural Conventions
-
-Check:
-
-- `name` field in frontmatter matches the directory name exactly
-- `description` field is present in frontmatter
-- `argument-hint` is present when the body references an optional argument
-- Phase/step headers are numbered consistently — not mixing "Phase N" and
-  "Step N" in the same file
-- Output files referenced in the body follow the `.dev/YYYY-MM-DD-<skill>-*.md`
-  naming convention (or `docs/` for persistent report-style outputs)
-- Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
-
-Severity: Medium for missing or inconsistent frontmatter fields; Low for
-numbering inconsistency or missing language tags.
-
-### Lens 3 — Description Drift
-
-Compare `description` and trigger phrases against the body:
-
-- Key action verbs in the description ("Spawns", "Writes", "Reads", "Audits")
-  that do not appear as actual instructions in the body
-- Trigger phrases describing use cases absent from the body
-- Related skills or agents mentioned in the description that do not appear in
-  the body
-- Description that promises an output file the body does not produce
-
-Severity: Medium for a missing use case or absent output; Low for minor verb mismatch.
-
-### Lens 4 — Bloat
-
-Check:
-
-- Step/phase count > 6
-- Any single step > 30 lines
-- `skip if...` or `only if...` conditions that are effectively always true
-  given normal usage (dead branches with no realistic false path)
-- Repetitive instruction blocks across steps that could be stated once
-- Accumulated historical commentary ("as of v2", "previously this was", "now
-  uses") that belongs in git history, not the skill body
-
-Severity: High for > 30 lines in a single step or > 8 total steps; Medium
-for dead branches or repetition; Low for minor historical commentary.
-
-### Lens 5 — Name Fit
-
-Compare the skill name against the primary verb and scope in the description
-and body:
-
-- Name implies X but body primarily does Y (scope has shifted since naming)
-- Name is too generic relative to a narrower actual scope
-- Another skill in the directory has a name so similar a user would struggle
-  to choose between them
-- Name uses an action verb inconsistent with how the skill is triggered
-
-Severity: High if the name actively misleads; Medium for moderate drift; Low
-for minor verb mismatch.
+If an argument was passed, filter `file_list` to the single matching path.
+Normalize: strip `/` prefix if present when matching input; always use `/<name>`
+for section headings in the report.
 
 ---
 
-## Step 3 — Write the Report
+## Phase 2 — Parallel Lens Dispatch
+
+Dispatch all five lens agents in a **single response** (five parallel Agent tool calls).
+
+Pass this prompt to each agent, substituting the actual absolute paths:
+
+```
+Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
+
+File list:
+/absolute/path/to/skills/skill-name/SKILL.md
+/absolute/path/to/skills/other-skill/SKILL.md
+[one path per line — paste all paths from Phase 1 here]
+```
+
+Agents to dispatch simultaneously (use `subagent_type` for each):
+- `quality-skill-lens-clarity`
+- `quality-skill-lens-structure`
+- `quality-skill-lens-description`
+- `quality-skill-lens-bloat`
+- `quality-skill-lens-name-fit`
+
+Each agent returns one block headed `### [Lens Name] Findings`.
+
+---
+
+## Phase 3 — Aggregate Findings
+
+Collect all five findings blocks. Each block contains lines in this format:
+`- **[skill-name]** | [Severity] | [observation] | [fix]`
+
+Reorganize by skill name for the report:
+
+1. Parse every findings line across all five blocks.
+2. Group lines by skill name.
+3. For each skill with at least one finding:
+   - Sort findings by severity: High first, then Medium, then Low.
+   - Format each finding with its lens name as the heading.
+4. Sort skills: those with High findings first, then Medium, then Low, then clean.
+5. Skills with no findings across all five lenses → `### /<name> — No findings.`
+
+---
+
+## Phase 4 — Write the Report
 
 ### Full run (no argument passed)
 
 Fully replace `docs/al-dev-skill-quality.md`. Substitute actual values for all
-angle-bracket placeholders before writing.
+angle-bracket placeholders before writing:
 
 ```markdown
 # AL Dev Skill Quality Audit
@@ -143,11 +104,11 @@ angle-bracket placeholders before writing.
 
 ### /<skill-name>
 
-**[High] Lens 1 — Prompt Clarity**
+**[High] Prompt Clarity**
 Observation: <offending text or pattern>
 Fix: <one-line suggestion>
 
-**[Medium] Lens 4 — Bloat**
+**[Medium] Bloat**
 Observation: <what is bloated>
 Fix: <one-line suggestion>
 
@@ -158,48 +119,40 @@ Fix: <one-line suggestion>
 ---
 ```
 
-Ordering rules: skills with findings first (sorted by highest-severity finding
-descending), then clean skills. Each skill section ends with `---`.
+Ordering: skills with findings first (highest-severity finding descending), then
+clean skills. Each skill section ends with `---`.
 
 ### Scoped run (argument passed)
 
-The argument may include or omit the leading `/` prefix; normalize by stripping
-it if present and always prepend `/` when constructing the section heading.
-For example, both `/audit-skill-quality` and `audit-skill-quality` resolve to
-section heading `### /audit-skill-quality`.
-
 1. Read `docs/al-dev-skill-quality.md` if it exists.
 2. Locate the section for the named skill — from `### /<arg>` to just before
-   the next `### /` heading or the end of `## Findings`.
-3. Build a replacement section with the new findings (or `### /<arg> — No findings.`).
-4. If the section exists: replace it in-place using the Edit tool, with the
-   old section text as `old_string` and the new section as `new_string`.
-5. If the section does not exist yet: append it at the end of `## Findings`.
-6. Recalculate Summary counts by scanning all `**[High]`, `**[Medium]`, and
-   `**[Low]` occurrences in the updated file, then rewrite the Summary table.
-7. If `docs/al-dev-skill-quality.md` does not yet exist, write a new full
-   report containing only the named skill's section.
+   the next `### /` heading or end of `## Findings`.
+3. Build a replacement section with new findings (or `### /<arg> — No findings.`).
+4. Replace in-place using the Edit tool, with the old section as `old_string`.
+5. If the section doesn't exist yet: append at the end of `## Findings`.
+6. Recalculate Summary counts by scanning all `**[High]`, `**[Medium]`, `**[Low]`
+   occurrences in the updated file, then rewrite the Summary table.
+7. If `docs/al-dev-skill-quality.md` doesn't exist: write a new full report
+   containing only the named skill's section.
 
 ---
 
-## Step 4 — Commit
+## Phase 5 — Commit
 
 ```bash
 git -C /Users/russelllaing/al-dev-shared add docs/al-dev-skill-quality.md
 git -C /Users/russelllaing/al-dev-shared commit -m "docs: update skill quality audit"
 ```
 
-For scoped runs, name the target in the message:
+For scoped runs, name the target in the commit message:
 
 ```bash
 git -C /Users/russelllaing/al-dev-shared commit -m "docs: update skill quality audit — /<skill-name>"
 ```
 
-Replace `<skill-name>` with the actual argument value.
-
 ---
 
-## Step 5 — Present to User
+## Phase 6 — Present to User
 
 Print one line per audited skill:
 - With findings: `/<skill-name>: N High, N Medium, N Low`

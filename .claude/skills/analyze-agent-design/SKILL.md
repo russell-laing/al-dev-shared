@@ -24,102 +24,95 @@ Run `/review-agent-map` first if the map may be out of date.
 
 ---
 
-## Step 1 — Read the Agent Map and Build Working Lists
+## Phase 1 — Read the Agent Map and Build Working Lists
 
-Read `docs/al-dev-agent-map.md` in full. As you read, build these lists:
+Read `docs/al-dev-agent-map.md` in full. Build these working lists:
 
-1. **Tool inventory** — for every agent, record its tools list from Layer 2.
+1. **Tool inventory** — for every agent, record its tools list from the map.
 2. **Model assignments** — for every agent, record its model.
-3. **Caller map** — for every agent, record which skills spawn it (from "Spawned by").
+3. **Caller map** — for every agent, record which skills spawn it.
 4. **Single-use agents** — agents spawned by exactly one skill.
 5. **Shared agents** — agents spawned by 2+ skills.
 6. **Undocumented agents** — agents with "Not documented" for both Inputs and Outputs.
+7. **Existing inline candidates** — agents already listed in `### Inline candidates`
+   in `docs/al-dev-agent-map.md`.
 
 If an argument was passed, restrict analysis to that lens:
 `trim`, `remodel`, `split`, `inline`, `align`, or `all` / no argument = `all`.
 
----
-
-## Step 2 — Apply Five Analytical Lenses
-
-### Lens 1 — Tool Hygiene (→ Trim)
-
-For each agent, compare the tools list in Layer 2 against what the system
-prompt body actually uses. Read the agent file:
+Also run this command to get agent file paths:
 
 ```bash
-# Run from repo root
-cat profile-al-dev-shared/agents/<name>.md
+find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents -name "*.md" | sort
 ```
-
-Red flags:
-- Agent described as "read-only" or analysis-only but has `Write` or `Edit`
-- Agent has `Bash` but no commands are mentioned in the system prompt
-- Agent has MCP tools but no MCP usage is described in the body
-
-A tool present in the frontmatter but unused in the system prompt is a Trim
-candidate.
-
-### Lens 2 — Model Fit (→ Remodel)
-
-For each agent, evaluate whether `sonnet` / `opus` / `haiku` is appropriate:
-
-- **Haiku-appropriate:** Single-step retrieval, simple API calls, basic
-  formatting — no multi-file reasoning needed
-- **Sonnet (default):** Most implementation, code review, and analysis tasks
-- **Opus justified:** Competitive design tasks, multi-file synthesis, complex
-  reasoning requiring broad codebase understanding
-
-An agent assigned `opus` for a single-step or single-file task, or `sonnet`
-for a clearly haiku-appropriate task, is a Remodel candidate.
-
-### Lens 3 — Scope Isolation (→ Split)
-
-For each agent, read its system prompt body. Ask: does it describe two clearly
-separable concerns?
-
-Signals:
-- System prompt contains two distinct "## Phase" or "## Mission" sections
-  addressing unrelated outputs
-- The Inputs and Outputs tables serve two different downstream consumers
-- The description uses "and" to connect two distinct task categories
-
-A system prompt with two separable concerns is a Split candidate.
-
-### Lens 4 — Caller Alignment (→ Align)
-
-For each agent, compare its documented Inputs/Outputs against how the spawning
-skill(s) actually invoke it:
-
-```bash
-# Run from repo root
-grep -A 20 "al-dev-<name>" profile-al-dev-shared/skills/<skill-name>/SKILL.md
-```
-
-Red flags:
-- Spawning skill passes a file the agent's Inputs table doesn't list
-- Agent's Outputs table names a file the spawning skill never reads
-- Agent Inputs is "Not documented" but spawning skill passes structured prompt
-
-A mismatch between caller behaviour and agent documentation is an Align
-candidate.
-
-### Lens 5 — Usage Patterns (→ Inline)
-
-For single-use agents, ask: does the complexity justify a dedicated agent file?
-
-Inline criteria (all three must apply):
-- Spawned by exactly one skill
-- System prompt body (after frontmatter) is fewer than 15 lines
-- No Inputs or Outputs tables documented
-
-An agent meeting all three is an Inline candidate. Before flagging, check the
-existing `### Inline candidates` section in `docs/al-dev-agent-map.md` —
-skip any agent already listed there.
 
 ---
 
-## Step 3 — Draft Suggestions
+## Phase 2 — Parallel Lens Dispatch
+
+Dispatch the relevant lens agents in a **single response** (parallel Agent tool calls).
+
+For each agent, pass this prompt (substituting actual data from Phase 1):
+
+```
+Analyze the following agent files. Apply your lens and return a findings block.
+
+## File list
+/absolute/path/to/agent1.md
+/absolute/path/to/agent2.md
+[one path per line]
+
+## Context from map analysis
+Tool inventory (agent → tools):
+[paste tool_inventory here]
+
+Model assignments (agent → model):
+[paste model_assignments here]
+
+Caller map (agent → spawning skills):
+[paste caller_map here]
+
+Single-use agents (spawned by exactly one skill):
+[comma-separated list]
+
+Already-listed inline candidates:
+[comma-separated list from docs/al-dev-agent-map.md]
+```
+
+Agents to dispatch based on the focus argument:
+- `all` or no argument: dispatch all five simultaneously
+  - `design-lens-tool-hygiene`
+  - `design-lens-model-fit`
+  - `design-lens-scope-isolation`
+  - `design-lens-caller-alignment`
+  - `design-lens-usage-patterns`
+- `trim`: dispatch only `design-lens-tool-hygiene`
+- `remodel`: dispatch only `design-lens-model-fit`
+- `split`: dispatch only `design-lens-scope-isolation`
+- `align`: dispatch only `design-lens-caller-alignment`
+- `inline`: dispatch only `design-lens-usage-patterns`
+
+Each agent returns one block headed `### [Lens Name] Findings`.
+
+---
+
+## Phase 3 — Aggregate Findings
+
+Collect all returned findings blocks. Parse each line:
+`- **[agent-name]** | [Severity] | [observation] | [fix]`
+
+Group by lens type to produce candidate lists for Phase 4:
+- **Trim candidates** — agents from Tool Hygiene findings
+- **Remodel candidates** — agents from Model Fit findings
+- **Split candidates** — agents from Scope Isolation findings
+- **Align candidates** — agents from Caller Alignment findings
+- **Inline candidates** — agents from Usage Patterns findings
+
+Keep the raw findings lines — they form the basis of Phase 4 suggestions.
+
+---
+
+## Phase 5 — Draft Suggestions
 
 Write 3–6 high-quality suggestions. Skip patterns that don't yield a real
 improvement.
@@ -166,7 +159,7 @@ Trade-off: Documentation-only change; prevents future caller confusion.
 
 ---
 
-## Step 4 — Complete Inventory Tables
+## Phase 6 — Complete Inventory Tables
 
 Build the three inventory tables from your working lists in Step 1:
 
@@ -182,7 +175,125 @@ are candidates for caller-contract documentation in `knowledge/`.
 
 ---
 
-## Step 5 — Write to `docs/al-dev-agent-map.md`
+## Phase 7 — Generate Workflow Diagram
+
+Produce a Mermaid diagram showing how the plugin's skills, agents, and knowledge files
+connect as a system. Write the result to `docs/al-dev-workflow-diagrams.md`, overwriting
+on each run.
+
+Read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram
+block.
+
+### Sub-step A — Static analysis
+
+Run four grep passes from the repo root:
+
+```bash
+# 1. Skill → Agent: agent type names invoked by each skill
+grep -rn "al-dev-shared:al-dev-" profile-al-dev-shared/skills/ --include="*.md"
+
+# 2. Skill → Skill: skill-to-skill references
+grep -rn "/al-dev-" profile-al-dev-shared/skills/ --include="*.md"
+
+# 3. Skill → Knowledge: direct knowledge file refs in skill bodies
+grep -rn "knowledge/" profile-al-dev-shared/skills/ --include="*.md"
+
+# 4. Agent → Knowledge: knowledge file refs in agent bodies
+grep -rn "knowledge/" profile-al-dev-shared/agents/ --include="*.md"
+```
+
+For each result, extract the source name (from the file path) and target name (from the
+matched line content):
+- Source skill = directory name under `skills/`
+- Source agent = filename under `agents/` without `.md`
+- Target agent = the `al-dev-*` suffix after `al-dev-shared:`
+- Target skill = the `/al-dev-*` command name (strip the leading `/`)
+- Target knowledge = the filename after `knowledge/` (strip any trailing path)
+
+Deduplicate. Build four relationship sets:
+- `skill_spawns_agent` — skill → agent (grep 1)
+- `skill_invokes_skill` — skill → skill, excluding self-references (grep 2)
+- `skill_reads_knowledge` — skill → knowledge file (grep 3)
+- `agent_reads_knowledge` — agent → knowledge file (grep 4)
+
+### Sub-step B — Complexity check
+
+Count:
+- `unique_nodes` = unique skills + unique agents + unique knowledge files
+- `total_relationships` = all edges across all four sets
+
+Decision:
+- `unique_nodes ≤ 25` **and** `total_relationships ≤ 35` → **one combined diagram**
+- Otherwise → **two focused diagrams**:
+  - Diagram 1 (Skills → Agents): `skill_spawns_agent` + `skill_invokes_skill`
+  - Diagram 2 (Skills/Agents → Knowledge): `skill_reads_knowledge` + `agent_reads_knowledge`
+
+### Sub-step C — Generate Mermaid
+
+Strict rules (from the mermaid helper — do not deviate):
+- Use `flowchart LR`
+- Node IDs: replace `-` with `_` (letters, numbers, underscores only)
+- Labels: short display name in brackets — e.g. `al_dev_plan[al-dev-plan]`
+- Knowledge file labels: filename without `.md`, path stripped
+- All `classDef` must include `font-weight:bold`
+- One `class` assignment per node, one per line
+- No HTML tags in any label
+
+Class definitions to use:
+
+```
+classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+```
+
+Diagram structure for the combined view:
+
+```
+flowchart LR
+  classDef skillNode ...
+  classDef agentNode ...
+  classDef knowledgeNode ...
+
+  subgraph Skills[Skills]
+    [one node per skill]
+  end
+  subgraph Agents[Agents]
+    [one node per agent]
+  end
+  subgraph Knowledge[Knowledge Files]
+    [one node per referenced knowledge file]
+  end
+
+  [relationship arrows between subgraphs]
+
+  class ... skillNode
+  class ... agentNode
+  class ... knowledgeNode
+```
+
+For the split view, generate two separate `flowchart LR` blocks.
+
+### Sub-step D — Write output file
+
+Write `docs/al-dev-workflow-diagrams.md`:
+
+```markdown
+# Plugin Workflow Diagrams
+
+> Generated by `/analyze-agent-design` on [today's date].
+> Re-run `/analyze-agent-design` to refresh.
+
+## Full Architecture
+
+[diagram block — or two blocks with headings:
+### Skills → Agents
+### Skills & Agents → Knowledge]
+```
+
+---
+
+## Phase 8 — Write to `docs/al-dev-agent-map.md`
 
 Replace the entire `## Observations` section (from the `## Observations`
 heading to the end of the file) with:
@@ -217,10 +328,11 @@ Update `**Last updated:**` in the document header to today's date.
 
 ---
 
-## Step 6 — Present to User
+## Phase 9 — Present to User
 
-After writing the file:
+After writing both files:
 
 1. Print a one-line summary per suggestion (type + subject).
 2. Mark the **highest-leverage** suggestion with `← highest leverage`.
-3. Ask: "Would you like to act on any of these now?"
+3. Print: `Workflow diagram written to docs/al-dev-workflow-diagrams.md`
+4. Ask: "Would you like to act on any of these now?"
