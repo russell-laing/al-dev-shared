@@ -15,8 +15,10 @@ Run all plugin audit/review skills in parallel, detect drift (orphaned nodes, st
 1. **Dispatch parallel audits** via Agent tool on `.../profile-al-dev-shared/`:
    - audit-skill-quality → skills/SKILL.md quality report
    - audit-agent-quality → agents quality report
-   - review-plugin-map → map accuracy report
-   - analyze-plugin-design → design suggestions report
+   - review-skill-map → map accuracy report
+   - analyze-skill-design → design suggestions report
+   - review-agent-map → agents accuracy report
+   - analyze-agent-design → design suggestions report
 2. **Aggregate findings** into unified report:
    - Classify each finding as autofixable | needs-review | informational
 3. **Auto-fix safe issues:**
@@ -28,6 +30,18 @@ Run all plugin audit/review skills in parallel, detect drift (orphaned nodes, st
    - Title: "chore: plugin health sweep YYYYMMDD"
    - Body includes all findings + recommended fixes + reproduction steps
    - Push to branch, create PR
+   - Example PR body:
+     ```
+     ## Findings Summary
+     - [N] autofixed items
+     - [N] items for review
+
+     ## Autofixed
+     - [list items]
+
+     ## For Review
+     - [item + rationale]
+     ```
 5. **Write weekly digest:**
    - findings-per-week trend
    - fix latency (how long items stay open)

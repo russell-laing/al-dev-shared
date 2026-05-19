@@ -6,7 +6,7 @@ set -e
 
 REPO_ROOT="/Users/russelllaing/al-dev-shared"
 TIMESTAMP=$(date +%Y%m%d)
-DRY_RUN="${1:---dry-run}"  # default to dry-run unless explicitly overridden
+DRY_RUN="${1:---dry-run}"  # default to dry-run; pass --execute to run live
 BRANCH="chore/health-sweep-${TIMESTAMP}"
 
 cd "$REPO_ROOT"
@@ -21,10 +21,14 @@ if [ "$DRY_RUN" != "--execute" ]; then
 fi
 
 # Execute mode
-git checkout -b "$BRANCH" 2>/dev/null || git checkout "$BRANCH"
+# Clean up stale branch if it exists, then create fresh
+git branch -D "$BRANCH" 2>/dev/null || true
+git checkout -b "$BRANCH"
 
-echo "[$(date)] Running plugin health audits..."
-# Dispatch audits in parallel via Claude Code
-# (Actual implementation would invoke Claude via API or CLI)
+echo "[$(date)] Running audits in parallel..."
+# Dispatch audit skills (implementation depends on scheduling context)
+# When run via Claude Code: use /audit-skill-quality, /audit-agent-quality, etc.
+# When run via cron: invoke claude CLI with skill names
+# Placeholder for audit invocation (will be completed based on schedule method)
 
 echo "[$(date)] Health sweep complete. Branch: $BRANCH"
