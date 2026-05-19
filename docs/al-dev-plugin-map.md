@@ -47,6 +47,8 @@ flowchart TD
     ReleaseNotes --> Notes(["✓ release notes"])
     Git -.-> Handoff("al-dev-handoff")
     Handoff --> HandoffOut(["✓ handoff-prompt.md"])
+    Git -.-> Document("al-dev-document")
+    Document --> DocOut(["✓ documentation"])
     Support --> Reply(["✓ customer reply"])
 
     style Ticket fill:#e1f5ff
@@ -66,6 +68,8 @@ flowchart TD
     style Lint fill:#e0f2f1
     style Handoff fill:#fff3e0
     style HandoffOut fill:#c8e6c9
+    style Document fill:#e3f2fd
+    style DocOut fill:#c8e6c9
     style Decision1 fill:#ffe0b2
 ```
 
