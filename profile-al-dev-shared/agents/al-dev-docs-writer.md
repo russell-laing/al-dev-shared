@@ -4,7 +4,7 @@ description: >-
   API references, and setup guides. Spawned by the
   al-dev-document skill.
 model: sonnet
-tools: ["Read", "Write", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Glob", "Grep"]
 ---
 
 # Agent: al-dev-docs-writer
