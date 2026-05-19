@@ -99,7 +99,7 @@ Severity: Medium for a missing use case or absent output; Low for minor verb mis
 Check:
 
 - Section count in the system prompt body > 6 top-level sections
-- Any single section > 20 lines
+- Any single section > 30 lines
 - `skip if...` or `only if...` conditions that are effectively always true
   given normal usage (dead branches with no realistic false path)
 - Repetitive instruction blocks across sections that could be stated once

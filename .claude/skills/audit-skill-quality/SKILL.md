@@ -163,6 +163,11 @@ descending), then clean skills. Each skill section ends with `---`.
 
 ### Scoped run (argument passed)
 
+The argument may include or omit the leading `/` prefix; normalize by stripping
+it if present and always prepend `/` when constructing the section heading.
+For example, both `/audit-skill-quality` and `audit-skill-quality` resolve to
+section heading `### /audit-skill-quality`.
+
 1. Read `docs/al-dev-skill-quality.md` if it exists.
 2. Locate the section for the named skill — from `### /<arg>` to just before
    the next `### /` heading or the end of `## Findings`.
