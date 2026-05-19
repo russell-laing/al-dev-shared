@@ -23,7 +23,7 @@ that skill is audited and only its section is updated in the report.
 ## Step 1 — Discover Skill Files
 
 ```bash
-find profile-al-dev-shared/skills -name "SKILL.md" | sort
+find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills -name "SKILL.md" | sort
 ```
 
 Build a list of skill names from directory names
@@ -92,7 +92,7 @@ Severity: Medium for a missing use case or absent output; Low for minor verb mis
 Check:
 
 - Step/phase count > 6
-- Any single step > ~20 lines
+- Any single step > 30 lines
 - `skip if...` or `only if...` conditions that are effectively always true
   given normal usage (dead branches with no realistic false path)
 - Repetitive instruction blocks across steps that could be stated once
@@ -153,7 +153,7 @@ Fix: <one-line suggestion>
 
 ---
 
-### /<other-skill> ✅ No findings.
+### /<other-skill> — No findings.
 
 ---
 ```
@@ -166,7 +166,7 @@ descending), then clean skills. Each skill section ends with `---`.
 1. Read `docs/al-dev-skill-quality.md` if it exists.
 2. Locate the section for the named skill — from `### /<arg>` to just before
    the next `### /` heading or the end of `## Findings`.
-3. Build a replacement section with the new findings (or `### /<arg> ✅ No findings.`).
+3. Build a replacement section with the new findings (or `### /<arg> — No findings.`).
 4. If the section exists: replace it in-place using the Edit tool, with the
    old section text as `old_string` and the new section as `new_string`.
 5. If the section does not exist yet: append it at the end of `## Findings`.
@@ -180,14 +180,14 @@ descending), then clean skills. Each skill section ends with `---`.
 ## Step 4 — Commit
 
 ```bash
-git -C . add docs/al-dev-skill-quality.md
-git -C . commit -m "docs: update skill quality audit"
+git -C /Users/russelllaing/al-dev-shared add docs/al-dev-skill-quality.md
+git -C /Users/russelllaing/al-dev-shared commit -m "docs: update skill quality audit"
 ```
 
 For scoped runs, name the target in the message:
 
 ```bash
-git -C . commit -m "docs: update skill quality audit — /<skill-name>"
+git -C /Users/russelllaing/al-dev-shared commit -m "docs: update skill quality audit — /<skill-name>"
 ```
 
 Replace `<skill-name>` with the actual argument value.
@@ -198,6 +198,6 @@ Replace `<skill-name>` with the actual argument value.
 
 Print one line per audited skill:
 - With findings: `/<skill-name>: N High, N Medium, N Low`
-- Without findings: `/<skill-name>: ✅ clean`
+- Without findings: `/<skill-name>: clean`
 
 Ask: "Would you like to fix any of these now?"
