@@ -11,7 +11,7 @@ bodies are normal for headings that introduce a list or forward-reference). The
 important metric is the severity breakdown:
 
 | Severity | Before | After | Change |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | HIGH severity | 6 | 0 | All resolved |
 | MEDIUM severity | 13 | 0 | All resolved |
 | LOW severity (false positives) | 15 | 40 | Validator fires on expanded sections |
@@ -22,7 +22,7 @@ important metric is the severity breakdown:
 
 Raw output from `python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge --verbose`:
 
-```
+```text
 WARNINGS (40):
   [THIN]     knowledge/al-developer-patterns.md: Performance Anti-Pattern: N+1 Queries (1 lines)
   [THIN]     knowledge/al-developer-patterns.md: Unreferenced Variables (1 lines)
@@ -131,7 +131,7 @@ in the original HIGH/MEDIUM list; section uses prose instructions, not code.
 ## Commits That Resolved HIGH Severity Issues
 
 | Commit | Fix |
-|---|---|
+| --- | --- |
 | `6af2511` | workflow-routing.md: COMPLEX workflow execution example added |
 | `80306c2` | compile-lint-procedure.md: verified and expanded (command options, log parsing, categorization, auto-fix criteria) |
 | `1b98cba` | perf-anti-patterns-prompt.md: all 8 patterns confirmed; severity/exclusion/trade-off sections expanded |
@@ -144,7 +144,7 @@ in the original HIGH/MEDIUM list; section uses prose instructions, not code.
 ## Commits That Resolved MEDIUM Severity Issues
 
 | Commit | Fix |
-|---|---|
+| --- | --- |
 | `5716217` | documentation-rtm-guide.md: Examples and User Perspective sections expanded |
 | `baecc8c` | code-review-patterns.md: AL code examples added for naming convention violations |
 | `7bf7280` | 4 stub files completed (al-developer-patterns, script-engineer-conventions, performance-review-examples, verification-and-planning) |
@@ -155,7 +155,7 @@ in the original HIGH/MEDIUM list; section uses prose instructions, not code.
 ## Validation Metrics (Post-Fix)
 
 | Category | Count | Status |
-|---|---|---|
+| --- | --- | --- |
 | Total files scanned | 33 | Unchanged |
 | CLEAN files | 21 | -1 (validator CLEAN list shifted) |
 | HIGH severity issues | 0 | All resolved |
