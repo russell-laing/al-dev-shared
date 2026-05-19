@@ -21,14 +21,32 @@ Every plan task must end with a verification step before its commit. This is the
 - Fail if: A file you claimed to write doesn't appear or is empty
 
 **2. Forbidden Pattern Scan**
-Verify that changed files contain NONE of these patterns:
+
+Scan all changed files for patterns that indicate incomplete work. Use grep to find:
+
+```bash
+# Check for unrendered date placeholders ([date], [YYYY-MM-DD])
+git diff --name-only --cached | xargs grep -l "\[date\]\|\[YYYY-MM-DD\]" 2>/dev/null && echo "FAIL: Found unrendered date placeholders"
+
+# Check for TODO/TBD markers (incomplete work)
+git diff --cached --unified=0 | grep "^+" | grep -E "TODO|TBD" && echo "FAIL: Found incomplete work markers"
+
+# Check for harness-specific debug comments
+git diff --cached | grep -E "claude:|copilot:" && echo "FAIL: Found harness-specific debug code"
+
+# If all checks pass:
+echo "PASS: No forbidden patterns found"
+```
+
+Run this before committing to catch common verification failures.
+
+Patterns that must not appear in changed files:
+
 - `[date]` (e.g., `[2026-05-15]`) — indicates unrendered template variable
 - `YYYY-MM-DD` (literal string, not a date value) — unrendered placeholder
 - `TODO` or `TBD` — incomplete work
 - `Co-Authored-By` (in code comments — allowed only in git trailers)
 - `claude:` or `copilot:` prefixed comments — harness-specific debugging left in
-
-Run: `grep -r "TODO\|TBD\|\[date\]\|YYYY-MM-DD\|Co-Authored-By" <changed-files>`
 
 **3. Acceptance Criteria Verification**
 - Read the task spec / requirements
