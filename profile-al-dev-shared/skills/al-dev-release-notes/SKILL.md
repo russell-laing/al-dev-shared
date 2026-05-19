@@ -7,7 +7,7 @@ argument-hint: "<start-hash> <end-hash> [uat|prod] [version]"
 # Release Notes Skill
 
 Thin orchestrator. Resolves inputs, reads project context, then
-dispatches `al-dev-release-notes-agent` to do the git analysis
+dispatches `al-dev-release-notes-writer` to do the git analysis
 and writing.
 
 ---
@@ -42,11 +42,11 @@ app.json name field.
 
 ---
 
-## Phase 2: Dispatch al-dev-release-notes-agent
+## Phase 2: Dispatch al-dev-release-notes-writer
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-release-notes-agent
+  agent: al-dev-shared:al-dev-release-notes-writer
   description: "Generate release notes [VERSION]: [start]..[end]"
 
 Prompt:

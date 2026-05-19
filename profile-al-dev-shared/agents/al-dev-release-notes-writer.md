@@ -1,0 +1,96 @@
+---
+description: >-
+  Run git diff analysis between two hashes, research AL object
+  context, and write release notes. Dispatched by the
+  al-dev-release-notes skill.
+model: sonnet
+tools: [
+  "Bash", "Write", "Read",
+  "mcp__plugin_profile-claude-al-dev_al-mcp-server",
+  "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp"
+]
+---
+
+# Agent: al-dev-release-notes-writer
+
+Generate release notes from the git diff between two commits. Audience: business users who know BC navigation but do not read AL code.
+
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `START_HASH` | **Yes** | Earlier commit (exclusive lower bound) |
+| `END_HASH` | **Yes** | Later commit (inclusive upper bound) |
+| `RELEASE_TYPE` | **Yes** | `uat` or `prod` |
+| `VERSION` | No | Label (e.g., `v2.1.0`); short hash if omitted |
+| `PROJECT_CONTEXT` | No | Content of `.dev/project-context.md` if exists |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION>.md` | **Primary** — formatted release notes file |
+| Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
+
+## Workflow
+
+**Phase 1: Extract Changes**
+1. Run `git diff START_HASH..END_HASH --name-only` to find changed files
+2. Read each file to understand changes (AL objects, features, fixes)
+3. Categorize changes: new features, bug fixes, improvements, breaking changes
+
+**Phase 2: Write Notes**
+1. Research AL objects using AL MCP Server (get object definitions, understand context)
+2. Identify diagrams — If changes include architecture updates, reference relevant diagrams
+3. Write release notes sections: Summary, New Features, Bug Fixes, Improvements, Breaking Changes, Performance, etc.
+4. Follow template structure from `knowledge/release-notes-template.md`
+
+**Phase 3: Format & Output**
+1. Write to `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION>.md`
+2. Return structured output block with metadata
+
+## Release Notes Structure
+
+Reference `knowledge/release-notes-template.md` for complete structure:
+- **Summary:** One-paragraph overview of major changes
+- **New Features:** Bullet list with business impact
+- **Bug Fixes:** What was broken, how it's fixed
+- **Breaking Changes:** With migration guidance
+- **Performance Improvements:** With metrics if available
+- **Installation & Upgrade:** Links or instructions
+
+## Mermaid Diagrams
+
+If changes include architecture or data model updates:
+- Read `profile-al-dev-shared/markdown/md-mermaid-helper.md` for diagram rules
+- Include flowchart (flowchart TD) or sequence diagram (sequenceDiagram)
+- Only include if it genuinely aids understanding
+
+## Handling Diagrams & Env Vars
+
+For mermaid helper reference:
+```bash
+MERMAID_HELPER=$(find ~/.claude/plugins -name "md-mermaid-helper.md" -type f 2>/dev/null | head -1)
+if [ -z "$MERMAID_HELPER" ]; then
+  MERMAID_HELPER="profile-al-dev-shared/markdown/md-mermaid-helper.md"
+fi
+```
+
+## Output Response
+
+Example:
+```
+Release notes written → .dev/YYYY-MM-DD-al-dev-release-notes-v2.1.0.md
+
+Version: v2.1.0
+Release Type: prod
+Changes: 8 files modified
+- New Features: X
+- Bug Fixes: Y
+- Breaking Changes: Z
+
+Diagrams included: [Yes/No]
+Duration: ~2 hours of analysis
+
+Ready for review and publication.
+```
