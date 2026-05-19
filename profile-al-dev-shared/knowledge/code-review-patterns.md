@@ -16,6 +16,30 @@ Good:
 - `PaymentProcessor` (≤30 chars, descriptive)
 - `ARRAnalyzer` (prefix convention for array processing)
 
+#### Examples in AL Code
+
+##### BAD: Violates character limit (>30 chars) and post-fix naming
+
+```al
+codeunit 50100 "LongNameViolationCodeunitPostFix" { }
+table 50101 "PurchaseOrderApprovalDataTable" { }
+```
+
+##### GOOD: Follows 30-char limit and pre-fix convention
+
+```al
+codeunit 50100 "PurchaseApprovalProcessor" { }
+table 50101 "PurchaseApprovalData" { }
+```
+
+##### Detection during review
+
+- Count characters in object names: if > 30, flag it
+- Check naming order: pre-fix (category first, e.g., "Purchase Approval")
+  vs post-fix (category last, bad)
+- Abbreviations: OK: "PO" for Purchase Order;
+  NOT OK: "PAPD" for Purchase Approval Processing Details
+
 ### Event Subscriber Mismatches
 
 **Pattern:** Procedure signature must match event signature exactly (var parameters, order, types).
