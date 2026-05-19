@@ -1,27 +1,27 @@
 ---
-name: commit-learn
-description: Analyze and recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
+name: commit-recover
+description: Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
 argument-hint: "[--auto-fix] [--file=path]"
 ---
 
-# Skill: /commit-learn
+# Skill: /commit-recover
 
-Analyzes incidents from `.dev/commit-integrity.log` and attempts to recover corrupted files using learned fallback strategies. Spawns a focused verifier subagent to analyze root causes and propose recovery methods.
+Recovers corrupted AL files from commit integrity failures. Analyzes incidents in `.dev/commit-integrity.log` and attempts recovery using learned fallback strategies. Spawns a focused verifier subagent to analyze root causes and propose recovery methods.
 
 ## Usage
 
 ```bash
-/commit-learn
+/commit-recover
 ```
 Read-only mode: shows incidents and proposed recoveries without making changes.
 
 ```bash
-/commit-learn --auto-fix
+/commit-recover --auto-fix
 ```
 Execute recovery: restores files with fallback strategies and creates repair commits.
 
 ```bash
-/commit-learn --file=path/to/file.al
+/commit-recover --file=path/to/file.al
 ```
 Analyze specific file only.
 
@@ -37,7 +37,7 @@ For each unresolved incident, dispatch the verifier subagent:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:commit-learn-verifier
+  agent: al-dev-shared:commit-recover-verifier
   description: "Analyze incident: [file path]"
 
 Prompt:
@@ -120,7 +120,7 @@ Append successful recovery patterns to `.dev/learnings.md`:
 
 ## Internal Workflow
 
-**Triggered by:** `User: /commit-learn` or `/commit-learn --auto-fix`
+**Triggered by:** `User: /commit-recover` or `/commit-recover --auto-fix`
 
 **Verifier subagent receives:**
 - Incident file path

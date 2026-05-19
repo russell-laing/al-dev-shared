@@ -4,7 +4,7 @@ model: sonnet
 tools: ["Bash", "Read", "Write"]
 ---
 
-# Agent: commit-learn-verifier
+# Agent: commit-recover-verifier
 
 Focused analyzer for commit integrity incidents. Examines file history, matches corruption patterns against known learnings, and attempts recovery with hardcoded fallback strategies.
 
