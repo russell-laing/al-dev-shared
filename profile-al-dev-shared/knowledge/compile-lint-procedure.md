@@ -38,12 +38,13 @@ lines, report clean and stop.
 
 Output format (one diagnostic per line):
 
-```
+```text
 <severity> AL<code>: <message> [<file>(<line>,<col>)]
 ```
 
 Example:
-```
+
+```text
 Error AL0118: The name 'MyField' does not exist in the current context [src/MyCodeunit.al(42,5)]
 Warning AA0231: Replace Error(StrSubstNo(...)) with Error(label, args) [src/MyCodeunit.al(58,3)]
 ```
@@ -56,10 +57,12 @@ An empty log (zero bytes or no `Error`/`Warning` lines) means a clean compile.
 Parse `.dev/compile-errors.log` to separate actionable items from noise:
 
 1. **Count errors and warnings separately:**
+
    ```bash
    grep -c '^Error' .dev/compile-errors.log   # must be 0 before merging
    grep -c '^Warning' .dev/compile-errors.log  # drive lint-fix pass
    ```
+
 2. **Extract file and line references** for each diagnostic using the bracketed suffix
    `[<file>(<line>,<col>)]`. Feed these coordinates directly to the Edit tool —
    do not search the file free-text for the error message.
@@ -69,9 +72,11 @@ Parse `.dev/compile-errors.log` to separate actionable items from noise:
    diagnostics were introduced.
 
 Example parse pipeline:
+
 ```bash
 grep '^Error' .dev/compile-errors.log | sed 's/.*\[\(.*\)\]/\1/' | sort -u
 ```
+
 This extracts unique `file(line,col)` locations for all errors.
 
 ### Diagnostic Categorization Rules
@@ -85,6 +90,7 @@ Diagnostics fall into three categories that drive different responses:
 | **Info / hints** | `Info AL0xxx` | Log only; never block or auto-fix |
 
 **AA-code families worth knowing:**
+
 - `AA0005–AA0099` — naming and casing conventions (auto-fixable)
 - `AA0100–AA0199` — deprecated or obsolete usage (fix or suppress with justification)
 - `AA0200–AA0231` — code quality rules, e.g. AA0231 (Error label) is always auto-fixable
@@ -100,6 +106,7 @@ Not every diagnostic can be safely fixed by a script or the Edit tool. Use these
 criteria to decide whether to auto-fix or escalate to human review:
 
 **Auto-fix (safe to apply without review):**
+
 - The fix is a pure textual substitution with no semantic change — e.g., renaming
   a variable to match casing convention, adding `DataClassification` to a field
   that currently has none, or replacing `Error(StrSubstNo(...))` with a label.
@@ -107,29 +114,35 @@ criteria to decide whether to auto-fix or escalate to human review:
 - The fix does not alter control flow, data types, or public procedure signatures.
 
 **Direct edit (fix but flag in report):**
+
 - The fix requires understanding context beyond the flagged line — e.g., selecting
   the right `ApplicationArea` from a set of valid values.
 - The fix changes a public interface (procedure name, parameter list) that callers
   may reference.
 
 **Human judgment required (log as Unresolved):**
+
 - The diagnostic is in the `AA0400+` complexity family.
 - The rule has multiple valid resolutions and the correct one depends on business logic.
 - The auto-fix would change behavior (e.g., removing a fallback that looks redundant
   but handles a real edge case).
 
 Example of an auto-fixable diagnostic:
-```
+
+```text
 Warning AA0231: Replace Error(StrSubstNo('Item %1 not found', ItemNo))
                 with Error(ItemNotFoundErr, ItemNo) [src/ItemMgt.al(33,5)]
 ```
+
 This is a pure label substitution; apply it without asking.
 
 Example of a human-judgment diagnostic:
-```
+
+```text
 Warning AA0462: The procedure 'ProcessOrder' is too long (62 statements)
                 [src/OrderMgt.al(10,1)]
 ```
+
 Splitting a long procedure requires understanding intent; log as Unresolved.
 
 ## Step 2 — Spawn diagnostics-fixer
