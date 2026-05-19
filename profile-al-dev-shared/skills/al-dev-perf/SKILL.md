@@ -23,95 +23,6 @@ they reach production.
 
 ---
 
-## Performance Anti-Patterns
-
-### P1 — N+1 Query (CRITICAL)
-
-```al
-// BAD: Get() or FindFirst inside a FindSet loop
-if Orders.FindSet() then repeat
-    Item.Get(Orders."Item No.");  // N DB calls
-until Orders.Next() = 0;
-```
-
-### P2 — Missing SetLoadFields (HIGH)
-
-```al
-// BAD: loads all fields when only one is needed
-Customer.Get(CustNo);
-Name := Customer.Name;
-
-// GOOD:
-Customer.SetLoadFields(Name);
-Customer.Get(CustNo);
-```
-
-Only flag when fewer than ~3 fields are used from the retrieved
-record. Do not flag when most fields are needed.
-
-### P3 — CalcFields Inside Loop (HIGH)
-
-```al
-// BAD: DB hit per record — use CalcFields before the loop
-// or filter with SetAutoCalcFields
-if Item.FindSet() then repeat
-    Item.CalcFields("Sales (LCY)");
-until Item.Next() = 0;
-```
-
-Do not flag CalcFields on FlowFields when there is no loop —
-that is required and correct.
-
-### P4 — FindSet(true) on Read-Only Pass (MEDIUM)
-
-```al
-// BAD: write lock when loop body never calls Modify/Delete
-if MyRec.FindSet(true) then repeat
-    // reads only
-until MyRec.Next() = 0;
-
-// GOOD: FindSet() or FindSet(false)
-```
-
-Only flag when the loop body has no Modify(), Delete(), or
-Rename() calls.
-
-### P5 — Setup.Get() Per Loop Iteration (MEDIUM)
-
-```al
-// BAD: re-reads same setup record on every iteration
-if Item.FindSet() then repeat
-    JobsSetup.Get();
-    InventorySetup.Get();
-until Item.Next() = 0;
-
-// GOOD: Get() once before the loop
-```
-
-### P6 — SetRange on PK + FindFirst Where Get() Suffices (LOW)
-
-```al
-// BAD:
-MyRec.SetRange("Primary Key", KeyValue);
-if MyRec.FindFirst() then ...
-
-// GOOD: if MyRec.Get(KeyValue) then ...
-```
-
-Only flag when the SetRange covers the full primary key with
-exact values (not ranges or filters).
-
-### P7 — Redundant Count Pass (LOW)
-
-```al
-// BAD: two full table scans for the same data
-RecCount := MyRec.Count();
-if MyRec.FindSet() then repeat
-until MyRec.Next() = 0;
-```
-
----
-
 ## Implementation
 
 ### Step 1 — Determine Scope
@@ -132,7 +43,7 @@ high-volume or batch-processing.
 
 ### Step 1.5 — Identify Entry-Point Metadata
 
-For each codeunit found in Step 1a, use the AL Symbols MCP
+For each codeunit found in Step 1, use the AL Symbols MCP
 (`al-mcp-server`) to classify it before spawning the analysis agent:
 
 - `al_get_object_summary` — check for OnRun() and codeunit type
