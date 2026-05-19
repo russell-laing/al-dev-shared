@@ -21,7 +21,7 @@ Create complete documentation for implemented features:
 ## Usage
 
 ```bash
-/document
+/al-dev-document
 ```
 
 **Prerequisites:**
@@ -30,7 +30,7 @@ Create complete documentation for implemented features:
 
 ---
 
-## How This Command Works (v3.0)
+## How This Command Works
 
 **Your Role:** Engineering Manager
 **Teammate:** docs-writer specialist (single agent)
@@ -76,18 +76,27 @@ Wait for the user's response. Then set:
   `technical` | `functional` | `user` | `executive`
 - `TEMPLATE_PATH` = `knowledge/doc-templates/[AUDIENCE].md`
 
+Verify the template exists:
+```bash
+ls "$AL_DEV_SHARED_PLUGIN_ROOT/knowledge/doc-templates/[AUDIENCE].md" 2>/dev/null \
+  || echo "Template not found — docs-writer will use inline structure from Step 2"
+```
+If the file is missing, omit `TEMPLATE_PATH` from the spawn prompt and let the docs-writer use the inline documentation structure defined in Step 2.
+
 ### Step 1: Identify Documentation Scope (1-2 min)
 
 ```text
 Determine what needs documenting:
 
 1. Find implemented AL files
-2. Read .dev/01-requirements.md — note how many REQ: tokens are present
-3. Read .dev/02-solution-plan.md if available (for context)
+2. Read latest requirements file — note how many REQ: tokens are present:
+   `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`
+3. Read latest solution plan if available:
+   `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)`
 4. Determine inferred RTM status from .dev/ files present:
-   - only 01-requirements.md → DEFINED
-   - 02-solution-plan.md present → IN-PROGRESS
-   - 03-code-review.md present → IMPLEMENTED
+   - only `*-al-dev-interview-requirements.md` → DEFINED
+   - `*-al-dev-plan-solution-plan.md` present → IN-PROGRESS
+   - `*-al-dev-develop-code-review.md` present → IMPLEMENTED
 5. Identify target audience (developers, users, admins)
 ```
 
@@ -106,12 +115,12 @@ Audience context:
 - TEMPLATE_PATH: [TEMPLATE_PATH]
 
 Context available:
-- Requirements: .dev/01-requirements.md (parse REQ: tokens for RTM)
-- Solution plan: .dev/02-solution-plan.md
-- Code review: .dev/03-code-review.md (if exists)
+- Requirements: `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)` (parse REQ: tokens for RTM)
+- Solution plan: `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)`
+- Code review: `$(ls .dev/*-al-dev-develop-code-review.md 2>/dev/null | sort | tail -1)` (if exists)
 
 RTM instructions:
-- Parse all REQ: tokens from .dev/01-requirements.md
+- Parse all REQ: tokens from the latest `*-al-dev-interview-requirements.md`
 - Inferred status for all requirements: [DEFINED/IN-PROGRESS/IMPLEMENTED/VERIFIED]
   (determined from .dev/ files present — override the token status field)
 - Add inline requirement ID references in narrative sections
@@ -198,7 +207,7 @@ When docs-writer completes:
    - User workflows clear?
    - Edge cases noted?
    - RTM table present at end of doc?
-   - All REQ: tokens from .dev/01-requirements.md accounted for in RTM table?
+   - All REQ: tokens from the latest `*-al-dev-interview-requirements.md` accounted for in RTM table?
    - Inline requirement ID references present in narrative sections?
 
 4. Verify clarity:
@@ -223,7 +232,7 @@ If gaps found:
 3. [Gap 3]: No mention of [integration point Z]
    → Document how this integrates with [base BC functionality]
 
-Update docs/[FeatureName].md"
+Update docs/Features/[FeatureName]-[AUDIENCE].md"
 
 Iterate until documentation is comprehensive.
 ```
@@ -231,10 +240,7 @@ Iterate until documentation is comprehensive.
 ### Step 5: Clean Up
 
 ```text
-Shut down docs-writer teammate:
-"Docs-writer, shut down"
-
-(No team cleanup needed - single agent)
+The docs-writer agent terminates automatically when it returns its result. No explicit shutdown is needed. Proceed to Step 6.
 ```
 
 ### Step 6: Present to User
@@ -327,7 +333,7 @@ Consider including:
 ✅ Single docs-writer teammate created comprehensive documentation
 ✅ You verified technical accuracy against implementation
 ✅ All objects, workflows, and integrations documented
-✅ All REQ: tokens from .dev/01-requirements.md appear in RTM appendix table
+✅ All REQ: tokens from the latest `*-al-dev-interview-requirements.md` appear in RTM appendix table
 ✅ Inline requirement ID references present in narrative sections
 ✅ Documentation is clear and complete
 ✅ Maintenance notes help future developers
