@@ -100,6 +100,31 @@ If available, search BC history for:
 [Escalation path, support contacts, debug steps]
 ```
 
+## Write Output
+
+After synthesizing findings, write the combined internal + customer-facing document to disk:
+
+```bash
+FILE_PATH=".dev/$(date +%Y-%m-%d)-support-<slug>.md"
+# Where <slug> is:
+# - Ticket ID if TICKET_FILE was provided (e.g., "T-12345")
+# - Query-type slug for freetext queries (e.g., "connection-error", "perf-issue")
+```
+
+Write both the **Internal Findings** and **Draft Customer Reply** sections (formatted as shown in Output Format above) to this file.
+
+## Return Block
+
+Return to `/al-dev-support` with:
+
+```text
+FILE: .dev/YYYY-MM-DD-support-<slug>.md
+QUERY_TYPE: [ticket|file|freetext]
+BC_VERSION_SCOPE: [identified BC versions or "not specified"]
+SOURCES: [AL Symbols|MS Docs|BC History|combinations thereof]
+SUMMARY: [one-sentence summary of root cause or workaround]
+```
+
 ## Env Var Handling
 
 For mermaid diagram references (if needed):
