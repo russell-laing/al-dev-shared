@@ -116,8 +116,9 @@ Prompt:
    Phase: fetch
    Ticket ID: [TICKET_ID]
 
-   FRESHDESK_API_KEY and FRESHDESK_DOMAIN are set in the
-   environment — use them directly in curl commands.
+   Environment: Credentials have been verified in Step 2.
+   Use FRESHDESK_API_KEY and FRESHDESK_DOMAIN directly in
+   curl commands.
 
    Return your output in exactly this format:
    TICKET_LOADED: #<id>
@@ -176,7 +177,8 @@ Prompt:
    Attachments:
    [paste the attachment list lines from Step 3 output]
 
-   FRESHDESK_API_KEY and FRESHDESK_DOMAIN are set in the environment.
+   Environment: Credentials verified in Step 2. Use
+   FRESHDESK_API_KEY and FRESHDESK_DOMAIN directly in curl.
 
    Return:
    DOWNLOADS_COMPLETE: <count> files
