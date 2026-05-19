@@ -7,7 +7,7 @@ description: >-
   design, or architect a Business Central feature — including
   when they describe a requirement, ask "how should I build
   this", or say "plan this" or "design this". Produces
-  .dev/YYYY-MM-DD-al-dev-plan-solution-plan.md. Prefer this
+  .dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md. Prefer this
   over ad-hoc planning.
 argument-hint: "[feature description]"
 ---
@@ -115,7 +115,7 @@ or any third-party analysis, verify the claims before forwarding to architects:
    - 50–74% verified → proceed with explicit caveat in prompt
    - <50% verified → gate with USER_GATE decision (proceed as hypotheses / re-run investigation / proceed anyway)
 
-## Step 0: Target Confirmation (Phase 1.5.5)
+## Phase 1.6: Target Confirmation
 
 Before acting on any findings file or context document:
 
@@ -254,66 +254,11 @@ Then decide (this is YOUR tactical decision, not the user's):
 - **Create hybrid** combining best elements from multiple
 - **Send back** for refinement if all approaches are weak
 
-## Phase 5: Write .dev/YYYY-MM-DD-al-dev-plan-solution-plan.md
+## Phase 5: Write .dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md
 
 YOU write the final synthesis yourself. Do not copy architect
-output. Use this structure:
-
-```markdown
-## Solution Plan: [Feature Name]
-
-### Overview
-[1-2 paragraphs: what we're building, why this approach]
-
-### Object Design
-
-**Tables / Table Extensions:**
-- Object ID 50xxx: "[Name]"
-  Purpose: [1 sentence]
-  Fields: [list key fields with IDs and types]
-
-**Pages / Page Extensions:**
-- Object ID 51xxx: "[Name]"
-  Purpose: [1 sentence]
-  Modifications: [what's being added/changed]
-
-**Codeunits:**
-- Object ID 52xxx: "[Name]" (Interface: "[Interface Name]")
-  Purpose: [1 sentence]
-  Key Methods: [list with signatures]
-
-**Enums** (if any):
-- Object ID 53xxx: "[Name]"
-  Values: [list]
-
-### BC Base App Integration
-- Extends Table: [Base Table Name] (ID: [Base ID])
-- Subscribes to Events: [Event names]
-- Calls Base App: [Procedures/APIs used]
-
-### Data Validation Rules
-[List all validation rules with triggers]
-
-### Testability Design
-[How dependency injection/interfaces enable testing]
-
-### Implementation Notes
-[Object ID assignments, naming conventions, special
-considerations]
-
-### Winning Approach Rationale
-Based on [Architect X]'s [approach], incorporating [Y]
-from [Architect Z].
-
-Chosen because:
-- [Benefit 1]
-- [Benefit 2]
-- [Benefit 3]
-
-Trade-offs accepted:
-- [Limitation 1]: Acceptable because [reason]
-- [Limitation 2]: Mitigated by [strategy]
-```
+output. Use the structure defined in
+`knowledge/solution-plan-template.md`.
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
@@ -345,7 +290,7 @@ user. Common issues:
 Present your synthesized plan:
 
 ```text
-Solution plan complete -> .dev/YYYY-MM-DD-al-dev-plan-solution-plan.md
+Solution plan complete -> .dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md
 
 Key decisions:
 - [Major design decisions with rationale]
