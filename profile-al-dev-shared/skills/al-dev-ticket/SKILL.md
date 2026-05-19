@@ -35,7 +35,7 @@ Check the arguments provided (text after `/al-dev-ticket`):
 - **Numeric argument** (e.g. `1234` or `FD-1234`): extract the
   number and proceed to Step 2.
 - **`search <terms>` or non-numeric text**: this is a keyword
-  search — skip to Step 1S.
+  search — skip to Step 1.5.
 - **No argument**: run `git branch --show-current`, extract from
   pattern `FD(\d+)` (case-insensitive). If found, confirm:
   _"Found FD ticket #XXXX from branch — loading."_
@@ -44,7 +44,7 @@ Check the arguments provided (text after `/al-dev-ticket`):
 
 ---
 
-## Step 1S — Search Tickets (Keyword Search)
+## Step 1.5 — Search Tickets (Keyword Search)
 
 URL-encode the search terms and query the search endpoint:
 
@@ -103,13 +103,15 @@ See your harness profile's Freshdesk setup guide for details.
 ## Step 3 — Dispatch al-dev-ticket-agent (fetch phase)
 
 ```text
+DATE=$(date +%Y-%m-%d)
+
 Agent tool:
   agent: al-dev-shared:al-dev-ticket-agent
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
   "Fetch Freshdesk ticket and write
-  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md.
+  .dev/$DATE-al-dev-ticket-ticket-context.md.
 
    Phase: fetch
    Ticket ID: [TICKET_ID]
@@ -123,7 +125,7 @@ Prompt:
    STATUS: <label> | PRIORITY: <label>
    SUMMARY: <2-3 sentence plain English summary>
    ATTACHMENTS: <count> | <name (size, type)> | ... (NONE if none)
-   FILE: .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md"
+   FILE: .dev/$DATE-al-dev-ticket-ticket-context.md"
 ```
 
 ---

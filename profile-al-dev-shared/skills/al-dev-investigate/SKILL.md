@@ -89,7 +89,7 @@ Extract from the user's args or ticket:
 
 ---
 
-### Step 1.5 — Regression Timeline
+### Step 2 — Regression Timeline
 
 Before formulating hypotheses, capture the regression timeline.
 This is metadata for the investigation and a gate against
@@ -107,10 +107,10 @@ context, ASK before proceeding to Step 2. One combined question is
 fine ("When did this last work, and when did it first fail?").
 
 Carry these three captured values forward. They become required
-fields in the findings file (Step 4) — alongside one derived field
+fields in the findings file (Step 5) — alongside one derived field
 ("Implications for hypothesis prioritisation", which you fill in
-during Step 4 synthesis based on the captured timeline). They also
-influence hypothesis prioritisation during Step 2:
+during Step 5 synthesis based on the captured timeline). They also
+influence hypothesis prioritisation during Step 3:
 
 - If **Recently working = yes**, prioritise change-timeline
   hypotheses (recent deployments, platform updates, IP/cert
@@ -123,7 +123,7 @@ influence hypothesis prioritisation during Step 2:
 
 ---
 
-### Step 2 — Formulate Hypotheses
+### Step 3 — Formulate Hypotheses
 
 Before spawning agents, list 2–4 initial hypotheses inline.
 
@@ -150,10 +150,12 @@ H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
 
 ---
 
-### Step 3 — Spawn Parallel Investigation Agents
+### Step 4 — Spawn Parallel Investigation Agents
 
 > Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
 > Hypothesis-testing prompt structure is below; spawn ×2 in parallel.
+
+Route by hypothesis count: if ≤2 hypotheses, spawn 1 agent with all hypotheses. If 3–4 hypotheses, spawn 2 agents in parallel, assigning 2 hypotheses each:
 
 Spawn 2 Explore agents in parallel, assigning 2 hypotheses each:
 
@@ -196,11 +198,11 @@ Both agents run in parallel (single message, two Agent tool calls).
 
 ---
 
-### Step 4 — Synthesise Findings
+### Step 5 — Synthesise Findings
 
 Read both agents' results and write
-`.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md`. Include the
-regression timeline values captured in Step 1.5 when populating
+`.dev/$(date +%Y-%m-%d)-al-dev-investigate-findings.md`. Include the
+regression timeline values captured in Step 2 when populating
 the findings template.
 
 > **Reconciliation Gate (required if Root Cause is labelled
@@ -298,10 +300,10 @@ in `Cod50741.al:471`.
 
 ---
 
-### Step 5 — Present to User
+### Step 6 — Present to User
 
 ```text
-Investigation complete → .dev/YYYY-MM-DD-al-dev-explore-findings.md
+Investigation complete → .dev/YYYY-MM-DD-al-dev-investigate-findings.md
 
 Root cause: [1–2 sentences]
 
@@ -322,7 +324,7 @@ Next:
 
 ## Notes
 
-- Creates date-prefixed `.dev/YYYY-MM-DD-al-dev-explore-findings.md`
+- Creates date-prefixed `.dev/YYYY-MM-DD-al-dev-investigate-findings.md`
   each run (one file per investigation date)
 - If all hypotheses are rejected, formulate 2 new hypotheses and
   repeat from Step 3 — do not give up after one round
