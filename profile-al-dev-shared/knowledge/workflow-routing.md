@@ -148,6 +148,38 @@ Analyze the user request and classify:
 **Phases:** All
 **Time saved:** None, but thoroughness justified by complexity
 
+#### COMPLEX Workflow Example: Approval Workflow Feature
+
+**Feature:** Add multi-step approval routing for purchase orders (requires table modification, page redesign, event subscribers, auto-notification).
+
+**Classification:** 4 subsystems + novel architecture + unclear performance impact → COMPLEX
+
+**Workflow Sequence:**
+
+1. **Phase 1 — Architect Debate** (45-60 min)
+   - 2-3 architect agents propose competing approval designs
+   - Agents debate: centralized state machine vs event-driven vs table-based
+   - You pick the best approach
+
+2. **Phase 2 — Detailed Planning** (30-45 min)
+   - Solution architect writes task-by-task plan (15-20 tasks)
+   - Coverage: schema changes, page controls, event subscribers, notifications
+   - Plan includes test strategy and verification steps
+
+3. **Phase 3 — Implementation** (2-4 hours)
+   - Parallel developer + 3 specialist reviewers (security, AL patterns, performance)
+   - Per-file commits as features are completed
+   - Auto-fix compile errors; checkpoint after each logical section
+
+4. **Phase 4 — Verification & Integration** (30-60 min)
+   - Run full test suite; verify no regressions in related workflows
+   - Security reviewer confirms permission checks on approval transitions
+   - Performance reviewer confirms no query loops in notification broadcast
+
+**Total estimate:** 4-6 hours wall-clock time (highly parallelized)
+
+**Key decision point:** Architecture choice in Phase 1 determines implementation scope — wrong choice = 2× rework. This is why COMPLEX tasks get architect debate upfront.
+
 ---
 
 ## Decision Tree
