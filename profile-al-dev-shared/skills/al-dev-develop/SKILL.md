@@ -235,14 +235,23 @@ Implement [module name] from the latest solution plan
 Your assigned objects:
 - [Object list from partition]
 
-Before writing code, use the AL Symbols MCP (`al-mcp-server`)
-to verify base app objects you will extend or subscribe to:
-- al_get_object_definition — confirm field names, IDs, and
-  triggers on base tables you are extending
-- al_search_object_members — locate the exact event signatures
-  you plan to subscribe to
-- al_find_references — check if similar extensions already
-  exist in the project
+SYMBOL_PREFLIGHT_GATE — Complete BEFORE writing any AL code.
+Follow `knowledge/al-symbol-pre-flight.md` for the full checklist.
+Required checks:
+1. Field references: verify each base field via al_get_object_definition
+   (exact field name, including spacing and capitalisation)
+2. Event signatures: verify via al_search_object_members — every var
+   parameter in the publisher MUST be declared var in your subscriber;
+   missing var = AL0118 compile error
+3. Object names: count characters — each must be ≤30
+4. Object IDs: confirm all are in your assigned range with no duplicates
+
+Report your pre-flight summary before writing a single line of AL:
+"Pre-flight complete: fields verified [list], events verified [list],
+names/IDs OK [or: issue found]."
+
+DO NOT proceed past pre-flight if any item is unverified. Stop and
+report back to the orchestrator with the unverified item.
 
 Follow AL best practices:
 - SetLoadFields for record retrieval
