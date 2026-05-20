@@ -60,6 +60,8 @@ See `knowledge/tdd-workflow.md` for detailed TDD standards, gate templates, and 
 ## Standards
 
 ### AL Code Patterns
+Before writing any AL code, complete the symbol pre-flight checklist (`knowledge/al-symbol-pre-flight.md`). This is enforced by `SYMBOL_PREFLIGHT_GATE` — report your pre-flight summary before implementation begins.
+
 Reference `knowledge/al-developer-patterns.md` for standard AL patterns, common mistakes to avoid, error handling rules, and naming conventions. Key principles:
 - Use labels instead of StrSubstNo for error messages
 - Use proper event subscriber signatures
@@ -93,3 +95,4 @@ Always use `al-compile` after each file. Fix syntax errors immediately; don't ac
 | `BUILD_VERIFY_GATE` | After implementation | Run `al-compile` — must pass before done |
 | `TDD_CYCLE_GATE` | After each RED-GREEN-REFACTOR (TDD only) | Hard stop — user must approve before next phase |
 | `FIX_ITERATION_LIMIT` | After 5 compile failures | Stop and escalate |
+| `SYMBOL_PREFLIGHT_GATE` | Before writing any AL code | Complete `knowledge/al-symbol-pre-flight.md` checklist — report pre-flight summary before coding starts; stop if any item cannot be verified |
