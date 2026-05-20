@@ -3,6 +3,52 @@
 Standard AL compile and lint-fix pass used by `al-dev-lint`,
 `al-dev-develop`, and `al-dev-fix`.
 
+## Step 0 — Log Freshness Check
+
+**Never trust an existing compile log.** Before reading or acting on
+`.dev/compile-errors.log`, verify it is not stale:
+
+```bash
+LOG=".dev/compile-errors.log"
+if [[ -f "$LOG" ]]; then
+  NEWEST_AL=$(find . -name "*.al" -newer "$LOG" 2>/dev/null | head -1)
+  if [[ -n "$NEWEST_AL" ]]; then
+    echo "⚠️  Log is stale — .al files modified since last compile. Deleting stale log."
+    rm -f "$LOG"
+  else
+    echo "Log appears current (no .al files newer than log)."
+  fi
+fi
+```
+
+If any `.al` file is newer than the log, delete the old log and proceed
+to Step 1 to compile fresh.
+
+**Claiming "only pre-existing warnings" is only valid if the log was
+produced AFTER the most recent edit.** If the log predates recent changes,
+it is evidence of the previous state, not the current one.
+
+### Optional: Baseline + Diff for Edit Sessions
+
+When modifying existing AL files (not creating new ones), capturing a
+baseline before editing lets you show exactly which diagnostics are new:
+
+```bash
+# 1. Before any edits — capture baseline
+al-compile --output .dev/compile-baseline.log 2>/dev/null || true
+
+# 2. After edits — compile and diff
+al-compile --output .dev/compile-errors.log
+diff .dev/compile-baseline.log .dev/compile-errors.log | grep '^[<>]'
+```
+
+Lines prefixed `>` are new diagnostics introduced by your edits.
+Lines prefixed `<` are diagnostics your edits resolved.
+
+**Only claim success if the diff shows zero new `Error` lines.**
+New `Warning` lines introduced by your edits must be acknowledged
+(even if the compile is technically clean).
+
 ## Step 1 — Compile
 
 Ensure output directory exists:
