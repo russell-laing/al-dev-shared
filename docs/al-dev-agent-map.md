@@ -1,27 +1,28 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-21 (analysis complete)
+**Last updated:** 2026-05-22
 
 ## Layer 1: Agent Catalog
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-code-review | sonnet | Read, Glob, Grep | (none found) |
+| al-dev-code-review | sonnet | Read | (none found) |
 | al-dev-commit-agent-analysis | sonnet | Bash, Read | /al-dev-commit |
 | al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
-| al-dev-docs-writer | sonnet | Read, Write, Glob, Grep, Bash | /al-dev-document |
-| al-dev-expert-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
+| al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | /al-dev-document |
+| al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
 | al-dev-interview | sonnet | Read, Write, AskUserQuestion | /al-dev-interview |
-| al-dev-performance-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
+| al-dev-performance-reviewer | sonnet | Read, Grep | /al-dev-develop |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
-| al-dev-security-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
-| al-dev-support-agent | sonnet | WebSearch, WebFetch, Bash, Write, Read, mcp:al-mcp-server, mcp:microsoft-docs | /al-dev-support |
+| al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-develop |
+| al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence-mcp, mcp:microsoft-docs-mcp, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
+| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-support |
+| al-dev-support-researcher | sonnet | WebSearch, WebFetch, Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp | /al-dev-support |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket, /al-dev-support |
 
 ---
@@ -32,7 +33,7 @@
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio.
 **Model:** sonnet
-**Tools:** Read, Glob, Grep
+**Tools:** Read
 **Spawned by:** (none found in skill files)
 
 **Inputs:**
@@ -156,7 +157,7 @@
 
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
-**Tools:** Read, Write, Glob, Grep, Bash
+**Tools:** Read, Write, Glob, Grep
 **Spawned by:** /al-dev-document
 
 **Inputs:**
@@ -185,7 +186,7 @@
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 **Model:** sonnet
-**Tools:** Read, Grep, Glob
+**Tools:** Read, Grep
 **Spawned by:** /al-dev-develop
 
 **Inputs:**
@@ -205,9 +206,9 @@
 
 ### al-dev-explore
 
-**Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about how code is organized.
-**Model:** sonnet
-**Tools:** Read, Glob, Grep
+**Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization.
+**Model:** haiku
+**Tools:** Read, Glob, Grep, Write
 **Spawned by:** (none found — the `/al-dev-explore` skill dispatches a built-in `Explore` subagent type, not this agent file directly)
 
 **Inputs:**
@@ -256,7 +257,7 @@
 
 **Description:** Review AL code for performance issues, inefficient queries, N+1 patterns, and resource consumption.
 **Model:** sonnet
-**Tools:** Read, Grep, Glob
+**Tools:** Read, Grep
 **Spawned by:** /al-dev-develop
 
 **Inputs:**
@@ -327,7 +328,7 @@
 
 **Description:** Review AL code for security vulnerabilities, permission issues, and data exposure risks.
 **Model:** sonnet
-**Tools:** Read, Grep, Glob
+**Tools:** Read, Grep
 **Spawned by:** /al-dev-develop
 
 **Inputs:**
@@ -370,11 +371,11 @@
 
 ---
 
-### al-dev-support-agent
+### al-dev-support-researcher
 
-**Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History.
+**Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings.
 **Model:** sonnet
-**Tools:** WebSearch, WebFetch, Bash, Write, Read, mcp:al-mcp-server, mcp:microsoft-docs
+**Tools:** WebSearch, WebFetch, Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp
 **Spawned by:** /al-dev-support
 
 **Inputs:**
@@ -384,6 +385,30 @@
 | `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | `QUERY_CONTEXT` | **Yes** | The customer's question or symptom |
 | `TICKET_FILE` | No | Path to ticket context file from `/al-dev-ticket`, or `NONE` |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| Return block | Structured internal findings: root cause, evidence (AL symbols, MS Docs, BC history), workarounds, recommended resolution |
+
+---
+
+### al-dev-support-reply-drafter
+
+**Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher.
+**Model:** sonnet
+**Tools:** Write, Read
+**Spawned by:** /al-dev-support
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
+| `QUERY_CONTEXT` | **Yes** | Original customer question or symptom |
+| `TICKET_FILE` | No | Path to ticket context file, or `NONE` |
+| `RESEARCHER_FINDINGS` | **Yes** | Full structured output block from al-dev-support-researcher |
 
 **Outputs:**
 
@@ -444,13 +469,16 @@
 
 ## Observations
 
-> Generated by /analyze-agent-design on 2026-05-21.
-> Run /review-agent-map first if the agent list has changed since this was written.
+> Synced by /review-agent-map on 2026-05-22.
 
-### Agents used by only one skill
+### Status Update
 
-- **al-dev-commit-agent-analysis** — used only by /al-dev-commit
-- **al-dev-commit-agent-execute** — used only by /al-dev-commit
+**✓ Completed:** The split of al-dev-support-agent into al-dev-support-researcher and al-dev-support-reply-drafter has been implemented.
+
+### Agents used by only one skill (single-purpose specialists)
+
+- **al-dev-commit-agent-analysis** — used only by /al-dev-commit (analysis phase)
+- **al-dev-commit-agent-execute** — used only by /al-dev-commit (execute phase)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-expert-reviewer** — used only by /al-dev-develop
@@ -458,44 +486,21 @@
 - **al-dev-performance-reviewer** — used only by /al-dev-develop
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-security-reviewer** — used only by /al-dev-develop
-- **al-dev-support-agent** — used only by /al-dev-support
+- **al-dev-support-reply-drafter** — used only by /al-dev-support (reply phase)
+- **al-dev-support-researcher** — used only by /al-dev-support (research phase)
 
-### Agents with no callers (standalone only)
+### Agents with no callers (standalone or special dispatch)
 
-- **al-dev-code-review** — no skill spawns it; available for direct standalone use
+- **al-dev-code-review** — no skill spawns it; available for direct standalone use via Agent tool
 - **al-dev-explore** — no skill spawns it; the `/al-dev-explore` skill dispatches the built-in `Explore` agent type instead
-- **al-dev-script-engineer** — no skill spawns it; available for direct use
+- **al-dev-script-engineer** — no skill spawns it; available for direct use via Agent tool
 
-### Potential shared agents
+### Agents used by multiple skills (shared)
 
 - **al-dev-developer** — used by /al-dev-develop, /al-dev-fix
-- **al-dev-diagnostics-fixer** — used by /al-dev-lint, /al-dev-develop
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket, /al-dev-support
 
-### Quality suggestions
+### Inline candidates
 
-**Split: al-dev-support-agent — Two separable concerns** ← highest leverage
-Observation: Agent performs two distinct workflows: (1) Research a support query across AL symbols, MS Docs, BC history; (2) Synthesize findings + draft customer-facing reply. These serve different audiences (internal technical team vs. customer) with different content needs.
-Suggestion: Split into two agents: (1) `al-dev-support-researcher` — research only, internal findings; (2) `al-dev-support-reply-drafter` — draft customer replies from researcher findings. Skills calling these would dispatch researcher first, then feed findings to reply-drafter.
-Trade-off: New agent file to maintain; each agent's scope becomes narrower. Benefit: Reusable researcher for internal troubleshooting; reply-drafting becomes independently testable.
-
-**Align: al-dev-support-agent — BC version not passed by caller**
-Observation: Agent's Inputs table documents "BC version" as **required**, but the spawning skill (/al-dev-support) does NOT pass a BC_VERSION field in its dispatch prompt. Skill passes only QUERY_TYPE, QUERY_CONTEXT, TICKET_FILE.
-Suggestion: Either (1) add BC_VERSION field to /al-dev-support's dispatch prompt, OR (2) remove "BC version" from agent's required Inputs and make it optional with instruction to infer from query context if possible.
-Trade-off: Option 1 adds one field to skill dispatch; Option 2 documents graceful fallback.
-
-**Align: al-dev-commit-recover-verifier — Inputs table does not match skill's actual dispatch**
-Observation: Agent's Inputs table documents `REPO`, `CORRUPTION_LOG`, `auto_fix` as structured inputs, but spawning skill (/commit-recover) passes different structured context: incident file path, baseline/current lines, git history, learnings content.
-Suggestion: Update agent's Inputs table to document what the skill actually passes: incident file path, baseline lines, current lines, git history, learnings file content. Or update /commit-recover skill to pass the documented Inputs.
-Trade-off: Documentation-only if aligning to skill's actual behavior; ensures future developers know what the caller provides.
-
-**Trim: al-dev-code-review, al-dev-developer, al-dev-diagnostics-fixer, al-dev-expert-reviewer, al-dev-performance-reviewer, al-dev-security-reviewer** (6 agents)
-Observation: Each has `Glob` and/or `Grep` declared in tools list but these tools are not used in the agent workflow. File discovery is performed by callers (via spawn prompt file lists), not by agents.
-Suggestion: Remove unused Glob and Grep from the tools lists in these agent frontmatter sections.
-Trade-off: Minimal — tools weren't used; tighter least-privilege posture for each agent.
-
-**Trim: al-dev-docs-writer, al-dev-script-engineer, al-dev-support-agent** (3 agents)
-Observation: Each has `Glob` and/or `Grep` declared but not used in workflow; agent Bash (support-agent) also unused.
-Suggestion: Remove `Glob`/`Grep` from al-dev-docs-writer and al-dev-script-engineer. Remove `Bash` and `WebSearch`/`WebFetch` from al-dev-support-agent (research uses MCP tools only, not web search).
-Trade-off: Minimal — tools weren't used; consistent with agent roles.
+None detected. All agents with single callers have well-documented Inputs/Outputs tables and meaningful bodies.
