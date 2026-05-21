@@ -36,6 +36,18 @@ Extract flagged files and issue codes from output. Group by issue type: [THIN], 
 
 ### Phase 2: Analyze Flagged Files
 
+#### Progress Tracking
+
+Before analyzing any file, create one TodoWrite todo per flagged file named `[issue-type] [filename]`. Mark each todo in-progress when analysis begins, complete when the file analysis is written to findings.
+
+#### Parallel Exploration
+
+When 4+ files are flagged, invoke `superpowers:dispatching-parallel-agents` before starting sequential analysis. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each agent returns a structured analysis record. Collect all records before proceeding to Phase 3.
+
+For ≤3 flagged files (or files with ordering dependencies), the sequential inline path is fine — keep it as the fallback.
+
+#### Sequential Analysis (for ≤3 files or fallback)
+
 For each flagged file:
 
 1. **Read the file** — Understand its structure and current content
