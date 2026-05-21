@@ -94,6 +94,14 @@ Check whether $ARGUMENTS contains a meaningful feature description.
    (e.g., no BC workspace is active), proceed directly to
    Phase 2 using general AL knowledge. Do not stop.
 
+5. Load performance constraints if available:
+   ```bash
+   PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
+   ```
+   If a file is found, read the CRITICAL and HIGH severity findings.
+   Include them as **"Performance constraints from prior analysis:"** in every
+   architect prompt in Phase 2. If no file exists, skip silently.
+
 ## Phase 1.5: Verify External Claims
 
 If the request references a findings file, codeburn output, lint report,

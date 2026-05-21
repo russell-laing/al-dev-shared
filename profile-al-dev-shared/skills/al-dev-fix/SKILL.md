@@ -149,6 +149,12 @@ Follow the **Quick Analysis** pattern in
 ```text
 For non-trivial fixes:
 
+0. Load performance constraints if available:
+   PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
+   If found: read CRITICAL/HIGH findings. Pass them as
+   "Known performance constraints: [findings]" in the architect prompt (step 1).
+   If not found: skip this step.
+
 1. Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
 
 2. Review architect's analysis yourself:
