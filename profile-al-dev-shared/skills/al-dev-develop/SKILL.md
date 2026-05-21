@@ -382,6 +382,13 @@ spawning the review team.
 > Canonical panel: `knowledge/review-panel-pattern.md`.
 > Role descriptions and synthesis steps are in that doc.
 
+**Compilation Discipline (MANDATORY):**
+- Do NOT run `al-compile` after each function or small change
+- Write all code for your assigned module (30–50 lines of code) BEFORE compiling
+- When code is complete, run `al-compile --output .dev/compile-errors.log` ONCE
+- Do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
+- Log files: Read errors from `.dev/compile-errors.log`, NOT stdout — errors are logged to file only
+
 When all developers complete, spawn 3 reviewers in parallel
 as a single batch:
 
