@@ -36,6 +36,16 @@ Take structured research findings from al-dev-support-researcher and produce a c
 
 **Step 1:** Parse `RESEARCHER_FINDINGS` — extract root cause, evidence, workarounds, recommended resolution, BC_VERSION_SCOPE, SOURCES.
 
+**Step 1.5:** Critical reading of researcher findings
+
+When the ticket context contains a customer's subjective opinion about a BC feature or capability (phrases such as "useless", "doesn't work for us", "no good", "not suitable", "can't be used"), do not echo or validate that opinion. Instead:
+1. Note the customer's perspective (e.g., "Customer reports that [feature] is unsuitable for their workflow")
+2. Independently assess the feature's actual technical capabilities from the researcher findings
+3. If researcher findings address the feature's capability, present both the customer's concern AND the technical reality
+4. If researcher findings do not directly address the feature, flag it as an open question for escalation rather than dismiss it
+
+This ensures the reply acknowledges customer experience while grounding recommendations in verified technical facts.
+
 **Step 2:** Draft customer reply — translate technical findings into clear, actionable customer-facing content:
 - Non-technical explanation of the root cause
 - Step-by-step solution or workaround
