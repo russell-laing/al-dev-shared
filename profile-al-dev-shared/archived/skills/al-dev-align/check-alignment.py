@@ -318,8 +318,8 @@ def main() -> None:
     if env_root:
         plugin_root = Path(env_root).expanduser().resolve()
     else:
-        # Script is at skills/al-dev-align/check-alignment.py inside plugin root
-        plugin_root = Path(__file__).resolve().parent.parent.parent
+        # Script is at archived/skills/al-dev-align/check-alignment.py inside plugin root
+        plugin_root = Path(__file__).resolve().parent.parent.parent.parent
 
     claude_profile = Path(args.claude_profile).expanduser().resolve()
     copilot_profile = Path(args.copilot_profile).expanduser().resolve()
