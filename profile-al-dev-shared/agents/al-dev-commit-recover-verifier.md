@@ -11,11 +11,13 @@ Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback
 
 ## Inputs
 
-| Field | Type | Description |
-|-------|------|-------------|
-| REPO | string | Project root directory |
-| CORRUPTION_LOG | string | Path to `.dev/commit-integrity.log` with flagged files |
-| auto_fix | boolean | If true, apply auto-fixes; if false, report findings only |
+| Input | Required | Description |
+|-------|----------|-------------|
+| incident_file_path | **Yes** | File path of the corrupted file (from integrity log incident) |
+| baseline_lines | **Yes** | Original line count from the integrity log |
+| current_lines | **Yes** | Current `wc -l` output for the file |
+| git_history | **Yes** | `git log` output for last 3–5 commits touching this file |
+| learnings_content | No | Content of `.dev/learnings.md` with known corruption patterns |
 
 ## Outputs
 
