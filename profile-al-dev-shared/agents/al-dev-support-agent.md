@@ -26,7 +26,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 | Input | Required | Description |
 |-------|----------|-------------|
 | Customer query | **Yes** | Support ticket or issue description |
-| BC version | **Yes** | Affected BC version (e.g., BC 23, BC 24) |
+| BC version | No | Inferred from query context if mentioned; not required from caller |
 | AL symbols | No | Code Intelligence for symbol lookup |
 | MS Docs | No | Official AL/BC documentation |
 
