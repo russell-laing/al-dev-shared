@@ -162,12 +162,12 @@ Continue to Step 6 regardless — both alignment and knowledge checks above are 
 
 ---
 
-## Step 6 — Dispatch Analysis Agent
+## Step 6 — Dispatch Analysis Agent (Manifest Extraction)
 
 ```text
 Agent tool:
   agent: al-dev-shared:al-dev-commit-agent-analysis
-  description: "Commit analysis: analyse staged changes"
+  description: "Commit analysis: extract manifests from staged changes"
 
 Prompt:
   "Perform ANALYSIS phase for git commit workflow.
@@ -185,7 +185,7 @@ Prompt:
    Follow the analysis phase instructions in your agent definition.
 
    Return output in exactly the format specified (MANIFESTS block,
-   PROPOSED_GROUPS block, DELETIONS, WARNINGS)."
+   DELETIONS, WARNINGS). Message drafting is handled in the next phase."
 ```
 
 ---
@@ -209,21 +209,54 @@ If **any deleted files** appear, display them prominently:
 
 Wait for user response:
 
-- **yes** — continue to Step 8
+- **yes** — continue to Step 7a
 - **no** — run `git restore --staged <file>` for every deleted
   file, then **stop** (user must re-run `/al-dev-commit` after
   reviewing their staged files)
 - **list-to-keep** — user names files to unstage; run
   `git restore --staged <file>` for each, then **stop**
 
-If no deleted files: continue to Step 8.
+If no deleted files: continue to Step 7a.
+
+---
+
+## Step 7a — Dispatch Message-Drafting Agent
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-commit-message-drafter
+  description: "Draft commit messages and propose groups"
+
+Prompt:
+  "Perform MESSAGE-DRAFTING phase for git commit workflow.
+
+   Phase: message-drafting
+
+   PROJECT_CONTEXT:
+   - Valid scopes: [list from Step 2]
+   - Object ID prefix: [from Step 2]
+   - AL naming pattern: [from Step 2]
+   - Gitmoji style: [from Step 5]
+
+   FD_TICKET: [ticket number from Step 2, or empty]
+
+   MANIFESTS FROM ANALYSIS PHASE:
+   [paste the MANIFESTS block from the analysis agent output]
+
+   Follow the message-drafting phase instructions in your agent definition.
+
+   Return output in exactly the format specified (PROPOSED_GROUPS block
+   with commit messages for each group)."
+```
+
+Continue to Step 8.
 
 ---
 
 ## Step 8 — Present Manifests and Confirm Commit Groups
 
-Display the `MANIFESTS` block from the agent output, then the
-`PROPOSED_GROUPS` block:
+Display the `MANIFESTS` block from the analysis agent output (Step 6), then the
+`PROPOSED_GROUPS` block from the message-drafting agent output (Step 7a):
 
 ```text
 Change manifests:
