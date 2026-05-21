@@ -1,8 +1,8 @@
 ---
 description: >-
-  Git commit analysis agent. Reads staged diffs, builds per-file manifests,
-  proposes commit groups, and drafts commit messages. Dispatched by
-  al-dev-commit (analysis phase). Read-only — never modifies files.
+  Git commit analyzer agent. Reads staged diffs and builds per-file manifests
+  with object IDs and change signatures. Dispatched by al-dev-commit
+  (analysis phase). Read-only — never modifies files.
 model: sonnet
 tools: ["Bash", "Read"]
 ---
@@ -33,15 +33,13 @@ All inputs arrive in the dispatch prompt:
 | Output | Description |
 |--------|-------------|
 | `MANIFESTS` block | Per-file change summary (object IDs, added/removed fields and procedures) |
-| `PROPOSED_GROUPS` block | Atomic commit group proposals with draft messages |
-| `DELETIONS` block | Staged deletions for the user audit gate |
 | `WARNINGS` block | Validation issues and advisory notices |
 
 ---
 
 ## Phase: analysis
 
-Analyse staged changes, build per-file manifests, propose commit groups, and draft commit messages.
+Analyse staged changes and build per-file manifests with object IDs and change signatures.
 
 **Do not modify any files in this phase.**
 
@@ -89,7 +87,7 @@ Extraction patterns from diff lines:
 
 Non-AL files: emit a simple one-liner, no manifest block.
 
-### Validation Checks (Steps 4–6)
+### Validation Checks (Steps 4–5)
 
 #### Step 4 — Detect staged deletions
 
@@ -127,171 +125,9 @@ while IFS= read -r -d '' f; do
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
 ```
 
-#### Step 6 — Propose commit groups
+### Return Format (Step 6)
 
-Group staged files into **deployable atomic commit units**:
-
-1. **Scope grouping** — files serving the same functional area
-   belong together.
-1. **Type separation** — configuration changes (`app.json`,
-   version bumps) must never share a commit with feature/fix
-   changes.
-1. **Deployable unit constraint** — if file A references file B
-   at compile time, they **must** be in the same commit.
-1. **Single-commit default** — 1-3 files with a clear single
-   purpose → propose one commit.
-
-#### Step 6a — Draft commit messages
-
-For each group, draft a message using this format:
-
-```text
-<emoji> <type>(<scope>): <subject>
-
-[WHY: one sentence — omit for version bumps and purely
-mechanical changes]
-
-CHANGED COMPONENTS
-- FileName.ObjectType.al [ObjectID] [marker]
-- non-al-file.json [marker]
-
-[Freshdesk: #<number> — only if FD_TICKET was provided]
-```
-
-**Canonical gitmoji — use only these:**
-
-| Type | Emoji |
-| --- | --- |
-| feat | ✨ |
-| fix | 🐛 |
-| hotfix | 🚑️ |
-| refactor | ♻️ |
-| perf | ⚡ |
-| config | 🔧 |
-| docs | 📝 |
-| test | ✅ |
-| style | 🎨 |
-| move | 🚚 |
-| gitignore | 🙈 |
-| chore | 📦 |
-| merge | 🔀 |
-| revert | ⏪ |
-| wip | 🚧 |
-| remove | 🔥 |
-| upgrade | ⬆️ |
-| breaking | 💥 |
-| i18n | 🌐 |
-| security | 🔒 |
-| lint | 🚨 |
-| minor fix | 🩹 |
-| deps add | ➕ |
-| deps remove | ➖ |
-
-**CHANGED COMPONENTS marker rules:**
-
-- AL object files: `FileName.ObjectType.al [ObjectID] [marker]`
-- Non-AL files: `filename.ext [marker]` (no object ID)
-- Markers: `[+]` added, `[m]` modified, `[-]` deleted,
-  `[>] OldName → NewName [ObjectID]` renamed
-- Marker always at end of line
-- Filenames only — no directory paths
-
-Subject line rules:
-
-- Imperative mood: "add field" not "added field"
-- Maximum 72 characters total
-- No trailing period
-- Scope is mandatory
-- No AI attribution
-- Never append `Co-Authored-By`, `Generated with Claude Code`,
-  or any AI attribution footer to the commit message
-
-#### Step 6b — Validate and correct drafted messages
-
-Run these checks against every drafted message before returning.
-Auto-correct where possible; add a `WARNINGS` entry for anything
-that cannot be auto-corrected.
-
-**Emoji check (auto-correct):**
-
-- Is a leading emoji present on the subject line?
-- Does the emoji match the canonical type (e.g. `fix` → `🐛`,
-  `feat` → `✨`, `refactor` → `♻️`)?
-
-If the emoji is absent or wrong, replace it with the correct
-canonical emoji from the table in Step 6. This is an auto-fix —
-do not leave the message without the correct emoji.
-
-**AI attribution strip (auto-correct):**
-
-Scan every line of every drafted message for:
-- Lines starting with `Co-Authored-By:`
-- Lines containing `Generated with Claude Code`
-- Lines containing `Generated with [any model name]`
-
-Remove any such lines before returning. Record stripped lines in
-the `WARNINGS` block so they are visible to the user.
-
-**AL body structure check (warn only):**
-
-If any file in the group ends in `.al`, the project uses AL
-conventions. For any message where `type` is `feat`, `fix`,
-`refactor`, or `hotfix`:
-
-- Is a `WHY:` block present?
-- Is a `CHANGED COMPONENTS` block present with at least one
-  file entry?
-
-If either is missing, add to `WARNINGS`:
-
-```text
-BODY_MISSING: Group <N> — AL commit type '<type>' requires
-'<missing block>'. Add it before approving this message.
-```
-
-**Subject line sanity (warn only):**
-
-- Total subject line length ≤ 72 characters
-- Subject does not end with a period
-
-Add a `WARNINGS` entry for any violation; do not block the group.
-
-#### Step 6c — `.gitattributes` OOXML advisory (warn only)
-
-If `STAGED_OOXML` is non-empty, inspect `.gitattributes`:
-
-```bash
-GITATTR="$REPO/.gitattributes"
-MISSING_BINARY_PATTERNS=()
-
-if [ "${#STAGED_OOXML[@]}" -gt 0 ]; then
-  if [ ! -f "$GITATTR" ]; then
-    MISSING_BINARY_PATTERNS+=("*.docx binary" "*.xlsx binary" "*.pptx binary" "*.odt binary")
-  else
-    grep -Eq '^\*\.docx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.docx binary")
-    grep -Eq '^\*\.xlsx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.xlsx binary")
-    grep -Eq '^\*\.pptx[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.pptx binary")
-    grep -Eq '^\*\.odt[[:space:]]+binary$' "$GITATTR" || MISSING_BINARY_PATTERNS+=("*.odt binary")
-  fi
-fi
-```
-
-If `MISSING_BINARY_PATTERNS` is non-empty, add one `WARNINGS` item that lists each missing line and states this is advisory only.
-
-#### Step 6d — Mixed `.al` + `.docx` risk flag
-
-If both `STAGED_AL` and `STAGED_DOCX` are non-empty, add a `WARNINGS` entry:
-
-```text
-MIXED_AL_DOCX: This staged set contains both .al and .docx files.
-AL files: <comma-separated list>
-DOCX files: <comma-separated list>
-Verify each .docx was saved from Microsoft Word and run OOXML ZIP validation before execute.
-```
-
-### Return Format (Step 7)
-
-#### Step 7 — Return analysis output
+#### Step 6 — Return analysis output
 
 ```text
 MANIFESTS:
@@ -305,24 +141,6 @@ MANIFEST: <filename>
   procs_removed: <list or none>
 ---
 [repeat for each staged file]
-
-PROPOSED_GROUPS:
-GROUP_1:
-  files: <file1>, <file2>
-  type: <type>
-  scope: <scope>
-  subject: <subject>
-  why: <one sentence or omit>
-  components:
-    - <FileName.al [ID] [marker]>
-  freshdesk: <#number or omit>
----
-[repeat for each group]
-
-DELETIONS: NONE
-(or)
-DELETIONS:
-  - <filename>
 
 WARNINGS: NONE
 (or)
