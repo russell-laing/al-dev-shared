@@ -1,14 +1,15 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-22
+**Last updated:** 2026-05-22 (19 agents; split commit analyzer/drafter, upgraded execute model, removed web tools from researcher)
 
 ## Layer 1: Agent Catalog
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-code-review | sonnet | Read | (none found) |
-| al-dev-commit-agent-analysis | sonnet | Bash, Read | /al-dev-commit |
-| al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit |
+| al-dev-commit-agent-analysis | sonnet | Bash, Read | /al-dev-commit (analysis phase) |
+| al-dev-commit-agent-execute | sonnet | Bash, Read | /al-dev-commit (execution phase) |
+| al-dev-commit-message-drafter | sonnet | Write, Read | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
@@ -21,9 +22,9 @@
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-develop |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence-mcp, mcp:microsoft-docs-mcp, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-support |
-| al-dev-support-researcher | sonnet | WebSearch, WebFetch, Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp | /al-dev-support |
-| al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket, /al-dev-support |
+| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-ticket (support mode) |
+| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp, mcp:bc-code-history | /al-dev-ticket (support mode) |
+| al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (all modes) |
 
 ---
 
@@ -53,10 +54,10 @@
 
 ### al-dev-commit-agent-analysis
 
-**Description:** Git commit analysis agent. Reads staged diffs, builds per-file manifests, proposes commit groups, and drafts commit messages. Read-only — never modifies files.
+**Description:** Git commit manifest analyzer. Reads staged diffs and builds per-file manifests. Read-only — never modifies files. Split from message-drafting phase (al-dev-commit-message-drafter handles message composition).
 **Model:** sonnet
-**Tools:** Bash, Read, Glob
-**Spawned by:** /al-dev-commit (Step 6 — analysis phase)
+**Tools:** Bash, Read
+**Spawned by:** /al-dev-commit (Phase 1 — analysis phase)
 
 **Inputs:**
 
@@ -70,18 +71,41 @@
 | Output | Description |
 |--------|-------------|
 | `MANIFESTS` block | Per-file change summary (object IDs, added/removed fields and procedures) |
-| `PROPOSED_GROUPS` block | Atomic commit group proposals with draft messages |
+| `PROPOSED_GROUPS` block | Atomic commit group proposals |
 | `DELETIONS` block | Staged deletions for the user audit gate |
 | `WARNINGS` block | Validation issues and advisory notices |
 
 ---
 
+### al-dev-commit-message-drafter
+
+**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
+**Model:** sonnet
+**Tools:** Write, Read
+**Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| Dispatch prompt | **Yes** | `MANIFESTS` and `PROPOSED_GROUPS` from analysis phase |
+| Project context | No | `.dev/project-context.md` for domain knowledge |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `COMMIT_MESSAGES` block | Draft commit message for each group with rationale |
+| `SUMMARY` block | Overall commit strategy summary |
+
+---
+
 ### al-dev-commit-agent-execute
 
-**Description:** Git commit execution agent. Runs lint, validates OOXML integrity, and executes git commits from an approved plan. Never writes or edits source files directly.
-**Model:** haiku
-**Tools:** Bash, Read, Glob
-**Spawned by:** /al-dev-commit (Step 10 — execute phase)
+**Description:** Git commit execution agent. Runs lint, validates OOXML integrity, and executes git commits from an approved plan. Never writes or edits source files directly. Upgraded to sonnet for multi-phase orchestration and error recovery.
+**Model:** sonnet (upgraded from haiku for complex error handling)
+**Tools:** Bash, Read
+**Spawned by:** /al-dev-commit (Phase 3 — execution phase)
 
 **Inputs:**
 
@@ -373,10 +397,10 @@
 
 ### al-dev-support-researcher
 
-**Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings.
+**Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
-**Tools:** WebSearch, WebFetch, Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp
-**Spawned by:** /al-dev-support
+**Tools:** Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp, mcp:bc-code-history
+**Spawned by:** /al-dev-ticket (support mode)
 
 **Inputs:**
 
@@ -396,10 +420,10 @@
 
 ### al-dev-support-reply-drafter
 
-**Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher.
+**Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
 **Model:** sonnet
 **Tools:** Write, Read
-**Spawned by:** /al-dev-support
+**Spawned by:** /al-dev-ticket (support mode)
 
 **Inputs:**
 
@@ -421,25 +445,27 @@
 
 ### al-dev-ticket-agent
 
-**Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, and optionally download attachments.
+**Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
 **Model:** haiku
 **Tools:** Bash, Write
-**Spawned by:** /al-dev-ticket, /al-dev-support
+**Spawned by:** /al-dev-ticket (all modes: fetch, support, quick)
 
 **Inputs:**
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `TICKET_ID` | **Yes** | Freshdesk ticket number — in dispatch prompt |
-| `FRESHDESK_API_KEY` | **Yes** | API key — from environment |
-| `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain — from environment |
+| `TICKET_ID` | **Yes** | Freshdesk ticket number (in dispatch prompt) |
+| `FRESHDESK_API_KEY` | **Yes** | API key (from global settings via environment) |
+| `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain (from global settings via environment) |
+| `PHASE` | No | `fetch`, `download-attachments`, or `detect-inline-images` (in dispatch prompt) |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
-| `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` | **Primary** — structured ticket brief |
-| Return block | `TICKET_LOADED`, `TITLE`, `STATUS`, `SUMMARY`, `ATTACHMENTS`, `FILE` |
+| `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` | **Primary** — structured ticket brief with inline image list |
+| `.dev/attachments/` | Attached files (when PHASE=download-attachments) |
+| Return block | `TICKET_LOADED`, `TITLE`, `STATUS`, `SUMMARY`, `ATTACHMENTS`, `INLINE_IMAGES`, `FILE` |
 
 ---
 
@@ -469,16 +495,14 @@
 
 ## Observations
 
-> Synced by /review-agent-map on 2026-05-22.
-
-### Status Update
-
-**✓ Completed:** The split of al-dev-support-agent into al-dev-support-researcher and al-dev-support-reply-drafter has been implemented.
+> Generated by /analyze-agent-design on 2026-05-22.
+> Updated after Tasks 1–8 (2026-05-22): Split commit agents, upgraded execute model, removed web tools from researcher, documented ticket pattern.
 
 ### Agents used by only one skill (single-purpose specialists)
 
-- **al-dev-commit-agent-analysis** — used only by /al-dev-commit (analysis phase)
-- **al-dev-commit-agent-execute** — used only by /al-dev-commit (execute phase)
+- **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1: analysis)
+- **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition) ← newly split
+- **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 3: execution)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-expert-reviewer** — used only by /al-dev-develop
@@ -486,8 +510,8 @@
 - **al-dev-performance-reviewer** — used only by /al-dev-develop
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-security-reviewer** — used only by /al-dev-develop
-- **al-dev-support-reply-drafter** — used only by /al-dev-support (reply phase)
-- **al-dev-support-researcher** — used only by /al-dev-support (research phase)
+- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase)
+- **al-dev-support-researcher** — used only by /al-dev-ticket (support mode: research phase)
 
 ### Agents with no callers (standalone or special dispatch)
 
@@ -501,6 +525,28 @@
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket, /al-dev-support
 
-### Inline candidates
+### Quality improvements (implemented)
 
-None detected. All agents with single callers have well-documented Inputs/Outputs tables and meaningful bodies.
+**✅ Implemented: Upgraded al-dev-commit-agent-execute**
+Status: Completed in Task 7. Model upgraded from haiku → sonnet for multi-phase orchestration (lint + validation + commit + retry).
+Rationale: Haiku scope is single-file patterns; execute phase requires stateful error recovery and line-count integrity verification.
+
+**✅ Implemented: Improved al-dev-ticket-agent robustness**
+Status: Completed in Task 5. Added inline image detection from HTML body; documented invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
+Rationale: Sequential workflow (API call + HTML parsing + pattern matching) requires structured error handling. Kept on haiku (cost-conscious); improved robustness through phase documentation.
+
+**✅ Implemented: Split al-dev-commit-agent-analysis**
+Status: Completed in Task 5. Split into `al-dev-commit-agent-analysis` (manifest only) and `al-dev-commit-message-drafter` (message composition).
+Rationale: Two separable concerns — manifests serve audit gates; messages require editorial judgment and are often iteratively refined. Independent agents enable deferred message editing.
+
+**✅ Implemented: Aligned al-dev-ticket-agent inputs documentation**
+Status: Completed in Task 6. Updated Inputs table to reflect environment variable resolution (FRESHDESK_API_KEY, FRESHDESK_DOMAIN from global settings).
+Rationale: Documentation-only change; prevents caller confusion about input contract.
+
+**✅ Implemented: Trimmed al-dev-support-researcher tools**
+Status: Completed in Task 8. Removed `WebSearch` and `WebFetch` from tools list; research uses only AL Symbols, MS Docs, BC Code History.
+Rationale: Tighter least-privilege posture (only tools actually used); prevents accidental web search. Research is systematic and restricted to known sources.
+
+### Remaining quality suggestions
+
+No critical suggestions remain. All identified remodels have been implemented or deferred by design.
