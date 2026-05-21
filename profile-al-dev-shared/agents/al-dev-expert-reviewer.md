@@ -4,7 +4,7 @@ description: >-
   and BC design patterns. Spawned in parallel by the
   al-dev-develop skill.
 model: sonnet
-tools: ["Read", "Grep", "Glob"]
+tools: ["Read", "Grep"]
 ---
 
 # Agent: al-dev-expert-reviewer
