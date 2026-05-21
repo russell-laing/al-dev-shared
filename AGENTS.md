@@ -1,5 +1,8 @@
 # AGENTS.md
 
+> **Note:** This file contains Copilot CLI–specific guidance and review discipline.
+> For general repository information applicable to all harnesses (architecture, validation, build commands, file format conventions), see `.github/copilot-instructions.md`.
+
 This file provides guidance to Copilot CLI when working with code in this repository.
 
 ## What This Repo Is

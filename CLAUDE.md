@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `al-dev-shared` is a **Claude Code plugin marketplace** — a shared library of AL/BC development skills, agents, and knowledge documents consumed by Claude Code profiles. It is not an AL project itself; it contains no `.al` source files.
 
 It is registered in `~/.claude/settings.json` as:
+
 ```json
 "al-dev-shared": {
   "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
@@ -15,7 +16,7 @@ It is registered in `~/.claude/settings.json` as:
 
 ## Structure
 
-```
+```text
 profile-al-dev-shared/          # The plugin consumed by Claude Code
   skills/<name>/SKILL.md        # Skill definitions (invoked as /name)
   agents/<name>.md              # Agent definitions (spawned by skills)
@@ -27,23 +28,45 @@ profile-al-dev-shared/          # The plugin consumed by Claude Code
 
 ## Skill File Format
 
-Each skill is a markdown file with YAML frontmatter:
+Each skill is a markdown file in `profile-al-dev-shared/skills/<name>/SKILL.md` with YAML frontmatter:
 
 ```markdown
 ---
 name: skill-name
 description: >-
-  Trigger description used by Claude to auto-invoke.
+  Trigger description (auto-invoked when user request matches).
+  Used by Claude to decide whether to invoke this skill.
 argument-hint: "[optional args]"
 ---
 # Skill instructions...
 ```
 
-Skills reference knowledge files using relative paths (e.g., `knowledge/workflow-routing.md`). Agents are referenced by their type name (e.g., `al-dev-shared:al-dev-developer`).
+**Key patterns:**
+
+- Skills reference knowledge via relative paths (e.g., `../../knowledge/workflow-routing.md`)
+- Agents are spawned by name (e.g., `al-dev-shared:al-dev-developer`)
+- Phase 0 of multi-phase skills checks `.dev/progress.md` for resume capability
+- All artifacts written to `.dev/` directory (not the project root)
 
 ## Agent File Format
 
-Each agent is a markdown file with YAML frontmatter specifying `name`, `description`, `model`, and `tools`. The body is the system prompt passed to the spawned agent.
+Each agent is a markdown file in `profile-al-dev-shared/agents/<name>.md` with YAML frontmatter:
+
+```markdown
+---
+name: agent-name
+description: Brief summary of agent role
+model: claude-opus-4-7  # or sonnet-4-6 / haiku-4-5
+tools:
+
+  - Tool1
+  - Tool2
+
+---
+# System prompt (the full agent instructions)
+```
+
+**Agent naming:** Agents referenced by skills use `al-dev-shared:<agent-name>` format.
 
 ## Key Architectural Patterns
 
@@ -58,9 +81,11 @@ Each agent is a markdown file with YAML frontmatter specifying `name`, `descript
 ## Compile/Lint
 
 Skills that run AL compilation use:
+
 ```bash
 al-compile --output .dev/compile-errors.log
 ```
+
 This command applies to AL projects *using* this plugin, not to this repo itself. The full procedure is in `knowledge/compile-lint-procedure.md`.
 
 ## Commit Conventions
@@ -68,11 +93,86 @@ This command applies to AL projects *using* this plugin, not to this repo itself
 project-type: tool
 Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
+## Development Commands
+
+Common commands for maintaining the plugin:
+
+```bash
+# Validate knowledge file quality
+python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+
+# Validate agent structure (frontmatter, tools, model assignment)
+python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+
+# Run plugin health daemon (audit sweep with auto-fix)
+bash scripts/plugin-health-daemon.sh --dry-run    # preview changes
+bash scripts/plugin-health-daemon.sh --execute    # apply changes and create PR
+```
+
+### Updating Documentation Maps
+
+When skills or agents change, synchronize the documentation:
+
+```bash
+# Within Claude Code, use these skills in sequence:
+/review-skill-map        # Update profile-al-dev-shared skills vs. docs/al-dev-plugin-map.md
+/review-agent-map        # Update profile-al-dev-shared agents vs. docs/al-dev-agent-map.md
+/analyze-skill-design    # Generate architecture improvement suggestions
+/analyze-agent-design    # Generate agent design improvement suggestions
+```
+
+These skills write findings to:
+
+- `docs/al-dev-plugin-map.md` — Skill inventory and relationships
+- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
+- `docs/al-dev-skill-quality.md` — Skill clarity and structural issues
+- `docs/al-dev-agent-quality.md` — Agent quality audit results
+
+## Plugin Architecture Quick Reference
+
+**Start here:** `docs/al-dev-plugin-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
+
+**Active skills:** 19 distributed skills covering three main flows:
+
+1. **Ticket/Support flow** (`al-dev-ticket` → `al-dev-support-reply-drafter`)
+2. **Development flow** (`al-dev-investigate` → `al-dev-plan` → `al-dev-develop` → `al-dev-commit`)
+3. **Direct fix flow** (`al-dev-fix` for trivial changes)
+
+**Pre-planning tributaries (optional):** `al-dev-explore`, `al-dev-interview`, `al-dev-perf`
+
+**Post-commit outputs:** `al-dev-release-notes`, `al-dev-handoff`, `al-dev-document`, `commit-recover`
+
 ## Diagram Guidance
 
 When writing Mermaid diagrams, read
 `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating
 any diagram blocks.
+
+## Verification Before Commit
+
+Before committing changes:
+
+1. **File persistence check**
+
+   ```bash
+   git status              # Shows expected file changes
+   wc -l <file>           # Verify line counts unchanged for automated edits
+   ```
+
+2. **Forbidden patterns scan** — Check for unfinished work:
+   - `[date]` like `[2026-05-15]` — unrendered template
+   - `YYYY-MM-DD` as literal string — unrendered date placeholder
+   - `TODO` or `TBD` — incomplete work
+   - `Co-Authored-By` in code comments — AI attribution (OK in git trailers)
+   - `claude:` or `copilot:` prefixed comments — harness debug tokens left in
+
+3. **Content acceptance criteria** — File content matches spec in commit message
+
+4. **Skill/agent validation** — If editing skills or agents:
+
+   ```bash
+   python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+   ```
 
 ---
 
@@ -101,21 +201,25 @@ pass the above checklist in the dispatch prompt so subagents self-verify before 
 For tasks that need a design decision:
 
 **SMALL/TRIVIAL** (single file, clear requirements, no alternatives):
+
 - Use `superpowers:writing-plans` directly if requirements are unambiguous
 - Skip the architect debate phase; the extra tokens and time aren't justified
 
 **MEDIUM** (4+ files, novel architecture, OR ambiguous requirements):
+
 - **Prefer** `/al-dev-plan` to run the competitive architect debate
 - This adds ~90–120 seconds and 20–40% token overhead vs `writing-plans` alone
 - Then use `superpowers:writing-plans` to convert the winning design into a task plan
 - **Why:** Adversarial review catches wrong-approach risks early; rework later is 3× more expensive
 
 **LARGE/COMPLEX** (multiple subsystems, major refactor, strategic decision):
+
 - **Always** use `/al-dev-plan` with mandatory architect debate
 - Do NOT use `writing-plans` alone for large scope
 - Consider escalating to user for requirements review before planning
 
 **Anti-pattern to avoid:**
+
 - Using `writing-plans` alone for MEDIUM+ work skips adversarial review and increases wrong-approach risk
 - If you're unsure whether a task is SMALL or MEDIUM, default to MEDIUM and use `al-dev-plan`
 
@@ -143,12 +247,14 @@ Before submitting any plan for execution, the plan author MUST perform a
 self-consistency pass:
 
 1. **Token audit:** If the plan prohibits harness-specific tokens in output
+
    files, scan all *plan-specified file content* for those same tokens. Any
    occurrence in a code block example counts as a violation of the plan's own
    rule and must be resolved (genericise the example or add an explicit
    exception with reasoning) before execution begins.
 
 2. **Constraint propagation check:** For every "must not contain X" rule in
+
    a spec, verify that no task step directs an agent to write content that
    contains X.
 
@@ -162,11 +268,17 @@ review** must be scheduled at the halfway task (e.g. after Task 4 of 7) to
 review the whole module assembled so far — not just the latest additions.
 
 Integration review checklist additions (beyond per-task scope) — adapt to project type:
+
 - [ ] All patterns/rules tested against the full input set, not just inputs
+
       introduced in the current task
+
 - [ ] Deduplication / membership logic verified end-to-end across all
+
       functions added to date
+
 - [ ] Interface names (flags, field names, API parameters) consistent across
+
       all definitions added so far
 
 ## Known Environment Issues
