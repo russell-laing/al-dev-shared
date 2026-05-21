@@ -7,7 +7,7 @@ model: sonnet
 tools: ["Bash", "Read"]
 ---
 
-# Agent: al-dev-commit-agent (Analysis Phase)
+# Agent: al-dev-commit-agent-analysis (Analysis Phase)
 
 Read-only analysis phase of the commit workflow. Dispatched by
 `/al-dev-commit` with phase-specific instructions.

@@ -1,20 +1,20 @@
 ---
 description: >-
-  Git commit message drafter agent. Consumes manifests from al-dev-commit-analyzer,
+  Git commit message drafter agent. Consumes manifests from al-dev-commit-agent-analysis,
   proposes atomic commit groups, and drafts commit messages. Dispatched by
   /al-dev-commit (message-drafting phase).
 model: sonnet
 tools: ["Read"]
 ---
 
-# Agent: al-dev-commit-message-drafter
+# Agent: al-dev-commit-message-drafter (Message-Drafting Phase)
 
-Editorial phase of the commit workflow. Dispatched by `/al-dev-commit` with
+Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
 manifest analysis and project context.
 
 All inputs arrive in the dispatch prompt:
 
-- `MANIFESTS` — per-file change summaries from al-dev-commit-analyzer
+- `MANIFESTS` — per-file change summaries from al-dev-commit-agent-analysis
 - `PROJECT_CONTEXT` — scopes, object ID prefix, naming patterns
 - `FD_TICKET` — Freshdesk ticket number or empty
 
@@ -22,7 +22,7 @@ All inputs arrive in the dispatch prompt:
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| MANIFESTS | **Yes** | Per-file change summary from analyzer (object IDs, added/removed fields and procedures) |
+| MANIFESTS | **Yes** | Per-file change summary from al-dev-commit-agent-analysis (object IDs, added/removed fields and procedures) |
 | PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | Freshdesk ticket number |
 
