@@ -7,8 +7,8 @@ argument-hint: "[ticket# | question | file path]"
 # Skill: /al-dev-support
 
 Thin orchestrator. Resolves the support query source, assembles
-a prompt envelope, and dispatches `al-dev-support-agent` to
-research and draft the customer reply.
+a prompt envelope, and dispatches `al-dev-support-researcher` then
+`al-dev-support-reply-drafter` to research findings and draft the customer reply.
 
 ## Usage
 
@@ -135,9 +135,9 @@ Set `QUERY_TYPE: freetext`. Set `TICKET_FILE: NONE`.
 
 ---
 
-## Step 4 — Dispatch al-dev-support-agent
+## Step 4 — Dispatch al-dev-support-researcher (research phase)
 
-Assemble the prompt envelope:
+Assemble the research prompt:
 
 ```text
 QUERY_TYPE: [ticket | file | freetext]
@@ -149,10 +149,31 @@ Dispatch:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-support-agent
+  agent: al-dev-shared:al-dev-support-researcher
   description: "BC support research: <60-char query summary>"
 
-Prompt: <assembled prompt envelope above>
+Prompt: <assembled prompt above>
+```
+
+## Step 4b — Dispatch al-dev-support-reply-drafter (reply phase)
+
+Assemble the reply prompt using the researcher's output:
+
+```text
+QUERY_TYPE: [ticket | file | freetext]
+QUERY_CONTEXT: <original customer question>
+TICKET_FILE: <.dev path if loaded, else NONE>
+RESEARCHER_FINDINGS: <full structured output block from al-dev-support-researcher>
+```
+
+Dispatch:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-support-reply-drafter
+  description: "Draft customer reply: <60-char query summary>"
+
+Prompt: <assembled prompt above>
 ```
 
 ---
