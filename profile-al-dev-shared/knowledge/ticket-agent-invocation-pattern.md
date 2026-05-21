@@ -30,7 +30,7 @@ The following environment variables **must be set** by the harness before dispat
 
 | Variable | Description | Source |
 |----------|-------------|--------|
-| `FRESHDESK_API_KEY` | Freshdesk API authentication key | User's global settings (`~/.claude/settings.json`) |
+| `FRESHDESK_API_KEY` | Freshdesk API authentication key | User's global settings (harness settings file) |
 | `FRESHDESK_DOMAIN` | Freshdesk subdomain (e.g., `company.freshdesk.com`) | User's global settings |
 
 These are resolved from the harness environment, not passed in the dispatch prompt.

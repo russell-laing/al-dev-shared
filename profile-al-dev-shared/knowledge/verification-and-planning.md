@@ -237,7 +237,7 @@ When updating skill behavior across Claude Code and Copilot CLI, use this mappin
 
 | Need | Claude Code | Copilot CLI |
 |---|---|---|
-| User decision gate | AskUserQuestion tool | USER_GATE |
+| User decision gate | USER_GATE | USER_GATE |
 | Subagent retry | re-dispatch Agent with updated prompt | re-dispatch with updated prompt |
 | Pattern scan (grep) | Bash tool: `grep` or `rg` | Bash tool: `rg` or `git diff \| grep` |
 
@@ -245,6 +245,6 @@ When updating skill behavior across Claude Code and Copilot CLI, use this mappin
 
 ## References
 
-- **CLAUDE.md** → "Plan Task Verification Standard" and "Write-Persistence Verification" sections (project instructions)
+- **project instructions file** → "Plan Task Verification Standard" and "Write-Persistence Verification" sections
 - **skills/al-dev-investigate/SKILL.md** → Step 0 — Target Confirmation (workflow implementation)
 - **skills/al-dev-plan/SKILL.md** → Phase 2–4 architect briefing and facilitation (workflow implementation)
