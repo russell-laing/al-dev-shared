@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-21 (full architectural analysis: 6 improvement suggestions, 2 maintenance moves)
-**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /align-harness-repos in `.claude/skills/` (project-local maintenance tool, not distributed).
+**Last updated:** 2026-05-22 (19 active skills, 2 archived maintenance tools, verified active/archived alignment)
+**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align, plugin-health-daemon) excluded. `/align-harness-repos` and `/plugin-health-daemon` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
 
@@ -437,26 +437,6 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
-### /align-harness-repos
-
-Runs a Python alignment script; no agents spawned. Reports forbidden-token violations and harness mapping gaps.
-
-```mermaid
-flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Run alignment script"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Handle results"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["alignment report"])
-    Output1 --> End([End])
-
-    style Phase1 fill:#e8eaf6
-    style Phase2 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork2 fill:#c5cae9
-    style Output1 fill:#9fa8da
-```
-
 ### /commit-recover
 
 Spawns one verifier per corrupted-file incident found in `.dev/commit-integrity.log`.
@@ -507,36 +487,6 @@ flowchart LR
     style SkillWork3 fill:#f06292
     style Critics fill:#f06292
     style Output1 fill:#c2185b
-```
-
-### /plugin-health-daemon
-
-> **Scope: Project-local only.** Moved to `.claude/skills/plugin-health-daemon/` — not distributed in the plugin. Maintained alongside `/align-harness-repos` as internal plugin-maintenance infrastructure.
-
-Autonomous audit sweep that dispatches all plugin review skills in parallel, auto-fixes safe issues, and generates a weekly digest.
-
-```mermaid
-flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Dispatch audits"]
-    Phase1 --> Audits["6 Audit skills<br/>in parallel<br/>(audit-skill-quality,<br/>audit-agent-quality,<br/>review-skill-map,<br/>analyze-skill-design,<br/>review-agent-map,<br/>analyze-agent-design)"]
-    Audits --> Phase2["Phase 2<br/>Aggregate findings"]
-    Phase2 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase3["Phase 3<br/>Auto-fix safe issues"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase4["Phase 4<br/>Generate reports"]
-    Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["PR + digest"])
-    Output1 --> End([End])
-
-    style Phase1 fill:#c8e6c9
-    style Phase2 fill:#c8e6c9
-    style Phase3 fill:#c8e6c9
-    style Phase4 fill:#c8e6c9
-    style SkillWork1 fill:#81c784
-    style SkillWork2 fill:#81c784
-    style SkillWork3 fill:#81c784
-    style Audits fill:#66bb6a
-    style Output1 fill:#4caf50
 ```
 
 ### /verify-commits
@@ -652,27 +602,11 @@ Trade-off: Adds scope; only worth building if BC deployment management is a freq
 
 ---
 
-**Move: `profile-al-dev-shared/skills/al-dev-align/` → archived or external utility**
+### Completed architectural moves
 
-Observation: The `al-dev-align/` directory in the skills folder contains only Python code (`check-alignment.py`) and tests, with NO `SKILL.md` file. This makes it an invalid skill and should not occupy a slot in the distributed plugin's skill registry.
+**✅ Status: /al-dev-align** — Archived in `profile-al-dev-shared/archived/`. The Python utility (`check-alignment.py`) remains available internally without occupying a slot in the distributed plugin skill registry.
 
-Signals: internal path refs (✓), self-audit purpose (✓), no spawned agents (✓).
-
-Suggestion: Move `profile-al-dev-shared/skills/al-dev-align/` to `profile-al-dev-shared/archived/utilities/al-dev-align/` or maintain it as a standalone Python utility outside the plugin structure.
-
-Trade-off: Utility remains available for internal use; removed from the distributed plugin skill catalog.
-
----
-
-**Move: `/plugin-health-daemon` → `.claude/skills/plugin-health-daemon/`**
-
-Observation: The plugin-health-daemon is an autonomous audit sweep for plugin maintenance (drift detection, quality checks, PR generation). It operates exclusively on the distributed plugin's structure and has no value to external consumers. Like /align-harness-repos, it is a plugin-maintenance tool, not an AL development service.
-
-Signals: internal path refs (✓ — operates on profile-al-dev-shared/), self-audit purpose (✓ — audits the plugin itself), no spawned agents (✓ — calls audit skills, not agents).
-
-Suggestion: Move `profile-al-dev-shared/skills/plugin-health-daemon/` to `.claude/skills/plugin-health-daemon/` alongside /align-harness-repos as project-local maintenance infrastructure.
-
-Trade-off: Skill remains available for internal plugin maintenance; removed from the distributed plugin skill catalog, improving clarity that external consumers should not depend on it.
+**✅ Status: /plugin-health-daemon** — Moved to `.claude/skills/plugin-health-daemon/` as project-local maintenance infrastructure alongside `/align-harness-repos`.
 
 ---
 
@@ -688,8 +622,8 @@ The plugin maintains healthy separation of concerns:
 
 ### Status summary
 
-**Previous analysis (2026-05-19):** Identified 5 mapping accuracy issues, reported status as resolved.
-**Current analysis (2026-05-21):** Full architectural lens analysis across all 20 skills. Identified 6 actionable improvement suggestions (3 high-leverage, 3 medium-leverage). Two low-impact architectural moves also documented. No correctness issues found; plugin design is sound.
+**Previous analysis (2026-05-21):** Full architectural lens analysis across all 20 skills. Identified 6 actionable improvement suggestions (3 high-leverage, 3 medium-leverage).
+**Current analysis (2026-05-22):** Verified active/archived alignment. Two maintenance tools (/al-dev-align, /plugin-health-daemon) confirmed moved out of distributed plugin. Active plugin now contains 19 skills (down from 20 in previous analysis). All remaining skills accurately documented. Architectural suggestions remain valid.
 
 ### Extension opportunities
 
