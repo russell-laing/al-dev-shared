@@ -102,6 +102,14 @@ Check whether $ARGUMENTS contains a meaningful feature description.
    Include them as **"Performance constraints from prior analysis:"** in every
    architect prompt in Phase 2. If no file exists, skip silently.
 
+6. Load exploration findings if available:
+   ```bash
+   EXPLORE=$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)
+   ```
+   If a file is found, read the findings and synthesized recommendations.
+   Include them as **"Codebase exploration findings from prior investigation:"** in every
+   architect prompt in Phase 2. If no file exists, skip silently.
+
 ## Phase 1.5: Verify External Claims
 
 If the request references a findings file, codeburn output, lint report,
