@@ -449,144 +449,17 @@ Decision:
 
 Do NOT present to user until critical issues are resolved.
 
-## Phase 8: Compile + Lint Pass
+## Phase 8: Compilation & Error Handling
 
-**Standard mode** (no `--autonomous`): Follow
-`knowledge/compile-lint-procedure.md` in full.
-
-Write lint report to:
-`.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md`
-
-Additional rules for this skill:
-
-- If compilation errors remain after the developer fix pass,
-  reassign to the responsible developer agent and iterate.
-- If `al-compile` is unavailable, skip the diagnostics-fixer
-  step and note "Compilation not verified" in the Phase 10
-  review summary.
-- Unresolved lint items from the lint report are surfaced at
-  the Phase 10 user approval gate — no new gate here.
-- If the diagnostics-fixer introduces a regression (new
-  compile errors), spawn a new `al-dev-developer` agent with
-  the regression details, re-run `al-compile`, then
-  re-spawn diagnostics-fixer.
-
-Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
-
----
-
-**Autonomous mode** (`--autonomous` in `$ARGUMENTS`):
-
-Run the compile-verify loop. Track attempt count.
-
-### Setup
-
-Always initialize these at Phase 8 entry:
-
-```bash
-mkdir -p .dev
-ATTEMPT=1
-MAX_ATTEMPTS=5
-```
-
-### Compile Step
-
-```bash
-if command -v al-compile &>/dev/null; then
-  al-compile --output \
-    .dev/compile-errors-attempt-${ATTEMPT}.log
-else
-  al compile /project:. /packagecachepath:.alpackages \
-    /errorlog:.dev/compile-errors-attempt-${ATTEMPT}.log
-fi
-```
-
-### After Each Compile
-
-**If log is absent, empty, or contains no `Error` lines:**
-Compilation is clean. Record that it took N attempts.
-Proceed to Phase 9.
-
-**If only `Warning` lines (no `Error` lines):**
-Spawn `al-dev-diagnostics-fixer` once to resolve warnings.
-Do NOT count this as a failed attempt.
-After it completes, read its lint report to confirm clean
-compile, then proceed to Phase 9.
-
-**If `Error` lines found:**
-
-Parse the log. Extract per error: file path, line number,
-error code, message text. Group by file.
-
-Resolve the signatures file path before spawning:
-
-```bash
-SIGFILE=$(ls .dev/*-al-dev-autonomous-signatures.md \
-  2>/dev/null | sort | tail -1)
-```
-
-If `SIGFILE` is empty (Phase 1.5 did not run or MCP was unavailable),
-omit the signatures section from the developer prompt and add this
-warning instead:
-
-```text
-⚠️ Signature file not found — MCP verification was not completed.
-Developers MUST verify signatures manually before fixing errors.
-```
-
-Spawn **al-dev-developer** with this prompt (substitute actual
-values of `ATTEMPT` and `SIGFILE` — do not paste literal variable names):
-
-```text
-Fix compilation errors in the AL project.
-This is attempt [ATTEMPT] of 5.
-
-Errors from .dev/compile-errors-attempt-[ATTEMPT].log:
-[paste full error list grouped by file]
-
-Verified signatures (use these exactly — do NOT alter):
-[paste relevant entries from [SIGFILE]]
-
-Context from solution plan for each erroring file:
-[paste relevant plan excerpt per file]
-
-Rules:
-- Fix ONLY the listed errors — do not refactor other code
-- If a signature error matches an "unverified" procedure,
-  use the AL symbols MCP NOW to get the correct signature
-  before fixing
-- Do NOT re-compile after fixing (the orchestrator compiles)
-- Report: [file:line] → [what changed] for each fix
-```
-
-Increment: `ATTEMPT=$((ATTEMPT + 1))`
-
-If `ATTEMPT <= MAX_ATTEMPTS`: return to Compile Step.
-
-### After 5 Failed Attempts
-
-Present to user:
-
-```text
-Compilation still failing after 5 attempts.
-
-Remaining errors (.dev/compile-errors-attempt-5.log):
-[list all remaining errors]
-
-Summary of fix attempts:
-- Attempt 1: [files changed, what was tried]
-- Attempt 2: [files changed, what was tried]
-...
-
-These errors likely require architectural review or a
-change to the solution plan approach.
-```
-
-USER_GATE — ask the user with options:
-
-- Show full error detail for all 5 logs
-- Assign manual fix with more context
-- Revise solution plan approach
+**Execution:**
+1. **Read** `.dev/compile-errors.log` (compiled by Phase 5 batch compile)
+2. **Categorize** errors using: `python3 .tools/error-categorizer.py .dev/compile-errors.log`
+3. **Report** the summary to conversation (NOT raw output)
+4. **If no errors:** Proceed to Phase 9 (code review)
+5. **If errors exist:** 
+   - Group by category (naming, schema, compilation, warnings)
+   - Assign fixes to reviewers based on error type
+   - Compile once more after all fixes applied
 
 ## Phase 9: Validate and Write Code Review
 
