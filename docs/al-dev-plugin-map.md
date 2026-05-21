@@ -481,30 +481,6 @@ flowchart LR
     style Output1 fill:#26a69a
 ```
 
-### /writing-plans
-
-No agents spawned; the skill itself orchestrates the task decomposition and documentation.
-
-```mermaid
-flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Scope check"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Design file structure"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase3["Phase 3<br/>Write bite-sized tasks"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["YYYY-MM-DD-plan.md"])
-    Output1 --> End([End])
-
-    style Phase1 fill:#fff8e1
-    style Phase2 fill:#fff8e1
-    style Phase3 fill:#fff8e1
-    style SkillWork1 fill:#ffe082
-    style SkillWork2 fill:#ffe082
-    style SkillWork3 fill:#ffe082
-    style Output1 fill:#fbc02d
-```
-
 ### /plan-with-critic-swarm
 
 Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
@@ -708,7 +684,7 @@ The plugin maintains healthy separation of concerns:
 - Single-use agents are appropriately scoped to domain-specific tasks
 - Pre-planning skills (interview/explore/perf) form a coherent optional enrichment layer feeding /al-dev-plan
 - Post-commit skills (release-notes/document/handoff/recover) handle orthogonal concerns
-- New meta-skills (plan-with-critic-swarm, writing-plans, verify-commits) are well-integrated
+- New meta-skills (plan-with-critic-swarm, verify-commits) are well-integrated
 
 ### Status summary
 

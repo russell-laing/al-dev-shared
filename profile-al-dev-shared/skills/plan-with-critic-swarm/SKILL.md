@@ -12,7 +12,7 @@ Generate an implementation plan, then dispatch 6 parallel critic agents (securit
 
 ## Steps
 
-1. **Generate draft plan** using writing-plans skill with the provided spec
+1. **Generate draft plan** using superpowers:writing-plans skill with the provided spec
 2. **Dispatch 6 parallel critics** via Agent tool:
    - **Security Critic:** Check for auth/permission issues, data exposure, input validation
    - **Testability Critic:** Verify tests are concrete, cover happy path + edge cases, assertions are verifiable
