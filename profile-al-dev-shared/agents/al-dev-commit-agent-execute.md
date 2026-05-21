@@ -4,7 +4,7 @@ description: >-
   executes git commits from an approved plan. Dispatched by al-dev-commit
   (execute phase). Never writes or edits source files directly — all fixes
   go through Bash.
-model: haiku
+model: sonnet  # Upgraded from haiku: multi-phase orchestration (baseline → lint → validation → commit → retry) with interdependent state and error recovery requires multi-step reasoning
 tools: ["Bash", "Read"]
 ---
 
