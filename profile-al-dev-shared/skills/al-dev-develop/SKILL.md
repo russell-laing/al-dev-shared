@@ -469,6 +469,37 @@ YOU write the synthesis yourself. Write to:
 Use the structure defined in `knowledge/code-review-template.md`.
 In autonomous mode (`--autonomous`), append the Autonomous Verification Results section from the same file.
 
+**Error Summary Section:**
+
+Before reviewers analyze code, include this structured error summary in the code review report:
+
+**Compilation Issues by Category:**
+- Extract from `.dev/compile-errors.log` using error categorizer
+- Separate: naming violations, schema errors, compilation errors, warnings
+- For each category, show:
+  - Count
+  - 2–3 representative examples (truncated)
+  - Suggested fix pattern
+  - Files affected
+
+**Example format:**
+
+```
+## Compilation Status
+
+**Naming Violations (5 fields):**
+- Fields missing 'AC' prefix in Customer.Table.al:45-89
+- Suggested fix: Rename fields to AC[FieldName] pattern
+- Files: Customer.Table.al
+
+**Schema Errors (2 references):**
+- Field "G/L Register No." not found in G/L Entry table
+- Suggested fix: Use "Entry No." instead (primary key exists)
+- Files: JournalEntryAllocation.Table.al:123
+```
+
+This structure helps reviewers prioritize fixes by category and understand root causes quickly.
+
 After writing, run the validator:
 
 ```bash
