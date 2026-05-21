@@ -49,6 +49,23 @@ Fetch operations are sequential API calls (not parallel):
 
 3. **Get ticket custom fields** if present in metadata
 
+### Step 1.5: Detect Inline Image Attachments
+
+After extracting conversation HTML from the API response, scan for inline embedded images:
+
+1. **Regex scan for `src=` attributes:** Extract all image URLs from `<img src="..."` tags in description and conversation HTML
+2. **Regex scan for `cid:` references:** Extract content-ID references (Freshdesk inline attachment pattern) from `src="cid:..."` tags
+3. **Compile inline-image list:** Create a distinct list of inline images found — these are separate from the file attachments array in the API response
+
+Example patterns to match:
+```
+src="https://cdn.freshdesk.com/...jpg"     → extract URL
+src="cid:attachment_123abc"                 → extract cid:attachment_123abc
+<img src="data:image/png;base64,..."      → note as "inline base64 image"
+```
+
+If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
+
 ### Step 2: Write Context File
 
 Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
@@ -78,7 +95,12 @@ Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
 [If applicable: field name: value pairs]
 
 ## Attachments
+
+**File Attachments:** (from API attachments array)
 [If applicable: filename, size, URL]
+
+**Inline Embeds:** (extracted from HTML src= and cid: references)
+[If applicable: image URL or cid:reference, extracted from description and comments]
 ```
 
 ### Step 3: Return Output
@@ -91,6 +113,7 @@ STATUS: [Status]
 PRIORITY: [Priority]
 COMMENTS_COUNT: [N]
 ATTACHMENTS: [Count or "None"]
+INLINE_IMAGES_COUNT: [N or "None"]
 ```
 
 ## Notes
