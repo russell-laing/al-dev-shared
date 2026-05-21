@@ -5,7 +5,7 @@ description: >-
   not integrated into /al-dev-develop (which uses specialist reviewers
   for security, patterns, and performance).
 model: sonnet
-tools: ["Read", "Glob", "Grep"]
+tools: ["Read"]
 ---
 
 # Agent: al-dev-code-review
