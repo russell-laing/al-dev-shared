@@ -626,13 +626,25 @@ flowchart LR
 
 **Move: `profile-al-dev-shared/skills/al-dev-align/` → archived or external utility**
 
-Observation: The `al-dev-align/` directory in the skills folder contains only Python code (`check-alignment.py`) and tests, with NO `SKILL.md` file. This makes it an invalid skill and should not occupy a slot in the distributed plugin's skill registry. 
+Observation: The `al-dev-align/` directory in the skills folder contains only Python code (`check-alignment.py`) and tests, with NO `SKILL.md` file. This makes it an invalid skill and should not occupy a slot in the distributed plugin's skill registry.
 
 Signals: internal path refs (✓), self-audit purpose (✓), no spawned agents (✓).
 
 Suggestion: Move `profile-al-dev-shared/skills/al-dev-align/` to `profile-al-dev-shared/archived/utilities/al-dev-align/` or maintain it as a standalone Python utility outside the plugin structure.
 
 Trade-off: Utility remains available for internal use; removed from the distributed plugin skill catalog.
+
+---
+
+**Move: `/plugin-health-daemon` → `.claude/skills/plugin-health-daemon/`**
+
+Observation: The plugin-health-daemon is an autonomous audit sweep for plugin maintenance (drift detection, quality checks, PR generation). It operates exclusively on the distributed plugin's structure and has no value to external consumers. Like /align-harness-repos, it is a plugin-maintenance tool, not an AL development service.
+
+Signals: internal path refs (✓ — operates on profile-al-dev-shared/), self-audit purpose (✓ — audits the plugin itself), no spawned agents (✓ — calls audit skills, not agents).
+
+Suggestion: Move `profile-al-dev-shared/skills/plugin-health-daemon/` to `.claude/skills/plugin-health-daemon/` alongside /align-harness-repos as project-local maintenance infrastructure.
+
+Trade-off: Skill remains available for internal plugin maintenance; removed from the distributed plugin skill catalog, improving clarity that external consumers should not depend on it.
 
 ---
 
