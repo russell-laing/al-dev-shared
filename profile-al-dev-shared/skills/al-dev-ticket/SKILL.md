@@ -162,6 +162,8 @@ Prompt:
    FILE: .dev/$DATE-al-dev-ticket-ticket-context.md"
 ```
 
+**See:** `../../knowledge/ticket-agent-invocation-pattern.md` for canonical dispatch pattern.
+
 ---
 
 ## Step 4 — Present Result and Handle Attachments

@@ -24,3 +24,5 @@ Example:
 ```
 
 This is equivalent to the former `/al-dev-support 12345`.
+
+**Note:** When using `--mode=full`, the skill internally dispatches `al-dev-ticket-agent` using the pattern documented in `../../knowledge/ticket-agent-invocation-pattern.md`.
