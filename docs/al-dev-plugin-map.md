@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-19 (fixed: 5 accuracy issues — stale names, Explore labeling, develop phase gap, Layer 1 post-commit completeness)
-**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /align-harness-repos moved to `.claude/skills/` (project-local maintenance tool, not distributed).
+**Last updated:** 2026-05-21 (added: 4 missing skills, flagged al-dev-align as invalid)
+**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer) excluded. /align-harness-repos in `.claude/skills/` (project-local maintenance tool, not distributed).
 
 ---
 
@@ -481,12 +481,121 @@ flowchart LR
     style Output1 fill:#26a69a
 ```
 
+### /writing-plans
+
+No agents spawned; the skill itself orchestrates the task decomposition and documentation.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase1["Phase 1<br/>Scope check"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Phase 2<br/>Design file structure"]
+    Phase2 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase3["Phase 3<br/>Write bite-sized tasks"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1(["YYYY-MM-DD-plan.md"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#fff8e1
+    style Phase2 fill:#fff8e1
+    style Phase3 fill:#fff8e1
+    style SkillWork1 fill:#ffe082
+    style SkillWork2 fill:#ffe082
+    style SkillWork3 fill:#ffe082
+    style Output1 fill:#fbc02d
+```
+
+### /plan-with-critic-swarm
+
+Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase1["Phase 1<br/>Generate draft plan"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Phase 2<br/>Dispatch critics"]
+    Phase2 --> Critics["6 Critic agents<br/>in parallel<br/>(security, testability,<br/>type-safety, rollback,<br/>api-contracts, edge-cases)"]
+    Critics --> Phase3["Phase 3<br/>Synthesize + rank"]
+    Phase3 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase4["Phase 4<br/>Apply auto-fixes"]
+    Phase4 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1(["plan-critique-YYYYMMDD.md"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#f8bbd0
+    style Phase2 fill:#f8bbd0
+    style Phase3 fill:#f8bbd0
+    style Phase4 fill:#f8bbd0
+    style SkillWork1 fill:#f06292
+    style SkillWork2 fill:#f06292
+    style SkillWork3 fill:#f06292
+    style Critics fill:#f06292
+    style Output1 fill:#c2185b
+```
+
+### /plugin-health-daemon
+
+Autonomous audit sweep that dispatches all plugin review skills in parallel, auto-fixes safe issues, and generates a weekly digest.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase1["Phase 1<br/>Dispatch audits"]
+    Phase1 --> Audits["6 Audit skills<br/>in parallel<br/>(audit-skill-quality,<br/>audit-agent-quality,<br/>review-skill-map,<br/>analyze-skill-design,<br/>review-agent-map,<br/>analyze-agent-design)"]
+    Audits --> Phase2["Phase 2<br/>Aggregate findings"]
+    Phase2 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase3["Phase 3<br/>Auto-fix safe issues"]
+    Phase3 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase4["Phase 4<br/>Generate reports"]
+    Phase4 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1(["PR + digest"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#c8e6c9
+    style Phase2 fill:#c8e6c9
+    style Phase3 fill:#c8e6c9
+    style Phase4 fill:#c8e6c9
+    style SkillWork1 fill:#81c784
+    style SkillWork2 fill:#81c784
+    style SkillWork3 fill:#81c784
+    style Audits fill:#66bb6a
+    style Output1 fill:#4caf50
+```
+
+### /verify-commits
+
+No agents spawned; compares git commits against plan and optionally re-splits combined commits.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase1["Step 1<br/>Read plan"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Step 2<br/>Inspect git log"]
+    Phase2 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Decision{Match?}
+    Decision -->|Yes| End1([End: OK])
+    Decision -->|No| Phase3["Step 3<br/>Re-split commits"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase4["Step 4<br/>Verify count"]
+    Phase4 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> End2([End: Fixed])
+
+    style Phase1 fill:#e0f2f1
+    style Phase2 fill:#e0f2f1
+    style Phase3 fill:#e0f2f1
+    style Phase4 fill:#e0f2f1
+    style SkillWork1 fill:#b2dfdb
+    style SkillWork2 fill:#b2dfdb
+    style SkillWork3 fill:#b2dfdb
+    style SkillWork4 fill:#b2dfdb
+    style Decision fill:#80cbc4
+```
+
 ---
 
 ## Observations
 
-> Generated by /analyze-skill-design on 2026-05-19.
-> Run /review-skill-map first if the skill list has changed since this was written.
+> Updated by /review-skill-map on 2026-05-21 to include 4 missing skills and flag invalid skill directory.
+> Previous analysis by /analyze-skill-design on 2026-05-19. Refresh architectural suggestions by running /analyze-skill-design and /analyze-agent-design if skills have been substantially changed.
 
 ### Agents used by only one skill
 
@@ -497,7 +606,7 @@ flowchart LR
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1; read-only)
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 2; runs git commits)
-- **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked by /al-dev-develop in its compile-verify phase (not shown in drill-down — see Connect suggestion below)
+- **al-dev-diagnostics-fixer** — primary caller is /al-dev-lint; also invoked by /al-dev-develop in its compile-verify phase (Phase 5)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 
 ### Skills with no dedicated agent (skill does the work itself)
@@ -513,31 +622,35 @@ flowchart LR
 - **al-dev-solution-architect** — spawned by /al-dev-plan (×2-3 competitive debate) and /al-dev-fix (×1 quick analysis); patterns in `knowledge/architect-invocation-patterns.md` ← implemented
 - **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — parallel composition in /al-dev-develop; canonical definition in `knowledge/review-panel-pattern.md` ← implemented
 
-### Previously implemented suggestions
+### Architectural suggestions
 
-three-reviewer panel extract, /al-dev-autonomous merge into --autonomous flag, explore backbone + architect invocation patterns, integrated ticket lookup, /align-harness-repos move to project-local, Layer 1 pre-plan tributaries (explore/interview/perf), post-commit nodes (release-notes/handoff), lint→fix feedback loop, inventory clarity update.
+**Move: `profile-al-dev-shared/skills/al-dev-align/` → archived or external utility**
 
-### Issues Resolution Log
+Observation: The `al-dev-align/` directory in the skills folder contains only Python code (`check-alignment.py`) and tests, with NO `SKILL.md` file. This makes it an invalid skill and should not occupy a slot in the distributed plugin's skill registry. 
 
-All five mapping accuracy issues identified on 2026-05-15 have been resolved:
+Signals: internal path refs (✓), self-audit purpose (✓), no spawned agents (✓).
 
-1. ✅ **Map accuracy — stale agent names** (resolved in earlier commits)
-   - `/commit-recover` drill-down title and `al-dev-commit-recover-verifier` agent name already corrected
-   - `/al-dev-release-notes` agent label fixed from `al-dev-release-notes-agent` → `al-dev-release-notes-writer`
+Suggestion: Move `profile-al-dev-shared/skills/al-dev-align/` to `profile-al-dev-shared/archived/utilities/al-dev-align/` or maintain it as a standalone Python utility outside the plugin structure.
 
-2. ✅ **Explore subagent labeling** (resolved in earlier commits)
-   - All three drill-downs (/al-dev-investigate, /al-dev-explore, /al-dev-perf) now consistently label the agent as `Explore subagent ×N`
+Trade-off: Utility remains available for internal use; removed from the distributed plugin skill catalog.
 
-3. ✅ **Undocumented compile-verify phase in /al-dev-develop** (resolved in this review)
-   - Phase 5 "Compile + verify" node added showing `al-dev-diagnostics-fixer ×1`
-   - Phase 6 "Write code review" clarifies the final output step
+---
 
-4. ✅ **Missing post-commit nodes in Layer 1** (resolved in recent commits)
-   - `/al-dev-document` added as dashed post-commit node with `✓ documentation` output
-   - `/commit-recover` added as conditional dashed post-commit recovery path with `(on integrity error)` label
+**General observations:**
 
-All map drill-downs now accurately reflect skill phases, spawned agents, and outputs.
+The plugin maintains healthy separation of concerns:
+- All multi-agent patterns are documented in `knowledge/`
+- No skills have overlapping phase structures that would benefit from merging
+- Single-use agents are appropriately scoped to domain-specific tasks
+- Pre-planning skills (interview/explore/perf) form a coherent optional enrichment layer feeding /al-dev-plan
+- Post-commit skills (release-notes/document/handoff/recover) handle orthogonal concerns
+- New meta-skills (plan-with-critic-swarm, plugin-health-daemon, writing-plans, verify-commits) are well-integrated
+
+### Status summary
+
+**Previous analysis (2026-05-19):** Identified 5 mapping accuracy issues, reported status as resolved.
+**Current analysis (2026-05-21):** Found 4 additional missing skills in Layer 2 (plan-with-critic-swarm, plugin-health-daemon, verify-commits, writing-plans) and 1 invalid skill entry (al-dev-align lacks SKILL.md). All discrepancies now addressed. All major agent-sharing patterns documented. All file handoff chains complete.
 
 ### Extension opportunities
 
-None beyond the five suggestions above. The plugin architecture is well-optimised; remaining gaps are documentation accuracy and Layer 1 completeness for skills that already exist.
+None identified at this time. The plugin architecture is well-optimised; remaining opportunities are in workflow documentation (e.g., "When should I run /al-dev-interview vs. /al-dev-explore before planning?") and guidance integration (/al-dev-help already covers this), not in structural changes.
