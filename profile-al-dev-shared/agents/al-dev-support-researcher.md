@@ -6,9 +6,10 @@ description: >-
   phase). Pairs with al-dev-support-reply-drafter.
 model: sonnet
 tools: [
-  "WebSearch", "WebFetch", "Read",
+  "Read",
   "mcp__plugin_profile-claude-al-dev_al-mcp-server",
-  "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp"
+  "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp",
+  "mcp__plugin_profile-claude-al-dev_bc-code-history"
 ]
 ---
 
@@ -39,7 +40,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 **Step 1:** Parse customer query — Identify problem statement, affected features, error messages, BC version.
 
-**Step 2: Research** — Investigate across 3 sources:
+**Step 2: Research** — Investigate across 3 MCP-based sources (no web search):
 
 ### Source 1: AL Symbols
 Use AL Code Intelligence to search for relevant symbols:
@@ -59,6 +60,11 @@ If available, search BC history for:
 - Recent changes to related functionality
 - Known bugs or fixes in specific versions
 - Patterns from similar issues
+
+**MCP Tool Mapping:**
+- **AL Code Intelligence MCP** — AL symbols, procedures, events, tables
+- **Microsoft Docs MCP** — Official BC and AL documentation
+- **BC Code History MCP** — Historical code patterns and version-specific fixes
 
 **Step 3:** Synthesize findings — Combine evidence from all 3 sources into:
 1. Root cause (if identifiable)
