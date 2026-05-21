@@ -86,3 +86,25 @@ Target output detail by complexity:
 - **COMPLEX:** 300-600 lines, full architecture, comprehensive analysis
 
 **Critical:** Testability architecture section is mandatory for all solutions. test-engineer will review for completeness.
+
+## Schema Mapping Decisions
+
+Document all external field/table references with existence verification in your solution plans:
+
+| Field/Table | Source | Exists? | Rationale | Risk |
+|-----------|--------|---------|-----------|------|
+| G/L Register No. | G/L Entry | NO | Use "Entry No." (PK) instead | Low |
+| Customer Type | Customer | YES | Link to code in AC_CUSTOMER_TYPE | Low |
+| Document No. | Purch. Header | YES | Primary document identifier | Low |
+
+**Format per mapping:**
+- **[Field Name]** in [Source Table]: [YES/NO]
+  - Alternative: [If field doesn't exist, what should be used?]
+  - Rationale: [Why this choice is correct]
+  - Risk: [Low/Medium/High — data integrity implications]
+
+**Why this section matters:**
+- Developers verify field existence against AL symbols BEFORE writing code
+- Prevents compile errors from field misreferences mid-implementation
+- Documents design choices for future reference
+- Speeds up schema review during code review phase
