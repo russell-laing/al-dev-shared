@@ -59,6 +59,14 @@ The file path is `.dev/$(date +%Y-%m-%d)-support-<slug>.md` where `<slug>` is:
 
 Write both **Internal Findings** and **Draft Customer Reply** sections to this file.
 
+## Tone and Framing Constraints
+
+The draft is always the customer's first communication about this issue — nothing has been sent before. Apply these constraints:
+
+- **Never use retraction language.** Phrases like "I want to correct what was said earlier," "Let me clarify," or "That earlier information was wrong" are inappropriate in a first draft. If researcher findings supersede earlier information, incorporate them silently into a cohesive answer.
+- **Preserve human, relatable voice.** Current output style (direct, clear section headings, minimal hedging) is working well. Do not over-correct toward formality or excessive caution when adding other constraints.
+- **Write as a first-person direct response**, not a meta-commentary on the conversation process.
+
 ## Output Format
 
 ```markdown
