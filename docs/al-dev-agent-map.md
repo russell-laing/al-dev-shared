@@ -1,19 +1,20 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-19
+**Last updated:** 2026-05-21
 
 ## Layer 1: Agent Catalog
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-code-review | sonnet | Read, Glob, Grep | (none found) |
-| al-dev-commit-agent-analysis | sonnet | Bash, Read, Glob | /al-dev-commit |
-| al-dev-commit-agent-execute | haiku | Bash, Read, Glob | /al-dev-commit |
+| al-dev-commit-agent-analysis | sonnet | Bash, Read | /al-dev-commit |
+| al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit |
+| al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-develop |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
 | al-dev-docs-writer | sonnet | Read, Write, Glob, Grep, Bash | /al-dev-document |
 | al-dev-expert-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
-| al-dev-explore | haiku | Read, Glob, Grep | (none found — skill uses built-in Explore type) |
+| al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
 | al-dev-interview | sonnet | Read, Write, AskUserQuestion | /al-dev-interview |
 | al-dev-performance-reviewer | sonnet | Read, Grep, Glob | /al-dev-develop |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp | /al-dev-release-notes |
@@ -22,7 +23,6 @@
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
 | al-dev-support-agent | sonnet | WebSearch, WebFetch, Bash, Write, Read, mcp:al-mcp-server, mcp:microsoft-docs | /al-dev-support |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket, /al-dev-support |
-| al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 
 ---
 
@@ -133,7 +133,7 @@
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** sonnet
 **Tools:** Read, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-lint, /al-dev-develop
+**Spawned by:** /al-dev-lint
 
 **Inputs:**
 
@@ -274,11 +274,11 @@
 
 ---
 
-### al-dev-release-notes-agent
+### al-dev-release-notes-writer
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read, Glob, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp
+**Tools:** Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp
 **Spawned by:** /al-dev-release-notes
 
 **Inputs:**
@@ -418,27 +418,27 @@
 
 ---
 
-### commit-learn-verifier
+### al-dev-commit-recover-verifier
 
-**Description:** Analyze file corruption incidents, propose and execute recovery strategies with fallback methods.
-**Model:** sonnet
+**Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
+**Model:** haiku
 **Tools:** Bash, Read, Write
-**Spawned by:** /commit-learn
+**Spawned by:** /commit-recover
 
 **Inputs:**
 
-- **File path:** the corrupted file
-- **Baseline/current line count:** what changed
-- **Git history:** last 3–5 commits showing what edits were made
-- **Learnings.md:** current known patterns and strategies
-- **Incident log entry:** timestamp, error type (CORRUPTION/SYNTAX_ERROR)
+| Input | Required | Description |
+|-------|----------|-------------|
+| `REPO` | **Yes** | Project root directory |
+| `CORRUPTION_LOG` | **Yes** | Path to `.dev/commit-integrity.log` with flagged files |
+| `auto_fix` | No | If true, apply auto-fixes; if false, report findings only |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
-| Analysis report (text) | Root cause hypothesis, pattern match result, fallback strategy, recovery result |
-| Updated `learnings.md` | Recovery outcome recorded (success or failure) with new guardrails if applicable |
+| Fixed AL files | Recovered via fallback strategies (git restore, regex reconstruction, schema rebuild) |
+| `.dev/$(date +%Y-%m-%d)-al-dev-commit-recover-report.md` | Recovery report with per-file strategy and status |
 
 ---
 
@@ -451,18 +451,18 @@
 
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit
+- **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-expert-reviewer** — used only by /al-dev-develop
 - **al-dev-interview** — used only by /al-dev-interview
 - **al-dev-performance-reviewer** — used only by /al-dev-develop
-- **al-dev-release-notes-agent** — used only by /al-dev-release-notes
+- **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-security-reviewer** — used only by /al-dev-develop
 - **al-dev-support-agent** — used only by /al-dev-support
-- **commit-learn-verifier** — used only by /commit-learn
 
 ### Agents with no callers (standalone only)
 
-- **al-dev-code-review** — no skill spawns it; available for direct use alongside the 3-reviewer team
+- **al-dev-code-review** — no skill spawns it; available for direct standalone use
 - **al-dev-explore** — no skill spawns it; the `/al-dev-explore` skill dispatches the built-in `Explore` agent type instead
 - **al-dev-script-engineer** — no skill spawns it; available for direct use
 
@@ -489,17 +489,32 @@ Observation: Tools list includes `Glob`; system prompt body contains no Glob usa
 Suggestion: Remove `Glob` from the tools list in the agent frontmatter.
 Trade-off: Minimal — Glob was unused; consistent with the agent's stated constraint that "all fixes go through Bash."
 
-**Trim: al-dev-release-notes-agent** ← implemented
+**Trim: al-dev-release-notes-writer** ← implemented
 Observation: Tools list includes `Glob`; system prompt body uses only `Bash` (git commands), `Write` (output file), `Read` (mermaid helper), and the two MCP servers. No Glob calls are described anywhere in the workflow.
 Suggestion: Remove `Glob` from the tools list in the agent frontmatter.
 Trade-off: Minimal — Glob was unused; tighter least-privilege for a focused output-writing agent.
 
 **Remodel: al-dev-explore** ← implemented
-Observation: Agent performs single-step codebase retrieval (grep patterns, glob searches, file reads) and returns a concise summary; currently assigned `sonnet`. The 42-line system prompt body describes straightforward search-and-summarize with no multi-file reasoning or complex synthesis.
-Suggestion: Change model to `haiku` — the task (keyword search, pattern matching, file reading, brief summary) is haiku-appropriate retrieval with no inference-heavy reasoning.
-Trade-off: Faster + cheaper per invocation; justified because exploration is tool-driven, not reasoning-heavy. Note: al-dev-explore has no automated callers — this applies when the agent is spawned directly.
+Observation: Agent performs single-step codebase retrieval (grep patterns, glob searches, file reads) and returns a concise summary; previously assigned `sonnet`.
+Suggestion: Changed model to `haiku` — the task (keyword search, pattern matching, file reading, brief summary) is haiku-appropriate retrieval with no inference-heavy reasoning.
+Trade-off: Faster + cheaper per invocation; justified because exploration is tool-driven, not reasoning-heavy.
 
-**Align: al-dev-code-review** ← implemented
-Observation: Agent description reads "Use standalone or as part of the 3-specialist parallel review team alongside al-dev-security-reviewer, al-dev-expert-reviewer, and al-dev-performance-reviewer." No skill currently spawns this agent; /al-dev-develop uses only the three named specialists, not al-dev-code-review.
-Suggestion: Update the description to clarify that al-dev-code-review is for direct manual use (standalone general review), not part of the automated /al-dev-develop pipeline. Remove the "alongside" framing or add a note that it is standalone-only.
-Trade-off: Documentation-only change; prevents confusion when onboarding or extending /al-dev-develop — a developer reading the description would reasonably expect this agent to already be wired in.
+**Align: al-dev-support-agent — missing Write step** ← highest leverage
+Observation: Tools list includes `Write`; the spawning skill `/al-dev-support` expects `FILE: .dev/YYYY-MM-DD-support-<slug>.md` in the agent's return block. However, the agent body workflow has no "Write to file" step — the workflow ends with a formatted markdown output section but never instructs the agent to persist a file.
+Suggestion: Add an explicit "Write findings to `.dev/$(date +%Y-%m-%d)-support-<slug>.md`" step at the end of the workflow, followed by a return block that includes the `FILE:` path. Without this step, the caller's expected file contract may not be fulfilled.
+Trade-off: Adds one workflow step to the agent body; ensures the `.dev/` output actually lands on disk and the `FILE:` field is returned to the skill.
+
+**Trim: al-dev-support-agent — Bash unused**
+Observation: Tools list includes `Bash`; the workflow uses only `WebSearch`, `WebFetch`, and MCP tools for research. The only bash-like content is a commented env-var example (`MERMAID_HELPER=...`) in an "Env Var Handling" section — not an actual workflow step.
+Suggestion: Remove `Bash` from the tools list in the agent frontmatter.
+Trade-off: Minimal — Bash wasn't used; tighter least-privilege posture for a research-only agent.
+
+**Trim: al-dev-docs-writer — Bash unused**
+Observation: Tools list includes `Bash`; the workflow describes only `Read`, `Write`, and `Glob` operations (detect doc folder, read source files, write documentation). No bash commands appear in the workflow steps or output format.
+Suggestion: Remove `Bash` from the tools list in the agent frontmatter.
+Trade-off: Minimal — Bash wasn't used; documentation workflow is fully covered by the three remaining tools.
+
+**Align: al-dev-code-review description not updated**
+Observation: The previous `Align: al-dev-code-review ← implemented` entry was premature — the agent file still reads "Standalone reviewer or part of the automated /al-dev-develop 3-specialist team." The fix was only marked done in this map, never applied to the agent file itself.
+Suggestion: Update the agent description to read: "Standalone general code reviewer for direct use; not part of the automated /al-dev-develop review pipeline (which uses the three specialist reviewers: security, expert, performance)."
+Trade-off: Documentation-only; prevents developers from expecting this agent to be wired into /al-dev-develop when reading its description.
