@@ -87,6 +87,23 @@ content until all suggestions are rubber-ducked.
 > mismatch or gap, resolve it before moving to the next suggestion.
 > See `knowledge/rubber-duck.md` for the underlying protocol.
 
+### Progress tracking
+
+Before rubber-ducking any suggestion, create one TodoWrite todo per suggestion
+named `[Type] [Subject]`. Mark each todo in-progress when rubber-ducking begins,
+complete when the rubber duck record is written.
+
+### Parallel exploration
+
+When there are 3+ independent suggestions, invoke `superpowers:dispatching-parallel-agents`
+before starting rubber-ducking. Dispatch one Explore subagent per suggestion.
+Each agent should: read the affected file(s) in full, run U2 artifact checks,
+run the type-specific grep(s), and return a structured rubber duck record.
+Collect all records before writing any plan content.
+
+For ≤2 suggestions (or suggestions with ordering dependencies), the sequential
+inline path is fine — keep it as the fallback.
+
 ### Universal checks (all suggestion types)
 
 **U1. Read the affected files in full.**
