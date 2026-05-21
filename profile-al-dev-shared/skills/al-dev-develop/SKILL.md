@@ -118,6 +118,52 @@ Per the Phase 0 Read Protocol in
 
 ---
 
+## Phase 0.5: Context Preservation Checkpoint
+
+**Purpose:** Before development starts, create a resumable checkpoint in case context compaction occurs.
+
+**Execution:**
+
+1. Check if `.dev/resume-context.md` exists
+   - If yes, read it and offer resume/restart option to user
+   - If restart chosen, delete checkpoint and proceed to Phase 1
+   - If resume chosen, inject checkpoint state into Phase 1 restart
+
+2. If starting fresh, write `.dev/resume-context.md`:
+
+   ```markdown
+   # Development Resume Checkpoint — [ISO-8601 timestamp]
+
+   ## Current State
+   - **Phase:** 1 (Design & Module Planning)
+   - **Modules assigned:** [List of module assignments by developer]
+   - **Last compilation:** [Timestamp or "not yet run"]
+   - **Error summary:** [If any errors from previous compile]
+   - **Developer progress:**
+     - Developer A: [Module name, lines written, current task]
+     - Developer B: [Module name, lines written, current task]
+
+   ## Resumption Instructions
+   If context overflow occurs, inject this section into the next session's developer spawn:
+   > "Previous session checkpoint: [current state details]. Resume from this point."
+
+   ## Next Steps
+   - [Task 1]
+   - [Task 2]
+   - [Task 3]
+   ```
+
+3. **Update checkpoint after each phase completes** — append new state before proceeding to next phase
+
+**Why this helps:**
+- Explicit record of where development left off
+- Prevents asking developers to re-explain design decisions after compaction
+- Enables instant resumption without re-planning
+
+**When to enable:** After first context compaction is detected
+
+---
+
 ## Phase 1: Read Context
 
 **Autonomous mode detection:**
