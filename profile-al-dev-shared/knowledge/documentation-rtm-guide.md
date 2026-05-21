@@ -96,6 +96,7 @@ In feature documentation narrative sections, reference requirements by ID immedi
 ### Examples
 
 **Technical audience:**
+
 ```markdown
 ### User Perspective
 
@@ -110,6 +111,7 @@ record's `Credit Limit` field (REQ-001, ACC-001).
 ```
 
 **Functional audience:**
+
 ```markdown
 ### Workflows
 
@@ -119,6 +121,14 @@ Users set a per-customer credit limit (REQ-001). When processing a sales
 order, the system checks if the order total will exceed this limit (REQ-002) 
 and prevents saving if it does (ACC-002).
 ```
+
+**Functional RTM Table Example:**
+
+| ID | Status | Requirement |
+|---|---|---|
+| REQ-001 | VERIFIED | Users can set a credit limit per customer |
+| REQ-002 | VERIFIED | System prevents saving orders that exceed the credit limit |
+| REQ-003 | IN-PROGRESS | System sends warning email if order approaches 80% of limit |
 
 ### Application Rules
 

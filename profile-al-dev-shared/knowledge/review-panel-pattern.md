@@ -22,11 +22,33 @@ Each reviewer reads ALL implemented AL files.
 
 ## Spawn Instructions
 
-Spawn all three as a single batch:
-- Agent type: `al-dev-security-reviewer`, `al-dev-expert-reviewer`,
-  `al-dev-performance-reviewer`
-- Prompt each reviewer with: paths to ALL implemented AL files
-- Pattern: ×3 parallel (one message, three Agent calls)
+Spawn all three as a single batch in a single message with three independent Agent calls:
+
+```javascript
+Agent(
+  description: "Security review of implemented code",
+  subagent_type: "al-dev-shared:al-dev-security-reviewer",
+  prompt: "Review these AL files for security issues: [file list]. Check permissions, data exposure, auth gaps."
+)
+
+Agent(
+  description: "AL patterns and BC best practices review",
+  subagent_type: "al-dev-shared:al-dev-expert-reviewer",
+  prompt: "Review these AL files for naming, patterns, BC conventions: [file list]. Check SetLoadFields, naming consistency, event patterns."
+)
+
+Agent(
+  description: "Performance analysis of implemented code",
+  subagent_type: "al-dev-shared:al-dev-performance-reviewer",
+  prompt: "Review these AL files for query efficiency and performance: [file list]. Check N+1 patterns, SetLoadFields, loop scoping."
+)
+```
+
+**Pattern:** All three Agent calls in ONE message (×3 parallel) — execution time = max(all three), not sum.
+
+- All reviewers read **the same file list** (complete implementation set)
+- Each reviewer focuses on their domain (security / patterns / performance)
+- Responses arrive in any order; synthesis happens after all complete
 
 ## Synthesis (after all three complete)
 

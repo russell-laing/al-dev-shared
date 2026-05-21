@@ -166,10 +166,64 @@ end;
 **How to verify:** Use `al_search_objects` and `al_get_object_definition` MCPs to inspect the publishing procedure, OR search the base app source for the event name and signature.
 
 ### Performance Anti-Pattern: N+1 Queries
-Use batch operations instead of record-by-record processing. Load all data first, then process in-memory when possible.
+
+**Problem:** Loading one record at a time inside a loop causes N database calls for N records — exponential slowdown.
+
+```al
+// ❌ BAD: N+1 queries — one Get() per customer
+procedure ProcessCustomersWithOrders()
+var
+    SalesHeader: Record "Sales Header";
+    Customer: Record Customer;
+begin
+    if SalesHeader.FindSet() then
+        repeat
+            Customer.Get(SalesHeader."Sell-to Customer No.");  // DB call per record!
+            ProcessOrder(SalesHeader, Customer);
+        until SalesHeader.Next() = 0;
+end;
+
+// ✅ GOOD: Load all customers once, process in-memory
+procedure ProcessCustomersWithOrdersBetter()
+var
+    SalesHeader: Record "Sales Header";
+    CustomerCache: Dictionary of [Code[20], Record Customer];
+begin
+    LoadCustomerCache(CustomerCache);  // Single filtered read
+    if SalesHeader.FindSet() then
+        repeat
+            ProcessOrder(SalesHeader, CustomerCache.Get(SalesHeader."Sell-to Customer No."));
+        until SalesHeader.Next() = 0;
+end;
+```
+
+Use batch operations (`ModifyAll`, `DeleteAll`) or load-first-then-process instead of row-by-row DB calls inside loops.
 
 ### Unreferenced Variables
-Remove unused variables. They clutter the code and indicate dead code paths.
+
+**Problem:** Unused variables indicate dead code, clutter the codeunit, and confuse readers about data flow.
+
+```al
+// ❌ BAD: Unused variables
+procedure CalculateTotal(var SalesHeader: Record "Sales Header"): Decimal
+var
+    SalesLine: Record "Sales Line";
+    Customer: Record Customer;  // Declared but never used
+    CurrencyCode: Code[10];     // Declared but never used
+begin
+    SalesHeader.CalcFields(Amount);
+    exit(SalesHeader.Amount);
+end;
+
+// ✅ GOOD: Only needed variables declared
+procedure CalculateTotal(var SalesHeader: Record "Sales Header"): Decimal
+begin
+    SalesHeader.CalcFields(Amount);
+    exit(SalesHeader.Amount);
+end;
+```
+
+Remove unused variables during code review or refactoring. They should not appear in GREEN or REFACTOR phases.
 
 ## Error Handling Rules
 
