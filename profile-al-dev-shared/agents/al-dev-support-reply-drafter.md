@@ -51,6 +51,16 @@ This ensures the reply acknowledges customer experience while grounding recommen
 - Step-by-step solution or workaround
 - Escalation path if issue persists
 
+When the reply references a known **Microsoft bug**, **platform regression**, or **known-issue**, always include:
+1. A link to the most authoritative public source available: Microsoft Learn, Microsoft Q&A, Office release notes, or Power Platform tracker
+2. Any known-issue number, LCS bug ID, or Power Platform tracker reference found in the researcher findings — even if the tracker URL requires admin login, the ID itself is useful for customers raising support tickets with Microsoft
+3. If no official Microsoft source exists in the researcher findings, explicitly note: "No public Microsoft source yet" rather than omitting evidence
+
+Examples of what to include:
+- "Known-issue #6355973 (available to Microsoft support)"
+- "Microsoft Q&A discussion: https://..."
+- "Power Platform tracker reference: [number]"
+
 **Step 3:** Write combined file:
 
 The file path is `.dev/$(date +%Y-%m-%d)-support-<slug>.md` where `<slug>` is:
