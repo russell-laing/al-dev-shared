@@ -1,14 +1,19 @@
 ---
 name: al-dev-ticket
-description: Load Freshdesk tickets and write structured context briefs.
-argument-hint: "[ticket number or search keywords]"
+description: >-
+  Fetch and contextualise a Freshdesk ticket, optionally research
+  and draft a support reply. Use --mode=context-only to load ticket
+  context only (default behavior), or --mode=full to include
+  research and reply drafting (equivalent to al-dev-support).
+argument-hint: "[ticket-id or search-term] [--mode=context-only|full]"
 ---
 
 # Freshdesk Ticket Context Loader
 
 Thin orchestrator. Resolves the ticket number, verifies
 credentials, then dispatches `al-dev-ticket-agent` to do the
-API work and file writing.
+API work and file writing. Can optionally extend to research
+and reply drafting via `--mode=full`.
 
 ## Usage
 
@@ -28,6 +33,34 @@ feature/#CU86d0dnfx2-FD1234-description
 
 ---
 
+## Phase 0.5: Resolve Mode
+
+Parse the `--mode` argument:
+
+- `--mode=context-only` (default) → Run Steps 1–4 only (fetch and contextualize ticket)
+- `--mode=full` → Run all steps including research + reply drafting (equivalent to /al-dev-support)
+
+If `--mode=` is not specified, default to `context-only`.
+
+Extract the mode flag from $ARGUMENTS using:
+
+```bash
+MODE="context-only"
+if [[ "$ARGUMENTS" =~ --mode=([^ ]+) ]]; then
+  MODE="${BASH_REMATCH[1]}"
+  # Remove flag from ARGUMENTS (handles any position, not just with leading space)
+  ARGUMENTS="${ARGUMENTS//--mode=[^ ]*/}"
+fi
+
+# Validate mode value
+if [[ ! "$MODE" =~ ^(context-only|full)$ ]]; then
+  echo "ERROR: Invalid mode '$MODE'. Allowed: context-only, full"
+  exit 1
+fi
+```
+
+---
+
 ## Step 1 — Resolve the Ticket Number or Search Intent
 
 Check the arguments provided (text after `/al-dev-ticket`):
@@ -37,7 +70,7 @@ Check the arguments provided (text after `/al-dev-ticket`):
 - **`search <terms>` or non-numeric text**: this is a keyword
   search — skip to Step 1.5.
 - **No argument**: run `git branch --show-current`, extract from
-  pattern `FD(\d+)` (case-insensitive). If found, confirm:
+  pattern `FD([0-9]+)`. If found, confirm:
   _"Found FD ticket #XXXX from branch — loading."_
   If not found, ask: _"What is the Freshdesk ticket number (or
   enter keywords to search)?"_
@@ -189,4 +222,92 @@ Append to the user summary:
 
 ```text
 Attachments saved to .dev/attachments/ ([count] files).
+```
+
+---
+
+## Phase 5: Branch on Mode
+
+**Note:** This phase controls execution flow. If mode is context-only, the skill 
+exits here. Otherwise, it continues to Phases 6 and 7 below.
+
+If MODE is `context-only`:
+- Skip Phases 6 and 7
+- Output ticket context only
+- Exit
+
+If MODE is `full`:
+- Continue to Phase 6 (research)
+
+---
+
+## Phase 6: Dispatch al-dev-support-researcher (research phase)
+
+Assemble the research prompt using the ticket context loaded in Step 3:
+
+```text
+QUERY_TYPE: ticket
+QUERY_CONTEXT: <SUMMARY from agent output in Step 3>
+TICKET_FILE: <FILE from agent output in Step 3>
+```
+
+Dispatch:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-support-researcher
+  description: "BC support research: <60-char query summary>"
+
+Prompt: <assembled prompt above>
+```
+
+---
+
+## Phase 7: Dispatch al-dev-support-reply-drafter (reply phase)
+
+Assemble the reply prompt using the researcher's output:
+
+```text
+QUERY_TYPE: ticket
+QUERY_CONTEXT: <SUMMARY from ticket loaded in Step 3>
+TICKET_FILE: <FILE from ticket loaded in Step 3>
+RESEARCHER_FINDINGS: <full structured output block from al-dev-support-researcher>
+```
+
+Dispatch:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-support-reply-drafter
+  description: "Draft customer reply: <60-char query summary>"
+
+Prompt: <assembled prompt above>
+```
+
+---
+
+## Phase 8: Present Result
+
+Parse the agent's returned summary:
+
+```text
+FILE: .dev/YYYY-MM-DD-support-<slug>.md
+QUERY_TYPE: <class>
+BC_VERSION_SCOPE: <scope or "not version-specific">
+SOURCES: MS Docs (<n> pages) | BC History (<n> commits or NONE)
+         | AL Symbols (<n> objects)
+SUMMARY: <1-2 sentence plain English summary of findings>
+```
+
+Present to user:
+
+```text
+Support research complete →
+<FILE value>
+
+<SUMMARY value>
+<QUERY_TYPE> | <BC_VERSION_SCOPE>
+
+Findings and draft reply written. Review and copy-paste
+the Draft Customer Reply section into Freshdesk.
 ```
