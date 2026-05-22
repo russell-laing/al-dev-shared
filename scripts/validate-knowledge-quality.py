@@ -91,6 +91,17 @@ def count_body_lines(body: str) -> int:
     return len([line for line in body.split("\n") if line.strip()])
 
 
+def has_emoji_or_checkmark(text: str) -> bool:
+    """Check if text contains emoji or checkmark characters.
+
+    Common emoji/checkmark patterns in markdown:
+    - ❌ ✅ 🔴 🟡 🟢 🔵 etc. (Unicode emoji)
+    - Common markdown markers: [x] [ ] etc.
+    """
+    emoji_pattern = r'[☺-\U0001F999]|[☀-➿]|[ἰ0-ᾟF]'
+    return bool(re.search(emoji_pattern, text))
+
+
 def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
     """Extract all knowledge file references (filename only, no 'knowledge/' prefix)."""
     pattern = r"knowledge/([\w\-]+\.md)"
@@ -121,6 +132,10 @@ def check_code_implication(filepath: str, sections: List) -> List[str]:
     for heading, level, body_start, body in sections:
         # Skip sections that are short by design
         if heading.lower() in ("overview", "usage", "references"):
+            continue
+
+        # Skip sections with emoji/checkmark headers (typically section titles with examples below)
+        if has_emoji_or_checkmark(heading):
             continue
 
         heading_lower = heading.lower()
