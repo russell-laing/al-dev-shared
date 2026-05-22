@@ -45,11 +45,11 @@ table 50101 "PurchaseApprovalData" { }
 BEFORE (Poor):
 ```al
 procedure CalculateQty(DocLine: Record "Sales Line"; var Qty: Decimal)
+var
+    tmpRec: Record "Item Ledger Entry";
+    idx: Integer;
+    mxLines: Integer;
 begin
-    var tmpRec: Record "Item Ledger Entry";
-    var idx: Integer;
-    var mxLines: Integer;
-    
     mxLines := DocLine.Count();
     Qty := 0;
     
@@ -64,11 +64,11 @@ end;
 AFTER (Good):
 ```al
 procedure CalculateOrderQuantity(DocumentLine: Record "Sales Line"; var TotalQuantity: Decimal)
+var
+    TemporaryInventoryRecord: Record "Item Ledger Entry";
+    LineIndex: Integer;
+    MaximumLineCount: Integer;
 begin
-    var TemporaryInventoryRecord: Record "Item Ledger Entry";
-    var LineIndex: Integer;
-    var MaximumLineCount: Integer;
-    
     MaximumLineCount := DocumentLine.Count();
     TotalQuantity := 0;
     
