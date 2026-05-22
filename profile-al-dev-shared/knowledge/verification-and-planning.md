@@ -96,6 +96,57 @@ After every Write tool call:
 
 **Right:** "Code review written to `.dev/2026-05-19-code-review.md` (verified: 187 lines, no forbidden patterns, all acceptance criteria present)"
 
+### Verification Checkpoint Template
+
+Every multi-phase skill should use this checkpoint structure after each phase:
+
+**File:** `.dev/progress.md`
+
+```markdown
+# Skill Execution Progress
+
+## Phase 0: Requirements Analysis
+- [x] Read ticket/spec
+- [x] Identified 3 affected modules (Table, Codeunit, Page)
+- [x] Risk assessment complete (medium complexity, 1 data model change)
+
+**Output:** Requirements context file saved to `.dev/requirements.md`
+
+**Resume capability:** Can restart from Phase 1 with requirements cached
+
+---
+
+## Phase 1: Design & Planning
+- [ ] Architect debate completed
+- [ ] Design decision: Use event-based architecture (vs. procedure override)
+- [ ] Plan written to `.dev/2026-05-22-solution-plan.md`
+
+**Next:** Phase 2 (Implementation) can proceed with design from Phase 1
+
+---
+
+## Phase 2: Implementation
+- [ ] Code changes: Table 18 (+5 fields), Codeunit 50000 (new procedure), Page 42 (new FactBox)
+- [ ] Tests written: 8 test procedures
+- [ ] Code review: Waiting for approval
+
+**Status:** Paused pending review
+
+---
+
+## Phase 3: Verification
+- [ ] Local test run: 8/8 tests passing
+- [ ] Compile check: 0 errors
+- [ ] Integration test: Feature end-to-end verified
+
+**Result:** Ready for commit
+```
+
+This structure lets agents:
+1. Resume at any phase (check `.dev/progress.md` at start)
+2. Know what was output from prior phases (references to `.dev/*.md` files)
+3. Checkpoint after each phase (prevents context loss in long sessions)
+
 ---
 
 ## Target Confirmation (Step 0)
@@ -214,6 +265,133 @@ After all architects submit proposals:
    - AL Symbols MCP for base app exploration
 
 Push architects to think deeper. Superficial solutions are not acceptable.
+
+### Example: Architect Debate on Caching Strategy
+
+**Problem Statement:** Sales order posting takes 2.5 seconds for 100+ lines due to repeated customer balance lookups.
+
+**Three Design Proposals:**
+
+**Proposal 1: Query Optimization (Solo Architect)**
+```
+Approach: Index customer ledger by customer number, add early-exit in query loop.
+
+Pros: 
+- Simplest change: 5 lines of code, no new tables/fields
+- Balance remains real-time (no stale cache risk)
+- No performance variation (consistent <500ms)
+
+Cons:
+- Won't scale beyond 500 lines (index hit still O(n) lookups)
+- Ignores root cause (repeated balance calculation inside line loop)
+
+Risk: Medium (low code change, but incomplete solution)
+```
+
+**Proposal 2: In-Memory Cache (Conservative)**
+```
+Approach: Load customer balance into Dictionary on order entry, reuse throughout posting.
+
+Pros:
+- Significant speed gain (90% reduction: 2.5s → 0.25s)
+- Clear cache invalidation (disposed when order posting done)
+- Backward compatible
+
+Cons:
+- Requires new Dictionary variable, increases function size
+- Breaks if balance changes mid-posting (rare, but possible in integration scenarios)
+
+Risk: Low (well-understood pattern, clear scope)
+```
+
+**Proposal 3: Database View + Materialized Cache (Aggressive)**
+```
+Approach: Create materialized view of customer balance, refresh every 1 hour via batch job, query view instead of ledger.
+
+Pros:
+- Fastest performance (0.05s lookup in view)
+- Scales to 1000s of lines
+- Works across all modules (not just sales posting)
+
+Cons:
+- High complexity: new view, new batch job, new sync logic
+- Cache can be 1 hour stale (balance might be wrong for recent transactions)
+- Requires new monitoring (batch failure alerts)
+
+Risk: High (complex implementation, stale-data risk, cross-module dependencies)
+```
+
+**Debate:**
+- **Conservative advocate:** "Proposal 2 (in-memory) hits the sweet spot. We're optimizing a single operation (order posting), not the whole system. Materialized view is overengineering."
+- **Aggressive advocate:** "Proposal 2 fails if balance changes mid-posting. We should use Proposal 3 — the view is the right abstraction, and we can invest in refresh logic now."
+- **Solo architect:** "Actually, let's try Proposal 1 first (query optimization). If it meets the 500ms target, we avoid cache complexity entirely."
+
+**Decision:** Proposal 2 (in-memory cache)
+
+Rationale: Proposal 1 insufficient (doesn't scale), Proposal 3 over-scoped (introduces stale-data risk and cross-module dependencies). Proposal 2 is minimal, isolated, and provides the needed performance (0.25s << 2.5s). Revisit if posting expands beyond 500 lines.
+
+**Implementation task:** Add `customerBalanceCache: Dictionary` to posting procedure, load once, query from cache for all line lookups, clear on exit.
+
+**Verification:** Measure posting time for 100-line order; confirm < 0.5s.
+
+---
+
+### Example: Architect Debate Output — Caching Strategy Decision Document
+
+After the debate resolves, the architect creates a one-page decision document:
+
+```markdown
+# Caching Strategy for Sales Order Posting
+
+## Decision: In-Memory Customer Balance Cache
+
+### Context
+Sales order posting (100+ lines) takes 2.5s due to repeated ledger lookups.
+
+### Rejected Alternatives
+- Query optimization alone (Proposal 1): insufficient scaling past 500 lines
+- Materialized view (Proposal 3): over-scoped, introduces stale-data risk
+
+### Implementation
+\`\`\`al
+procedure PostSalesOrder(var SalesHeader: Record "Sales Header")
+var
+    customerBalanceCache: Dictionary of [Code[20], Decimal];
+begin
+    // Load balance once
+    LoadCustomerBalances(SalesHeader, customerBalanceCache);
+    
+    // Query cache for all line lookups (no repeated ledger queries)
+    ProcessSalesLines(SalesHeader, customerBalanceCache);
+    
+    // Clear cache on exit (order-scoped, not persistent)
+    customerBalanceCache.Clear();
+end;
+\`\`\`
+
+### Test Coverage
+- test_PostSalesOrder_UsesCache() — verify cache loaded once
+- test_PostSalesOrder_Performance() — confirm < 0.5s for 100-line order
+
+### Risk Mitigation
+- Cache is order-scoped (cleared on function exit)
+- Falls back to ledger query if cache miss (defensible)
+- Only used in posting; doesn't affect balance queries in UI
+
+### Rollback Plan
+If cache causes test failure: Remove customerBalanceCache variable, revert to uncached ledger queries (recovers original 2.5s behavior).
+\`\`\`
+
+This output:
+- States the decision clearly
+- Documents why alternatives were rejected
+- Shows the code implementation
+- Lists verification steps
+- Includes risk mitigation and rollback path
+
+All future work references this decision document, so developers don't re-litigate the choice.
+
+---
 
 ### Evaluation Criteria (for the facilitator)
 
