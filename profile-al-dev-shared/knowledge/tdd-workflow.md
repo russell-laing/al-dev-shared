@@ -408,7 +408,7 @@ The tool reads `app.json` to find test configuration:
   "version": "1.0.0.0",
   "test": {
     "enabled": true,
-    "codunitIdRanges": [
+    "codeunitIdRanges": [
       { "from": 50100, "to": 50199 }
     ]
   }
@@ -416,12 +416,12 @@ The tool reads `app.json` to find test configuration:
 ```
 
 When `test.enabled` is `true`, bc-test:
-- Reads `codunitIdRanges` array
+- Reads `codeunitIdRanges` array
 - Runs all test codeunits in those ranges
 - No user input needed
 
 ```bash
-# Auto-detects from app.json test.codunitIdRanges
+# Auto-detects from app.json test.codeunitIdRanges
 bc-test
 # Output: "Running tests 50100-50199..."
 # Discovers and executes all [Test] procedures
@@ -457,7 +457,7 @@ If auto-detection fails, bc-test tries fallback patterns:
 
 ```bash
 # Fallback order (stops at first match):
-1. app.json test.codunitIdRanges (AL)
+1. app.json test.codeunitIdRanges (AL)
 2. pytest.ini present → pytest
 3. jest.config.js present → npm test
 4. go.mod present → go test
@@ -758,14 +758,15 @@ jobs:
       
       - name: Run Tests
         run: |
-          bc-test -o test-results.json -f json
+          bc-test -o test-results.xml -f xml
         shell: pwsh
       
       - name: Check for Failures
         run: |
-          $results = Get-Content test-results.json | ConvertFrom-Json
-          if ($results.failed -gt 0) {
-            Write-Error "$($results.failed) tests failed"
+          if (Select-String -Path test-results.xml -Pattern 'failures="0"' -Quiet) {
+            exit 0
+          } else {
+            Write-Error "Tests failed"
             exit 1
           }
       
@@ -897,11 +898,15 @@ codeunit 50200 "Credit Limit Tests"
     [Test]
     procedure Test_Order_WithinCreditLimit_Allowed()
     var
+        Customer: Record Customer;
         Validator: Codeunit "Credit Limit Validator";
         Result: Boolean;
     begin
         // [GIVEN] Customer with 10000 limit, 5000 outstanding
-        Result := Validator.ValidateCreditLimit('C001', 3000);
+        LibrarySmallBusiness.CreateCustomer(Customer, '10000', '5000');
+        
+        // [WHEN] Try to approve an order for 3000 (would total 8000)
+        Result := Validator.ValidateCreditLimit(Customer."No.", 3000);
         
         // [THEN] Should allow (5000 + 3000 = 8000 < 10000)
         Assert.IsTrue(Result, 'Should allow order within limit');
@@ -1061,7 +1066,7 @@ bc-test --failures-only
 
 # 4. Quick check with failures-only
 bc-test --failures-only
-# Output: "1 failures (out of 567 total)" ← Still broken
+# Output: "1 failure (out of 567 total)" ← Still broken
 
 # 5. Fix again
 # ... adjust decimal rounding ...
