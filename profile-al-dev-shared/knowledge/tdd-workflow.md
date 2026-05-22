@@ -395,75 +395,326 @@ TaskUpdate: "TDD REFACTOR: [test]" → addBlockedBy: ["TDD GREEN: [test]"]
 
 ### Auto-Detection from app.json
 
-**bc-test can automatically detect the test codeunit range:**
+**bc-test automatically detects test frameworks and codeunit ranges:**
 
-```bash
-# No codeunit IDs needed - auto-detects from app.json
-bc-test
+#### AL Test Framework Detection
 
-# Reads first idRange from app.json in current directory
-# Example: {"from": 83200, "to": 83299} → runs 83200-83299
+The tool reads `app.json` to find test configuration:
+
+```json
+{
+  "appId": "12345678-1234-1234-1234-123456789012",
+  "name": "My App",
+  "version": "1.0.0.0",
+  "test": {
+    "enabled": true,
+    "codunitIdRanges": [
+      { "from": 50100, "to": 50199 }
+    ]
+  }
+}
 ```
 
-**Benefits:**
-- No need to remember codeunit IDs
+When `test.enabled` is `true`, bc-test:
+- Reads `codunitIdRanges` array
+- Runs all test codeunits in those ranges
+- No user input needed
+
+```bash
+# Auto-detects from app.json test.codunitIdRanges
+bc-test
+# Output: "Running tests 50100-50199..."
+# Discovers and executes all [Test] procedures
+```
+
+#### External Test Framework Detection
+
+For non-AL projects, bc-test detects external frameworks:
+
+```bash
+# Detects pytest from pytest.ini
+bc-test
+# Output: "Detected pytest framework"
+# Runs: pytest --tb=short -v
+# Results written to bc-test.log
+
+# Detects Jest from jest.config.js or package.json
+bc-test
+# Output: "Detected Jest framework"
+# Runs: npm test -- --testResultsProcessor=...
+# Results written to bc-test.log
+
+# Detects Go testing from go.mod
+bc-test
+# Output: "Detected Go testing"
+# Runs: go test ./... -v
+# Results written to bc-test.log
+```
+
+#### Fallback Logic
+
+If auto-detection fails, bc-test tries fallback patterns:
+
+```bash
+# Fallback order (stops at first match):
+1. app.json test.codunitIdRanges (AL)
+2. pytest.ini present → pytest
+3. jest.config.js present → npm test
+4. go.mod present → go test
+5. Makefile with "test" target → make test
+6. Error: No test configuration found
+```
+
+#### Benefits
+
+- No need to remember codeunit IDs or framework names
 - Works across projects automatically
 - Updates when app.json changes
+- Handles both AL and external frameworks transparently
 
 ### File Output Options
 
 **Write detailed results to file instead of flooding console:**
 
-```bash
-# Text format (human-readable with full call stacks)
-bc-test -o .dev/test-results.txt
+#### AL Test Framework Output Structure
 
-# JSON format (machine-readable for CI/CD)
+When running AL tests via bc-test, the tool produces multiple output files:
+
+```bash
+# Text format with full call stacks and error details
+bc-test -o .dev/test-results.txt
+# Creates: .dev/test-results.txt
+
+# JSON format for machine-readable parsing
 bc-test -o .dev/test-results.json -f json
+# Creates: .dev/test-results.json
+
+# XML format compatible with CI/CD systems
+bc-test -o .dev/test-results.xml -f xml
+# Creates: .dev/test-results.xml
 
 # Console shows summary only:
-# "Passed: 558, Failed: 9"
+# Passed: 558, Failed: 9, Skipped: 2
 ```
 
-**JSON Structure:**
+#### .dev/ Naming Convention
+
+Test runs coexist without overwriting by using timestamped filenames:
+
+```bash
+# Pattern: {DATE}-tdd-{FRAMEWORK}-{OUTPUT_TYPE}.{EXT}
+
+# AL tests (multiple runs, different phases)
+.dev/2026-05-22-tdd-al-red.txt           # RED phase results
+.dev/2026-05-22-tdd-al-green.txt         # GREEN phase results
+.dev/2026-05-22-tdd-al-refactor.txt      # REFACTOR phase results
+
+# External framework tests
+.dev/2026-05-22-tdd-pytest-results.json  # pytest JSON output
+.dev/2026-05-22-tdd-jest-results.json    # Jest JSON output
+.dev/2026-05-22-tdd-go-results.txt       # Go test output
+
+# Command to use dynamic dates
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-results.txt"
+```
+
+#### AL Test Summary Format
+
+Example test-summary.txt structure:
+
+```
+TEST EXECUTION REPORT
+=====================
+Date: 2026-05-22T14:30:45Z
+Framework: AL Test Framework
+Total Tests Run: 567
+Passed: 558
+Failed: 9
+Skipped: 0
+Duration: 2.45 minutes
+
+SUMMARY BY CODEUNIT:
+  Codeunit 50100 "Credit Limit Tests": 8 passed, 0 failed
+  Codeunit 50101 "Payment Processing Tests": 10 passed, 2 failed
+  Codeunit 50102 "Invoice Tests": 540 passed, 7 failed
+
+FAILED TESTS:
+  [50101] Test_PaymentProcessing_InvalidAmountThrowsError
+    Error: Expected validation error, got success
+    Call Stack: [line 45 in PaymentValidator.al]
+  [50102] Test_Invoice_RoundingEdgeCase
+    Error: Expected 99.99, got 100.00
+    Call Stack: [line 78 in InvoiceCalculator.al]
+```
+
+#### External Framework Output
+
+Example pytest output format:
+
+```
+test-results.json (pytest):
+{
+  "tests": [
+    {
+      "nodeid": "tests/test_credit_limit.py::test_within_limit",
+      "outcome": "passed",
+      "duration": 0.025
+    },
+    {
+      "nodeid": "tests/test_credit_limit.py::test_exceeds_limit",
+      "outcome": "failed",
+      "duration": 0.031,
+      "call": "AssertionError: expected True, got False"
+    }
+  ],
+  "summary": {
+    "passed": 45,
+    "failed": 2,
+    "skipped": 0,
+    "duration": 1.23
+  }
+}
+```
+
+#### JSON Structure (AL Tests)
+
 ```json
 {
   "total_tests_run": 567,
   "passed": 558,
   "failed": 9,
+  "skipped": 0,
+  "execution_time_seconds": 147.3,
   "showing": "all",
   "tests": [
     {
-      "codeunitId": 83220,
+      "codeunitId": 50100,
       "codeunitName": "Credit Limit Tests",
       "functionName": "Test_ValidateCreditLimit_WithinLimit",
       "success": true,
       "errorMessage": "",
       "callStack": ""
+    },
+    {
+      "codeunitId": 50101,
+      "codeunitName": "Payment Processing Tests",
+      "functionName": "Test_PaymentProcessing_InvalidAmountThrowsError",
+      "success": false,
+      "errorMessage": "Expected validation error, got success",
+      "callStack": "PaymentValidator.al:45"
     }
   ]
 }
 ```
 
-### Failures-Only Filter
+#### Multiple Test Runs Coexist
 
-**Focus on what needs attention:**
+Each test phase and framework produces separate files — no overwrites:
 
-```bash
-# Show only failed tests (console output)
-bc-test --failures-only
-
-# Save only failures to file
-bc-test -o .dev/failures.txt --failures-only
-
-# Example: 567 tests → 9 failures shown
-# Header: "9 failures (out of 567 total)"
+```
+.dev/
+  2026-05-22-tdd-al-red.txt              # RED phase (test fails)
+  2026-05-22-tdd-al-green.txt            # GREEN phase (test passes)
+  2026-05-22-tdd-al-refactor.txt         # REFACTOR phase (all pass)
+  2026-05-22-tdd-pytest-unit.json        # Unit tests
+  2026-05-22-tdd-pytest-integration.json # Integration tests
+  2026-05-22-tdd-jest-unit.json          # JS unit tests
 ```
 
-**Use cases:**
-- Quick identification of problems
-- Reduced noise in large test suites
-- CI/CD failure reports
+### Failures-Only Filter
+
+**Focus on what needs attention during development:**
+
+#### Full Run vs Failures-Only Commands
+
+```bash
+# FULL RUN: See all test results (recommended for initial verification)
+bc-test
+# Output:
+# Passed: 558
+# Failed: 9
+# Skipped: 0
+# Details for all 567 tests...
+
+# FAILURES-ONLY: See only the 9 failures (recommended for iterative fixes)
+bc-test --failures-only
+# Output:
+# 9 failures (out of 567 total)
+# [50101] Test_PaymentProcessing_InvalidAmountThrowsError
+#   Error: Expected validation error, got success
+#   Call Stack: PaymentValidator.al:45
+# [50102] Test_Invoice_RoundingEdgeCase
+#   Error: Expected 99.99, got 100.00
+#   Call Stack: InvoiceCalculator.al:78
+# ... (8 more failures)
+
+# FILE OUTPUT: Failures-only for archival
+bc-test -o .dev/failures.txt --failures-only
+# File contains only the 9 failures with full error details
+```
+
+#### Usage Heuristics
+
+**Full run (bc-test) is used when:**
+- First test verification after RED phase (confirm 1 test fails)
+- After GREEN phase (confirm 1 test passes)
+- After REFACTOR phase (confirm all tests still pass)
+- Before commit (final verification)
+- CI/CD pipelines (complete record required)
+
+Example workflow:
+```bash
+# RED phase: verify test fails
+bc-test  # Full run → shows "Passed: 0, Failed: 1"
+
+# GREEN phase: verify test passes
+bc-test  # Full run → shows "Passed: 1, Failed: 0"
+
+# REFACTOR phase: verify all still pass
+bc-test  # Full run → shows "Passed: 567, Failed: 0"
+```
+
+**Failures-only (bc-test --failures-only) is used when:**
+- Iterating on a fix (after seeing failure, fixing code, testing again)
+- Large test suite with only a few failures
+- During development to reduce console noise
+- Focusing on specific broken tests
+
+Example workflow:
+```bash
+# Initial failure
+bc-test --failures-only
+# Output: "9 failures (out of 567 total)"
+
+# Fix first failure in PaymentValidator.al
+# Test again
+bc-test --failures-only
+# Output: "8 failures (out of 567 total)" ← PaymentValidator fix worked
+
+# Fix second failure
+bc-test --failures-only
+# Output: "7 failures (out of 567 total)"
+```
+
+#### Recommended Development Cycle
+
+```
+FULL RUN (verify failure)
+  ↓
+FAILURES-ONLY (identify what failed)
+  ↓
+FIX CODE (address first failure)
+  ↓
+FAILURES-ONLY (quick check progress)
+  ↓
+FAILURES-ONLY (check next failure)
+  ↓
+FIX CODE (address second failure)
+  ↓
+FULL RUN (final verification before commit)
+```
+
+This pattern balances speed during development with thorough verification before commit.
 
 ### Smart Defaults
 
@@ -481,10 +732,112 @@ bc-test -o .dev/failures.txt --failures-only
 
 ### CI/CD Integration
 
-**Use JSON format for automated pipelines:**
+**Automate test execution in GitHub Actions and Azure Pipelines:**
+
+#### GitHub Actions Integration
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup AL Development Environment
+        run: |
+          choco install bc-dev-tools
+      
+      - name: Run Tests
+        run: |
+          bc-test -o test-results.json -f json
+        shell: pwsh
+      
+      - name: Check for Failures
+        run: |
+          $results = Get-Content test-results.json | ConvertFrom-Json
+          if ($results.failed -gt 0) {
+            Write-Error "$($results.failed) tests failed"
+            exit 1
+          }
+      
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: test-results.xml
+          check_name: AL Test Results
+          comment_title: Test Summary
+```
+
+Result: GitHub shows test failures in PR checks, blocks merge until passing.
+
+#### Azure Pipelines Integration
+
+```yaml
+# azure-pipelines.yml
+trigger:
+  - main
+  - develop
+
+pr:
+  - main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.9'
+  displayName: 'Use Python 3.9'
+
+- task: PowerShell@2
+  displayName: 'Compile AL App'
+  inputs:
+    targetType: 'inline'
+    script: |
+      al-compile --output compile-errors.log
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Compilation failed"
+        exit 1
+      }
+
+- task: PowerShell@2
+  displayName: 'Run Tests'
+  inputs:
+    targetType: 'inline'
+    script: |
+      bc-test -o test-results.xml -f xml
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Tests failed"
+        exit 1
+      }
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  condition: always()
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: 'test-results.xml'
+    testRunTitle: 'AL Tests'
+    failTaskOnFailedTests: true
+```
+
+Result: Azure Pipelines shows test pass/fail in build logs and blocks merge until passing.
+
+#### JSON-Based Verification
 
 ```bash
-# Export test results for CI/CD
+# Export test results for CI/CD parsing
 bc-test -o test-results.json -f json
 
 # Parse with jq for failed tests
@@ -495,30 +848,292 @@ if jq -e '.failed > 0' test-results.json; then
   echo "Tests failed!"
   exit 1
 fi
+
+# Generate summary for build logs
+jq '{
+  total: .total_tests_run,
+  passed: .passed,
+  failed: .failed,
+  duration: .execution_time_seconds
+}' test-results.json
+```
+
+#### CI/CD Workflow Result
+
+Both GitHub and Azure show:
+- Test execution status in PR checks
+- Pass/fail count in build summary
+- Individual test failure details
+- Merge blocked until all tests pass
+
+Example PR check output:
+```
+✓ Test (1 check)
+  AL Test Results
+    Passed: 558
+    Failed: 9
+    Duration: 2m 45s
+    
+    Failed Tests:
+    - Test_PaymentProcessing_InvalidAmountThrowsError
+    - Test_Invoice_RoundingEdgeCase
+    - ... (7 more)
 ```
 
 ### Example Workflows
 
-**Quick check during development:**
+#### Scenario 1: New Feature (Red-Green-Refactor Cycle)
+
+**Goal:** Add credit limit validation for customer orders
+
+**RED Phase:**
 ```bash
-# See only what's broken
-bc-test
-# Output: "9 failures (out of 567 total)" + failure details
+# 1. Write failing test
+cat > src/Tests.al <<'EOF'
+codeunit 50200 "Credit Limit Tests"
+{
+    Subtype = Test;
+
+    [Test]
+    procedure Test_Order_WithinCreditLimit_Allowed()
+    var
+        Validator: Codeunit "Credit Limit Validator";
+        Result: Boolean;
+    begin
+        // [GIVEN] Customer with 10000 limit, 5000 outstanding
+        Result := Validator.ValidateCreditLimit('C001', 3000);
+        
+        // [THEN] Should allow (5000 + 3000 = 8000 < 10000)
+        Assert.IsTrue(Result, 'Should allow order within limit');
+    end;
+}
+EOF
+
+# 2. Compile and test
+al-compile
+bc-publish
+
+# 3. Run test - should FAIL
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-red.txt"
+# Output: "Passed: 0, Failed: 1" ✓ RED phase verified
 ```
 
-**Comprehensive documentation:**
+**GREEN Phase:**
 ```bash
-# Save complete test run for records
-bc-test -o .dev/test-run-$(date +%Y%m%d).txt
-# File contains all tests with full details
+# 1. Implement production code
+cat > src/CreditLimitValidator.al <<'EOF'
+codeunit 50100 "Credit Limit Validator"
+{
+    procedure ValidateCreditLimit(
+        CustomerNo: Code[20];
+        OrderAmount: Decimal
+    ): Boolean
+    var
+        Customer: Record Customer;
+        Outstanding: Decimal;
+    begin
+        if not Customer.Get(CustomerNo) then
+            Error('Customer not found');
+
+        if Customer."Credit Limit (LCY)" = 0 then
+            exit(true); // Unlimited
+
+        Outstanding := GetOutstandingAmount(CustomerNo);
+        exit(Outstanding + OrderAmount <= Customer."Credit Limit (LCY)");
+    end;
+
+    local procedure GetOutstandingAmount(CustomerNo: Code[20]): Decimal
+    var
+        SalesHeader: Record "Sales Header";
+        Outstanding: Decimal;
+    begin
+        SalesHeader.SetRange("Sell-to Customer No.", CustomerNo);
+        SalesHeader.SetFilter(Status, '<>%1', SalesHeader.Status::Released);
+        if SalesHeader.FindSet() then
+            repeat
+                Outstanding += SalesHeader."Amount Including VAT";
+            until SalesHeader.Next() = 0;
+        exit(Outstanding);
+    end;
+}
+EOF
+
+# 2. Compile and test
+al-compile
+bc-publish
+
+# 3. Run test - should PASS
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-green.txt"
+# Output: "Passed: 1, Failed: 0" ✓ GREEN phase verified
 ```
 
-**Automated testing:**
+**REFACTOR Phase:**
 ```bash
-# CI/CD pipeline
-bc-test -o results.json -f json --failures-only
-# Upload results.json as artifact
+# 1. Improve code quality
+cat > src/CreditLimitValidator.al <<'EOF'
+codeunit 50100 "Credit Limit Validator"
+{
+    /// <summary>
+    /// Validates that a new order does not exceed customer credit limit.
+    /// </summary>
+    procedure ValidateCreditLimit(
+        CustomerNo: Code[20];
+        OrderAmount: Decimal
+    ): Boolean
+    var
+        Customer: Record Customer;
+    begin
+        Customer := GetCustomer(CustomerNo);
+
+        if IsUnlimitedCredit(Customer) then
+            exit(true);
+
+        exit(IsWithinCreditLimit(Customer, OrderAmount));
+    end;
+
+    local procedure GetCustomer(CustomerNo: Code[20]): Record Customer
+    var
+        Customer: Record Customer;
+    begin
+        if not Customer.Get(CustomerNo) then
+            Error('Customer not found');
+        exit(Customer);
+    end;
+
+    local procedure IsUnlimitedCredit(Customer: Record Customer): Boolean
+    begin
+        exit(Customer."Credit Limit (LCY)" = 0);
+    end;
+
+    local procedure IsWithinCreditLimit(
+        Customer: Record Customer;
+        OrderAmount: Decimal
+    ): Boolean
+    var
+        Outstanding: Decimal;
+    begin
+        Outstanding := GetOutstandingAmount(Customer."No.");
+        exit(Outstanding + OrderAmount <= Customer."Credit Limit (LCY)");
+    end;
+
+    local procedure GetOutstandingAmount(CustomerNo: Code[20]): Decimal
+    var
+        SalesHeader: Record "Sales Header";
+        Outstanding: Decimal;
+    begin
+        SalesHeader.SetRange("Sell-to Customer No.", CustomerNo);
+        SalesHeader.SetFilter(Status, '<>%1', SalesHeader.Status::Released);
+        if SalesHeader.FindSet() then
+            repeat
+                Outstanding += SalesHeader."Amount Including VAT";
+            until SalesHeader.Next() = 0;
+        exit(Outstanding);
+    end;
+}
+EOF
+
+# 2. Compile and run ALL tests
+al-compile
+bc-publish
+
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt"
+# Output: "Passed: 1, Failed: 0" ✓ REFACTOR phase verified
+# No regressions introduced
 ```
+
+#### Scenario 2: Bug Fix with Test
+
+**Goal:** Fix rounding bug in invoice calculator
+
+**Quick Development Cycle:**
+```bash
+# 1. Write failing test for the bug
+bc-test  # Run all first
+# Output shows: Test_Invoice_RoundingEdgeCase FAILED
+# Error: Expected 99.99, got 100.00
+
+# 2. Look at failures only
+bc-test --failures-only
+# Output: Only the rounding edge case failure (faster iteration)
+
+# 3. Fix the rounding logic
+# ... edit InvoiceCalculator.al ...
+
+# 4. Quick check with failures-only
+bc-test --failures-only
+# Output: "1 failures (out of 567 total)" ← Still broken
+
+# 5. Fix again
+# ... adjust decimal rounding ...
+
+# 6. Quick check again
+bc-test --failures-only
+# Output: "0 failures (out of 567 total)" ✓ Bug fixed!
+
+# 7. Final full verification
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-bugfix.txt"
+# Output: "Passed: 567, Failed: 0" ✓ All tests pass, no regressions
+```
+
+#### Scenario 3: Refactor with Safety Net
+
+**Goal:** Optimize payment processing without breaking behavior
+
+**Comprehensive Workflow:**
+```bash
+# 0. Baseline: verify all tests pass
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-baseline.txt"
+# Output: "Passed: 567, Failed: 0"
+# (Baseline file acts as safety net)
+
+# 1. Refactor payment processing
+# Extract duplicate validation logic
+# Improve variable names
+# Add XML documentation
+# ... complex refactoring ...
+
+# 2. Compile
+al-compile
+# Output: No errors
+
+# 3. Publish
+bc-publish
+# Output: App published successfully
+
+# 4. Run full test suite
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-after-refactor.txt"
+# Output: "Passed: 565, Failed: 2"
+# ⚠️ Refactoring broke 2 tests!
+
+# 5. Identify failures
+bc-test --failures-only
+# Output shows which 2 tests broke
+
+# 6. Revert refactoring
+# git checkout src/PaymentProcessor.al
+# (Or manually revert changes)
+
+# 7. Verify revert
+bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-reverted.txt"
+# Output: "Passed: 567, Failed: 0" ✓ Back to safe state
+
+# 8. Document and continue
+# Add note to code: "Refactoring reverted - broke payment tests"
+# Try different refactoring approach
+```
+
+#### Test Phases Summary
+
+All three scenarios follow this pattern:
+
+```
+WRITE → COMPILE → PUBLISH → TEST → GATE → ITERATE
+  ↓       ↓         ↓        ↓     ↓      ↓
+Code  Compiles  Updates  Runs  User    Next
+      OK        Server   OK    Reviews Cycle
+```
+
+Each phase is gated by user verification of test results before proceeding.
 
 ---
 
