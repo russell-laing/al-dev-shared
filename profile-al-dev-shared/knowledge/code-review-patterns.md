@@ -40,6 +40,114 @@ table 50101 "PurchaseApprovalData" { }
 - Abbreviations: OK: "PO" for Purchase Order;
   NOT OK: "PAPD" for Purchase Approval Processing Details
 
+##### Variable Naming — Avoid Abbreviations
+
+BEFORE (Poor):
+```al
+procedure CalculateQty(DocLine: Record "Sales Line"; var Qty: Decimal)
+begin
+    var tmpRec: Record "Item Ledger Entry";
+    var idx: Integer;
+    var mxLines: Integer;
+    
+    mxLines := DocLine.Count();
+    Qty := 0;
+    
+    if (DocLine.FindSet()) then
+        repeat
+            idx += 1;
+            Qty += DocLine.Quantity;
+        until DocLine.Next() = 0;
+end;
+```
+
+AFTER (Good):
+```al
+procedure CalculateOrderQuantity(DocumentLine: Record "Sales Line"; var TotalQuantity: Decimal)
+begin
+    var TemporaryInventoryRecord: Record "Item Ledger Entry";
+    var LineIndex: Integer;
+    var MaximumLineCount: Integer;
+    
+    MaximumLineCount := DocumentLine.Count();
+    TotalQuantity := 0;
+    
+    if (DocumentLine.FindSet()) then
+        repeat
+            LineIndex += 1;
+            TotalQuantity += DocumentLine.Quantity;
+        until DocumentLine.Next() = 0;
+end;
+```
+
+What improved: Variable names spell out intent (`tmpRec` → `TemporaryInventoryRecord`, `idx` → `LineIndex`). Parameter names are descriptive (`Qty` → `TotalQuantity`).
+
+##### Procedure Naming — Reflect Intent, Not Implementation
+
+BEFORE (Poor):
+```al
+procedure Proc1(var Rec: Record Item; Amt: Decimal)
+begin
+    Rec."Unit Cost" := Amt;
+    Rec.Validate();
+end;
+
+procedure DoIt(ItemNo: Code[20])
+begin
+    Clear(ItemNo);
+end;
+```
+
+AFTER (Good):
+```al
+procedure UpdateItemUnitCost(var Item: Record Item; NewUnitCost: Decimal)
+begin
+    Item."Unit Cost" := NewUnitCost;
+    Item.Validate();
+end;
+
+procedure ClearItemInventoryCache(ItemNumber: Code[20])
+begin
+    Clear(ItemNumber);
+end;
+```
+
+What improved: Procedure names describe the action (`Proc1` → `UpdateItemUnitCost`, `DoIt` → `ClearItemInventoryCache`). Intent is clear to reviewers without reading the body.
+
+##### Table and Field Naming — Use Full Words in Public Interfaces
+
+BEFORE (Poor):
+```al
+table 50000 "Ord Header"
+{
+    fields
+    {
+        field(1; "Ord No"; Code[20]) { }
+        field(2; "Cust No"; Code[20]) { }
+        field(3; "Amt Due"; Decimal) { }
+        field(4; "Shp Dt"; Date) { }
+        field(5; "Stat"; Option) { }
+    }
+}
+```
+
+AFTER (Good):
+```al
+table 50000 "Sales Order Header"
+{
+    fields
+    {
+        field(1; "Order Number"; Code[20]) { }
+        field(2; "Customer Number"; Code[20]) { }
+        field(3; "Amount Due"; Decimal) { }
+        field(4; "Shipment Date"; Date) { }
+        field(5; "Status"; Option) { }
+    }
+}
+```
+
+What improved: Field names are unambiguous and full-word (`Ord No` → `Order Number`, `Cust No` → `Customer Number`). No abbreviations in public table definitions.
+
 ### Event Subscriber Mismatches
 
 **Pattern:** Procedure signature must match event signature exactly (var parameters, order, types).
