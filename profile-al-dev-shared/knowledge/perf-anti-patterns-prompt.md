@@ -133,22 +133,252 @@ Not every performance anti-pattern should be fixed the same way. The right fix d
 
 ### When to prioritise a clean fix over the fastest fix
 
-A full rewrite to eliminate N+1 queries can introduce bugs, especially when the inner query carries filtering side-effects. If the loop is called fewer than 100 times per batch and the table has fewer than 500 rows, a `SetLoadFields` addition (P2) or a Setup cache variable (P5) is the right trade-off — it removes measurable overhead without restructuring logic.
+**Decision Framework:**
 
-Example trade-off: `CalcFields` inside a loop (P3) on a report that runs nightly over 200 invoices. The correct fix is `SetAutoCalcFields` on the record before the loop, not restructuring the report dataset. Adding `SetAutoCalcFields` is a one-line change with zero maintainability cost.
+Choose the *clean* (slower but maintainable) fix when:
+- The code is in a hot path executed 100+ times per user session, AND code clarity won't impact future performance tuning
+- The performance gain (fast fix) is < 5% vs. baseline, AND code complexity increases >30%
+- The fast fix requires unsafe patterns (unchecked ARRAY operations, unsafe type casts, global state mutation) that create regression risk
+- The code is in a shared library (codeunit/table) where maintainability affects other modules' performance debugging
+
+Choose the *fast* fix when:
+- User-facing latency is >2s and clean rewrite requires weeks
+- The fix is isolated to one code path with no shared dependencies
+- The performance gain (fast fix) is >20% improvement over clean approach
+
+**Example:** Query returning 10,000 records for a FactBox display
+
+SLOW BUT CLEAN FIX:
+```al
+procedure GetCustomerSummary(var Customer: Record Customer): JsonObject
+var
+    SalesLines: Record "Sales Line";
+    Summary: JsonObject;
+    TotalAmount: Decimal;
+begin
+    TotalAmount := 0;
+    if Customer.FindSet() then
+        repeat
+            SalesLines.SetRange("Customer No.", Customer."No.");
+            SalesLines.CalcSums(Amount);
+            TotalAmount += SalesLines.Amount;
+        until Customer.Next() = 0;
+    
+    Summary.Add('Total', TotalAmount);
+    exit(Summary);
+end;
+```
+
+FAST BUT RISKY FIX:
+```al
+procedure GetCustomerSummaryCached(var Customer: Record Customer): JsonObject
+var
+    CacheKey: Text;
+begin
+    CacheKey := 'CUST_' + Customer."No.";
+    if Cache.Get(CacheKey) <> '' then
+        exit(ParseCacheJson(Cache.Get(CacheKey)));
+    // ... cache logic with inline SQL
+end;
+```
+
+**Decision:** Use the clean fix. The 10,000-record load is a data-load problem (table design), not an algorithm problem. Solving it with cache masks the real issue and breaks when data changes.
 
 ### When the performance fix changes business logic risk
 
-Replacing `FindFirst` (P6) with `Get()` changes error-handling behaviour: `Get()` returns `false` on missing records while `FindFirst` combined with a conditional may swallow the miss silently. Always note this in the FIX block when the patterns differ in error behaviour.
+**Decision Framework:**
 
-### Batch Processor vs. UI code paths
+A performance fix introduces *business logic risk* when it:
+- Changes which records are processed (filtering, batching boundaries)
+- Modifies when validations run (early exit vs. full validation)
+- Alters transaction scope (split one transaction into many, or vice versa)
+- Removes intermediate steps that provide audit/compliance trail
 
-Apply stricter thresholds for batch processors and job queue codeunits. A P8 finding (full table scan) that costs 200 ms in a UI action is LOW impact; the same scan inside a job that runs every 5 minutes becomes HIGH impact due to accumulated load. Escalate severity by one level for any pattern found inside a codeunit with `IsJobQueueEntry` logic or `OnRun` trigger serving as a job entry point.
+**RED FLAGS — Ask for requirements review before implementing:**
+- "Skip validation on bulk inserts for speed"
+- "Cache customer balance instead of querying each time"
+- "Process payments in batches instead of one-by-one"
 
-### Caching as a trade-off
+These are NOT performance problems; they are requirements problems.
 
-For P5 (Setup table in loop), the standard fix is to read the setup record once before the loop into a local variable. This is always safe when the loop does not `Commit()` mid-run. If the loop contains explicit `Commit()` calls, a cached variable may read stale setup data — in that case, flag the pattern but note the caching risk in the FIX block rather than recommending the cache blindly.
+**Example: "Slow Sales Order validation"**
 
-### Complexity budget
+RISKY FIX (skips validation):
+```al
+procedure PostSalesOrderFast(var SalesHeader: Record "Sales Header")
+begin
+    SalesHeader.Validate := false;  // DANGEROUS: skips all field validations
+    SalesHeader.Modify();
+end;
+```
 
-If fixing a pattern requires adding a temporary table, a new procedure, or more than 15 lines of new code, note the complexity cost explicitly in the IMPACT field. A LOW-severity finding (P6 or P7) never justifies a refactor that adds 30 lines. Recommend the simple fix or mark it as "acceptable at current data volume" with a note to revisit if volume grows.
+SAFE FIX (validates earlier):
+```al
+procedure PostSalesOrderOptimized(var SalesHeader: Record "Sales Header")
+var
+    SalesLines: Record "Sales Line";
+begin
+    // Validate BEFORE loops, not during
+    SalesHeader.ValidateCustomerCredit();
+    SalesHeader.ValidateShippingAddress();
+    
+    if SalesLines.FindSet() then
+        repeat
+            // No per-line validation; all checks done at header level
+            SalesLines.Modify();
+        until SalesLines.Next() = 0;
+end;
+```
+
+**Decision:** The safe fix pre-validates once (header-level), then skips per-line checks. No business logic changes; same validations, better order.
+
+### Batch Processor vs. UI code paths — Different Trade-off Rules
+
+**Batch Processing (Codeunit::RunBatch) Trade-offs:**
+- Can sacrifice user-facing latency for throughput (10 seconds for 1M records is OK)
+- Can use memory-intensive caching/indexing strategies
+- Must prioritize **correctness** over speed (batch runs unattended; no way to retry fast)
+- Best approach: Clean code + async architecture (fire and forget)
+
+**UI Code Path Trade-offs:**
+- Must keep response <500ms (user perception threshold)
+- Memory constraints (UI thread must not block)
+- Can sacrifice data completeness for responsiveness (show 100 records, not 10K)
+- Best approach: Pagination, filtering, narrow result sets
+
+**Example Decision:**
+
+**Batch Processor — Recalculate Inventory:**
+```al
+procedure RecalculateAllInventory()  // Called from batch job
+var
+    Item: Record Item;
+    InventoryCache: Dictionary of [Code[20], Decimal];
+begin
+    // Load all items into cache (OK for batch, uses memory freely)
+    if Item.FindSet() then
+        repeat
+            InventoryCache.Add(Item."No.", CalculateInventory(Item."No."));
+        until Item.Next() = 0;
+    
+    // Single pass through data
+    UpdateInventoryLedger(InventoryCache);
+end;
+```
+
+**UI Code Path — Show Customer Balance:**
+```al
+procedure GetCustomerBalance(CustomerNo: Code[20]): Decimal
+begin
+    // DO NOT load all items like batch does
+    // Query only the customer balance, cache short-lived (1 min)
+    exit(QueryCustomerBalance(CustomerNo));  // Query, not cache
+end;
+```
+
+**Decision:** Batch uses memory-heavy caching; UI uses lightweight queries. Different rules for different contexts.
+
+### Caching as trade-off — When Cache Correctness Matters
+
+**When Caching Improves Performance:**
+- Data is read-heavy (100+ reads per write)
+- Query is expensive (10+ table joins, complex filtering)
+- Update frequency is known and bounded (daily batch, weekly reconciliation)
+
+**When Caching Creates Risk:**
+- Cache invalidation is unclear (how to know cache is stale?)
+- Data consistency is critical (customer balance, inventory, compliance audit)
+- Multiple systems write the same data (integration scenarios)
+
+**Invalidation Patterns:**
+- **Time-based:** Cache expires after N minutes (OK for non-critical reads like "top 10 customers")
+- **Event-based:** Cache clears when related data changes (OK for materialized views, requires event hook)
+- **Manual:** Code explicitly clears cache on Save (OK for small caches, risky if forgotten)
+
+**Example: Customer Credit Limit Cache**
+
+WRONG (high invalidation cost):
+```al
+var CreditCache: Dictionary of [Code[20], Decimal];
+
+procedure GetCustomerCreditLimit(CustomerNo: Code[20]): Decimal
+begin
+    if not CreditCache.ContainsKey(CustomerNo) then
+        CreditCache.Add(CustomerNo, Customer."Credit Limit");
+    exit(CreditCache.Get(CustomerNo));
+end;
+
+// When is this cache invalid? If customer credit is changed manually in table,
+// cache stays stale. Dangerous for sales orders!
+```
+
+RIGHT (invalidation is clear):
+```al
+procedure GetCustomerCreditLimit(CustomerNo: Code[20]): Decimal
+var
+    Customer: Record Customer;
+begin
+    Customer.Get(CustomerNo);
+    // Direct query; cache not worth it (customer changes infrequently)
+    exit(Customer."Credit Limit");
+end;
+```
+
+**Decision:** Skip the cache. Customer credit limit changes rarely; query cost is <1ms. Cache invalidation risk >> performance gain.
+
+### Complexity budget — When Code Gets Too Clever
+
+**Complexity warning signs:**
+- Function exceeds 50 lines (split into procedures)
+- More than 3 nested IF statements (extract to separate procedure)
+- More than 2 data structures (Dictionary + Array + custom record) in one function
+- Conditional logic using bitwise operations or unusual patterns
+
+**Complexity vs. Performance Trade-off:**
+
+| Code Pattern | Performance | Maintainability | Use When |
+|-------------|-------------|-----------------|----------|
+| Loop with early exit | Good | Good | Searching, filtering |
+| Indexed lookup (Dictionary) | Excellent | Good | 100+ lookups |
+| Bit flags (1 var stores 8 states) | Excellent | Poor | Extreme memory constraint |
+| Separate procedures (DRY) | Slightly slower | Excellent | Default choice |
+| Inline/unrolled loops | Excellent | Poor | Proven bottleneck with measurement |
+
+**Example: Don't Trade Maintainability for Micro-optimizations**
+
+OVER-COMPLEX (unrolled loop for 5% speed gain):
+```al
+procedure ProcessOrdersFast(var SalesHeaders: Record "Sales Header")
+begin
+    // Unrolled loop: processes 4 orders per iteration (too clever!)
+    while SalesHeaders.FindSet() do begin
+        ProcessOrder(SalesHeaders);
+        SalesHeaders.Next();
+        if SalesHeaders."No." <> '' then begin
+            ProcessOrder(SalesHeaders);
+            SalesHeaders.Next();
+            if SalesHeaders."No." <> '' then begin
+                ProcessOrder(SalesHeaders);
+                SalesHeaders.Next();
+                if SalesHeaders."No." <> '' then begin
+                    ProcessOrder(SalesHeaders);
+                    SalesHeaders.Next();
+                end;
+            end;
+        end;
+    end;
+end;
+```
+
+SIMPLE AND SUFFICIENT (clear, 95% speed of over-complex version):
+```al
+procedure ProcessOrders(var SalesHeaders: Record "Sales Header")
+begin
+    if SalesHeaders.FindSet() then
+        repeat
+            ProcessOrder(SalesHeaders);
+        until SalesHeaders.Next() = 0;
+end;
+```
+
+**Decision:** Use the simple loop. 5% speed gain is not worth a 10x increase in maintenance cost. Keep complexity budget for proven bottlenecks.
