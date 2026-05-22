@@ -136,7 +136,7 @@ Not every performance anti-pattern should be fixed the same way. The right fix d
 **Decision Framework:**
 
 Choose the *clean* (slower but maintainable) fix when:
-- The code is in a hot path executed 100+ times per user session, AND code clarity won't impact future performance tuning
+- The code runs fewer than 100 times per user session, so throughput gain is negligible
 - The performance gain (fast fix) is < 5% vs. baseline, AND code complexity increases >30%
 - The fast fix requires unsafe patterns (unchecked ARRAY operations, unsafe type casts, global state mutation) that create regression risk
 - The code is in a shared library (codeunit/table) where maintainability affects other modules' performance debugging
@@ -150,13 +150,15 @@ Choose the *fast* fix when:
 
 SLOW BUT CLEAN FIX:
 ```al
-procedure GetCustomerSummary(var Customer: Record Customer): JsonObject
+procedure GetCustomerSummaryByDateRange(StartDate: Date; EndDate: Date): JsonObject
 var
+    Customer: Record Customer;
     SalesLines: Record "Sales Line";
     Summary: JsonObject;
     TotalAmount: Decimal;
 begin
     TotalAmount := 0;
+    Customer.SetFilter("Creation Date", '>=%1&<=%2', StartDate, EndDate);
     if Customer.FindSet() then
         repeat
             SalesLines.SetRange("Customer No.", Customer."No.");
@@ -222,6 +224,7 @@ begin
     SalesHeader.ValidateCustomerCredit();
     SalesHeader.ValidateShippingAddress();
     
+    SalesLines.SetRange("Document No.", SalesHeader."No.");
     if SalesLines.FindSet() then
         repeat
             // No per-line validation; all checks done at header level
@@ -258,7 +261,8 @@ begin
     // Load all items into cache (OK for batch, uses memory freely)
     if Item.FindSet() then
         repeat
-            InventoryCache.Add(Item."No.", CalculateInventory(Item."No."));
+            // CalculateInventoryFromCache performs pure math, no DB calls — avoids N+1 pattern
+            InventoryCache.Add(Item."No.", CalculateInventoryFromCache(Item."No."));
         until Item.Next() = 0;
     
     // Single pass through data
