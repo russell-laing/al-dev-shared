@@ -92,14 +92,28 @@ def count_body_lines(body: str) -> int:
 
 
 def has_emoji_or_checkmark(text: str) -> bool:
-    """Check if text contains emoji or checkmark characters.
+    """Check if text contains status emoji used in markdown headings.
 
-    Common emoji/checkmark patterns in markdown:
-    - ❌ ✅ 🔴 🟡 🟢 🔵 etc. (Unicode emoji)
-    - Common markdown markers: [x] [ ] etc.
+    Detects emoji commonly used in knowledge file section headers:
+    - Status emoji: 🟢 🟡 🔴 ✅ ❌ 🔵
+    - Fallback: broader emoji range for future extensibility
     """
-    emoji_pattern = r'[☺-\U0001F999]|[☀-➿]|[ἰ0-ᾟF]'
-    return bool(re.search(emoji_pattern, text))
+    # Known status emoji in use across knowledge files
+    known_emoji = {'🟢', '🟡', '🔴', '✅', '❌', '🔵'}
+    if any(e in text for e in known_emoji):
+        return True
+
+    # Fallback: detect emoji in standard emoji range U+1F300–U+1F9FF
+    # Using non-raw string with proper Unicode escapes
+    pattern = '[\U0001F300-\U0001F9FF]'
+    return bool(re.search(pattern, text))
+
+
+# Quick test of emoji detection (validates regex works)
+assert has_emoji_or_checkmark("🟢 TRIVIAL") == True
+assert has_emoji_or_checkmark("✅ Example") == True
+assert has_emoji_or_checkmark("Normal text") == False
+assert has_emoji_or_checkmark("## Overview") == False
 
 
 def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
