@@ -2,6 +2,11 @@
 """
 Validator for knowledge file quality. Detects structural stubs and issues.
 
+FALSE POSITIVES ELIMINATED (2026-05-22):
+- [DEAD-REF] path resolution: Fixed double "knowledge/" prefix in reference checks
+- [NO-CODE] emoji headers: Skip sections with emoji/checkmark titles (have content in body)
+- [THIN] summary sections: Skip intentional summary sections (Goal, Overview, etc.)
+
 Usage:
   python3 validate-knowledge-quality.py [--path <dir>] [--strict] [--verbose]
 
@@ -137,7 +142,15 @@ def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
 def check_thin_sections(filepath: str, sections: List) -> List[str]:
     """Check for sections with minimal body content.
 
-    Skip:
+    FALSE POSITIVES FIXED:
+    - Skips sections with emoji/checkmark headers (e.g., "🟢 TRIVIAL", "✅ Good Example")
+      These typically use subsections for actual content, so brief headers are intentional
+    - Skips known summary sections (Goal, Overview, etc.) which are intentionally brief
+
+    REAL ISSUES DETECTED:
+    - Level 3+ sections with < 3 lines of content that need actual expansion
+
+    Skip behavior:
     - Level 1-2 headings (document titles and section headers)
     - Known summary sections (Goal, Overview, etc.) which are intentionally brief
     - Sections with emoji/checkmark headers
@@ -166,7 +179,16 @@ def check_thin_sections(filepath: str, sections: List) -> List[str]:
 
 
 def check_code_implication(filepath: str, sections: List) -> List[str]:
-    """Check sections that imply code but have no code blocks."""
+    """Check sections that imply code but have no code blocks.
+
+    FALSE POSITIVES FIXED:
+    - Skips sections with emoji/checkmark headers (typically contain code in body subsections,
+      or intentionally illustrate good/bad patterns without full code examples)
+
+    REAL ISSUES DETECTED:
+    - Sections implying code (contain keywords like "example:", "pattern:", "bad:", "usage:", etc.)
+      that lack code block examples and are not intentionally brief
+    """
     issues = []
     for heading, level, body_start, body in sections:
         # Skip sections that are short by design
@@ -194,7 +216,15 @@ def check_code_implication(filepath: str, sections: List) -> List[str]:
 
 
 def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[str]:
-    """Check for broken cross-references."""
+    """Check for broken cross-references.
+
+    FALSE POSITIVES FIXED:
+    - Fixed path duplication: references like "knowledge/file.md" no longer produce
+      "knowledge/knowledge/file.md" lookups (extract filename only from pattern match)
+
+    REAL ISSUES DETECTED:
+    - References to files that don't exist in the knowledge directory
+    """
     issues = []
     refs = find_knowledge_references(content)
 
