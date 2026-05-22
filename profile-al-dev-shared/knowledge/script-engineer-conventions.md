@@ -129,7 +129,6 @@ update_progress "linking" 50
 ./link-all.sh
 update_progress "packaging" 75
 ./package-app.sh
-update_progress "completed" 100
 
 cat > "$progress_file" <<EOF
 {
@@ -142,7 +141,7 @@ cat > "$progress_file" <<EOF
 EOF
 ```
 
-Claude Code harness polls `.dev/progress.json` and shows progress bar; on completion, reads the `output` field.
+The parent process or skill can poll `.dev/progress.json` to show progress; on completion, it reads the `output` field.
 
 **When to use each pattern:**
 
