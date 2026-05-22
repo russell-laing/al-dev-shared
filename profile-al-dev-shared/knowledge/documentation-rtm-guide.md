@@ -233,6 +233,74 @@ User guides omit the requirement IDs and SLA details; technical docs include the
 
 ---
 
+## Examples
+
+### Example 1: Functional User RTM — "How to Process a Sales Order"
+
+**Use case:** Documenting a feature from the business user's perspective. RTM maps user stories to instructions.
+
+| User Requirement | Page Section | Step | Verification |
+|------------------|-------------|------|--------------|
+| "Create sales order for customer" | Sales Order Card | Enter header (customer, date) | Customer details auto-populate |
+| "Add line items with quantity" | Sales Order Lines | Click Add Line, enter Item No., Quantity | System calculates line total |
+| "System should verify customer credit" | Sales Order Card | Click Validate (before posting) | Credit warning appears if exceeded |
+| "Apply discount if quantity threshold met" | Sales Order Lines | Quantity > 10 auto-applies 5% discount | Discount appears in Amount field |
+| "Post order to create invoice" | Sales Order Card | Click Post | Order status changes to "Posted" |
+| "Verify invoice in Accounts Receivable" | Posted Invoices | Search customer invoices | New invoice appears in list |
+
+**RTM structure:** Each row is a user action (requirement) → UI location → steps → how to verify. Rows flow in business-logic order (create → validate → post → verify).
+
+**Who uses this RTM?** Functional testers, business analysts, end users validating new features.
+
+### Example 2: Technical Admin RTM — "Deploying the Sales Module Update"
+
+**Use case:** Documenting a system administration task. RTM maps deployment requirements to configuration steps.
+
+| Admin Requirement | Configuration Area | Procedure | Verification Command |
+|------------------|-------------------|-----------|---------------------|
+| "Apply hotfix to codeunit 50000" | Code Deployments | Import .al file via DevOps | `al-compile --output errors.log` returns no errors |
+| "Update customer credit limit validation" | Table 18 extensions | Modify validation rule in Customer table | Run test suite: `pytest tests/customer-validation/` |
+| "Enable credit limit enforcement on sales order posting" | Permission Set assignments | Add "Post Sales Order" permission to all Sales roles | User can post order without "Access Denied" |
+| "Configure audit logging for order amendments" | Audit Trail setup | Enable field-change logging on Sales Header | Changes appear in Audit Log within 5 minutes |
+| "Validate integration with external billing system" | Integration endpoints | Test webhook endpoint with mock payload | Webhook returns HTTP 200 OK; order appears in billing system |
+
+**RTM structure:** Each row is an admin task → config location → how to perform it → how to verify it works. Rows follow deployment sequence (code → config → permissions → testing).
+
+**Who uses this RTM?** System administrators, DevOps engineers, deployment teams.
+
+### Example 3: Developer RTM — "Implementing Customer Credit Limit Enforcement"
+
+**Use case:** Documenting a code feature. RTM maps functional requirements to code modules and tests.
+
+| Functional Requirement | Code Module | Implementation | Test Coverage |
+|-------|---|---|---|
+| "Customer credit limit is set and stored" | Table 18 (Customer) | Add field "Credit Limit" (Decimal, min 0) | `test_CustomerCreditLimitField_CanBeSet()` |
+| "Credit limit cannot be negative" | Table 18 validation | Add validation: `if "Credit Limit" < 0 then Error(...)` | `test_CustomerCreditLimitField_RejectsNegative()` |
+| "Sales order cannot post if customer exceeds credit" | Codeunit 80 (Sales-Post) | Add pre-post check in OnBeforePostSalesHeader | `test_SalesOrder_BlockedWhenCreditExceeded()` |
+| "Sales order warning if approaching limit (90%)" | Page 42 (Sales Order) | Add FactBox field binding to credit usage % | `test_SalesOrderPage_WarningAppearsAt90Percent()` |
+| "Credit limit overrides for emergency orders" | Table 109 (Sales Order Header) | Add field "Override Credit Check" (boolean) | `test_SalesOrder_AllowsOverride_WhenFlagSet()` |
+| "Audit log tracks credit overrides" | Codeunit 50001 (Audit Handler) | Log credit override to audit table | `test_AuditLog_RecordsCreditOverride()` |
+
+**RTM structure:** Each row is a requirement → code location → how implemented → corresponding test. Rows follow data-flow order (store → validate → use → display).
+
+**Who uses this RTM?** Developers writing code, code reviewers verifying coverage, QA testers writing test plans.
+
+### When to Omit RTM Table
+
+**Omit RTM if:**
+- Documentation is <500 words (RTM adds overhead for small docs)
+- Feature is a bug fix or internal refactor with no new requirements (RTM is for requirements tracing, not code refactoring)
+- Feature is a simple config change with 1-2 steps (too granular for RTM; use numbered list instead)
+- Audience is developers only, code-level traceability is in comments/tests (don't duplicate)
+
+**Include RTM if:**
+- Feature is new and spans 3+ modules (track req → code → test mappings)
+- Documentation is for multiple audiences (functional users + admins + developers; RTM tailors to each)
+- Compliance/audit trail required (RTM documents what was implemented, who verified, where the evidence is)
+- Stakeholder sign-off needed (RTM is the deliverable artifact)
+
+---
+
 ## Folder Structure
 
 Documentation output follows this structure in the target project:
