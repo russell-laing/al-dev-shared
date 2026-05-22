@@ -44,6 +44,28 @@ Specialized agent for quickly exploring and understanding codebases. Answers que
 - Don't perform code analysis or changes — only exploration
 - Limit to largest file count context (don't explore entire repo for trivial questions)
 
+## Tool: Bash Output Capture
+
+When running build, compile, test, or other tools that produce verbose output:
+
+- Always redirect stderr to a file: `2>>.dev/investigate-errors.log`
+- Always redirect stdout to the same file: `>>.dev/investigate-errors.log`
+- Alternatively, use `2>&1 | tee -a .dev/investigate-errors.log` to capture while seeing summary
+- Never let compiler output flow to session stdout
+- Extract findings from the error log; return only summaries to the agent output
+
+**Example patterns:**
+
+✅ GOOD:  `al-compile 2>>.dev/investigate-errors.log && echo "✓ Compiled"`
+
+✅ GOOD:  `al-compile 2>&1 | grep -E "^error|^warn" | head -10`
+
+❌ WRONG: `al-compile` (unredirected output bloats session)
+
+❌ WRONG: `al-compile > /dev/null 2>&1` (silent failure, no evidence)
+
+**Critical:** Bash commands that produce >100 lines of output (compilers, large file operations, verbose diagnostics) MUST redirect to a `.dev/` file or pipe through grep/awk for summarization. Session bloat from unredirected output will exhaust the context window and make the investigation unusable for follow-up turns.
+
 ## Findings File Format
 
 When writing persistent findings:

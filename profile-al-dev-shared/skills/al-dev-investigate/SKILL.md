@@ -188,6 +188,13 @@ Prompt:
 
    For EACH hypothesis report:
 
+   **Output handling:** If your investigation requires running compile,
+   build, or test commands, redirect all output to `.dev/investigate-errors.log`
+   (use `2>>.dev/investigate-errors.log`). Extract only relevant error summaries
+   or findings to report back — do not let verbose compiler output flow to the
+   session. If a compilation error is significant to the investigation, include
+   the error message but not the full compiler trace.
+
    VERDICT: CONFIRMED | REJECTED | INCONCLUSIVE
    EVIDENCE: [file path, line number, code snippet]
    REASONING: [1-2 sentences]
