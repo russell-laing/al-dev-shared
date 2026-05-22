@@ -37,6 +37,17 @@ CODE_KEYWORDS = {
     "**bad**",
 }
 
+# Section names that are intentionally brief summaries
+SUMMARY_SECTIONS = {
+    "goal",
+    "summary",
+    "overview",
+    "introduction",
+    "rationale",
+    "motivation",
+    "purpose",
+}
+
 # Knowledge directory relative to repo root
 KNOWLEDGE_DIR = "profile-al-dev-shared/knowledge"
 
@@ -124,11 +135,25 @@ def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
 
 
 def check_thin_sections(filepath: str, sections: List) -> List[str]:
-    """Check for sections with minimal body content."""
+    """Check for sections with minimal body content.
+
+    Skip:
+    - Level 1-2 headings (document titles and section headers)
+    - Known summary sections (Goal, Overview, etc.) which are intentionally brief
+    - Sections with emoji/checkmark headers
+    """
     issues = []
     for heading, level, body_start, body in sections:
         # Skip level-2 (##) headings and special sections
-        if level <= 2 or heading.lower() in ("overview", "usage", "example"):
+        if level <= 2:
+            continue
+
+        # Skip known summary sections that are intentionally brief
+        if heading.lower() in SUMMARY_SECTIONS:
+            continue
+
+        # Skip sections with emoji/checkmark headers (typically have content in subsections)
+        if has_emoji_or_checkmark(heading):
             continue
 
         line_count = count_body_lines(body)
