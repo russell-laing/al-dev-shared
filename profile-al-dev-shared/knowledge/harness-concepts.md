@@ -7,7 +7,9 @@ always-loaded instructions file (CLAUDE.md, AGENTS.md, etc.).
 Shared capability-to-harness tool translation rules live in
 `knowledge/agent-tool-projection-policy.md`. This file remains the prose
 vocabulary contract; the projection policy defines how shared `tools:` intent
-is translated into harness-native metadata.
+is translated into harness-native metadata, including the documented
+translation tables and fail-closed generation rules for Claude, Copilot, and
+Codex projections.
 
 ## Skill Author Guidelines
 

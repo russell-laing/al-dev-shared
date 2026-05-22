@@ -1,18 +1,6 @@
----
-name: al-dev-support-researcher
-description: >-
-  Research a BC support query using AL symbols, MS Docs, and BC Code History.
-  Produces internal technical findings. Dispatched by /al-dev-support (research
-  phase). Pairs with al-dev-support-reply-drafter.
-model: sonnet
-tools: [
-  "Read",
-  "MCP: al-mcp-server",
-  "MCP: microsoft-docs",
-  "MCP: bc-code-intelligence"
-]
----
-
+name = "al-dev-support-researcher"
+description = "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-support (research phase). Pairs with al-dev-support-reply-drafter."
+developer_instructions = """
 # Agent: al-dev-support-researcher
 
 Research BC support queries and produce internal technical findings.
@@ -98,3 +86,9 @@ SUMMARY: [one-sentence root cause or workaround]
 ### Recommended Resolution
 [Recommended path to fix]
 ```
+
+Codex capability notes:
+- read files available in the active Codex session
+- use the AL symbol lookup MCP capability available in the active Codex session
+- use the Microsoft Docs MCP capability available in the active Codex session
+- use the BC code intelligence MCP capability available in the active Codex session"""

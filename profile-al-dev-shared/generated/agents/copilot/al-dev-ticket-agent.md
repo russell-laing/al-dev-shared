@@ -1,0 +1,124 @@
+---
+name: "al-dev-ticket-agent"
+description: "Fetch a Freshdesk ticket via API, write .dev/context file, and optionally download attachments. Dispatched by the al-dev-ticket skill."
+tools: ["execute", "edit"]
+---
+
+
+# Agent: al-dev-ticket-agent
+
+Fetch Freshdesk ticket context and create structured documentation file.
+
+## Inputs
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `TICKET_ID` | **Yes** | Freshdesk ticket ID (passed in dispatch prompt, e.g., 12345) |
+| `FRESHDESK_API_KEY` | **Yes** | API key (environment variable, not dispatch field) |
+| `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain (environment variable, not dispatch field) |
+
+**Note:** `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` are resolved from the harness environment and set as shell variables, not passed in the dispatch prompt. See `knowledge/ticket-agent-invocation-pattern.md`.
+
+## Outputs
+
+| File | Description |
+|------|-------------|
+| `.dev/<date>-al-dev-ticket-ticket-context.md` | Structured ticket context with fields, comments, metadata |
+
+## Workflow
+
+**Phase: fetch**
+
+### Step 1: Fetch Ticket and Conversations
+
+Fetch operations are sequential API calls (not parallel):
+
+1. **Get ticket metadata** via Freshdesk API:
+   ```bash
+   curl -s -u "$FRESHDESK_API_KEY:x" \
+     https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID
+   ```
+   Extract: ID, status, priority, subject, description, created date, updated date
+
+2. **Get ticket conversations** (comments):
+   ```bash
+   curl -s -u "$FRESHDESK_API_KEY:x" \
+     https://$FRESHDESK_DOMAIN/api/v2/tickets/$TICKET_ID/conversations
+   ```
+   Extract: author, timestamp, content, attachments
+
+3. **Get ticket custom fields** if present in metadata
+
+### Step 1.5: Detect Inline Image Attachments
+
+After extracting conversation HTML from the API response, scan for inline embedded images:
+
+1. **Regex scan for `src=` attributes:** Extract all image URLs from `<img src="..."` tags in description and conversation HTML
+2. **Regex scan for `cid:` references:** Extract content-ID references (Freshdesk inline attachment pattern) from `src="cid:..."` tags
+3. **Compile inline-image list:** Create a distinct list of inline images found — these are separate from the file attachments array in the API response
+
+Example patterns to match:
+```
+src="https://cdn.freshdesk.com/...jpg"     → extract URL
+src="cid:attachment_123abc"                 → extract cid:attachment_123abc
+<img src="data:image/png;base64,..."      → note as "inline base64 image"
+```
+
+If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
+
+### Step 2: Write Context File
+
+Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
+
+```markdown
+# Freshdesk Ticket Context
+
+**Ticket ID:** [ID]
+**Status:** [Status]
+**Priority:** [Priority]
+**Created:** [Date]
+**Updated:** [Date]
+
+## Subject
+[Ticket subject/title]
+
+## Description
+[Original ticket description]
+
+## Comments
+[Author] — [Timestamp]
+[Comment content]
+
+[Repeat for each comment]
+
+## Custom Fields
+[If applicable: field name: value pairs]
+
+## Attachments
+
+**File Attachments:** (from API attachments array)
+[If applicable: filename, size, URL]
+
+**Inline Embeds:** (extracted from HTML src= and cid: references)
+[If applicable: image URL or cid:reference, extracted from description and comments]
+```
+
+### Step 3: Return Output
+
+Return structured block:
+```
+TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
+TICKET_ID: [ID]
+STATUS: [Status]
+PRIORITY: [Priority]
+COMMENTS_COUNT: [N]
+ATTACHMENTS: [Count or "None"]
+INLINE_IMAGES_COUNT: [N or "None"]
+```
+
+## Notes
+
+- Ticket operations are sequential (API rate limiting)
+- Authentication via Freshdesk API key (never commit keys)
+- Attachments are referenced by URL only (not downloaded by default)
+- Custom fields are included if present in the ticket

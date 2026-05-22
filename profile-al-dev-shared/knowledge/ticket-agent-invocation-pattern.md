@@ -87,7 +87,7 @@ When a new skill needs to fetch Freshdesk tickets, it should:
 | **Performance Issue** | Codeunit (query loops, batching), Table (indexing), Report (rendering) | `ticket_type: "perf"`, `metric: "response_time|memory|throughput"` |
 | **Data Migration** | New Codeunit (migration logic), Source/Target Tables | `ticket_type: "data-migration"`, `cutover_date: "YYYY-MM-DD"` |
 | **Integration** | New Codeunit (API/webhook handler), Existing Codeunit (caller), External API definition | `ticket_type: "integration"`, `system: "Salesforce|SAP|Custom"` |
-| **Documentation** | Knowledge files, Help context strings, CLAUDE.md | `ticket_type: "docs"`, `audience: "admin|developer|end-user"` |
+| **Documentation** | Knowledge files, Help context strings, project instructions file | `ticket_type: "docs"`, `audience: "admin|developer|end-user"` |
 | **Compliance/Security** | Codeunit (access control), Table (audit fields), Permission Set | `ticket_type: "compliance"`, `standard: "GDPR|SOC2|HIPAA"` |
 
 ### When Ticket Analysis Routes to Multiple Files
