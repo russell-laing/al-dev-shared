@@ -31,7 +31,126 @@ if __name__ == "__main__":
 **Why:** Sequential requests are slow — fetching 10 URLs one-by-one takes 10× the time of parallel. Use `asyncio.gather()` for true concurrency.
 
 ### Protocol-Based Integration
-Scripts must export structured output (JSON/CSV) that parses cleanly. Always include an exit code that indicates success/failure.
+
+Scripts often need to communicate results to parent processes (Claude Code harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output (JSON/CSV) that parses cleanly. Always include an exit code that indicates success/failure.
+
+**Protocol patterns:**
+
+**Pattern 1: Exit Code + Stdout JSON**
+
+```bash
+#!/bin/bash
+# Script performs some task and outputs structured result
+
+result_json=$(cat <<EOF
+{
+  "status": "success",
+  "task": "deploy-app",
+  "version": "1.0.5",
+  "duration_seconds": 42,
+  "artifacts": [
+    "dist/app-1.0.5.tar.gz",
+    "dist/app-1.0.5.sha256"
+  ]
+}
+EOF
+)
+
+echo "$result_json"
+exit 0  # 0 = success; non-zero = failure
+```
+
+Parent process parses JSON from stdout, checks exit code:
+
+```bash
+output=$(./deploy.sh)
+if [ $? -eq 0 ]; then
+    version=$(echo "$output" | jq -r '.version')
+    echo "Deployment succeeded: $version"
+else
+    echo "Deployment failed"
+    exit 1
+fi
+```
+
+**Pattern 2: Structured Log Lines (Newline-Delimited JSON)**
+
+```bash
+#!/bin/bash
+# Script emits progress as it runs; each line is parseable JSON
+
+log_event() {
+    local phase=$1
+    local status=$2
+    local message=$3
+    echo "{\"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"phase\": \"$phase\", \"status\": \"$status\", \"message\": \"$message\"}"
+}
+
+log_event "setup" "in_progress" "Installing dependencies..."
+pip install -r requirements.txt
+log_event "setup" "completed" "Dependencies installed"
+
+log_event "test" "in_progress" "Running tests..."
+pytest tests/
+log_event "test" "completed" "Tests passed (24/24)"
+```
+
+Parent process (Claude Code monitor) reads each line, parses JSON, updates UI:
+
+```
+✓ Setup completed: Dependencies installed
+✓ Test completed: Tests passed (24/24)
+```
+
+**Pattern 3: File-Based Result Checkpoint**
+
+```bash
+#!/bin/bash
+# Long-running script writes progress to .dev/progress.json periodically
+
+progress_file=".dev/progress.json"
+
+update_progress() {
+    local phase=$1
+    local percent=$2
+    cat > "$progress_file" <<EOF
+{
+  "phase": "$phase",
+  "percent_complete": $percent,
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "in_progress"
+}
+EOF
+}
+
+update_progress "compilation" 25
+./compile-all.sh
+update_progress "linking" 50
+./link-all.sh
+update_progress "packaging" 75
+./package-app.sh
+update_progress "completed" 100
+
+cat > "$progress_file" <<EOF
+{
+  "phase": "completed",
+  "percent_complete": 100,
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "success",
+  "output": "app-1.0.5.tar.gz"
+}
+EOF
+```
+
+Claude Code harness polls `.dev/progress.json` and shows progress bar; on completion, reads the `output` field.
+
+**When to use each pattern:**
+
+- **Exit Code + JSON:** Simple scripts, one-shot operations, CI/CD integration
+- **Log Lines (NDJSON):** Long-running scripts, multiple discrete steps, monitoring/UI feedback
+- **File Checkpoint:** Very long operations (>10 minutes), risk of process interruption, need to resume
+
+All three patterns follow the rule: **Make your output machine-parseable, not human-readable.** Humans read JSON fine; machines struggle with prose.
 
 ### Strict Typing
 Define input/output schemas; validate at boundaries. For Python, use type hints. For TypeScript, use explicit types. Document expected schema in comments.
