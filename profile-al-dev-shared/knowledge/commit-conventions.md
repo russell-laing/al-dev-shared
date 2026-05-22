@@ -116,9 +116,50 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ---
 
-## Project Types
+## project-type Declaration
 
-Every project declares its type in its project instructions file as `project-type: <type>`.
+Every project must declare the `project-type` field in its project instructions file. This field tells Claude Code how to categorize the project and what workflows apply.
+
+**Valid project-type values:**
+
+| Type | Meaning | Example Projects | Tools & Patterns |
+|------|---------|------------------|------------------|
+| `al` | Business Central / Dynamics 365 AL application | nzpg, mml, client-abc (AL extensions) | AL compiler, BC symbols, test framework |
+| `vault` | Knowledge/documentation vault (no code compilation) | nzpg vault, mml vault, second-brain | Markdown validators, knowledge organization |
+| `tool` | CLI tool, script, or utility (Python, Bash, JS) | al-dev-shared, al-smart-compile, claude-configs | Package managers, test runners, CI/CD hooks |
+
+**Example declarations:**
+
+AL Project:
+```yaml
+project-type: al
+```
+
+Knowledge Vault:
+```yaml
+project-type: vault
+```
+
+Tool / Plugin:
+```yaml
+project-type: tool
+```
+
+**Why this matters:**
+- Determines which skills and agents are active (e.g., `al-dev-develop` only works for AL projects)
+- Informs compile/test commands (AL projects run `al-compile`, tool projects run `pytest` or `npm test`)
+- Shapes documentation requirements (AL projects need RTM mapping, vault projects need knowledge audits)
+- Drives commit scope rules (see per-type guidance below)
+
+**Detection (if not explicitly specified):**
+1. Check for `app.json` → project-type: `al`
+2. Check for `package.json` or `pyproject.toml` → project-type: `tool`
+3. Check for `knowledge/` or `docs/` directory as primary content → project-type: `vault`
+4. If unclear, ask the user to declare in their project instructions file
+
+---
+
+## Project Types — Scope and Body Rules
 
 ### `al` — AL/Business Central Extensions
 
