@@ -91,10 +91,11 @@ def count_body_lines(body: str) -> int:
     return len([line for line in body.split("\n") if line.strip()])
 
 
-def find_knowledge_references(content: str) -> List[str]:
-    """Extract all knowledge file references from content."""
-    pattern = r"knowledge/[\w\-]+\.md"
-    return re.findall(pattern, content)
+def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
+    """Extract all knowledge file references (filename only, no 'knowledge/' prefix)."""
+    pattern = r"knowledge/([\w\-]+\.md)"
+    matches = re.finditer(pattern, content)
+    return [(match.group(1), match.start()) for match in matches]
 
 
 def check_thin_sections(filepath: str, sections: List) -> List[str]:
@@ -143,14 +144,14 @@ def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[s
     issues = []
     refs = find_knowledge_references(content)
 
-    for ref in refs:
+    for ref_filename, _ in refs:
         # Skip self-references (file referencing itself is fine)
-        if ref.endswith(Path(filepath).name):
+        if ref_filename == Path(filepath).name:
             continue
 
-        ref_path = knowledge_dir / ref
+        ref_path = knowledge_dir / ref_filename
         if not ref_path.exists():
-            issues.append(f"[DEAD-REF] {filepath}: {ref} (not found)")
+            issues.append(f"[DEAD-REF] {filepath}: knowledge/{ref_filename} (not found)")
 
     return issues
 
