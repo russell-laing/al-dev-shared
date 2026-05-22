@@ -4,6 +4,11 @@ This file defines the generic vocabulary used across all `al-dev-shared`
 skills and agents. Each profile repo implements concrete mappings in its
 always-loaded instructions file (CLAUDE.md, AGENTS.md, etc.).
 
+Shared capability-to-harness tool translation rules live in
+`knowledge/agent-tool-projection-policy.md`. This file remains the prose
+vocabulary contract; the projection policy defines how shared `tools:` intent
+is translated into harness-native metadata.
+
 ## Skill Author Guidelines
 
 When writing skills for `al-dev-shared`:
