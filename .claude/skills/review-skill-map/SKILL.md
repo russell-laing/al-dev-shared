@@ -12,7 +12,8 @@ argument-hint: "[optional: skill name to focus on]"
 # Review Skill Map
 
 Audit `profile-al-dev-shared` and update `docs/al-dev-plugin-map.md` so it
-accurately reflects the current active skills, agents, phases, and file handoffs.
+accurately reflects the current active skills, agents, phases, file handoffs,
+and generated projection surfaces under `profile-al-dev-shared/generated/agents/`.
 
 ---
 

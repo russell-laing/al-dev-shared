@@ -4,18 +4,53 @@ shared_capabilities:
   - shared `tools:` metadata
 projection_rules:
   claude:
-    USER_GATE: Project to the `AskUserQuestion` tool.
-    tools: Project shared `tools:` intent into Claude Code tool allowlists and Claude-form MCP tool IDs.
+    USER_GATE:
+      tool: AskUserQuestion
+    Read:
+      tool: Read
+    Write:
+      tool: Write
+    Edit:
+      tool: Edit
+    Glob:
+      tool: Glob
+    Grep:
+      tool: Grep
+    Bash:
+      tool: Bash
   copilot:
-    USER_GATE: Project to the `ask_user` tool.
-    tools: Project shared `tools:` intent into Copilot CLI tool allowlists and Copilot-form MCP tool IDs.
+    USER_GATE:
+      tool: ask_user
+    Read:
+      tool: read
+    Write:
+      tool: edit
+    Edit:
+      tool: edit
+    Glob:
+      tool: glob
+    Grep:
+      tool: grep
+    Bash:
+      tool: execute
   codex:
-    USER_GATE: Project to the `request_user_input` tool.
-    tools: Project shared `tools:` intent into Codex tool metadata and Codex-form MCP or native tool IDs.
+    USER_GATE:
+      developer_instruction: request_user_input
+    Read:
+      native_capability: read-only file access through the active Codex session
+    Write:
+      native_capability: apply_patch or equivalent file-edit capability in the active Codex session
+    Edit:
+      native_capability: apply_patch or equivalent file-edit capability in the active Codex session
+    Glob:
+      native_capability: search files through the active Codex session
+    Grep:
+      native_capability: search file contents through the active Codex session
+    Bash:
+      native_capability: run shell commands allowed by the active Codex session
 failure_policy:
-  - Never silently drop a required capability during projection.
-  - If no safe projection exists, preserve the shared intent in prose and stop at USER_GATE.
-  - If the harness lacks an equivalent tool, record the mismatch explicitly instead of inventing a new shared term.
+  - Generation fails if a shared capability has no documented harness mapping.
+  - Codex output must use documented TOML keys only; do not invent a synthetic tools field.
 ---
 
 # Agent Tool Projection Policy
@@ -37,27 +72,31 @@ Harness-specific instructions files and profile repos perform the projection.
 
 ### Claude
 
-- Project `USER_GATE` to the `AskUserQuestion` tool.
-- Project shared `tools:` intent into Claude Code tool allowlists.
-- Project shared MCP capability references into Claude-form MCP tool IDs.
+- `USER_GATE` projects to the `AskUserQuestion` tool.
+- `Read`, `Write`, `Edit`, `Glob`, `Grep`, and `Bash` project to the matching
+  Claude tool names.
 
 ### Copilot
 
-- Project `USER_GATE` to the `ask_user` tool.
-- Project shared `tools:` intent into Copilot CLI tool allowlists.
-- Project shared MCP capability references into Copilot-form MCP tool IDs.
+- `USER_GATE` projects to the `ask_user` tool.
+- `Read` projects to `read`.
+- `Write` and `Edit` project to `edit`.
+- `Glob` projects to `glob`.
+- `Grep` projects to `grep`.
+- `Bash` projects to `execute`.
 
 ### Codex
 
-- Project `USER_GATE` to the `request_user_input` tool.
-- Project shared `tools:` intent into Codex tool metadata.
-- Project shared MCP capability references into Codex-form MCP or native tool
-  IDs.
+- `USER_GATE` projects to the `request_user_input` developer instruction.
+- `Read` uses native read-only file access through the active Codex session.
+- `Write` and `Edit` use `apply_patch` or an equivalent active-session edit
+  capability.
+- `Glob` and `Grep` use the active session's file and content search
+  capabilities.
+- `Bash` uses the active session's allowed shell command capability.
 
 ## Failure Policy
 
-- Do not silently weaken or remove a required capability during projection.
-- If a harness cannot safely represent shared `tools:` intent, keep the shared
-  wording in prose and stop at `USER_GATE`.
-- If a harness has no equivalent tool, document the mismatch explicitly rather
-  than inventing a new shared vocabulary term.
+- Generation fails if a shared capability has no documented harness mapping.
+- Codex output must use documented TOML keys only; do not invent a synthetic
+  `tools` field.

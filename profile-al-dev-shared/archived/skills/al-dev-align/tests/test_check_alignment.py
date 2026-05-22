@@ -24,6 +24,76 @@ parse_mapping_table = mod.parse_mapping_table
 compute_coverage_gaps = mod.compute_coverage_gaps
 
 
+def test_validate_repo_local_claude_boundary_requires_generated_projection_note(tmp_path):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    (repo_root / "AGENTS.md").write_text(
+        "# AGENTS\n\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    (repo_root / "CLAUDE.md").write_text(
+        "# CLAUDE\n\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    generated_root = repo_root / "profile-al-dev-shared" / "generated" / "agents"
+    generated_root.mkdir(parents=True)
+    (generated_root / "README.md").write_text("# Generated Agent Projections\n")
+    issues = mod.validate_repo_local_claude_boundary(repo_root)
+    assert any("profile-al-dev-shared/generated/agents/" in issue["error"] for issue in issues)
+
+
+def test_validate_repo_local_claude_boundary_accepts_three_way_classification(tmp_path):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    (repo_root / "AGENTS.md").write_text(
+        "# AGENTS\n\n"
+        "profile-al-dev-shared/ is shared source.\n"
+        "profile-al-dev-shared/generated/agents/ is generated projection output.\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    (repo_root / "CLAUDE.md").write_text(
+        "# CLAUDE\n\n"
+        "profile-al-dev-shared/ is shared source.\n"
+        "profile-al-dev-shared/generated/agents/ is generated projection output.\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    generated_root = repo_root / "profile-al-dev-shared" / "generated" / "agents"
+    generated_root.mkdir(parents=True)
+    (generated_root / "README.md").write_text(
+        "# Generated Agent Projections\n\n"
+        "This directory contains generated harness-native agent artifacts.\n\n"
+        "- `claude/` contains generated Claude Markdown manifests.\n"
+        "- `copilot/` contains generated Copilot Markdown manifests.\n"
+        "- `codex/` contains generated Codex TOML manifests.\n\n"
+        "These files are derived from `profile-al-dev-shared/agents/*.md` plus\n"
+        "projection policy metadata. Do not hand-edit them.\n"
+    )
+    issues = mod.validate_repo_local_claude_boundary(repo_root)
+    assert issues == []
+
+
+def test_projection_scan_ignores_repo_local_claude_tree(tmp_path):
+    repo_root = tmp_path / "repo"
+    plugin_root = repo_root / "profile-al-dev-shared"
+    (repo_root / ".claude" / "agents").mkdir(parents=True)
+    (plugin_root / "generated" / "agents" / "claude").mkdir(parents=True)
+    (repo_root / ".claude" / "agents" / "local-only.md").write_text("local")
+    paths = mod.classify_projection_paths(repo_root, plugin_root)
+    assert ".claude/agents/local-only.md" not in paths["shared_source"]
+    assert ".claude/agents/local-only.md" not in paths["generated_projection"]
+    assert ".claude/agents/local-only.md" in paths["repo_local_maintainer_tooling"]
+
+
+def test_projection_validation_fails_when_generated_projection_missing(tmp_path):
+    plugin_root = tmp_path / "profile-al-dev-shared"
+    (plugin_root / "agents").mkdir(parents=True)
+    (plugin_root / "agents" / "al-dev-interview.md").write_text(
+        "---\ndescription: test\ntools: [\"Read\"]\n---\n# Agent\n"
+    )
+    issues = mod.validate_projection_outputs(plugin_root)
+    assert any("generated/agents/claude/al-dev-interview.md" in issue["error"] for issue in issues)
+
+
 class TestStripFrontmatter:
     def test_file_with_frontmatter_preserves_line_count(self):
         lines = ["---\n", "name: foo\n", "---\n", "Body line\n"]

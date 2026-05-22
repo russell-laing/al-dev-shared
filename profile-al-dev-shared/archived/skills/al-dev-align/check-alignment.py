@@ -27,7 +27,10 @@ HARDCODED_TOKENS = {
 }
 
 SCAN_PATTERNS = ["skills/*/SKILL.md", "agents/*.md", "knowledge/*.md"]
-EXCLUDED_RELPATHS = {"knowledge/harness-concepts.md"}
+EXCLUDED_RELPATHS = {
+    "knowledge/agent-tool-projection-policy.md",
+    "knowledge/harness-concepts.md",
+}
 
 
 def _extract_token(cell: str) -> str | None:
@@ -238,6 +241,90 @@ def compute_coverage_gaps(
     return missing, orphaned
 
 
+def validate_repo_local_claude_boundary(repo_root: Path) -> list[dict]:
+    """Validate source-repo docs clearly mark maintainer and generated boundaries."""
+    issues: list[dict] = []
+    file_requirements = {
+        "AGENTS.md": (
+            ".claude/agents/",
+            ".claude/skills/",
+            "profile-al-dev-shared/generated/agents/",
+            "repo-local Claude maintainer",
+            "generated projection",
+        ),
+        "CLAUDE.md": (
+            ".claude/agents/",
+            ".claude/skills/",
+            "profile-al-dev-shared/generated/agents/",
+            "repo-local Claude maintainer",
+            "generated projection",
+        ),
+        "profile-al-dev-shared/generated/agents/README.md": (
+            "generated harness-native agent artifacts",
+            "`claude/`",
+            "`copilot/`",
+            "`codex/`",
+            "Do not hand-edit",
+        ),
+    }
+    for rel_path, required_markers in file_requirements.items():
+        doc_path = repo_root / rel_path
+        if not doc_path.exists():
+            issues.append({"file": rel_path, "error": f"{rel_path} not found at repo root"})
+            continue
+
+        text = doc_path.read_text(encoding="utf-8")
+        missing = [marker for marker in required_markers if marker not in text]
+        if missing:
+            issues.append(
+                {
+                    "file": rel_path,
+                    "error": (
+                        f"{rel_path} must document its required projection boundary contract; "
+                        f"missing: {', '.join(missing)}"
+                    ),
+                }
+            )
+    return issues
+
+
+def classify_projection_paths(repo_root: Path, plugin_root: Path) -> dict[str, set[str]]:
+    groups = {
+        "shared_source": set(),
+        "generated_projection": set(),
+        "repo_local_maintainer_tooling": set(),
+    }
+    for path in plugin_root.rglob("*"):
+        if path.is_file():
+            rel = path.relative_to(repo_root).as_posix()
+            if rel.startswith("profile-al-dev-shared/generated/agents/"):
+                groups["generated_projection"].add(rel)
+            else:
+                groups["shared_source"].add(rel)
+    claude_root = repo_root / ".claude"
+    if claude_root.exists():
+        for path in claude_root.rglob("*"):
+            if path.is_file():
+                groups["repo_local_maintainer_tooling"].add(path.relative_to(repo_root).as_posix())
+    return groups
+
+
+def validate_projection_outputs(plugin_root: Path) -> list[dict]:
+    issues = []
+    for agent_path in sorted((plugin_root / "agents").glob("*.md")):
+        stem = agent_path.stem
+        for rel in (
+            f"generated/agents/claude/{stem}.md",
+            f"generated/agents/copilot/{stem}.md",
+            f"generated/agents/codex/{stem}.toml",
+        ):
+            if not (plugin_root / rel).exists():
+                issues.append(
+                    {"file": rel, "error": f"Missing generated projection artifact: {rel}"}
+                )
+    return issues
+
+
 def find_scan_files(plugin_root: Path) -> list[tuple[Path, str]]:
     """Return (absolute_path, relative_path) pairs for all files to scan."""
     results: list[tuple[Path, str]] = []
@@ -284,11 +371,15 @@ def run_checks(
     )
 
     missing, orphaned = compute_coverage_gaps(concepts, claude_mapping, copilot_mapping)
+    repo_local_claude_failures = validate_repo_local_claude_boundary(plugin_root.parent)
+    projection_output_failures = validate_projection_outputs(plugin_root)
 
     return {
         "forbidden_tokens": all_hits,
         "missing_mappings": missing,
         "orphaned_mappings": orphaned,
+        "repo_local_claude_failures": repo_local_claude_failures,
+        "projection_output_failures": projection_output_failures,
     }
 
 
@@ -336,6 +427,8 @@ def main() -> None:
         result["forbidden_tokens"]
         or result["missing_mappings"]
         or result["orphaned_mappings"]
+        or result["repo_local_claude_failures"]
+        or result["projection_output_failures"]
     )
     if has_issues and args.mode == "enforce":
         sys.exit(1)

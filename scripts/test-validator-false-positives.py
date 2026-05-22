@@ -72,9 +72,19 @@ def test_thin_goal_section_skip():
     print("✓ THIN goal section skip test passed")
 
 
+def test_align_skill_mentions_generated_projection_surface():
+    text = Path(".claude/skills/align-harness-repos/SKILL.md").read_text(encoding="utf-8")
+    assert "profile-al-dev-shared/generated/agents/" in text
+    assert "repo-local `.claude` boundary issues" in text
+    review_text = Path(".claude/skills/review-skill-map/SKILL.md").read_text(encoding="utf-8")
+    assert "generated/agents" in review_text
+    print("✓ Local projection-awareness skill text test passed")
+
+
 if __name__ == "__main__":
     test_dead_ref_path_resolution()
     test_emoji_detection()
     test_no_code_emoji_skip()
     test_thin_goal_section_skip()
+    test_align_skill_mentions_generated_projection_surface()
     print("\n✅ All regression tests passed!")

@@ -26,6 +26,19 @@ profile-al-dev-shared/          # The plugin consumed by Claude Code
 .claude-plugin/marketplace.json # Marketplace registration schema
 ```
 
+## Repo-Local Maintainer Tooling
+
+`profile-al-dev-shared/` is the shared authored plugin surface.
+
+`profile-al-dev-shared/generated/agents/` contains generated projection
+artifacts for harness-native consumption. These files are derived outputs and
+must not be edited by hand.
+
+`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
+tooling. They may inspect shared source and generated projection artifacts
+locally, but they are never part of the distributed plugin or projection
+contract.
+
 ## Skill File Format
 
 Each skill is a markdown file in `profile-al-dev-shared/skills/<name>/SKILL.md` with YAML frontmatter:

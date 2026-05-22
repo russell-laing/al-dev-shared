@@ -9,9 +9,12 @@ argument-hint: ""
 
 # Skill: /align-harness-repos
 
-Audit alignment between `al-dev-shared` and the two harness profile repos.
-Checks for forbidden harness-specific tokens in shared files, and verifies
-the Harness Mapping tables are complete in both harness profile instruction files.
+Audit alignment between the distributed `al-dev-shared` plugin surface, the
+generated projection artifacts under `profile-al-dev-shared/generated/agents/`,
+and the two harness profile repos. Checks for forbidden harness-specific tokens
+in shared files, verifies Harness Mapping table coverage, and surfaces
+repo-local `.claude` boundary issues separately from shared-source or generated
+projection failures.
 
 ---
 
@@ -36,7 +39,8 @@ ALIGN_EXIT=$?
 If `ALIGN_EXIT` is 0:
 
 ```
-All checks passed — no forbidden tokens or mapping gaps found.
+All checks passed — no forbidden tokens, mapping gaps, repo-local `.claude`
+boundary issues, or generated projection failures found.
 ```
 
 Stop.
@@ -101,12 +105,14 @@ Harness mapping gaps:
 Present a summary count and offer to fix:
 
 ```
-Found N forbidden token(s) across M file(s), and P mapping gap(s).
+Found N forbidden token(s) across M file(s), P mapping gap(s), R repo-local
+`.claude` boundary issues, and G generated projection failures.
 
 Want me to attempt fixes?
 - Autofixable prose hits will be substituted with the generic concept name from harness-concepts.md.
 - code_block and prohibition_rule hits will be flagged for manual review (not auto-changed).
 - Missing mapping rows will be added to the appropriate harness profile instruction file.
+- Generated projection failures will be fixed by re-running the projection generator.
 - Orphaned rows will be flagged for manual review (not auto-deleted).
 
 Proceed? (yes / no)
@@ -159,6 +165,15 @@ Verify this is intentional. If the concept was renamed, update harness-concepts.
 ```
 
 Do not auto-delete orphaned rows.
+
+### 6e — Handle generated projection and repo-local boundary findings
+
+- Repo-local `.claude/` tooling may inspect shared source and generated
+  projection outputs, but it must never be treated as a projection input,
+  expected generated output, or distributable plugin content.
+- If `projection_output_failures` are reported, regenerate
+  `profile-al-dev-shared/generated/agents/` before re-running the alignment
+  check.
 
 ---
 

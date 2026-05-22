@@ -1,17 +1,8 @@
 ---
-name: al-dev-support-researcher
-description: >-
-  Research a BC support query using AL symbols, MS Docs, and BC Code History.
-  Produces internal technical findings. Dispatched by /al-dev-support (research
-  phase). Pairs with al-dev-support-reply-drafter.
-model: sonnet
-tools: [
-  "Read",
-  "MCP: al-mcp-server",
-  "MCP: microsoft-docs",
-  "MCP: bc-code-intelligence"
-]
+description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-support (research phase). Pairs with al-dev-support-reply-drafter."
+tools: ["Read", "mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>", "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>", "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"]
 ---
+
 
 # Agent: al-dev-support-researcher
 

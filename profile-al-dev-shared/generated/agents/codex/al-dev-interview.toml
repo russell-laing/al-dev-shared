@@ -1,12 +1,6 @@
----
-description: >-
-  Interview the user to extract complete BC/AL implementation
-  details through structured questioning. Spawned by the
-  al-dev-interview skill.
-model: sonnet
-tools: ["Read", "Write", "USER_GATE"]
----
-
+name = "al-dev-interview"
+description = "Interview the user to extract complete BC/AL implementation details through structured questioning. Spawned by the al-dev-interview skill."
+developer_instructions = """
 # Agent: al-dev-interview
 
 Conduct thorough technical interviews to extract complete implementation details for Business Central AL development projects.
@@ -87,3 +81,8 @@ Session log entry:
 - Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
 - Status: ✓ Complete
 ```
+
+Codex capability notes:
+- read files available in the active Codex session
+- edit files available in the active Codex session
+- request_user_input"""

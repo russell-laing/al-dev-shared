@@ -1,11 +1,9 @@
 ---
-description: >-
-  Interview the user to extract complete BC/AL implementation
-  details through structured questioning. Spawned by the
-  al-dev-interview skill.
-model: sonnet
-tools: ["Read", "Write", "USER_GATE"]
+name: "al-dev-interview"
+description: "Interview the user to extract complete BC/AL implementation details through structured questioning. Spawned by the al-dev-interview skill."
+tools: ["read", "edit", "ask_user"]
 ---
+
 
 # Agent: al-dev-interview
 

@@ -1,16 +1,6 @@
----
-description: >-
-  Run git diff analysis between two hashes, research AL object
-  context, and write release notes. Dispatched by the
-  al-dev-release-notes skill.
-model: sonnet
-tools: [
-  "Bash", "Write", "Read",
-  "MCP: al-mcp-server",
-  "MCP: bc-code-intelligence"
-]
----
-
+name = "al-dev-release-notes-writer"
+description = "Run git diff analysis between two hashes, research AL object context, and write release notes. Dispatched by the al-dev-release-notes skill."
+developer_instructions = """
 # Agent: al-dev-release-notes-writer
 
 Generate release notes from the git diff between two commits. Audience: business users who know BC navigation but do not read AL code.
@@ -91,3 +81,10 @@ Duration: ~2 hours of analysis
 
 Ready for review and publication.
 ```
+
+Codex capability notes:
+- run shell commands allowed by the active Codex session
+- edit files available in the active Codex session
+- read files available in the active Codex session
+- use the AL symbol lookup MCP capability available in the active Codex session
+- use the BC code intelligence MCP capability available in the active Codex session"""
