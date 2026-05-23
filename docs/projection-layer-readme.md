@@ -195,6 +195,20 @@ Current `master` uses the projection-layer model directly, but not by merging th
 
 ---
 
+## Documentation Boundaries
+
+This projection layer is described in three parallel harness-specific guidance files:
+
+- `CLAUDE.md` — Claude Code registration and usage
+- `AGENTS.md` — Copilot CLI registration and usage
+- `CODEX.md` — Codex registration and usage
+
+All three reference this document for understanding the projection mechanism itself. Shared content stays harness-agnostic; harness-specific guidance lives in those three files.
+
+When updating this document, ensure the three guidance files are kept in sync regarding the overall multi-harness architecture (even if implementation details differ per harness).
+
+---
+
 ## Maintainer Checklist
 
 When changing agent capabilities or projection behavior:
