@@ -2,7 +2,7 @@
 
 The three-reviewer panel is the standard parallel review composition
 used by /al-dev-develop (with or without `--autonomous`). Spawn all three
-reviewers in a single batch (one message, three Agent tool calls).
+reviewers in a single batch (one message, three agent dispatches).
 
 ## Composition
 
@@ -22,29 +22,24 @@ Each reviewer reads ALL implemented AL files.
 
 ## Spawn Instructions
 
-Spawn all three as a single batch in a single message with three independent Agent calls:
+Dispatch all three as a single batch in a single message with three
+independent agent dispatch blocks:
 
-```javascript
-Agent(
-  description: "Security review of implemented code",
-  subagent_type: "al-dev-shared:al-dev-security-reviewer",
+```text
+Dispatch agent: al-dev-shared:al-dev-security-reviewer
+  description: "Security review of implemented code"
   prompt: "Review these AL files for security issues: [file list]. Check permissions, data exposure, auth gaps."
-)
 
-Agent(
-  description: "AL patterns and BC best practices review",
-  subagent_type: "al-dev-shared:al-dev-expert-reviewer",
+Dispatch agent: al-dev-shared:al-dev-expert-reviewer
+  description: "AL patterns and BC best practices review"
   prompt: "Review these AL files for naming, patterns, BC conventions: [file list]. Check SetLoadFields, naming consistency, event patterns."
-)
 
-Agent(
-  description: "Performance analysis of implemented code",
-  subagent_type: "al-dev-shared:al-dev-performance-reviewer",
+Dispatch agent: al-dev-shared:al-dev-performance-reviewer
+  description: "Performance analysis of implemented code"
   prompt: "Review these AL files for query efficiency and performance: [file list]. Check N+1 patterns, SetLoadFields, loop scoping."
-)
 ```
 
-**Pattern:** All three Agent calls in ONE message (×3 parallel) — execution time = max(all three), not sum.
+**Pattern:** All three dispatches in ONE message (x3 parallel) — execution time = max(all three), not sum.
 
 - All reviewers read **the same file list** (complete implementation set)
 - Each reviewer focuses on their domain (security / patterns / performance)

@@ -57,9 +57,10 @@ table:
 - If ambiguous: ask the user for the full path
 
 ```bash
-ls "[target-repo-path]/src" 2>/dev/null || \
-  ls "[target-repo-path]/app.json" 2>/dev/null || \
-  echo "Path not found — verify target repo path"
+[ -d "[target-repo-path]" ] || {
+  echo "Path not found — verify target repo path" >&2
+  exit 1
+}
 ```
 
 ---
@@ -168,9 +169,11 @@ cause is in Cod50741.al in this repo. The source repo
 
 ## Context files available in `.dev/`
 
-- `ticket-context.md` — original ticket ([FDxxxxx])
-- `explore-findings.md` — hypothesis results with evidence
+- `source-ticket-context.md` — original ticket ([FDxxxxx])
+- `source-explore-findings.md` — hypothesis results with evidence
 - `source-project-context.md` — context from [source repo name]
+- `source-solution-plan.md` — prior solution plan from [source repo name], if copied
+- `source-requirements.md` — prior requirements/context from [source repo name], if copied
 
 ## Key objects to examine in this repo
 
@@ -210,7 +213,7 @@ Files copied:
 Session prompt → .dev/[date]-al-dev-handoff-handoff-prompt.md
 
 To continue in [target repo name]:
-1. Open Claude Code in: [target-repo-path]
+1. Open a new session rooted at: [target-repo-path]
 2. Paste the prompt from .dev/[date]-al-dev-handoff-handoff-prompt.md
    (preview: cat .dev/[date]-al-dev-handoff-handoff-prompt.md)
 ```

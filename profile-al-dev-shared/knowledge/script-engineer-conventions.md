@@ -11,6 +11,7 @@ Write async code patterns when possible; use proper concurrency primitives. For 
 ```python
 import asyncio
 import aiohttp
+import json
 
 async def fetch_data(url: str) -> dict:
     async with aiohttp.ClientSession() as session:
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
 ### Protocol-Based Integration
 
-Scripts often need to communicate results to parent processes (Claude Code harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output (JSON/CSV) that parses cleanly. Always include an exit code that indicates success/failure.
+Scripts often need to communicate results to parent processes (the active harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output (JSON/CSV) that parses cleanly. Always include an exit code that indicates success/failure.
 
 **Protocol patterns:**
 
@@ -77,7 +78,7 @@ fi
 
 ```bash
 #!/bin/bash
-# Script emits progress as it runs; each line is parseable JSON
+# Script emits progress on stdout; command chatter is redirected elsewhere
 
 log_event() {
     local phase=$1
@@ -87,20 +88,30 @@ log_event() {
 }
 
 log_event "setup" "in_progress" "Installing dependencies..."
-pip install -r requirements.txt
-log_event "setup" "completed" "Dependencies installed"
+if pip install -r requirements.txt >/tmp/setup.log 2>&1; then
+    log_event "setup" "completed" "Dependencies installed"
+else
+    log_event "setup" "failed" "Dependency installation failed; see /tmp/setup.log"
+    exit 1
+fi
 
 log_event "test" "in_progress" "Running tests..."
-pytest tests/
-log_event "test" "completed" "Tests passed (24/24)"
+if pytest tests/ >/tmp/test.log 2>&1; then
+    log_event "test" "completed" "Tests passed (24/24)"
+else
+    log_event "test" "failed" "Tests failed; see /tmp/test.log"
+    exit 1
+fi
 ```
 
-Parent process (Claude Code monitor) reads each line, parses JSON, updates UI:
+Parent process reads stdout line-by-line, parses JSON, and updates the UI. Any non-protocol command output must be redirected to stderr or a separate log file so stdout remains valid NDJSON:
 
 ```
 ✓ Setup completed: Dependencies installed
 ✓ Test completed: Tests passed (24/24)
 ```
+
+Use the same pattern for any protocol-emitting script: emit `completed` only after checking the command exit status, and emit `failed` before returning a non-zero exit code when a step does not succeed.
 
 **Pattern 3: File-Based Result Checkpoint**
 
@@ -110,25 +121,37 @@ Parent process (Claude Code monitor) reads each line, parses JSON, updates UI:
 
 progress_file=".dev/progress.json"
 
-update_progress() {
+write_progress() {
     local phase=$1
     local percent=$2
+    local status=$3
     cat > "$progress_file" <<EOF
 {
   "phase": "$phase",
   "percent_complete": $percent,
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "status": "in_progress"
+  "status": "$status"
 }
 EOF
 }
 
-update_progress "compilation" 25
-./compile-all.sh
-update_progress "linking" 50
-./link-all.sh
-update_progress "packaging" 75
-./package-app.sh
+write_progress "compilation" 25 "in_progress"
+if ! ./compile-all.sh; then
+    write_progress "compilation" 25 "failed"
+    exit 1
+fi
+
+write_progress "linking" 50 "in_progress"
+if ! ./link-all.sh; then
+    write_progress "linking" 50 "failed"
+    exit 1
+fi
+
+write_progress "packaging" 75 "in_progress"
+if ! ./package-app.sh; then
+    write_progress "packaging" 75 "failed"
+    exit 1
+fi
 
 cat > "$progress_file" <<EOF
 {
@@ -141,7 +164,7 @@ cat > "$progress_file" <<EOF
 EOF
 ```
 
-The parent process or skill can poll `.dev/progress.json` to show progress; on completion, it reads the `output` field.
+The parent process or skill can poll `.dev/progress.json` to show progress; on completion, it reads the `output` field. On failure, the last checkpoint shows which phase failed.
 
 **When to use each pattern:**
 
@@ -193,7 +216,7 @@ print(json.dumps(output.__dict__))
 The `al-analysis-toolkit` is optional:
 
 ```bash
-TOOLKIT_PATH=$(find ~ -name "al-analysis-toolkit" -maxdepth 5 -type d 2>/dev/null | head -1)
+TOOLKIT_PATH=$(find ~ -maxdepth 5 -type d -name "al-analysis-toolkit" 2>/dev/null | head -1)
 if [ -z "$TOOLKIT_PATH" ]; then
   echo "al-analysis-toolkit not found; continuing without it"
 else

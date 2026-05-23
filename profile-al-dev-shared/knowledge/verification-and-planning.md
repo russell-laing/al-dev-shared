@@ -25,14 +25,21 @@ Every plan task must end with a verification step before its commit. This is the
 Scan all changed files for patterns that indicate incomplete work. Use grep to find:
 
 ```bash
-# Check for unrendered date placeholders ([date], [YYYY-MM-DD])
-git diff --name-only --cached | xargs grep -l "\[date\]\|\[YYYY-MM-DD\]" 2>/dev/null && echo "FAIL: Found unrendered date placeholders"
+# Build a combined file list from both unstaged and staged changes
+CHANGED_FILES="$(printf '%s\n%s\n' \
+  "$(git diff --name-only --diff-filter=ACM)" \
+  "$(git diff --cached --name-only --diff-filter=ACM)" | sort -u)"
 
-# Check for TODO/TBD markers (incomplete work)
-git diff --cached --unified=0 | grep "^+" | grep -E "TODO|TBD" && echo "FAIL: Found incomplete work markers"
+# Check for unrendered date placeholders ([date], [YYYY-MM-DD])
+printf '%s\n' "$CHANGED_FILES" | sed '/^$/d' | xargs grep -l "\[date\]\|\[YYYY-MM-DD\]" 2>/dev/null && echo "FAIL: Found unrendered date placeholders"
+
+# Check for TODO/TBD markers in both unstaged and staged added lines
+git diff --unified=0 | grep "^+" | grep -E "TODO|TBD" && echo "FAIL: Found incomplete work markers in unstaged edits"
+git diff --cached --unified=0 | grep "^+" | grep -E "TODO|TBD" && echo "FAIL: Found incomplete work markers in staged edits"
 
 # Check for harness-specific debug comments
-git diff --cached | grep -E "claude:|copilot:" && echo "FAIL: Found harness-specific debug code"
+git diff | grep -E "claude:|copilot:|codex:" && echo "FAIL: Found harness-specific debug code in unstaged edits"
+git diff --cached | grep -E "claude:|copilot:|codex:" && echo "FAIL: Found harness-specific debug code in staged edits"
 
 # If all checks pass:
 echo "PASS: No forbidden patterns found"
@@ -46,7 +53,7 @@ Patterns that must not appear in changed files:
 - `YYYY-MM-DD` (literal string, not a date value) — unrendered placeholder
 - `TODO` or `TBD` — incomplete work
 - `Co-Authored-By` (in code comments — allowed only in git trailers)
-- `claude:` or `copilot:` prefixed comments — harness-specific debugging left in
+- `claude:`, `copilot:`, or `codex:` prefixed comments — harness-specific debugging left in
 
 **3. Acceptance Criteria Verification**
 - Read the task spec / requirements
@@ -68,7 +75,7 @@ Whenever an agent reports that something was done — a file written, code compi
 
 ### What Counts as a Claim
 
-- "File written" — the agent called Write
+- "File written" — the agent used a file-write mechanism
 - "Compilation succeeded" — the agent ran `al-compile`
 - "Tests passed" — the agent ran a test suite
 - "Pattern scan found N matches" — the agent ran grep/rg
@@ -83,12 +90,12 @@ For each claim, follow this pattern:
 3. **Spot-check the content** — Don't just check that the file exists; sample its content to confirm it's not corrupted or empty
 4. **State what was verified** — In the response: "File written: confirmed via `ls -la`, 245 lines, no forbidden patterns"
 
-### Special Case: Write Tool
+### Special Case: File Writes
 
-After every Write tool call:
+After every file-write action:
 - Run `ls -la <file>` immediately
 - If file is large or its content matters downstream, also run `wc -l <file>` or Read the first N lines
-- If verification fails, escalate to user immediately — do NOT silently retry with Write
+- If verification fails, escalate to user immediately — do NOT silently retry the write
 
 ### Example
 
@@ -411,13 +418,13 @@ Then decide (facilitator's tactical choice, not the user's):
 
 ## Cross-Harness Tool Mapping
 
-When updating skill behavior across Claude Code and Copilot CLI, use this mapping:
+When updating skill behavior across Claude Code, Copilot CLI, and Codex, use this mapping:
 
-| Need | Claude Code | Copilot CLI |
-|---|---|---|
-| User decision gate | USER_GATE | USER_GATE |
-| Subagent retry | re-dispatch Agent with updated prompt | re-dispatch with updated prompt |
-| Pattern scan (grep) | Bash tool: `grep` or `rg` | Bash tool: `rg` or `git diff \| grep` |
+| Need | Claude Code | Copilot CLI | Codex |
+|---|---|---|---|
+| User decision gate | USER_GATE | USER_GATE | USER_GATE |
+| Subagent retry | re-dispatch Agent with updated prompt | re-dispatch with updated prompt | re-run the delegated Codex subtask/agent workflow with the corrected prompt |
+| Pattern scan (grep) | Bash tool: `grep` or `rg` | Bash tool: `rg` or `git diff \| grep` | shell command or active-session search capability: `rg` preferred |
 
 ---
 

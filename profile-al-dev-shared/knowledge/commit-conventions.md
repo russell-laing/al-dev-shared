@@ -20,7 +20,7 @@ Every commit uses this format, regardless of project type:
 | **scope** | Required. Lowercase. Valid values depend on project type (see below). |
 | **subject** | Imperative mood ("add field", not "added field"). Max 72 chars total including emoji and type. No trailing period. |
 
-**No AI attribution.** Never append `Co-Authored-By`, `Generated with Claude Code`, or any AI footer to commit messages.
+**No AI attribution.** Never append `Co-Authored-By`, `Generated with [harness name]`, or any AI footer to commit messages.
 
 **Freshdesk references.** `#FD<number>` goes in the commit body only — never in the subject line.
 
@@ -84,12 +84,11 @@ grep -rn -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" \
   | grep -v "commit-conventions"
 ```
 
-> The `.github/copilot-instructions.md` file is the common Copilot commit
-> instruction file. It contains its own emoji-type table (5 types, uses `🔧`
-> for `chore` — conflicts with this spec's `📦`). Remove the "Commit Message
-> Format" section from it when adopting this spec; keep any project-specific
-> scope rules and atomic update checklists, as those extend rather than
-> duplicate this spec.
+> If the repository has a shared commit-instructions section in its project
+> instructions files, check whether it contains its own emoji-type table or
+> overlapping format rules. Remove duplicated or conflicting commit-format
+> sections when adopting this spec; keep project-specific scope rules and
+> atomic update checklists, as those extend rather than duplicate this spec.
 
 ### Step 2 — Decide: remove or keep?
 
@@ -118,7 +117,7 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ## project-type Declaration
 
-Every project must declare the `project-type` field in its project instructions file. This field tells Claude Code how to categorize the project and what workflows apply.
+Every project must declare the `project-type` field in its project instructions file. This field tells the active harness how to categorize the project and what workflows apply.
 
 **Valid project-type values:**
 
@@ -126,7 +125,7 @@ Every project must declare the `project-type` field in its project instructions 
 |------|---------|------------------|------------------|
 | `al` | Business Central / Dynamics 365 AL application | nzpg, mml, client-abc (AL extensions) | AL compiler, BC symbols, test framework |
 | `vault` | Knowledge/documentation vault (no code compilation) | nzpg vault, mml vault, second-brain | Markdown validators, knowledge organization |
-| `tool` | CLI tool, script, or utility (Python, Bash, JS) | al-dev-shared, al-smart-compile, claude-configs | Package managers, test runners, CI/CD hooks |
+| `tool` | CLI tool, script, or utility (Python, Bash, JS) | al-dev-shared, al-smart-compile, repo-maintainer-tools | Package managers, test runners, CI/CD hooks |
 
 **Example declarations:**
 
@@ -214,7 +213,7 @@ Projects: nzpg vault, mml vault, second-brain, client-abc vault.
 
 ### `tool` — Standalone Tools and Plugin Repos
 
-Projects: al-dev-shared, al-smart-compile, claude-configs, copilot-configs.
+Projects: al-dev-shared, al-smart-compile, repo-maintainer-tools, automation-utils.
 
 **Scope:** Component or module name — e.g. `al-dev-align`, `al-dev-commit`, `skills`, `agents`, `knowledge`, `markdown`. Match the directory or skill name.
 
@@ -342,7 +341,7 @@ The `WHY:` and `CHANGED COMPONENTS` blocks are **Required** for `feat`, `fix`,
 ```text
 🐛 fix(report): Remove dead GLN columns
 
-Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+Co-Authored-By: AI Assistant <noreply@example.invalid>
 ```
 
 ✅ **Correct:**

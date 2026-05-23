@@ -24,18 +24,18 @@ When writing skills for `al-dev-shared`:
 
 ## Generic Concept Vocabulary
 
-| Concept | Description | Claude Code | Copilot CLI |
-|---|---|---|---|
-| **project instructions file** | The file that provides the AI agent with project-specific instructions | `CLAUDE.md` | `AGENTS.md` |
-| **harness settings file** | The file where harness-wide settings (e.g. API keys) are stored | `~/.claude/settings.json` | `~/.copilot/settings.json` |
-| **AL_DEV_SHARED_PLUGIN_ROOT** | The installed path of the al-dev-shared plugin | `~/.claude/plugins/al-dev-shared/profile-al-dev-shared` | `~/.copilot/installed-plugins/<plugin-id>/profile-al-dev-shared` |
-| **USER_GATE** | A blocking user-confirmation point; never continue past this without a user response | `AskUserQuestion` tool | `ask_user` tool |
-| **explore agent** | A fast parallel exploration agent | `subagent_type: Explore` | `agent_type: "explore"` in task tool |
-| **restart the agent** | Instruction to the user to start a new AI coding session | "Restart Claude Code" | "start a new Copilot CLI session" |
-| **Dispatch agent: X** | Dispatch a named agent; X is the fully-qualified agent name (namespace:agent) | `Agent` tool with `subagent_type: X` | `task` tool with `agent_type: X` |
-| **MCP: al-mcp-server** | AL symbol lookup, object definitions, references | `mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>` | `al-mcp-server-<tool>` |
-| **MCP: bc-code-intelligence** | BC knowledge, specialist consultation, code analysis | `mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>` | `bc-code-intelligence-mcp-<tool>` |
-| **MCP: microsoft-docs** | Microsoft documentation search and fetch | `mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>` | `microsoft_docs_mcp-<tool>` |
+| Concept | Description | Claude Code | Copilot CLI | Codex |
+|---|---|---|---|---|
+| **project instructions file** | The file that provides the AI agent with project-specific instructions | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
+| **harness settings file** | The file where harness-wide settings (e.g. API keys) are stored | `~/.claude/settings.json` | `~/.copilot/settings.json` | harness/runtime configuration outside the repo-local instructions contract |
+| **AL_DEV_SHARED_PLUGIN_ROOT** | The installed path of the al-dev-shared plugin | `~/.claude/plugins/al-dev-shared/profile-al-dev-shared` | `~/.copilot/installed-plugins/<plugin-id>/profile-al-dev-shared` | session-defined plugin/workspace path supplied by the active Codex environment |
+| **USER_GATE** | A blocking user-confirmation point; never continue past this without a user response | `AskUserQuestion` tool | `ask_user` tool | no single full-equivalence primitive; in Plan mode use `request_user_input`, otherwise stop in the session transcript and wait for the user's next message |
+| **explore agent** | A fast parallel exploration agent | `subagent_type: Explore` | `agent_type: "explore"` in task tool | delegated subagent or parallel exploration workflow in the active Codex session |
+| **restart the agent** | Instruction to the user to start a new AI coding session | "Restart Claude Code" | "start a new Copilot CLI session" | "start a new Codex session" |
+| **Dispatch agent: X** | Dispatch a named agent; X is the fully-qualified agent name (namespace:agent) | `Agent` tool with `subagent_type: X` | `task` tool with `agent_type: X` | delegated agent workflow using the active Codex session's supported agent/subtask mechanism |
+| **MCP: al-mcp-server** | AL symbol lookup, object definitions, references | `mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>` | `al-mcp-server-<tool>` | active Codex MCP/tool binding for `al-mcp-server` |
+| **MCP: bc-code-intelligence** | BC knowledge, specialist consultation, code analysis | `mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>` | `bc-code-intelligence-mcp-<tool>` | active Codex MCP/tool binding for `bc-code-intelligence` |
+| **MCP: microsoft-docs** | Microsoft documentation search and fetch | `mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>` | `microsoft_docs_mcp-<tool>` | active Codex MCP/tool binding for `microsoft-docs` |
 
 ## USER_GATE Semantics
 
@@ -45,6 +45,12 @@ When writing skills for `al-dev-shared`:
 - The agent MUST NOT continue until a user response is received
 - The question SHOULD include options where applicable
 - There is no timeout — wait indefinitely
+
+Codex limitation:
+
+- Codex does not provide one general-purpose tool that is equivalent to the shared `USER_GATE` contract in every workflow state
+- In Plan mode, `request_user_input` is the closest structured mechanism
+- Outside Plan mode, the agent must enforce the contract behaviorally by asking the question in the session and doing no further work until the user replies
 
 ## AL_DEV_SHARED_PLUGIN_ROOT
 
@@ -82,3 +88,4 @@ Spawn an explore agent:
 | Shared agents (in al-dev-shared) | `al-dev-shared:<agent-name>` |
 | Claude Code-only agents | `profile-claude-al-dev:<agent-name>` |
 | Copilot CLI-only agents | `profile-copilot-al-dev:<agent-name>` |
+| Codex-only agents | `profile-codex-al-dev:<agent-name>` |

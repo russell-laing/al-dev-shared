@@ -1,14 +1,22 @@
 # Session Analysis Report Format
 
 Canonical output format for `al-dev-session-analyst` agents across all harnesses.
-Both Claude Code (JSONL-based) and Copilot CLI (SQL-based) analysts produce reports
-conforming to this structure so findings are consistent and interchangeable.
+Claude Code (JSONL-based), Copilot CLI (SQL-based), and Codex
+(session-transcript/tool-trace-based) analysts produce reports conforming to
+this structure so findings are consistent and interchangeable.
 
 ---
 
-## Required Sections
+## Report Shapes
 
-Reports must include sections in this order:
+Use one of these two valid report shapes:
+
+1. Standard report — required when one or more findings are present
+2. Zero-finding collapsed report — allowed only when no issues are found
+
+### Standard Report Sections
+
+Standard reports must include sections in this order:
 
 1. Report header
 2. Executive summary
@@ -25,7 +33,7 @@ Reports must include sections in this order:
 # Session Review — {YYYY-MM-DD}
 
 **Analysed:** {session identifier or repository name}
-**Data source:** {e.g. "Claude Code JSONL transcript" | "Copilot CLI session_store (SQL)"}
+**Data source:** {e.g. "Claude Code JSONL transcript" | "Copilot CLI session_store (SQL)" | "Codex session transcript / tool trace"}
 **Scope:** {one sentence describing what was analysed and how many sessions}
 ```
 
@@ -92,8 +100,8 @@ Each finding must follow this structure exactly:
 
 ## 5. What Went Well (optional)
 
-Brief bulleted list of workflow phases that succeeded without friction. Include at least one
-entry if findings were found — shows the report is balanced, not a pure defect list.
+Brief bulleted list of workflow phases that succeeded without friction.
+Include this section only when there is at least one concrete success worth recording.
 
 ---
 
@@ -106,13 +114,14 @@ Include only when there is a clear next action after the review.
 
 ## Zero-Finding Report
 
-If no issues are found, the full report collapses to:
+If no issues are found, use this collapsed format instead of the standard
+section order above:
 
 ```markdown
 # Session Review — {YYYY-MM-DD}
 
 **Analysed:** {session identifier or repository name}
-**Data source:** {data source}
+**Data source:** {e.g. "Claude Code JSONL transcript" | "Copilot CLI session_store (SQL)" | "Codex session transcript / tool trace"}
 
 ## Summary
 

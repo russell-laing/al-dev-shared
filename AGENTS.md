@@ -27,6 +27,14 @@ profile-al-dev-shared/          # The plugin content consumed by harness profile
 
 `profile-al-dev-shared/` is the shared authored plugin surface.
 
+Maintain a strict boundary inside that tree:
+
+- Shared authored content in `skills/`, `agents/`, most `knowledge/`, `markdown/`, and `bc-code-intel-knowledge/` must remain harness agnostic.
+- Harness-mapping documentation such as `knowledge/harness-concepts.md` and `knowledge/agent-tool-projection-policy.md` may name Copilot CLI, Claude Code, and Codex explicitly.
+- `profile-al-dev-shared/generated/agents/` contains generated harness-native projection artifacts and must not be edited by hand.
+
+Before committing shared-content changes, run `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`.
+
 `profile-al-dev-shared/generated/agents/` contains generated projection
 artifacts for harness-native consumption. These files are derived outputs and
 must not be edited by hand.
@@ -80,6 +88,19 @@ This command applies to AL projects *using* this plugin, not to this repo itself
 - Freshdesk tickets as `#FD<number>` in the message body
 - No `Co-Authored-By` trailers
 - Use `git -C <path>` instead of `cd <path> && git`
+
+## Maintainer Validation
+
+Run the shared-surface neutrality validator where you would normally run repo validators:
+
+```bash
+python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
+```
+
+Checks:
+- Shared authored files do not contain harness-branded instructions or tool tokens
+- Harness-aware mapping docs are excluded by allowlist
+- Generated projections are excluded because they are derived artifacts
 
 ## Diagram Guidance
 

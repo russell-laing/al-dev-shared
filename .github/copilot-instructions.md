@@ -2,7 +2,7 @@
 
 ## Repository Overview
 
-`al-dev-shared` is a **shared plugin** for AL/BC development — a library of skills, agents, and knowledge documents consumed by AI harness profiles (Claude Code, Copilot CLI, etc.). This is **not** an AL project itself; it contains no `.al` source files.
+`al-dev-shared` is a **shared plugin** for AL/BC development — a library of skills, agents, and knowledge documents consumed by AI harness profiles (Claude Code, Copilot CLI, Codex, etc.). This is **not** an AL project itself; it contains no `.al` source files.
 
 ### What This Repo Does
 
@@ -28,6 +28,16 @@ profile-al-dev-shared/
 docs/                        # Architecture maps and audit reports
 scripts/                     # Validation and maintenance scripts
 ```
+
+## Shared Surface Boundaries
+
+Treat `profile-al-dev-shared/` as three distinct maintainer surfaces:
+
+- **Shared authored content** — `skills/`, `agents/`, most `knowledge/`, `markdown/`, and `bc-code-intel-knowledge/`. This is the source of truth and must remain harness agnostic.
+- **Intentional harness-mapping docs** — files such as `knowledge/harness-concepts.md` and `knowledge/agent-tool-projection-policy.md`. These may name harnesses and tool mappings explicitly because that is their purpose.
+- **Generated projection artifacts** — `generated/agents/**`. These are derived harness-native outputs and must not be hand-edited.
+
+Before committing changes to shared authored content, run `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`.
 
 ## File Format Conventions
 
@@ -97,6 +107,17 @@ Checks:
 - Code keywords are followed by code blocks
 - No stub sections or incomplete patterns
 
+### Validate Shared-Surface Harness Neutrality
+
+```bash
+python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
+```
+
+Checks:
+- Shared authored files do not contain harness-branded instructions or tool tokens
+- Harness-aware mapping docs are excluded by allowlist
+- Generated projections are excluded because they are derived artifacts
+
 ### Plugin Health Sweep (Automated Audits)
 
 ```bash
@@ -164,19 +185,19 @@ Validator scripts find outputs via `find $AL_DEV_SHARED_PLUGIN_ROOT -name "valid
 
 ## Harness Mapping
 
-Generic skill/agent concepts map to concrete harness implementations:
+Generic skill/agent concepts map to concrete harness implementations. Keep the authored shared surface neutral; put named harness mappings here or in the dedicated knowledge mapping docs instead of back into shared operational content.
 
-| Concept | Copilot CLI | Claude Code |
-|---------|-------------|-------------|
-| **Instructions file** | `AGENTS.md` | `CLAUDE.md` |
-| **Settings file** | `~/.copilot/settings.json` | `~/.claude/settings.json` |
-| **Plugin root variable** | `AL_DEV_SHARED_PLUGIN_ROOT` | (filesystem path) |
-| **Ask user** | `ask_user` tool | `AskUser` tool |
-| **Explore agent** | `agent_type: "explore"` in task tool | `explore` agent in task tool |
-| **MCP: AL** | `al-mcp-server-*` | `al-mcp-server-*` |
-| **MCP: BC Code Intel** | `bc-code-intelligence-mcp-*` | `bc-code-intelligence-mcp-*` |
+| Concept | Copilot CLI | Claude Code | Codex |
+|---------|-------------|-------------|-------|
+| **Instructions file** | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` |
+| **Settings file** | `~/.copilot/settings.json` | `~/.claude/settings.json` | harness-local configuration |
+| **Plugin root variable** | `AL_DEV_SHARED_PLUGIN_ROOT` | (filesystem path) | (filesystem path) |
+| **Ask user** | `ask_user` tool | `AskUser` tool | `request_user_input` tool |
+| **Explore agent** | `agent_type: "explore"` in task tool | `explore` agent in task tool | subagent or parallel developer-tool workflow |
+| **MCP: AL** | `al-mcp-server-*` | `al-mcp-server-*` | `al-mcp-server-*` |
+| **MCP: BC Code Intel** | `bc-code-intelligence-mcp-*` | `bc-code-intelligence-mcp-*` | `bc-code-intelligence-mcp-*` |
 
-See `AGENTS.md` (Copilot CLI) and `CLAUDE.md` (Claude Code) for platform-specific guidance.
+See `AGENTS.md` (Copilot CLI), `CLAUDE.md` (Claude Code), and the generated projections for harness-specific guidance.
 
 ## Documentation
 
