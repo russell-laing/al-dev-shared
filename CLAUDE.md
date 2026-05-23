@@ -29,17 +29,34 @@ Claude Code consumes:
 - **Generated agent projections** from `profile-al-dev-shared/generated/agents/claude/`
 - **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
 
-## Structure
+## Shared Plugin Surface (All Harnesses)
+
+All three harnesses consume the same authored source:
 
 ```text
-profile-al-dev-shared/          # The plugin consumed by Claude Code
+profile-al-dev-shared/          # Canonical authored plugin surface
   skills/<name>/SKILL.md        # Skill definitions (invoked as /name)
-  agents/<name>.md              # Agent definitions (spawned by skills)
-  knowledge/                    # Workflow knowledge referenced by skills
+  agents/<name>.md              # Agent definitions (harness-neutral)
+  knowledge/                    # Generic workflow knowledge
   bc-code-intel-knowledge/      # BC Code Intelligence specialist knowledge
   markdown/                     # Markdown and Mermaid style guides
-.claude-plugin/marketplace.json # Marketplace registration schema
+.claude-plugin/marketplace.json # Marketplace registration (Claude Code only)
 ```
+
+## Generated Projection Artifacts (Per-Harness Native Formats)
+
+For harness-native tool execution, the projection layer generates harness-specific artifacts:
+
+```text
+profile-al-dev-shared/generated/agents/
+  claude/                       # Claude Code-native agent projections (Markdown)
+  copilot/                      # Copilot CLI-native agent projections (Markdown)
+  codex/                        # Codex-native agent projections (TOML)
+```
+
+Each projection applies the mappings from `knowledge/agent-tool-projection-policy.md` to translate generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) into harness-native tool names (e.g., `AskUserQuestion`, `read`, `execute`).
+
+**Key rule:** Shared source is canonical; generated artifacts are derived output and must never be hand-edited.
 
 ## Repo-Local Maintainer Tooling
 
