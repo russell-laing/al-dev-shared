@@ -140,15 +140,34 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ## Development Commands
 
-Common commands for maintaining the plugin:
+Common commands for maintaining the shared plugin surface:
+
+### Validation (All Harnesses)
 
 ```bash
-# Validate knowledge file quality
-python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+# Validate that shared source has no harness-specific leakage
+python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 
 # Validate agent structure (frontmatter, tools, model assignment)
 python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
 
+# Validate knowledge file quality
+python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+```
+
+### Projection (Harness-Native Artifacts)
+
+```bash
+# Regenerate all harness projections after shared agent/policy changes
+python3 scripts/generate-agent-projections.py
+
+# Verify generated artifacts match shared source across all three harnesses
+# (run after any projection policy or agent updates)
+```
+
+### Plugin Health and Documentation
+
+```bash
 # Run plugin health daemon (audit sweep with auto-fix)
 bash scripts/plugin-health-daemon.sh --dry-run    # preview changes
 bash scripts/plugin-health-daemon.sh --execute    # apply changes and create PR
