@@ -1,18 +1,33 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with this repository.
 
 ## What This Repo Is
 
-`al-dev-shared` is a **Claude Code plugin marketplace** — a shared library of AL/BC development skills, agents, and knowledge documents consumed by Claude Code profiles. It is not an AL project itself; it contains no `.al` source files.
+`al-dev-shared` is a **shared AI development plugin** — a unified library of AL/BC development skills, agents, and knowledge documents consumed by three AI coding harnesses:
 
-It is registered in `~/.claude/settings.json` as:
+- **Claude Code** (claude.ai/code) — Desktop app, CLI, and IDE extensions
+- **Copilot CLI** — Autonomous command-line agent (see `AGENTS.md`)
+- **Codex** — Autonomous development system (see `CODEX.md`)
+
+It maintains one canonical authored surface (`profile-al-dev-shared/`) and generates harness-native projection artifacts for each consumer. This document covers Claude Code registration and usage; refer to `AGENTS.md` (Copilot CLI) and `CODEX.md` (Codex) for harness-specific guidance.
+
+This repository is not itself an AL project; it contains no `.al` source files.
+
+### Claude Code Registration
+
+`al-dev-shared` is registered in `~/.claude/settings.json` as:
 
 ```json
 "al-dev-shared": {
   "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
 }
 ```
+
+Claude Code consumes:
+- **Shared skills** from `profile-al-dev-shared/skills/`
+- **Generated agent projections** from `profile-al-dev-shared/generated/agents/claude/`
+- **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
 
 ## Structure
 
