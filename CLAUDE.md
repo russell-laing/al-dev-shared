@@ -60,16 +60,16 @@ Each projection applies the mappings from `knowledge/agent-tool-projection-polic
 
 ## Repo-Local Maintainer Tooling
 
-`profile-al-dev-shared/` is the shared authored plugin surface.
+`profile-al-dev-shared/` is the shared authored plugin surface distributed to all three harnesses.
 
-`profile-al-dev-shared/generated/agents/` contains generated projection
-artifacts for harness-native consumption. These files are derived outputs and
-must not be edited by hand.
+`.claude/agents/` and `.claude/skills/` contain Claude Code-specific maintainer tooling used to review, audit, and improve the shared plugin surface. This tooling is currently Claude-specific; future harnesses may have parallel tooling (`.agents/`, `.codex/`, etc.).
 
-`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
-tooling. They may inspect shared source and generated projection artifacts
-locally, but they are never part of the distributed plugin or projection
-contract.
+**Output boundary rule:** While the maintainer tooling is harness-specific, its **outputs must be harness-agnostic**:
+- Any documents written to the shared surface or `.dev/` directory must not contain harness-specific tokens
+- Changes made to shared files must use generic vocabulary (from `knowledge/harness-concepts.md`)
+- Generated artifacts remain the output of the projection layer, never hand-edited by maintainer tooling
+
+Repo-local tooling may *inspect* shared source and generated projection outputs for analysis, but its modifications or documents must maintain neutrality across all three harnesses.
 
 ## Skill File Format
 
