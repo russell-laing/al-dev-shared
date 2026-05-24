@@ -98,6 +98,52 @@ Warning AA0231: Replace Error(StrSubstNo(...)) with Error(label, args) [src/MyCo
 The severity token is always one of `Error`, `Warning`, or `Info`.
 An empty log (zero bytes or no `Error`/`Warning` lines) means a clean compile.
 
+### ⚠️ Anti-Patterns: What NOT to Do
+
+**❌ DO NOT pipe `al-compile` output to terminal viewers:**
+
+```bash
+# WRONG — pipes full compile output through head/tail
+al-compile --output .dev/compile-errors.log 2>&1 | head -20
+al-compile --output .dev/compile-errors.log 2>&1 | tail -15
+
+# WRONG — pipes through grep without file capture
+al-compile 2>&1 | grep -E "(error|warning)"
+```
+
+**Why this is harmful:**
+- The `--output` flag already writes diagnostics silently to file
+- Piping to `head/tail/grep` causes the **entire stdout to be captured in session context** (4.7MB+ for this codebase)
+- Terminal viewers only display first/last N lines to user ✓, but the Bash tool captures the entire output ✗
+- Result: forced context compacts and session restarts after 2–3 compile checks
+
+**✅ DO: Write to file, then inspect via Read or grep the file if needed:**
+
+```bash
+# CORRECT — write diagnostics to file, suppress stdout
+al-compile --output .dev/compile-errors.log
+
+# If you need to inspect a subset of errors:
+grep -E "error|warning" .dev/compile-errors.log | grep -E "\.(Page|PageExt)\.al"
+
+# If you need a summary count:
+grep -c '^Error' .dev/compile-errors.log
+```
+
+**Always include a `description` parameter on Bash tool calls invoking `al-compile`:**
+
+The description helps the harness track intent (logging vs. inspection) and prevents re-reading large log files:
+
+```json
+{
+  "tool": "Bash",
+  "input": {
+    "command": "al-compile --output .dev/compile-errors.log",
+    "description": "Compile AL project and write results to log file"
+  }
+}
+```
+
 ### Error Log Parsing Procedures
 
 Parse `.dev/compile-errors.log` to separate actionable items from noise:
