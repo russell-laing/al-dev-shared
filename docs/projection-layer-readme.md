@@ -31,6 +31,17 @@ graph LR
     C -->|outputs| D["Claude Code<br/>(generated/agents/claude/)"]
     C -->|outputs| E["Copilot CLI<br/>(generated/agents/copilot/)"]
     C -->|outputs| F["Codex<br/>(generated/agents/codex/)"]
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+
+    class A input
+    class B process
+    class C process
+    class D output
+    class E output
+    class F output
 ```
 
 The diagram above shows the core insight: shared source (left) flows through the projection policy and generator (center) to produce three harness-native outputs (right). Maintainers edit the shared source once; the generator ensures all three harnesses stay synchronized.
@@ -198,6 +209,15 @@ graph LR
     A["1. Author Shared Source<br/>(agents/*.md or skills/*/SKILL.md)<br/>Use generic capability names"] -->|generic| B["2. Regenerate Projections<br/>(python3 scripts/generate-agent-projections.py)<br/>Creates harness-native versions"]
     B -->|generates| C["3. Validate Harness Neutrality<br/>(python3 scripts/validate_harness_neutrality.py)<br/>Checks for leaked tokens"]
     C -->|passes validation| D["4. Commit<br/>(git add + git commit)<br/>Stage shared + generated files"]
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+
+    class A input
+    class B process
+    class C process
+    class D output
 ```
 
 ---
@@ -272,6 +292,17 @@ graph LR
     B -->|maps capabilities| D["Claude Code Projection<br/>(generated/agents/claude/*.md)<br/>AskUserQuestion, read, bash"]
     B -->|maps capabilities| E["Copilot CLI Projection<br/>(generated/agents/copilot/*.md)<br/>ask_user, file_read, shell"]
     B -->|maps capabilities| F["Codex Projection<br/>(generated/agents/codex/*.toml)<br/>ASK_USER, READ, BASH"]
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+
+    class A input
+    class C input
+    class B process
+    class D output
+    class E output
+    class F output
 ```
 
 ---
@@ -425,7 +456,7 @@ flowchart LR
     classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
     classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
     classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
-    classDef emphasisBlue fill:#1976d2,stroke:#1976d2,color:#fff,font-weight:bold
+    classDef emphasisBlue fill:#1976d2,stroke:none,color:#fff,font-weight:bold
 
     %% Class assignments
     class Shared input
@@ -588,16 +619,21 @@ graph LR
     H --> J
     I --> J
     
-    style A fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
-    style B fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
-    style C fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
-    style D fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
-    style E fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
-    style F fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
-    style G fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
-    style H fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
-    style I fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
-    style J fill:#e8f5e9,stroke:#388e3c,color:#323130,font-weight:bold
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+    classDef emphasisGreen fill:#388e3c,stroke:none,color:#fff,font-weight:bold
+
+    class A input
+    class B process
+    class C process
+    class D process
+    class E output
+    class F output
+    class G output
+    class H output
+    class I output
+    class J emphasisGreen
 ```
 
 ### Execution Details
@@ -935,6 +971,16 @@ graph LR
     B -->|dispatches| C["Agent Name<br/>(my-agent)"]
     C -->|loads| D["Claude Code Projection<br/>(generated/agents/claude/my-agent.md)<br/>Native tool names"]
     D -->|executes with| E["Claude Code Tools<br/>(Read, Bash,<br/>AskUserQuestion, etc.)"]
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    classDef output fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+
+    class A input
+    class B process
+    class C process
+    class D process
+    class E output
 ```
 
 ## Appendix C: Harness Developer Reference
