@@ -435,6 +435,8 @@ spawning the review team.
 - Do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
 - Log files: Read errors from `.dev/compile-errors.log`, NOT stdout — errors are logged to file only
 
+(See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
+
 When all developers complete, spawn 3 reviewers in parallel
 as a single batch:
 
