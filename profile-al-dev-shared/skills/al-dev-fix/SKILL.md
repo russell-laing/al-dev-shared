@@ -101,6 +101,7 @@ For trivial fixes:
 
 4. Run compile + lint pass per
    `knowledge/compile-lint-procedure.md`.
+   (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
    No re-iteration gate in this skill — if compilation fails,
    have the developer fix the error and re-run.
 
@@ -194,6 +195,7 @@ For non-trivial fixes:
 
 7. Run compile + lint pass per
    `knowledge/compile-lint-procedure.md`.
+   (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
    No re-iteration gate in this skill — if compilation fails,
    have the developer fix the error and re-run.
 
