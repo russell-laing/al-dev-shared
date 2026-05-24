@@ -1,241 +1,305 @@
 # Design: `/projection-sync` Skill
 
 **Date:** 2026-05-24  
-**Status:** Approved  
+**Status:** Revised for implementation planning  
 **Author:** Claude Code Brainstorming
 
 ---
 
 ## Overview
 
-`/projection-sync` is a Claude Code maintainer skill that validates shared agent source for harness-specific tokens, auto-fixes violations, regenerates harness-native projections, and commits all changes with contextual message. It lives in `.claude/skills/projection-sync/` as repository maintenance tooling.
+`/projection-sync` is a Claude Code maintainer skill that validates shared
+agent source, regenerates harness-native projections, summarizes the resulting
+changes, and asks before creating a commit. It lives in
+`.claude/skills/projection-sync/` as repo-local maintenance tooling.
+
+This skill is intentionally narrow. It orchestrates existing repo scripts and
+generated outputs; it does not replace the richer alignment/audit workflow that
+already exists elsewhere in the repo.
 
 ---
 
 ## Purpose & Scope
 
-The AL development plugin distributes a single canonical agent surface (`profile-al-dev-shared/agents/`) and three harness-native projections (Claude Code, Copilot CLI, Codex). When shared agents are edited, their changes must be validated for harness neutrality, then propagated into the three generated projection artifacts.
+The AL development plugin distributes a single canonical agent surface
+(`profile-al-dev-shared/agents/`) and three harness-native projections (Claude
+Code, Copilot CLI, Codex). When shared agents are edited, maintainers need a
+safe way to validate shared source, regenerate projections, inspect what
+changed, and optionally commit the result.
 
 **In scope:**
-- Validating shared agent source against harness-specific token patterns
-- Auto-fixing autofixable violations (token replacement)
-- Regenerating all three harness projections
-- Committing changes with contextual message
+- Running the current shared-surface neutrality validator
+- Regenerating all three harness projection sets
+- Summarizing changed files for maintainer review
+- Asking before any staging or commit action
+- Writing a simple progress checkpoint file in `.dev/`
 
-**Out of scope:**
-- Manual review UI for non-autofixable violations (reported in commit message only)
-- Interactive diff review (user sees changes via git)
-- Harness mapping table updates (align-harness-repos skill handles that)
+**Out of scope for v1:**
+- Auto-fixing validation failures
+- Replacing `/align-harness-repos`
+- Editing harness mapping tables
+- Creating empty "no changes" commits
+- Broad rollback of user changes
+- Any destructive cleanup outside files this workflow explicitly owns
+
+---
+
+## Relationship to Existing Tooling
+
+`/projection-sync` is a thin maintainer wrapper over existing repo primitives:
+
+- `scripts/validate_harness_neutrality.py`
+- `scripts/generate-agent-projections.py`
+
+It should not duplicate the responsibilities of
+`.claude/skills/align-harness-repos/SKILL.md`, which already covers broader
+alignment concerns such as mapping-table coverage, repo-local `.claude`
+boundary findings, and richer fix-oriented flows.
+
+The current validator interface is also intentionally simple. At present it
+returns only:
+
+- exit `0` for pass
+- exit `1` for findings
+- plain text findings in `path: rule: excerpt` form
+
+It does **not** currently provide:
+
+- JSON output
+- line numbers
+- context classification
+- `autofixable` metadata
+- token-to-concept mapping data
+
+That means v1 of `/projection-sync` must stop on validation failures instead of
+trying to auto-repair them.
 
 ---
 
 ## Entry Point & Trigger
 
 **Manual invocation:** `/projection-sync`  
-**Argument:** None (optional in future: `--validate-only`, `--dry-run`, but not required for v1)  
-**Prerequisite:** User has edited shared agents in `profile-al-dev-shared/agents/` and wants to propagate changes
+**Argument:** None in v1  
+**Prerequisite:** The maintainer has edited shared agent source under
+`profile-al-dev-shared/agents/` and wants to propagate those edits into
+generated projection artifacts.
+
+Possible future flags such as `--validate-only` or `--dry-run` are reasonable,
+but they are not part of this design.
 
 ---
 
 ## Workflow Phases
 
-### Phase 0: Resume Check (Standard Checkpoint)
+### Phase 0: Resume Check
 
-Read `.dev/projection-sync-progress.md` if it exists. If present, offer user:
-- `Resume` — continue from last completed phase
-- `Restart` — begin from Phase 1
+Read `.dev/projection-sync-progress.md` if it exists. If present, offer:
 
-If no progress file exists, proceed to Phase 1.
+- `Resume` — continue from the next incomplete phase
+- `Restart` — overwrite the checkpoint and begin again at Phase 1
 
-**Output file:** `.dev/projection-sync-progress.md` (checkpoint after each phase)
+If no progress file exists, proceed directly to Phase 1.
+
+**Checkpoint file:** `.dev/projection-sync-progress.md`
 
 ---
 
-### Phase 1: Validate Harness Neutrality
+### Phase 1: Validate Shared Source
 
 **Command:**
 ```bash
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 ```
 
-**Exit code handling:**
-- **0 (clean)** → Proceed to Phase 2
-- **1 (violations found)** → Proceed to Phase 2 (auto-fix will attempt repairs)
-- **2 (runtime error)** → Fail with error message, roll back, exit
+**Observed current contract:**
+- Exit `0`: validation passed
+- Exit `1`: one or more findings were reported
+- Findings are emitted as plain text lines
 
-**Captured output:** Store stdout/stderr in `.dev/projection-sync-validation.json` (or parse JSON if script outputs it directly)
+**Behavior:**
+- On exit `0`, proceed to Phase 2
+- On exit `1`, present the validator output, record the failure in the progress
+  file, and stop
+- On any unexpected runtime failure, report the command failure, record it in
+  the progress file, and stop
 
-**Progress checkpoint:** Update `.dev/projection-sync-progress.md`
+**Progress checkpoint example:**
 ```yaml
 phase: 1
 status: complete
-violations_found: N
-autofixable: M
-manual_review: K
+result: pass
 ```
 
----
-
-### Phase 2: Auto-fix Autofixable Violations
-
-Parse validation output. For each violation where `autofixable: true`:
-
-1. Read the target file
-2. Locate the forbidden token line
-3. Identify the generic concept name from `profile-al-dev-shared/knowledge/harness-concepts.md`
-4. Replace the token with the concept name, preserving surrounding text
-5. Write the file back
-
-**Non-autofixable violations:** Collect in a list (flagged for commit message documentation only; do NOT auto-modify)
-
-**Verification:**
-```bash
-# After all auto-fixes, re-run validation to confirm
-python3 scripts/validate_harness_neutrality.py profile-al-dev-shared --mode check
-```
-
-If re-validation still has violations, note them in commit message but proceed to Phase 3 (violations may be acceptable per team review).
-
-**Progress checkpoint:** Update `.dev/projection-sync-progress.md`
+Validation failure example:
 ```yaml
-phase: 2
-status: complete
-fixes_applied: M
-manual_review_remaining: K
+phase: 1
+status: blocked
+result: findings_reported
 ```
 
 ---
 
-### Phase 3: Regenerate Projections
+### Phase 2: Regenerate Projections
+
+This phase only runs if Phase 1 passes.
 
 **Command:**
 ```bash
 python3 scripts/generate-agent-projections.py
 ```
 
-**Exit code handling:**
-- **0 (success)** → Proceed to Phase 4
-- **Non-zero (failure)** → Fail with error message, roll back all changes (undo fixes from Phase 2), exit
+**Behavior:**
+- On success, proceed to Phase 3
+- On failure, report the generator error, record the failed phase, and stop
 
-**Verification:** Check that files were created/updated:
-```bash
-git status profile-al-dev-shared/generated/agents/
-```
+**Verification:**
+- Inspect `git diff --name-only -- profile-al-dev-shared/generated/agents`
+- Confirm whether the generator changed any projection files
 
-**Progress checkpoint:** Update `.dev/projection-sync-progress.md`
+**Progress checkpoint example:**
 ```yaml
-phase: 3
+phase: 2
 status: complete
-projections_generated:
-  claude: N_agents
-  copilot: N_agents
-  codex: N_agents
+result: projections_regenerated
 ```
 
 ---
 
-### Phase 4: Commit Changes
+### Phase 3: Summarize Changes
 
-Determine what changed:
+Determine what changed after regeneration:
+
 ```bash
 git diff --name-only
 ```
 
-**Commit message format:**
+Summarize, at minimum:
 
-```
-refactor: regenerate agent projections
+- Whether any files changed at all
+- Which files under `profile-al-dev-shared/generated/agents/` changed
+- Whether only generated projections changed or other tracked files also differ
+- Whether the progress checkpoint file changed
 
-Validation:
-- Violations found: N (M auto-fixed, K manual review)
+If there are no projection diffs, report that regeneration produced no changes
+and stop without committing unless the user explicitly asks for a commit anyway.
 
-Regenerated projections:
-- Claude Code: agents/claude/ (N agents)
-- Copilot CLI: agents/copilot/ (N agents)
-- Codex: agents/codex/ (N agents)
-
-If violations remain, note:
-- Manual review required: [list]
-
-Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
-```
-
-**No-changes case:** Still commit with message:
-```
-refactor: regenerate projections (no changes)
-
-Validation: clean (no violations found)
-Regenerated: no changes to agents
-
-Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
-```
-
-**Commit behavior:** Use `git commit` (not git amend); create new atomic commit.
-
-**Progress checkpoint:** Update `.dev/projection-sync-progress.md`
+**Progress checkpoint example:**
 ```yaml
-phase: 4
+phase: 3
 status: complete
-commit_hash: <hash>
-commit_message: <first_line>
+result: diff_summarized
+changed_files:
+  - profile-al-dev-shared/generated/agents/claude/example.md
 ```
 
 ---
 
-## Error Handling & Rollback
+### Phase 4: USER_GATE Before Commit
 
-**On failure at any phase:**
+If there are meaningful changes, stop and ask whether to commit them.
 
-1. Print error message with phase context
-2. Run rollback:
-   ```bash
-   # Undo all modified files from Phase 2
-   git checkout profile-al-dev-shared/
-   # Remove any partially-generated artifacts from Phase 3
-   rm -rf profile-al-dev-shared/generated/agents/
-   ```
-3. Remove progress file: `rm .dev/projection-sync-progress.md`
-4. Exit with non-zero code
+The approval point must occur immediately before any `git add` or `git commit`.
 
-**User action:** User must investigate the error (check validation failure reason, regeneration error, etc.) and retry.
+Prompt shape:
+
+```text
+Projection regeneration is complete.
+
+Changed files:
+- [list]
+
+Do you want me to stage and commit these changes?
+```
+
+**Behavior:**
+- If the user says yes, stage only the intended files and create one commit
+- If the user says no, stop and leave the working tree unchanged
+
+**Commit policy:**
+- No commit without explicit approval
+- No empty commit in the no-change case
+- No `git amend`
+
+**Progress checkpoint example after approval and commit:**
+```yaml
+phase: 4
+status: complete
+result: committed
+commit_hash: <hash>
+```
+
+Declined example:
+```yaml
+phase: 4
+status: complete
+result: user_declined_commit
+```
+
+---
+
+## Error Handling
+
+v1 should use conservative failure handling:
+
+- Do not run `git checkout profile-al-dev-shared/`
+- Do not delete `profile-al-dev-shared/generated/agents/`
+- Do not attempt to clean up unrelated working-tree changes
+
+On failure:
+
+1. Report the failing phase and command
+2. Preserve the working tree as-is
+3. Update `.dev/projection-sync-progress.md` with the failed state
+4. Stop
+
+This keeps the skill safe in a dirty repo and avoids discarding unrelated user
+work.
 
 ---
 
 ## Success Criteria
 
-- [ ] Validation runs successfully (exit 0 or violations found but manageable)
-- [ ] All autofixable violations are replaced with concept names
-- [ ] Regeneration produces valid projections for all three harnesses
-- [ ] Exactly one atomic commit is created with contextual message
-- [ ] If no changes: empty commit is created with "no changes" message
-- [ ] Rollback works correctly on any failure (repo state is clean)
-- [ ] Progress file exists at end (for debugging / resume capability in future)
+- [ ] Validation passes before regeneration is attempted
+- [ ] Projection regeneration runs through the existing generator script
+- [ ] The skill summarizes changed files before any commit action
+- [ ] The skill asks before staging or committing
+- [ ] No commit is created in the no-change case unless explicitly requested
+- [ ] Failures do not discard unrelated repo changes
+- [ ] The progress checkpoint reflects the last completed or blocked phase
 
 ---
 
 ## Implementation Notes
 
-**Scripts location:** All scripts live in `scripts/` at repo root; skill invokes them via relative paths or `AL_DEV_SHARED_PLUGIN_ROOT` env var.
-
-**Working directory:** Skill executes from repo root (al-dev-shared).
+**Scripts location:** `scripts/` at repo root  
+**Working directory:** repo root (`al-dev-shared`)  
+**Skill placement:** `.claude/skills/projection-sync/`
 
 **Dependencies:**
-- Python 3.7+ (for script execution)
-- `profile-al-dev-shared/knowledge/harness-concepts.md` (for concept name mapping)
 - `scripts/validate_harness_neutrality.py`
 - `scripts/generate-agent-projections.py`
+- `profile-al-dev-shared/generated/agents/`
 
-**Tool usage:** Bash for script execution; Read/Write for file manipulation in Phase 2.
+**Current validator constraints that shape v1:**
+- `scripts/validate_harness_neutrality.py` scans shared authored directories and
+  reports only `path`, `rule`, and `excerpt` findings
+- The script currently has no structured output mode or fix metadata
+- Any future auto-fix design must start by extending the validator contract or
+  delegating to existing alignment tooling
 
 ---
 
 ## Future Enhancements
 
-Not in scope for v1, but worth noting:
-- `--validate-only` flag to skip regeneration and commits
-- `--dry-run` to show changes without committing
-- Detailed report output (`.dev/projection-sync-report.md`)
-- Integration with other skills (e.g., trigger after agent edits)
+Not in scope for v1:
+
+- `--validate-only`
+- `--dry-run`
+- Structured validator output for machine-readable findings
+- Auto-fix support driven by line-level and concept-mapping metadata
+- Delegation into `/align-harness-repos` when a maintainer wants broader repair
+  behavior
+- A richer `.dev/projection-sync-report.md` artifact
 
 ---
 
@@ -244,26 +308,21 @@ Not in scope for v1, but worth noting:
 ```mermaid
 flowchart TD
     Start["User invokes /projection-sync"] --> Phase0["Phase 0: Resume Check"]
-    Phase0 -->|Resume| Phase1
-    Phase0 -->|Restart| Phase1
-    
-    Phase1["Phase 1: Validate Harness Neutrality"]
-    Phase1 -->|Success or Violations| Phase2
-    Phase1 -->|Runtime Error| Fail1["Fail: Validation Error"]
-    
-    Phase2["Phase 2: Auto-fix Autofixable Violations"]
-    Phase2 --> Phase3
-    
-    Phase3["Phase 3: Regenerate Projections"]
-    Phase3 -->|Success| Phase4
-    Phase3 -->|Failure| Rollback["Rollback: Undo Phase 2 + Phase 3"]
-    Rollback --> Fail2["Fail: Regeneration Error"]
-    
-    Phase4["Phase 4: Commit Changes"]
-    Phase4 --> Success["✓ Success: Commit created"]
-    
-    Fail1 --> Exit1["Exit with error"]
-    Fail2 --> Exit2["Exit with error"]
-    Success --> Exit3["Exit 0"]
-```
+    Phase0 -->|Resume or Restart| Phase1
 
+    Phase1["Phase 1: Validate Shared Source"]
+    Phase1 -->|Pass| Phase2
+    Phase1 -->|Findings or Error| Stop1["Report and stop"]
+
+    Phase2["Phase 2: Regenerate Projections"]
+    Phase2 -->|Success| Phase3
+    Phase2 -->|Failure| Stop2["Report and stop"]
+
+    Phase3["Phase 3: Summarize Changes"]
+    Phase3 -->|No projection diffs| Stop3["Report no changes and stop"]
+    Phase3 -->|Changes found| Phase4
+
+    Phase4["Phase 4: USER_GATE Before Commit"]
+    Phase4 -->|User approves| Success["Create one commit"]
+    Phase4 -->|User declines| Stop4["Leave changes uncommitted"]
+```
