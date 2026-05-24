@@ -112,6 +112,7 @@ al-compile 2>&1 | grep -E "(error|warning)"
 ```
 
 **Why this is harmful:**
+
 - The `--output` flag already writes diagnostics silently to file
 - Piping to `head/tail/grep` causes the **entire stdout to be captured in session context** (4.7MB+ for this codebase)
 - Terminal viewers only display first/last N lines to user ✓, but the Bash tool captures the entire output ✗
