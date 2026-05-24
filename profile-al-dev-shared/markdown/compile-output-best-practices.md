@@ -1,12 +1,13 @@
 ---
-title: Compile Output & Context Management Best Practices
 ---
 
 # Compile Output & Context Management Best Practices
 
 ## Summary
 
-Piping `al-compile` output to terminal viewers (`head`, `tail`, `grep`) causes entire compile logs (4.7MB+) to be captured in session context, triggering forced context compacts and session restarts. This guide documents the correct approach.
+Piping `al-compile` output to terminal viewers (`head`, `tail`, `grep`) causes entire compile logs
+(4.7MB+) to be captured in session context, triggering forced context compacts and session restarts.
+This guide documents the correct approach.
 
 ## The Problem
 
@@ -23,6 +24,7 @@ al-compile --output .dev/compile-errors.log 2>&1 | head -20
 ```
 
 **Result:**
+
 1. User sees first 20 lines on terminal ✓
 2. Bash tool captures entire stdout in session context ✗ (4.7MB)
 3. Session context grows 4.7MB per compile check
@@ -53,6 +55,7 @@ al-compile --output .dev/compile-errors.log
 ```
 
 **Rationale:**
+
 - The `--output` flag already writes diagnostics silently to a file
 - No terminal display needed — the file is the output
 - User/agent can inspect the file afterward via Read tool or file-based grep
@@ -71,6 +74,7 @@ al-compile --output .dev/compile-errors.log
 ```
 
 **Rationale:**
+
 - The `description` parameter tells the harness this is a logging operation (file capture)
 - Without description, harness may re-read the log file for validation, loading it into context
 - Short description prevents context bloat from validation re-reads
@@ -104,7 +108,7 @@ al-compile 2>&1 | grep -c '^Error'
 
 ## Decision Tree: When to Use What
 
-```
+```text
 Does your command write to a file (--output flag)?
   ├─ YES → Do NOT pipe. Use --output only.
   │         Example: al-compile --output .dev/compile-errors.log
@@ -167,7 +171,7 @@ grep -E "warning|error" .dev/compile-errors.log | grep -E "\.(Page|PageExt)\.al"
 # (Read tool displays page-warnings.log contents)
 ```
 
-## Summary
+## Summary Table
 
 | Action | Safe? | Context Cost | Notes |
 |--------|-------|--------------|-------|
