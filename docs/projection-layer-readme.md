@@ -128,6 +128,160 @@ This is the key idea of the projection layer: one authored agent, three harness-
 
 ---
 
+## Claude Code Worktree Integration Example
+
+Claude Code uses the projection layer to load skills and dispatch agents while supporting isolated development workspaces via git worktrees.
+
+### 1. Skill Invocation and Plugin Discovery
+
+When a user types `/al-dev-plan` in Claude Code:
+
+1. Claude Code resolves the skill from `~/.claude/settings.json`:
+
+   ```json
+   {
+     "al-dev-shared": {
+       "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
+     }
+   }
+   ```
+
+2. Claude Code loads `profile-al-dev-shared/skills/al-dev-plan/SKILL.md`
+
+3. The skill may dispatch agents referenced by name (e.g., `al-dev-shared:al-dev-architect`)
+
+### 2. Agent Projection Resolution
+
+When a skill dispatches `al-dev-shared:al-dev-architect`, Claude Code:
+
+1. Looks up the agent in `profile-al-dev-shared/generated/agents/claude/al-dev-architect.md`
+
+2. Reads the Claude Code-native frontmatter:
+
+   ```yaml
+   name: al-dev-architect
+   description: Multi-agent debate on design approach
+   model: claude-opus-4-7
+   tools:
+     - Bash
+     - Read
+     - Write
+     - AskUserQuestion      # <- Projected from generic USER_GATE
+   ```
+
+3. Claude Code maps tool names to native operations:
+   - `Bash` → execute shell commands
+   - `Read` → read files from local filesystem
+   - `Write` → write files to local filesystem
+   - `AskUserQuestion` → prompt user for input
+
+### 3. Worktree Lifecycle in Claude Code
+
+When developing a feature that needs isolation:
+
+## Phase 1: Workspace Creation
+
+```bash
+# User runs /al-dev-plan for a feature design
+# Skill invokes superpowers:using-git-worktrees
+
+# Claude Code creates isolated worktree:
+git worktree add .claude/worktrees/feature-xyz main
+cd .claude/worktrees/feature-xyz
+
+# Plugin is still accessible from worktree:
+~/.claude/plugins/cache/claude-plugins-official/...
+```
+
+## Phase 2: Skill Execution in Worktree
+
+While in the worktree, the user invokes `/al-dev-develop`:
+
+1. Skill loads from the plugin (shared across all workspaces)
+2. Skill dispatches `al-dev-shared:al-dev-developer` agent
+3. Agent runs in the worktree context (CWD is the worktree root)
+4. Agent uses `Bash` tool to run commands in the worktree
+5. Agent uses `Read`/`Write` to edit files in the worktree
+
+```bash
+# From inside worktree context, agent might run:
+git status                          # Shows worktree branch state
+npm test                            # Runs tests in worktree
+git commit -m "feat: ..."          # Commits to worktree branch
+```
+
+## Phase 3: Worktree Cleanup
+
+When development completes, the user invokes `/superpowers:finishing-a-development-branch`:
+
+1. Skill detects worktree state: `git rev-parse --git-dir` ≠ `git rev-parse --git-common-dir`
+2. Skill presents merge/PR/keep/discard options
+3. On merge: Returns to main repo, merges worktree branch, removes worktree
+4. On PR: Keeps worktree alive (user may need to iterate on feedback)
+
+### 4. Concrete Flow: Adding a Feature to al-dev-shared
+
+```text
+User: /al-dev-plan "Add new skill for X"
+
+→ /al-dev-plan skill invokes:
+  - Architect agent (al-dev-architect) for design debate
+  - Dispatched via: al-dev-shared:al-dev-architect projection
+  - Uses: AskUserQuestion (USER_GATE projected to Claude native tool)
+  
+→ User approves design
+
+→ User: /al-dev-develop "Implement the skill"
+
+→ /al-dev-develop skill:
+  - Creates worktree: .claude/worktrees/skill-xyz
+  - Loads developer agent: al-dev-shared:al-dev-developer
+  - Agent uses Bash, Read, Write tools (all Claude Code natives)
+  - Agent creates: profile-al-dev-shared/skills/new-skill/SKILL.md
+  - Agent runs: /projection-sync to regenerate harness artifacts
+
+→ /projection-sync orchestrates:
+  - Validates shared source (no harness leakage)
+  - Regenerates: generated/agents/claude/*.md, copilot/*.md, codex/*.toml
+  - Commits projection changes
+  - For Claude Code user: only claude/*.md changes visible (but all three harnesses work)
+
+→ User: /superpowers:finishing-a-development-branch
+
+→ Finishing skill detects worktree, offers options
+
+→ User chooses: "Create PR"
+
+→ Skill:
+  - Keeps worktree alive at .claude/worktrees/skill-xyz
+  - Pushes worktree branch to origin/skill-xyz
+  - Creates PR with summary
+
+→ User iterates on feedback in same worktree
+
+→ Feedback incorporated, PR merged
+
+→ User: /superpowers:finishing-a-development-branch again
+
+→ User chooses: "Merge and cleanup"
+
+→ Finishing skill:
+  - Detects worktree is under .claude/worktrees/ (Claude Code ownership)
+  - Returns to main repo
+  - Removes worktree: git worktree remove .claude/worktrees/skill-xyz
+  - Deletes feature branch
+```
+
+### Key Points
+
+- **Plugin loading is harness-agnostic:** `profile-al-dev-shared/` works the same way in Claude Code, Copilot CLI, and Codex
+- **Projections are harness-specific:** Each harness consumes its own `generated/agents/<harness>/` directory
+- **Tool mapping is hidden:** Claude Code developers see `Bash`, `Read`, `Write`, `AskUserQuestion`; the projection layer mapped these from generic capability names
+- **Worktrees are optional:** Users can work directly on main, or use worktrees for isolation; the projection layer doesn't care which
+- **Plugin discovery is once-per-session:** Claude Code reads plugin paths from settings, then uses them for all skills and agents in that session
+
+---
+
 ## Boundary Rules
 
 Keep these boundaries strict:
