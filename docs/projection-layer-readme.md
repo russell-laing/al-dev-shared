@@ -203,11 +203,31 @@ While in the worktree, the user invokes `/al-dev-develop`:
 4. Agent uses `Bash` tool to run commands in the worktree
 5. Agent uses `Read`/`Write` to edit files in the worktree
 
+The worktree has the full repo structure, including generated agents:
+
+```text
+.claude/worktrees/skill-xyz/
+  profile-al-dev-shared/
+    agents/                    # Shared authored source
+    generated/agents/
+      claude/                  # Claude Code projections
+      copilot/                 # Copilot CLI projections
+      codex/                   # Codex projections
+```
+
+Agent execution in the worktree:
+
 ```bash
 # From inside worktree context, agent might run:
 git status                          # Shows worktree branch state
 npm test                            # Runs tests in worktree
 git commit -m "feat: ..."          # Commits to worktree branch
+
+# When /projection-sync runs, it regenerates IN-PLACE:
+python3 scripts/generate-agent-projections.py
+# → Updates profile-al-dev-shared/generated/agents/claude/*.md
+# → Updates profile-al-dev-shared/generated/agents/copilot/*.md
+# → Updates profile-al-dev-shared/generated/agents/codex/*.toml
 ```
 
 ## Phase 3: Worktree Cleanup
@@ -240,11 +260,14 @@ User: /al-dev-plan "Add new skill for X"
   - Agent creates: profile-al-dev-shared/skills/new-skill/SKILL.md
   - Agent runs: /projection-sync to regenerate harness artifacts
 
-→ /projection-sync orchestrates:
+→ /projection-sync orchestrates from within worktree:
   - Validates shared source (no harness leakage)
-  - Regenerates: generated/agents/claude/*.md, copilot/*.md, codex/*.toml
-  - Commits projection changes
-  - For Claude Code user: only claude/*.md changes visible (but all three harnesses work)
+  - Regenerates projections in-place:
+    * profile-al-dev-shared/generated/agents/claude/*.md
+    * profile-al-dev-shared/generated/agents/copilot/*.md
+    * profile-al-dev-shared/generated/agents/codex/*.toml
+  - Commits changed projection files to worktree branch
+  - Claude Code user sees: only claude/*.md files (but all three harnesses regenerated)
 
 → User: /superpowers:finishing-a-development-branch
 
