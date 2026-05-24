@@ -239,7 +239,35 @@ When development completes, the user invokes `/superpowers:finishing-a-developme
 3. On merge: Returns to main repo, merges worktree branch, removes worktree
 4. On PR: Keeps worktree alive (user may need to iterate on feedback)
 
-### 4. Concrete Flow: Adding a Feature to al-dev-shared
+### 4. Visual Flow Diagram
+
+```mermaid
+graph TD
+    A["User: /al-dev-plan"] -->|Claude Code| B["Load Skill<br/>profile-al-dev-shared/<br/>skills/al-dev-plan/SKILL.md"]
+    B -->|Skill invokes| C["Dispatch Agent<br/>al-dev-shared:al-dev-architect"]
+    C -->|Agent lookup| D["Load Projection<br/>generated/agents/claude/<br/>al-dev-architect.md"]
+    D -->|Tool mapping| E["Claude Code Native Tools<br/>- Bash<br/>- Read<br/>- Write<br/>- AskUserQuestion"]
+    E -->|Agent execution| F{In Worktree?}
+    F -->|Yes| G["Worktree Context<br/>.claude/worktrees/feature-xyz/<br/>CWD = worktree root"]
+    F -->|No| H["Main Repo Context<br/>CWD = main root"]
+    G -->|Agent runs| I["Execute Commands<br/>git status<br/>git commit<br/>npm test<br/>Read/Write files"]
+    H -->|Agent runs| I
+    I -->|Skill: /projection-sync| J["Regenerate Projections<br/>python3 scripts/<br/>generate-agent-projections.py"]
+    J -->|Updates in-place| K["Generated Artifacts<br/>generated/agents/claude/*.md<br/>generated/agents/copilot/*.md<br/>generated/agents/codex/*.toml"]
+    K -->|Commit| L["git commit<br/>chore: regenerate"]
+    
+    style A fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
+    style B fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    style C fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    style D fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    style E fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+    style G fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
+    style H fill:#fff3e0,stroke:#f57c00,color:#323130,font-weight:bold
+    style J fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
+    style K fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+```
+
+### 5. Concrete Flow: Adding a Feature to al-dev-shared
 
 ```text
 User: /al-dev-plan "Add new skill for X"
@@ -295,7 +323,7 @@ User: /al-dev-plan "Add new skill for X"
   - Deletes feature branch
 ```
 
-### Key Points
+### 6. Key Points
 
 - **Plugin loading is harness-agnostic:** `profile-al-dev-shared/` works the same way in Claude Code, Copilot CLI, and Codex
 - **Projections are harness-specific:** Each harness consumes its own `generated/agents/<harness>/` directory
