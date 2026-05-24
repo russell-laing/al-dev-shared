@@ -170,7 +170,7 @@ python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 Expected output:
 
 ```plaintext
-✓ No harness-specific tokens detected in shared source
+PASS: no harness-specific leakage in shared authored surface
 ```
 
 If validation fails, see Section 5 for how to fix violations.
@@ -259,7 +259,7 @@ Look for:
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 ```
 
-Expected: ✓ No harness-specific tokens detected in shared source
+Expected: PASS: no harness-specific leakage in shared authored surface
 
 If validation fails, fix the violations (see Section 5) and regenerate again.
 
@@ -298,8 +298,7 @@ The validator checks for:
 Expected successful output:
 
 ```plaintext
-✓ No harness-specific tokens detected in shared source
-✓ All files are harness-agnostic
+PASS: no harness-specific leakage in shared authored surface
 ```
 
 ### Common Pitfalls and How to Fix Them
@@ -458,7 +457,7 @@ flowchart LR
 - Output shape: Markdown frontmatter plus body
 - Projection examples:
   - `USER_GATE` -> `ask_user`
-  - shell -> `execute`
+  - `Bash` -> `execute`
   - MCP tools -> `al-mcp-server-*`, `bc-code-intelligence-mcp-*`
 
 ### Codex
@@ -517,8 +516,10 @@ When a user types `/al-dev-plan` in Claude Code:
 
    ```json
    {
-     "al-dev-shared": {
-       "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
+     "extraKnownMarketplaces": {
+       "al-dev-shared": {
+         "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
+       }
      }
    }
    ```
@@ -529,25 +530,21 @@ When a user types `/al-dev-plan` in Claude Code:
 
 ### 2. Agent Projection Resolution
 
-When a skill dispatches `al-dev-shared:al-dev-architect`, Claude Code:
+When a skill dispatches `al-dev-shared:al-dev-interview`, Claude Code:
 
-1. Looks up the agent in `profile-al-dev-shared/generated/agents/claude/al-dev-architect.md`
+1. Looks up the agent in `profile-al-dev-shared/generated/agents/claude/al-dev-interview.md`
 
 2. Reads the Claude Code-native frontmatter:
 
    ```yaml
-   name: al-dev-architect
-   description: Multi-agent debate on design approach
-   model: claude-opus-4-7
+   description: "Interview the user to extract complete BC/AL implementation details..."
    tools:
-     - Bash
      - Read
      - Write
      - AskUserQuestion      # <- Projected from generic USER_GATE
    ```
 
 3. Claude Code maps tool names to native operations:
-   - `Bash` → execute shell commands
    - `Read` → read files from local filesystem
    - `Write` → write files to local filesystem
    - `AskUserQuestion` → prompt user for input
@@ -984,9 +981,9 @@ The policy defines entries like:
 
 ```markdown
 Generic Name  | Claude Code      | Copilot CLI | Codex
-USER_GATE     | AskUserQuestion  | ask_user    | ASK_USER
-Read          | Read             | file_read   | READ
-Bash          | Bash             | shell       | BASH
+USER_GATE     | AskUserQuestion  | ask_user    | request_user_input
+Read          | Read             | read        | native file access capability
+Bash          | Bash             | execute     | native shell capability
 ```
 
 When the generator runs, it:
@@ -1003,10 +1000,10 @@ To support a new harness (e.g., MyHarness):
 1. **Extend the projection policy** to include MyHarness tool mappings:
 
 ```markdown
-Generic Name  | Claude Code      | Copilot CLI | Codex       | MyHarness
-USER_GATE     | AskUserQuestion  | ask_user    | ASK_USER    | prompt_user
-Read          | Read             | file_read   | READ        | load_file
-Bash          | Bash             | shell       | BASH        | exec_cmd
+Generic Name  | Claude Code      | Copilot CLI | Codex                          | MyHarness
+USER_GATE     | AskUserQuestion  | ask_user    | request_user_input             | prompt_user
+Read          | Read             | read        | native file access capability  | load_file
+Bash          | Bash             | execute     | native shell capability        | exec_cmd
 ```
 
 1. **Update the generator script** to output MyHarness projections:
