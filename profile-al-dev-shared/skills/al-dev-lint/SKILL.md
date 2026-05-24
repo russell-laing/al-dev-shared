@@ -35,6 +35,8 @@ fi
 
 **Note:** Use `al-compile` if available (preferred—faster and simpler). If `al-compile` is not in PATH, fall back to `al compile`. Both produce the same output log format.
 
+(See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
+
 If the log is absent, empty, or contains no lines matching
 `Warning` or `Error`:
 
