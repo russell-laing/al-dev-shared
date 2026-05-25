@@ -22,6 +22,18 @@ This repository is not itself an AL project; it contains no `.al` source files.
 - **Generated agent projections** from `profile-al-dev-shared/generated/agents/codex/` (TOML format)
 - **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
 
+### Repo-Local Codex Skills
+
+This repository may also contain repo-local Codex skills under `.codex/skills/`.
+These are not part of the shared plugin surface and should be used only for
+repository-specific workflows that should not be projected into other harnesses.
+
+Current repo-local skill:
+
+- `.codex/skills/ai-usage-report/` — converts harness-specific usage artifacts
+  into neutral markdown reports and can optionally add Codex-derived local
+  usage observations.
+
 ## Shared Plugin Surface (All Harnesses)
 
 All three harnesses consume the same authored source:

@@ -94,6 +94,58 @@ def test_projection_validation_fails_when_generated_projection_missing(tmp_path)
     assert any("generated/agents/claude/al-dev-interview.md" in issue["error"] for issue in issues)
 
 
+def test_find_repo_local_claude_references_reports_shared_plugin_leaks(tmp_path):
+    plugin_root = tmp_path / "profile-al-dev-shared"
+    (plugin_root / "skills" / "foo").mkdir(parents=True)
+    (plugin_root / "skills" / "foo" / "SKILL.md").write_text(
+        "---\nname: foo\n---\nSee .claude/skills/local-only/SKILL.md\n"
+    )
+    issues = mod.find_repo_local_claude_references(plugin_root)
+    assert len(issues) == 1
+    assert issues[0]["file"] == "skills/foo/SKILL.md"
+    assert ".claude/skills/local-only/SKILL.md" in issues[0]["context"]
+
+
+def test_validate_repo_local_claude_boundary_requires_boundary_note(tmp_path):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    (repo_root / "AGENTS.md").write_text("# AGENTS\n")
+    issues = mod.validate_repo_local_claude_boundary(repo_root)
+    assert len(issues) == 3
+    assert any("repo-local Claude maintainer" in issue["error"] for issue in issues)
+
+
+def _write_repo_boundary_docs(repo_root: Path) -> None:
+    (repo_root / "AGENTS.md").write_text(
+        "# AGENTS\n\n"
+        "## Structure\n\n"
+        "```\n"
+        "profile-al-dev-shared/generated/agents/\n"
+        "profile-al-dev-shared/\n"
+        ".claude/agents/\n"
+        ".claude/skills/\n"
+        "```\n\n"
+        "profile-al-dev-shared/generated/agents/ is generated projection output.\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    (repo_root / "CLAUDE.md").write_text(
+        "# CLAUDE\n\n"
+        "profile-al-dev-shared/generated/agents/ is generated projection output.\n"
+        ".claude/agents/ and .claude/skills/ are repo-local Claude maintainer tooling.\n"
+    )
+    generated_root = repo_root / "profile-al-dev-shared" / "generated" / "agents"
+    generated_root.mkdir(parents=True, exist_ok=True)
+    (generated_root / "README.md").write_text(
+        "# Generated Agent Projections\n\n"
+        "This directory contains generated harness-native agent artifacts.\n\n"
+        "- `claude/` contains generated Claude Markdown manifests.\n"
+        "- `copilot/` contains generated Copilot Markdown manifests.\n"
+        "- `codex/` contains generated Codex TOML manifests.\n\n"
+        "These files are derived from `profile-al-dev-shared/agents/*.md` plus\n"
+        "projection policy metadata. Do not hand-edit them.\n"
+    )
+
+
 class TestStripFrontmatter:
     def test_file_with_frontmatter_preserves_line_count(self):
         lines = ["---\n", "name: foo\n", "---\n", "Body line\n"]
@@ -505,6 +557,7 @@ class TestCLI:
         skills_dir.mkdir(parents=True)
         (skills_dir / "SKILL.md").write_text("---\nname: test\n---\nUse the project instructions file.\n")
         (tmp_path / "knowledge").mkdir()
+        _write_repo_boundary_docs(tmp_path.parent)
         harness_concepts = (
             "| Concept | Description | Claude Code | Copilot CLI |\n"
             "|---|---|---|---|\n"
@@ -529,12 +582,14 @@ class TestCLI:
         assert data["forbidden_tokens"] == []
         assert data["missing_mappings"] == []
         assert data["orphaned_mappings"] == []
+        assert data["repo_local_claude_failures"] == []
 
     def test_exit_1_enforce_when_issues_found(self, tmp_path):
         skills_dir = tmp_path / "skills" / "bad-skill"
         skills_dir.mkdir(parents=True)
         (skills_dir / "SKILL.md").write_text("---\nname: bad\n---\nOpen CLAUDE.md here.\n")
         (tmp_path / "knowledge").mkdir()
+        _write_repo_boundary_docs(tmp_path.parent)
         harness_concepts = (
             "| Concept | Description | Claude Code | Copilot CLI |\n"
             "|---|---|---|---|\n"
@@ -556,6 +611,7 @@ class TestCLI:
         skills_dir.mkdir(parents=True)
         (skills_dir / "SKILL.md").write_text("---\nname: bad\n---\nOpen CLAUDE.md here.\n")
         (tmp_path / "knowledge").mkdir()
+        _write_repo_boundary_docs(tmp_path.parent)
         harness_concepts = (
             "| Concept | Description | Claude Code | Copilot CLI |\n"
             "|---|---|---|---|\n"
@@ -572,6 +628,7 @@ class TestCLI:
 
     def test_output_is_valid_json(self, tmp_path):
         (tmp_path / "knowledge").mkdir()
+        _write_repo_boundary_docs(tmp_path.parent)
         (tmp_path / "knowledge" / "harness-concepts.md").write_text(
             "| Concept | Description | Claude Code | Copilot CLI |\n|---|---|---|---|\n"
         )
@@ -585,18 +642,19 @@ class TestCLI:
         assert "forbidden_tokens" in data
         assert "missing_mappings" in data
         assert "orphaned_mappings" in data
+        assert "repo_local_claude_failures" in data
 
 
 class TestSkillFile:
     # SKILL.md was moved to .claude/skills/ (project-local maintenance tool)
-    SKILL_MD = Path(__file__).parent.parent.parent.parent.parent / ".claude" / "skills" / "al-dev-align" / "SKILL.md"
+    SKILL_MD = Path(__file__).parent.parent.parent.parent.parent.parent / ".claude" / "skills" / "align-harness-repos" / "SKILL.md"
 
     def test_skill_md_exists(self):
         assert self.SKILL_MD.exists(), "SKILL.md must exist"
 
     def test_skill_md_has_name_frontmatter(self):
         text = self.SKILL_MD.read_text()
-        assert "name: al-dev-align" in text
+        assert "name: align-harness-repos" in text
 
     def test_skill_md_has_description(self):
         text = self.SKILL_MD.read_text()

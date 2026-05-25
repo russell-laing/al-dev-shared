@@ -46,6 +46,29 @@ profile-al-dev-shared/          # Canonical authored plugin surface
 ## Generated Projection Artifacts (Per-Harness Native Formats)
 
 For harness-native tool execution, the projection layer generates harness-specific artifacts in `profile-al-dev-shared/generated/agents/copilot/` that map generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) to Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
+.claude/agents/                 # Repo-local Claude maintainer agents for this source repo
+.claude/skills/                 # Repo-local Claude maintainer skills for this source repo
+.claude-plugin/marketplace.json # Marketplace registration schema
+```
+
+## Repo-Local Maintainer Tooling
+
+`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
+tooling. They help audit, document, and iteratively improve this repository,
+but they are not part of the distributed `al-dev-shared` plugin and must not
+be treated as projection inputs or downstream harness-consumer artifacts.
+
+## Generated Projection Artifacts (Per-Harness Native Formats)
+
+For harness-native tool execution, the projection layer generates harness-specific artifacts in `profile-al-dev-shared/generated/agents/copilot/` that map generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) to Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
+
+## Repo-Local Maintainer Tooling
+
+`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
+tooling. They help audit, document, and iteratively improve this repository,
+but they are not part of the distributed `al-dev-shared` plugin and must not
+be treated as projection inputs, expected generated output, or downstream
+harness-consumer artifacts.
 
 ## Skill File Format
 

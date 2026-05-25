@@ -31,6 +31,12 @@ EXCLUDED_RELPATHS = {
     "knowledge/agent-tool-projection-policy.md",
     "knowledge/harness-concepts.md",
 }
+REPO_LOCAL_CLAUDE_PATTERNS = (
+    ".claude/skills/",
+    ".claude/agents/",
+    ".claude/settings.json",
+    ".claude/settings.local.json",
+)
 
 
 def _extract_token(cell: str) -> str | None:
@@ -336,12 +342,37 @@ def find_scan_files(plugin_root: Path) -> list[tuple[Path, str]]:
     return results
 
 
+def find_repo_local_claude_references(plugin_root: Path) -> list[dict]:
+    """Return shared-plugin files that reference repo-local .claude artifacts."""
+    issues: list[dict] = []
+    for filepath, rel in find_scan_files(plugin_root):
+        text = filepath.read_text(encoding="utf-8")
+        for pattern in REPO_LOCAL_CLAUDE_PATTERNS:
+            if pattern not in text:
+                continue
+            for line_no, line in enumerate(text.splitlines(), start=1):
+                if pattern in line:
+                    issues.append(
+                        {
+                            "file": rel,
+                            "line": line_no,
+                            "context": line.strip(),
+                            "error": (
+                                "Shared plugin content must not depend on repo-local "
+                                f"Claude maintainer tooling: {pattern}"
+                            ),
+                        }
+                    )
+    return issues
+
+
 def run_checks(
     plugin_root: Path,
     claude_profile: Path,
     copilot_profile: Path,
 ) -> dict:
     """Run all alignment checks and return the result dict."""
+    repo_root = plugin_root.parent
     harness_concepts_path = plugin_root / "knowledge" / "harness-concepts.md"
     if not harness_concepts_path.exists():
         raise FileNotFoundError(
@@ -373,6 +404,7 @@ def run_checks(
     missing, orphaned = compute_coverage_gaps(concepts, claude_mapping, copilot_mapping)
     repo_local_claude_failures = validate_repo_local_claude_boundary(plugin_root.parent)
     projection_output_failures = validate_projection_outputs(plugin_root)
+    repo_local_claude_failures.extend(find_repo_local_claude_references(plugin_root))
 
     return {
         "forbidden_tokens": all_hits,

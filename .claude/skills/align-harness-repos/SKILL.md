@@ -12,9 +12,9 @@ argument-hint: ""
 Audit alignment between the distributed `al-dev-shared` plugin surface, the
 generated projection artifacts under `profile-al-dev-shared/generated/agents/`,
 and the two harness profile repos. Checks for forbidden harness-specific tokens
-in shared files, verifies Harness Mapping table coverage, and surfaces
-repo-local `.claude` boundary issues separately from shared-source or generated
-projection failures.
+in shared files, verifies Harness Mapping table coverage, validates generated
+projection outputs, and enforces that repo-local `.claude/` maintainer tooling
+stays outside the distributed plugin and projection boundary.
 
 ---
 
@@ -98,6 +98,19 @@ Harness mapping gaps:
     - "old concept": present in [harness-a]  <- may be intentional
 ```
 
+**Section C — Repo-local `.claude` boundary issues**:
+
+```
+Repo-local .claude boundary issues:
+
+  AGENTS.md
+    Error: AGENTS.md must document `.claude` as repo-local Claude maintainer tooling.
+
+  skills/al-dev-foo/SKILL.md:12
+    Error: Shared plugin content must not depend on repo-local Claude maintainer tooling.
+      Context: "... .claude/skills/local-tool/SKILL.md ..."
+```
+
 ---
 
 ## Step 5 — USER_GATE: offer fixes
@@ -114,6 +127,7 @@ Want me to attempt fixes?
 - Missing mapping rows will be added to the appropriate harness profile instruction file.
 - Generated projection failures will be fixed by re-running the projection generator.
 - Orphaned rows will be flagged for manual review (not auto-deleted).
+- Repo-local `.claude` boundary issues will be flagged for manual review unless they are missing repo documentation markers in `AGENTS.md`.
 
 Proceed? (yes / no)
 ```

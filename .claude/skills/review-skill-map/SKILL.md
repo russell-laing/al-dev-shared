@@ -156,7 +156,11 @@ Report what changed and what was verified as already correct.
 
 > **Skip if** `$ARGUMENTS` names a specific skill — this is a scoped accuracy-check run. Note: *"Move candidate scan skipped — run without arguments for full analysis."* and stop.
 
-Scan every active skill identified in Phase 1 for signals that it belongs in the project-local `.claude/skills/` directory rather than the distributed plugin. Report findings only — do not move any files.
+Scan every active skill identified in Phase 1 for signals that it belongs in
+the project-local `.claude/skills/` directory rather than the distributed
+plugin. Report findings only — do not move any files. Move candidates are
+repo-local Claude maintainer tooling and are not part of the shared projection
+or downstream harness-consumer surface.
 
 ### Detection signals
 
