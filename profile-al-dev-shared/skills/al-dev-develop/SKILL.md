@@ -39,11 +39,16 @@ and the Scope Expansion Gate rules. Ensures consistency across
 parallel developers.
 
 **Phase 0–10:** Semantic workflow layers of the /al-dev-develop skill.
-Phase 0 checks for resumed progress; Phases 1–4 read context and
-partition work; Phase 5 spawns developers; Phases 6–7 handle review;
-Phase 8 compiles and lints; Phase 9 writes the code review; Phase 10
-presents to user. Each phase is a checkpoint with specific inputs
-and outputs.
+Phase 0 checks for resumed progress; Phase 0.5 establishes the
+resume pack; Phases 1–3 prepare context, checklist, scope, and
+developer assignments; Phases 4–4.5 verify implementation
+ownership and optional autonomous checks; Phase 5 prepares the
+review entry and compile discipline; Phases 8 and 8.5 must pass
+before the review panel is spawned; Phases 6–7 then synthesize and
+manage review findings; Phase 9 writes the review artifact
+(success review or blocking note); Phase 10 presents to the
+user. Each phase is a checkpoint with specific
+inputs and outputs.
 
 **Phase 1.5 (Autonomous):** Optional signature verification phase
 activated by the `--autonomous` flag. Uses AL Symbols MCP to verify
@@ -61,7 +66,8 @@ cycles with detailed error tracking per attempt. After each compile,
 parses errors, spawns a developer to fix them, and re-compiles.
 Stops after 5 failed attempts and escalates to the user.
 
-**Review Panel:** The three-specialist review team spawned in Phase 5:
+**Review Panel:** The three-specialist review team spawned only after
+Phases 8 and 8.5 complete cleanly:
 **al-dev-security-reviewer** (permission/auth/data exposure),
 **al-dev-expert-reviewer** (AL conventions/BC patterns), and
 **al-dev-performance-reviewer** (N+1/SetLoadFields/efficiency).
@@ -120,47 +126,33 @@ Per the Phase 0 Read Protocol in
 
 ## Phase 0.5: Context Preservation Checkpoint
 
-**Purpose:** Before development starts, create a resumable checkpoint in case context compaction occurs.
+**Purpose:** Establish the resume pack that `/al-dev-develop`
+maintains through the run so context compaction and session
+hand-off do not require a full re-read of the solution plan.
 
-**Execution:**
+**Resume pack artifacts:**
+- `.dev/progress.md` — latest phase checkpoint, overwritten each phase
+- `.dev/$(date +%Y-%m-%d)-al-dev-develop-progress.md` — dated session snapshot
+- `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md` — implementation checklist extracted from plan
+- `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` — file-level scope contract
 
-1. Check if `.dev/resume-context.md` exists
-   - If yes, read it and offer resume/restart option to user
-   - If restart chosen, delete checkpoint and proceed to Phase 1
-   - If resume chosen, inject checkpoint state into Phase 1 restart
+At fresh start:
+1. Create or overwrite `.dev/progress.md` per
+   `knowledge/workflow-resilience.md`
+2. Create the dated progress snapshot for the current run
+3. Continue building the rest of the resume pack in later phases:
+   - Phase 2.5 writes the checklist artifact
+   - Phase 3.0 writes the scope artifact
+4. Refresh the resume pack at each named phase boundary
 
-2. If starting fresh, write `.dev/resume-context.md`:
-
-   ```markdown
-   # Development Resume Checkpoint — [ISO-8601 timestamp]
-
-   ## Current State
-   - **Phase:** 1 (Design & Module Planning)
-   - **Modules assigned:** [List of module assignments by developer]
-   - **Last compilation:** [Timestamp or "not yet run"]
-   - **Error summary:** [If any errors from previous compile]
-   - **Developer progress:**
-     - Developer A: [Module name, lines written, current task]
-     - Developer B: [Module name, lines written, current task]
-
-   ## Resumption Instructions
-   If context overflow occurs, inject this section into the next session's developer spawn:
-   > "Previous session checkpoint: [current state details]. Resume from this point."
-
-   ## Next Steps
-   - [Task 1]
-   - [Task 2]
-   - [Task 3]
-   ```
-
-3. **Update checkpoint after each phase completes** — append new state before proceeding to next phase
-
-**Why this helps:**
-- Explicit record of where development left off
-- Prevents asking developers to re-explain design decisions after compaction
-- Enables instant resumption without re-planning
-
-**When to enable:** After first context compaction is detected
+If resuming:
+1. Read `.dev/progress.md`
+2. Read the latest dated `*-al-dev-develop-progress.md` if present
+3. Read the latest dated `*-al-dev-develop-checklist.md` if present
+4. Read the latest dated `*-al-dev-develop-scope.md` if present
+5. Resume from the recorded next step using the artifacts that
+   exist; only re-scan the full plan if a required resume detail
+   is missing or contradictory
 
 ---
 
@@ -270,7 +262,35 @@ Partition boundaries:
 For small solutions (1-3 objects), skip partitioning and
 spawn a single developer.
 
+### Phase 2.5: Extract Implementation Checklist
+
+Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md`
+from the approved solution plan.
+
+Required sections:
+- `File` — each in-scope file path
+- `Module Variables / Objects` — concrete additions expected
+- `Procedures / Triggers` — concrete additions or edits expected
+- `Integration Points` — exact existing procedures or trigger
+  locations to touch
+- `Verification` — compile, review, and artifact checks
+
+Developers and reviewers must reference this checklist instead
+of repeatedly re-reading the full solution plan.
+
 ## Phase 3: Spawn Developer Team
+
+### Phase 3.0: Write Scope Boundary Document
+
+Before spawning developers, write
+`.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` with:
+- `Files in scope`
+- `Permitted change types per file`
+- `Files explicitly out of scope`
+- `Escalation rule if an out-of-scope edit appears necessary`
+
+Reviewers validate the implementation against this scope file,
+not memory alone.
 
 For each developer, include in the prompt:
 
@@ -423,7 +443,7 @@ If CRITICAL issues found: dispatch a developer with the specific
 violations. Wait for fixes. Re-run the relevant check before
 spawning the review team.
 
-## Phase 5: Spawn Review Team
+## Phase 5: Prepare Review Team
 
 > Canonical panel: `knowledge/review-panel-pattern.md`.
 > Role descriptions and synthesis steps are in that doc.
@@ -435,10 +455,27 @@ spawning the review team.
 - Do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
 - Log files: Read errors from `.dev/compile-errors.log`, NOT stdout — errors are logged to file only
 
+Compile result reporting rules:
+- Run `al-compile --output .dev/compile-errors.log` with no pipes
+- Inspect the file after compile; never pipe the compile command into `head`, `tail`, or `grep`
+- In conversation, report only:
+  - error count
+  - warning count
+  - up to 3 representative diagnostics
+  - affected files
+- Reference `.dev/compile-errors.log` for the full log
+- Do not paste raw tail output into the session
+
 (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
 
-When all developers complete, spawn 3 reviewers in parallel
-as a single batch:
+When all developers complete, finish the implementation compile
+pass first using the `.dev/compile-errors.log` generated from
+the Phase 5 compilation discipline. Do not spawn reviewers yet.
+Phase 8 compilation handling and the Phase 8.5 pre-review
+staging gate must both complete cleanly before review begins.
+
+Once Phase 8.5 is satisfied, spawn 3 reviewers in parallel as
+a single batch:
 
 **al-dev-security-reviewer:**
 Review all implemented code for permission issues, data
@@ -459,6 +496,10 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 ## Phase 6: Synthesise Review Findings
 
+Execute this phase only after the reviewer batch has actually
+been spawned following successful completion of Phases 8 and
+8.5.
+
 When all reviewers complete:
 
 1. Read all three review outputs
@@ -473,6 +514,9 @@ When all reviewers complete:
    assigning fixes
 
 ## Phase 7: Manage Review Iteration
+
+Execute this phase only after Phase 6 has synthesized findings
+from the reviewer batch spawned after Phases 8 and 8.5.
 
 Categorize all findings:
 
@@ -500,14 +544,64 @@ Do NOT present to user until critical issues are resolved.
 ## Phase 8: Compilation & Error Handling
 
 **Execution:**
-1. **Read** `.dev/compile-errors.log` (compiled by Phase 5 batch compile)
+1. **Read** `.dev/compile-errors.log` (generated after the
+   implementation compile pass described in Phase 5)
 2. **Categorize** errors using: `python3 .tools/error-categorizer.py .dev/compile-errors.log`
-3. **Report** the summary to conversation (NOT raw output)
-4. **If no errors:** Proceed to Phase 9 (code review)
-5. **If errors exist:** 
+3. **Report** the summary to conversation (NOT raw output):
+   - error count
+   - warning count
+   - up to 3 representative diagnostics
+   - affected files
+   - reference `.dev/compile-errors.log` as the full log
+4. **If no errors:** Proceed to Phase 8.5 (pre-review
+   staging). If Phase 8.5 passes, return to the Phase 5
+   reviewer batch. If Phase 8.5 finds unexpected residue,
+   skip the reviewer batch and continue directly to the
+   blocking-note path in Phase 9
+5. **After the reviewer batch completes:** continue to
+   Phase 6 (synthesise findings) and then Phase 9 (write the
+   code review)
+6. **If errors exist:** 
    - Group by category (naming, schema, compilation, warnings)
-   - Assign fixes to reviewers based on error type
+   - Assign fixes to developers based on error type
    - Compile once more after all fixes applied
+
+### Phase 8.5: Pre-Review File Staging
+
+Before spawning reviewers or beginning review synthesis:
+1. Read `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md`
+2. Run:
+   `git -C <repo> status --porcelain`
+3. From that status output, collect only paths that both:
+   - appear in the scope file's `Files in scope` list
+   - currently appear in `git status --porcelain`
+4. Stage only the collected in-scope changed paths that exist in
+   the working tree. Do not blindly `git add` the full allowlist.
+   If a path is deleted and the scope file explicitly permits a
+   delete for that file, stage that delete intentionally.
+5. Re-run:
+   `git -C <repo> status --porcelain`
+6. Interpret the output entry-by-entry against both the path list
+   and the `Permitted change types per file` section in the scope
+   artifact:
+   - Acceptable entries are staged-only paths that are listed
+     in the scope file and whose staged change type matches what
+     that file is permitted to do (for example, edit-only,
+     create, delete, rename)
+   - If an in-scope path still has unstaged worktree changes,
+     stage it and re-run status
+   - If any entry is untracked, has unstaged residue after
+     re-staging, names a path outside the scope file, or uses a
+     staged change type not permitted for that file, mark it as
+     unexpected residue
+7. If only acceptable staged in-scope entries remain, this
+   gate passes and review may continue
+8. If any unexpected residue remains:
+   - Do not spawn reviewers
+   - Do not begin review synthesis
+   - Do not continue to the normal success-review path
+   - Continue directly to Phase 9 and write the blocking note
+     artifact instead
 
 ## Phase 9: Validate and Write Code Review
 
@@ -519,14 +613,14 @@ In autonomous mode (`--autonomous`), append the Autonomous Verification Results 
 
 **Error Summary Section:**
 
-Before reviewers analyze code, include this structured error summary in the code review report:
+Include this structured error summary in the final code review report:
 
 **Compilation Issues by Category:**
 - Extract from `.dev/compile-errors.log` using error categorizer
 - Separate: naming violations, schema errors, compilation errors, warnings
 - For each category, show:
   - Count
-  - 2–3 representative examples (truncated)
+  - Up to 3 representative diagnostics (truncated)
   - Suggested fix pattern
   - Files affected
 
@@ -546,7 +640,20 @@ Before reviewers analyze code, include this structured error summary in the code
 - Files: JournalEntryAllocation.Table.al:123
 ```
 
-This structure helps reviewers prioritize fixes by category and understand root causes quickly.
+This structure helps the user and any follow-up reviewer
+understand the remaining fix patterns and affected files quickly.
+
+If Phase 8.5 found unexpected residue, do not write a success
+review and do not describe reviewer findings that were never run.
+Instead, write a blocking note that lists:
+- file path
+- why it is outside the approved scope
+- user decision status: `pending` if no reply yet, otherwise
+  `approved`, `rejected`, or `deferred`
+
+This blocking note is the final review artifact for that run.
+Normal reviewer flow resumes only after the unexpected residue
+is resolved in a later run.
 
 After writing, run the validator:
 
@@ -609,4 +716,3 @@ USER_GATE — ask the user with options:
 After user approves, remind them: "Run `/al-dev-commit` to stage
 and commit the implemented changes using the validated commit
 workflow."
-

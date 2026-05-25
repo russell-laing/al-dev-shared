@@ -181,6 +181,31 @@ grep -E "warning|error" .dev/compile-errors.log | grep -E "\.(Page|PageExt)\.al"
 | `grep FILE` (file-based) | ✅ | 0KB | Only grep results in stdout |
 | `command > FILE` + Read | ✅ | ~0KB | File on disk, Read opens it separately |
 
+## Reporting Back Into the Session
+
+Safe compile inspection is not enough; the session update must
+also stay compact.
+
+Use this pattern:
+
+```text
+Compilation summary:
+- Errors: 2
+- Warnings: 5
+- Representative diagnostics:
+  - AL0118 in src/Foo.al:42
+  - AA0231 in src/Bar.al:88
+- Files affected: src/Foo.al, src/Bar.al
+- Detailed log: .dev/compile-errors.log
+```
+
+Avoid this pattern:
+- pasting `tail -20 .dev/compile-errors.log`
+- pasting `head -20 .dev/compile-errors.log`
+- bulk `cat .dev/compile-errors.log` output
+- dumping repeated grep output for the same error family
+- reproducing diagnostics already persisted to disk
+
 ---
 
 **Last Updated:** 2026-05-24

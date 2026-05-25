@@ -145,6 +145,21 @@ The description helps the harness track intent (logging vs. inspection) and prev
 }
 ```
 
+### Session Reporting Rule
+
+After parsing `.dev/compile-errors.log`, summarize the result
+instead of replaying raw log lines into the session.
+
+Required summary fields:
+- `Errors:` count
+- `Warnings:` count
+- `Representative diagnostics:` up to 3
+- `Files affected:` unique file list
+- `Detailed log:` `.dev/compile-errors.log`
+
+Do not use `tail`, `head`, or bulk `cat` output as a status
+update.
+
 ### Error Log Parsing Procedures
 
 Parse `.dev/compile-errors.log` to separate actionable items from noise:
