@@ -2,7 +2,7 @@
 
 > Maintainer reference for how shared agent source becomes harness-native artifacts for Claude Code, Copilot CLI, and Codex.
 
-**Last updated:** 2026-05-23
+**Last updated:** 2026-05-24
 
 ---
 
@@ -17,8 +17,8 @@ The `al-dev-shared` plugin is consumed by three different AI harnesses: Claude C
 The projection layer solves this by maintaining **one canonical authored surface** with generic, harness-neutral definitions, then **automatically translating them** into harness-native versions at build time.
 
 - Shared source (`profile-al-dev-shared/agents/*.md`) uses generic capability names (e.g., `Read`, `Bash`, `USER_GATE`)
-- The projection **policy** (`knowledge/agent-tool-projection-policy.md`) defines how to map each generic capability to each harness's native tool
-- The **generator** reads the shared source and policy, then outputs three sets of harness-specific versions
+- The projection **policy doc** (`knowledge/agent-tool-projection-policy.md`) documents the intended mapping from each generic capability to each harness's native tool or behavior
+- The **generator** reads the shared source and applies the currently implemented mapping logic from `scripts/generate-agent-projections.py`, then outputs three sets of harness-specific versions
 
 This means maintainers edit once, and all three harnesses get consistent, synchronized agents automatically.
 
@@ -26,8 +26,8 @@ This means maintainers edit once, and all three harnesses get consistent, synchr
 
 ```mermaid
 graph LR
-    A["Shared Source<br/>(agents/*.md)"] -->|applies| B["Projection Policy<br/>(agent-tool-projection-policy.md)"]
-    B -->|generator reads| C["Generator Script<br/>(generate-agent-projections.py)"]
+    A["Shared Source<br/>(agents/*.md)"] -->|read by| C["Generator Script<br/>(generate-agent-projections.py)"]
+    B["Projection Policy<br/>(agent-tool-projection-policy.md)"] -->|documents intended mappings for| C
     C -->|outputs| D["Claude Code<br/>(generated/agents/claude/)"]
     C -->|outputs| E["Copilot CLI<br/>(generated/agents/copilot/)"]
     C -->|outputs| F["Codex<br/>(generated/agents/codex/)"]
@@ -44,7 +44,7 @@ graph LR
     class F output
 ```
 
-The diagram above shows the core insight: shared source (left) flows through the projection policy and generator (center) to produce three harness-native outputs (right). Maintainers edit the shared source once; the generator ensures all three harnesses stay synchronized.
+The diagram above shows the core insight: shared source (left) is projected by the generator into three harness-native outputs (right). The policy document describes the intended mapping contract, and the generator implementation must stay aligned with it.
 
 ---
 
@@ -56,10 +56,10 @@ These files are canonical authored source and are meant to be edited:
 
 - `profile-al-dev-shared/agents/*.md` — agent definitions
 - `profile-al-dev-shared/skills/<name>/SKILL.md` — skill definitions
-- `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` — the mapping policy itself
+- `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` — the documented projection contract
 - `profile-al-dev-shared/knowledge/` — all shared knowledge documents
 
-When you edit these files, you are modifying the source of truth. Changes here flow through to all three harnesses.
+When you edit these files, you are modifying the source of truth. Agent changes flow through to all three harnesses after regeneration; skills and knowledge remain shared authored content directly consumed by the harnesses.
 
 ### Generated Files: Never Hand-Edit
 
@@ -97,7 +97,7 @@ This scanner ensures no harness-specific tokens have leaked into shared source. 
 
 ### Overview
 
-This workflow walks you through adding a new agent or skill safely, from authoring through validation and commit.
+Adding an **agent** and adding a **skill** are different maintenance flows. Only agents participate in the generated projection pipeline.
 
 ### Step-by-Step Workflow
 
@@ -114,10 +114,7 @@ cat > /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/my-new-agen
 name: my-new-agent
 description: Brief description of what this agent does
 model: claude-opus-4-7
-tools:
-  - Read
-  - Bash
-  - USER_GATE
+tools: ["Read", "Bash", "USER_GATE"]
 ---
 
 # System Prompt for the Agent
@@ -144,9 +141,9 @@ argument-hint: "[optional args]"
 EOF
 ```
 
-**Key rule:** Use generic capability names in the `tools:` list (e.g., `Read`, `Bash`, `USER_GATE`), never harness-specific names like `AskUserQuestion` or `ask_user`. Reference `profile-al-dev-shared/knowledge/harness-concepts.md` for the complete generic vocabulary.
+**Key rule:** Use generic capability names in the `tools:` list (e.g., `Read`, `Bash`, `USER_GATE`), never harness-specific names like `AskUserQuestion` or `ask_user`. Keep the `tools:` value in the inline list format currently used by authored agents, because `scripts/generate-agent-projections.py` parses that format. Reference `profile-al-dev-shared/knowledge/harness-concepts.md` for the complete generic vocabulary.
 
-#### Step 2: Regenerate Projections
+#### Step 2A: Regenerate Projections for a New or Edited Agent
 
 Run the generator to create harness-native versions:
 
@@ -155,7 +152,7 @@ cd /Users/russelllaing/al-dev-shared
 python3 scripts/generate-agent-projections.py
 ```
 
-Expected output:
+Expected output for an agent change:
 
 - New files created in `profile-al-dev-shared/generated/agents/claude/`
 - New files created in `profile-al-dev-shared/generated/agents/copilot/`
@@ -167,7 +164,17 @@ Run:
 git status
 ```
 
-You should see your new shared source file plus the three generated versions.
+You should see your new shared agent file plus the three generated versions.
+
+#### Step 2B: Skill-Only Changes
+
+If you only added or edited a skill under `profile-al-dev-shared/skills/`, do **not** expect new generated agent artifacts. Skills are shared authored content, not projection inputs.
+
+For a skill-only change:
+
+1. Validate the shared surface as needed
+2. Run any skill-specific checks
+3. Commit the skill change directly
 
 #### Step 3: Validate Harness Neutrality
 
@@ -188,7 +195,7 @@ If validation fails, see Section 5 for how to fix violations.
 
 #### Step 4: Commit the Changes
 
-Stage both the shared source and generated versions:
+For an agent change, stage both the shared source and generated versions:
 
 ```bash
 git add profile-al-dev-shared/agents/my-new-agent.md \
@@ -206,9 +213,10 @@ Regenerated projections for all three harnesses."
 
 ```mermaid
 graph LR
-    A["1. Author Shared Source<br/>(agents/*.md or skills/*/SKILL.md)<br/>Use generic capability names"] -->|generic| B["2. Regenerate Projections<br/>(python3 scripts/generate-agent-projections.py)<br/>Creates harness-native versions"]
-    B -->|generates| C["3. Validate Harness Neutrality<br/>(python3 scripts/validate_harness_neutrality.py)<br/>Checks for leaked tokens"]
-    C -->|passes validation| D["4. Commit<br/>(git add + git commit)<br/>Stage shared + generated files"]
+    A["1. Author Shared Source<br/>(agents/*.md or skills/*/SKILL.md)<br/>Use generic capability names"] -->|agent changes only| B["2. Regenerate Projections<br/>(python3 scripts/generate-agent-projections.py)<br/>Creates harness-native versions"]
+    A -->|all shared-source changes| C["3. Validate Harness Neutrality<br/>(python3 scripts/validate_harness_neutrality.py)<br/>Checks for leaked tokens"]
+    B --> D["4. Commit<br/>(stage shared + generated files for agent changes)"]
+    C --> D
 
     classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
     classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
@@ -226,13 +234,12 @@ graph LR
 
 ### When to Regenerate
 
-You must regenerate projections after any of these changes:
+You must regenerate projections after either of these changes:
 
 1. **Editing an agent:** You modify `profile-al-dev-shared/agents/*.md`
-2. **Editing the projection policy:** You modify `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`
-3. **Editing shared knowledge that affects tool descriptions:** You modify relevant files in `profile-al-dev-shared/knowledge/`
+2. **Editing the generator's implemented mapping logic:** You modify `scripts/generate-agent-projections.py`
 
-You do **not** need to regenerate when editing skills, knowledge unrelated to agents, or non-source files.
+You do **not** need to regenerate when editing skills, the policy documentation, knowledge files, or non-source files, unless you also changed agents or the generator implementation.
 
 ### How to Regenerate
 
@@ -243,7 +250,7 @@ cd /Users/russelllaing/al-dev-shared
 python3 scripts/generate-agent-projections.py
 ```
 
-The script reads all shared agent files and the projection policy, then outputs harness-native versions in-place:
+The script reads all shared agent files and applies its built-in mapping logic, then outputs harness-native versions in-place:
 
 - `profile-al-dev-shared/generated/agents/claude/*.md` — Claude Code versions
 - `profile-al-dev-shared/generated/agents/copilot/*.md` — Copilot CLI versions
@@ -288,10 +295,10 @@ If validation fails, fix the violations (see Section 5) and regenerate again.
 ```mermaid
 graph LR
     A["Shared Agent Definitions<br/>(agents/*.md)<br/>Uses generic names"] -->|read by| B["Generator Script"]
-    C["Projection Policy<br/>(agent-tool-projection-policy.md)<br/>Capability → Tool mappings"] -->|read by| B
-    B -->|maps capabilities| D["Claude Code Projection<br/>(generated/agents/claude/*.md)<br/>AskUserQuestion, read, bash"]
-    B -->|maps capabilities| E["Copilot CLI Projection<br/>(generated/agents/copilot/*.md)<br/>ask_user, file_read, shell"]
-    B -->|maps capabilities| F["Codex Projection<br/>(generated/agents/codex/*.toml)<br/>ASK_USER, READ, BASH"]
+    C["Projection Policy<br/>(agent-tool-projection-policy.md)<br/>Documents intended mappings"] -->|kept aligned with| B
+    B -->|maps capabilities| D["Claude Code Projection<br/>(generated/agents/claude/*.md)<br/>AskUserQuestion, Read, Bash"]
+    B -->|maps capabilities| E["Copilot CLI Projection<br/>(generated/agents/copilot/*.md)<br/>ask_user, read, execute"]
+    B -->|renders capability notes| F["Codex Projection<br/>(generated/agents/codex/*.toml)<br/>developer_instructions + capability notes"]
 
     classDef input fill:#e3f2fd,stroke:#1976d2,color:#323130,font-weight:bold
     classDef process fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
@@ -319,12 +326,17 @@ Run:
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 ```
 
-The validator checks for:
+The validator currently checks for a specific set of forbidden patterns in shared authored directories:
 
-- Harness-specific tool names in agent files (e.g., `AskUserQuestion`, `ask_user`, `ASK_USER`)
-- Harness-specific prefixes (e.g., `mcp__`, `claude:`, `copilot:`)
-- Harness-specific keys or formats (e.g., TOML-specific syntax in shared source)
-- File paths that reference generated directories (should reference shared source only)
+- Claude-specific tool/session tokens such as `AskUserQuestion`, `subagent_type`, `Open Claude Code`, and `Restart Claude Code`
+- Copilot-specific tool/session tokens such as `ask_user`, `agent_type: ...`, and `start a new Copilot CLI session`
+- Claude plugin MCP token prefixes such as `mcp__plugin_profile-claude`
+- Claude and Copilot settings paths such as `~/.claude` and `~/.copilot`
+
+Two shared knowledge files are intentionally allowlisted because they document cross-harness mappings:
+
+- `profile-al-dev-shared/knowledge/harness-concepts.md`
+- `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`
 
 Expected successful output:
 
@@ -343,35 +355,31 @@ PASS: no harness-specific leakage in shared authored surface
 ```markdown
 # agents/my-agent.md
 
-tools:
-  - Read
-  - AskUserQuestion  # ❌ This is Claude-specific, not generic
+tools: ["Read", "AskUserQuestion"]  # ❌ This is Claude-specific, not generic
 ```
 
 **Fix:** Replace with the generic capability name
 
 ```markdown
-tools:
-  - Read
-  - USER_GATE  # ✓ Generic name from harness-concepts.md
+tools: ["Read", "USER_GATE"]  # ✓ Generic name from harness-concepts.md
 ```
 
 **How to find the right generic name:** Consult `profile-al-dev-shared/knowledge/harness-concepts.md` for the mapping of harness-specific names to generic names.
 
-#### Pitfall 2: Including Harness-Specific Prefixes in Descriptions
+#### Pitfall 2: Including Harness-Specific Session or Tool Tokens in Shared Text
 
-**Symptom:** Validator reports `claude:` or `copilot:` prefix in agent description
+**Symptom:** Validator reports tokens such as `start a new Copilot CLI session` or `subagent_type`
 
 **Example of mistake:**
 
 ```markdown
-description: This agent handles claude:code-review tasks
+If blocked, start a new Copilot CLI session and continue there.
 ```
 
-**Fix:** Remove the harness-specific prefix
+**Fix:** Rewrite the instruction in harness-neutral language
 
 ```markdown
-description: This agent handles code review tasks
+If blocked, ask the user how to proceed and wait for a response.
 ```
 
 #### Pitfall 3: Copying a Generated File Back Into Shared Source
@@ -425,7 +433,7 @@ When in doubt, use this decision tree:
    - Yes → It's generic, use it
    - No → It's likely harness-specific
 
-3. **Does it reference a specific tool by its harness-native name?** (e.g., `AskUserQuestion`, `ask_user`, `ASK_USER`)
+3. **Does it reference a specific tool or session concept by its harness-native name?** (e.g., `AskUserQuestion`, `ask_user`, `subagent_type`)
    - Yes → It's harness-specific, use the generic equivalent
    - No → It's generic
 
@@ -435,11 +443,10 @@ When in doubt, use this decision tree:
 flowchart LR
     %% Nodes
     Shared["Shared agent source
-    agents/*.md"] --> Policy["Projection policy
-    agent-tool-projection-policy.md"]
-    Shared --> Generator["Projection generator
+    agents/*.md"] --> Generator["Projection generator
     scripts/generate-agent-projections.py"]
-    Policy --> Generator
+    Policy["Projection policy
+    agent-tool-projection-policy.md"] --> Generator
 
     Generator --> Claude["generated/agents/claude/*.md"]
     Generator --> Copilot["generated/agents/copilot/*.md"]
@@ -517,7 +524,7 @@ It does **not** declare harness-native names like `AskUserQuestion`, `ask_user`,
 
 ### 2. Projection step
 
-The generator reads the shared agent file and applies the projection policy:
+The generator reads the shared agent file and applies the currently implemented mapping logic documented by the projection policy:
 
 - Claude projection maps `USER_GATE` to `AskUserQuestion`
 - Copilot projection maps `USER_GATE` to `ask_user`
@@ -547,17 +554,15 @@ When a user types `/al-dev-plan` in Claude Code:
 
    ```json
    {
-     "extraKnownMarketplaces": {
-       "al-dev-shared": {
-         "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
-       }
+     "al-dev-shared": {
+       "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
      }
    }
    ```
 
 2. Claude Code loads `profile-al-dev-shared/skills/al-dev-plan/SKILL.md`
 
-3. The skill may dispatch agents referenced by name (e.g., `al-dev-shared:al-dev-architect`)
+3. The skill may dispatch agents referenced by name (e.g., `al-dev-shared:al-dev-solution-architect`)
 
 ### 2. Agent Projection Resolution
 
@@ -569,16 +574,10 @@ When a skill dispatches `al-dev-shared:al-dev-interview`, Claude Code:
 
    ```yaml
    description: "Interview the user to extract complete BC/AL implementation details..."
-   tools:
-     - Read
-     - Write
-     - AskUserQuestion      # <- Projected from generic USER_GATE
+   tools: ["Read", "Write", "AskUserQuestion"]
    ```
 
-3. Claude Code maps tool names to native operations:
-   - `Read` → read files from local filesystem
-   - `Write` → write files to local filesystem
-   - `AskUserQuestion` → prompt user for input
+3. Claude Code uses the projected Claude-native tool names when executing that agent.
 
 ### 3. Worktree Lifecycle in Claude Code
 
@@ -587,15 +586,9 @@ When developing a feature that needs isolation:
 ## Phase 1: Workspace Creation
 
 ```bash
-# User runs /al-dev-plan for a feature design
-# Skill invokes superpowers:using-git-worktrees
-
-# Claude Code creates isolated worktree:
+# Claude Code may create an isolated worktree:
 git worktree add .claude/worktrees/feature-xyz main
 cd .claude/worktrees/feature-xyz
-
-# Plugin is still accessible from worktree:
-~/.claude/plugins/cache/claude-plugins-official/...
 ```
 
 ## Phase 2: Skill Execution in Worktree
@@ -659,12 +652,11 @@ The worktree has the full repo structure, including generated agents:
 Agent execution in the worktree:
 
 ```bash
-# From inside worktree context, agent might run:
+# From inside worktree context, the maintainer might run:
 git status                          # Shows worktree branch state
-npm test                            # Runs tests in worktree
-git commit -m "feat: ..."          # Commits to worktree branch
+git diff                            # Reviews worktree edits
 
-# When /projection-sync runs, it regenerates IN-PLACE:
+# Regenerate projections in-place when shared agents change:
 python3 scripts/generate-agent-projections.py
 # → Updates profile-al-dev-shared/generated/agents/claude/*.md
 # → Updates profile-al-dev-shared/generated/agents/copilot/*.md
@@ -673,12 +665,7 @@ python3 scripts/generate-agent-projections.py
 
 ## Phase 3: Worktree Cleanup
 
-When development completes, the user invokes `/superpowers:finishing-a-development-branch`:
-
-1. Skill detects worktree state: `git rev-parse --git-dir` ≠ `git rev-parse --git-common-dir`
-2. Skill presents merge/PR/keep/discard options
-3. On merge: Returns to main repo, merges worktree branch, removes worktree
-4. On PR: Keeps worktree alive (user may need to iterate on feedback)
+When development completes, finish the branch using the harness-specific workflow documented in `CLAUDE.md` or your local maintainer tooling.
 
 ### 4. Concrete Flow: Adding a Feature to al-dev-shared
 
@@ -686,8 +673,8 @@ When development completes, the user invokes `/superpowers:finishing-a-developme
 User: /al-dev-plan "Add new skill for X"
 
 → /al-dev-plan skill invokes:
-  - Architect agent (al-dev-architect) for design debate
-  - Dispatched via: al-dev-shared:al-dev-architect projection
+  - Solution architect agent (`al-dev-solution-architect`) for design work
+  - Dispatched via: `al-dev-shared:al-dev-solution-architect`
   - Uses: AskUserQuestion (USER_GATE projected to Claude native tool)
   
 → User approves design
@@ -699,41 +686,17 @@ User: /al-dev-plan "Add new skill for X"
   - Loads developer agent: al-dev-shared:al-dev-developer
   - Agent uses Bash, Read, Write tools (all Claude Code natives)
   - Agent creates: profile-al-dev-shared/skills/new-skill/SKILL.md
-  - Agent runs: /projection-sync to regenerate harness artifacts
+  - Agent or maintainer regenerates harness artifacts when shared agents change
 
-→ /projection-sync orchestrates from within worktree:
+→ Projection maintenance from within the worktree:
   - Validates shared source (no harness leakage)
   - Regenerates projections in-place:
     * profile-al-dev-shared/generated/agents/claude/*.md
     * profile-al-dev-shared/generated/agents/copilot/*.md
     * profile-al-dev-shared/generated/agents/codex/*.toml
-  - Commits changed projection files to worktree branch
-  - Claude Code user sees: only claude/*.md files (but all three harnesses regenerated)
+  - Commits changed projection files to the worktree branch
 
-→ User: /superpowers:finishing-a-development-branch
-
-→ Finishing skill detects worktree, offers options
-
-→ User chooses: "Create PR"
-
-→ Skill:
-  - Keeps worktree alive at .claude/worktrees/skill-xyz
-  - Pushes worktree branch to origin/skill-xyz
-  - Creates PR with summary
-
-→ User iterates on feedback in same worktree
-
-→ Feedback incorporated, PR merged
-
-→ User: /superpowers:finishing-a-development-branch again
-
-→ User chooses: "Merge and cleanup"
-
-→ Finishing skill:
-  - Detects worktree is under .claude/worktrees/ (Claude Code ownership)
-  - Returns to main repo
-  - Removes worktree: git worktree remove .claude/worktrees/skill-xyz
-  - Deletes feature branch
+→ User completes the normal review and merge flow for that worktree branch
 ```
 
 ### 5. Key Points
@@ -742,7 +705,7 @@ User: /al-dev-plan "Add new skill for X"
 - **Projections are harness-specific:** Each harness consumes its own `generated/agents/<harness>/` directory
 - **Tool mapping is hidden:** Claude Code developers see `Bash`, `Read`, `Write`, `AskUserQuestion`; the projection layer mapped these from generic capability names
 - **Worktrees are optional:** Users can work directly on main, or use worktrees for isolation; the projection layer doesn't care which
-- **Plugin discovery is once-per-session:** Claude Code reads plugin paths from settings, then uses them for all skills and agents in that session
+- **Plugin discovery comes from harness settings:** Claude Code reads plugin paths from its configured settings, then loads skills and projections from the registered plugin surface
 
 ---
 
@@ -754,7 +717,7 @@ Quick lookup for file locations and purposes:
 | --- | --- | --- |
 | `profile-al-dev-shared/agents/*.md` | Canonical agent definitions | ✅ Yes |
 | `profile-al-dev-shared/skills/<name>/SKILL.md` | Canonical skill definitions | ✅ Yes |
-| `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | Capability → tool mappings | ✅ Yes |
+| `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | Capability-to-harness mapping contract | ✅ Yes |
 | `profile-al-dev-shared/knowledge/harness-concepts.md` | Generic capability vocabulary | ✅ Yes |
 | `profile-al-dev-shared/knowledge/` | Shared knowledge documents | ✅ Yes |
 | `profile-al-dev-shared/generated/agents/claude/` | Claude Code projections | ❌ No (regenerate instead) |
@@ -850,7 +813,7 @@ When updating this document, ensure the three guidance files are kept in sync re
 
 When changing agent capabilities or projection behavior:
 
-1. Edit the shared agent source or projection policy, not generated files.
+1. Edit the shared agent source, generator implementation, or policy docs as appropriate; do not hand-edit generated files.
 2. Regenerate or verify generated artifacts as appropriate.
 3. Run the shared-surface neutrality validator.
 4. Check that Claude, Copilot, and Codex outputs still reflect the intended capability mapping.
@@ -863,7 +826,7 @@ This section is for advanced users and Claude Code developers who want to unders
 
 When Claude Code runs in a worktree (an isolated copy of the repository), it:
 
-1. Registers the plugin from `.claude/settings.json` or `~/.claude/settings.json`
+1. Registers the plugin from `~/.claude/settings.json`
 2. Looks for skill definitions in `profile-al-dev-shared/skills/`
 3. Looks for agent projections in `profile-al-dev-shared/generated/agents/claude/`
 4. Loads knowledge files from `profile-al-dev-shared/knowledge/`
@@ -874,12 +837,12 @@ The projection layer ensures that agents in the worktree have Claude Code-native
 
 A worktree is an isolated copy of the repository used for development:
 
-1. **Creation:** Claude Code creates a worktree via `git worktree add` or the EnterWorktree skill
+1. **Creation:** Claude Code or the maintainer creates a worktree via `git worktree add`
 2. **Isolation:** The worktree has its own branch and working directory, separate from the main workspace
 3. **Execution:** Skills and agents run in the worktree; projections are loaded from this isolated copy
 4. **Cleanup:** On completion, the worktree can be kept or removed
 
-When projections are regenerated in a worktree, the generator outputs harness-native versions specific to Claude Code.
+When projections are regenerated in a worktree, the generator updates all three harness output directories in that worktree copy.
 
 ### Example: Adding a Feature to al-dev-shared in a Worktree
 
@@ -889,13 +852,7 @@ This example walks through the full workflow of modifying the plugin within a wo
 
 #### Step 1: Create a Worktree
 
-In Claude Code, use the `superpowers:using-git-worktrees` skill to create an isolated worktree:
-
-```text
-/superpowers:using-git-worktrees
-```
-
-This creates a new branch in `.claude/worktrees/` and switches the session to that isolated directory.
+Create an isolated worktree with your normal git workflow, then work from that directory.
 
 #### Step 2: Author the Agent in Shared Source
 
@@ -907,10 +864,7 @@ cat > profile-al-dev-shared/agents/my-experimental-agent.md << 'EOF'
 name: my-experimental-agent
 description: Test agent for feature X
 model: claude-opus-4-7
-tools:
-  - Read
-  - Bash
-  - USER_GATE
+tools: ["Read", "Bash", "USER_GATE"]
 ---
 
 # System Prompt
@@ -921,7 +875,7 @@ EOF
 
 #### Step 3: Regenerate Projections in the Worktree
 
-Run the generator to create Claude Code-native versions:
+Run the generator to create harness-native versions:
 
 ```bash
 python3 scripts/generate-agent-projections.py
@@ -930,17 +884,13 @@ python3 scripts/generate-agent-projections.py
 The worktree now has:
 
 - `profile-al-dev-shared/agents/my-experimental-agent.md` (generic shared source)
-- `profile-al-dev-shared/generated/agents/claude/my-experimental-agent.md` (Claude-native version with `AskUserQuestion`, `Read`, `Bash`)
+- `profile-al-dev-shared/generated/agents/claude/my-experimental-agent.md`
+- `profile-al-dev-shared/generated/agents/copilot/my-experimental-agent.md`
+- `profile-al-dev-shared/generated/agents/codex/my-experimental-agent.toml`
 
 #### Step 4: Test in Claude Code
 
-Invoke the agent directly via Claude Code's Skill tool to test its behavior:
-
-```text
-/al-dev-shared:my-experimental-agent
-```
-
-If the agent works as expected, you can commit and exit the worktree. If you need to iterate, edit the shared source, regenerate, and test again.
+Test the new agent using the harness-native workflow you are maintaining. If you need to iterate, edit the shared source, regenerate, and test again.
 
 #### Step 5: Commit and Exit the Worktree
 
@@ -948,12 +898,14 @@ When satisfied with the changes:
 
 ```bash
 git add profile-al-dev-shared/agents/my-experimental-agent.md \
-        profile-al-dev-shared/generated/agents/claude/my-experimental-agent.md
+        profile-al-dev-shared/generated/agents/claude/my-experimental-agent.md \
+        profile-al-dev-shared/generated/agents/copilot/my-experimental-agent.md \
+        profile-al-dev-shared/generated/agents/codex/my-experimental-agent.toml
 
 git commit -m "feat: add my-experimental-agent for feature X"
 ```
 
-Then use the `ExitWorktree` tool to return to the main workspace and clean up the worktree.
+Then clean up the worktree using your normal git workflow.
 
 ### How Skill Execution Flows Through Projections
 
@@ -996,28 +948,28 @@ Each of the three supported harnesses consumes a different projection format:
 - **Location:** `profile-al-dev-shared/generated/agents/claude/*.md`
 - **Format:** Markdown with YAML frontmatter
 - **Tool Names:** Claude Code-native (e.g., `AskUserQuestion`, `Read`, `Bash`)
-- **Registration:** Via `.claude/settings.json` plugin path
-- **Execution:** Skills invoke agents via the Skill tool; agents execute with full Claude Code tool access
+- **Registration:** Via `~/.claude/settings.json`
+- **Execution:** Skills dispatch agents through Claude Code's native workflow; agents execute with Claude Code tool access
 
 #### Copilot CLI (Autonomous Command-Line Agent)
 
 - **Location:** `profile-al-dev-shared/generated/agents/copilot/*.md`
 - **Format:** Markdown with YAML frontmatter
-- **Tool Names:** Copilot-native (e.g., `ask_user`, `file_read`, `shell`)
-- **Registration:** Via Copilot CLI plugin discovery
+- **Tool Names:** Copilot-native (e.g., `ask_user`, `read`, `execute`)
+- **Registration:** Via `~/.copilot/settings.json`
 - **Execution:** Agents are dispatched directly by the CLI; they execute with Copilot's tool set
 
 #### Codex (Autonomous Development System)
 
 - **Location:** `profile-al-dev-shared/generated/agents/codex/*.toml`
 - **Format:** TOML configuration
-- **Tool Names:** Codex-native (e.g., `ASK_USER`, `READ`, `BASH`)
-- **Registration:** Via Codex plugin registry
+- **Tool Shape:** TOML plus capability notes in `developer_instructions`
+- **Registration:** Via the active Codex session/plugin environment
 - **Execution:** Agents are loaded by the Codex system; they execute with Codex's tool set
 
 ### The Projection Policy: How Mapping Works
 
-The projection policy is the configuration that maps generic capability names to harness-native tool names. It lives in:
+The projection policy is the documentation contract for how generic capability names map to harness-native behavior. It lives in:
 
 ```text
 profile-al-dev-shared/knowledge/agent-tool-projection-policy.md
@@ -1035,15 +987,15 @@ Bash          | Bash             | execute     | native shell capability
 When the generator runs, it:
 
 1. Reads `profile-al-dev-shared/agents/*.md` (generic definitions)
-2. Consults the projection policy
-3. For each harness, replaces generic capability names with harness-native names
-4. Outputs harness-native versions
+2. Applies the mapping logic implemented in `scripts/generate-agent-projections.py`
+3. Renders each harness-specific output format, including Codex capability notes in `developer_instructions`
+4. Writes the generated artifacts under `profile-al-dev-shared/generated/agents/`
 
 ### Example: Adding Support for a New Harness
 
 To support a new harness (e.g., MyHarness):
 
-1. **Extend the projection policy** to include MyHarness tool mappings:
+1. **Extend the policy documentation** to include MyHarness tool mappings:
 
 ```markdown
 Generic Name  | Claude Code      | Copilot CLI | Codex                          | MyHarness
@@ -1052,20 +1004,20 @@ Read          | Read             | read        | native file access capability  
 Bash          | Bash             | execute     | native shell capability        | exec_cmd
 ```
 
-1. **Update the generator script** to output MyHarness projections:
+2. **Update the generator script** to output MyHarness projections:
 
-   - Add MyHarness to the `HARNESSES` list
+   - Add a new output directory and renderer for MyHarness
    - Define the output format for MyHarness agents
    - Implement the tool name mapping for MyHarness
 
-2. **Test the generator** to ensure MyHarness projections are created correctly:
+3. **Test the generator** to ensure MyHarness projections are created correctly:
 
    ```bash
    python3 scripts/generate-agent-projections.py
    ls profile-al-dev-shared/generated/agents/myharness/
    ```
 
-3. **Register the plugin** in MyHarness's plugin system so it loads the new projections
+4. **Register the plugin** in MyHarness's plugin system so it loads the new projections
 
 ### Common Questions for Harness Developers
 
@@ -1075,7 +1027,7 @@ A: No. All harness-specific customizations should be made to the shared source u
 
 **Q: What if my harness needs a tool that doesn't map to any generic capability?**
 
-A: Add it to the projection policy. Define a new generic capability name (in `harness-concepts.md`), add it to the policy, and regenerate. This keeps the system extensible and maintains parity across harnesses.
+A: Add it to the shared vocabulary and implemented mapping together. Define a new generic capability name in `harness-concepts.md`, document it in `agent-tool-projection-policy.md`, update `scripts/generate-agent-projections.py`, and regenerate. This keeps the system extensible and maintains parity across harnesses.
 
 **Q: How do I test a projection before committing?**
 

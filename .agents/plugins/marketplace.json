@@ -1,0 +1,20 @@
+{
+  "name": "al-dev-shared",
+  "interface": {
+    "displayName": "AL Dev Shared"
+  },
+  "plugins": [
+    {
+      "name": "al-dev-shared",
+      "source": {
+        "source": "local",
+        "path": "./profile-al-dev-shared"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "development"
+    }
+  ]
+}
