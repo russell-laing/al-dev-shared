@@ -57,6 +57,18 @@ corpus:
   - prompt: "i'm done — commit what's staged"
     expected: al-dev-commit
 
+  # --- intent preflight and near-miss prompts -----------------------------
+  - prompt: "review this usage report and suggest possible plugin improvements without editing files"
+    expected: NONE
+  - prompt: "audit the validation output and tell me what failed, do not plan implementation"
+    expected: NONE
+  - prompt: "assess whether these recommendations belong in the shared plugin"
+    expected: NONE
+  - prompt: "commit only the staged docs changes after checking scope"
+    expected: al-dev-commit
+  - prompt: "implement the approved plan in autonomous mode and keep compiling until it builds"
+    expected: al-dev-develop
+
   # --- expected to route elsewhere or to NONE ----------------------------
   - prompt: "what is the current branch name"
     expected: NONE

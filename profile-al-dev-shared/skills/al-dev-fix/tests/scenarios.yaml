@@ -13,3 +13,12 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent: al-dev-shared:al-dev-solution-architect
     notes: "Ambiguous root cause. Per al-dev-fix SKILL.md, NON-TRIVIAL classification (matches Step 1 example 'Posting fails intermittently') spawns solution-architect for quick analysis before delegating to a developer."
+
+  - id: fix-rejects-review-only-misfire
+    status: golden
+    user_prompt: "Review this suspected posting bug and explain the likely cause. Do not change files."
+    expected_artifacts: []
+    must_not_invoke_agent:
+      - al-dev-shared:al-dev-solution-architect
+      - al-dev-shared:al-dev-developer
+    notes: "Intent preflight regression. A review-only request must not silently enter the lightweight edit path."

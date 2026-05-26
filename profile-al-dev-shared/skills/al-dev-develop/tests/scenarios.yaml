@@ -60,3 +60,28 @@ scenarios:
       - al-dev-shared:al-dev-expert-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Locks in summary-only compile reporting and references `.dev/compile-errors.log` as the full source of diagnostics."
+
+  - id: develop-rejects-review-only-misfire
+    status: golden
+    user_prompt: "Review the approved plan for risks only. Do not edit files or dispatch developers."
+    expected_artifacts: []
+    must_not_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-performance-reviewer
+    notes: "Intent preflight regression. Review-only prompts must not enter edit or review-panel execution flow."
+
+  - id: develop-autonomous-compile-routing
+    status: golden
+    user_prompt: "Implement the latest approved plan in autonomous mode and keep compiling until it builds."
+    expected_artifacts:
+      - ".dev/*-al-dev-autonomous-signatures.md"
+      - ".dev/*-al-dev-autonomous-static-validation.md"
+      - ".dev/*-al-dev-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-performance-reviewer
+    notes: "Locks autonomous compile prompts to al-dev-develop autonomous behavior instead of ad-hoc fixes."

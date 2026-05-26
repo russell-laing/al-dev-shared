@@ -21,3 +21,10 @@ scenarios:
       - ".dev/*-al-dev-plan-solution-plan.md"
     must_invoke_agent: al-dev-shared:al-dev-solution-architect
     notes: "MEDIUM-sized refactor — should still produce a competitive plan."
+
+  - id: plan-rejects-validation-audit-misfire
+    status: golden
+    user_prompt: "Audit the validation output and summarize what failed. Do not create an implementation plan."
+    expected_artifacts: []
+    must_not_invoke_agent: al-dev-shared:al-dev-solution-architect
+    notes: "Intent preflight regression. A validation-audit prompt is REVIEW intent and must not route to competitive implementation planning."

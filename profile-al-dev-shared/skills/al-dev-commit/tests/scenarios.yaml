@@ -13,3 +13,12 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent: al-dev-shared:al-dev-commit-agent
     notes: "Harness pre-seeds a deletion of an unrelated file. Skill must surface the unexpected deletion in its summary and gate on user confirmation — verified by transcript grep for 'unrelated' / 'scope' in the agent's final message."
+
+  - id: commit-explicit-scoped-docs
+    status: golden
+    user_prompt: "Commit only the staged docs changes after checking scope."
+    expected_artifacts: []
+    must_invoke_agent:
+      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-agent-execute
+    notes: "Commit intent regression. Explicit scoped commit prompts must route to commit gates and commit agents, not edit or planning flows."
