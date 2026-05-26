@@ -114,8 +114,8 @@ For trivial fixes:
 4. Run compile + lint pass per
    `knowledge/compile-lint-procedure.md`.
    (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
-   No re-iteration gate in this skill — if compilation fails,
-   have the developer fix the error and re-run.
+   If compilation fails, fix only errors caused by the small
+   change and re-run compile once.
 
 5. Pre-commit scope check — run `git status` and classify every
    changed file against the original symptom. Populate each entry
@@ -208,8 +208,8 @@ For non-trivial fixes:
 7. Run compile + lint pass per
    `knowledge/compile-lint-procedure.md`.
    (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
-   No re-iteration gate in this skill — if compilation fails,
-   have the developer fix the error and re-run.
+   If compilation fails, keep compile correction bounded to the
+   confirmed root-cause scope.
 
 8. Pre-commit scope check — run `git status` and classify every
    changed file against the original symptom. Populate each entry
@@ -334,8 +334,12 @@ Fix → Compilation Check → Present to User → User Tests
 
 ## Compilation Verification
 
-This skill uses `knowledge/compile-lint-procedure.md` for all
-compile and lint passes. Surface the result using the format below:
+This skill uses `knowledge/compile-lint-procedure.md` for compile and lint
+passes. For trivial fixes, compile once after the minimal edit and report a
+concise result. If compilation fails, fix only errors caused by the small change
+and re-run compile once; do not expand into a broad compile-fix loop. For
+non-trivial fixes, keep compile correction bounded to the confirmed root-cause
+scope.
 
 ```text
 ✅ Compilation successful
@@ -343,8 +347,9 @@ compile and lint passes. Surface the result using the format below:
 ⚠️  Compilation not verified (al-compile unavailable)
 ```
 
-If compilation fails: have the developer fix errors and re-run before
-presenting to the user.
+If compilation fails: for trivial fixes, fix only errors caused by the small
+change and re-run compile once; for non-trivial fixes, keep compile correction
+bounded to the confirmed root-cause scope before presenting to the user.
 
 ---
 
@@ -375,7 +380,9 @@ For detailed walkthroughs of two common fix scenarios, see [`knowledge/al-dev-fi
 → Challenge it yourself, don't blindly accept
 
 **Developer's fix doesn't compile?**
-→ Have them fix errors, re-compile, iterate
+→ For trivial fixes, fix only errors caused by the small change and re-run
+compile once. For non-trivial fixes, keep compile correction bounded to the
+confirmed root-cause scope.
 
 **Fix seems to need multiple approaches?**
 → This might be a feature, not a fix. Suggest `/al-dev-plan` instead.

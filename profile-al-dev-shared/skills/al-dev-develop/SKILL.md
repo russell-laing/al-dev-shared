@@ -463,7 +463,8 @@ spawning the review team.
 - Do NOT run `al-compile` after each function or small change
 - Write all code for your assigned module (30–50 lines of code) BEFORE compiling
 - When code is complete, run `al-compile --output .dev/compile-errors.log` ONCE
-- Do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
+- In normal mode, do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
+- In autonomous mode (`--autonomous`), follow the bounded compile-fix loop in Phase 8 instead
 - Log files: Read errors from `.dev/compile-errors.log`, NOT stdout — errors are logged to file only
 
 Compile result reporting rules:
@@ -552,6 +553,20 @@ Decision:
 
 Do NOT present to user until critical issues are resolved.
 
+## Compile Verification Modes
+
+Compilation must be reported from `.dev/compile-errors.log` using concise
+summaries, not raw terminal output.
+
+| Mode | Compile Behavior | Success Rule |
+|---|---|---|
+| Normal `/al-dev-develop` | Run one implementation compile pass, summarize diagnostics, assign one batched fix pass if errors exist, then compile once more. | Do not report success while new compile errors remain. If errors remain after the batched fix pass, write them into the review artifact as blocking compilation issues. |
+| `/al-dev-develop --autonomous` | Run bounded compile-fix iterations, up to five compile attempts total. | Do not leave autonomous mode through the success path while new compile errors remain. If five attempts are exhausted, stop with a blocking review artifact. |
+| Small fixes | Use `/al-dev-fix`, not `/al-dev-develop`, for a tightly scoped one-file or trivial correction. | Compile once and report the concise result; if compilation fails, fix only errors caused by the small change. |
+
+Hook setup is optional environment guidance. This shared profile defines the
+compile discipline, but does not require harness-specific hook installation.
+
 ## Phase 8: Compilation & Error Handling
 
 **Execution:**
@@ -572,10 +587,22 @@ Do NOT present to user until critical issues are resolved.
 5. **After the reviewer batch completes:** continue to
    Phase 6 (synthesise findings) and then Phase 9 (write the
    code review)
-6. **If errors exist:** 
+6. **If errors exist in normal mode:**
    - Group by category (naming, schema, compilation, warnings)
-   - Assign fixes to developers based on error type
-   - Compile once more after all fixes applied
+   - Assign one batched fix pass to the relevant developer(s)
+   - Compile once more after all fixes are applied
+   - If new compile errors remain, do not report success; write the remaining
+     diagnostics into the Phase 9 review artifact as blocking compilation
+     issues
+7. **If errors exist in autonomous mode (`--autonomous`):**
+   - Run a bounded compile-fix loop with at most five compile attempts total
+   - After each failed attempt, summarize the error count, representative
+     diagnostics, affected files, and assigned fix owner
+   - Stop immediately when a compile attempt has no new errors and proceed to
+     Phase 8.5
+   - If attempt five still has new compile errors, do not report success; write
+     a blocking review artifact with the remaining diagnostics and attempts
+     summary
 
 ### Phase 8.5: Pre-Review File Staging
 
