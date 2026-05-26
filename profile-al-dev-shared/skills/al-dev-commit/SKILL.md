@@ -20,6 +20,18 @@ stop condition.
 
 ---
 
+## Intent Preflight
+
+Before dispatching commit agents, staging files, unstaging files, or committing,
+apply `knowledge/intent-preflight.md`.
+
+Default intent for this skill is `COMMIT`. If the request is review-only,
+edit-only, assessment-only, or asks for a commit plan without committing, stop
+and ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before
+continuing.
+
+---
+
 ## Step 1 — Guard: Verify Project Context
 
 Check whether the project instructions file exists in the current directory (use your harness's concrete filename).

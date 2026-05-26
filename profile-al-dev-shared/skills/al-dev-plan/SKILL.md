@@ -18,6 +18,20 @@ Design a complete AL/BC solution by facilitating competitive
 debate between 2-3 solution architect agents, then synthesizing
 the winning approach. You do NOT design the solution yourself.
 
+## Intent Preflight
+
+Before dispatching architect agents or writing a plan artifact, apply
+`knowledge/intent-preflight.md`.
+
+Default intent for this skill is `REVIEW` when the user asks for design,
+planning, or architecture output. Writing the requested `.dev/` plan artifact is
+allowed as part of that planning request.
+
+Stop before architect dispatch if the request is only an audit, validation
+review, code review, or report assessment that does not ask for a design or
+implementation plan. Ask the intent-mismatch prompt from
+`knowledge/intent-preflight.md` before continuing.
+
 ## Phase Numbering Rationale
 
 The skill uses fractional phase numbers (Phase 0, Phase 0.5, Phase 1–7) to reflect semantic workflow layers rather than strict sequential numbering. Each fractional phase represents a distinct decision point or checkpoint within the broader workflow. This allows precise specification of where handoff points occur without forcing artificially sequential numbering.

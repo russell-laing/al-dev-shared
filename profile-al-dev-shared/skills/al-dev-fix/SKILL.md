@@ -19,6 +19,18 @@ Quick iteration for bug fixes and small changes:
 
 ---
 
+## Intent Preflight
+
+Before spawning an architect or developer, editing files, or running a mutating
+fix path, apply `knowledge/intent-preflight.md`.
+
+Default intent for this skill is `EDIT`. If the request asks only to review,
+audit, investigate, explain, or assess a possible fix without applying changes,
+stop and ask the intent-mismatch prompt from `knowledge/intent-preflight.md`
+before any mutating action or implementation agent dispatch.
+
+---
+
 ## Usage
 
 ```bash

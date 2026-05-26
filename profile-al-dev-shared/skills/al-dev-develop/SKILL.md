@@ -17,6 +17,17 @@ argument-hint: "[--autonomous] [module or scope override]"
 Implement an AL/BC solution using parallel developers
 and 3-specialist review. You do NOT write code yourself.
 
+## Intent Preflight
+
+Before reading the solution plan for execution, dispatching developers, editing
+files, staging files, or spawning reviewers, apply
+`knowledge/intent-preflight.md`.
+
+Default intent for this skill is `EDIT`. If the request is review-only,
+assessment-only, validation-audit-only, planning-only, or commit-only, stop and
+ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before any
+mutating action or agent dispatch.
+
 ## Prerequisites
 
 `.dev/*-al-dev-plan-solution-plan.md` must exist (from

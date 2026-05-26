@@ -1,0 +1,46 @@
+# Intent Preflight
+
+Intent preflight prevents a skill from silently doing a different class of work than the user asked for.
+
+Run this preflight before a non-trivial workflow dispatches agents, edits files, stages files, or commits.
+
+## Intent Classes
+
+Classify the user's request as exactly one of:
+
+| Intent | Meaning | Allowed Work |
+|---|---|---|
+| `REVIEW` | Analyze, inspect, summarize, audit, or critique only. | Read files, run non-mutating inspection commands, write an explicitly requested report artifact. Do not edit project/runtime files. Do not commit. |
+| `EDIT` | Modify files, implement a fix, or generate changed artifacts. | Edit files inside the approved scope. Do not commit unless the user separately asks for a commit. |
+| `COMMIT` | Stage and commit explicitly approved changes. | Inspect and commit staged or approved changes after all commit gates pass. Do not add unrelated files. |
+
+## Mismatch Rule
+
+If the invoked skill and detected intent disagree, stop before agent dispatch or any mutating action and ask for confirmation.
+
+Use this prompt:
+
+```text
+Intent mismatch: this request appears to be [REVIEW|EDIT|COMMIT], but [skill-name] normally performs [expected intent]. Confirm the intended action before I continue.
+```
+
+Continue only after the user confirms the intended action.
+
+## Skill Defaults
+
+| Skill | Default Intent |
+|---|---|
+| `al-dev-plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
+| `al-dev-develop` | `EDIT` |
+| `al-dev-fix` | `EDIT` |
+| `al-dev-commit` | `COMMIT` |
+
+## Examples
+
+| User Request | Intent | Result |
+|---|---|---|
+| "review this usage report and suggest possible plugin improvements" | `REVIEW` | Do not invoke implementation or commit workflows. |
+| "audit the validation output and tell me what failed" | `REVIEW` | Do not route to implementation planning. |
+| "fix the posting bug" | `EDIT` | A fix workflow may edit files after normal scope checks. |
+| "implement the approved plan" | `EDIT` | A develop workflow may proceed after confirming the plan exists. |
+| "commit the staged changes" | `COMMIT` | A commit workflow may proceed through commit gates. |
