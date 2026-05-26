@@ -28,11 +28,14 @@ This repository may also contain repo-local Codex skills under `.codex/skills/`.
 These are not part of the shared plugin surface and should be used only for
 repository-specific workflows that should not be projected into other harnesses.
 
-Current repo-local skill:
+Current repo-local skills:
 
 - `.codex/skills/ai-usage-report/` — converts harness-specific usage artifacts
   into neutral markdown reports and can optionally add Codex-derived local
   usage observations.
+- `.codex/skills/plugin-improvement-review/` — reviews supplied usage or
+  improvement reports and writes evidence-backed plugin improvement
+  assessments without editing the shared plugin profile directly.
 
 ## Shared Plugin Surface (All Harnesses)
 
