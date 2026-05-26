@@ -74,7 +74,7 @@ scenarios:
 
   - id: develop-autonomous-compile-routing
     status: golden
-    user_prompt: "Implement the latest approved plan in autonomous mode and keep compiling until it builds."
+    user_prompt: "Implement the latest approved plan with --autonomous and keep compiling until it builds."
     expected_artifacts:
       - ".dev/*-al-dev-autonomous-signatures.md"
       - ".dev/*-al-dev-autonomous-static-validation.md"
