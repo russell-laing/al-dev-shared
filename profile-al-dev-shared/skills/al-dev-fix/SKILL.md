@@ -168,6 +168,12 @@ For non-trivial fixes:
    "Known performance constraints: [findings]" in the architect prompt (step 1).
    If not found: skip this step.
 
+0.5. Load prior lint findings if available:
+   LINT=$(ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1)
+   If found: parse UNRESOLVED items and include in the architect dispatch prompt
+   as "Known linting constraints: [list of UNRESOLVED items]".
+   If not found: skip this step.
+
 1. Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
 
 2. Review architect's analysis yourself:
