@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-27 (18 active skills: 17 distributed + 1 deprecated alias mode, Layer 1 consolidated /al-dev-support into /al-dev-ticket modes, 5-lens strategic analysis maintained)
+**Last updated:** 2026-05-27 (18 distributed skills: 17 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align, plugin-health-daemon) excluded. `/align-harness-repos` and `/plugin-health-daemon` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -14,29 +14,29 @@ This diagram shows pre-planning tributaries (dashed, optional), the three main e
 ```mermaid
 flowchart TD
     %% Pre-planning tributaries (optional)
-    Explore("al-dev-explore") -.->|explore-findings.md| Investigate
-    Explore -.->|explore-findings.md| Plan
-    Interview("al-dev-interview") -.->|interview-requirements.md| Plan
-    Perf("al-dev-perf") -.->|perf-analysis.md| Plan
-    Perf -.->|perf-analysis.md| FixDirect
+    Explore("al-dev-explore") -.->|.dev/*-al-dev-explore-findings.md| Investigate
+    Explore -.->|.dev/*-al-dev-explore-findings.md| Plan
+    Interview("al-dev-interview") -.->|.dev/*-al-dev-interview-requirements.md| Plan
+    Perf("al-dev-perf") -.->|.dev/*-al-dev-perf-perf-analysis.md| Plan
+    Perf -.->|.dev/*-al-dev-perf-perf-analysis.md| FixDirect
 
     %% Entry points
-    Ticket("al-dev-ticket<br/>(3 modes)")
+    Ticket("al-dev-ticket<br/>(--mode=context-only|full)")
     Investigate("al-dev-investigate")
     FixDirect("al-dev-fix") -->|AL code| Commit("al-dev-commit")
 
     %% Investigation path branches
-    Investigate -->|explore-findings.md| Decision1{Needs<br/>full plan?}
+    Investigate -->|.dev/*-al-dev-investigate-findings.md| Decision1{Needs<br/>full plan?}
     Decision1 -->|Yes| Plan("al-dev-plan")
     Decision1 -->|No| FixDirect
 
     %% Main development spine
-    Plan -->|solution-plan.md| Develop("al-dev-develop")
-    Develop -->|code-review.md| Commit
+    Plan -->|.dev/*-al-dev-plan-solution-plan.md| Develop("al-dev-develop")
+    Develop -->|.dev/*-al-dev-develop-code-review.md| Commit
 
     %% Lint feedback loop
-    Develop -.-> Lint("al-dev-lint")
-    Lint -.->|lint-report.md| FixDirect
+    Develop -.->|optional compile cleanup| Lint("al-dev-lint")
+    Lint -.->|.dev/*-al-dev-lint-lint-report.md| FixDirect
 
     %% Complexity gate within plan
     Note["Trivial requests<br/>route to /fix"] -.-> Plan
@@ -46,12 +46,12 @@ flowchart TD
     Git -.-> ReleaseNotes("al-dev-release-notes")
     ReleaseNotes --> Notes(["✓ release notes"])
     Git -.-> Handoff("al-dev-handoff")
-    Handoff --> HandoffOut(["✓ handoff-prompt.md"])
+    Handoff --> HandoffOut(["✓ .dev/*-al-dev-handoff-handoff-prompt.md"])
     Git -.->|on integrity error| Recover("commit-recover")
     Recover --> RecoverOut(["✓ recovered files"])
     Git -.-> Document("al-dev-document")
     Document --> DocOut(["✓ documentation"])
-    Ticket -.->|mode=support| Reply(["✓ customer reply"])
+    Ticket -.->|--mode=full| Reply(["✓ customer reply"])
 
     style Ticket fill:#e1f5ff
     style Investigate fill:#f3e5f5
@@ -91,44 +91,36 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Three modes:** fetch (context only), support (research + reply), quick (brief summary).
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch + research + reply drafting). `/al-dev-support` remains as a deprecated alias that points users to `--mode=full`.
 
 ```mermaid
 flowchart LR
     Start([Start]) --> Decision{Mode?}
     
-    Decision -->|fetch| Phase1F["Phase 1<br/>Fetch ticket"]
+    Decision -->|context-only| Phase1F["Phase 1<br/>Fetch ticket"]
     Phase1F --> Agent1F["al-dev-ticket-agent ×1"]
-    Agent1F --> Output1F(["ticket-context.md"])
+    Agent1F --> Output1F([".dev/*-al-dev-ticket-ticket-context.md"])
     
-    Decision -->|support| Phase1S["Phase 1<br/>Fetch ticket"]
+    Decision -->|full| Phase1S["Phase 1<br/>Fetch ticket"]
     Phase1S --> Agent1S["al-dev-ticket-agent ×1"]
     Agent1S --> Phase2S["Phase 2<br/>Research"]
     Phase2S --> Agent2S["al-dev-support-researcher ×1"]
     Agent2S --> Phase3S["Phase 3<br/>Draft reply"]
     Phase3S --> Agent3S["al-dev-support-reply-drafter ×1"]
     Agent3S --> Output1S(["customer reply"])
-    
-    Decision -->|quick| Phase1Q["Phase 1<br/>Brief summary"]
-    Phase1Q --> Agent1Q["(skill itself)"]
-    Agent1Q --> Output1Q(["summary"])
-    
+
     Output1F --> End([End])
     Output1S --> End
-    Output1Q --> End
 
     style Decision fill:#fff9c4
     style Phase1F fill:#e3f2fd
     style Phase1S fill:#e3f2fd
-    style Phase1Q fill:#e3f2fd
     style Agent1F fill:#bbdefb
     style Agent1S fill:#bbdefb
     style Agent2S fill:#bbdefb
     style Agent3S fill:#bbdefb
-    style Agent1Q fill:#c5e1a5
     style Output1F fill:#90caf9
     style Output1S fill:#90caf9
-    style Output1Q fill:#90caf9
 ```
 
 ### /al-dev-investigate
@@ -138,10 +130,10 @@ flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Form hypotheses"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Test hypotheses"]
-    Phase2 --> Agent1["Explore subagent ×2<br/>parallel"]
+    Phase2 --> Agent1["Explore subagent<br/>×1–2 (by hypothesis count)"]
     Agent1 --> Phase3["Phase 3<br/>Synthesise findings"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["explore-findings.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-investigate-findings.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#f3e5f5
@@ -200,7 +192,7 @@ flowchart LR
     Phase2 --> ArchAgents["al-dev-solution-architect<br/>×2-3 parallel"]
     ArchAgents --> Phase3["Phase 3<br/>Synthesise winner"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["solution-plan.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-plan-solution-plan.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fff3e0
@@ -214,7 +206,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Three-reviewer panel:** Security, AL expert, and performance reviewers run in parallel, then the skill synthesises findings. Compile-verify loop (with diagnostics fixer) runs before final code review output.
+**Compile and staging gates before review:** developers implement first; compilation/error handling and Phase 8.5 pre-review staging must pass before the three-reviewer panel is spawned. Normal mode assigns one batched fix pass back to developers; `--autonomous` uses the bounded compile-fix loop.
 
 ```mermaid
 flowchart LR
@@ -222,23 +214,23 @@ flowchart LR
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Implement"]
     Phase2 --> DevAgent["al-dev-developer ×1-4<br/>(scaled by object count)"]
-    DevAgent --> Phase3["Phase 3<br/>Review<br/>in parallel"]
+    DevAgent --> Phase3["Phase 3<br/>Compile + error handling"]
+    Phase3 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase4["Phase 4<br/>Pre-review staging<br/>(Phase 8.5)"]
+    Phase4 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase5["Phase 5<br/>Review<br/>in parallel"]
 
-    Phase3 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase3 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase3 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+    Phase5 --> SecReview["al-dev-security-reviewer<br/>×1"]
+    Phase5 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
+    Phase5 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
 
-    SecReview --> Phase4["Phase 4<br/>Synthesise"]
-    ExpertReview --> Phase4
-    PerfReview --> Phase4
+    SecReview --> Phase6["Phase 6<br/>Synthesise"]
+    ExpertReview --> Phase6
+    PerfReview --> Phase6
 
-    Phase4 --> Phase5["Phase 5<br/>Compile + verify"]
-    Phase5 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> CompileAgent["al-dev-diagnostics-fixer ×1"]
-    CompileAgent --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase6["Phase 6<br/>Write code review"]
-    Phase6 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1(["code-review.md"])
+    Phase6 --> Phase7["Phase 7<br/>Write code review"]
+    Phase7 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fff8e1
@@ -247,12 +239,12 @@ flowchart LR
     style Phase4 fill:#fff8e1
     style Phase5 fill:#fff8e1
     style Phase6 fill:#fff8e1
+    style Phase7 fill:#fff8e1
     style SkillWork1 fill:#ffe082
     style SkillWork2 fill:#ffe082
     style SkillWork3 fill:#ffe082
     style SkillWork4 fill:#ffe082
     style DevAgent fill:#ffd54f
-    style CompileAgent fill:#ffd54f
     style SecReview fill:#ffca28
     style ExpertReview fill:#ffca28
     style PerfReview fill:#ffca28
@@ -295,7 +287,7 @@ flowchart LR
     Phase2 --> Agent1["Explore subagent ×1"]
     Agent1 --> Phase3["Step 3<br/>Write findings"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["explore-findings.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-explore-findings.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#f3e5f5
@@ -317,7 +309,7 @@ flowchart LR
     Phase2 --> Agent1["al-dev-interview ×1"]
     Agent1 --> Phase3["Phase 3<br/>Write requirements"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["interview-requirements.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-interview-requirements.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#e8f5e9
@@ -339,7 +331,7 @@ flowchart LR
     Phase2 --> Agent1["al-dev-diagnostics-fixer ×1"]
     Agent1 --> Phase3["Step 3<br/>Present summary"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["lint-report.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-lint-lint-report.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#e0f2f1
@@ -381,7 +373,7 @@ flowchart LR
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Generate notes"]
     Phase2 --> Agent1["al-dev-release-notes-writer ×1"]
-    Agent1 --> Output1(["release-notes-{version}.md"])
+    Agent1 --> Output1([".dev/YYYY-MM-DD-[app-id]-al-dev-release-notes-[short-hash].md"])
     Output1 --> End([End])
 
     style Phase1 fill:#e3f2fd
@@ -401,7 +393,7 @@ flowchart LR
     Phase2 --> Agent1["Explore subagent ×1"]
     Agent1 --> Phase3["Step 3<br/>Write report"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["perf-analysis.md"])
+    SkillWork2 --> Output1([".dev/*-al-dev-perf-perf-analysis.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fce4ec
@@ -541,13 +533,13 @@ flowchart LR
 ## Observations
 
 > Generated by /analyze-skill-design on 2026-05-27 with five parallel lenses: Shared Execution Backbone, Complexity Outliers, Near-Duplicate Shapes, Handoff Chain Gaps, Pre-planning Skills.
-> Previous analysis (2026-05-22): Three implemented moves (/al-dev-ticket+support merge, /al-dev-commit split, architect patterns documented). Current sweep (2026-05-27): Five lenses identify eight actionable suggestions with refined cost-benefit assessment.
+> Previous analysis (2026-05-22): Three implemented moves (/al-dev-ticket+support consolidation, /al-dev-commit split, architect patterns documented). Current sweep (2026-05-27): Five lenses identify four remaining future-facing suggestions plus four confirmed current-state checks.
 
 ### Agents used by only one skill
 
-- **al-dev-ticket-agent** — used by /al-dev-ticket (all modes), /al-dev-support (legacy alias)
-- **al-dev-support-researcher** — used only by /al-dev-ticket (support mode)
-- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode)
+- **al-dev-ticket-agent** — used by /al-dev-ticket (`--mode=context-only|full`) and /al-dev-support (deprecated alias path to `--mode=full`)
+- **al-dev-support-researcher** — used only by /al-dev-ticket (`--mode=full`)
+- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (`--mode=full`)
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (message-drafting phase)
 - **al-dev-interview** (agent) — used only by /al-dev-interview
 - **al-dev-docs-writer** — used only by /al-dev-document
@@ -566,11 +558,11 @@ flowchart LR
 
 ### Potential shared agents (with documented patterns)
 
-- **al-dev-ticket-agent** — used by /al-dev-ticket, /al-dev-support; invocation patterns in `knowledge/ticket-agent-invocation-pattern.md` ← implemented
+- **al-dev-ticket-agent** — used by /al-dev-ticket and the deprecated /al-dev-support alias; invocation patterns in `knowledge/ticket-agent-invocation-pattern.md` ← implemented
 - **al-dev-developer** — spawned by /al-dev-fix, /al-dev-develop; patterns in `knowledge/architect-invocation-patterns.md` ← implemented
 - **al-dev-solution-architect** — spawned by /al-dev-plan, /al-dev-fix; patterns in `knowledge/architect-invocation-patterns.md` ← implemented
 - **Explore subagent** — invoked by /al-dev-investigate (×2 parallel), /al-dev-explore (×1), /al-dev-perf (×1); canonical template in `knowledge/explore-subagent-pattern.md` ← implemented
-- **al-dev-diagnostics-fixer** — used by /al-dev-lint, /al-dev-develop (compile-verify phase); no shared pattern doc yet
+- **al-dev-diagnostics-fixer** — used by /al-dev-lint; /al-dev-develop returns compile corrections to developers instead of dispatching the fixer
 - **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — parallel composition in /al-dev-develop; canonical definition in `knowledge/review-panel-pattern.md` ← implemented
 
 ### Architectural suggestions
@@ -585,21 +577,21 @@ Trade-off: Adds one skill to the distributed registry. Each skill becomes narrow
 
 ---
 
-**Connect: Canonicalize developer pre-flight pattern** 
+**Connect: Reuse the existing symbol pre-flight pattern more broadly**
 
-Observation: /al-dev-fix spawns `al-dev-developer` with minimal context (file path, issue description), while /al-dev-develop spawns it with extensive pre-flight gating (SYMBOL_PREFLIGHT_GATE, scope expansion verification, naming convention checks, AL symbol evidence gathering). The `al-dev-developer` agent expects different input completeness across callers, creating a maintenance risk: if symbol verification rules change in /al-dev-develop, they will not propagate to /al-dev-fix, creating latent inconsistency.
+Observation: `knowledge/al-symbol-pre-flight.md` already exists and /al-dev-develop already treats it as the canonical pre-flight contract. The remaining asymmetry is narrower: /al-dev-fix still uses a lighter developer prompt, so symbol-evidence rigor can still drift between the trivial-fix and planned-development paths.
 
-Suggestion: Document a canonical "AL symbol pre-flight verification" pattern in `knowledge/al-symbol-pre-flight.md` specifying: (1) when to run SYMBOL_PREFLIGHT_GATE (always for multi-object work; optional for single-file fixes), (2) required evidence fields (current object IDs, naming prefixes, scope expansions), (3) how to recover if developer request violates gates. Reference this document from both /al-dev-fix and /al-dev-develop to ensure both enforce equivalent rigor.
+Suggestion: Treat the knowledge document as complete current-state infrastructure and evaluate a follow-up change that explicitly references it from /al-dev-fix when a "small fix" stops being truly trivial. This is propagation work, not missing documentation.
 
-Trade-off: Adds one knowledge document. Both skills increase context length slightly when loading the pattern reference. Improvement: symbol verification rules become single-source-of-truth; drift across skills is prevented.
+Trade-off: Slightly longer /al-dev-fix prompts for borderline-simple work. Improvement: stronger consistency between one-file fixes and planned development without inventing another pattern document.
 
 ---
 
 **Extend: Add /al-dev-publish (post-release workflow)**
 
-Observation: The main development spine ends at /al-dev-commit (which creates git commits), then branches to four post-commit skills: /al-dev-release-notes (generates release-*.md), /al-dev-handoff (cross-repo context), /commit-recover (integrity checks), and /al-dev-document (write docs). But no skill consumes the release-notes output. Release notes are a complete deliverable with no downstream action: the chain `/al-dev-commit` → `/al-dev-release-notes` → **[ends here]**. This is an orphaned well-established handoff point with an obvious natural next step.
+Observation: The main development spine ends at /al-dev-commit (which creates git commits), then branches to four post-commit skills: /al-dev-release-notes (generates dated `.dev/*-al-dev-release-notes-*.md` files), /al-dev-handoff (cross-repo context), /commit-recover (integrity checks), and /al-dev-document (write docs). But no skill consumes the release-notes output. Release notes are a complete deliverable with no downstream action: the chain `/al-dev-commit` → `/al-dev-release-notes` → **[ends here]**. This is an orphaned well-established handoff point with an obvious natural next step.
 
-Suggestion: Create `/al-dev-publish` skill that consumes `/al-dev-release-notes` output (release-*.md files) and orchestrates release publishing: copy to changelog, tag repository, notify stakeholders, or trigger CI/CD deployment pipelines. This completes a frequent workflow: plan → develop → commit → release-notes → **publish** → deployed. The skill would (1) read latest release-*.md, (2) offer publication targets (changelog, GitHub releases, notification channel), (3) execute chosen publication method.
+Suggestion: Create `/al-dev-publish` skill that consumes `/al-dev-release-notes` output (dated `.dev/*-al-dev-release-notes-*.md` files) and orchestrates release publishing: copy to changelog, tag repository, notify stakeholders, or trigger CI/CD deployment pipelines. This completes a frequent workflow: plan → develop → commit → release-notes → **publish** → deployed. The skill would (1) read the latest dated release-notes artifact, (2) offer publication targets (changelog, GitHub releases, notification channel), (3) execute the chosen publication method.
 
 Trade-off: Adds scope and infrastructure dependencies (changelog tooling, tagging policy, notification integration). Only valuable if release publishing is a frequent manual task. Medium complexity if publication targets are standardized; high complexity if integration is ad-hoc per project.
 
@@ -607,42 +599,41 @@ Trade-off: Adds scope and infrastructure dependencies (changelog tooling, taggin
 
 **Improve: Close /al-dev-lint feedback loop in /al-dev-fix**
 
-Observation: Layer 1 diagram shows /al-dev-lint as a dashed feedback loop feeding into /al-dev-fix (line 38-39), but /al-dev-fix does not actually check for or load `.dev/lint-report.md` when available. The diagram suggests a feedback mechanism that is not implemented: lint findings should inform the architect's complexity analysis, but currently they are ignored.
+Observation: Layer 1 diagram shows /al-dev-lint as a dashed feedback loop feeding into /al-dev-fix (line 38-39), but /al-dev-fix does not actually check for or load `.dev/*-al-dev-lint-lint-report.md` when available. The diagram suggests a feedback mechanism that is not implemented: lint findings should inform the architect's complexity analysis, but currently they are ignored.
 
-Suggestion: In /al-dev-fix Phase 1 (Analyse), after loading perf-analysis.md, also check for `.dev/*-al-dev-lint-lint-report.md` and surface any UNRESOLVED items to the architect as "**Known linting constraints**" so complexity assessment can factor in linting debt. This closes the feedback loop shown in the Layer 1 diagram.
+Suggestion: In /al-dev-fix Step 3 (Non-Trivial Fix), after loading `.dev/*-al-dev-perf-perf-analysis.md`, also check for `.dev/*-al-dev-lint-lint-report.md` and surface any UNRESOLVED items to the architect as "**Known linting constraints**" so complexity assessment can factor in linting debt. This closes the feedback loop shown in the Layer 1 diagram.
 
 Trade-off: One additional glob pattern per /al-dev-fix invocation. Architect prompts become slightly longer when prior lint exists. Improvement: linting debt is visible to the architect instead of hidden.
 
 ---
 
-**Improve: Suggest /al-dev-interview when requirements unclear**
+**✅ Confirmed: /al-dev-plan already points unclear requirements to /al-dev-interview**
 
-Observation: /al-dev-plan Phase 1 loads `interview-requirements.md` when available, but does not explicitly suggest running `/al-dev-interview` when the initial requirements are ambiguous or complexity is high. The pre-planning tributary exists but is not advertised at a moment when users would benefit most from running it.
+Status: Confirmed in current sweep. /al-dev-plan Phase 1 explicitly checks for dated `*-al-dev-interview-requirements.md` input and says "If requirements are unclear/complex, suggest /interview." The pre-planning tributary is already discoverable at the right gate.
 
-Suggestion: In /al-dev-plan Phase 1, after detecting unclear or contradictory requirements (line 85-86), explicitly suggest running `/al-dev-interview --mode={quick|deep}` before proceeding to architect dispatch. This makes the pre-planning tributary discoverable at the right time.
-
-Trade-off: One additional user-facing suggestion per ambiguous requirement detected. Potential to extend plan duration if user accepts interview suggestion. Improvement: users discover /al-dev-interview naturally instead of learning it as a separate skill.
+Impact: No follow-up work needed unless the team wants to refine the exact wording of that suggestion.
 
 ---
 
-**Update: Clarify /al-dev-develop compile-verify strategy**
+**✅ Confirmed: /al-dev-develop compile strategy is already explicit**
 
-Observation: /al-dev-develop Phase 8 (Compilation + 8.5 staging) runs compilation and outputs diagnostics, but the skill body does not explicitly state whether al-dev-diagnostics-fixer is spawned (as in /al-dev-lint) or whether compile errors are handled inline by the skill itself. This creates ambiguity about whether /al-dev-develop and /al-dev-lint use a shared diagnostic-fix pattern.
+Status: Confirmed in current sweep. The live skill now states:
+- normal mode = one implementation compile pass, one batched developer fix pass, then one more compile
+- `--autonomous` = bounded compile-fix loop with up to five attempts
+- reviewers are spawned only after Phase 8 compile handling and Phase 8.5 staging both pass
 
-Suggestion: Clarify Phase 8 documentation: state explicitly whether al-dev-diagnostics-fixer is spawned (and if so, add to the agent dispatch diagram), OR document that compile errors are handled inline by developer re-runs. If diagnostic-fixer is spawned, update the skill diagram to show it; if inline, document the inline strategy and its convergence guarantee.
-
-Trade-off: Minimal; documentation clarification only. No code changes needed. Improvement: diagnostic strategy is explicit and maintainable.
+Impact: No clarification task remains. The maintainer opportunity here is optional future refactoring, not missing current-state documentation.
 
 ---
 
-**✅ Implemented: Merge /al-dev-ticket and /al-dev-support (as modes)**
+**✅ Implemented: Consolidate ticket workflows under /al-dev-ticket**
 
-Status: Completed in Task 4. Both skills consolidated into `/al-dev-ticket --mode={fetch,support,quick}`:
-- `fetch`: loads ticket context only
-- `support`: research + reply drafting
-- `quick`: brief summary
+Status: Completed in Task 4. The live interface is:
+- `/al-dev-ticket --mode=context-only` (default) for fetch/context only
+- `/al-dev-ticket --mode=full` for fetch + research + reply drafting
+- `/al-dev-support` retained as a deprecated alias that points users to `--mode=full`
 
-Impact: Skill count stable; single entry point for all ticket workflows.
+Impact: Single primary entry point for ticket workflows without removing the compatibility alias.
 
 ---
 
@@ -692,13 +683,13 @@ The plugin maintains healthy separation of concerns:
 - Split /al-dev-commit into analysis, message-drafting, execution
 - Documented architect and pattern invocations
 
-**Current analysis (2026-05-27):** Five lenses re-applied across same 18 skills. Eight actionable suggestions identified:
+**Current analysis (2026-05-27):** Five lenses re-applied across the same 18 skills. Four future-facing suggestions remain, plus four confirmed current-state checks:
 - **Atomise: /al-dev-develop** (split pre-flight from review; highest leverage)
-- **Connect: Developer pre-flight pattern** (AL symbol verification; medium leverage)
+- **Connect: Reuse symbol pre-flight in /al-dev-fix** (propagate existing guidance; medium leverage)
 - **Extend: /al-dev-publish** (consume release-notes; medium leverage if deployment is frequent)
 - **Improve: Close lint feedback** (wire lint-report into /al-dev-fix; low effort, high clarity)
-- **Improve: Suggest /al-dev-interview at clarity gates** (discovery improvement; low effort)
-- **Update: Clarify compile-verify strategy** (documentation clarity; no code change)
+- **Confirmed: /al-dev-plan interview guidance already present**
+- **Confirmed: /al-dev-develop compile/staging gates already documented**
 - **Confirmed: /al-dev-explore integration working** (outdated observation removed)
 - **Confirmed: Patterns documented** (architect, explore, ticket-agent, review-panel)
 
