@@ -4,7 +4,7 @@ description: >-
   proposes atomic commit groups, and drafts commit messages. Dispatched by
   /al-dev-commit (message-drafting phase).
 model: sonnet
-tools: ["Read"]
+tools: []
 ---
 
 # Agent: al-dev-commit-message-drafter (Message-Drafting Phase)
