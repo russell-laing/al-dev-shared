@@ -24,7 +24,7 @@ When writing skills for `al-dev-shared`:
   information, or rename-impact checks
 - Treat AL LSP as an optional provider of `AL semantic navigation` only when
   the active harness or adapter exposes it; do not assume availability from
-  ALTool documentation alone
+  tooling documentation alone
 - Label symbol evidence as `AL LSP`, `AL MCP`, `text search`, or `unverified`
   whenever the distinction affects planning, implementation, or risk
 - Use plain English for file operations ("read the file", "write to disk")
@@ -80,7 +80,7 @@ Preferred order for AL symbol questions:
 4. `unverified` — required symbol evidence was not established. Stop or
    escalate before implementation if the symbol is required.
 
-Do not claim AL LSP is available because ALTool documentation exists. Use AL
+Do not claim AL LSP is available because tooling documentation exists. Use AL
 LSP only when the active harness exposes an LSP-capable tool or adapter.
 
 ## AL_DEV_SHARED_PLUGIN_ROOT
