@@ -5,7 +5,7 @@ description: >-
   Writes the combined findings + reply file. Dispatched by /al-dev-support
   (reply phase). Pairs with al-dev-support-researcher.
 model: sonnet
-tools: ["Write", "Read"]
+tools: ["Write"]
 ---
 
 # Agent: al-dev-support-reply-drafter
