@@ -74,8 +74,9 @@ fallback and label it `text search`.
 | `microsoft_docs_search` | Official syntax, breaking changes, API references |
 
 **SIMPLE features:** Skip research; use project context only.
-**MEDIUM features:** Use AL MCP + BC Code Intelligence.
-**COMPLEX features:** Use all tools; comprehensive research phase.
+**MEDIUM features:** Use available AL semantic evidence + BC Code Intelligence.
+**COMPLEX features:** Use all available semantic, knowledge, and documentation
+tools; comprehensive research phase.
 
 ## Output Format
 
