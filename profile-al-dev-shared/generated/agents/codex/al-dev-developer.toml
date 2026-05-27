@@ -14,7 +14,7 @@ Write clean, correct AL code that implements the planned solution. Follow AL cod
 | Input | Required | Description |
 |-------|----------|-------------|
 | `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
-| `.dev/*-al-dev-test-test-plan.md` | From /al-dev-develop | Test specs (use TDD if present) |
+| `.dev/*-al-dev-test-test-plan.md` | Optional | User-supplied or created by test-engineer agent (TDD workflow). If absent, uses traditional implementation workflow. |
 | `.dev/project-context.md` | No | Project memory |
 | `.dev/*-al-dev-develop-code-review.md` | No | Review findings for iteration |
 

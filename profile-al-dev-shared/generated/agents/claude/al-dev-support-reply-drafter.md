@@ -1,6 +1,6 @@
 ---
 description: "Draft a customer-facing reply from internal BC support research findings. Writes the combined findings + reply file. Dispatched by /al-dev-support (reply phase). Pairs with al-dev-support-researcher."
-tools: ["Write", "Read"]
+tools: ["Write"]
 ---
 
 
