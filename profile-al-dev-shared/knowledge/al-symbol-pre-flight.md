@@ -10,17 +10,39 @@ common cause of compilation errors: referencing fields, events, or procedures
 that don't exist in the base app or in the project's own objects.
 
 Missing `var` modifiers and non-existent field names are the top two causes
-of subagent-generated compile failures. This checklist catches them at
-design time, before a single line is written.
+of subagent-generated compile failures. This checklist catches them at design
+time by requiring each required symbol to be verified through the strongest
+available evidence source.
+
+Preferred verification order:
+
+1. `AL LSP` — use when the active harness or adapter exposes workspace-aware
+   AL semantic operations such as go-to-definition, find-references, document
+   symbols, hover/type information, or rename-impact checks.
+2. `AL MCP` — use `al-mcp-server` for object definitions, member searches,
+   references, and package/base-app symbol exploration.
+3. `text search` — use tightly scoped `rg` searches only when no semantic
+   provider is available; label the result as text-verified only.
+4. `unverified` — do not guess required fields, events, procedures, or object
+   names. Stop and report the blocker.
 
 ## Pre-Flight Checklist
 
 ### 1. Field References
 
-For every base-table field you plan to reference, verify it exists:
+For every base-table field you plan to reference, verify it exists using the
+strongest available evidence source. Prefer `AL LSP` workspace-semantic lookup
+when available. Otherwise use `AL MCP`:
 
 ```text
-al_get_object_definition(objectType: 'Table', objectName: '<TableName>')
+al_get_object_definition(objectType: 'Table', objectName: 'Sales Header')
+```
+
+If neither semantic provider is available, use a tightly scoped text search and
+label the result as `text search`, for example:
+
+```bash
+rg -n 'field\([0-9]+; "Document Type"' src .alpackages
 ```
 
 - [ ] Field name is exact (including spacing, e.g., `"Sell-to Customer No."`)
@@ -32,10 +54,17 @@ using a field that exists in W1 but not in a localized base app.
 
 ### 2. Event Subscriber Signatures
 
-For every event publisher you plan to subscribe to:
+For every event publisher you plan to subscribe to, prefer `AL LSP`
+find-references or hover/signature information when available. Otherwise use
+`AL MCP`:
 
 ```text
-al_search_object_members(searchTerm: '<EventName>', objectType: 'Codeunit')
+al_search_object_members(
+  objectName: 'Sales-Post',
+  objectType: 'Codeunit',
+  memberType: 'procedures',
+  pattern: 'OnAfterPostSalesDoc',
+  includeDetails: true)
 ```
 
 - [ ] Event publisher name is exact (case-sensitive)
@@ -55,8 +84,10 @@ local procedure OnAfterPostSalesDoc(var SalesHeader: Record "Sales Header"; ...)
 begin end;
 ```
 
-If the MCP result is ambiguous, use `al_find_references` to locate the
-publisher source and read its exact signature.
+If `AL LSP` lookup is unavailable or ambiguous, use `AL MCP` such as
+`al_find_references` to locate the publisher source and read its exact
+signature. If the only evidence is `rg`, label the result as `text search` and
+include the exact file:line evidence in the pre-flight summary.
 
 ### 3. Object Names and IDs
 
@@ -74,10 +105,12 @@ grep -rn --include="*.al" \
 
 ### 4. Object Types You Extend
 
-For every object you write a table/page/codeunit extension for:
+For every object you write a table/page/codeunit extension for, prefer
+workspace-semantic lookup through `AL LSP` when available. Otherwise use
+`AL MCP`:
 
 ```text
-al_search_objects(searchTerm: '<ObjectName>', objectType: '<Table|Page|Codeunit>')
+al_search_objects(pattern: 'Customer', objectType: 'Table')
 ```
 
 - [ ] Object type is correct (extending a `Table`, not a `TableExtension`)
@@ -91,12 +124,16 @@ Report a pre-flight summary before beginning implementation:
 
 ```text
 Pre-flight complete:
-- Fields verified: [list field names checked, or "none referenced"]
-- Events verified: [list event names + var-params confirmed, or "none"]
+- Evidence sources used: [AL LSP / AL MCP / text search]
+- Fields verified: [field name -> source label + evidence, or "none referenced"]
+- Events verified: [event name -> source label + var-params confirmed, or "none"]
+- Objects verified: [object name -> source label + evidence, or "none"]
 - Object names: [all ≤30 chars — confirmed]
-- Object IDs: [in range <X>–<Y>, no conflicts]
-- Anything unverified: [name the item and reason]
+- Object IDs: [in assigned range from the solution plan, no conflicts]
+- Text-verified only: [items verified by text search, or "none"]
+- Unverified: [required item and reason, or "none"]
 ```
 
-If any item cannot be verified via MCP, do NOT guess — report it as
-unverified and stop until the orchestrator or user provides guidance.
+If any required item cannot be verified by `AL LSP`, `AL MCP`, or scoped text
+search, do NOT guess. Report it as `unverified` and stop until the orchestrator
+or user provides guidance.
