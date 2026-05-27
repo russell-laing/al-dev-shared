@@ -62,9 +62,10 @@ user. Each phase is a checkpoint with specific
 inputs and outputs.
 
 **Phase 1.5 (Autonomous):** Optional signature verification phase
-activated by the `--autonomous` flag. Uses AL Symbols MCP to verify
-external procedure signatures before developers are spawned, reducing
-downstream compilation errors.
+activated by `--autonomous`; uses strongest available AL symbol
+evidence before developers are spawned: `AL LSP` through active
+harness/adapter when available, otherwise AL Symbols MCP, otherwise
+scoped text search labeled as weaker evidence.
 
 **Phase 4.5 (Autonomous):** Optional static validation phase that
 runs after developer completion but before the review team is spawned.
@@ -201,10 +202,14 @@ modules outside the specified scope.
 Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
 
 Before dispatching any developer, verify every external procedure
-signature via the AL symbols MCP.
+signature using the strongest available AL symbol evidence.
 
-For each external procedure identified in Phase 1, run the
-appropriate MCP query:
+Preferred evidence order:
+1. `AL LSP` through active harness/adapter semantic operations:
+   go-to-definition, find-references, document symbols, and
+   hover/type information.
+2. `AL MCP` through `al-mcp-server`, using the appropriate MCP
+   query:
 
 ```text
 al_get_object_definition — for base objects being extended:
@@ -216,6 +221,10 @@ al_search_object_members — for event signatures and methods:
 al_find_references — to detect existing similar extensions:
   avoids duplicate subscriber registration
 ```
+
+3. `text search` through scoped `rg` only when no semantic provider
+   is available. Label it as weaker evidence and include file:line
+   references.
 
 Verify for each procedure:
 
@@ -234,21 +243,29 @@ Use this format:
 ### [ObjectType] [ObjectName].[ProcedureName]
 - Parameters: [ParamName: Type; var ParamName: Type]
 - Return: [Type or void]
-- Source: al_search_object_members / al_get_object_definition
+- Evidence source: [AL LSP / AL MCP / text search]
+- Evidence: [go-to-definition result / al_search_object_members / file:line]
 - Verified: [ISO timestamp]
 
 ### NOT VERIFIED: [ProcedureName]
-- Reason: [not found in MCP / ambiguous match]
+- Evidence source: unverified
+- Reason: [not found in semantic provider / ambiguous match / no provider available]
 - Risk: Developer must not guess this signature
 ```
 
-If any procedure is NOT VERIFIED, include this block in the
+If any required external procedure is NOT VERIFIED, do not spawn
+developers for code that depends on that signature. Stop and report the
+unverified required signature to the orchestrator or user.
+
+Only carry a NOT VERIFIED item forward as a documented risk when the
+procedure is explicitly optional or no assigned developer task depends on
+calling it. If an optional item is carried forward, include this block in the
 developer spawn prompt:
 
 ```text
-⚠️ Unverified signatures — do NOT guess these:
-- [ProcedureName]: [reason not verified]
-STOP and report back if you need to call this procedure.
+Optional unverified signatures — do NOT guess these:
+- [ProcedureName]: [reason not verified; not required for assigned task]
+STOP and report back if the implementation would need to call this procedure.
 ```
 
 ## Phase 2: Partition Work
@@ -314,18 +331,27 @@ Your assigned objects:
 
 SYMBOL_PREFLIGHT_GATE — Complete BEFORE writing any AL code.
 Follow `knowledge/al-symbol-pre-flight.md` for the full checklist.
+Use the strongest available evidence source and label every item as
+`AL LSP`, `AL MCP`, `text search`, or `unverified`.
 Required checks:
-1. Field references: verify each base field via al_get_object_definition
-   (exact field name, including spacing and capitalisation)
-2. Event signatures: verify via al_search_object_members — every var
-   parameter in the publisher MUST be declared var in your subscriber;
-   missing var = AL0118 compile error
-3. Object names: count characters — each must be ≤30
-4. Object IDs: confirm all are in your assigned range with no duplicates
+1. Field references: verify each base field, exact field name,
+   spacing, and capitalisation.
+2. Event signatures: verify every event publisher signature; every
+   var parameter in the publisher MUST be declared var in your
+   subscriber; missing var = AL0118 compile error.
+3. Object names: verify each name and count characters; each must
+   be ≤30.
+4. Object IDs: verify all IDs are in your assigned range with no
+   duplicates.
 
 Report your pre-flight summary before writing a single line of AL:
-"Pre-flight complete: fields verified [list], events verified [list],
-names/IDs OK [or: issue found]."
+"Pre-flight complete.
+Evidence sources used: [AL LSP / AL MCP / text search].
+Fields: [field + source].
+Events: [event + source].
+Objects: [object name + source].
+Names/IDs: [name/ID + source].
+Unverified: [none or list]."
 
 DO NOT proceed past pre-flight if any item is unverified. Stop and
 report back to the orchestrator with the unverified item.
@@ -736,8 +762,9 @@ Ready to proceed to testing?
 
 ```text
 Autonomous verification:
-✅ N external signatures verified via AL symbols MCP
-   [N unverified — see risks in code review]
+✅ N required external signatures verified
+   Evidence sources: AL LSP N / AL MCP N / text search N
+   Optional unresolved signatures: N documented as risks
 ✅ Object names: all ≤30 chars [or: N violations fixed]
 ✅ Compile guards: all correct [or: N inversions fixed]
 ✅ Labels: consistent with plan [or: N discrepancies flagged]

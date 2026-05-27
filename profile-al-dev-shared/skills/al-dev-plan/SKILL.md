@@ -90,23 +90,26 @@ Check whether $ARGUMENTS contains a meaningful feature description.
      integration points
    - If not exists, suggest `/al-dev-init-context` and
      continue without it
-4. Pre-research base app integration points using the AL
-   Symbols MCP (`al-mcp-server`) before spawning architects:
-   - `al_search_objects` — find relevant base app tables,
-     pages, or codeunits the feature will extend or interact
-     with (e.g. "Sales Header", "Customer", "Item")
-   - `al_get_object_definition` — inspect the fields,
-     triggers, and events on key base objects
-   - `al_search_object_members` — locate existing events or
-     procedures the solution can subscribe to
+4. Pre-research base app and project integration points using
+   the strongest available AL symbol evidence before spawning
+   architects:
+   - Prefer `AL semantic navigation` when the active harness exposes
+     an `AL LSP` provider or adapter. Use go-to-definition,
+     find-references, document symbols, and hover/type information.
+   - If `AL LSP` is unavailable, use AL MCP through the AL Symbols
+     MCP server (`al-mcp-server`): `al_search_objects`,
+     `al_get_object_definition`, and `al_search_object_members`.
+   - If no semantic provider is available, use tightly scoped `rg`
+     searches and label the result as `text search`, not semantically
+     verified.
 
-   Include these findings in every architect prompt so
-   architects start from real object knowledge, not
-   assumptions.
+   Include the findings and evidence source (`AL LSP`, `AL MCP`,
+   `text search`, or `unverified`) in every architect prompt so
+   architects start from explicit evidence, not assumptions.
 
-   If the MCP server is unavailable or returns no results
-   (e.g., no BC workspace is active), proceed directly to
-   Phase 2 using general AL knowledge. Do not stop.
+   If no provider is available or no results are returned, proceed
+   directly to Phase 2 using general AL knowledge unless a required
+   symbol is `unverified`.
 
 5. Load performance constraints if available:
    ```bash
@@ -135,17 +138,25 @@ or any third-party analysis, verify the claims before forwarding to architects:
    - If path doesn't exist → mark as **unverified**, note the missing path
    - If content differs from description → mark as **partially verified**, note the discrepancy
 2. **Symbol/API verification:** For each function, procedure, field, or table mentioned:
-   - Use the AL MCP server (`al_search_objects` or `al_find_references`) to confirm the symbol exists
-   - Cross-harness fallback: `grep -r "symbol_name" src/ --include="*.al"`
-   - If not found → mark as **unverified**
-   - If found but context differs → mark as **partially verified**
+   - Prefer `AL semantic navigation` (`AL LSP`) when the active
+     harness exposes it: go-to-definition, find-references,
+     document symbols, and hover/type information.
+   - If unavailable, use AL MCP (`al_search_objects`,
+     `al_search_object_members`, `al_get_object_definition`, or
+     `al_find_references`).
+   - If no semantic provider is available, use scoped text search:
+     `rg -n "symbol_name" src/ --glob "*.al"`.
+   - Record evidence source as `AL LSP`, `AL MCP`, `text search`,
+     or `unverified`.
+   - If not found → mark as **unverified**.
+   - If found but context differs → mark as **partially verified**.
 3. **Build evidence summary** as Markdown table:
 
-   | Claim | Type | Status | Evidence |
-   | --- | --- | --- | --- |
-   | "File X has problem Y" | file+issue | ✅ Verified | File exists, issue confirmed at line Z |
-   | "Function Q is slow" | performance | ⚠️ Unverified | Function exists but no profiling data provided |
-   | "Table R has no indexes" | schema | ✅ Verified | Grep confirms table R, no index definitions found |
+   | Claim | Type | Status | Evidence Source | Evidence |
+   | --- | --- | --- | --- | --- |
+   | "Field X exists on table Y" | symbol | Verified | text search | `src/TableY.al:42` contains field declaration; semantic provider unavailable |
+   | "Procedure Q exists" | procedure | Unverified | unverified | No `AL LSP`, `AL MCP`, or scoped `rg` result found |
+   | "Event R has parameter S" | event signature | Verified | AL MCP | `al_search_object_members` found publisher signature with parameter S |
 
 4. **Communicate findings to architects** under `**External findings status:**`
    - ✅ Verified — treat as design input
@@ -262,12 +273,17 @@ Quality bar: critiques/falsifications must be substantive enough to force re-eva
    - "Your plan doesn't address [scenario X]. How would
      your approach handle it?"
    - "What happens when [edge case Y] occurs?"
-4. Verify architects use MCP tools:
-   - BC Code Intelligence for architecture patterns
-   - MS Docs for BC API documentation
+4. Verify architects use available semantic evidence:
+   - AL semantic navigation (`AL LSP`) when exposed for definition
+     lookup, references, document symbols, hover/type information,
+     and rename/refactor impact checks
    - AL Symbols MCP (`al-mcp-server`) for base app object
      exploration (`al_search_objects`, `al_get_object_definition`,
      `al_find_references`)
+   - BC Code Intelligence for architecture patterns
+   - MS Docs for BC API documentation
+   - Scoped text search only as a weaker fallback labeled
+     `text search`
 
 Push architects to think deeper. Do not accept superficial
 solutions.
@@ -356,4 +372,3 @@ USER_GATE — ask the user with options:
 
 If user selects "Refine", spawn architects again with the
 user's feedback.
-
