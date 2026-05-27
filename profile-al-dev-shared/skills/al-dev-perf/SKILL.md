@@ -43,11 +43,22 @@ high-volume or batch-processing.
 
 ### Step 1a — Identify Entry-Point Metadata
 
-For each codeunit found in Step 1, use the AL Symbols MCP
-(`al-mcp-server`) to classify it before spawning the analysis agent:
+For each codeunit found in Step 1, use the strongest available symbol evidence
+to classify it before spawning the analysis agent. Prefer `AL LSP` document
+symbols when the active harness exposes semantic navigation. Otherwise use
+`AL MCP`:
 
 - `al_get_object_summary` — check for OnRun() and codeunit type
 - `al_search_object_members` — detect event subscriber attributes
+
+If no semantic provider is available, use scoped text search against the
+codeunit file list from Step 1:
+
+```bash
+rg -n \
+  "trigger OnRun\\(|\\[EventSubscriber\\]|codeunit [0-9]+ .*(Batch|Process|Import|Post|Transfer|Run)" \
+  [codeunit files from Step 1]
+```
 
 | Indicator | Classification | Severity modifier |
 | --- | --- | --- |
@@ -56,16 +67,18 @@ For each codeunit found in Step 1, use the AL Symbols MCP
 | Name contains Batch/Process/Import/Post/Transfer/Run | Batch Processor | +1 level |
 | None of the above | Utility | none |
 
-If al-mcp-server is unavailable or returns no result for a codeunit,
-default to Utility (no modifier). Do not block the analysis.
+If neither `AL LSP` nor `AL MCP` is available and scoped text search finds no
+entry-point indicators, default to Utility (no modifier). Do not block the
+analysis. Label the source as `text search` if the fallback search ran, or
+`unverified` if no lookup could be performed.
 
 Produce a classification summary to pass into Step 2:
 
-```
+```text
 Codeunit classifications:
-- CreateJobV6.Codeunit.al → Entry Point (has OnRun)
-- BatchPostSales.Codeunit.al → Batch Processor (name heuristic)
-- StringHelper.Codeunit.al → Utility
+- CreateJobV6.Codeunit.al → Entry Point (has OnRun; evidence source: AL LSP)
+- BatchPostSales.Codeunit.al → Batch Processor (name heuristic; evidence source: text search)
+- StringHelper.Codeunit.al → Utility (no indicators found; evidence source: AL MCP)
 ```
 
 ---
@@ -87,7 +100,7 @@ Prompt:
 
    Files to analyse: [file paths from Step 1]
 
-   Codeunit classifications (from AL Symbols pre-research):
+   Codeunit classifications (with evidence source labels: AL LSP, AL MCP, text search, or unverified):
    [paste the classification summary from Step 1a]
 
    Severity escalation rule: For any P1–P8 finding in a codeunit
@@ -209,8 +222,10 @@ No critical issues found. Findings in perf-analysis.md.
   inside a loop with many iterations
 - For very large codebases, scope to specific codeunits first;
   use "scan all" only for smaller extensions
-- AL Symbols lookup (Step 1a) enriches severity by context; if symbols
-  are unavailable the skill falls back to equal-weight analysis
+- Symbol lookup (Step 1a) enriches severity by context. Prefer `AL LSP`
+  document symbols when available, otherwise use `AL MCP`, then scoped text
+  search. If no lookup can be performed, fall back to equal-weight analysis and
+  label classification evidence as `unverified`.
 - The +1 severity escalation applies once per finding — a LOW finding
   in a Batch Processor becomes MEDIUM, not CRITICAL
 - P8 (full table scan) is most useful on tables > ~1000 rows; do not
