@@ -3,7 +3,7 @@ description: >-
   Review AL code for security vulnerabilities, permission issues,
   and data exposure risks. Spawned in parallel by the
   al-dev-develop skill.
-model: sonnet
+model: haiku
 tools: ["Read", "Grep"]
 ---
 

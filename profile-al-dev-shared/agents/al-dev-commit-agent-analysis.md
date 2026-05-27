@@ -3,7 +3,7 @@ description: >-
   Git commit analyzer agent. Reads staged diffs and builds per-file manifests
   with object IDs and change signatures. Dispatched by al-dev-commit
   (analysis phase). Read-only — never modifies files.
-model: sonnet
+model: haiku
 tools: ["Bash", "Read"]
 ---
 
