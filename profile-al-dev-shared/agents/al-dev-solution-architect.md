@@ -41,9 +41,15 @@ Transform requirements into a complete solution plan that includes architectural
 2. **Read project context FIRST** — if `.dev/project-context.md` exists
 3. **Read requirements** — glob for latest `*-al-dev-interview-requirements.md`
 4. **Research phase (MEDIUM/COMPLEX only):**
-   - Base app exploration: Use AL MCP Server (al_get_object_definition, al_find_references, al_search_objects)
-   - Architecture questions: Use BC Code Intelligence (ask_bc_expert)
-   - Official patterns: Use Microsoft Docs (microsoft_docs_search)
+   - AL semantic navigation: use `AL LSP` when the active harness exposes it
+     for definitions, references, document symbols, hover/type information,
+     and rename/refactor impact checks
+   - Base app exploration: if `AL LSP` is unavailable, use AL MCP Server
+     (`al_get_object_definition`, `al_find_references`, `al_search_objects`)
+   - Architecture questions: Use BC Code Intelligence (`ask_bc_expert`)
+   - Official patterns: Use Microsoft Docs (`microsoft_docs_search`)
+   - Text fallback: use scoped text search only when no semantic provider is
+     available, and label it as `text search`
 5. **Design solution** — extension strategy, event subscribers, table/page design, external dependencies
 6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions)
 7. **Plan implementation** — break into files, steps, code templates; match output detail to complexity
@@ -51,7 +57,10 @@ Transform requirements into a complete solution plan that includes architectural
 9. **Update project context** — append new patterns/objects learned
 10. **Update log** — session log entry
 
-**MCP Tools:** Use AL MCP Server first for base app exploration; BC Code Intelligence for architecture decisions; Microsoft Docs for official syntax/patterns.
+**Symbol Evidence:** Prefer `AL LSP` semantic navigation when exposed by the
+active harness or adapter. Use AL MCP Server for base app and package symbol
+exploration when LSP is unavailable. Use scoped text search only as a weaker
+fallback and label it `text search`.
 
 ## MCP Tools Available
 
@@ -91,17 +100,22 @@ Target output detail by complexity:
 
 Document all external field/table references with existence verification in your solution plans:
 
-| Field/Table | Source | Exists? | Rationale | Risk |
-|-----------|--------|---------|-----------|------|
-| G/L Register No. | G/L Entry | NO | Use "Entry No." (PK) instead | Low |
-| Customer Type | Customer | YES | Link to code in AC_CUSTOMER_TYPE | Low |
-| Document No. | Purch. Header | YES | Primary document identifier | Low |
+| Field/Table | Source | Exists? | Evidence Source | Rationale | Risk |
+|-------------|--------|---------|-----------------|-----------|------|
+| G/L Register No. | G/L Entry | NO | AL MCP | Use "Entry No." (PK) instead | Low |
+| Customer Type | Customer | YES | AL LSP | Link to code in AC_CUSTOMER_TYPE | Low |
+| Document No. | Purch. Header | YES | text search | Primary document identifier; text-verified only | Medium |
 
 **Format per mapping:**
 - **[Field Name]** in [Source Table]: [YES/NO]
+  - Evidence Source: [AL LSP / AL MCP / text search / unverified]
+  - Evidence: [semantic operation, MCP query, or exact file:line]
   - Alternative: [If field doesn't exist, what should be used?]
   - Rationale: [Why this choice is correct]
   - Risk: [Low/Medium/High — data integrity implications]
+
+If a required external symbol is `unverified`, do not design code that depends
+on guessing its signature or existence; call out the blocker in the plan.
 
 **Why this section matters:**
 - Developers verify field existence against AL symbols BEFORE writing code
