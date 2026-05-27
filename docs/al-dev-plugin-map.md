@@ -623,6 +623,12 @@ Suggestion: Create `/al-dev-publish` skill that consumes `/al-dev-release-notes`
 
 Trade-off: Adds scope and infrastructure dependencies (changelog tooling, tagging policy, notification integration). Only valuable if release publishing is a frequent manual task. Medium complexity if publication targets are standardized; high complexity if integration is ad-hoc per project.
 
+**Status:** Deferred to future work pending scope clarification.
+See `knowledge/publish-workflow-opportunity.md` for detailed opportunity analysis.
+Current recommendation: Defer implementation until:
+1. Confirmation that publishing is frequently manual (not already automated in CI/CD)
+2. Standardization of publication targets and integration scope
+
 ---
 
 **Improve: Close /al-dev-lint feedback loop in /al-dev-fix**
