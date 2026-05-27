@@ -16,7 +16,7 @@
 Analyze the user request and classify:
 
 ### 🟢 TRIVIAL (Use Fast Path - 2-5 min)
-**Route:** `/al-dev-fix` workflow (no planning, no testing)
+**Route:** `/al-dev-fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
 
 **Criteria:**
 - Single file modification
@@ -33,10 +33,10 @@ Analyze the user request and classify:
 
 **Steps:**
 1. Read project-context.md
-2. Locate file (use context, minimal search)
-3. Make change
-4. Run al-compile
-5. Done (skip all agents)
+2. Locate the likely file with minimal search
+3. If the fix stays obvious and single-scope, continue on the direct `/al-dev-fix` path
+4. If ambiguity, multiple files, or integration risk appears, follow the `/al-dev-fix` non-trivial branch instead of forcing a trivial edit
+5. Run compile/lint verification and present the bounded result
 
 **Time saved:** 15-25 minutes vs full workflow
 
@@ -279,7 +279,7 @@ Then: Synthesize results into solution plan
 
 User can force a specific path:
 
-- `/al-dev-fix` → Always TRIVIAL path
+- `/al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
 - `/al-dev-develop` → SIMPLE/MEDIUM path (no requirements phase)
 - `/al-dev-plan` → MEDIUM path (planning only)
 - `/al-dev-dev-cycle` → COMPLEX path (full pipeline)

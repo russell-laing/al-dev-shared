@@ -595,23 +595,28 @@ flowchart LR
 
 ### Architectural suggestions
 
-**Atomise: /al-dev-develop** ← highest leverage
+**✅ Implemented: /al-dev-review-develop extracted from /al-dev-develop**
 
-Observation: /al-dev-develop currently spans 10 semantic phases (0–10 with fractional sub-phases) in two clearly separable concern groups: (1) Phases 0–4 handle context preservation, signature verification, work partitioning, and pre-implementation validation gates; (2) Phases 5–10 handle developer dispatch, review synthesis, compilation, and code-review output. The transition from "resource allocation and pre-flight validation" to "quality assurance and finalization" is sharp after Phase 4. A complete, unreviewed implementation exists after Phase 4 (all developers have completed work).
+Status: Confirmed in current sweep. The live workflow now splits implementation from review:
+- `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` produces a Phase 4 handoff for `/al-dev-review-develop`
+- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` owns the post-implementation review orchestration (Phase 5-10)
 
-Suggestion: Extract Phases 5–10 (multi-reviewer synthesis, compile-verify, code-review output) into a new `/al-dev-review-develop` skill that consumes /al-dev-develop's intermediate output (all implementation files after Phase 4) and focuses exclusively on post-implementation review orchestration. This splits the 10-phase skill into: (1) `/al-dev-develop` (Phases 0–4): partition work, pre-flight validation, run developers; (2) `/al-dev-review-develop` (Phases 1–3): review coordination, synthesis, compilation verification, code-review write.
-
-Trade-off: Adds one skill to the distributed registry. Each skill becomes narrower (5 vs 10 phases), reducing cognitive load per invocation. Enables independent review workflows (useful for post-hoc code review on completed implementation, or running review multiple times without re-implementing). Requires refactoring Phase 4 output format into a hand-off file format that /al-dev-review-develop reads.
+Impact: This is no longer remaining implementation scope. The map should treat review-workflow independence as current state, not future work.
 
 ---
 
-**Connect: Reuse the existing symbol pre-flight pattern more broadly**
+**Connect: Clarify `/al-dev-fix` escalation boundaries**
 
-Observation: `knowledge/al-symbol-pre-flight.md` already exists and /al-dev-develop already treats it as the canonical pre-flight contract. The remaining asymmetry is narrower: /al-dev-fix still uses a lighter developer prompt, so symbol-evidence rigor can still drift between the trivial-fix and planned-development paths.
+Observation: The core propagation work is already present. `/al-dev-fix` now:
+- loads prior lint findings on the non-trivial path
+- dispatches an architect for non-trivial fixes
+- explicitly tells that architect to follow `knowledge/al-symbol-pre-flight.md`
 
-Suggestion: Treat the knowledge document as complete current-state infrastructure and evaluate a follow-up change that explicitly references it from /al-dev-fix when a "small fix" stops being truly trivial. This is propagation work, not missing documentation.
+The remaining asymmetry is documentation: `profile-al-dev-shared/knowledge/workflow-routing.md` still describes `/al-dev-fix` as if it were always a direct trivial edit with no planning branch.
 
-Trade-off: Slightly longer /al-dev-fix prompts for borderline-simple work. Improvement: stronger consistency between one-file fixes and planned development without inventing another pattern document.
+Suggestion: Treat symbol pre-flight reuse as implemented for the non-trivial `/al-dev-fix` path. The remaining follow-up is to align routing guidance so `/al-dev-fix` is documented as a fast-fix entrypoint that may escalate to quick architect analysis when the issue is ambiguous, multi-file, or integration-heavy.
+
+Trade-off: Slightly more nuanced routing prose. Improvement: removes false expectations about `/al-dev-fix`, makes existing symbol-rigor behavior discoverable, and avoids adding prompt weight to truly trivial fixes without evidence.
 
 ---
 
@@ -625,19 +630,21 @@ Trade-off: Adds scope and infrastructure dependencies (changelog tooling, taggin
 
 **Status:** Deferred to future work pending scope clarification.
 See `knowledge/publish-workflow-opportunity.md` for detailed opportunity analysis.
-Current recommendation: Defer implementation until:
-1. Confirmation that publishing is frequently manual (not already automated in CI/CD)
-2. Standardization of publication targets and integration scope
+Current recommendation: Do not implement in shared profile until:
+1. Publishing is confirmed to be a frequent manual workflow
+2. Publication targets are standardized enough to be harness-neutral
+3. Required integrations are known and supportable across downstream repos
 
 ---
 
-**Improve: Close /al-dev-lint feedback loop in /al-dev-fix**
+**✅ Implemented: /al-dev-fix consumes prior lint findings**
 
-Observation: Layer 1 diagram shows /al-dev-lint as a dashed feedback loop feeding into /al-dev-fix (line 38-39), but /al-dev-fix does not actually check for or load `.dev/*-al-dev-lint-lint-report.md` when available. The diagram suggests a feedback mechanism that is not implemented: lint findings should inform the architect's complexity analysis, but currently they are ignored.
+Status: Confirmed in current sweep. `/al-dev-fix` Step 3 now:
+- loads the latest `.dev/*-al-dev-lint-lint-report.md` when present
+- extracts unresolved items
+- passes them into the architect prompt as `Known linting constraints`
 
-Suggestion: In /al-dev-fix Step 3 (Non-Trivial Fix), after loading `.dev/*-al-dev-perf-perf-analysis.md`, also check for `.dev/*-al-dev-lint-lint-report.md` and surface any UNRESOLVED items to the architect as "**Known linting constraints**" so complexity assessment can factor in linting debt. This closes the feedback loop shown in the Layer 1 diagram.
-
-Trade-off: One additional glob pattern per /al-dev-fix invocation. Architect prompts become slightly longer when prior lint exists. Improvement: linting debt is visible to the architect instead of hidden.
+Impact: The Layer 1 lint -> fix feedback loop is implemented in the live skill. No new behavior change is required here; only the map text needed reconciliation.
 
 ---
 
@@ -717,11 +724,11 @@ The plugin maintains healthy separation of concerns:
 - Split /al-dev-commit into analysis, message-drafting, execution
 - Documented architect and pattern invocations
 
-**Current analysis (2026-05-27):** Five lenses re-applied across the same 18 skills. Four future-facing suggestions remain, plus four confirmed current-state checks:
-- **Atomise: /al-dev-develop** (split pre-flight from review; highest leverage)
-- **Connect: Reuse symbol pre-flight in /al-dev-fix** (propagate existing guidance; medium leverage)
-- **Extend: /al-dev-publish** (consume release-notes; medium leverage if deployment is frequent)
-- **Improve: Close lint feedback** (wire lint-report into /al-dev-fix; low effort, high clarity)
+**Current analysis (2026-05-27):** Five lenses re-applied across the same 18 skills. Current state is:
+- **Implemented: /al-dev-review-develop extraction** (review workflow independence is now live)
+- **Narrow follow-up: `/al-dev-fix` symbol-rigor wording** (non-trivial path already uses symbol pre-flight; routing docs still need alignment)
+- **Deferred: /al-dev-publish** (blocked on scope clarification)
+- **Implemented: lint feedback into `/al-dev-fix`** (unresolved lint items already surface to the architect)
 - **Confirmed: /al-dev-plan interview guidance already present**
 - **Confirmed: /al-dev-develop compile/staging gates already documented**
 - **Confirmed: /al-dev-explore integration working** (outdated observation removed)
@@ -729,6 +736,6 @@ The plugin maintains healthy separation of concerns:
 
 ### Extension opportunities
 
-1. **Post-release orchestration**: `/al-dev-publish` would consume release-notes and push to channels/changelog/CI (medium priority if deployment is frequently manual; low priority if CI is fully automated).
-2. **Review workflow independence**: `/al-dev-review-develop` extracted from `/al-dev-develop` would enable standalone review cycles on completed implementations (medium priority for iterative review workflows; low priority for linear develop-once-review-once patterns).
-3. **Lint quality gates**: Optional pre-commit lint check preventing merge if CRITICAL items remain. Currently lint is informational; gating would enforce standards (low priority, lint is advisory by design).
+1. **Post-release orchestration**: `/al-dev-publish` remains a deferred opportunity until publication targets, tooling, and audience are standardized.
+2. **`/al-dev-fix` routing clarity**: Align the routing docs with the live skill so "fast fix" does not imply "always trivial" or "never uses an architect".
+3. **Lint quality gates**: Optional pre-commit lint gating remains separate future work; current lint integration is advisory by design.

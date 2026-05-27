@@ -30,6 +30,13 @@ Would consume `/al-dev-release-notes` output and orchestrate:
 - Confirm publication targets match project needs
 - Estimate integration complexity (low if standardized; high if ad-hoc)
 
+## Shared-Profile Gate
+
+Do not convert this opportunity into a distributed skill until the four scope
+questions above are answered for at least one real downstream workflow. If the
+answers are repo-specific, keep the automation repo-local instead of adding it
+to `profile-al-dev-shared`.
+
 ## Future Task
 
 Once scope is approved, create `/al-dev-publish` skill with:
