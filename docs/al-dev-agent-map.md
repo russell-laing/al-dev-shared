@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-27 (19 agents; clarified docs-writer and commit-message-drafter dispatch status, fixed tools lists)
+**Last updated:** 2026-05-27 (19 agents; technical accuracy review — corrected MCP tool names, spawner references, output block fields, input specifications)
 
 ## Layer 1: Agent Catalog
 
@@ -12,18 +12,18 @@
 | al-dev-commit-message-drafter | sonnet | Read | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-fix |
 | al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | (not spawned — skill mentions but doesn't dispatch) |
 | al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
-| al-dev-interview | sonnet | Read, Write, AskUserQuestion | /al-dev-interview |
+| al-dev-interview | sonnet | Read, Write, USER_GATE | /al-dev-interview |
 | al-dev-performance-reviewer | sonnet | Read, Grep | /al-dev-develop |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp | /al-dev-release-notes |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-develop |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence-mcp, mcp:microsoft-docs-mcp, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-ticket (support mode) |
-| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp, mcp:bc-code-history | /al-dev-ticket (support mode) |
+| al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
+| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-support (reply phase) |
+| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence | /al-dev-support (research phase) |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (all modes) |
 
 ---
@@ -71,8 +71,6 @@
 | Output | Description |
 |--------|-------------|
 | `MANIFESTS` block | Per-file change summary (object IDs, added/removed fields and procedures) |
-| `PROPOSED_GROUPS` block | Atomic commit group proposals |
-| `DELETIONS` block | Staged deletions for the user audit gate |
 | `WARNINGS` block | Validation issues and advisory notices |
 
 ---
@@ -95,8 +93,9 @@
 
 | Output | Description |
 |--------|-------------|
-| `COMMIT_MESSAGES` block | Draft commit message for each group with rationale |
-| `SUMMARY` block | Overall commit strategy summary |
+| `PROPOSED_GROUPS` block | Atomic commit group proposals with rationale |
+| `DELETIONS` block | Staged deletions for the user audit gate |
+| `WARNINGS` block | Validation issues and advisory notices |
 
 ---
 
@@ -148,7 +147,6 @@
 | AL source files | **Primary** — Implemented code in `src/` |
 | Test codeunits | Test code in `src/Tests/` |
 | `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md` | TDD log |
-| `.dev/project-context.md` | Update with new objects |
 | `.dev/session-log.md` | Append entry per file |
 
 ---
@@ -158,14 +156,13 @@
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** sonnet
 **Tools:** Read, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-lint
+**Spawned by:** /al-dev-lint, /al-dev-fix
 
 **Inputs:**
 
 | Input | Required | Description |
 |-------|----------|-------------|
 | `.dev/compile-errors.log` | Yes | Output from `al-compile` |
-| `knowledge/al-linting-rules.md` | Yes | Rule ID lookup reference |
 | AL source files (flagged paths) | Yes | Files to fix |
 
 **Outputs:**
@@ -191,6 +188,7 @@
 | Latest `*-requirements.md` | **Yes** | What was needed |
 | Latest `*-solution-plan.md` | **Yes** | Architecture |
 | AL source files | **Yes** | Actual implementation |
+| `AUDIENCE` parameter | **Yes** | Target audience (technical, functional, user, executive) |
 | Latest `*-code-review.md` | No | Quality notes |
 | Latest `*-test-plan.md` | No | Test coverage info |
 
@@ -224,7 +222,7 @@
 
 | Output | Description |
 |--------|-------------|
-| AL Best Practices Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Minor Issues |
+| AL Expert Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Minor Issues |
 
 ---
 
@@ -250,6 +248,7 @@
 | Findings | List of relevant files, code snippets, or relationships |
 | Summary | Concise explanation of codebase structure for the query |
 | Suggestions | Recommendations for next steps |
+| `.dev/$(date +%Y-%m-%d)-al-dev-explore.md` | Persistent findings file |
 
 ---
 
@@ -257,7 +256,7 @@
 
 **Description:** Interview the user to extract complete BC/AL implementation details through structured questioning.
 **Model:** sonnet
-**Tools:** Read, Write, AskUserQuestion
+**Tools:** Read, Write, USER_GATE
 **Spawned by:** /al-dev-interview
 
 **Inputs:**
@@ -265,13 +264,13 @@
 | Input | Required | Description |
 |-------|----------|-------------|
 | File path argument | No | Existing spec to refine (e.g., `.dev/*-al-dev-interview-requirements.md`) |
-| Fresh start | No | If no file specified, creates new `.dev/*-al-dev-interview-notes.md` |
+| Fresh start | No | If no file specified, creates new `.dev/*-al-dev-interview-requirements.md` |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
-| `.dev/$(date +%Y-%m-%d)-al-dev-interview-notes.md` | **Primary** (new interview) — Complete spec with decisions |
+| `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` | **Primary** (new interview) — Complete spec with decisions |
 | Updated input file | **Primary** (refining) — Enhanced with interview findings |
 | `.dev/session-log.md` | Append entry with summary |
 
@@ -295,7 +294,7 @@
 
 | Output | Description |
 |--------|-------------|
-| Performance Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Optimization Opportunities |
+| Performance Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Medium / Low |
 
 ---
 
@@ -303,7 +302,7 @@
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence-mcp
+**Tools:** Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence
 **Spawned by:** /al-dev-release-notes
 
 **Inputs:**
@@ -399,8 +398,8 @@
 
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
-**Tools:** Read, mcp:al-mcp-server, mcp:microsoft-docs-mcp, mcp:bc-code-history
-**Spawned by:** /al-dev-ticket (support mode)
+**Tools:** Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence
+**Spawned by:** /al-dev-support (research phase)
 
 **Inputs:**
 
@@ -423,7 +422,7 @@
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
 **Model:** sonnet
 **Tools:** Write, Read
-**Spawned by:** /al-dev-ticket (support mode)
+**Spawned by:** /al-dev-support (reply phase)
 
 **Inputs:**
 
@@ -457,15 +456,14 @@
 | `TICKET_ID` | **Yes** | Freshdesk ticket number (in dispatch prompt) |
 | `FRESHDESK_API_KEY` | **Yes** | API key (from global settings via environment) |
 | `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain (from global settings via environment) |
-| `PHASE` | No | `fetch`, `download-attachments`, or `detect-inline-images` (in dispatch prompt) |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
 | `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` | **Primary** — structured ticket brief with inline image list |
-| `.dev/attachments/` | Attached files (when PHASE=download-attachments) |
-| Return block | `TICKET_LOADED`, `TITLE`, `STATUS`, `SUMMARY`, `ATTACHMENTS`, `INLINE_IMAGES`, `FILE` |
+| `.dev/attachments/` | Attached files (downloaded with ticket context) |
+| Return block | `TICKET_CONTEXT_WRITTEN`, `TICKET_ID`, `STATUS`, `PRIORITY`, `COMMENTS_COUNT`, `ATTACHMENTS`, `INLINE_IMAGES_COUNT` |
 
 ---
 
