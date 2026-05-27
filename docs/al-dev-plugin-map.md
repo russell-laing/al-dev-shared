@@ -221,7 +221,7 @@ flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Read plan"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Implement"]
-    Phase2 --> DevAgent["al-dev-developer ×2-3<br/>parallel"]
+    Phase2 --> DevAgent["al-dev-developer ×1-4<br/>(scaled by object count)"]
     DevAgent --> Phase3["Phase 3<br/>Review<br/>in parallel"]
 
     Phase3 --> SecReview["al-dev-security-reviewer<br/>×1"]
@@ -563,7 +563,6 @@ flowchart LR
 
 - **/al-dev-handoff** — file copy + prompt assembly; purely shell/file operations
 - **/al-dev-help** — reads `.dev/` context files and presents guidance inline
-- **/align-harness-repos** — runs an external Python alignment script; all logic is inline (project-local, not distributed)
 
 ### Potential shared agents (with documented patterns)
 
