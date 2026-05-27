@@ -175,6 +175,7 @@ For non-trivial fixes:
    If not found: skip this step.
 
 1. Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
+   Include this in the dispatch prompt: "Follow `knowledge/al-symbol-pre-flight.md` for symbol verification rigor. Ensure all proposed changes reference verified AL symbol definitions."
 
 2. Review architect's analysis yourself:
    - Does root cause make sense?
