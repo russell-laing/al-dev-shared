@@ -57,7 +57,17 @@ See `knowledge/tdd-workflow.md` for detailed TDD standards, gate templates, and 
 ## Standards
 
 ### AL Code Patterns
-Before writing any AL code, complete the symbol pre-flight checklist (`knowledge/al-symbol-pre-flight.md`). This is enforced by `SYMBOL_PREFLIGHT_GATE` — report your pre-flight summary before implementation begins.
+Before writing any AL code, complete the symbol pre-flight checklist
+(`knowledge/al-symbol-pre-flight.md`). This is enforced by
+`SYMBOL_PREFLIGHT_GATE` — report your pre-flight summary before implementation
+begins. The summary must name the evidence source for each required symbol:
+`AL LSP`, `AL MCP`, `text search`, or `unverified`.
+
+Prefer `AL LSP` semantic navigation when the active harness exposes it for
+definition lookup, references, document symbols, hover/type information, and
+rename/refactor impact checks. If unavailable, use AL MCP. Use scoped text
+search only as a weaker fallback with exact file:line evidence. Stop before
+implementation if a required symbol remains `unverified`.
 
 Reference `knowledge/al-developer-patterns.md` for standard AL patterns, common mistakes to avoid, error handling rules, and naming conventions. Key principles:
 - Use labels instead of StrSubstNo for error messages
