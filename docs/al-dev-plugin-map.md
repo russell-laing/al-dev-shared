@@ -32,7 +32,8 @@ flowchart TD
 
     %% Main development spine
     Plan -->|.dev/*-al-dev-plan-solution-plan.md| Develop("al-dev-develop")
-    Develop -->|.dev/*-al-dev-develop-code-review.md| Commit
+    Develop -->|.dev/*-phase4-handoff| ReviewDevelop("al-dev-review-develop")
+    ReviewDevelop -->|.dev/*-al-dev-develop-code-review.md| Commit
 
     %% Lint feedback loop
     Develop -.->|optional compile cleanup| Lint("al-dev-lint")
@@ -59,6 +60,7 @@ flowchart TD
     style Interview fill:#e8f5e9
     style Plan fill:#fff3e0
     style Develop fill:#fff3e0
+    style ReviewDevelop fill:#ff8a65
     style FixDirect fill:#e8f5e9
     style Commit fill:#e8f5e9
     style Git fill:#c8e6c9
@@ -206,49 +208,75 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Compile and staging gates before review:** developers implement first; compilation/error handling and Phase 8.5 pre-review staging must pass before the three-reviewer panel is spawned. Normal mode assigns one batched fix pass back to developers; `--autonomous` uses the bounded compile-fix loop.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output.
 
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Read plan"]
+    Start([Start]) --> Phase0["Phase 0<br/>Resume check"]
+    Phase0 --> Phase1["Phase 1<br/>Read plan"]
     Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Implement"]
-    Phase2 --> DevAgent["al-dev-developer ×1-4<br/>(scaled by object count)"]
-    DevAgent --> Phase3["Phase 3<br/>Compile + error handling"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase4["Phase 4<br/>Pre-review staging<br/>(Phase 8.5)"]
+    SkillWork1 --> Phase2["Phase 2<br/>Partition work"]
+    Phase2 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase3["Phase 3<br/>Spawn developers"]
+    Phase3 --> DevAgent["al-dev-developer ×1-4<br/>(scaled by object count)"]
+    DevAgent --> Phase4["Phase 4<br/>Verify completion<br/>+ optional static validation"]
     Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase5["Phase 5<br/>Review<br/>in parallel"]
+    SkillWork3 --> Handoff(["Phase 4 handoff<br/>(.dev/*-phase4-handoff.md)"])
+    Handoff --> ReviewDevelop["→ /al-dev-review-develop<br/>(compilation, review, code review)"]
+    ReviewDevelop --> End([End])
 
-    Phase5 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase5 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase5 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
-
-    SecReview --> Phase6["Phase 6<br/>Synthesise"]
-    ExpertReview --> Phase6
-    PerfReview --> Phase6
-
-    Phase6 --> Phase7["Phase 7<br/>Write code review"]
-    Phase7 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
-    Output1 --> End([End])
-
+    style Phase0 fill:#fff8e1
     style Phase1 fill:#fff8e1
     style Phase2 fill:#fff8e1
     style Phase3 fill:#fff8e1
     style Phase4 fill:#fff8e1
-    style Phase5 fill:#fff8e1
-    style Phase6 fill:#fff8e1
-    style Phase7 fill:#fff8e1
     style SkillWork1 fill:#ffe082
     style SkillWork2 fill:#ffe082
     style SkillWork3 fill:#ffe082
-    style SkillWork4 fill:#ffe082
     style DevAgent fill:#ffd54f
-    style SecReview fill:#ffca28
-    style ExpertReview fill:#ffca28
-    style PerfReview fill:#ffca28
-    style Output1 fill:#fbc02d
+    style Handoff fill:#ffb74d
+    style ReviewDevelop fill:#ff8a65
+```
+
+### /al-dev-review-develop
+
+**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification, dispatches three-specialist review panel in parallel, synthesizes findings, and writes code-review artifact.
+
+```mermaid
+flowchart LR
+    Start([Handoff<br/>Phase 4]) --> Phase5["Phase 5<br/>Prepare review"]
+    Phase5 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase6["Phase 6<br/>Compile<br/>+ staging"]
+    Phase6 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase7["Phase 7<br/>Review panel<br/>in parallel"]
+
+    Phase7 --> SecReview["al-dev-security-reviewer<br/>×1"]
+    Phase7 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
+    Phase7 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+
+    SecReview --> Phase8["Phase 8<br/>Synthesise<br/>+ iterate fixes"]
+    ExpertReview --> Phase8
+    PerfReview --> Phase8
+
+    Phase8 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase9["Phase 9<br/>Write code review"]
+    Phase9 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
+    Output1 --> End([End])
+
+    style Phase5 fill:#ff8a65
+    style Phase6 fill:#ff8a65
+    style Phase7 fill:#ff8a65
+    style Phase8 fill:#ff8a65
+    style Phase9 fill:#ff8a65
+    style SkillWork1 fill:#ff7043
+    style SkillWork2 fill:#ff7043
+    style SkillWork3 fill:#ff7043
+    style SkillWork4 fill:#ff7043
+    style SecReview fill:#ff5722
+    style ExpertReview fill:#ff5722
+    style PerfReview fill:#ff5722
+    style Output1 fill:#d84315
 ```
 
 ### /al-dev-commit

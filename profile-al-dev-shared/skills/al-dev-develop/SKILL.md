@@ -1,21 +1,22 @@
 ---
 name: al-dev-develop
 description: >-
-  Implement an AL/BC solution using parallel developers
-  and 3-specialist review (security, AL expert, performance).
-  Use when implementing a planned feature,
-  generating AL code, or building from a solution plan.
-  Requires a solution plan. Pass --autonomous to activate
-  signature verification, static validation, and a
-  self-healing compile loop (replaces /al-dev-autonomous).
-  Prefer over ad-hoc implementation for anything beyond a trivial fix.
+  Prepare implementation context, validate scope, partition work across developers,
+  and dispatch developers to implement AL code. Consumes a solution plan and orchestrates
+  parallel developer agents through pre-flight validation and implementation.
+  Produces Phase 4 handoff artifact for /al-dev-review-develop (review orchestration).
+  Requires a solution plan. Pass --autonomous to activate signature verification
+  and static validation.
 argument-hint: "[--autonomous] [module or scope override]"
 ---
 
 # Develop Skill
 
-Implement an AL/BC solution using parallel developers
-and 3-specialist review. You do NOT write code yourself.
+Prepare implementation context, validate scope, partition work across developers,
+and dispatch developers to implement AL code. You do NOT write code yourself.
+
+After all developers complete, /al-dev-review-develop orchestrates the review panel,
+compilation, and code-review output.
 
 ## Intent Preflight
 
@@ -478,306 +479,24 @@ HIGH issues: N (flagged in code review)
 
 If CRITICAL issues found: dispatch a developer with the specific
 violations. Wait for fixes. Re-run the relevant check before
-spawning the review team.
+proceeding to review.
 
-## Phase 5: Prepare Review Team
+---
 
-> Canonical panel: `knowledge/review-panel-pattern.md`.
-> Role descriptions and synthesis steps are in that doc.
+## Phase 4 Output: Handoff to /al-dev-review-develop
 
-**Compilation Discipline (MANDATORY):**
-- Do NOT run `al-compile` after each function or small change
-- Write all code for your assigned module (30–50 lines of code) BEFORE compiling
-- When code is complete, run `al-compile --output .dev/compile-errors.log` ONCE
-- In normal mode, do NOT iterate with compile-fix-compile-fix cycles; batch your fixes after the single compile run
-- In autonomous mode (`--autonomous`), follow the bounded compile-fix loop in Phase 8 instead
-- Log files: Read errors from `.dev/compile-errors.log`, NOT stdout — errors are logged to file only
+After Phase 4 (or Phase 4.5 if autonomous), all developers have completed implementation:
 
-Compile result reporting rules:
-- Run `al-compile --output .dev/compile-errors.log` with no pipes
-- Inspect the file after compile; never pipe the compile command into `head`, `tail`, or `grep`
-- In conversation, report only:
-  - error count
-  - warning count
-  - up to 3 representative diagnostics
-  - affected files
-- Reference `.dev/compile-errors.log` for the full log
-- Do not paste raw tail output into the session
+**Handoff artifact:**
+`.dev/$(date +%Y-%m-%d)-al-dev-develop-phase4-handoff.md`
 
-(See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
+This document is created at Phase 4 completion and includes:
+- List of developers and their module assignments
+- File ownership verification (no overlap)
+- Naming consistency status
+- Object ID verification results
+- Status: Ready for review team dispatch
+- References to scope document and checklist artifacts
 
-When all developers complete, finish the implementation compile
-pass first using the `.dev/compile-errors.log` generated from
-the Phase 5 compilation discipline. Do not spawn reviewers yet.
-Phase 8 compilation handling and the Phase 8.5 pre-review
-staging gate must both complete cleanly before review begins.
-
-Once Phase 8.5 is satisfied, spawn 3 reviewers in parallel as
-a single batch:
-
-**al-dev-security-reviewer:**
-Review all implemented code for permission issues, data
-exposure risks, authentication gaps.
-
-**al-dev-expert-reviewer:**
-Review for AL naming conventions, BC best practices
-(SetLoadFields, FieldCaption), code organization, event
-patterns.
-
-**al-dev-performance-reviewer:**
-Review for query efficiency, N+1 patterns, SetLoadFields
-usage, loop efficiency, record variable scoping.
-
-Each reviewer reads ALL implemented AL files.
-
-Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
-
-## Phase 6: Synthesise Review Findings
-
-Execute this phase only after the reviewer batch has actually
-been spawned following successful completion of Phases 8 and
-8.5.
-
-When all reviewers complete:
-
-1. Read all three review outputs
-2. Cross-reference overlapping findings — if Security
-   and Performance both flag the same code, that finding
-   is higher priority than one raised by a single reviewer
-3. Where reviewers contradict each other (e.g. AL Expert
-   recommends a pattern that Performance flags as slow),
-   apply your own judgement to resolve the conflict using
-   the criteria in Phase 7
-4. Consolidate into a single categorised list before
-   assigning fixes
-
-## Phase 7: Manage Review Iteration
-
-Execute this phase only after Phase 6 has synthesized findings
-from the reviewer batch spawned after Phases 8 and 8.5.
-
-Categorize all findings:
-
-**CRITICAL** (must fix before user sees code):
-- Security vulnerabilities
-- Data corruption risks
-- Missing core functionality
-- Broken testability (no dependency injection)
-
-**HIGH** (should fix):
-- Performance issues, missing SetLoadFields
-- Poor error handling, pattern violations
-
-**MINOR** (nice to have):
-- Naming suggestions, code organization, comments
-
-Decision:
-- CRITICAL found: assign fixes to relevant developer(s),
-  re-review after fixes, iterate until resolved
-- Only HIGH/MINOR: document in code review, present to
-  user for decision
-
-Do NOT present to user until critical issues are resolved.
-
-## Compile Verification Modes
-
-Compilation must be reported from `.dev/compile-errors.log` using concise
-summaries, not raw terminal output.
-
-| Mode | Compile Behavior | Success Rule |
-|---|---|---|
-| Normal `/al-dev-develop` | Run one implementation compile pass, summarize diagnostics, assign one batched fix pass if errors exist, then compile once more. | Do not report success while new compile errors remain. If errors remain after the batched fix pass, write them into the review artifact as blocking compilation issues. |
-| `/al-dev-develop --autonomous` | Run bounded compile-fix iterations, up to five compile attempts total. | Do not leave autonomous mode through the success path while new compile errors remain. If five attempts are exhausted, stop with a blocking review artifact. |
-| Small fixes | Use `/al-dev-fix`, not `/al-dev-develop`, for a tightly scoped one-file or trivial correction. | Compile once and report the concise result; if compilation fails, fix only errors caused by the small change. |
-
-Hook setup is optional environment guidance. This shared profile defines the
-compile discipline, but does not require harness-specific hook installation.
-
-## Phase 8: Compilation & Error Handling
-
-**Execution:**
-1. **Read** `.dev/compile-errors.log` (generated after the
-   implementation compile pass described in Phase 5)
-2. **Categorize** errors using: `python3 .tools/error-categorizer.py .dev/compile-errors.log`
-3. **Report** the summary to conversation (NOT raw output):
-   - error count
-   - warning count
-   - up to 3 representative diagnostics
-   - affected files
-   - reference `.dev/compile-errors.log` as the full log
-4. **If no errors:** Proceed to Phase 8.5 (pre-review
-   staging). If Phase 8.5 passes, return to the Phase 5
-   reviewer batch. If Phase 8.5 finds unexpected residue,
-   skip the reviewer batch and continue directly to the
-   blocking-note path in Phase 9
-5. **After the reviewer batch completes:** continue to
-   Phase 6 (synthesise findings) and then Phase 9 (write the
-   code review)
-6. **If errors exist in normal mode:**
-   - Group by category (naming, schema, compilation, warnings)
-   - Assign one batched fix pass to the relevant developer(s)
-   - Compile once more after all fixes are applied
-   - If new compile errors remain, do not report success; write the remaining
-     diagnostics into the Phase 9 review artifact as blocking compilation
-     issues
-7. **If errors exist in autonomous mode (`--autonomous`):**
-   - Run a bounded compile-fix loop with at most five compile attempts total
-   - After each failed attempt, summarize the error count, representative
-     diagnostics, affected files, and assigned fix owner
-   - Stop immediately when a compile attempt has no new errors and proceed to
-     Phase 8.5
-   - If attempt five still has new compile errors, do not report success; write
-     a blocking review artifact with the remaining diagnostics and attempts
-     summary
-
-### Phase 8.5: Pre-Review File Staging
-
-Before spawning reviewers or beginning review synthesis:
-1. Read `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md`
-2. Run:
-   `git -C <repo> status --porcelain`
-3. From that status output, collect only paths that both:
-   - appear in the scope file's `Files in scope` list
-   - currently appear in `git status --porcelain`
-4. Stage only the collected in-scope changed paths that exist in
-   the working tree. Do not blindly `git add` the full allowlist.
-   If a path is deleted and the scope file explicitly permits a
-   delete for that file, stage that delete intentionally.
-5. Re-run:
-   `git -C <repo> status --porcelain`
-6. Interpret the output entry-by-entry against both the path list
-   and the `Permitted change types per file` section in the scope
-   artifact:
-   - Acceptable entries are staged-only paths that are listed
-     in the scope file and whose staged change type matches what
-     that file is permitted to do (for example, edit-only,
-     create, delete, rename)
-   - If an in-scope path still has unstaged worktree changes,
-     stage it and re-run status
-   - If any entry is untracked, has unstaged residue after
-     re-staging, names a path outside the scope file, or uses a
-     staged change type not permitted for that file, mark it as
-     unexpected residue
-7. If only acceptable staged in-scope entries remain, this
-   gate passes and review may continue
-8. If any unexpected residue remains:
-   - Do not spawn reviewers
-   - Do not begin review synthesis
-   - Do not continue to the normal success-review path
-   - Continue directly to Phase 9 and write the blocking note
-     artifact instead
-
-## Phase 9: Validate and Write Code Review
-
-YOU write the synthesis yourself. Write to:
-`.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md`
-
-Use the structure defined in `knowledge/code-review-template.md`.
-In autonomous mode (`--autonomous`), append the Autonomous Verification Results section from the same file.
-
-**Error Summary Section:**
-
-Include this structured error summary in the final code review report:
-
-**Compilation Issues by Category:**
-- Extract from `.dev/compile-errors.log` using error categorizer
-- Separate: naming violations, schema errors, compilation errors, warnings
-- For each category, show:
-  - Count
-  - Up to 3 representative diagnostics (truncated)
-  - Suggested fix pattern
-  - Files affected
-
-**Example format:**
-
-```
-## Compilation Status
-
-**Naming Violations (5 fields):**
-- Fields missing 'AC' prefix in Customer.Table.al:45-89
-- Suggested fix: Rename fields to AC[FieldName] pattern
-- Files: Customer.Table.al
-
-**Schema Errors (2 references):**
-- Field "G/L Register No." not found in G/L Entry table
-- Suggested fix: Use "Entry No." instead (primary key exists)
-- Files: JournalEntryAllocation.Table.al:123
-```
-
-This structure helps the user and any follow-up reviewer
-understand the remaining fix patterns and affected files quickly.
-
-If Phase 8.5 found unexpected residue, do not write a success
-review and do not describe reviewer findings that were never run.
-Instead, write a blocking note that lists:
-- file path
-- why it is outside the approved scope
-- user decision status: `pending` if no reply yet, otherwise
-  `approved`, `rejected`, or `deferred`
-
-This blocking note is the final review artifact for that run.
-Normal reviewer flow resumes only after the unexpected residue
-is resolved in a later run.
-
-After writing, run the validator:
-
-```bash
-VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-develop/validate-code-review.py"
-PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md \
-  2>/dev/null | sort | tail -1)
-REVIEW=$(ls .dev/*-al-dev-develop-code-review.md \
-  2>/dev/null | sort | tail -1)
-[ -f "$VALIDATOR" ] && [ -n "$PLAN" ] && \
-  [ -n "$REVIEW" ] && python3 "$VALIDATOR" \
-  "$REVIEW" "$PLAN" || echo \
-  "Validator not found — skipping"
-```
-
-Fix any issues before presenting to the user.
-
-## Phase 10: Present to User for Approval
-
-```text
-Implementation complete -> [list AL files created]
-
-Review findings (3 specialist reviewers):
-[N] critical issues found and fixed
-[N] high-priority issues for your decision
-[N] minor suggestions documented
-
-Key implementations:
-- [Object 1]: [1-sentence description]
-- [Object 2]: [1-sentence description]
-- [Object 3]: [1-sentence description]
-
-Code review -> .dev/[date]-al-dev-develop-code-review.md
-Lint report -> .dev/[date]-al-dev-lint-lint-report.md
-  (N unresolved items, if any)
-Compilation: [Success / Not verified]
-
-Ready to proceed to testing?
-```
-
-**Autonomous mode:** add this block before "Review findings":
-
-```text
-Autonomous verification:
-✅ N required external signatures verified
-   Evidence sources: AL LSP N / AL MCP N / text search N
-   Optional unresolved signatures: N documented as risks
-✅ Object names: all ≤30 chars [or: N violations fixed]
-✅ Compile guards: all correct [or: N inversions fixed]
-✅ Labels: consistent with plan [or: N discrepancies flagged]
-✅ Compilation clean (N of 5 attempts)
-```
-
-USER_GATE — ask the user with options:
-- Approve - Proceed to testing
-- Review Issues - Show high-priority issues in detail
-- Fix Issues First - Address high-priority issues now
-- Refine - Adjust implementation
-- Stop - Cancel development
-
-After user approves, remind them: "Run `/al-dev-commit` to stage
-and commit the implemented changes using the validated commit
-workflow."
+**Next step:** Dispatch to `/al-dev-review-develop` to begin compilation verification,
+multi-reviewer code review, and code-review output generation (Phases 5–10).
