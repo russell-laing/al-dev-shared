@@ -161,6 +161,28 @@ without reading the actual success evidence required by
 
 ---
 
+## Step 4b — Verify Acceptance Criteria (If Solution Plan Exists)
+
+Check whether a solution plan exists:
+
+```bash
+PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)
+```
+
+If a solution plan file is found, read its Acceptance Criteria section. For each directly checkable criterion (structural, gate, pattern forms):
+
+- **Structural criteria:** Verify that named files exist and contain named symbols (use `grep` or `al-compile` output)
+- **Gate criteria:** Confirm that referenced gates (e.g., `al-compile`) exit 0
+- **Pattern criteria:** Use `git diff --cached` to verify patterns do or do not appear in changed code
+
+Do not treat `[manual]` criteria as automatic blockers. Surface any pending manual criteria as a note to the user: "Manual validation pending: [list]"
+
+If verification of any directly checkable criterion fails, stop the commit workflow and report the failure to the user.
+
+If no solution plan exists, skip this step and continue to Step 5.
+
+---
+
 ## Step 5 — Establish Gitmoji Style and Advisory Alignment Check
 
 Check the project's recent commit style:

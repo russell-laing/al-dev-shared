@@ -11,20 +11,24 @@
 **Tables / Table Extensions:**
 - Object ID 50xxx: "[Name]"
   Purpose: [1 sentence]
+  Pattern reference: [file:line or "none — rationale"]
   Fields: [list key fields with IDs and types]
 
 **Pages / Page Extensions:**
 - Object ID 51xxx: "[Name]"
   Purpose: [1 sentence]
+  Pattern reference: [file:line or "none — rationale"]
   Modifications: [what's being added/changed]
 
 **Codeunits:**
 - Object ID 52xxx: "[Name]" (Interface: "[Interface Name]")
   Purpose: [1 sentence]
+  Pattern reference: [file:line or "none — rationale"]
   Key Methods: [list with signatures]
 
 **Enums** (if any):
 - Object ID 53xxx: "[Name]"
+  Pattern reference: [file:line or "none — rationale"]
   Values: [list]
 
 ### BC Base App Integration
@@ -41,6 +45,25 @@
 ### Implementation Notes
 [Object ID assignments, naming conventions, special
 considerations]
+
+### Acceptance Criteria
+
+Use numbered criteria in one of four allowed forms:
+
+**Structural check** — file or symbol existence:
+1. `src/Codeunit/SalesPostingGuard.Codeunit.al` exists and contains `procedure ValidatePostingDate`
+2. `src/PageExtension/SalesOrderExt.PageExt.al` contains reference to `SalesPostingGuard.ValidatePostingDate`
+
+**Gate check** — tool exit code or existing skill gate:
+3. `al-compile` exits 0 with no new errors in `.dev/compile-errors.log`
+
+**Pattern check** — a required or forbidden pattern in changed code:
+4. No `Error(StrSubstNo(` appears in new or modified files
+
+**Manual check** — user or tester validation that cannot be machine-checked:
+5. [manual] Posting is blocked when order date is before work date
+
+Unlabelled prose criteria are not permitted. Each criterion must be numbered and use one of the four forms above.
 
 ### Winning Approach Rationale
 Based on [Architect X]'s [approach], incorporating [Y]
