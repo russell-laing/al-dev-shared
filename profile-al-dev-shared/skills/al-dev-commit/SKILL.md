@@ -121,7 +121,9 @@ Check your edits before committing."
 
 ---
 
-## Step 4 — Check Staged Files
+## Step 4 — Verify Staged Files
+
+Check what is staged:
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRDT
@@ -134,16 +136,16 @@ your changes, then run `/al-dev-commit` again."
 
 **Stop.**
 
----
+**AL-affecting staged set check:** Run this compile gate when staged changes include any
+`.al`, `app.json`, or `.al.json` files. Skip for pure documentation (`.md`, `.txt`),
+changelog, or manifest-only edits.
 
-## Step 4a — Pre-Commit Compile Verification
+```bash
+AL_STAGED=$(git diff --cached --name-only --diff-filter=ACMRDT \
+  | grep -E '(^|/)(app\.json|[^/]+\.al|[^/]+\.al\.json)$')
+```
 
-Run this gate when staged changes include any `.al`, `app.json`, or `.al.json` files.
-Skip for pure documentation (`.md`, `.txt`), changelog, or manifest-only edits.
-
-Run this gate after the workflow has already confirmed that staged files exist.
-
-Before dispatching commit agents or confirming commit groups for an AL-affecting staged set:
+If `$AL_STAGED` is non-empty, run the compile gate before dispatching commit agents:
 
 1. Apply `knowledge/compile-lint-procedure.md`
 2. Produce a fresh `.dev/compile-errors.log` if the current log is absent or stale
@@ -153,7 +155,7 @@ Before dispatching commit agents or confirming commit groups for an AL-affecting
    - up to 3 representative diagnostics
    - `Detailed log:` `.dev/compile-errors.log`
 4. If `Errors > 0`, stop the commit workflow and tell the user the staged changes are not ready to commit
-5. Only continue to the existing commit workflow when the compile result shows zero errors
+5. Only continue when the compile result shows zero errors
 
 Critical rule: never claim the staged set is ready, "clean compile", or "zero errors"
 without reading the actual success evidence required by
