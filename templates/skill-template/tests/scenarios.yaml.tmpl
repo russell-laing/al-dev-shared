@@ -1,0 +1,11 @@
+# scenarios for {{skill-name}} — see knowledge/skill-test-format.md
+scenarios:
+  - name: {{skill-name}}-trigger-canonical
+    request: "{{phrasing that should trigger this skill}}"
+    expected: trigger
+    rationale: "{{why this phrasing must trigger}}"
+
+  - name: {{skill-name}}-no-trigger-review-only
+    request: "{{phrasing that resembles this skill but must not trigger — typically a review/audit framing}}"
+    expected: no-trigger
+    rationale: "{{why this phrasing must NOT trigger}}"

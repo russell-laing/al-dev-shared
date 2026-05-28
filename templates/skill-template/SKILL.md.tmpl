@@ -1,0 +1,38 @@
+---
+name: {{skill-name}}
+description: >-
+  {{one-paragraph trigger description — used for auto-invocation routing.
+  State what user request phrases trigger this skill.}}
+argument-hint: "{{optional args | leave empty if none}}"
+---
+
+## Intent Preflight
+
+Before any mutating action, apply `knowledge/intent-preflight.md`.
+
+Default intent for this skill is `{{REVIEW | EDIT | COMMIT}}`.
+
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the work is complete, validated, clean, or ready for the next
+workflow step until the success evidence named in `knowledge/artifact-contracts.md`
+for this skill has been produced and read in the current run.
+
+## Inputs
+
+{{Describe the required inputs — files, user request, prior skill outputs.}}
+
+## Phases
+
+{{Describe the phases or steps the skill executes.}}
+
+## Outputs
+
+{{Describe the durable output files written to .dev/ and their naming pattern.}}
+
+## Resume Behaviour
+
+Follow `knowledge/workflow-resilience.md`. Read `.dev/progress.md` first;
+reconcile against the resume read-order declared in `knowledge/artifact-contracts.md`.
