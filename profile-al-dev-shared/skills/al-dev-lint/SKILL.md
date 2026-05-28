@@ -8,6 +8,12 @@ argument-hint: "[optional: path to existing compile-errors.log]"
 
 Run a lint-fix pass against the current AL project. No approval gate.
 
+## Intent Preflight
+
+Before compiling, fixing diagnostics, or writing a lint report, apply `knowledge/intent-preflight.md`.
+
+Default intent for this skill is `EDIT`. If the request is review-only, explanation-only, or asks to assess diagnostics without changing files, stop and ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before any mutating action.
+
 ## Step 1: Compile (if needed)
 
 Ensure output directory exists:
