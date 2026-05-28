@@ -110,3 +110,12 @@ corpus:
     expected_response: "I'll review this plan for completeness and risk. I won't execute it unless you confirm."
     expected: NONE
     note: "treat as REVIEW (no implementation); do not route to al-dev-develop"
+
+  - prompt: "fix the bug, but do not say it is done unless you verified it this run"
+    expected: al-dev-fix
+  - prompt: "implement the approved plan and only call it ready when the handoff artifact exists"
+    expected: al-dev-develop
+  - prompt: "run lint, but do not claim clean without reading the current compile log"
+    expected: al-dev-lint
+  - prompt: "commit the staged changes, but only if the current staged-state evidence says they are ready"
+    expected: al-dev-commit

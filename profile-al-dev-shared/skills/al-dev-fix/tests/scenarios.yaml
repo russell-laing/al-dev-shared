@@ -22,3 +22,10 @@ scenarios:
       - al-dev-shared:al-dev-solution-architect
       - al-dev-shared:al-dev-developer
     notes: "Intent preflight regression. A review-only request must not silently enter the lightweight edit path."
+
+  - id: fix-blocks-final-claim-without-current-verification
+    status: golden
+    user_prompt: "Fix the bug, but do not call it complete unless you have current verification evidence."
+    expected_artifacts: []
+    must_invoke_agent: al-dev-shared:al-dev-developer
+    notes: "Final-gate regression. The skill may implement the fix path, but must not claim completion without current-run compile/lint or other bounded success evidence."

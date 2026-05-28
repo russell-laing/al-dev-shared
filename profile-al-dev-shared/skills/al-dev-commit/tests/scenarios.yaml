@@ -34,7 +34,7 @@ scenarios:
       - .dev/compile-errors.log
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
-    notes: "Compile gate regression. Harness pre-seeds staged .al files that contain compile errors. Skill must run Step 4a compile verification, read .dev/compile-errors.log, report the error count and up to 3 representative diagnostics, and halt before dispatching al-dev-commit-agent-execute — verified by transcript grep confirming 'not ready to commit' and absence of execute-agent invocation."
+    notes: "Compile gate regression. Harness pre-seeds staged .al files that contain compile errors. Skill must read current staged-state success evidence from `.dev/compile-errors.log`, refuse any ready-to-commit claim, and halt before `al-dev-commit-agent-execute`."
 
   - id: docs-only-skip-compile-gate
     status: golden
@@ -43,4 +43,4 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
       - al-dev-shared:al-dev-commit-agent-execute
-    notes: "Docs-only optimization regression. Harness pre-seeds only non-AL staged changes (markdown and docs files, no .al files). Skill must confirm no .al files are staged, skip Step 4a compile verification entirely, and proceed to normal commit orchestration — verified by transcript confirming compile gate was not triggered and commit completed successfully."
+    notes: "Docs-only optimization regression. Harness pre-seeds only non-AL staged changes. Skill may skip Step 4a, but it still must base any ready-to-commit claim on the current staged diff and required staged-state evidence."

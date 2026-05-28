@@ -85,3 +85,16 @@ scenarios:
       - al-dev-shared:al-dev-expert-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Locks autonomous compile prompts to al-dev-develop autonomous behavior instead of ad-hoc fixes."
+
+  - id: develop-requires-phase4-handoff-before-ready-claim
+    status: golden
+    user_prompt: "Implement the approved plan and do not say it is ready for review unless the Phase 4 handoff artifact exists and has been read."
+    expected_artifacts:
+      - ".dev/*-al-dev-develop-phase4-handoff.md"
+      - ".dev/*-al-dev-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-performance-reviewer
+    notes: "Final-gate regression. The develop flow must produce and read the Phase 4 handoff before making a ready-for-review claim."
