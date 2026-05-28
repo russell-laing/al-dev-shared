@@ -29,6 +29,16 @@ audit, investigate, explain, or assess a possible fix without applying changes,
 stop and ask the intent-mismatch prompt from `knowledge/intent-preflight.md`
 before any mutating action or implementation agent dispatch.
 
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+durable outputs and success evidence.
+
+Do not claim the fix is complete, validated, or ready for the next workflow
+step until the success evidence named in
+`knowledge/artifact-contracts.md` for `al-dev-fix` has been produced and read
+for the current run.
+
 ---
 
 ## Usage
@@ -56,7 +66,7 @@ before any mutating action or implementation agent dispatch.
 - Analyze complexity first (trivial vs non-trivial)
 - Spawn architect for quick plan if needed (5 min max)
 - Spawn single developer for implementation
-- Verify fix compiles
+- Verify fix using the current-run success evidence required by `knowledge/artifact-contracts.md` for `al-dev-fix` (compile/lint output or other bounded verification result)
 - Present fix directly (no formal approval gate)
 
 ---

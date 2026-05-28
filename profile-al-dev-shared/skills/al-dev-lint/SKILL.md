@@ -14,6 +14,16 @@ Before compiling, fixing diagnostics, or writing a lint report, apply `knowledge
 
 Default intent for this skill is `EDIT`. If the request is review-only, explanation-only, or asks to assess diagnostics without changing files, stop and ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before any mutating action.
 
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+durable outputs and success evidence.
+
+Do not claim the project is clean, the lint pass is complete, or the result is
+ready for the next workflow step until the success evidence named in
+`knowledge/artifact-contracts.md` for `al-dev-lint` has been produced and read
+for the current run.
+
 ## Step 1: Compile (if needed)
 
 Ensure output directory exists:
@@ -47,7 +57,7 @@ If the log is absent, empty, or contains no lines matching
 `Warning` or `Error`:
 
 ```text
-✅ No lint issues found. Compile clean.
+No lint issues found in the current compile output. Current-run success evidence read from `.dev/compile-errors.log` and the lint report when one is produced.
 ```
 
 Stop here.
