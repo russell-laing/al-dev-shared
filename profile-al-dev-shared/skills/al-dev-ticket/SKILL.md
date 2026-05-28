@@ -68,7 +68,7 @@ Check the arguments provided (text after `/al-dev-ticket`):
 - **Numeric argument** (e.g. `1234` or `FD-1234`): extract the
   number and proceed to Step 2.
 - **`search <terms>` or non-numeric text**: this is a keyword
-  search — skip to Step 1.5.
+  search — skip to **Step 1.5 — Search Tickets** (the section immediately following this one).
 - **No argument**: run `git branch --show-current`, extract from
   pattern `FD([0-9]+)`. If found, confirm:
   _"Found FD ticket #XXXX from branch — loading."_
