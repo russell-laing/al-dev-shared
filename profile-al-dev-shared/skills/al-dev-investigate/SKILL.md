@@ -16,6 +16,10 @@ argument-hint: "[symptom or bug description]"
 Root cause investigation — answers "why is this happening?" before
 `/al-dev-plan` answers "how do we fix it?".
 
+This skill itself is the shared-profile root-cause framework.
+Do not create an ad-hoc implementation hypothesis and jump straight to fixes.
+Use the regression timeline, competing-hypothesis, and evidence gates below before recommending any implementation path.
+
 ---
 
 ## When to Use
@@ -207,6 +211,8 @@ Prompt:
 Both agents run in parallel (single message, two Agent tool calls).
 
 ---
+
+Do not present a fix path until the findings file contains at least one confirmed or best-supported hypothesis and the rejected alternatives are named.
 
 ### Step 5 — Synthesise Findings
 
