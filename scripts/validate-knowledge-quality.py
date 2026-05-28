@@ -20,6 +20,15 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+def _format_issue(path: str, rule: str, issue: str, fix: str) -> str:
+    return (
+        f"{path}\n"
+        f"  rule: {rule}\n"
+        f"  issue: {issue}\n"
+        f"  fix: {fix}"
+    )
+
+
 # Files/patterns to exclude from validation (these are intentionally brief)
 EXCLUDED_PATTERNS = [
     "doc-templates/",
@@ -172,7 +181,12 @@ def check_thin_sections(filepath: str, sections: List) -> List[str]:
         line_count = count_body_lines(body)
         if line_count < 3:
             issues.append(
-                f"[THIN]     {filepath}: {heading} ({line_count} lines)"
+                _format_issue(
+                    filepath,
+                    "knowledge-stub",
+                    f'section "{heading}" has {line_count} content line(s) — too thin for a level-{level} section',
+                    "expand the section body or remove the header if the content belongs elsewhere",
+                )
             )
 
     return issues
@@ -209,7 +223,12 @@ def check_code_implication(filepath: str, sections: List) -> List[str]:
 
         if implies_code and not has_code_block(body) and count_body_lines(body) > 2:
             issues.append(
-                f"[NO-CODE]  {filepath}: {heading} — body implies code but has none"
+                _format_issue(
+                    filepath,
+                    "knowledge-no-code",
+                    f'section "{heading}" implies code (keyword in heading or body) but has no fenced code block',
+                    "add a fenced code block example, or rename the heading to remove the code implication",
+                )
             )
 
     return issues
@@ -235,7 +254,14 @@ def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[s
 
         ref_path = knowledge_dir / ref_filename
         if not ref_path.exists():
-            issues.append(f"[DEAD-REF] {filepath}: knowledge/{ref_filename} (not found)")
+            issues.append(
+                _format_issue(
+                    filepath,
+                    "knowledge-dead-ref",
+                    f"reference to knowledge/{ref_filename} does not resolve to an existing file",
+                    f"check the filename for typos or create the missing file at knowledge/{ref_filename}",
+                )
+            )
 
     return issues
 
@@ -268,7 +294,14 @@ def validate_knowledge_dir(
             with open(filepath, "r") as f:
                 content = f.read()
         except Exception as e:
-            warnings.append(f"[ERROR]    {str_path}: {e}")
+            warnings.append(
+                _format_issue(
+                    str_path,
+                    "file-unreadable",
+                    f"could not read file: {e}",
+                    "check file encoding (must be UTF-8) or fix file permissions",
+                )
+            )
             continue
 
         sections = parse_sections(content)
@@ -318,8 +351,8 @@ def main():
     # Print results
     if warnings:
         print(f"\nWARNINGS ({len(warnings)}):")
-        for warning in warnings:
-            print(f"  {warning}")
+        print()
+        print("\n\n".join(warnings))
 
     if args.verbose and clean_files:
         print(f"\nCLEAN ({len(clean_files)}):")
