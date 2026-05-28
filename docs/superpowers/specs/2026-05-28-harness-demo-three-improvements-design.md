@@ -1,45 +1,42 @@
-# Design: Three Improvements from Harness Engineering Demo
+# Design: Two Durable Improvements from Harness Engineering Demo
 
 **Date:** 2026-05-28
-**Goal:** Apply three patterns from `coleam00/harness-engineering-demo` to strengthen `profile-al-dev-shared`
-**Scope:** Skill frontmatter safety gates, solution plan pattern references, verifiable acceptance criteria
-**Effort:** ~90 minutes total
+**Goal:** Adapt the strongest reusable planning patterns from `coleam00/harness-engineering-demo`
+to strengthen `profile-al-dev-shared`
+**Scope:** Solution plan pattern references, constrained acceptance criteria, deferred invocation
+safety follow-up
+**Effort:** ~60 minutes total
 **Source inspiration:** https://github.com/coleam00/harness-engineering-demo
 
 ---
 
 ## Background
 
-Review of `coleam00/harness-engineering-demo` surfaced three patterns directly applicable to
-`profile-al-dev-shared`:
+Review of `coleam00/harness-engineering-demo` surfaced three useful ideas:
 
-1. **`disable-model-invocation: true`** — prevents auto-trigger of side-effect skills; the demo
-   applies this to all four of its skills and documents it as the convention for "user-only,
-   side-effect" invocations.
+1. A frontmatter gate to prevent accidental auto-trigger of side-effect skills
+2. A pattern-reference field in implementation planning
+3. Acceptance criteria written as verifiable conditions rather than prose
 
-2. **Pattern Reference field in plan tasks** — each task in the demo's plan template includes
-   `Pattern: <file>:L<line> — what to mirror`, forcing the planner to locate a concrete code
-   analogue before writing instructions.
+Only the latter two are ready to adopt directly in `profile-al-dev-shared`. The invocation-safety
+idea addresses a real risk, but the demo's mechanism is harness-specific and does not currently
+fit this repo's shared authored surface without a separate boundary-aware mechanism design.
 
-3. **Verifiable acceptance criteria** — the demo's `PROMPT.md` format requires each acceptance
-   criterion to be a programmatically-checkable condition, not prose.
-
-None of these patterns are addressed by today's earlier work (artifact-contract validator, skill
-scaffold template, validator self-correction messages, hybrid improvements). All three changes
-are additive and non-breaking.
+This design therefore keeps the two durable planning improvements and defers the invocation-safety
+mechanism to a follow-up spec.
 
 ---
 
 ## Existing Coverage Reviewed
 
 - `docs/superpowers/plans/2026-05-28-artifact-contract-validator-and-skill-template.md` — adds
-  a structural validator and skill scaffold template. Does not touch skill frontmatter flags or
-  plan content quality.
+  a structural validator and skill scaffold template. Does not address plan content quality.
 - `docs/superpowers/plans/2026-05-28-shared-artifact-contracts-and-gates.md` — adds artifact
-  contract matrix and final-gate wording. Acceptance criteria format is not in scope.
+  contract matrix and final-gate wording. Does not constrain plan-level acceptance-criteria
+  format.
 - `docs/superpowers/plans/2026-05-28-profile-al-dev-shared-hybrid-improvements.md` — adds
-  compile gate to `al-dev-commit`, investigation tightening, intent-preflight. Does not address
-  plan content quality or invocation safety.
+  compile gate to `al-dev-commit`, investigation tightening, intent-preflight. Does not add
+  pattern anchors inside solution plans.
 - `docs/superpowers/plans/2026-05-28-harness-coverage-model.md` — coverage table only; does not
   change runtime behaviour.
 
@@ -47,95 +44,45 @@ are additive and non-breaking.
 
 ## Problem Statement
 
-Three narrow gaps remain after today's work:
+Two active planning gaps remain after today's work, plus one deferred safety concern:
 
-1. **Accidental auto-trigger risk on action skills.** Skills that dispatch developer agents, commit
-   to git, or write source code can be silently auto-triggered if a user's message matches their
-   description. There is no frontmatter gate preventing this.
+1. **Solution plans lack a concrete pattern anchor.** When the solution architect writes an
+   implementation task, it describes what to build but does not point the developer agent at the
+   best existing analogue to mirror. Developer agents must infer patterns from scratch, which
+   increases variance.
 
-2. **Plan tasks lack a concrete pattern anchor.** When the solution architect writes an
-   implementation task, it describes *what* to build but does not point the developer agent at an
-   existing code pattern to mirror. Developer agents must infer patterns from scratch, which
-   increases variance in output.
+2. **Acceptance criteria are not constrained enough to review or partially gate.** The current
+   solution plan template does not define an Acceptance Criteria section with a limited, checkable
+   structure. This makes self-verification and commit-gate review inconsistent.
 
-3. **Acceptance criteria are prose, not verifiable conditions.** The current plan template allows
-   "validation works correctly" as an acceptance criterion. The commit gate cannot check this.
-   The developer agent cannot self-verify against it. There is no structural connection between a
-   plan's acceptance criteria and the `al-dev-commit` final gate.
-
----
-
-## Change A: Explicit-Invocation Gates
-
-### Mechanism
-
-The `disable-model-invocation: true` YAML frontmatter field prevents a skill from being
-auto-triggered by the model. The skill remains available as an explicit `/skill-name` slash
-command.
-
-### Classification Criterion
-
-A skill receives `disable-model-invocation: true` when it meets **any** of:
-- Dispatches developer agents that write source files
-- Commits or modifies the git state
-- Writes files outside `.dev/` (source code, release artifacts, documentation)
-- Is only valid as a sequential follow-on to a preceding skill (workflow-ordered)
-
-A skill keeps auto-trigger when it is an **entry point** — a skill the user invokes by describing
-a goal ("plan this", "investigate this bug", "look at this ticket").
-
-### Skills Receiving the Flag
-
-| Skill | Reason |
-|---|---|
-| `al-dev-develop` | Dispatches developer agents; writes source files |
-| `al-dev-commit` | Commits to git |
-| `al-dev-fix` | Writes source code fixes |
-| `al-dev-lint` | Can write files in `--fix` mode |
-| `al-dev-review-develop` | Workflow-ordered: only valid after `al-dev-develop` |
-| `al-dev-release-notes` | Writes durable release artifact |
-| `al-dev-handoff` | Writes durable handoff artifact |
-| `al-dev-document` | Writes documentation files |
-| `al-dev-consolidate` | Writes `.dev/sessions/` consolidation artifacts |
-| `commit-recover` | Modifies git state |
-| `verify-commits` | Workflow-ordered sequential tool |
-| `plan-with-critic-swarm` | Alternative planner; explicit invocation only |
-
-### Skills Keeping Auto-Trigger
-
-`al-dev-plan`, `al-dev-ticket`, `al-dev-investigate`, `al-dev-explore`, `al-dev-interview`,
-`al-dev-support`, `al-dev-help`, `al-dev-perf`
-
-### Convention Documentation
-
-The skill scaffold template at `templates/skill-template/SKILL.md` receives a comment block
-explaining the convention so that future skills default to the right choice.
-
-### Files Changed
-
-- `profile-al-dev-shared/skills/al-dev-develop/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-commit/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-fix/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-lint/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-release-notes/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-handoff/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-document/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-consolidate/SKILL.md`
-- `profile-al-dev-shared/skills/commit-recover/SKILL.md`
-- `profile-al-dev-shared/skills/verify-commits/SKILL.md`
-- `profile-al-dev-shared/skills/plan-with-critic-swarm/SKILL.md`
-- `templates/skill-template/SKILL.md` (convention comment)
+3. **Accidental auto-trigger risk remains a real concern, but its mechanism is deferred.** Shared
+   authored skills should remain harness-neutral unless the repo defines and validates an explicit
+   exception. That mechanism is not part of this design.
 
 ---
 
-## Change B: Pattern Reference per Object in Solution Plans
+## Deferred Follow-Up: Invocation Safety Mechanism
+
+The auto-trigger concern is valid, especially for skills that dispatch developers, modify git
+state, or write durable outputs. However, this design does **not** add a harness-specific
+frontmatter field such as `disable-model-invocation` to shared skill files.
+
+Any future invocation-safety mechanism must first answer:
+
+- Where the control lives without weakening shared/harness boundaries
+- Which runtime or projection layer enforces it
+- How the behavior is validated in this repo rather than assumed from an external demo
+
+This follow-up should be designed separately from the plan-quality changes below.
+
+---
+
+## Change A: Pattern Reference per Object in Solution Plans
 
 ### Problem
 
 The solution plan's Object Design section names objects and describes their purpose but does not
-tell the developer agent what existing code to mirror. Developer agents must infer patterns from
-scratch, which is slower and produces higher variance than following a verified existing example.
+tell the developer agent what existing code pattern is the best analogue to follow.
 
 ### Addition to `knowledge/solution-plan-template.md`
 
@@ -146,11 +93,12 @@ Each object entry in the Object Design section gains a required `Pattern referen
 - Object ID 52xxx: "SalesPostingGuard"
   Purpose: Validate posting date on sales order release
   Key Methods: `ValidatePostingDate(SalesHeader: Record "Sales Header")`
-  Pattern reference: `src/Codeunit/CustomerCreditCheck.Codeunit.al:L45` — mirrors the
-    validation-on-release pattern (subscriber + guard codeunit split)
+  Pattern reference: `src/Codeunit/CustomerCreditCheck.Codeunit.al:L45` — best analogue for
+    validation-on-release flow (subscriber + guard codeunit split)
 ```
 
 When no analogue exists:
+
 ```markdown
   Pattern reference: none — establishing new posting-guard pattern
 ```
@@ -160,13 +108,15 @@ unnoticed during review.
 
 ### Addition to `agents/al-dev-solution-architect.md`
 
-The Research phase gains an explicit sub-step (add after the existing symbol-navigation
-instructions, before the Design solution step):
+The Research phase gains an explicit sub-step:
 
-> For each object in the Object Design, use `AL LSP` `find_references` or `al_find_references`
-> (MCP fallback) to locate an existing object that uses the same structural pattern. Record its
-> file path and line number as the `Pattern reference`. If no analogue exists in the project,
-> record `none` with a one-line rationale.
+> For each object in the Object Design, locate the best existing analogue in the project using
+> the strongest available evidence source: `AL LSP` when exposed by the active harness or adapter,
+> otherwise `AL MCP`, otherwise scoped `text search`. Record the file path and line number as the
+> `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale.
+
+This change does not require exact proof of an identical structural pattern. It requires the
+strongest available evidence for the best analogue the developer should inspect first.
 
 ### Files Changed
 
@@ -175,62 +125,64 @@ instructions, before the Design solution step):
 
 ---
 
-## Change C: Verifiable Acceptance Criteria
+## Change B: Constrained Acceptance Criteria
 
 ### Problem
 
-Prose acceptance criteria ("validation works correctly") cannot be checked by the developer
-agent mid-task or by the `al-dev-commit` final gate. The existing artifact-contract matrix
-requires success evidence but does not define what form that evidence must take at the plan
-level.
+The current solution plan template does not define an Acceptance Criteria section with a limited
+format. Prose criteria such as "validation works correctly" are difficult to review consistently
+and only partially usable by the existing `al-dev-commit` gate.
 
-### Format
+### Addition to `knowledge/solution-plan-template.md`
 
-Each criterion must be one of three types:
+Add a new `Acceptance Criteria` section to the solution plan template. Each criterion must be
+numbered and use one of four forms:
 
 **Structural check** — file or symbol existence:
-```
+
+```text
 1. `src/Codeunit/SalesPostingGuard.Codeunit.al` exists and contains `procedure ValidatePostingDate`
 2. `src/PageExtension/SalesOrderExt.PageExt.al` contains `SalesPostingGuard.ValidatePostingDate`
 ```
 
-**Gate check** — tool exit code:
-```
+**Gate check** — tool exit code or existing skill gate:
+
+```text
 3. `al-compile` exits 0 with no new errors in `.dev/compile-errors.log`
 ```
 
-**Pattern check** — forbidden code pattern is absent:
-```
-4. No `Error(StrSubstNo(` in new or modified files
+**Pattern check** — a required or forbidden pattern in changed code:
+
+```text
+4. No `Error(StrSubstNo(` appears in new or modified files
 ```
 
-**Manual check** — where no machine-checkable form exists, mark explicitly:
-```
+**Manual check** — user or tester validation that cannot be machine-checked yet:
+
+```text
 5. [manual] Posting is blocked when order date is before work date
 ```
 
-Unlabelled prose criteria are not permitted. Each criterion must be actionable by the developer
-agent for self-verification and by the `al-dev-commit` gate for completion confirmation.
-
-### Addition to `knowledge/solution-plan-template.md`
-
-The Acceptance Criteria section is reformulated to use the four-type format above, with one
-example of each type.
+Unlabelled prose criteria are not permitted.
 
 ### Addition to `agents/al-dev-solution-architect.md`
 
-The Write output step gains (add as the final instruction in that step):
+The Write output step gains:
 
-> Acceptance criteria must be numbered, with each criterion matching one of the four verifiable
-> types (structural, gate, pattern, manual). Do not write unlabelled prose criteria.
+> Add a numbered `Acceptance Criteria` section to the solution plan. Each criterion must use one
+> of the allowed forms: structural, gate, pattern, or `[manual]`. Do not write free-form prose
+> criteria.
 
 ### Addition to `skills/al-dev-commit/SKILL.md`
 
-The pre-commit checklist step gains a cross-reference:
+The pre-commit checklist step gains a bounded cross-reference:
 
-> Read the acceptance criteria from the solution plan (if present). For each structural, gate,
-> or pattern criterion, confirm the condition is satisfied before proceeding. `[manual]` criteria
-> are noted but do not block the commit gate.
+> Read the acceptance criteria from the solution plan when one exists. Verify directly checkable
+> structural, gate, and pattern criteria before proceeding. Surface any `[manual]` criteria as
+> pending manual validation; do not treat them as automatic blockers.
+
+This is intentionally narrower than full programmatic enforcement. It improves review and partial
+gating now without claiming a dedicated validator contract that does not yet exist.
 
 ### Files Changed
 
@@ -244,36 +196,34 @@ The pre-commit checklist step gains a cross-reference:
 
 | Change | Files touched | Risk |
 |---|---|---|
-| A — Explicit-invocation gates | 12 skill SKILL.md frontmatters + 1 template | Minimal — frontmatter only, no body changes |
-| B — Pattern Reference | `solution-plan-template.md` + `al-dev-solution-architect.md` | Low — additive field, no existing fields removed |
-| C — Verifiable criteria | `solution-plan-template.md` + `al-dev-solution-architect.md` + `al-dev-commit/SKILL.md` | Low — reformats template section, does not change runtime logic |
+| A — Pattern reference | `solution-plan-template.md` + `al-dev-solution-architect.md` | Low — additive planning guidance |
+| B — Constrained acceptance criteria | `solution-plan-template.md` + `al-dev-solution-architect.md` + `al-dev-commit/SKILL.md` | Low — additive format + bounded gate wording |
+| Deferred follow-up — invocation safety | No shared-surface runtime changes in this spec | None in this spec |
 
-**Note:** B and C both modify the same two files. The implementation plan must combine these
-into a single task per shared file — do not create separate tasks that each open and edit the
-same file independently.
+**Note:** Change A and Change B both modify the same two shared files. The implementation plan
+should combine them into one task per file rather than editing each file in separate tasks.
 
-No generated projection artifacts need updating (frontmatter fields are Claude Code-specific;
-B and C changes are agent-internal).
-
-**Harness neutrality:** `disable-model-invocation` is a Claude Code-specific field. The
-projection policy (`knowledge/agent-tool-projection-policy.md`) must be checked to confirm this
-field is not propagated to Copilot or Codex projections. If it is, add an exclusion rule. If it
-is not projected, no action is needed.
+This design intentionally avoids projection or runtime changes for invocation safety. Any future
+mechanism must be specified separately and validated against this repo's boundary rules.
 
 ---
 
 ## Acceptance Criteria for This Design
 
-1. All 12 target skills contain `disable-model-invocation: true` in their frontmatter
-2. The 8 entry-point skills do **not** contain the flag
-3. `templates/skill-template/SKILL.md` contains a comment explaining the convention
-4. `knowledge/solution-plan-template.md` Object Design section includes `Pattern reference:` in
-   each object block
-5. `agents/al-dev-solution-architect.md` Step 4 includes the pattern-lookup sub-step
-6. `knowledge/solution-plan-template.md` Acceptance Criteria section uses the four-type format
-7. `agents/al-dev-solution-architect.md` Step 8 prohibits unlabelled prose criteria
-8. `skills/al-dev-commit/SKILL.md` pre-commit step cross-references criteria check
+1. The spec contains no instruction to add `disable-model-invocation` to shared skill files.
+2. The spec contains a deferred follow-up section for invocation safety.
+3. `knowledge/solution-plan-template.md` is specified to include `Pattern reference:` in each
+   Object Design block.
+4. Pattern references allow `AL LSP`, `AL MCP`, or scoped `text search` evidence, and permit
+   `none` plus rationale when no analogue exists.
+5. `knowledge/solution-plan-template.md` is specified to gain a new `Acceptance Criteria` section.
+6. The Acceptance Criteria format is limited to numbered structural, gate, pattern, or
+   `[manual]` criteria.
+7. `agents/al-dev-solution-architect.md` is specified to require the pattern-reference lookup and
+   the constrained criteria format.
+8. `skills/al-dev-commit/SKILL.md` is specified to verify only directly checkable criteria and to
+   surface `[manual]` items without treating them as automatic blockers.
 9. `python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents` exits 0 after
-   agent edits
+   the agent wording changes.
 10. `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared` exits 0 after all
-    changes
+    shared-surface changes.
