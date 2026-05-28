@@ -31,6 +31,12 @@ Transform requirements into a complete solution plan that includes architectural
 2. **Read project context FIRST** — if `.dev/project-context.md` exists
 3. **Read requirements** — glob for latest `*-al-dev-interview-requirements.md`
 4. **Research phase (MEDIUM/COMPLEX only):**
+   - Pattern references: For each object in the Object Design, locate the best existing
+     analogue in the project using the strongest available evidence source: `AL LSP`
+     when exposed by the active harness or adapter, otherwise `AL MCP`, otherwise
+     scoped `text search`. Record the file path and line number as the `Pattern reference`.
+     If no useful analogue exists, record `none` with a one-line rationale. This is not
+     exact structural matching—only the best analogue the developer should inspect first.
    - AL semantic navigation: use `AL LSP` when the active harness exposes it
      for definitions, references, document symbols, hover/type information,
      and rename/refactor impact checks
@@ -78,7 +84,9 @@ For complete structure and template content, read `knowledge/solution-plan-templ
 - Design decisions with rationale
 - Testability architecture (with interfaces, injection points, mocks)
 - Implementation plan (files, steps, code templates)
-- Acceptance criteria
+- **Acceptance Criteria section:** Add a numbered `Acceptance Criteria` section where each
+  criterion uses one of the allowed forms: structural, gate, pattern, or `[manual]`. Do not
+  write free-form prose criteria. See `knowledge/solution-plan-template.md` for examples.
 
 Target output detail by complexity:
 - **SIMPLE:** 50-100 lines, no diagrams, no alternatives
