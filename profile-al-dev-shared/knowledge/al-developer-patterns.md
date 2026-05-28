@@ -304,3 +304,45 @@ The error message:
 - Object names must be ≤30 characters
 - Use AL prefix convention (e.g., prefix `ARR` for array processing codeunits)
 - Be descriptive: `PaymentProcessor` is better than `Proc`
+
+---
+
+## Bash Command Conventions
+
+AL projects frequently have directories with spaces in their names (e.g., `SRC/Table Extension/`). Backslash-escaped whitespace in bash commands (`SRC/Table\ Extension/file.al`) triggers permission prompts. Follow these rules when constructing bash commands.
+
+### Rule 1: Single file — use the Read tool, not bash grep
+
+When inspecting a known specific file, use the Read tool. This avoids path construction entirely and is faster.
+
+```text
+✅ Read "SRC/Table Extension/SalesLine.TableExt.al"
+❌ Bash: grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+```
+
+### Rule 2: Multi-file search — use recursive patterns with `.`
+
+Use `--include` glob patterns with `.` as the root. `grep` and `find` traverse directories transparently, so no spaced path ever appears in the command.
+
+```bash
+# ✅ Safe — no explicit path, grep recurses from .
+grep -rn --include="*.al" -E '^\s*(field|procedure|table)' .
+
+# ✅ Safe — find recurses without explicit directory names
+find . -name "*.al" -exec grep -l "95010\|95008" {} \;
+
+# ❌ Avoid — backslash-escaped space triggers prompts
+grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+```
+
+### Rule 3: When an explicit path is unavoidable — double-quote it
+
+If you must reference a file by path directly, always wrap in double quotes.
+
+```bash
+# ✅ Quoted — no prompt
+grep -E '...' "SRC/Table Extension/SalesLine.TableExt.al"
+
+# ❌ Backslash-escaped — triggers prompt
+grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+```
