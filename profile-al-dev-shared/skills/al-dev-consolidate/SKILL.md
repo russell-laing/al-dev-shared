@@ -123,58 +123,40 @@ Hold in working memory:
 For each date group and for persistent files, run the extraction commands
 below. Hold only the command outputs — never the full file content.
 
+Reusable bash patterns (heading extraction, per-section awk, governance token
+count, verdict lines, mermaid/image signals) are documented in
+`knowledge/consolidate-extraction-patterns.md`. Refer to that file for the
+canonical pattern definitions; the group sections below specify which patterns
+to apply and any group-specific parameters.
+
 ### Group A — Core workflow documents
 
-```bash
-file="<path>"
+Set `file="<path>"` then apply:
 
-# All headings
-grep '^#' "$file"
-
-# First 3 non-heading lines under each ## heading
-awk '
-  /^## / { in_section=1; remaining=3; next }
-  /^#/   { in_section=0 }
-  in_section && remaining > 0 { print; remaining-- }
-' "$file"
-
-# Governance token counts
-for token in REQ ACC TEST DEC IMP DEP RISK; do
-  n=$(grep -c "${token}-\|${token}:" "$file" 2>/dev/null || echo 0)
-  [ "$n" -gt 0 ] && echo "${token}: $n"
-done
-```
+- **Heading Extraction** — all headings
+- **First-N-Lines-Per-Section** — N=3 (first 3 non-heading lines under each `##` heading)
+- **Governance Token Count** — REQ, ACC, TEST, DEC, IMP, DEP, RISK
 
 ### Group B — Test delivery documents
 
+Set `file="<path>"` then apply:
+
+- **Heading Extraction** — all headings
+- Group-specific: TEST token lines with type classifiers (not a shared pattern):
+
 ```bash
-file="<path>"
-
-# All headings
-grep '^#' "$file"
-
-# TEST token lines with type classifiers
 grep -E 'TEST-[0-9]+|UNIT\||INTEGRATION\||SCENARIO\||PERFORMANCE\|' \
   "$file" | head -20
 ```
 
 ### Group C — Ticket-context files
 
-```bash
-file="<path>"
+Set `file="<path>"` then apply:
 
-# All headings
-grep '^#' "$file"
+- **Heading Extraction** — all headings
+- **First-N-Lines-Per-Section** — N=5 (first 5 non-heading lines per section)
 
-# First 5 non-heading lines per section
-awk '
-  /^#/ { in_section=1; remaining=5; next }
-  in_section && /^#/ { in_section=0 }
-  in_section && remaining > 0 { print; remaining-- }
-' "$file"
-```
-
-Also run Vault Candidates detection:
+Also run Vault Candidates detection (group-specific):
 
 ```bash
 grep -i \
@@ -187,17 +169,10 @@ returns any non-empty lines.
 
 ### Group D — Dated session artifacts
 
-```bash
-file="<path>"
+Set `file="<path>"` then apply:
 
-# All headings
-grep '^#' "$file"
-
-# Key verdict / phase lines
-grep -E \
-  '^✅|^❌|^Phase [0-9]|^Status:|^Outcome:|\*\*(Verdict|Decision|Result)\*\*' \
-  "$file" | head -20
-```
+- **Heading Extraction** — all headings
+- **Verdict / Phase Lines** — key verdict, phase markers, and status headers
 
 ### Persistent files
 
@@ -211,21 +186,8 @@ Vault Candidates detection) to those.
 
 After running the group-appropriate extraction, check each file for:
 
-**Mermaid diagram** — if the file contains ` ```mermaid `:
-
-```bash
-awk '
-  /^#/ { last_heading = $0 }
-  /^```mermaid/ { in_block=1; print last_heading; print; next }
-  in_block { print; if (/^```$/) in_block=0 }
-' "$file"
-```
-
-**Image reference** — if the file contains `![`:
-
-```bash
-grep -B2 -A2 '!\[' "$file"
-```
+- **Mermaid Diagram Extraction** — if the file contains ` ```mermaid `
+- **Image Reference Extraction** — if the file contains `![`
 
 Both signals may match the same file — combine all extra extractions with
 the group's base excerpts.
