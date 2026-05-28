@@ -86,7 +86,8 @@ against the solution plan.
 in autonomous mode. Runs up to 5 sequential compile-fix-compile
 cycles with detailed error tracking per attempt. After each compile,
 parses errors, spawns a developer to fix them, and re-compiles.
-Stops after 5 failed attempts and escalates to the user.
+Stop when: (1) compilation succeeds with zero errors, OR (2) 5 attempts
+exhausted. If exhausted, escalate to the user with the final compile error log.
 
 **Review Panel:** The three-specialist review team spawned only after
 Phases 8 and 8.5 complete cleanly:
@@ -135,6 +136,8 @@ explicitly named in the approved plan, you MUST:
 - Cosmetic adjustments inside an in-scope edit (whitespace,
   formatter output)
 - Importing a dependency required to implement an in-scope change
+
+If no out-of-scope changes are proposed, proceed with the edits.
 
 This gate is passed verbatim into every developer agent dispatch
 in Phase 3 so the rule propagates to subagents.
@@ -263,9 +266,10 @@ Use this format:
 - Risk: Developer must not guess this signature
 ```
 
-If any required external procedure is NOT VERIFIED, do not spawn
-developers for code that depends on that signature. Stop and report the
-unverified required signature to the orchestrator or user.
+A procedure is "required" if it is explicitly referenced in the approved solution plan
+and the assigned developer task must call it. If any required external procedure is
+NOT VERIFIED, do not spawn developers for code that depends on that signature.
+Stop and report the unverified required signature to the orchestrator or user.
 
 Only carry a NOT VERIFIED item forward as a documented risk when the
 procedure is explicitly optional or no assigned developer task depends on
@@ -392,9 +396,10 @@ Then present to the user: "These changes are outside the
 approved plan. Approve, reject, or defer each. Reply with
 item numbers (e.g., '1 approve, 2 defer')."
 
-Wait for per-item decision before resuming. Do NOT silently
-expand scope by fixing encountered lint warnings, deprecated
-APIs, or unrelated issues not named in the plan.
+Wait for per-item decision before resuming. Do NOT continue writing
+code until the user confirms each item. Do NOT silently expand scope
+by fixing encountered lint warnings, deprecated APIs, or unrelated
+issues not named in the plan.
 ```
 
 Spawn developers as **al-dev-developer** agents. If parallel,
