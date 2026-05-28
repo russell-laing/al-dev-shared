@@ -208,6 +208,8 @@ Treat any `Error AL0` diagnostic as a hard blocker. Treat `Warning AA0` diagnost
 as required work but not a compilation blocker. Never escalate `Info` items to the
 caller — filter them out of the lint report.
 
+**Note:** `al-dev-commit` must consume this procedure before any commit orchestration begins.
+
 ### Auto-Fix Applicability Criteria
 
 Not every diagnostic can be safely fixed by a script or the Edit tool. Use these
