@@ -8,6 +8,8 @@ Use this document when:
 - handing work from one skill to another
 - deciding whether a final completion or validation claim is supported by current-run evidence
 
+> New skills should be scaffolded from `templates/skill-template/` so this contract is honoured by default.
+
 ## Rules
 
 1. Do not name a durable output here unless the current workflow already writes it or the implementation in this repo is being updated in the same change set to write it.
