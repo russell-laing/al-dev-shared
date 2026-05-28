@@ -157,6 +157,9 @@ python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
 
 # Validate knowledge file quality
 python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+
+# Validate that skills honour the artifact-contract matrix
+python3 scripts/validate_artifact_contracts.py
 ```
 
 ### Projection (Harness-Native Artifacts)
