@@ -119,9 +119,13 @@ tools:
 
 **Workflow resilience** (`knowledge/workflow-resilience.md`): Multi-phase skills checkpoint to `.dev/progress.md` after each phase. Phase 0 of every multi-phase skill checks this file and offers resume/restart.
 
-**`.dev/` directory convention**: All skill artifacts are written here — progress checkpoints, solution plans (`YYYY-MM-DD-al-dev-plan-solution-plan.md`), code reviews (`YYYY-MM-DD-al-dev-develop-code-review.md`), lint reports (`YYYY-MM-DD-al-dev-lint-lint-report.md`), ticket contexts, requirements files.
+**`.dev/` directory convention**: All skill artifacts are written here — progress checkpoints, solution plans (`YYYY-MM-DD-al-dev-plan-solution-plan.md`), code reviews (`YYYY-MM-DD-al-dev-develop-code-review.md`), lint reports (`YYYY-MM-DD-al-dev-lint-lint-report.md`), ticket contexts, requirements files. See `knowledge/artifact-contracts.md` for the per-skill contract governing which of these files are required, in what read-order, and what completion they evidence.
+
+**Artifact contracts** (`knowledge/artifact-contracts.md`): Defines the durable handoff artifacts, resume read-order, and success-evidence requirements for each core skill. The key rule: a skill may not claim completion (ready, clean, validated) until it has read its named success-evidence file in the current run. Skills that implement this: `al-dev-plan`, `al-dev-develop`, `al-dev-review-develop`, `al-dev-fix`, `al-dev-commit`, `al-dev-lint`. Each implementing skill has an **Artifact Contract** section in its SKILL.md that cross-references this file.
 
 **Validator scripts**: Some skills have companion Python validators (e.g., `skills/al-dev-plan/validate-plan.py`) that are run after output files are written. Skills look for these via `find ~/.claude/plugins -name "validate-*.py"`.
+
+**Skill test scenarios** (`skills/<name>/tests/scenarios.yaml`): Regression corpora protecting behavioral invariants for individual skills. Each scenario defines a user request, expected trigger/no-trigger outcome, and a rationale. Add scenarios when a misfire (false trigger) or miss (failure to trigger) is fixed to prevent regression. These coexist with validator scripts but test trigger behavior rather than output correctness. See `knowledge/skill-test-format.md` for the full YAML schema.
 
 ## Compile/Lint
 
