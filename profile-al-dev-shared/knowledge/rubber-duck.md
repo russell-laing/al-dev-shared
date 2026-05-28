@@ -46,6 +46,24 @@ Each accepted suggestion must answer all five questions:
 If any answer is missing, weak, or harness-specific, classify the suggestion as
 `defer` or `reject` instead of adding it to shared-profile scope.
 
+## Coverage Model Ratchet
+
+When a suggestion passes the gate and becomes shared-profile scope, update or
+check `docs/harness-coverage-model.md` before changing distributed guidance.
+
+The coverage row must name:
+
+- the behavior being regulated
+- the existing guide or the new guide being added
+- the sensor, test, scenario, validator, or manual review path
+- the enforcement strength
+- the owner
+- the remaining gap
+
+Choose the smallest durable control. Prefer a wording clarification,
+trigger-corpus case, focused scenario, or existing validator/test update before
+adding a broader workflow gate.
+
 ## Why It Matters
 
 The most expensive mistakes are the ones that pass silently through a gate. A missed
