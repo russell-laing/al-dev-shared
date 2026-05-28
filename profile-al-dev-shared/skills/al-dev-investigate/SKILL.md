@@ -162,9 +162,10 @@ H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
 > Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
 > Hypothesis-testing prompt structure is below; spawn ×2 in parallel.
 
-Route by hypothesis count: if ≤2 hypotheses, spawn 1 agent with all hypotheses. If 3–4 hypotheses, spawn 2 agents in parallel, assigning 2 hypotheses each:
-
-Spawn 2 Explore agents in parallel, assigning 2 hypotheses each:
+Route by hypothesis count:
+- **1–2 hypotheses:** spawn 1 agent with all hypotheses.
+- **3–4 hypotheses:** spawn 2 agents in parallel (H1+H2 → agent 1; H3+H4 → agent 2).
+- **5+ hypotheses:** spawn 3 agents, distributing hypotheses evenly.
 
 ```text
 Spawn an explore agent:
