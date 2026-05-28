@@ -35,6 +35,15 @@ mutating action or agent dispatch.
 /plan). If missing, tell the user to run /plan first
 and stop.
 
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+durable outputs, resume read order, handoff artifact, and success evidence.
+
+Do not claim implementation is complete or ready for `/al-dev-review-develop`
+until the success evidence named in `knowledge/artifact-contracts.md` for
+`al-dev-develop` has been produced and read for the current run.
+
 ## Glossary
 
 **Scope Expansion Gate:** A governance checkpoint enforced during
@@ -498,5 +507,6 @@ This document is created at Phase 4 completion and includes:
 - Status: Ready for review team dispatch
 - References to scope document and checklist artifacts
 
-**Next step:** Dispatch to `/al-dev-review-develop` to begin compilation verification,
-multi-reviewer code review, and code-review output generation (Phases 5–10).
+**Next step:** Dispatch to `/al-dev-review-develop` only after reading the current
+Phase 4 handoff artifact and confirming it satisfies the `al-dev-develop`
+success evidence in `knowledge/artifact-contracts.md`.

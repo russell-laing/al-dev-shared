@@ -19,6 +19,16 @@ Dispatched by /al-dev-develop after Phase 4 (developer dispatch and implementati
 Phase 4 handoff artifact must exist:
 `.dev/*-al-dev-develop-phase4-handoff.md` (or latest from /al-dev-develop Phase 4 output).
 
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+required handoff artifact, durable outputs, and success evidence.
+
+Do not claim the review is complete, validated, clean, or ready for the next
+workflow step until the success evidence named in
+`knowledge/artifact-contracts.md` for `al-dev-review-develop` has been
+produced and read for the current run.
+
 ## Phase 5–10 Summary
 
 - **Phase 5:** Prepare review entry + compile discipline
@@ -37,7 +47,7 @@ Three specialist agents (haiku):
 
 ## Outputs
 
-`.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md` — Synthesized review findings from all three reviewers
+`.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md` — synthesized review findings from all three reviewers; this file is also the downstream handoff artifact named in `knowledge/artifact-contracts.md` and must be read before any final clean/ready claim.
 
 ## Implementation Notes
 
