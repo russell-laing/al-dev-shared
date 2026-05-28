@@ -37,6 +37,62 @@ class Finding:
     excerpt: str
 
 
+_RULE_FIX: dict[str, str] = {
+    "Open Claude Code": (
+        'replace "Open Claude Code" with "open the harness" or '
+        "move the line to .claude/ if it must be harness-specific"
+    ),
+    "Restart Claude Code": (
+        'replace "Restart Claude Code" with "restart the session" or '
+        "move the line to .claude/ if it must be harness-specific"
+    ),
+    "Copilot session wording": (
+        "replace with generic session-restart phrasing; "
+        "see knowledge/harness-concepts.md for neutral equivalents"
+    ),
+    "Claude tool token": (
+        'replace "AskUserQuestion" with the generic tool name from knowledge/harness-concepts.md'
+    ),
+    "Copilot tool token": (
+        'replace "ask_user" with the generic tool name from knowledge/harness-concepts.md'
+    ),
+    "Claude dispatch token": (
+        'replace "subagent_type" with the generic agent dispatch syntax from knowledge/harness-concepts.md'
+    ),
+    "Copilot dispatch token": (
+        "replace the agent_type: dispatch syntax with the generic equivalent "
+        "from knowledge/harness-concepts.md"
+    ),
+    "Claude MCP token": (
+        'replace "mcp__plugin_profile-claude" with the generic identifier '
+        "from knowledge/harness-concepts.md"
+    ),
+    "Claude settings path": (
+        'remove "~/.claude" or move the reference to .claude/ '
+        "so it does not appear in the shared authored surface"
+    ),
+    "Copilot settings path": (
+        'remove "~/.copilot" or move the reference to a harness-specific location'
+    ),
+    "Unreadable file": (
+        "check file encoding (must be UTF-8) or fix file permissions"
+    ),
+}
+
+
+def _format_finding(f: Finding) -> str:
+    fix = _RULE_FIX.get(
+        f.rule,
+        "replace with generic vocabulary from knowledge/harness-concepts.md",
+    )
+    return (
+        f"{f.path}\n"
+        f"  rule: neutrality-violation\n"
+        f"  issue: forbidden harness token ({f.rule!r}); matched text: {f.excerpt!r}\n"
+        f"  fix: {fix}"
+    )
+
+
 def iter_markdown_files(plugin_root: Path):
     """Yield markdown and yaml files from shared authored directories."""
     for directory in SCAN_DIRS:
@@ -85,8 +141,8 @@ def main(argv: list[str] | None = None) -> int:
         print("PASS: no harness-specific leakage in shared authored surface")
         return 0
 
-    for finding in findings:
-        print(f"{finding.path}: {finding.rule}: {finding.excerpt}")
+    blocks = "\n\n".join(_format_finding(f) for f in findings)
+    print(blocks)
     return 1
 
 

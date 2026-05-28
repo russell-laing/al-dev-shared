@@ -133,6 +133,19 @@ def test_reports_unreadable_scanned_files_without_crashing(tmp_path: Path) -> No
     )
 
 
+def test_formatted_output_has_canonical_shape() -> None:
+    from scripts.validate_harness_neutrality import _format_finding, Finding
+    f = Finding("skills/demo/SKILL.md", "Claude tool token", "AskUserQuestion")
+    output = _format_finding(f)
+    lines = output.splitlines()
+    assert lines[0] == "skills/demo/SKILL.md", f"First line must be the path, got: {lines[0]!r}"
+    assert any(ln.strip().startswith("rule:") for ln in lines), "Missing 'rule:' field"
+    assert any(ln.strip().startswith("issue:") for ln in lines), "Missing 'issue:' field"
+    assert any(ln.strip().startswith("fix:") for ln in lines), "Missing 'fix:' field"
+    assert "AskUserQuestion" in output, "Matched text must appear in output"
+    assert "harness-concepts.md" in output, "Fix must reference the rule document"
+
+
 def _run_pytest_style_test(func):
     signature = inspect.signature(func)
     if not signature.parameters:
