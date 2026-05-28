@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-27 (18 distributed skills: 17 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
+**Last updated:** 2026-05-28 (19 distributed skills: 18 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align, plugin-health-daemon) excluded. `/align-harness-repos` and `/plugin-health-daemon` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -556,6 +556,45 @@ flowchart LR
     style Decision fill:#80cbc4
 ```
 
+### /al-dev-consolidate
+
+Standalone utility skill. No agents spawned. Consolidates `.dev/` artifacts
+into vault-ready session summaries and an Obsidian-compatible sessions index,
+using only bash extraction — file content is never read into LLM context.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase0["Phase 0\nResume check"]
+    Phase0 --> SkillWork0["(skill itself)"]
+    SkillWork0 --> Decision{Index\nexists?}
+    Decision -->|No index| Phase1["Phase 1\nDiscover & group"]
+    Decision -->|Re-run all| Phase1
+    Decision -->|Update| Phase1
+    Decision -->|Cancel| End1([End])
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Phase 2\nExtract per session"]
+    Phase2 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase3["Phase 3\nWrite summaries"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase4["Phase 4\nWrite index"]
+    Phase4 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1([".dev/sessions/\nsession-summary.md\nsessions-index.md"])
+    Output1 --> End([End])
+
+    style Phase0 fill:#e8eaf6
+    style Phase1 fill:#e8eaf6
+    style Phase2 fill:#e8eaf6
+    style Phase3 fill:#e8eaf6
+    style Phase4 fill:#e8eaf6
+    style SkillWork0 fill:#c5cae9
+    style SkillWork1 fill:#c5cae9
+    style SkillWork2 fill:#c5cae9
+    style SkillWork3 fill:#c5cae9
+    style SkillWork4 fill:#c5cae9
+    style Decision fill:#fff9c4
+    style Output1 fill:#9fa8da
+```
+
 ---
 
 ## Observations
@@ -583,6 +622,7 @@ flowchart LR
 
 - **/al-dev-handoff** — file copy + prompt assembly; purely shell/file operations
 - **/al-dev-help** — reads `.dev/` context files and presents guidance inline
+- **/al-dev-consolidate** — bash-only artifact extraction; writes session summaries and sessions index to `.dev/sessions/`
 
 ### Potential shared agents (with documented patterns)
 
