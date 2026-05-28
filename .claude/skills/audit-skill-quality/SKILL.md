@@ -159,3 +159,25 @@ Print one line per audited skill:
 - Without findings: `/<skill-name>: clean`
 
 Ask: "Would you like to fix any of these now?"
+
+### If the user says yes — Fix Application Protocol
+
+For each file to be modified:
+
+1. **Read the file** and record its original line count (`original_lines`).
+2. **Calculate budget:** `floor(original_lines × 0.05)` — max net lines
+   removable from this file in this pass.
+3. **Apply only atomic fixes** per finding, in priority order:
+   High → Medium → Low. An atomic fix is one that fully resolves a finding
+   without rewriting unrelated sections.
+4. **If the next full fix would exceed `budget`:**
+   skip that finding for this pass, append to the report section for that file:
+   `"Skipped — full fix exceeds remaining budget; queue for next audit pass."`
+5. **Do not partially rewrite structural blocks** such as headings, lists,
+   frontmatter, or phase instructions. If a finding touches a structural block
+   and cannot be resolved atomically within the remaining budget, skip it.
+6. **Verify after edit:** `wc -l <file>` — confirm net reduction ≤ budget.
+   Also confirm the edited file still contains the required structural sections
+   for its type before proceeding to the next file.
+7. **Leave commits to the surrounding workflow.** The protocol only governs
+   safe edit application; it does not introduce a new commit step.
