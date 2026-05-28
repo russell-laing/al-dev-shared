@@ -44,3 +44,13 @@ Continue only after the user confirms the intended action.
 | "fix the posting bug" | `EDIT` | A fix workflow may edit files after normal scope checks. |
 | "implement the approved plan" | `EDIT` | A develop workflow may proceed after confirming the plan exists. |
 | "commit the staged changes" | `COMMIT` | A commit workflow may proceed through commit gates. |
+
+## Artifact Mismatch Checks
+
+Before continuing, compare the user's wording with the artifact they pointed to:
+
+- design/spec document + "implement/execute" → confirm whether the user wants planning output or implementation
+- plan document + "review/audit only" → treat as `REVIEW` unless the user confirms implementation
+- code or diagnostics + "summarize what failed" → treat as `REVIEW`, not `EDIT`
+
+Use existing shared-profile skills when clarifying. Do not route through external skill names that are outside this profile's published surface.
