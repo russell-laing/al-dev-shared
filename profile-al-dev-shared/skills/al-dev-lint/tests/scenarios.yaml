@@ -1,0 +1,8 @@
+skill: al-dev-lint
+scenarios:
+  - id: lint-rejects-review-only-misfire
+    status: golden
+    user_prompt: "Summarize the compile failures without fixing anything."
+    expected_artifacts: []
+    must_not_invoke_agent: al-dev-shared:al-dev-diagnostics-fixer
+    notes: "Intent preflight regression."
