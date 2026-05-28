@@ -279,9 +279,9 @@ For non-trivial fixes:
 ```text
 User: "/fix [issue]"
     ↓
-You: Analyze complexity
+You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
     ↓
-    ├─→ TRIVIAL (simple, obvious)
+    ├─→ TRIVIAL (simple, obvious, single-file)
     │   ├─→ Spawn 1 al-dev-shared:al-dev-developer
     │   ├─→ Fix implemented
     │   ├─→ Verify compilation
