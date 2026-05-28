@@ -69,9 +69,9 @@ The interview agent MUST:
    rush through categories. Each user answer should inform
    your next questions.
 
-5. **GATE: The interview agent must complete all categories
-   before signalling completion. Upon agent return, proceed
-   to Phase 3.**
+5. **GATE: The interview agent must explicitly state "INTERVIEW COMPLETE" and
+   confirm questions were asked in all 11 categories listed above. Upon this
+   explicit signal, proceed to Phase 3.**
 
 ## Phase 3: Write Requirements (only after interview)
 
