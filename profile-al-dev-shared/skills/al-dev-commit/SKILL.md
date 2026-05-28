@@ -30,6 +30,15 @@ edit-only, assessment-only, or asks for a commit plan without committing, stop
 and ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before
 continuing.
 
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+required staged-state checks and success evidence.
+
+Do not claim the staged set is ready, validated, or safe to commit until the
+success evidence named in `knowledge/artifact-contracts.md` for
+`al-dev-commit` has been produced and read for the current staged state.
+
 ---
 
 ## Step 1 — Guard: Verify Project Context
@@ -146,7 +155,9 @@ Before dispatching commit agents or confirming commit groups for an AL-affecting
 4. If `Errors > 0`, stop the commit workflow and tell the user the staged changes are not ready to commit
 5. Only continue to the existing commit workflow when the compile result shows zero errors
 
-Critical rule: never claim "clean compile" or "zero errors" without reading the actual log file produced for the current working tree state.
+Critical rule: never claim the staged set is ready, "clean compile", or "zero errors"
+without reading the actual success evidence required by
+`knowledge/artifact-contracts.md` for the current staged state.
 
 ---
 
