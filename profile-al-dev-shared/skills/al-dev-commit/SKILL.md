@@ -127,6 +127,29 @@ your changes, then run `/al-dev-commit` again."
 
 ---
 
+## Step 4a — Pre-Commit Compile Verification
+
+Run this gate only when the staged set includes `.al` files or other files that can affect AL compilation.
+Skip it for docs-only or other non-AL staged changes.
+
+Run this gate after the workflow has already confirmed that staged files exist.
+
+Before dispatching commit agents or confirming commit groups for an AL-affecting staged set:
+
+1. Apply `knowledge/compile-lint-procedure.md`
+2. Produce a fresh `.dev/compile-errors.log` if the current log is absent or stale
+3. Read the log and report:
+   - `Errors:` count
+   - `Warnings:` count
+   - up to 3 representative diagnostics
+   - `Detailed log:` `.dev/compile-errors.log`
+4. If `Errors > 0`, stop the commit workflow and tell the user the staged changes are not ready to commit
+5. Only continue to the existing commit workflow when the compile result shows zero errors
+
+Critical rule: never claim "clean compile" or "zero errors" without reading the actual log file produced for the current working tree state.
+
+---
+
 ## Step 5 — Establish Gitmoji Style and Advisory Alignment Check
 
 Check the project's recent commit style:
