@@ -11,6 +11,8 @@ The audit skills (`/audit-agent-quality`, `/audit-skill-quality`) were removing 
 
 Add a hard per-file content reduction cap of 5% to the fix application step in both audit skills. Each file being fixed may lose at most 5% of its original line count in a single audit pass.
 
+Execution is tracked outside this design doc. Checklist state changes are not repository changes.
+
 ## Scope
 
 - **Files changed:** 2
@@ -41,16 +43,21 @@ For each file to be modified:
 1. **Read the file** and record its original line count (`original_lines`).
 2. **Calculate budget:** `floor(original_lines × 0.05)` — max net lines
    removable from this file in this pass.
-3. **Apply the minimum effective fix** per finding, in priority order:
-   High → Medium → Low. Stop adding fixes to a file once the running
-   removal total would exceed `budget`.
-4. **If a finding requires more than the remaining budget to fully resolve:**
-   apply the highest-impact partial fix within the remaining budget, then
-   append to the report section for that file:
-   `"Partial fix applied — remainder queued for next audit pass."`
-5. **Verify after edit:** `wc -l <file>` — confirm net reduction ≤ budget
-   before proceeding to the next file.
-6. **Commit** changes to fixed files.
+   If the result is `0`, skip all non-atomic edits for that file this pass.
+3. **Apply only atomic fixes** per finding, in priority order:
+   High → Medium → Low. An atomic fix is one that fully resolves a finding
+   without rewriting unrelated sections.
+4. **If the next full fix would exceed `budget`:**
+   skip that finding for this pass, append to the report section for that file:
+   `"Skipped — full fix exceeds remaining budget; queue for next audit pass."`
+5. **Do not partially rewrite structural blocks** such as headings, lists,
+   frontmatter, or phase instructions. If a finding touches a structural block
+   and cannot be resolved atomically within the remaining budget, skip it.
+6. **Verify after edit:** `wc -l <file>` — confirm net reduction ≤ budget.
+   Also confirm the edited file still contains the required structural sections
+   for its type before proceeding to the next file.
+7. **Leave commits to the surrounding workflow.** The protocol only governs
+   safe edit application; it does not introduce a new commit step.
 ```
 
 ### What Does Not Change
@@ -67,5 +74,5 @@ The lens agents are reporting tools — they should surface real issues accurate
 
 - [ ] `audit-agent-quality/SKILL.md` Phase 6 includes the Fix Application Protocol with a 5% per-file cap
 - [ ] `audit-skill-quality/SKILL.md` Phase 6 includes the Fix Application Protocol with a 5% per-file cap
-- [ ] The protocol specifies: read line count, calculate budget, apply minimum effective fix, partial-fix path, verify with `wc -l`
-- [ ] No changes to lens agents or other skills
+- [ ] The protocol specifies: read line count, calculate budget, apply atomic fixes, skip-and-queue behavior, structural verification, verify with `wc -l`
+- [ ] No changes to lens agents or other skills, and no unrelated worktree files are treated as implementation output
