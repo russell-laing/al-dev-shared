@@ -68,6 +68,8 @@ corpus:
     expected: al-dev-commit
   - prompt: "implement the approved plan in autonomous mode and keep compiling until it builds"
     expected: al-dev-develop
+  - prompt: "review these repeated agent failures and tell me which ones deserve shared-profile rules"
+    expected: NONE
 
   # --- expected to route elsewhere or to NONE ----------------------------
   - prompt: "what is the current branch name"

@@ -1,4 +1,12 @@
+import inspect
 from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.validate_harness_neutrality import scan_paths
 
@@ -123,3 +131,27 @@ def test_reports_unreadable_scanned_files_without_crashing(tmp_path: Path) -> No
         and item.excerpt == "UnicodeDecodeError"
         for item in findings
     )
+
+
+def _run_pytest_style_test(func):
+    signature = inspect.signature(func)
+    if not signature.parameters:
+        func()
+        return
+    if list(signature.parameters) == ["tmp_path"]:
+        with tempfile.TemporaryDirectory() as td:
+            func(Path(td))
+        return
+    raise TypeError(f"Unsupported test signature: {func.__name__}{signature}")
+
+
+def load_tests(loader, tests, pattern):  # noqa: ARG001
+    suite = unittest.TestSuite()
+    for name, func in sorted(globals().items()):
+        if name.startswith("test_") and callable(func):
+            suite.addTest(unittest.FunctionTestCase(lambda func=func: _run_pytest_style_test(func)))
+    return suite
+
+
+if __name__ == "__main__":
+    unittest.main()
