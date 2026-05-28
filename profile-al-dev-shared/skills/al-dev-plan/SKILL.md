@@ -32,6 +32,12 @@ review, code review, or report assessment that does not ask for a design or
 implementation plan. Ask the intent-mismatch prompt from
 `knowledge/intent-preflight.md` before continuing.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the work is complete or ready for implementation until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ## Phase Numbering Rationale
 
 The skill uses fractional phase numbers (Phase 0, Phase 0.5, Phase 1–7) to reflect semantic workflow layers rather than strict sequential numbering. Each fractional phase represents a distinct decision point or checkpoint within the broader workflow. This allows precise specification of where handoff points occur without forcing artificially sequential numbering.
