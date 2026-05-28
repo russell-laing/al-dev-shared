@@ -30,10 +30,11 @@ Continue only after the user confirms the intended action.
 
 | Skill | Default Intent |
 |---|---|
-| `al-dev-plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
+| `al-dev-commit` | `COMMIT` |
 | `al-dev-develop` | `EDIT` |
 | `al-dev-fix` | `EDIT` |
-| `al-dev-commit` | `COMMIT` |
+| `al-dev-lint` | `EDIT` |
+| `al-dev-plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
 
 ## Examples
 
