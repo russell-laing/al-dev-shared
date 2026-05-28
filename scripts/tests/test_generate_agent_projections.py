@@ -19,6 +19,17 @@ def test_policy_exposes_documented_translation_tables():
     assert policy["codex"]["USER_GATE"]["developer_instruction"] == "request_user_input"
 
 
+def test_policy_exposes_mcp_capability_mappings():
+    policy = mod.default_projection_policy()
+
+    assert policy["claude"]["MCP: al-mcp-server"].startswith("mcp__plugin_profile-claude")
+    assert policy["copilot"]["MCP: bc-code-intelligence"] == "bc-code-intelligence-mcp-<tool>"
+    assert (
+        policy["codex"]["MCP: microsoft-docs"]["native_capability"]
+        == "use the Microsoft Docs MCP capability available in the active Codex session"
+    )
+
+
 def test_shared_agent_tools_use_normalized_vocabulary():
     agent_paths = sorted(Path("profile-al-dev-shared/agents").glob("*.md"))
     allowed = {
