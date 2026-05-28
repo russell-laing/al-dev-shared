@@ -85,6 +85,10 @@ Codeunit classifications:
 
 ### Step 2 — Spawn Performance Analysis Agent
 
+Before assembling the dispatch prompt, read
+`knowledge/perf-anti-patterns-prompt.md` and hold its full content as
+`PERF_PATTERNS` in working memory. Do not read any other file at this step.
+
 > Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
 > Performance-specific prompt content is below.
 
@@ -108,7 +112,8 @@ Prompt:
    its severity by one level (LOW→MEDIUM, MEDIUM→HIGH, HIGH→CRITICAL).
    Reflect this in the SEVERITY field and explain it in the IMPACT field.
 
-   Anti-patterns to find and 'Do NOT flag' exclusions: See `knowledge/perf-anti-patterns-prompt.md`. Paste the full content of that file here before dispatching.
+   Anti-patterns to find and 'Do NOT flag' exclusions:
+   [PERF_PATTERNS — content of knowledge/perf-anti-patterns-prompt.md loaded above]
 
    For EACH finding report:
    PATTERN: [P1–P8 ID]
