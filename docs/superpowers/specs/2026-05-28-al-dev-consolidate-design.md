@@ -28,8 +28,8 @@ weeks without exceeding the context window.
 
 | Phase | Name | Description |
 |-------|------|-------------|
-| 0 | Resume check | If `.dev/sessions/sessions-index.md` exists, ask: re-run all / update new sessions only / cancel |
-| 1 | Discover & group | `find .dev -maxdepth 1 -name "*.md"` → skip ignored files/dirs; classify into Groups A–D + persistent; group dated files by YYYY-MM-DD prefix; group solution-plan variants under base date |
+| 0 | Resume check | If `.dev/sessions/sessions-index.md` exists, ask: re-run all / update changed or new sessions / cancel |
+| 1 | Discover & group | `find .dev -maxdepth 1 -name "*.md"` → classify markdown artifacts into Groups A–D + persistent; non-markdown exports such as `*.html` never enter discovery; group dated files by YYYY-MM-DD prefix; group solution-plan variants under base date |
 | 2 | Extract per session | Classify each file by tier and run tier-appropriate bash extraction |
 | 3 | Write session summaries | One `YYYY-MM-DD-session-summary.md` per date group written to `.dev/sessions/` |
 | 4 | Write index | `sessions-index.md` written to `.dev/sessions/` — one row per session, links to each summary |
@@ -45,7 +45,7 @@ These files are operational artifacts only — no analytical value for vault not
 - `progress.md`, `session-log.md`
 - `*-develop-progress.md`, `*-develop-checklist.md`, `*-develop-scope.md`
 - `compile-errors*.log`, `investigate-errors.log`
-- `*.html`
+- `*.html` exports/copies of existing markdown files
 - `.DS_Store`
 - Subdirectories: `archive/`, `templates/`, `attachments/`
 
@@ -126,8 +126,12 @@ grep -E '^✅|^❌|^Phase [0-9]|^Status:|^Outcome:|\*\*(Verdict|Decision|Result)
 # Headings
 grep '^#' "$file"
 
-# First 3 lines under each ## heading
-awk '/^## /{if(NR>1)count=0} count<=3{print; count++}' "$file"
+# First 3 non-heading lines under each ## heading
+awk '
+  /^## / { in_section=1; remaining=3; next }
+  /^#/   { in_section=0 }
+  in_section && remaining > 0 { print; remaining-- }
+' "$file"
 
 # Governance token summary (count occurrences of each type)
 for token in REQ ACC TEST DEC IMP DEP RISK; do
@@ -149,9 +153,13 @@ grep -E 'TEST-[0-9]+|UNIT\||INTEGRATION\||SCENARIO\||PERFORMANCE\|' "$file" | he
 ### Group C — Ticket-context
 
 ```bash
-# Headings + first 5 lines per section
+# Headings + first 5 non-heading lines per section
 grep '^#' "$file"
-awk '/^#/{if(NR>1)count=0} count<5{print; count++}' "$file"
+awk '
+  /^#/ { in_section=1; remaining=5; next }
+  in_section && /^#/ { in_section=0 }
+  in_section && remaining > 0 { print; remaining-- }
+' "$file"
 ```
 
 ### Mermaid upgrade
@@ -292,12 +300,18 @@ Sessions index found (N sessions previously consolidated).
 
 Options:
   1. Re-run all — regenerate every session summary from scratch
-  2. Update — process only session dates not already in the index
+  2. Update — rebuild changed summaries and add newly discovered sessions
   3. Cancel
 ```
 
-"Update" mode: compare date groups from `ls .dev/` against dates already
-present in `sessions-index.md` and process only the new ones.
+"Update" mode:
+
+- Rebuild `persistent-summary.md` every run because undated artifacts can change
+  without introducing a new session date.
+- Rebuild any existing dated session summary whose source files have a newer
+  modification time than the corresponding `.dev/sessions/YYYY-MM-DD-session-summary.md`.
+- Create summaries for any newly discovered session dates that are not already
+  present in `sessions-index.md`.
 
 ---
 

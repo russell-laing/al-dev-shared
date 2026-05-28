@@ -5,5 +5,6 @@ __pycache__/
 .superpowers/
 .dev/skill-test-runs/
 .dev/skill-test-plan.json
+# HTML files in this repo are exported copies of markdown, not source artifacts.
 *.html
 .dev/projection-sync-progress.md
