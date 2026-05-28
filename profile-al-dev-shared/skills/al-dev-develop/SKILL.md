@@ -181,9 +181,10 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-## Phase 1.5: Signature Verification (--autonomous only)
+## Phase 1.5: Signature Verification (Autonomous Mode — activated by Phase 1)
 
-Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
+Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
+mode, Phase 1 skips this phase entirely and proceeds to Phase 2.
 
 Before dispatching any developer, verify every external procedure
 signature using the strongest available AL symbol evidence.
@@ -382,9 +383,10 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
-## Phase 4.5: Static Validation (--autonomous only)
+## Phase 4.5: Static Validation (Autonomous Mode — activated by Phase 1)
 
-Skip this phase if `--autonomous` is not in `$ARGUMENTS`.
+Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
+mode, Phase 1 skips this phase entirely and proceeds to review dispatch.
 
 Run these checks on all newly created AL files before the
 review team is spawned. Fix CRITICAL issues by dispatching
