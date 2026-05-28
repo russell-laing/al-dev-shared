@@ -138,8 +138,8 @@ your changes, then run `/al-dev-commit` again."
 
 ## Step 4a — Pre-Commit Compile Verification
 
-Run this gate only when the staged set includes `.al` files or other files that can affect AL compilation.
-Skip it for docs-only or other non-AL staged changes.
+Run this gate when staged changes include any `.al`, `app.json`, or `.al.json` files.
+Skip for pure documentation (`.md`, `.txt`), changelog, or manifest-only edits.
 
 Run this gate after the workflow has already confirmed that staged files exist.
 
