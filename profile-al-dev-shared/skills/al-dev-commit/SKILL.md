@@ -397,7 +397,7 @@ Proceed to execution? (yes / no)
 
 User response:
 
-- `yes` — proceed to Step 10
+- `yes` — proceed to Step 9.5
 - `no` — stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
 If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 9.5.
