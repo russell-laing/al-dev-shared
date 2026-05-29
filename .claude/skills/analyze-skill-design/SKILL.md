@@ -182,7 +182,16 @@ for absorption into an adjacent skill.
 
 ---
 
-## Phase 7 — Write to `docs/al-dev-plugin-map.md`
+## Phase 7 — Dispatch Diagram Generation
+
+Dispatch `/al-dev-diagram-generator` to generate the workflow diagram. This skill
+handles all diagram logic and writes `docs/al-dev-workflow-diagrams.md`.
+
+Pass `--caller-name analyze-skill-design` so the generated diagram references the correct command for re-runs.
+
+---
+
+## Phase 8 — Write to `docs/al-dev-plugin-map.md`
 
 Replace the entire `## Observations` section (from the `## Observations` heading
 to the end of the file) with:
@@ -218,9 +227,9 @@ Update `**Last updated:**` in the document header to today's date.
 
 ---
 
-## Phase 8 — Present to User
+## Phase 9 — Present to User
 
-After writing the file:
+After Phase 7 dispatch returns and both files are written:
 
 1. Print a one-line summary per suggestion (type + subject).
 2. Mark the **highest-leverage** suggestion (best improvement-to-disruption ratio)
