@@ -79,7 +79,7 @@ analysis.
   be inlined into their sole spawner)
 - `no_agent_skills`: Skills with zero agents spawned (skills that do all work internally)
 
-**Store all 10 context structures as named variables for reuse in dispatch prompts:**
+**Store all 11 context structures as named variables for reuse in dispatch prompts:**
 1. `tool_inventory`
 2. `model_assignments`
 3. `caller_map`
@@ -90,6 +90,8 @@ analysis.
 8. `single_use_agents`
 9. `already_inline_candidates`
 10. `no_agent_skills`
+11. `layer1_diagram_content` — raw text of the Layer 1 Mermaid diagram from
+    `docs/al-dev-plugin-map.md` (required by `design-skill-lens-preplanning`)
 
 **Extraction implementation notes:**
 - Use Read tool on both map files to extract tables and text
@@ -127,30 +129,52 @@ object type and the `--dimension` argument:**
 **Both object lists** additionally receive `naming-convention-lens`, with
 `docs/al-dev-naming-convention.md` passed as the convention doc.
 
-Dispatch prompt template (substitute real paths and context):
+Dispatch prompt templates — use the variant matching each lens class.
+See `knowledge/lens-invocation-patterns.md` for the full context-field reference.
 
+**For design-agent-lens-* agents:**
+```
+Analyze the following agent files. Apply your lens to every file and return a findings block.
+
+File list:
+[one absolute path per line]
+
+Context (include only the fields this lens requires — see knowledge/lens-invocation-patterns.md):
+
+tool_inventory: {mapping of agent → [tools]}
+model_assignments: {mapping of agent → model}
+caller_map: {mapping of agent → [spawning skills]}
+single_use_agents: [list of agents with exactly one spawning skill]
+already_inline_candidates: [single-use agents that could be inlined]
+```
+
+**For design-skill-lens-* agents:**
+```
+Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
+
+File list:
+[one absolute path per line]
+
+Context (include only the fields this lens requires — see knowledge/lens-invocation-patterns.md):
+
+agent_usage_counts: {mapping of agent-type → [skill names that spawn it]}
+phase_counts: {mapping of skill → phase count}
+no_agent_skills: [list of skills with zero spawned agents]
+handoff_chains: {mapping of skill → [output files]}
+preplanning_skills: [pre-planning skill names (dashed arrows in Layer 1)]
+layer1_diagram_content: [raw text of Layer 1 Mermaid diagram from docs/al-dev-plugin-map.md]
+```
+
+**For quality-agent-lens-*, quality-skill-lens-*, and naming-convention-lens:**
 ```
 Analyze the following files. Apply your lens to every file and return a findings block.
 
 File list:
 [one absolute path per line]
-
-Context structures (provided for all design and quality lenses):
-
-tool_inventory: {mapping of agent → [tools]}
-model_assignments: {mapping of agent → model}
-caller_map: {mapping of agent → [spawning skills]}
-phase_counts: {mapping of skill → phase count}
-handoff_chains: {mapping of skill → [output files]}
-preplanning_skills: [list of pre-planning skill names]
-agent_usage_counts: {mapping of agent → spawn count}
-single_use_agents: [list of agents with exactly one spawning skill]
-already_inline_candidates: [single-use agents that could be inlined]
-no_agent_skills: [list of skills with zero spawned agents]
+```
 
 Convention doc (naming-convention-lens only):
 /Users/russelllaing/al-dev-shared/docs/al-dev-naming-convention.md
-```
 
 ## Phase 3 — Collect findings (fault-tolerant)
 
