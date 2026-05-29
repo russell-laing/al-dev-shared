@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-28 (19 distributed skills: 18 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
+**Last updated:** 2026-05-29 (19 distributed skills: 18 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align, plugin-health-daemon) excluded. `/align-harness-repos` and `/plugin-health-daemon` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -240,39 +240,37 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification, dispatches three-specialist review panel in parallel, synthesizes findings, and writes code-review artifact.
+**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Dispatches three-specialist review panel in parallel, then runs compilation verification and staging, writes code-review artifact, and presents findings to user.
 
 ```mermaid
 flowchart LR
-    Start([Handoff<br/>Phase 4]) --> Phase5["Phase 5<br/>Prepare review"]
+    Start([Handoff<br/>Phase 4]) --> Phase5["Phase 5<br/>Prepare review<br/>+ compile discipline"]
     Phase5 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase6["Phase 6<br/>Compile<br/>+ staging"]
-    Phase6 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase7["Phase 7<br/>Review panel<br/>in parallel"]
+    SkillWork1 --> Phase67["Phase 6–7<br/>Review panel<br/>in parallel"]
 
-    Phase7 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase7 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase7 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+    Phase67 --> SecReview["al-dev-security-reviewer<br/>×1"]
+    Phase67 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
+    Phase67 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
 
-    SecReview --> Phase8["Phase 8<br/>Synthesise<br/>+ iterate fixes"]
+    SecReview --> Phase8["Phase 8–8.5<br/>Compile verify<br/>+ staging"]
     ExpertReview --> Phase8
     PerfReview --> Phase8
 
-    Phase8 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase9["Phase 9<br/>Write code review"]
-    Phase9 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
-    Output1 --> End([End])
+    Phase8 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase9["Phase 9<br/>Write code review"]
+    Phase9 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1([".dev/*-al-dev-develop-code-review.md"])
+    Output1 --> Phase10["Phase 10<br/>Present findings"]
+    Phase10 --> End([End])
 
     style Phase5 fill:#ff8a65
-    style Phase6 fill:#ff8a65
-    style Phase7 fill:#ff8a65
+    style Phase67 fill:#ff8a65
     style Phase8 fill:#ff8a65
     style Phase9 fill:#ff8a65
+    style Phase10 fill:#ff8a65
     style SkillWork1 fill:#ff7043
     style SkillWork2 fill:#ff7043
     style SkillWork3 fill:#ff7043
-    style SkillWork4 fill:#ff7043
     style SecReview fill:#ff5722
     style ExpertReview fill:#ff5722
     style PerfReview fill:#ff5722
