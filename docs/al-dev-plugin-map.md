@@ -780,5 +780,5 @@ The plugin maintains healthy separation of concerns:
 ### Extension opportunities
 
 1. **Post-release orchestration**: `/al-dev-publish` remains a deferred opportunity until publication targets, tooling, and audience are standardized.
-2. **`/al-dev-fix` routing clarity**: Align the routing docs with the live skill so "fast fix" does not imply "always trivial" or "never uses an architect".
+2. **✅ Confirmed implemented: `/al-dev-fix` routing clarity** (2026-05-29): `workflow-routing.md` lines 40–46 already document the non-trivial architect escalation path explicitly. No prose update needed.
 3. **Lint quality gates**: Optional pre-commit lint gating remains separate future work; current lint integration is advisory by design.
