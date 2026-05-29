@@ -234,6 +234,8 @@ agent frontmatter default (`opus`, see
 Each architect prompt must include:
 
 ```text
+**Task Complexity Tier:** [SIMPLE if architect_model=sonnet | MEDIUM/COMPLEX if architect_model=opus]
+
 Design a complete AL/BC solution for: [user requirement]
 
 Project context:

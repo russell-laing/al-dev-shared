@@ -184,8 +184,17 @@ For non-trivial fixes:
    as "Known linting constraints: [list of UNRESOLVED items]".
    If not found: skip this step.
 
-1. Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
-   Include this in the dispatch prompt: "Follow `knowledge/al-symbol-pre-flight.md` for symbol verification rigor. Ensure all proposed changes reference verified AL symbol definitions."
+1. Assess fix complexity to determine architect model tier:
+   - **SIMPLE tier** (use sonnet): root cause is obvious, 1-2 files, < 20 lines to change
+   - **COMPLEX tier** (use opus — default): root cause is unclear, multi-file, ≥ 20 lines, or architectural impact
+
+   Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
+   - If complexity = SIMPLE: include `model: sonnet` in the Agent tool invocation
+   - If complexity = COMPLEX: omit model parameter (agent default opus applies)
+
+   Include this in the dispatch prompt:
+   "**Fix Complexity Tier:** [SIMPLE|COMPLEX]
+   Follow `knowledge/al-symbol-pre-flight.md` for symbol verification rigor. Ensure all proposed changes reference verified AL symbol definitions."
 
 2. Review architect's analysis yourself:
    - Does root cause make sense?
