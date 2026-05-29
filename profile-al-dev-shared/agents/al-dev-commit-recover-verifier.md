@@ -20,7 +20,7 @@ When an AL file becomes corrupted during commit (broken OOXML, syntax errors, tr
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `REPO` | **Yes** | Project root directory |
+| `REPO` | No | Inferred from working directory; not passed explicitly by /commit-recover |
 | `CORRUPTION_LOG` | **Yes** | Path to `.dev/commit-integrity.log` with flagged files |
 | `auto_fix` | No | If true, apply auto-fixes; if false, report findings only |
 

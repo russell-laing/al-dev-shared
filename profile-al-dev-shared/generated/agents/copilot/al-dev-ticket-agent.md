@@ -14,10 +14,10 @@ Fetch Freshdesk ticket context and create structured documentation file.
 | Input | Required | Description |
 |-------|----------|-------------|
 | `TICKET_ID` | **Yes** | Freshdesk ticket ID (passed in dispatch prompt, e.g., 12345) |
-| `FRESHDESK_API_KEY` | **Yes** | API key (environment variable, not dispatch field) |
-| `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain (environment variable, not dispatch field) |
+| `FRESHDESK_API_KEY` | **Yes** | API key; available as shell environment variable in agent bash context (configured in harness environment settings per `knowledge/ticket-agent-invocation-pattern.md`) |
+| `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain; available as shell environment variable in agent bash context (configured in harness environment settings per `knowledge/ticket-agent-invocation-pattern.md`) |
 
-**Note:** `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` are resolved from the harness environment and set as shell variables, not passed in the dispatch prompt. See `knowledge/ticket-agent-invocation-pattern.md`.
+**Note:** `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` are configured in the harness environment settings and injected as shell variables at agent dispatch — not passed in the dispatch prompt.
 
 ## Outputs
 
