@@ -1,5 +1,5 @@
 ---
-name: quality-lens-bloat
+name: quality-agent-lens-bloat
 description: Apply Bloat lens to agent files — detects oversized sections, dead conditional branches, repetitive instruction blocks, and historical commentary. Returns a findings block.
 model: haiku
 tools: ["Read", "Glob"]

@@ -1,5 +1,5 @@
 ---
-name: design-lens-tool-hygiene
+name: design-agent-lens-tool-hygiene
 description: Apply Tool Hygiene lens to agent files — identifies tools declared in frontmatter but unused in the system prompt body. Returns a findings block for Trim suggestions.
 model: haiku
 tools: ["Read", "Glob"]

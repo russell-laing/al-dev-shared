@@ -22,13 +22,13 @@ _format_failure = _mod._format_failure
 
 def test_format_failure_has_canonical_shape() -> None:
     output = _format_failure(
-        path=".claude/agents/quality-lens-clarity.md",
+        path=".claude/agents/quality-agent-lens-clarity.md",
         rule="agent-model",
         issue="model is not set to haiku",
         fix='add "model: haiku" to the YAML frontmatter',
     )
     lines = output.splitlines()
-    assert lines[0] == ".claude/agents/quality-lens-clarity.md", (
+    assert lines[0] == ".claude/agents/quality-agent-lens-clarity.md", (
         f"First line must be path, got: {lines[0]!r}"
     )
     assert any(ln.strip().startswith("rule:") for ln in lines), "Missing 'rule:' field"

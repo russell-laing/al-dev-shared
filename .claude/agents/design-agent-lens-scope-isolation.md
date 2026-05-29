@@ -1,5 +1,5 @@
 ---
-name: design-lens-scope-isolation
+name: design-agent-lens-scope-isolation
 description: Apply Scope Isolation lens to agent files — identifies agents with two clearly separable concerns in their system prompt body. Returns a findings block for Split suggestions.
 model: haiku
 tools: ["Read", "Glob"]
