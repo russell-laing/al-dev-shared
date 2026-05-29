@@ -46,6 +46,31 @@
 [Object ID assignments, naming conventions, special
 considerations]
 
+### Implementation Tasks
+
+**Task 1: [name]**
+Files: [files to create or modify]
+Gotcha: [one project-specific pitfall — e.g., "object names must be ≤30 chars; verify before creating" or "var parameters from AL MCP must be verified before use in subscribers"]
+Validate: [exact shell command confirming this task is done — e.g., `grep -rn "procedure ValidatePostingDate" src/` or `grep -c "error AL" .dev/compile-errors.log | grep -q "^0$"`]
+
+**Task 2: [name]**
+Files: ...
+Gotcha: ...
+Validate: ...
+
+**Task N: [name]**
+Files: ...
+Gotcha: ...
+Validate: ...
+
+---
+
+#### Gotcha and Validate Rules
+
+- `Gotcha:` is required. Write `Gotcha: none — [rationale]` rather than omitting it.
+- `Validate:` is required. Write `Validate: [manual] — [description]` rather than omitting it.
+- Tasks here are the architect's logical implementation units. They inform (but do not replace) the detailed sub-task checklist produced by `writing-plans`.
+
 ### Acceptance Criteria
 
 Use numbered criteria in one of four allowed forms:
