@@ -40,6 +40,11 @@ Three specialist agents (haiku):
 
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md` — synthesized review findings from all three reviewers; this file is also the downstream handoff artifact named in `knowledge/artifact-contracts.md` and must be read before any final clean/ready claim.
 
+## Execution Order
+
+Phases run in this order: **5 → 8 → 8.5 → 6-7 → 9 → 10**.
+Phase headers are numbered to match the parent workflow's phase map; run them in the order above, not in header-number order.
+
 ---
 
 ## Phase 5: Prepare Review Context
@@ -69,6 +74,8 @@ Three specialist agents (haiku):
    ```bash
    echo "Phase 5 complete — $(date +%Y-%m-%d %H:%M): context loaded, CHANGED_FILES identified" >> .dev/progress.md
    ```
+
+5. Proceed to Phase 8.
 
 ---
 
@@ -108,8 +115,10 @@ Run `al-compile` and handle errors. This phase must pass before the review panel
 4. **Read compile verification result** (required by artifact contract):
 
    ```bash
-   ls -la .dev/compile-errors.log
+   cat .dev/compile-errors.log
    ```
+
+   Read the file contents — the artifact contract requires the compile result to be read, not merely confirmed to exist.
 
 5. **Write progress checkpoint:**
 
@@ -131,7 +140,7 @@ Verify all prerequisites are met before spawning the review panel.
 
 ## Phase 6-7: Dispatch Review Panel
 
-Spawn the three specialist reviewer agents in parallel. Pass each agent the same `CHANGED_FILES` list and implementation context from the Phase 4 handoff.
+Spawn all three specialist reviewer agents simultaneously — do not wait for one agent to return before spawning the next. Pass each agent the same `CHANGED_FILES` list and implementation context from the Phase 4 handoff.
 
 **Dispatch prompt for each reviewer:**
 
@@ -209,11 +218,13 @@ Synthesize findings from all three reviewers into a single dated code-review fil
    [READY: no blocking issues found — proceed to /al-dev-commit]
    ```
 
-3. **Read the file back** to confirm it was written (required by artifact contract):
+3. **Read the file back** to confirm it was written and satisfy the artifact contract:
 
    ```bash
-   ls -la "$CODE_REVIEW_FILE" && wc -l "$CODE_REVIEW_FILE"
+   cat "$CODE_REVIEW_FILE"
    ```
+
+   Read the file contents — the artifact contract requires the code-review artifact to be read in this run, not merely confirmed to exist.
 
 4. **Write progress checkpoint:**
 
