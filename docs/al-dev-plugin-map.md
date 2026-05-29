@@ -736,6 +736,12 @@ Impact: Pre-planning tributary is fully integrated; diagram matches implementati
 
 ---
 
+### Move candidates
+
+None detected. One false positive: `al-dev-commit` scored 2 signals, but both are triggered by advisory side-effects (runtime `$AL_DEV_SHARED_PLUGIN_ROOT` lookup and "alignment" wording in an advisory step), not the skill's core purpose (commit creation for AL developers).
+
+---
+
 ### Completed architectural moves
 
 **✅ Status: /al-dev-align** — Archived in `profile-al-dev-shared/archived/`. Python utility remains available without occupying skill registry slot.
