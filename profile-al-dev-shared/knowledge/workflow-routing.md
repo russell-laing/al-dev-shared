@@ -31,14 +31,21 @@ Analyze the user request and classify:
 - "Fix typo in error message"
 - "Update variable name for consistency"
 
-**Steps:**
+**Steps (direct-fix path, 2-5 min):**
 1. Read project-context.md
 2. Locate the likely file with minimal search
-3. If the fix stays obvious and single-scope, continue on the direct `/al-dev-fix` path
-4. If ambiguity, multiple files, or integration risk appears, follow the `/al-dev-fix` non-trivial branch instead of forcing a trivial edit
-5. Run compile/lint verification and present the bounded result
+3. If the fix stays obvious and single-scope, implement directly
+4. Run compile/lint verification and present the bounded result
 
-**Time saved:** 15-25 minutes vs full workflow
+**Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `/al-dev-fix` switches automatically to its built-in escalation branch:
+- Spawns `al-dev-solution-architect` for quick root-cause analysis (~5 min)
+- Reviews architect's hypothesis; presents to user for approval
+- Spawns `al-dev-developer` with confirmed approach
+- Runs compile/lint verification and presents result
+
+Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `/al-dev-fix` escalation handles these efficiently.
+
+**Time saved:** 15-25 min vs full workflow (direct path); 10-15 min vs full plan cycle (escalation path)
 
 ---
 
