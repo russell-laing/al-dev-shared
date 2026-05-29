@@ -42,8 +42,7 @@ EXPECTED_AGENTS = [
 ]
 
 SKILLS_TO_CHECK = [
-    os.path.join(REPO, ".claude/skills/audit-agent-quality/SKILL.md"),
-    os.path.join(REPO, ".claude/skills/audit-skill-quality/SKILL.md"),
+    os.path.join(REPO, ".claude/skills/audit-quality/SKILL.md"),
     os.path.join(REPO, ".claude/skills/analyze-agent-design/SKILL.md"),
     os.path.join(REPO, ".claude/skills/analyze-skill-design/SKILL.md"),
 ]
