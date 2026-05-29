@@ -1,5 +1,28 @@
 {
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/russelllaing/al-dev-shared/.claude/hooks/post_edit_validate.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/russelllaing/al-dev-shared/.claude/hooks/stop_projection_check.py"
+          }
+        ]
+      }
+    ]
   }
 }
