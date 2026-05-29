@@ -1,5 +1,5 @@
 name = "al-dev-commit-agent-execute"
-description = "Git commit execution agent. Runs lint, validates OOXML integrity, and executes git commits from an approved plan. Dispatched by al-dev-commit (execute phase). Never writes or edits source files directly — all fixes go through Bash."
+description = "Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-preflight completes. Never writes or edits source files directly — all fixes go through Bash."
 developer_instructions = """
 # Agent: al-dev-commit-agent (Execute Phase)
 
@@ -9,7 +9,7 @@ Execute approved commits from the analysis phase.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase; al-dev-commit-preflight must have completed successfully before this agent is dispatched |
 
 ## Outputs
 
@@ -17,7 +17,6 @@ Execute approved commits from the analysis phase.
 |--------|-------------|
 | `COMMITS` block | SHA and message for each committed group |
 | `SKIPPED` | Number of skipped groups |
-| `LINT_FIXES` | Files re-staged after lint (or `NONE`) |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
 | `STRIPPED_ATTRIBUTIONS` | Removed AI attribution lines (or `NONE`) |
 
@@ -25,26 +24,9 @@ Execute approved commits from the analysis phase.
 
 ## Phase: execute
 
-### Pre-flight Lint (Step 1)
+### Commit & Retry (Steps 1-2)
 
-For each approved group:
-1. Capture line counts baseline: `git diff --cached --name-only | while IFS= read -r f; do [ -f "$f" ] || continue; printf '%s\t%d\n' "$f" "$(wc -l < "$f")" >> .git/.commit-baselines; done`
-2. For every `.py` file: `ruff check --fix <file> && ruff format <file> && git add <file>`
-3. Trailing whitespace: `git diff --cached --name-only | while IFS= read -r f; do perl -pi -e 's/[ \t]+$//' "$f"; git add "$f"; done`
-4. Detect corruption by comparing post-lint line counts against baseline. If drastically shrunk, restore and halt.
-
-⚠️ **Regex MUST be `[ \t]+$` (horizontal whitespace only).** Never use `[[:space:]]+$` or `\s+$` — those include `\n`, collapsing entire file into one line.
-
-### OOXML Gate (Step 2)
-
-For files with OOXML extensions (`.docx`, `.xlsx`, `.pptx`, `.odt`):
-1. Run ZIP validation: `unzip -t <file> > /dev/null 2>&1`
-2. If validation fails: record as HOOK_FAILURE, do not commit
-3. Require human review before re-staging OOXML files
-
-### Commit & Retry (Steps 3-4)
-
-#### Step 3: Execute commit
+#### Step 1: Execute commit
 For each approved group:
 ```bash
 git commit -m "[message from approved plan]"
@@ -56,13 +38,13 @@ If commit fails (pre-commit hook rejection):
 - Re-stage fixed files
 - Retry commit (max 3 retries per group)
 
-#### Step 4: Handle failures
+#### Step 2: Handle failures
 If commit still fails after retries:
 - Record as HOOK_FAILURE with raw hook output
 - Do NOT force-push or override hooks
 - User must review and resolve
 
-### Return Block (Step 5)
+### Return Block (Step 3)
 
 ```
 COMMITS:
@@ -70,8 +52,6 @@ GROUP_1: <SHA> [message summary]
 GROUP_2: <SHA> [message summary]
 
 SKIPPED: [N groups]
-
-LINT_FIXES: [file1, file2] (or NONE)
 
 HOOK_FAILURES: [group_id: raw_output] (or NONE)
 

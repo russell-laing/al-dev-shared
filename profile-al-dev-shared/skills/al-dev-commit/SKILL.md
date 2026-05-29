@@ -400,7 +400,48 @@ User response:
 - `yes` — proceed to Step 10
 - `no` — stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
-If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 10.
+If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 9.5.
+
+---
+
+## Step 9.5 — Dispatch Preflight Agent
+
+Dispatch `al-dev-shared:al-dev-commit-preflight` with the approved plan:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-commit-preflight
+  description: "Pre-flight lint and OOXML validation"
+
+Prompt:
+  "Perform PREFLIGHT phase for git commit workflow.
+
+   Phase: preflight
+
+   APPROVED_PLAN:
+   [paste the approved plan from Step 9]
+
+   CRITICAL RULES:
+   - NEVER use Write or Edit on staged source files — all fixes via Bash only
+   - Record OOXML failures; do not proceed to commit for failed files
+
+   Return output in exactly the format specified (LINT_FIXES, OOXML_FAILURES)."
+```
+
+If `OOXML_FAILURES` is not `NONE`, show:
+
+```text
+⚠️  OOXML VALIDATION FAILURE
+
+The following files failed ZIP validation and cannot be committed:
+[OOXML_FAILURES output]
+
+Resolve these files (save in Microsoft Word, not via script), re-stage, and re-run.
+```
+
+Stop if any OOXML failures — do not proceed to Step 10.
+
+Store the `LINT_FIXES` value from the preflight output for display in Step 11.
 
 ---
 
@@ -438,7 +479,7 @@ Prompt:
    Follow the execute phase instructions in your agent definition.
 
    Return output in exactly the format specified (COMMITS, SKIPPED,
-   LINT_FIXES, HOOK_FAILURES)."
+   HOOK_FAILURES)."
 ```
 
 ---
@@ -454,7 +495,7 @@ Commit workflow complete.
   [sha] [emoji] [type(scope)]: [subject]
 
 [N] commits created. [N] skipped.
-[If LINT_FIXES is not NONE:]
+[If LINT_FIXES from Step 9.5 is not NONE:]
   Files re-staged after lint: [LINT_FIXES]
 [If HOOK_FAILURES is not NONE:]
   Hook failures:

@@ -6,6 +6,7 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-preflight
       - al-dev-shared:al-dev-commit-agent-execute
     notes: "Standard commit flow. Harness pre-seeds a small staged change (one-line edit to a fixture file) before the run."
 
@@ -15,6 +16,7 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-preflight
       - al-dev-shared:al-dev-commit-agent-execute
     notes: "Harness pre-seeds a deletion of an unrelated file. Skill must surface the unexpected deletion in its summary and gate on user confirmation — verified by transcript grep for 'unrelated' / 'scope' in the agent's final message."
 
@@ -24,6 +26,7 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-preflight
       - al-dev-shared:al-dev-commit-agent-execute
     notes: "Commit intent regression. Explicit scoped commit prompts must route to commit gates and commit agents, not edit or planning flows."
 
@@ -42,5 +45,6 @@ scenarios:
     expected_artifacts: []
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-preflight
       - al-dev-shared:al-dev-commit-agent-execute
     notes: "Docs-only optimization regression. Harness pre-seeds only non-AL staged changes. Skill may skip Step 4a, but it still must base any ready-to-commit claim on the current staged diff and required staged-state evidence."
