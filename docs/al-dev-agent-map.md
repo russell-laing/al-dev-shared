@@ -1,29 +1,29 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-27 (19 agents; technical accuracy review — corrected MCP tool names, spawner references, output block fields, input specifications)
+**Last updated:** 2026-05-29 (19 agents; synced models to haiku after Remodel implementation; corrected tools and spawner references)
 
 ## Layer 1: Agent Catalog
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-code-review | sonnet | Read | (none found) |
-| al-dev-commit-agent-analysis | sonnet | Bash, Read | /al-dev-commit (analysis phase) |
+| al-dev-code-review | haiku | Read | (none found) |
+| al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
 | al-dev-commit-agent-execute | sonnet | Bash, Read | /al-dev-commit (execution phase) |
-| al-dev-commit-message-drafter | sonnet | Read | /al-dev-commit (message-drafting phase) |
+| al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-fix |
+| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
 | al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | (not spawned — skill mentions but doesn't dispatch) |
-| al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-develop |
+| al-dev-expert-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
-| al-dev-interview | sonnet | Read, Write, USER_GATE | /al-dev-interview |
-| al-dev-performance-reviewer | sonnet | Read, Grep | /al-dev-develop |
+| al-dev-interview | haiku | Read, Write, USER_GATE | /al-dev-interview |
+| al-dev-performance-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
-| al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-develop |
+| al-dev-security-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | sonnet | Write, Read | /al-dev-support (reply phase) |
-| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence | /al-dev-support (research phase) |
+| al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase) |
+| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence | /al-dev-ticket (support mode: research phase) |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (all modes) |
 
 ---
@@ -33,7 +33,7 @@
 ### al-dev-code-review
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
@@ -55,7 +55,7 @@
 ### al-dev-commit-agent-analysis
 
 **Description:** Git commit manifest analyzer. Reads staged diffs and builds per-file manifests. Read-only — never modifies files. Split from message-drafting phase (al-dev-commit-message-drafter handles message composition).
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Bash, Read
 **Spawned by:** /al-dev-commit (Phase 1 — analysis phase)
 
@@ -78,8 +78,8 @@
 ### al-dev-commit-message-drafter
 
 **Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
-**Model:** sonnet
-**Tools:** Read
+**Model:** haiku
+**Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
 
 **Inputs:**
@@ -154,9 +154,9 @@
 ### al-dev-diagnostics-fixer
 
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-lint, /al-dev-fix
+**Spawned by:** /al-dev-lint
 
 **Inputs:**
 
@@ -207,9 +207,9 @@
 ### al-dev-expert-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop
+**Spawned by:** /al-dev-develop, /al-dev-review-develop
 
 **Inputs:**
 
@@ -255,7 +255,7 @@
 ### al-dev-interview
 
 **Description:** Interview the user to extract complete BC/AL implementation details through structured questioning.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read, Write, USER_GATE
 **Spawned by:** /al-dev-interview
 
@@ -279,9 +279,9 @@
 ### al-dev-performance-reviewer
 
 **Description:** Review AL code for performance issues, inefficient queries, N+1 patterns, and resource consumption.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop
+**Spawned by:** /al-dev-develop, /al-dev-review-develop
 
 **Inputs:**
 
@@ -350,9 +350,9 @@
 ### al-dev-security-reviewer
 
 **Description:** Review AL code for security vulnerabilities, permission issues, and data exposure risks.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop
+**Spawned by:** /al-dev-develop, /al-dev-review-develop
 
 **Inputs:**
 
@@ -399,7 +399,7 @@
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
 **Tools:** Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence
-**Spawned by:** /al-dev-support (research phase)
+**Spawned by:** /al-dev-ticket (support mode: research phase)
 
 **Inputs:**
 
@@ -420,9 +420,9 @@
 ### al-dev-support-reply-drafter
 
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
-**Model:** sonnet
-**Tools:** Write, Read
-**Spawned by:** /al-dev-support (reply phase)
+**Model:** haiku
+**Tools:** Write
+**Spawned by:** /al-dev-ticket (support mode: reply phase)
 
 **Inputs:**
 
@@ -493,8 +493,7 @@
 
 ## Observations
 
-> Generated by /analyze-agent-design on 2026-05-27.
-> Five analytical lenses applied: Tool Hygiene, Model Fit, Scope Isolation, Caller Alignment, Usage Patterns.
+> Generated by /analyze-agent-design on 2026-05-27; updated by /review-agent-map on 2026-05-29.
 
 ### Agents used by only one skill (single-purpose specialists)
 
@@ -503,14 +502,17 @@
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-diagnostics-fixer** — used only by /al-dev-lint
-- **al-dev-docs-writer** — used only by /al-dev-document
-- **al-dev-expert-reviewer** — used only by /al-dev-develop
+- **al-dev-docs-writer** — used only by /al-dev-document (prose reference; no formal Agent() spawn call found)
 - **al-dev-interview** — used only by /al-dev-interview
-- **al-dev-performance-reviewer** — used only by /al-dev-develop
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
-- **al-dev-security-reviewer** — used only by /al-dev-develop
 - **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase)
 - **al-dev-support-researcher** — used only by /al-dev-ticket (support mode: research phase)
+
+### Agents used by the review panel (shared across develop + review-develop)
+
+- **al-dev-expert-reviewer** — used by /al-dev-develop, /al-dev-review-develop
+- **al-dev-performance-reviewer** — used by /al-dev-develop, /al-dev-review-develop
+- **al-dev-security-reviewer** — used by /al-dev-develop, /al-dev-review-develop
 
 ### Agents with no documented callers (standalone or special dispatch)
 
@@ -524,34 +526,31 @@
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
 
-### Quality suggestions
-
-**CRITICAL: Restore al-dev-commit-recover-verifier agent definition**
-Observation: Agent file exists but is empty (1 line, no content). No frontmatter, no system prompt. /commit-recover skill (Step 2) expects this agent to analyze corrupted files and propose recovery strategies. Map contains detailed profile (lines 472–493), but agent file is completely empty—profile and implementation are misaligned.
-Suggestion: Restore or recreate `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/al-dev-commit-recover-verifier.md` with proper YAML frontmatter (name, description, model: haiku, tools) and system prompt body. Reference the detailed profile already in this map (section "al-dev-commit-recover-verifier") and the `/commit-recover` skill Step 2 for expected output format.
-Trade-off: Critical path blocker for recovery workflows; must be completed before commit-recover skill can function.
-
-**Trim: al-dev-support-reply-drafter** ← highest leverage
-Observation: Frontmatter declares tools=[Write, Read], but system prompt contains no Read operations — agent parses researcher findings from dispatch block and writes reply only.
-Suggestion: Remove `Read` from tools list in frontmatter.
-Trade-off: Minimal — tool was never used; tighter least-privilege posture.
-
-**Trim: al-dev-commit-message-drafter**
-Observation: Frontmatter declares tools=[Read, Write], but system prompt body never references Read — agent analyzes manifests from dispatch prompt (MANIFESTS, PROPOSED_GROUPS) without reading files.
-Suggestion: Remove `Read` from tools list in frontmatter.
-Trade-off: Minimal — tool was never used; clarifies that this agent doesn't perform file I/O.
-
-**Remodel: Reduce 9 sonnet agents to haiku for cost efficiency**
-Observation: Nine single-step review/analysis agents are currently assigned sonnet, but their tasks (pattern matching, deterministic transformations, single-file analysis, template-based output) do not require sonnet's multi-file synthesis capability. These agents include: code-review, commit-agent-analysis, commit-message-drafter, diagnostics-fixer, expert-reviewer, interview, performance-reviewer, security-reviewer, support-reply-drafter.
-Suggestion: Downgrade all nine agents from sonnet → haiku. Retain sonnet for: developer (multi-phase TDD), docs-writer (multi-file synthesis), release-notes-writer (multi-source MCP research), script-engineer (error recovery). Retain opus for: solution-architect (broad design reasoning).
-Trade-off: ~60% cost reduction for these agents; minimal impact on quality (each has well-defined single task with no multi-file synthesis). Haiku sufficient for deterministic pattern matching and template output.
+### Open quality suggestions
 
 **Align: Clarify al-dev-developer TDD activation path**
 Observation: Agent Inputs table documents `.dev/*-al-dev-test-test-plan.md` as required input "from /al-dev-develop," but the /al-dev-develop skill contains no logic to create test plans. Agent body (CRITICAL line 38) gates TDD workflow on test-plan file presence, but no spawning skill documented as providing this file. This breaks the TDD path.
 Suggestion: Update Inputs table row for test-plan: mark as "Optional: User-supplied via /al-dev-test or created by test-engineer agent" OR clarify which skill creates test plans. If TDD is not actively used, remove the test-plan input and the CRITICAL gate from the agent body.
 Trade-off: Documentation-only change; prevents confusion about TDD activation contract between skill and agent.
 
+**Align: al-dev-review-develop is a stub skill**
+Observation: /al-dev-review-develop describes Phases 5–10 of the develop workflow but its SKILL.md body is a stub (61 lines; no actual phase instructions). The three reviewer agents (expert, security, performance) are documented as its callers, but the skill contains no spawn calls. Map is pre-emptively accurate; skill body needs implementation to match documented contract.
+Suggestion: Implement /al-dev-review-develop by copying Phases 5–10 from /al-dev-develop per the skill's own notes. Until then, /al-dev-develop is the only active spawner of the review panel.
+Trade-off: Skill body is incomplete; review panel spawning works through /al-dev-develop only.
+
 ### Previously implemented improvements
+
+**✅ Restored al-dev-commit-recover-verifier agent** (2026-05-29)
+Agent file was empty; now restored with proper YAML frontmatter (haiku, Bash/Read/Write) and full recovery system prompt.
+
+**✅ Remodelled 9 sonnet agents to haiku** (2026-05-27)
+Downgraded: code-review, commit-agent-analysis, commit-message-drafter, diagnostics-fixer, expert-reviewer, interview, performance-reviewer, security-reviewer, support-reply-drafter. ~60% cost reduction for single-task agents.
+
+**✅ Trimmed al-dev-support-reply-drafter tools** (2026-05-27)
+Removed unused `Read` from tools list. Agent receives all input via dispatch block; no file reads needed.
+
+**✅ Trimmed al-dev-commit-message-drafter tools** (2026-05-27)
+Removed unused `Read` from tools list. Agent analyzes manifests from dispatch prompt without file I/O.
 
 **✅ Upgraded al-dev-commit-agent-execute** (2026-05-22)
 Model changed from haiku → sonnet for multi-phase orchestration (lint + validation + commit + retry) with error recovery.
@@ -565,6 +564,6 @@ Enabled independent iteration and audit gates between phases.
 **✅ Trimmed al-dev-support-researcher tools** (2026-05-22)
 Removed WebSearch and WebFetch; restricted to AL Symbols, MS Docs, BC Code History only.
 
-### Inline candidates detected on 2026-05-27
+### Inline candidates detected on 2026-05-29
 
-None detected. All 9 single-purpose agents with single callers have documented Inputs/Outputs sections and body length >10 lines; they do not meet the 2+ signal threshold for inlining.
+None detected. All single-purpose agents have documented Inputs/Outputs sections and body length >10 lines; they do not meet the 2+ signal threshold for inlining.
