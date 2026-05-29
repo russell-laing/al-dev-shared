@@ -78,10 +78,11 @@ Wait for the user's response. Then set:
 
 Verify the template exists:
 ```bash
-ls "$AL_DEV_SHARED_PLUGIN_ROOT/knowledge/doc-templates/[AUDIENCE].md" 2>/dev/null \
+ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/[AUDIENCE].md 2>/dev/null \
   || echo "Template not found — docs-writer will use inline structure from Step 2"
+# Non-zero exit here is expected and normal — do not retry.
 ```
-If the file is missing, omit `TEMPLATE_PATH` from the spawn prompt and let the docs-writer use the inline documentation structure defined in Step 2.
+If the echo fires, omit `TEMPLATE_PATH` from the spawn prompt and let the docs-writer use the inline documentation structure defined in Step 2.
 
 ### Step 1: Identify Documentation Scope (1-2 min)
 
@@ -216,6 +217,19 @@ When docs-writer completes:
    - Is jargon explained?
 ```
 
+**MANDATORY before presenting to user** — spot-check three sections and output
+this block (do NOT present to user until all three rows are filled in):
+
+```
+VERIFICATION
+- Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
+- Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
+- Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
+```
+
+If any row shows `no`, send the specific mismatch back to docs-writer before
+presenting. Skipping this block is visible to the user — do not omit it.
+
 ### Step 4: Request Refinements (if needed)
 
 ```text
@@ -235,6 +249,10 @@ If gaps found:
 Update docs/Features/[FeatureName]-[AUDIENCE].md"
 
 Iterate until documentation is comprehensive.
+
+When applying fixes with the Edit tool: include 2–3 lines of surrounding
+context to ensure the match is unique, or use `replace_all: true` when
+updating all instances of a repeated string (e.g. markdown lint directives).
 ```
 
 ### Step 5: Clean Up
