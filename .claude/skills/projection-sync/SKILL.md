@@ -12,8 +12,6 @@ description: >-
 
 This skill validates the canonical agent source under `profile-al-dev-shared/agents/`, regenerates harness-native projections (Claude Code, Copilot CLI, Codex), summarizes the changes, and asks for approval before committing.
 
-**Narrow scope:** Orchestrates existing scripts and managed outputs. Does not auto-fix validation failures or replace broader alignment workflows like `/align-harness-repos`.
-
 ---
 
 ## Workflow: Four Phases

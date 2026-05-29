@@ -25,8 +25,8 @@ agent name from the filename (strip directory path and `.md` extension).
 **Check for:**
 - Section count in the system prompt body (after frontmatter) > 6 top-level sections
 - Any single section > 30 lines
-- `skip if...` or `only if...` conditions that are effectively always true given
-  normal usage (dead branches with no realistic false path)
+- `skip if...` or `only if...` conditions that always evaluate the same way in all
+  realistic invocations based on the agent's documented contract (dead branches)
 - Repetitive instruction blocks across sections that could be stated once
 - Accumulated historical commentary ("as of v2", "previously this was", "now uses")
   that belongs in git history, not the agent body

@@ -25,8 +25,8 @@ skill name from the parent directory name.
 **Check for:**
 - Step/phase count (top-level `## Step` or `## Phase` headers) > 6
 - Any single step > 30 lines
-- `skip if...` or `only if...` conditions that are effectively always true given
-  normal usage (dead branches with no realistic false path)
+- `skip if...` or `only if...` conditions that always evaluate the same way in all
+  realistic invocations based on the agent's documented contract (dead branches)
 - Repetitive instruction blocks across steps that could be stated once
 - Accumulated historical commentary ("as of v2", "previously this was", "now uses")
   that belongs in git history, not the skill body

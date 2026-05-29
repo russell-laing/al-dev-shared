@@ -249,7 +249,7 @@ classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bol
 
 Diagram structure for the combined view:
 
-```
+```mermaid
 flowchart LR
   classDef skillNode ...
   classDef agentNode ...
