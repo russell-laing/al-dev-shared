@@ -2,7 +2,7 @@
 name: design-skill-lens-handoff-gaps
 description: Apply Handoff Chain Gaps lens to plugin skills — traces .dev/ file handoff chains to find established chains with obvious next steps or orphaned outputs. Returns findings for Extend suggestions.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

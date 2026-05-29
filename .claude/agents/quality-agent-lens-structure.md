@@ -2,7 +2,7 @@
 name: quality-agent-lens-structure
 description: Apply Structural Conventions lens to agent files — checks frontmatter completeness, tool canonicality, Inputs/Outputs tables, header numbering, and code block language tags. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

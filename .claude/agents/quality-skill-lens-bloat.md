@@ -2,7 +2,7 @@
 name: quality-skill-lens-bloat
 description: Apply Bloat lens to SKILL.md files — detects oversized steps, dead conditional branches, repetitive instruction blocks, and historical commentary. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

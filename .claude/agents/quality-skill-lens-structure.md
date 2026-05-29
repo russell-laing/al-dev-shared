@@ -2,7 +2,7 @@
 name: quality-skill-lens-structure
 description: Apply Structural Conventions lens to SKILL.md files — checks frontmatter fields, argument-hint presence, output file naming, header numbering, and code block language tags. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

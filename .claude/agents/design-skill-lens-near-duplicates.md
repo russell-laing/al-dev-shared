@@ -2,7 +2,7 @@
 name: design-skill-lens-near-duplicates
 description: Apply Near-Duplicate Shapes lens to plugin skills — identifies pairs with similar structure (same agents, similar phase count, similar output patterns) that could be merged. Returns findings for Merge suggestions.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

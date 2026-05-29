@@ -2,7 +2,7 @@
 name: quality-skill-lens-name-fit
 description: Apply Name Fit lens to SKILL.md files — compares skill name against primary verb and scope in description and body to detect naming drift and trigger-phrase conflicts. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

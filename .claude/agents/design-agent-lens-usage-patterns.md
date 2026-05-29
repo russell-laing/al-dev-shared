@@ -2,7 +2,7 @@
 name: design-agent-lens-usage-patterns
 description: Apply Usage Patterns lens to agent files — identifies single-use agents with small bodies and no documented contract, which are candidates for inlining. Returns a findings block for Inline suggestions.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

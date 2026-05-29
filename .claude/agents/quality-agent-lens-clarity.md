@@ -2,7 +2,7 @@
 name: quality-agent-lens-clarity
 description: Apply Prompt Clarity lens to agent files — identifies ambiguous instructions, vague qualifiers, incomplete conditionals, and pseudo-code blocks. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

@@ -2,7 +2,7 @@
 name: quality-skill-lens-clarity
 description: Apply Prompt Clarity lens to SKILL.md files — identifies ambiguous instructions, vague qualifiers, incomplete conditionals, and pseudo-code blocks. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

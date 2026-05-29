@@ -2,7 +2,7 @@
 name: quality-agent-lens-name-fit
 description: Apply Name Fit lens to agent files — compares agent name against primary verb and scope in description and body to detect naming drift and conflicts. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs

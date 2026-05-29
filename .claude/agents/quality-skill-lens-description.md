@@ -2,7 +2,7 @@
 name: quality-skill-lens-description
 description: Apply Description Drift lens to SKILL.md files — compares description and trigger phrases against body content to detect disconnected verbs, missing outputs, and absent use cases. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs
