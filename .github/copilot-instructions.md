@@ -118,17 +118,14 @@ Checks:
 - Harness-aware mapping docs are excluded by allowlist
 - Generated projections are excluded because they are derived artifacts
 
-### Plugin Health Sweep (Automated Audits)
+### Plugin Health Sweep
 
 ```bash
-# Preview mode (no changes)
-bash scripts/plugin-health-daemon.sh --dry-run
-
-# Execute mode (creates branch + PR)
-bash scripts/plugin-health-daemon.sh --execute
+# Suggestions-only sweep — writes per-surface dossiers, never auto-edits
+/plugin-health --surface both
 ```
 
-Runs parallel audits and auto-fixes safe issues. Creates a PR for manual review.
+Dispatches design, quality, and naming lenses. Review the dossiers in `docs/health/` and use `/plan-map-changes` to act on accepted items.
 
 ## Commit Conventions
 
@@ -247,4 +244,4 @@ print('PASS')
 - **Sync docs with code**: Use `/review-skill-map` and `/review-agent-map` skills (Claude Code) to update maps
 - **Audit design**: Use `/analyze-skill-design` and `/analyze-agent-design` (Claude Code) for architecture improvement suggestions
 - **Check quality**: Use `/audit-skill-quality` and `/audit-agent-quality` (Claude Code) for structural issues
-- **Run health sweep**: `bash scripts/plugin-health-daemon.sh --execute` to create PR with auto-fixes
+- **Run health sweep**: invoke `/plugin-health` (suggestions-only; writes per-surface dossiers, no auto-fixes)

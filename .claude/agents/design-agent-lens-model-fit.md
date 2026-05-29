@@ -1,5 +1,5 @@
 ---
-name: design-lens-model-fit
+name: design-agent-lens-model-fit
 description: Apply Model Fit lens to agent files — evaluates whether haiku/sonnet/opus assignment matches task complexity. Returns a findings block for Remodel suggestions.
 model: haiku
 tools: ["Read", "Glob"]

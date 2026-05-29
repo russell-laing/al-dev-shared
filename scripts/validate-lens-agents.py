@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+from pathlib import Path
 
 
 def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
@@ -13,20 +14,20 @@ def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
     )
 
 
-REPO = "/Users/russelllaing/al-dev-shared"
+REPO = str(Path(__file__).resolve().parents[1])
 AGENTS_DIR = os.path.join(REPO, ".claude/agents")
 
 EXPECTED_AGENTS = [
-    "quality-lens-clarity",
-    "quality-lens-structure",
-    "quality-lens-description",
-    "quality-lens-bloat",
-    "quality-lens-name-fit",
-    "design-lens-tool-hygiene",
-    "design-lens-model-fit",
-    "design-lens-scope-isolation",
-    "design-lens-caller-alignment",
-    "design-lens-usage-patterns",
+    "quality-agent-lens-clarity",
+    "quality-agent-lens-structure",
+    "quality-agent-lens-description",
+    "quality-agent-lens-bloat",
+    "quality-agent-lens-name-fit",
+    "design-agent-lens-tool-hygiene",
+    "design-agent-lens-model-fit",
+    "design-agent-lens-scope-isolation",
+    "design-agent-lens-caller-alignment",
+    "design-agent-lens-usage-patterns",
     "quality-skill-lens-clarity",
     "quality-skill-lens-structure",
     "quality-skill-lens-description",
@@ -37,6 +38,7 @@ EXPECTED_AGENTS = [
     "design-skill-lens-near-duplicates",
     "design-skill-lens-handoff-gaps",
     "design-skill-lens-preplanning",
+    "naming-convention-lens",
 ]
 
 SKILLS_TO_CHECK = [

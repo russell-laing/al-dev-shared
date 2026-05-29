@@ -175,9 +175,8 @@ python3 scripts/generate-agent-projections.py
 ### Plugin Health and Documentation
 
 ```bash
-# Run plugin health daemon (audit sweep with auto-fix)
-bash scripts/plugin-health-daemon.sh --dry-run    # preview changes
-bash scripts/plugin-health-daemon.sh --execute    # apply changes and create PR
+# Run the suggestions-only health sweep (writes per-surface dossiers; never auto-edits)
+/plugin-health --surface both
 ```
 
 ### Updating Documentation Maps

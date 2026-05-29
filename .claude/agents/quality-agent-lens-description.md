@@ -1,5 +1,5 @@
 ---
-name: quality-lens-description
+name: quality-agent-lens-description
 description: Apply Description Drift lens to agent files — compares description field against body content to detect disconnected verbs, missing outputs, and caller contract mismatches. Returns a findings block.
 model: haiku
 tools: ["Read", "Glob"]

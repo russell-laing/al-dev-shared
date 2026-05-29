@@ -1,5 +1,5 @@
 ---
-name: design-lens-caller-alignment
+name: design-agent-lens-caller-alignment
 description: Apply Caller Alignment lens to agent files — compares documented Inputs/Outputs against how spawning skills actually invoke each agent. Returns a findings block for Align suggestions.
 model: haiku
 tools: ["Read", "Glob", "Grep"]

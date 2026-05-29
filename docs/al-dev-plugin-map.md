@@ -3,7 +3,7 @@
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
 **Last updated:** 2026-05-29 (19 distributed skills: 18 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
-**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align, plugin-health-daemon) excluded. `/align-harness-repos` and `/plugin-health-daemon` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
+**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align) excluded. `/align-harness-repos` and `/plugin-health` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
 
@@ -746,7 +746,6 @@ None detected. One false positive: `al-dev-commit` scored 2 signals, but both ar
 
 **✅ Status: /al-dev-align** — Archived in `profile-al-dev-shared/archived/`. Python utility remains available without occupying skill registry slot.
 
-**✅ Status: /plugin-health-daemon** — Moved to `.claude/skills/` as project-local maintenance infrastructure.
 
 ---
 

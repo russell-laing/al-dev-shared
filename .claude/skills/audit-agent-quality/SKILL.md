@@ -52,11 +52,11 @@ File list:
 ```
 
 Agents to dispatch simultaneously (use `subagent_type` for each):
-- `quality-lens-clarity`
-- `quality-lens-structure`
-- `quality-lens-description`
-- `quality-lens-bloat`
-- `quality-lens-name-fit`
+- `quality-agent-lens-clarity`
+- `quality-agent-lens-structure`
+- `quality-agent-lens-description`
+- `quality-agent-lens-bloat`
+- `quality-agent-lens-name-fit`
 
 Each agent returns one block headed `### [Lens Name] Findings`.
 

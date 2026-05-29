@@ -81,16 +81,16 @@ Already-listed inline candidates:
 
 Agents to dispatch based on the focus argument:
 - `all` or no argument: dispatch all five simultaneously
-  - `design-lens-tool-hygiene`
-  - `design-lens-model-fit`
-  - `design-lens-scope-isolation`
-  - `design-lens-caller-alignment`
-  - `design-lens-usage-patterns`
-- `trim`: dispatch only `design-lens-tool-hygiene`
-- `remodel`: dispatch only `design-lens-model-fit`
-- `split`: dispatch only `design-lens-scope-isolation`
-- `align`: dispatch only `design-lens-caller-alignment`
-- `inline`: dispatch only `design-lens-usage-patterns`
+  - `design-agent-lens-tool-hygiene`
+  - `design-agent-lens-model-fit`
+  - `design-agent-lens-scope-isolation`
+  - `design-agent-lens-caller-alignment`
+  - `design-agent-lens-usage-patterns`
+- `trim`: dispatch only `design-agent-lens-tool-hygiene`
+- `remodel`: dispatch only `design-agent-lens-model-fit`
+- `split`: dispatch only `design-agent-lens-scope-isolation`
+- `align`: dispatch only `design-agent-lens-caller-alignment`
+- `inline`: dispatch only `design-agent-lens-usage-patterns`
 
 Each agent returns one block headed `### [Lens Name] Findings`.
 
@@ -249,7 +249,7 @@ classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bol
 
 Diagram structure for the combined view:
 
-```
+```mermaid
 flowchart LR
   classDef skillNode ...
   classDef agentNode ...
