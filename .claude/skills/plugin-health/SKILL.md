@@ -42,8 +42,71 @@ Keep the agent list and the skill list separate — different lenses target each
 
 ## Phase 2 — Parallel lens dispatch (per surface)
 
-Dispatch in a single response (parallel Agent tool calls). Choose lenses by the
-object type and the `--dimension` argument:
+### Sub-phase 2.0: Pre-dispatch aggregation
+
+Extract context from documentation maps before dispatching lenses. This provides
+the structured data lenses need to perform alignment, hygiene, and architecture
+analysis.
+
+**Read and parse `docs/al-dev-agent-map.md`:**
+- Extract the Agent Catalog table (first table after "Layer 1: Agent Catalog")
+- For each agent row: extract agent name, model, tools list, and "Spawned by" field
+- Build these mappings:
+  - `tool_inventory`: `{agent-name: [tool1, tool2, ...], ...}`
+  - `model_assignments`: `{agent-name: model, ...}` (haiku/sonnet/opus)
+  - `caller_map`: `{agent-name: [skill1, skill2, ...], ...}` (parse "Spawned by" field;
+    extract skill names like `/al-dev-commit`; handle "(none found)" as empty list)
+
+**Read and parse `docs/al-dev-plugin-map.md`:**
+- Extract the Layer 1 diagram (the `mermaid` block after "Layer 1: Lifecycle Overview")
+- Extract all skill names from the diagram as `layer1_diagram_content` (raw diagram text)
+- Scan the entire document for skill sections (e.g., "### /al-dev-ticket", "### /al-dev-fix")
+- For each skill section, extract:
+  - Phase count: count `## Phase` headings (or Mermaid `["Phase N<br/>`-style entries)
+  - Agent references: extract all agent names mentioned in the section
+  - Output files: extract `.dev/*` file patterns mentioned in the section
+- Build these mappings:
+  - `phase_counts`: `{skill-name: phase-count, ...}`
+  - `handoff_chains`: `{skill-name: [output-files], ...}`
+  - `preplanning_skills`: `[al-dev-explore, al-dev-interview, al-dev-perf, ...]` 
+    (skills with dashed lines in the diagram; scan "tributaries" section)
+
+**Compute derived mappings:**
+- `agent_usage_counts`: For each agent, count how many skills spawn it
+  (from `caller_map`)
+- `single_use_agents`: Agents with `agent_usage_counts[agent] == 1`
+- `already_inline_candidates`: Filter of `single_use_agents` (agents that could
+  be inlined into their sole spawner)
+- `no_agent_skills`: Skills with zero agents spawned (skills that do all work internally)
+
+**Store all 10 context structures as named variables for reuse in dispatch prompts:**
+1. `tool_inventory`
+2. `model_assignments`
+3. `caller_map`
+4. `phase_counts`
+5. `handoff_chains`
+6. `preplanning_skills`
+7. `agent_usage_counts`
+8. `single_use_agents`
+9. `already_inline_candidates`
+10. `no_agent_skills`
+
+**Extraction implementation notes:**
+- Use Read tool on both map files to extract tables and text
+- For Mermaid diagram sections, capture the raw text (linters refer to it)
+- "Spawned by" field may contain multiple skills separated by commas or multiple rows
+  (e.g., "/al-dev-develop, /al-dev-fix" or "/al-dev-ticket (support mode: X)");
+  extract all skill names (those starting with `/`)
+- "Spawned by" field may contain "(none found)" or "(not spawned...)" — treat as
+  empty caller list for that agent
+- Phase count may be derived from either explicit "## Phase N" headers or from
+  Mermaid diagram content (count Phase N entries)
+- Preplanning skills: grep for dashed arrows (`-.->`) in the Layer 1 diagram
+
+### Phase 2.1 — Dispatch all design/quality lenses (with context)
+
+**Dispatch in a single response (parallel Agent tool calls). Choose lenses by the
+object type and the `--dimension` argument:**
 
 **Agent file list** receives:
 - `design`/`all`: `design-agent-lens-tool-hygiene`, `design-agent-lens-model-fit`,
@@ -64,13 +127,26 @@ object type and the `--dimension` argument:
 **Both object lists** additionally receive `naming-convention-lens`, with
 `docs/al-dev-naming-convention.md` passed as the convention doc.
 
-Dispatch prompt template (substitute real paths):
+Dispatch prompt template (substitute real paths and context):
 
 ```
 Analyze the following files. Apply your lens to every file and return a findings block.
 
 File list:
 [one absolute path per line]
+
+Context structures (provided for all design and quality lenses):
+
+tool_inventory: {mapping of agent → [tools]}
+model_assignments: {mapping of agent → model}
+caller_map: {mapping of agent → [spawning skills]}
+phase_counts: {mapping of skill → phase count}
+handoff_chains: {mapping of skill → [output files]}
+preplanning_skills: [list of pre-planning skill names]
+agent_usage_counts: {mapping of agent → spawn count}
+single_use_agents: [list of agents with exactly one spawning skill]
+already_inline_candidates: [single-use agents that could be inlined]
+no_agent_skills: [list of skills with zero spawned agents]
 
 Convention doc (naming-convention-lens only):
 /Users/russelllaing/al-dev-shared/docs/al-dev-naming-convention.md
