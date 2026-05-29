@@ -30,6 +30,8 @@ only that agent or skill is audited and only its section is updated in the repor
 Parse the input to extract `--type` and optional object name:
 
 ```python
+# Reference only — this parsing logic is embedded in the skill's runtime.
+# Do not execute this block directly.
 import sys
 args = sys.argv[1:]  # Get arguments after command name
 audit_type = None
@@ -145,87 +147,59 @@ Reorganize by object name for the report:
 
 ## Phase 4 — Write the Report
 
+**Report template** (shared structure for agent and skill full runs):
+
+```markdown
+# AL Dev {Type} Quality Audit
+
+**Last run:** {today's date}
+**{Types} audited:** {N}
+
+## Summary
+
+| Severity | Count |
+|----------|-------|
+| High     | {N}   |
+| Medium   | {N}   |
+| Low      | {N}   |
+
+## Findings
+
+### {prefix}{name}
+
+**[High] Prompt Clarity**
+Observation: {offending text or pattern}
+Fix: {one-line suggestion}
+
+**[Medium] Bloat**
+Observation: {what is bloated}
+Fix: {one-line suggestion}
+
+---
+
+### {prefix}{other} — No findings.
+
+---
+```
+
+**Substitution variables:**
+
+| Variable | Agents | Skills |
+|----------|--------|--------|
+| `{Type}` | `Agent` | `Skill` |
+| `{Types}` | `Agents` | `Skills` |
+| `{prefix}` | `al-dev-` | `/` |
+| Output file | `docs/al-dev-agent-quality.md` | `docs/al-dev-skill-quality.md` |
+
 ### Full run (no object name passed)
 
-**For agents, fully replace `docs/al-dev-agent-quality.md`:**
-
-```markdown
-# AL Dev Agent Quality Audit
-
-**Last run:** <today's date>
-**Agents audited:** <N>
-
-## Summary
-
-| Severity | Count |
-|----------|-------|
-| High     | <N>   |
-| Medium   | <N>   |
-| Low      | <N>   |
-
-## Findings
-
-### al-dev-<agent-name>
-
-**[High] Prompt Clarity**
-Observation: <offending text or pattern>
-Fix: <one-line suggestion>
-
-**[Medium] Bloat**
-Observation: <what is bloated>
-Fix: <one-line suggestion>
-
----
-
-### al-dev-<other-agent> — No findings.
-
----
-```
-
-**For skills, fully replace `docs/al-dev-skill-quality.md`:**
-
-```markdown
-# AL Dev Skill Quality Audit
-
-**Last run:** <today's date>
-**Skills audited:** <N>
-
-## Summary
-
-| Severity | Count |
-|----------|-------|
-| High     | <N>   |
-| Medium   | <N>   |
-| Low      | <N>   |
-
-## Findings
-
-### /<skill-name>
-
-**[High] Prompt Clarity**
-Observation: <offending text or pattern>
-Fix: <one-line suggestion>
-
-**[Medium] Bloat**
-Observation: <what is bloated>
-Fix: <one-line suggestion>
-
----
-
-### /<other-skill> — No findings.
-
----
-```
-
-Ordering: objects with findings first (highest-severity finding descending), then
-clean objects. Each object section ends with `---`.
+Fully replace the output file using the report template with the appropriate
+substitution variables. Ordering: objects with findings first (highest-severity
+finding descending), then clean objects. Each object section ends with `---`.
 
 ### Scoped run (object name passed)
 
-1. Determine report file:
-   - **For agents:** `docs/al-dev-agent-quality.md`
-   - **For skills:** `docs/al-dev-skill-quality.md`
-
+1. Determine report file per the substitution table above.
 2. Read the report file if it exists.
 3. Locate the section for the named object:
    - **For agents:** from `### al-dev-<arg>` to just before the next `### al-dev-` heading or end of `## Findings`
