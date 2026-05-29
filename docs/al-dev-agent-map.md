@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-29 (19 agents; analysis refreshed with 4 new suggestions; workflow diagrams regenerated)
+**Last updated:** 2026-05-29 (19 agents; all 6 quality suggestions confirmed implemented; Observations section cleaned up)
 
 ## Layer 1: Agent Catalog
 
@@ -524,35 +524,25 @@ None — all 19 agents have documented Inputs and Outputs tables.
 
 ### Quality suggestions
 
-**Remodel: al-dev-solution-architect** ← highest leverage
-Observation: Agent performs SIMPLE/MEDIUM/COMPLEX routing internally but uses opus for all complexity levels, including SIMPLE tasks (2–3 files, project-context-only research, no MCP lookups required).
-Suggestion: Add a complexity-gated model: pass the complexity tier in the dispatch prompt; spawn with sonnet when classification is SIMPLE, reserve opus for MEDIUM and COMPLEX.
-Trade-off: Requires spawning skills (/al-dev-plan, /al-dev-fix) to include the tier in their dispatch blocks; modest caller change for significant cost reduction on simple tasks.
+All suggestions confirmed implemented as of 2026-05-29. Parallel Explore subagents read each affected file; every open suggestion was already live in the codebase.
 
-**Split: al-dev-commit-agent-execute**
-Observation: Agent body mixes two concerns: (a) pre-flight lint and OOXML validation with fix-and-retry loops, and (b) git commit execution with hook retry logic. Validation could fail and be retried independently of commit invocation.
-Suggestion: Extract pre-flight lint/OOXML validation into a new agent al-dev-commit-preflight-validator; keep al-dev-commit-agent-execute focused on git commit invocation and hook handling.
-Trade-off: New agent file to maintain; each phase becomes narrower and independently testable; commit-recover skill may also reuse the standalone preflight validator.
+**✅ Confirmed implemented: Remodel al-dev-solution-architect** (2026-05-29)
+Both /al-dev-plan and /al-dev-fix already conditionally pass `model: sonnet` for SIMPLE tier and omit the model parameter (defaulting to opus) for MEDIUM/COMPLEX. No spawning-skill change needed.
 
-**Align: al-dev-commit-recover-verifier**
-Observation: Agent Inputs table documents `REPO` as a required "Project root directory" parameter, but the /commit-recover skill passes `CORRUPTION_LOG` path explicitly and relies on working directory context for the repo root — no `REPO:` field appears in the dispatch prompt block.
-Suggestion: Either (a) update the Inputs table to note "REPO is inferred from working directory, not passed explicitly," or (b) update /commit-recover dispatch to include `REPO: $(pwd)` as an explicit field.
-Trade-off: Option (a) is documentation-only and lower friction; option (b) makes the dispatch self-documenting if REPO ever needs to differ from cwd.
+**✅ Confirmed implemented: Split al-dev-commit-agent-execute** (2026-05-29)
+Pre-flight lint and OOXML validation already extracted into `al-dev-commit-preflight` (dispatched at Step 9.5). al-dev-commit-agent-execute handles only git commit invocation and hook retry logic.
 
-**Align: al-dev-ticket-agent**
-Observation: Agent Inputs table documents `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` with the note "resolved from the harness environment and set as shell variables." The agent body cross-references `knowledge/ticket-agent-invocation-pattern.md` for the setup mechanism, but the Inputs table itself does not state how these variables reach the agent's bash execution context.
-Suggestion: Expand the Inputs table rows to read "available as shell environment variables in the agent's bash execution context; exported by the spawning skill per knowledge/ticket-agent-invocation-pattern.md." Eliminates the need to chase the knowledge file to understand the caller contract.
-Trade-off: Documentation-only change; self-documents the pass mechanism without changing behavior.
+**✅ Confirmed implemented: Align al-dev-commit-recover-verifier** (2026-05-29)
+Inputs table line 23 already reads: "Inferred from working directory; not passed explicitly by /commit-recover."
 
-**Align: Clarify al-dev-developer TDD activation path**
-Observation: Agent Inputs table documents `.dev/*-al-dev-test-test-plan.md` as required input "from /al-dev-develop," but the /al-dev-develop skill contains no logic to create test plans. Agent body gates the TDD workflow on test-plan file presence, but no spawning skill is documented as providing this file.
-Suggestion: Update Inputs table row for test-plan: mark as "Optional: User-supplied or created upstream" and clarify which skill creates test plans. If TDD is not actively used, remove the test-plan input and the CRITICAL gate from the agent body.
-Trade-off: Documentation-only change; prevents confusion about TDD activation contract.
+**✅ Confirmed implemented: Align al-dev-ticket-agent** (2026-05-29)
+Inputs table rows already document FRESHDESK_API_KEY and FRESHDESK_DOMAIN as "available as shell environment variable in agent bash context" with a Note block explaining the injection mechanism.
 
-**Align: al-dev-review-develop is a stub skill**
-Observation: /al-dev-review-develop describes Phases 5–10 of the develop workflow but its SKILL.md body is a stub with no actual phase instructions. The three reviewer agents (expert, security, performance) are documented as its callers, but the skill contains no spawn calls.
-Suggestion: Implement /al-dev-review-develop by copying Phases 5–10 from /al-dev-develop per the skill's own notes. Until then, /al-dev-develop is the only active spawner of the review panel.
-Trade-off: Skill body is incomplete; review panel spawning works through /al-dev-develop only.
+**✅ Confirmed implemented: Align al-dev-developer TDD activation** (2026-05-29)
+Inputs table already marks test-plan as Optional. Agent body correctly implements dual-path logic (TDD if file present, traditional if absent).
+
+**✅ Confirmed implemented: Align al-dev-review-develop stub** (2026-05-29)
+al-dev-review-develop/SKILL.md is fully implemented with all Phases 5–10 including reviewer spawn calls in Phase 6-7. Not a stub.
 
 ### Inline candidates
 
