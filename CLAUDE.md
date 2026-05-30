@@ -340,6 +340,16 @@ blocks forcing fallback to serial execution.
 
 This prevents silent subagent failures from being discovered downstream.
 
+## AL Build & Verification
+
+- **Pre-commit compilation gate:** After any commit that modifies `.al` files, run
+  `al-compile --output .dev/compile-errors.log` and verify exit code 0 before
+  reporting success. Do not trust earlier intermediate reports — compilation
+  failures discovered post-commit indicate that verification was skipped.
+- **Why:** 70 friction events in the past month involved AL code that failed
+  compilation only after commits were created. Stop hooks reported the failures,
+  but the work had already been committed.
+
 ## Planning Routing
 
 For tasks that need a design decision:
@@ -369,6 +379,15 @@ For tasks that need a design decision:
 
 Shared parity reference: `profile-al-dev-shared/knowledge/verification-and-planning.md`.
 
+## Plan & Spec Writing
+
+- **File persistence verification:** When writing implementation plans or
+  specification files, immediately verify the file was written to disk and
+  confirm its path before reporting completion. Do not claim the plan is
+  complete until `ls -la <path>` confirms the file exists.
+- **Why:** Several sessions generated plan content but failed to instantiate the
+  file, requiring the user to ask Claude to save it.
+
 ---
 
 ## Quality Review Conventions
@@ -384,6 +403,14 @@ same session. Append to the review prompt:
 
 This prevents the same class of bug being found twice across two sequential
 review cycles.
+
+## Documentation & Markdown Quality
+
+- **Markdownlint compliance:** All generated or modified markdown files must pass
+  `markdownlint` (unique headings, blank lines around headings/lists, language
+  specifiers on code blocks). Run verification before committing markdown changes.
+- **Why:** Subagent outputs repeatedly introduced markdownlint errors requiring
+  re-fixes. Markdown is the most-edited language in your workflow (3504 edits).
 
 ## Plan Self-Review Requirement
 
@@ -404,6 +431,24 @@ self-consistency pass:
 
 Unresolved contradictions at plan-review time cost 3× more to fix during
 execution than at authoring time.
+
+## AL Development
+
+- **SaaS constraints:** AL features run on SaaS BC: do not assume direct database
+  access, upgrade-codeunit DB writes, or instance-level table creation. Design
+  within SaaS constraints from the start, not as a late refactor.
+- **Why:** One design assumed direct database access and required full rework for
+  SaaS BC constraints.
+
+## File & Reference Verification
+
+Before referencing scripts, files, or validators in skills, specs, or plans,
+verify they still exist in the repo (not archived, renamed, or moved). Use `find`
+or `git ls-files` to confirm before writing them into tasks.
+
+- **Why:** A skill referenced an archived `check-alignment.py` that no longer
+  existed, and a plan targeted the wrong CLAUDE.md path, both requiring
+  rediscovery and rework.
 
 ## Tiered Code Review Protocol
 
