@@ -5,51 +5,36 @@ import argparse
 import ast
 import json
 import re
+import yaml
 from pathlib import Path
+from typing import Any
 
 
-def default_projection_policy() -> dict:
-    return {
-        "claude": {
-            "USER_GATE": "AskUserQuestion",
-            "Read": "Read",
-            "Write": "Write",
-            "Edit": "Edit",
-            "Glob": "Glob",
-            "Grep": "Grep",
-            "Bash": "Bash",
-            "MCP: al-mcp-server": "mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>",
-            "MCP: bc-code-intelligence": "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>",
-            "MCP: microsoft-docs": "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>",
-        },
-        "copilot": {
-            "USER_GATE": "ask_user",
-            "Read": "read",
-            "Write": "edit",
-            "Edit": "edit",
-            "Glob": "glob",
-            "Grep": "grep",
-            "Bash": "execute",
-            "MCP: al-mcp-server": "al-mcp-server-<tool>",
-            "MCP: bc-code-intelligence": "bc-code-intelligence-mcp-<tool>",
-            "MCP: microsoft-docs": "microsoft_docs_mcp-<tool>",
-        },
-        "codex": {
-            "USER_GATE": {"developer_instruction": "request_user_input"},
-            "Read": {"native_capability": "read files available in the active Codex session"},
-            "Write": {"native_capability": "edit files available in the active Codex session"},
-            "Edit": {"native_capability": "edit files available in the active Codex session"},
-            "Glob": {"native_capability": "search files available in the active Codex session"},
-            "Grep": {"native_capability": "search file contents available in the active Codex session"},
-            "Bash": {"native_capability": "run shell commands allowed by the active Codex session"},
-            "MCP: al-mcp-server": {"native_capability": "use the AL symbol lookup MCP capability available in the active Codex session"},
-            "MCP: bc-code-intelligence": {"native_capability": "use the BC code intelligence MCP capability available in the active Codex session"},
-            "MCP: microsoft-docs": {"native_capability": "use the Microsoft Docs MCP capability available in the active Codex session"},
-        },
-    }
+def load_projection_policy(policy_path: Path) -> dict:
+    """Load the projection table from the policy frontmatter.
+
+    claude/copilot capabilities map to a flat tool-name string (the `tool`
+    key); codex capabilities keep their dict form (`developer_instruction`
+    or `native_capability`), matching what the render functions expect.
+    """
+    frontmatter, _ = _extract_frontmatter(policy_path.read_text(encoding="utf-8"))
+    data = yaml.safe_load(frontmatter)
+    rules = data.get("projection_rules")
+    if not rules:
+        raise ValueError(f"Projection policy {policy_path} has no projection_rules")
+    policy: dict = {}
+    for harness, capabilities in rules.items():
+        policy[harness] = {}
+        for capability, mapping in capabilities.items():
+            if "tool" in mapping:
+                policy[harness][capability] = mapping["tool"]
+            else:
+                policy[harness][capability] = dict(mapping)
+    return policy
 
 
-def _project_tools(shared_tools: list[str], mapping: dict[str, object]) -> list[object]:
+
+def _project_tools(shared_tools: list[str], mapping: dict[str, Any]) -> list[Any]:
     projected: list[object] = []
     for tool in shared_tools:
         if tool not in mapping:
@@ -183,12 +168,17 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--agents-root", default="profile-al-dev-shared/agents")
     parser.add_argument("--output-root", default="profile-al-dev-shared/generated/agents")
+    parser.add_argument(
+        "--policy-path",
+        default="profile-al-dev-shared/knowledge/agent-tool-projection-policy.md",
+    )
     args = parser.parse_args()
 
     agents_root = Path(args.agents_root)
     output_root = Path(args.output_root)
+    policy = load_projection_policy(Path(args.policy_path))
     agents = [load_agent(path) for path in sorted(agents_root.glob("*.md"))]
-    write_all_projections(output_root, agents, default_projection_policy())
+    write_all_projections(output_root, agents, policy)
 
 
 if __name__ == "__main__":
