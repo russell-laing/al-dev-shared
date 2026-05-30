@@ -404,28 +404,51 @@ If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 9.5.
 
 ---
 
-## Step 9.5 — Dispatch Preflight Agent
+## Step 9.5 — Dispatch Preflight Agents
 
-Dispatch `al-dev-shared:al-dev-commit-preflight` with the approved plan:
+Run preflight sequentially: lint fixes first, then OOXML validation.
+
+### Step 9.5a — Dispatch Lint Preflight Agent
+
+Dispatch `al-dev-shared:al-dev-commit-lint-fixer` with the approved plan:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-commit-preflight
-  description: "Pre-flight lint and OOXML validation"
+  agent: al-dev-shared:al-dev-commit-lint-fixer
+  description: "Pre-flight lint and trailing whitespace fixes"
 
 Prompt:
-  "Perform PREFLIGHT phase for git commit workflow.
-
-   Phase: preflight
+  "Perform LINT-PREFLIGHT phase for git commit workflow.
 
    APPROVED_PLAN:
    [paste the approved plan from Step 9]
 
    CRITICAL RULES:
    - NEVER use Write or Edit on staged source files — all fixes via Bash only
-   - Record OOXML failures; do not proceed to commit for failed files
+   - Skip binary and OOXML files in trailing-whitespace step
+   - Stop immediately if corruption detected (line count collapses)
 
-   Return output in exactly the format specified (LINT_FIXES, OOXML_FAILURES)."
+   Return output in exactly the format specified (LINT_FIXES)."
+```
+
+Store the `LINT_FIXES` value for display in Step 11.
+
+### Step 9.5b — Dispatch OOXML Validation Agent
+
+Dispatch `al-dev-shared:al-dev-commit-ooxml-validator` with the approved plan:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-commit-ooxml-validator
+  description: "OOXML ZIP integrity validation"
+
+Prompt:
+  "Perform OOXML-VALIDATE phase for git commit workflow.
+
+   APPROVED_PLAN:
+   [paste the approved plan from Step 9]
+
+   Return output in exactly the format specified (OOXML_FAILURES)."
 ```
 
 If `OOXML_FAILURES` is not `NONE`, show:
@@ -440,8 +463,6 @@ Resolve these files (save in Microsoft Word, not via script), re-stage, and re-r
 ```
 
 Stop if any OOXML failures — do not proceed to Step 10.
-
-Store the `LINT_FIXES` value from the preflight output for display in Step 11.
 
 ---
 
