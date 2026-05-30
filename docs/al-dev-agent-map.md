@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-31 (21 agents; al-dev-commit-preflight split into al-dev-commit-lint-fixer + al-dev-commit-ooxml-validator; al-dev-commit-agent-execute model corrected to haiku; reviewer agent callers corrected to al-dev-review-develop)
+**Last updated:** 2026-05-31 (21 agents; al-dev-commit-preflight split into al-dev-commit-lint-fixer + al-dev-commit-ooxml-validator; al-dev-commit-agent-execute model corrected to haiku; reviewer agent callers corrected to al-dev-review-develop; reviewer agent models corrected to sonnet; al-dev-developer caller list extended with al-dev-review-develop autonomous mode; al-dev-diagnostics-fixer caller list corrected to al-dev-lint only)
 
 ## Layer 1: Agent Catalog
 
@@ -13,16 +13,16 @@
 | al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-ooxml-validator | haiku | Bash, Read | /al-dev-commit (Step 9.5b — OOXML validation) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
-| al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-fix |
+| al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
+| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
 | al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | (not spawned — skill mentions but doesn't dispatch) |
-| al-dev-expert-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
+| al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
 | al-dev-interview | haiku | Read, Write, USER_GATE | /al-dev-interview |
-| al-dev-performance-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
+| al-dev-performance-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server, MCP: bc-code-intelligence | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
-| al-dev-security-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
+| al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep, MCP: bc-code-intelligence, MCP: microsoft-docs, MCP: al-mcp-server | /al-dev-plan, /al-dev-fix |
 | al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase); also /al-dev-support (deprecated alias) |
 | al-dev-support-researcher | sonnet | Read, MCP: al-mcp-server, MCP: microsoft-docs, MCP: bc-code-intelligence | /al-dev-ticket (support mode: research phase); also /al-dev-support (deprecated alias) |
@@ -172,7 +172,7 @@
 **Description:** Implement AL code following an implementation plan.
 **Model:** sonnet
 **Tools:** Read, Write, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-develop, /al-dev-fix
+**Spawned by:** /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
 
 **Inputs:**
 
@@ -199,7 +199,7 @@
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** haiku
 **Tools:** Read, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-lint, /al-dev-fix
+**Spawned by:** /al-dev-lint
 
 **Inputs:**
 
@@ -250,9 +250,9 @@
 ### al-dev-expert-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop, /al-dev-review-develop
+**Spawned by:** /al-dev-review-develop
 
 **Inputs:**
 
@@ -322,9 +322,9 @@
 ### al-dev-performance-reviewer
 
 **Description:** Review AL code for performance issues, inefficient queries, N+1 patterns, and resource consumption.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop, /al-dev-review-develop
+**Spawned by:** /al-dev-review-develop
 
 **Inputs:**
 
@@ -393,9 +393,9 @@
 ### al-dev-security-reviewer
 
 **Description:** Review AL code for security vulnerabilities, permission issues, and data exposure risks.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Grep
-**Spawned by:** /al-dev-develop, /al-dev-review-develop
+**Spawned by:** /al-dev-review-develop
 
 **Inputs:**
 
@@ -555,15 +555,15 @@
 
 ### Agents with no inputs/outputs documentation
 
-None — all 20 agents have documented Inputs and Outputs tables.
+None — all 21 agents have documented Inputs and Outputs tables.
 
 ### Potential shared agents
 
-- **al-dev-developer** — used by /al-dev-develop, /al-dev-fix
+- **al-dev-developer** — used by /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
 - **al-dev-expert-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
 - **al-dev-performance-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
 - **al-dev-security-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
-- **al-dev-diagnostics-fixer** — used by /al-dev-lint, /al-dev-fix
+- **al-dev-diagnostics-fixer** — used by /al-dev-lint
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
 
