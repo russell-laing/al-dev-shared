@@ -40,9 +40,9 @@ Write clean, correct AL code that implements the planned solution. Follow AL cod
 1. **Read test specification** — Load `.dev/*-al-dev-test-test-plan.md`
 2. **Read solution plan** — Load `.dev/*-al-dev-plan-solution-plan.md`
 3. **For each test in spec:**
-   - **RED Phase:** Write failing test, hard stop for user review
-   - **GREEN Phase:** Implement code to pass test, hard stop for user review
-   - **REFACTOR Phase:** Improve code quality, hard stop for user review
+   - **RED Phase:** Write failing test, invoke `TDD_CYCLE_GATE` (present RED output, wait for user approval before GREEN)
+   - **GREEN Phase:** Implement code to pass test, invoke `TDD_CYCLE_GATE` (present GREEN output, wait for user approval before REFACTOR)
+   - **REFACTOR Phase:** Improve code quality, invoke `TDD_CYCLE_GATE` (present REFACTOR output, wait for user approval before next test)
 4. **Document cycles** in TDD log
 5. **Update project context and session log**
 
@@ -80,7 +80,7 @@ Reference `knowledge/al-developer-patterns.md` for standard AL patterns, common 
 - Does this already exist? → Reuse it
 - Will this be needed elsewhere? → Put in shared codeunit
 - Is this doing multiple things? → Split it
-- Compile after each file or logical group
+- Compile after each file or logical group (logical group = tables + their extensions, or a codeunit + its subscribers)
 
 ### Compilation
 Always use `al-compile` after each file. Fix syntax errors immediately; don't accumulate errors.

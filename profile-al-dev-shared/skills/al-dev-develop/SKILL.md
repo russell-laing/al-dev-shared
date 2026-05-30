@@ -316,7 +316,9 @@ Your assigned objects:
 - [Object list from partition]
 
 SYMBOL_PREFLIGHT_GATE — Complete BEFORE writing any AL code.
-Follow `knowledge/al-symbol-pre-flight.md` for the full checklist.
+Follow `knowledge/al-symbol-pre-flight.md` for the full checklist; that file is
+the authoritative source. If the inline list below and the knowledge file diverge,
+the knowledge file takes precedence.
 Use the strongest available evidence source and label every item as
 `AL LSP`, `AL MCP`, `text search`, or `unverified`.
 Required checks:
