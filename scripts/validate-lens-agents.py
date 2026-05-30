@@ -3,6 +3,7 @@ import os
 import re
 import sys
 from pathlib import Path
+import yaml
 
 
 def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
@@ -16,6 +17,32 @@ def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
 
 REPO = str(Path(__file__).resolve().parents[1])
 AGENTS_DIR = os.path.join(REPO, ".claude/agents")
+
+POLICY_PATH = os.path.join(REPO, "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md")
+STRUCTURE_LENS = os.path.join(AGENTS_DIR, "quality-agent-lens-structure.md")
+
+
+def _canonical_tools_from_lens(path: str):
+    """Extract the backtick-quoted tokens between the canonical-tools markers."""
+    text = open(path).read()
+    block = re.search(
+        r"<!-- canonical-tools:start -->(.*?)<!-- canonical-tools:end -->",
+        text,
+        re.DOTALL,
+    )
+    if not block:
+        return None
+    return set(re.findall(r"`([^`]+)`", block.group(1)))
+
+
+def _policy_source_tokens(path: str):
+    """Return the projection_rules.claude capability keys from the policy."""
+    m = re.match(r"^---\n(.*?)\n---", open(path).read(), re.DOTALL)
+    if not m:
+        raise ValueError(f"No YAML frontmatter found in {path}")
+    data = yaml.safe_load(m.group(1))
+    return set(data["projection_rules"]["claude"].keys())
+
 
 EXPECTED_AGENTS = [
     "quality-agent-lens-clarity",
@@ -124,6 +151,27 @@ for skill_path in SKILLS_TO_CHECK:
             'no parallel dispatch language ("parallel" or "simultaneously") found in body',
             f"add explicit parallel dispatch phrasing to Phase 2 in {skill_path}",
         ))
+
+lens_tokens = _canonical_tools_from_lens(STRUCTURE_LENS)
+policy_tokens = _policy_source_tokens(POLICY_PATH)
+if lens_tokens is None:
+    failures.append(_format_failure(
+        STRUCTURE_LENS,
+        "lens-canonical-markers",
+        "could not find <!-- canonical-tools:start/end --> markers",
+        "wrap the canonical tool list in canonical-tools:start/end HTML comments",
+    ))
+elif lens_tokens != policy_tokens:
+    missing = policy_tokens - lens_tokens
+    extra = lens_tokens - policy_tokens
+    failures.append(_format_failure(
+        STRUCTURE_LENS,
+        "lens-policy-sync",
+        f"canonical tool list diverges from projection policy "
+        f"(missing from lens: {sorted(missing)}; extra in lens: {sorted(extra)})",
+        "reconcile the structure lens canonical-tools list with "
+        "projection_rules.claude keys in agent-tool-projection-policy.md",
+    ))
 
 if failures:
     print(f"FAIL — {len(failures)} issue(s):\n")
