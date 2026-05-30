@@ -39,7 +39,8 @@ flowchart LR
         al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
         al_dev_commit_agent_execute[al-dev-commit-agent-execute]
         al_dev_commit_message_drafter[al-dev-commit-message-drafter]
-        al_dev_commit_preflight[al-dev-commit-preflight]
+        al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
+        al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
         al_dev_commit_recover_verifier[al-dev-commit-recover-verifier]
         al_dev_developer[al-dev-developer]
         al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
@@ -116,7 +117,8 @@ flowchart LR
     al_dev_commit --> al_dev_commit_agent_analysis
     al_dev_commit --> al_dev_commit_agent_execute
     al_dev_commit --> al_dev_commit_message_drafter
-    al_dev_commit --> al_dev_commit_preflight
+    al_dev_commit --> al_dev_commit_lint_fixer
+    al_dev_commit --> al_dev_commit_ooxml_validator
     al_dev_fix --> al_dev_developer
     al_dev_fix --> al_dev_solution_architect
     al_dev_release_notes --> al_dev_release_notes_writer
@@ -199,7 +201,8 @@ flowchart LR
     class al_dev_commit_agent_analysis agentNode
     class al_dev_commit_agent_execute agentNode
     class al_dev_commit_message_drafter agentNode
-    class al_dev_commit_preflight agentNode
+    class al_dev_commit_lint_fixer agentNode
+    class al_dev_commit_ooxml_validator agentNode
     class al_dev_commit_recover_verifier agentNode
     class al_dev_developer agentNode
     class al_dev_diagnostics_fixer agentNode

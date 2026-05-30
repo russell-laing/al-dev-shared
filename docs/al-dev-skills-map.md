@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-30 (20 distributed skills: 19 primary + 1 deprecated alias skill `/al-dev-support`, `/al-dev-ticket` exposes `--mode=context-only|full`, audit confirmed accurate)
+**Last updated:** 2026-05-31 (20 distributed skills: 19 primary + 1 deprecated alias `/al-dev-support`; /al-dev-commit section updated to reflect 5-agent flow; reviewer agent callers corrected to /al-dev-review-develop)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align) excluded. `/align-harness-repos` and `/plugin-health` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -279,7 +279,7 @@ flowchart LR
 
 ### /al-dev-commit
 
-**Two-pass execution:** Analysis pass builds manifests and proposes commit groups; message-drafting pass creates commit messages; execution pass runs the commits with hook support. Three agents with focused responsibilities.
+**Multi-pass execution:** Analysis pass builds manifests and proposes commit groups; message-drafting pass creates commit messages; preflight passes run lint fixes and OOXML validation; execution pass runs the commits with hook support. Five agents with focused responsibilities.
 
 ```mermaid
 flowchart LR
@@ -289,17 +289,25 @@ flowchart LR
     Interim1 --> Phase2["Phase 2<br/>Message drafting"]
     Phase2 --> Agent2["al-dev-commit-message-drafter ×1"]
     Agent2 --> Interim2["(commit messages)"]
-    Interim2 --> Phase3["Phase 3<br/>Execution pass"]
-    Phase3 --> Agent3["al-dev-commit-agent-execute ×1<br/>(sonnet)"]
+    Interim2 --> Phase35a["Step 9.5a<br/>Lint pre-flight"]
+    Phase35a --> Agent4["al-dev-commit-lint-fixer ×1"]
+    Agent4 --> Phase35b["Step 9.5b<br/>OOXML validation"]
+    Phase35b --> Agent5["al-dev-commit-ooxml-validator ×1"]
+    Agent5 --> Phase3["Phase 3<br/>Execution pass"]
+    Phase3 --> Agent3["al-dev-commit-agent-execute ×1<br/>(haiku)"]
     Agent3 --> Output1(["(git commits)"])
     Output1 --> End([End])
 
     style Phase1 fill:#e0f2f1
     style Phase2 fill:#e0f2f1
+    style Phase35a fill:#e0f2f1
+    style Phase35b fill:#e0f2f1
     style Phase3 fill:#e0f2f1
     style Agent1 fill:#80cbc4
     style Agent2 fill:#4db8a8
     style Agent3 fill:#80cbc4
+    style Agent4 fill:#4db8a8
+    style Agent5 fill:#4db8a8
     style Output1 fill:#26a69a
 ```
 
@@ -649,10 +657,12 @@ flowchart LR
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1; read-only)
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 3; runs git commits)
+- **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a; lint pre-flight)
+- **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b; OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
-- **al-dev-security-reviewer** — used only by /al-dev-develop
-- **al-dev-expert-reviewer** — used only by /al-dev-develop
-- **al-dev-performance-reviewer** — used only by /al-dev-develop
+- **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
+- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
+- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
 
 ### Skills with no dedicated agent (skill does the work itself)
 

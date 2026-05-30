@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-30 (20 agents; al-dev-support-researcher MCP tool prefix normalized)
+**Last updated:** 2026-05-31 (21 agents; al-dev-commit-preflight split into al-dev-commit-lint-fixer + al-dev-commit-ooxml-validator; al-dev-commit-agent-execute model corrected to haiku; reviewer agent callers corrected to al-dev-review-develop)
 
 ## Layer 1: Agent Catalog
 
@@ -8,9 +8,10 @@
 |-------|-------|-------|------------|
 | al-dev-code-review | haiku | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
-| al-dev-commit-agent-execute | sonnet | Bash, Read | /al-dev-commit (execution phase) |
-| al-dev-commit-preflight | sonnet | Bash, Read | /al-dev-commit (Step 9.5 — pre-flight phase) |
+| al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
+| al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
 | al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
+| al-dev-commit-ooxml-validator | haiku | Bash, Read | /al-dev-commit (Step 9.5b — OOXML validation) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
 | al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-fix |
@@ -102,8 +103,8 @@
 
 ### al-dev-commit-agent-execute
 
-**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-preflight completes. Never writes or edits source files directly — all fixes go through Bash.
-**Model:** sonnet (upgraded from haiku for complex error handling)
+**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
+**Model:** haiku
 **Tools:** Bash, Read
 **Spawned by:** /al-dev-commit (Phase 3 — execution phase)
 
@@ -119,31 +120,50 @@
 |--------|-------------|
 | `COMMITS` block | SHA and message for each committed group |
 | `SKIPPED` | Number of skipped groups |
-| `LINT_FIXES` | Files re-staged after lint (or `NONE`) |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
 | `STRIPPED_ATTRIBUTIONS` | Removed AI attribution lines (or `NONE`) |
 
 ---
 
-### al-dev-commit-preflight
+### al-dev-commit-lint-fixer
 
-**Description:** Pre-flight lint and OOXML validation for staged commit files. Runs Python lint, trailing whitespace fixes, line-count corruption detection, and ZIP validation on OOXML files. Returns LINT_FIXES and OOXML_FAILURES. Dispatched by al-dev-commit (Step 9.5) before commit execution.
-**Model:** sonnet
+**Description:** Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by al-dev-commit (Step 9.5a) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files.
+**Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit (Step 9.5 — pre-flight phase)
+**Spawned by:** /al-dev-commit (Step 9.5a — lint pre-flight)
 
 **Inputs:**
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
 | `LINT_FIXES` | Files re-staged after lint fixes (or `NONE`) |
-| `OOXML_FAILURES` | OOXML files that failed ZIP validation (or `NONE`) |
+
+---
+
+### al-dev-commit-ooxml-validator
+
+**Description:** OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit (Step 9.5b) after lint preflight. Read-only: never modifies files.
+**Model:** haiku
+**Tools:** Bash, Read
+**Spawned by:** /al-dev-commit (Step 9.5b — OOXML validation)
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `OOXML_FAILURES` | OOXML files that failed ZIP validation with reason (or `NONE`) |
 
 ---
 
@@ -523,8 +543,9 @@
 
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1: analysis)
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 3: execution)
-- **al-dev-commit-preflight** — used only by /al-dev-commit (Step 9.5: pre-flight validation)
+- **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a: lint pre-flight)
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition)
+- **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b: OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-docs-writer** — used only by /al-dev-document (prose reference; no formal Agent() spawn call found)
 - **al-dev-interview** — used only by /al-dev-interview
@@ -539,9 +560,9 @@ None — all 20 agents have documented Inputs and Outputs tables.
 ### Potential shared agents
 
 - **al-dev-developer** — used by /al-dev-develop, /al-dev-fix
-- **al-dev-expert-reviewer** — used by /al-dev-develop, /al-dev-review-develop
-- **al-dev-performance-reviewer** — used by /al-dev-develop, /al-dev-review-develop
-- **al-dev-security-reviewer** — used by /al-dev-develop, /al-dev-review-develop
+- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
+- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
+- **al-dev-security-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
 - **al-dev-diagnostics-fixer** — used by /al-dev-lint, /al-dev-fix
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
@@ -553,8 +574,8 @@ All suggestions confirmed implemented as of 2026-05-29. Parallel Explore subagen
 **✅ Confirmed implemented: Remodel al-dev-solution-architect** (2026-05-29)
 Both /al-dev-plan and /al-dev-fix already conditionally pass `model: sonnet` for SIMPLE tier and omit the model parameter (defaulting to opus) for MEDIUM/COMPLEX. No spawning-skill change needed.
 
-**✅ Confirmed implemented: Split al-dev-commit-agent-execute** (2026-05-29)
-Pre-flight lint and OOXML validation already extracted into `al-dev-commit-preflight` (dispatched at Step 9.5). al-dev-commit-agent-execute handles only git commit invocation and hook retry logic.
+**✅ Confirmed implemented: Split al-dev-commit-agent-execute** (2026-05-29; preflight further split 2026-05-31)
+Pre-flight lint and OOXML validation extracted into two focused agents: `al-dev-commit-lint-fixer` (Step 9.5a — ruff, trailing whitespace, line-count corruption) and `al-dev-commit-ooxml-validator` (Step 9.5b — ZIP integrity). al-dev-commit-agent-execute handles only git commit invocation and hook retry logic.
 
 **✅ Confirmed implemented: Align al-dev-commit-recover-verifier** (2026-05-29)
 Inputs table line 23 already reads: "Inferred from working directory; not passed explicitly by /commit-recover."

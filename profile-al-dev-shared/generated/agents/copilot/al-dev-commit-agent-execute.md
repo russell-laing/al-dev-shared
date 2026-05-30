@@ -1,6 +1,6 @@
 ---
 name: "al-dev-commit-agent-execute"
-description: "Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-preflight completes. Never writes or edits source files directly — all fixes go through Bash."
+description: "Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash."
 tools: ["execute", "read"]
 ---
 
@@ -13,7 +13,7 @@ Execute approved commits from the analysis phase.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase; al-dev-commit-preflight must have completed successfully before this agent is dispatched |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase; al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator must have completed successfully before this agent is dispatched |
 
 ## Outputs
 
