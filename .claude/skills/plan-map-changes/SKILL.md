@@ -97,6 +97,11 @@ complete when the rubber duck record is written.
 
 ### Parallel exploration
 
+Two suggestions are **independent** if they modify no overlapping files and neither
+suggestion's output is an input to the other's rubber-duck phase. If suggestion A
+writes a file that suggestion B must read before it can be rubber-ducked, B is
+ordered after A.
+
 When there are 3+ independent suggestions, invoke `superpowers:dispatching-parallel-agents`
 before starting rubber-ducking. Dispatch one Explore subagent per suggestion.
 Each agent should: read the affected file(s) in full, run U2 artifact checks,
