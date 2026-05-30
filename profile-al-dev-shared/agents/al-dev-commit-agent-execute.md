@@ -4,7 +4,7 @@ description: >-
   handling hook failures and retry logic. Dispatched by al-dev-commit
   (execute phase) after al-dev-commit-preflight completes. Never writes or
   edits source files directly — all fixes go through Bash.
-model: sonnet  # Upgraded from haiku: multi-step commit orchestration with hook retry and error recovery requires multi-step reasoning
+model: haiku
 tools: ["Bash", "Read"]
 ---
 
@@ -41,7 +41,7 @@ git commit -m "[message from approved plan]"
 
 If commit fails (pre-commit hook rejection):
 - Capture hook output
-- Attempt to fix issues if scripted fix available (e.g., lint fixes)
+- Attempt scripted fixes only: trailing whitespace (`sed -i '' 's/[ \t]*$//' <file>`), Python lint (`ruff check --fix <file>`). All other hook failures are recorded as HOOK_FAILURE without retry.
 - Re-stage fixed files
 - Retry commit (max 3 retries per group)
 

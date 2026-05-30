@@ -37,7 +37,7 @@ git commit -m "[message from approved plan]"
 
 If commit fails (pre-commit hook rejection):
 - Capture hook output
-- Attempt to fix issues if scripted fix available (e.g., lint fixes)
+- Attempt scripted fixes only: trailing whitespace (`sed -i '' 's/[ \t]*$//' <file>`), Python lint (`ruff check --fix <file>`). All other hook failures are recorded as HOOK_FAILURE without retry.
 - Re-stage fixed files
 - Retry commit (max 3 retries per group)
 

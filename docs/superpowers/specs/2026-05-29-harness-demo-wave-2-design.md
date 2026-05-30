@@ -120,11 +120,16 @@ via `validate_harness_neutrality.py` and `validate-lens-agents.py`. The demo's `
 demonstrates that running validators after every edit gives immediate feedback and keeps the
 correction loop tight. No hooks exist in this project's `.claude/settings.json`.
 
+This change is advisory only. The hook must fail open on malformed payloads or command errors and
+must not block editing.
+
 ### Hook Behavior
 
 **File:** `.claude/hooks/post_edit_validate.py`
 
-The hook reads the tool event from stdin as JSON and extracts the changed file path:
+The hook reads the tool event from stdin as JSON and extracts the changed file path from the active
+harness's edit payload. If the payload does not expose a usable file path, the hook exits 0 without
+side effects.
 
 ```python
 import sys, json, subprocess, os
@@ -132,7 +137,7 @@ import sys, json, subprocess, os
 try:
     event = json.load(sys.stdin)
     tool_input = event.get("tool_input", {})
-    file_path = tool_input.get("file_path", "")
+    file_path = tool_input.get("file_path", "") or tool_input.get("path", "")
     if not file_path:
         sys.exit(0)
 
@@ -212,6 +217,10 @@ must be re-run before committing. CLAUDE.md documents this requirement but it is
 during multi-file editing sessions. The demo's `stop_validate.py` demonstrates a pattern for
 blocking turn completion when session-end quality requirements are not met.
 
+This change is also advisory only with one narrow exception: it may block turn completion when
+agent sources changed and projections are stale, but it must fail open on any ambiguous state that
+cannot be verified locally.
+
 ### Hook Behavior
 
 **File:** `.claude/hooks/stop_projection_check.py`
@@ -229,7 +238,7 @@ try:
     project_root = os.environ.get("CLAUDE_PROJECT_DIR",
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    result = subprocess.run(
+    tracked = subprocess.run(
         ["git", "-C", project_root, "diff", "--name-only", "HEAD"],
         capture_output=True, text=True
     )
@@ -237,7 +246,11 @@ try:
         ["git", "-C", project_root, "diff", "--cached", "--name-only"],
         capture_output=True, text=True
     )
-    changed = (result.stdout + staged.stdout).splitlines()
+    untracked = subprocess.run(
+        ["git", "-C", project_root, "ls-files", "--others", "--exclude-standard"],
+        capture_output=True, text=True
+    )
+    changed = (tracked.stdout + staged.stdout + untracked.stdout).splitlines()
 
     agent_changes = [f for f in changed if "profile-al-dev-shared/agents/" in f and f.endswith(".md")]
     generated_changes = [f for f in changed if "profile-al-dev-shared/generated/agents/" in f]
@@ -248,7 +261,7 @@ try:
             "Run: python3 scripts/generate-agent-projections.py\n"
             f"Modified agents: {', '.join(agent_changes)}"
         )
-        print(f"[stop-hook] ⚠️  {reason}", file=sys.stderr)
+        print(f"[stop-hook] warning: {reason}", file=sys.stderr)
         print(json.dumps({"decision": "block", "reason": reason}))
         sys.exit(0)
 
@@ -299,8 +312,8 @@ before attempting to stop again.
 | Change | Files | Risk |
 |--------|-------|------|
 | 1 — Gotcha + Validate in solution plan | `solution-plan-template.md`, `al-dev-solution-architect.md` | Low — additive planning guidance |
-| 2 — PostToolUse validation hook | `.claude/hooks/post_edit_validate.py`, `settings.json` | Low — advisory, fails open |
-| 3 — Stop hook for stale projections | `.claude/hooks/stop_projection_check.py`, `settings.json` | Low — block-with-remedy, `stop_hook_active` guard, fails open |
+| 2 — PostToolUse validation hook | `.claude/hooks/post_edit_validate.py`, `settings.json` | Medium — advisory, fails open, payload schema must be verified during implementation |
+| 3 — Stop hook for stale projections | `.claude/hooks/stop_projection_check.py`, `settings.json` | Medium — block-with-remedy, `stop_hook_active` guard, includes untracked-file check, fails open on ambiguity |
 
 **New files:** 2 hook scripts  
 **Modified files:** `solution-plan-template.md`, `al-dev-solution-architect.md`, `settings.json`
@@ -317,8 +330,8 @@ before attempting to stop again.
    shared surface edit, additionally runs agent-structure validator on agent file edits; always
    exits 0.
 4. `.claude/hooks/stop_projection_check.py` exists; emits `{"decision": "block", ...}` when
-   agent sources are modified and projections are not; includes `stop_hook_active` guard; always
-   exits 0 when agents are not modified or on any exception.
+   agent sources are modified or newly added and projections are not; includes
+   `stop_hook_active` guard; always exits 0 when agents are not modified or on any exception.
 5. Both hooks are registered in `.claude/settings.json` under their respective hook types.
 6. `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared` exits 0 after all
    shared-surface changes.

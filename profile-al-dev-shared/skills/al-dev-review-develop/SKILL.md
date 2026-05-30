@@ -31,7 +31,7 @@ produced and read for the current run.
 
 ## Review Panel
 
-Three specialist agents (haiku):
+Three specialist agents (sonnet):
 - **al-dev-security-reviewer** — permission/auth/data exposure
 - **al-dev-expert-reviewer** — AL conventions/BC patterns
 - **al-dev-performance-reviewer** — N+1/SetLoadFields/efficiency

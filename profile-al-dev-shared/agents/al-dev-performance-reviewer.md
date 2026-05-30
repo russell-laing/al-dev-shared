@@ -3,7 +3,7 @@ description: >-
   Review AL code for performance issues, inefficient queries,
   N+1 patterns, and resource consumption. Spawned in parallel by the
   al-dev-develop skill.
-model: haiku
+model: sonnet
 tools: ["Read", "Grep"]
 ---
 
