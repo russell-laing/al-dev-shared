@@ -269,6 +269,32 @@ Before committing changes:
    python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
    ```
 
+### Pre-Commit AL Compilation Check
+
+Before creating any commit that modifies `.al` files:
+
+1. **Compile AL code and capture the result:**
+
+   ```bash
+   al-compile --output .dev/compile-errors.log 2>&1
+   echo "Exit code: $?"
+   ```
+
+   If the exit code is non-zero, you MUST NOT commit. Fix compilation errors first and re-verify.
+
+2. **If markdown was generated, verify markdownlint passes:**
+
+   ```bash
+   markdownlint .claude/skills/**/*.md profile-al-dev-shared/**/*.md 2>&1 | head -20
+   ```
+
+   If any errors are reported, fix them before committing.
+
+3. **Commit ONLY after both gates pass. Statement in commit message:**
+
+   - For AL changes: "AL compilation verified clean before commit"
+   - For markdown: "Markdown linting verified before commit"
+
 ---
 
 ## Plan Task Verification Standard
