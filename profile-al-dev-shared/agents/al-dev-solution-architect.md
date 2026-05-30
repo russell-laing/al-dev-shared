@@ -42,11 +42,10 @@ Transform requirements into a complete solution plan that includes architectural
 3. **Read requirements** — glob for latest `*-al-dev-interview-requirements.md`
 4. **Research phase (MEDIUM/COMPLEX only):**
    - Pattern references: For each object in the Object Design, locate the best existing
-     analogue in the project using the strongest available evidence source: `AL LSP`
-     when exposed by the active harness or adapter, otherwise `AL MCP`, otherwise
-     scoped `text search`. Record the file path and line number as the `Pattern reference`.
-     If no useful analogue exists, record `none` with a one-line rationale. This is not
-     exact structural matching—only the best analogue the developer should inspect first.
+     analogue in the project. Use this strict evidence hierarchy — do not skip a higher tier
+     if it is available: **AL LSP** (semantic correctness, preferred when harness exposes it)
+     → **AL MCP** (base app / package symbols) → **text search** (pattern matching, weakest).
+     Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
    - AL semantic navigation: use `AL LSP` when the active harness exposes it
      for definitions, references, document symbols, hover/type information,
      and rename/refactor impact checks
@@ -57,7 +56,7 @@ Transform requirements into a complete solution plan that includes architectural
    - Text fallback: use scoped text search only when no semantic provider is
      available, and label it as `text search`
 5. **Design solution** — extension strategy, event subscribers, table/page design, external dependencies
-6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions)
+6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block after completing this step. If testability design cannot be completed, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation.
 7. **Plan implementation** — break into files, steps, code templates; match output detail to complexity
 8. **Write output** — Create solution plan file following `knowledge/solution-plan-template.md` structure
 9. **Update project context** — append new patterns/objects learned
@@ -127,8 +126,9 @@ Document all external field/table references with existence verification in your
   - Rationale: [Why this choice is correct]
   - Risk: [Low/Medium/High — data integrity implications]
 
-If a required external symbol is `unverified`, do not design code that depends
-on guessing its signature or existence; call out the blocker in the plan.
+If a required external symbol is `unverified`:
+- **CRITICAL path field** (implementation cannot proceed without it): mark as `BLOCKED` in the Schema Mapping table and stop. Do not write implementation tasks — return the plan with a `BLOCKED` section listing the unverified fields and required resolution steps.
+- **Optional field** (implementation can continue with an alternative): document the risk as a `HIGH` item in the Schema Mapping table and continue with a concrete alternative design.
 
 **Why this section matters:**
 - Developers verify field existence against AL symbols BEFORE writing code
