@@ -58,33 +58,45 @@ If an argument was passed, restrict analysis to that category
 
 Dispatch the relevant lens agents in a **single response** (parallel Agent tool calls).
 
-For each agent, pass this prompt (substituting actual data from Phase 1):
+For each lens, pass only the context fields it requires (per `knowledge/lens-invocation-patterns.md`).
+Construct one dispatch prompt per lens:
 
+**design-skill-lens-shared-backbone:**
 ```
-Analyze the following skill files. Apply your lens and return a findings block.
+Analyze the following SKILL.md files. Apply your lens and return a findings block.
+File list: [one path per line]
+agent_usage_counts: {agent-type → [skills that spawn it]}
+```
 
-## File list
-/absolute/path/to/skills/skill-name/SKILL.md
-[one path per line]
+**design-skill-lens-complexity:**
+```
+Analyze the following SKILL.md files. Apply your lens and return a findings block.
+File list: [one path per line]
+phase_counts: {skill → phase count}
+no_agent_skills: [list]
+```
 
-## Context from plugin map analysis
-Agent usage counts (agent-type → skills that use it):
-[paste agent_usage_counts here]
+**design-skill-lens-near-duplicates:**
+```
+Analyze the following SKILL.md files. Apply your lens and return a findings block.
+File list: [one path per line]
+agent_usage_counts: {agent-type → [skills that spawn it]}
+phase_counts: {skill → phase count}
+```
 
-Phase counts (skill-name → count):
-[paste phase_counts here]
+**design-skill-lens-handoff-gaps:**
+```
+Analyze the following SKILL.md files. Apply your lens and return a findings block.
+File list: [one path per line]
+handoff_chains: {skill → [output files]}
+```
 
-No-agent skills:
-[comma-separated list]
-
-Handoff chains:
-[paste handoff_chains here — skill → output-file → consuming-skill]
-
-Pre-planning skills:
-[comma-separated list]
-
-Layer 1 diagram content:
-[paste the Layer 1 diagram block from docs/al-dev-plugin-map.md]
+**design-skill-lens-preplanning:**
+```
+Analyze the following SKILL.md files. Apply your lens and return a findings block.
+File list: [one path per line]
+preplanning_skills: [list]
+layer1_diagram_content: [raw text of Layer 1 Mermaid diagram]
 ```
 
 Agents to dispatch based on the focus argument:

@@ -132,37 +132,46 @@ object type and the `--dimension` argument:**
 Dispatch prompt templates — use the variant matching each lens class.
 See `knowledge/lens-invocation-patterns.md` for the full context-field reference.
 
-**For design-agent-lens-* agents:**
+**For design-agent-lens-* agents** — include only the per-lens fields from `knowledge/lens-invocation-patterns.md`:
+
+| Lens | Context field(s) to include |
+|------|-----------------------------|
+| `design-agent-lens-tool-hygiene` | `tool_inventory` |
+| `design-agent-lens-model-fit` | `model_assignments` |
+| `design-agent-lens-scope-isolation` | *(file list only — no context fields)* |
+| `design-agent-lens-caller-alignment` | `caller_map` |
+| `design-agent-lens-usage-patterns` | `single_use_agents`, `already_inline_candidates` |
+
+Template:
 ```
 Analyze the following agent files. Apply your lens to every file and return a findings block.
 
 File list:
 [one absolute path per line]
 
-Context (include only the fields this lens requires — see knowledge/lens-invocation-patterns.md):
-
-tool_inventory: {mapping of agent → [tools]}
-model_assignments: {mapping of agent → model}
-caller_map: {mapping of agent → [spawning skills]}
-single_use_agents: [list of agents with exactly one spawning skill]
-already_inline_candidates: [single-use agents that could be inlined]
+Context:
+[include only the field(s) for this lens per the table above]
 ```
 
-**For design-skill-lens-* agents:**
+**For design-skill-lens-* agents** — include only the per-lens fields from `knowledge/lens-invocation-patterns.md`:
+
+| Lens | Context field(s) to include |
+|------|-----------------------------|
+| `design-skill-lens-shared-backbone` | `agent_usage_counts` |
+| `design-skill-lens-complexity` | `phase_counts`, `no_agent_skills` |
+| `design-skill-lens-near-duplicates` | `agent_usage_counts`, `phase_counts` |
+| `design-skill-lens-handoff-gaps` | `handoff_chains` |
+| `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
+
+Template:
 ```
 Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
 
 File list:
 [one absolute path per line]
 
-Context (include only the fields this lens requires — see knowledge/lens-invocation-patterns.md):
-
-agent_usage_counts: {mapping of agent-type → [skill names that spawn it]}
-phase_counts: {mapping of skill → phase count}
-no_agent_skills: [list of skills with zero spawned agents]
-handoff_chains: {mapping of skill → [output files]}
-preplanning_skills: [pre-planning skill names (dashed arrows in Layer 1)]
-layer1_diagram_content: [raw text of Layer 1 Mermaid diagram from docs/al-dev-plugin-map.md]
+Context:
+[include only the field(s) for this lens per the table above]
 ```
 
 **For quality-agent-lens-*, quality-skill-lens-*, and naming-convention-lens:**

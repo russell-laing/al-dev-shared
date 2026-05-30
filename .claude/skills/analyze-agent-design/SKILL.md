@@ -52,31 +52,42 @@ find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents -name "*.md"
 
 Dispatch the relevant lens agents in a **single response** (parallel Agent tool calls).
 
-For each agent, pass this prompt (substituting actual data from Phase 1):
+For each lens, pass only the context fields it requires (per `knowledge/lens-invocation-patterns.md`).
+Construct one dispatch prompt per lens:
 
+**design-agent-lens-tool-hygiene:**
 ```
 Analyze the following agent files. Apply your lens and return a findings block.
+File list: [one path per line]
+tool_inventory: {agent → [tools]}
+```
 
-## File list
-/absolute/path/to/agent1.md
-/absolute/path/to/agent2.md
-[one path per line]
+**design-agent-lens-model-fit:**
+```
+Analyze the following agent files. Apply your lens and return a findings block.
+File list: [one path per line]
+model_assignments: {agent → model}
+```
 
-## Context from map analysis
-Tool inventory (agent → tools):
-[paste tool_inventory here]
+**design-agent-lens-scope-isolation:**
+```
+Analyze the following agent files. Apply your lens and return a findings block.
+File list: [one path per line]
+```
 
-Model assignments (agent → model):
-[paste model_assignments here]
+**design-agent-lens-caller-alignment:**
+```
+Analyze the following agent files. Apply your lens and return a findings block.
+File list: [one path per line]
+caller_map: {agent → [spawning skills]}
+```
 
-Caller map (agent → spawning skills):
-[paste caller_map here]
-
-Single-use agents (spawned by exactly one skill):
-[comma-separated list]
-
-Already-listed inline candidates:
-[comma-separated list from docs/al-dev-agent-map.md]
+**design-agent-lens-usage-patterns:**
+```
+Analyze the following agent files. Apply your lens and return a findings block.
+File list: [one path per line]
+single_use_agents: [list]
+already_inline_candidates: [list from docs/al-dev-agent-map.md]
 ```
 
 Agents to dispatch based on the focus argument:
