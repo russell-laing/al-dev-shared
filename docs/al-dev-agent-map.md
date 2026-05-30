@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-29 (19 agents; all 6 quality suggestions confirmed implemented; Observations section cleaned up)
+**Last updated:** 2026-05-30 (20 agents; al-dev-support-researcher MCP tool prefix normalized)
 
 ## Layer 1: Agent Catalog
 
@@ -9,21 +9,22 @@
 | al-dev-code-review | haiku | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
 | al-dev-commit-agent-execute | sonnet | Bash, Read | /al-dev-commit (execution phase) |
+| al-dev-commit-preflight | sonnet | Bash, Read | /al-dev-commit (Step 9.5 — pre-flight phase) |
 | al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
 | al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
+| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint, /al-dev-fix |
 | al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | (not spawned — skill mentions but doesn't dispatch) |
 | al-dev-expert-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
 | al-dev-interview | haiku | Read, Write, USER_GATE | /al-dev-interview |
 | al-dev-performance-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence | /al-dev-release-notes |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server, MCP: bc-code-intelligence | /al-dev-release-notes |
 | al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
 | al-dev-security-reviewer | haiku | Read, Grep | /al-dev-develop, /al-dev-review-develop |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase) |
-| al-dev-support-researcher | sonnet | Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence | /al-dev-ticket (support mode: research phase) |
+| al-dev-solution-architect | opus | Read, Write, Glob, Grep, MCP: bc-code-intelligence, MCP: microsoft-docs, MCP: al-mcp-server | /al-dev-plan, /al-dev-fix |
+| al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase); also /al-dev-support (deprecated alias) |
+| al-dev-support-researcher | sonnet | Read, MCP: al-mcp-server, MCP: microsoft-docs, MCP: bc-code-intelligence | /al-dev-ticket (support mode: research phase); also /al-dev-support (deprecated alias) |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (all modes) |
 
 ---
@@ -32,7 +33,7 @@
 
 ### al-dev-code-review
 
-**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio.
+**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
 **Model:** haiku
 **Tools:** Read
 **Spawned by:** (none found in skill files)
@@ -54,7 +55,7 @@
 
 ### al-dev-commit-agent-analysis
 
-**Description:** Git commit manifest analyzer. Reads staged diffs and builds per-file manifests. Read-only — never modifies files. Split from message-drafting phase (al-dev-commit-message-drafter handles message composition).
+**Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files.
 **Model:** haiku
 **Tools:** Bash, Read
 **Spawned by:** /al-dev-commit (Phase 1 — analysis phase)
@@ -101,7 +102,7 @@
 
 ### al-dev-commit-agent-execute
 
-**Description:** Git commit execution agent. Runs lint, validates OOXML integrity, and executes git commits from an approved plan. Never writes or edits source files directly. Upgraded to sonnet for multi-phase orchestration and error recovery.
+**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-preflight completes. Never writes or edits source files directly — all fixes go through Bash.
 **Model:** sonnet (upgraded from haiku for complex error handling)
 **Tools:** Bash, Read
 **Spawned by:** /al-dev-commit (Phase 3 — execution phase)
@@ -121,6 +122,28 @@
 | `LINT_FIXES` | Files re-staged after lint (or `NONE`) |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
 | `STRIPPED_ATTRIBUTIONS` | Removed AI attribution lines (or `NONE`) |
+
+---
+
+### al-dev-commit-preflight
+
+**Description:** Pre-flight lint and OOXML validation for staged commit files. Runs Python lint, trailing whitespace fixes, line-count corruption detection, and ZIP validation on OOXML files. Returns LINT_FIXES and OOXML_FAILURES. Dispatched by al-dev-commit (Step 9.5) before commit execution.
+**Model:** sonnet
+**Tools:** Bash, Read
+**Spawned by:** /al-dev-commit (Step 9.5 — pre-flight phase)
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `LINT_FIXES` | Files re-staged after lint fixes (or `NONE`) |
+| `OOXML_FAILURES` | OOXML files that failed ZIP validation (or `NONE`) |
 
 ---
 
@@ -156,7 +179,7 @@
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** haiku
 **Tools:** Read, Edit, Glob, Grep, Bash
-**Spawned by:** /al-dev-lint
+**Spawned by:** /al-dev-lint, /al-dev-fix
 
 **Inputs:**
 
@@ -302,7 +325,7 @@
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read, mcp:al-mcp-server, mcp:bc-code-intelligence
+**Tools:** Bash, Write, Read, MCP: al-mcp-server, MCP: bc-code-intelligence
 **Spawned by:** /al-dev-release-notes
 
 **Inputs:**
@@ -373,7 +396,7 @@
 
 **Description:** Design BC-integrated solutions and create detailed implementation plans.
 **Model:** opus
-**Tools:** Read, Write, Glob, Grep, mcp:bc-code-intelligence, mcp:microsoft-docs, mcp:al-mcp-server
+**Tools:** Read, Write, Glob, Grep, MCP: bc-code-intelligence, MCP: microsoft-docs, MCP: al-mcp-server
 **Spawned by:** /al-dev-plan, /al-dev-fix
 
 **Inputs:**
@@ -398,8 +421,8 @@
 
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
-**Tools:** Read, mcp:al-mcp-server, mcp:microsoft-docs, mcp:bc-code-intelligence
-**Spawned by:** /al-dev-ticket (support mode: research phase)
+**Tools:** Read, MCP: al-mcp-server, MCP: microsoft-docs, MCP: bc-code-intelligence
+**Spawned by:** /al-dev-ticket (support mode: research phase); /al-dev-support is a deprecated alias that routes to the same flow
 
 **Inputs:**
 
@@ -422,7 +445,7 @@
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
 **Model:** haiku
 **Tools:** Write
-**Spawned by:** /al-dev-ticket (support mode: reply phase)
+**Spawned by:** /al-dev-ticket (support mode: reply phase); /al-dev-support is a deprecated alias that routes to the same flow
 
 **Inputs:**
 
@@ -500,18 +523,18 @@
 
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1: analysis)
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 3: execution)
+- **al-dev-commit-preflight** — used only by /al-dev-commit (Step 9.5: pre-flight validation)
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
-- **al-dev-diagnostics-fixer** — used only by /al-dev-lint
 - **al-dev-docs-writer** — used only by /al-dev-document (prose reference; no formal Agent() spawn call found)
 - **al-dev-interview** — used only by /al-dev-interview
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
-- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase)
-- **al-dev-support-researcher** — used only by /al-dev-ticket (support mode: research phase)
+- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase); /al-dev-support is a deprecated alias
+- **al-dev-support-researcher** — used only by /al-dev-ticket (support mode: research phase); /al-dev-support is a deprecated alias
 
 ### Agents with no inputs/outputs documentation
 
-None — all 19 agents have documented Inputs and Outputs tables.
+None — all 20 agents have documented Inputs and Outputs tables.
 
 ### Potential shared agents
 
@@ -519,6 +542,7 @@ None — all 19 agents have documented Inputs and Outputs tables.
 - **al-dev-expert-reviewer** — used by /al-dev-develop, /al-dev-review-develop
 - **al-dev-performance-reviewer** — used by /al-dev-develop, /al-dev-review-develop
 - **al-dev-security-reviewer** — used by /al-dev-develop, /al-dev-review-develop
+- **al-dev-diagnostics-fixer** — used by /al-dev-lint, /al-dev-fix
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
 

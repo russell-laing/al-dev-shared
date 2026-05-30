@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-29 (19 distributed skills: 18 primary + 1 deprecated alias skill, `/al-dev-ticket` exposes `--mode=context-only|full`, 5-lens strategic analysis maintained)
+**Last updated:** 2026-05-30 (20 distributed skills: 19 primary + 1 deprecated alias skill `/al-dev-support`, `/al-dev-ticket` exposes `--mode=context-only|full`, audit confirmed accurate)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align) excluded. `/align-harness-repos` and `/plugin-health` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -593,6 +593,44 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
+### /al-dev-diagram-generator
+
+**Maintainer tool — not part of the main development lifecycle.** Dispatched by `/analyze-agent-design` and `/analyze-skill-design` after their analysis phases complete. Does not appear in the Layer 1 lifecycle diagram because it is called from project-local maintainer tooling (`.claude/skills/`), not from distributed plugin skills.
+
+Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, and knowledge files connect. Writes `docs/al-dev-workflow-diagrams.md`.
+
+| Field | Value |
+|---|---|
+| Triggered by | `--caller-name <skill-name>` argument from `/analyze-agent-design` or `/analyze-skill-design` |
+| Agents spawned | None — skill does all work itself |
+| Inputs | Repo source files (grepped via bash); `markdown/md-mermaid-helper.md` style guide |
+| Outputs | `docs/al-dev-workflow-diagrams.md` |
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Phase1["Phase 1\nStatic analysis\n(4 grep passes)"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Phase 2\nComplexity check\n(node/edge count)"]
+    Phase2 --> Decision{Combined\nor split?}
+    Decision -->|"≤25 nodes, ≤35 edges"| Phase3a["Phase 3\nGenerate one\ncombined diagram"]
+    Decision -->|Larger| Phase3b["Phase 3\nGenerate two\nfocused diagrams"]
+    Phase3a --> Phase4["Phase 4\nWrite output file"]
+    Phase3b --> Phase4
+    Phase4 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Output1(["docs/al-dev-workflow-diagrams.md"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#e8eaf6
+    style Phase2 fill:#e8eaf6
+    style Phase3a fill:#e8eaf6
+    style Phase3b fill:#e8eaf6
+    style Phase4 fill:#e8eaf6
+    style SkillWork1 fill:#c5cae9
+    style SkillWork2 fill:#c5cae9
+    style Decision fill:#fff9c4
+    style Output1 fill:#9fa8da
+```
+
 ---
 
 ## Observations
@@ -621,6 +659,7 @@ flowchart LR
 - **/al-dev-handoff** — file copy + prompt assembly; purely shell/file operations
 - **/al-dev-help** — reads `.dev/` context files and presents guidance inline
 - **/al-dev-consolidate** — bash-only artifact extraction; writes session summaries and sessions index to `.dev/sessions/`
+- **/al-dev-diagram-generator** — static grep analysis + Mermaid generation; dispatched by `/analyze-agent-design` and `/analyze-skill-design`; writes `docs/al-dev-workflow-diagrams.md`
 
 ### Potential shared agents (with documented patterns)
 
