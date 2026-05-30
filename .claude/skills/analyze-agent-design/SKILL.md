@@ -137,7 +137,7 @@ dispatching the diagram generator, and writing to `docs/al-dev-agent-map.md`.
 
 ## Phase 6 — Present to User
 
-After Phase 7 dispatch returns and both files are written:
+After Phase 5 invocation completes and both files are written:
 
 1. Print a one-line summary per suggestion (type + subject).
 2. Mark the **highest-leverage** suggestion with `← highest leverage`.

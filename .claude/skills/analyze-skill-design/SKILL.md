@@ -144,9 +144,10 @@ dispatching the diagram generator, and writing to `docs/al-dev-plugin-map.md`.
 
 ## Phase 6 — Present to User
 
-After Phase 7 dispatch returns and both files are written:
+After Phase 5 invocation completes and both files are written:
 
 1. Print a one-line summary per suggestion (type + subject).
 2. Mark the **highest-leverage** suggestion (best improvement-to-disruption ratio)
    with `← highest leverage`.
-3. Ask: "Would you like to act on any of these now?"
+3. Print: `Workflow diagram written to docs/al-dev-workflow-diagrams.md`
+4. Ask: "Would you like to act on any of these now?"
