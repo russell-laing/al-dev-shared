@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-31 (20 distributed skills: 19 primary + 1 deprecated alias `/al-dev-support`; /al-dev-commit section updated to reflect 5-agent flow; reviewer agent callers corrected to /al-dev-review-develop)
+**Last updated:** 2026-05-31 (21 distributed skills: 19 primary + 1 deprecated alias `/al-dev-support` + 1 consolidation utility `/al-dev-consolidate`; `/al-dev-diagram-generator` is a maintainer-only tool and is not counted as a distributed skill)
 **Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align) excluded. `/align-harness-repos` and `/plugin-health` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
 
 ---
@@ -52,6 +52,8 @@ flowchart TD
     Recover --> RecoverOut(["✓ recovered files"])
     Git -.-> Document("al-dev-document")
     Document --> DocOut(["✓ documentation"])
+    Git -.-> Consolidate("al-dev-consolidate")
+    Consolidate --> ConsolidateOut(["✓ .dev/sessions/\nsession-summary.md\nsessions-index.md"])
     Ticket -.->|--mode=full| Reply(["✓ customer reply"])
 
     style Ticket fill:#e1f5ff
@@ -75,6 +77,8 @@ flowchart TD
     style RecoverOut fill:#c8e6c9
     style Document fill:#e3f2fd
     style DocOut fill:#c8e6c9
+    style Consolidate fill:#e8eaf6
+    style ConsolidateOut fill:#c8e6c9
     style Decision1 fill:#ffe0b2
 ```
 
@@ -221,7 +225,7 @@ flowchart LR
     Phase3 --> DevAgent["al-dev-developer ×1-4<br/>(scaled by object count)"]
     DevAgent --> Phase4["Phase 4<br/>Verify completion<br/>+ optional static validation"]
     Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Handoff(["Phase 4 handoff<br/>(.dev/*-phase4-handoff.md)"])
+    SkillWork3 --> Handoff(["Phase 4 handoff<br/>(.dev/*-al-dev-develop-phase4-handoff.md)"])
     Handoff --> ReviewDevelop["→ /al-dev-review-develop<br/>(compilation, review, code review)"]
     ReviewDevelop --> End([End])
 
