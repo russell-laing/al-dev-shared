@@ -25,98 +25,21 @@ Run `/review-skill-map` first if the map may be out of date.
 
 ---
 
-## Phase 1 — Read the Plugin Map and Build Working Lists
+## Phase 1 — Discovery
 
-Read `docs/al-dev-plugin-map.md` in full. Build these working lists:
+Invoke `/discover-skill-design`. Pass the focus argument if one was supplied.
 
-1. **Agent usage counts** — for every `al-dev-shared:` agent type mentioned in
-   drill-downs, record which skills use it and how many times.
-2. **Phase counts** — record the number of named phases per skill.
-3. **File handoff chains** — trace `.dev/` output files. Note when one skill's
-   output is consumed by another.
-4. **No-agent skills** — list skills whose drill-down contains only `(skill itself)`
-   nodes.
-5. **Pre-planning tributaries** — list skills that produce output files consumed
-   by `/al-dev-plan` or `/al-dev-investigate`. Note whether each appears in the
-   Layer 1 diagram as a dashed tributary arrow (`-.->`).
-
-Also read the Layer 1 diagram content from `docs/al-dev-plugin-map.md` for use
-in the pre-planning lens.
-
-Get SKILL.md file paths:
-
-```bash
-find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills -name "SKILL.md" | sort
-```
-
-If an argument was passed, restrict analysis to that category
-(`atomise`, `connect`, `merge`, or `all` / no argument = `all`).
+Receive from `/discover-skill-design`:
+- **working_lists**: `agent_usage_counts`, `phase_counts`, `handoff_chains`,
+  `no_agent_skills`, `preplanning_tributaries`, `layer1_diagram_content`
+- **candidate_lists**: Connect/Promote, Atomise/Absorb, Merge, Extend,
+  Diagram/labelling gaps
 
 ---
 
-## Phase 2 — Parallel Lens Dispatch
+## Phase 2 — Aggregate Findings (in parallel from Phase 1 dispatch)
 
-Dispatch the relevant lens agents in a **single response** (parallel Agent tool calls).
-
-For each lens, pass only the context fields it requires (per `knowledge/lens-invocation-patterns.md`).
-Construct one dispatch prompt per lens:
-
-**design-skill-lens-shared-backbone:**
-```
-Analyze the following SKILL.md files. Apply your lens and return a findings block.
-File list: [one path per line]
-agent_usage_counts: {agent-type → [skills that spawn it]}
-```
-
-**design-skill-lens-complexity:**
-```
-Analyze the following SKILL.md files. Apply your lens and return a findings block.
-File list: [one path per line]
-phase_counts: {skill → phase count}
-no_agent_skills: [list]
-```
-
-**design-skill-lens-near-duplicates:**
-```
-Analyze the following SKILL.md files. Apply your lens and return a findings block.
-File list: [one path per line]
-agent_usage_counts: {agent-type → [skills that spawn it]}
-phase_counts: {skill → phase count}
-```
-
-**design-skill-lens-handoff-gaps:**
-```
-Analyze the following SKILL.md files. Apply your lens and return a findings block.
-File list: [one path per line]
-handoff_chains: {skill → [output files]}
-```
-
-**design-skill-lens-preplanning:**
-```
-Analyze the following SKILL.md files. Apply your lens and return a findings block.
-File list: [one path per line]
-preplanning_skills: [list]
-layer1_diagram_content: [raw text of Layer 1 Mermaid diagram]
-```
-
-Agents to dispatch based on the focus argument:
-- `all` or no argument: dispatch all five simultaneously
-  - `design-skill-lens-shared-backbone`
-  - `design-skill-lens-complexity`
-  - `design-skill-lens-near-duplicates`
-  - `design-skill-lens-handoff-gaps`
-  - `design-skill-lens-preplanning`
-- `connect`: dispatch only `design-skill-lens-shared-backbone`
-- `atomise`: dispatch only `design-skill-lens-complexity`
-- `merge`: dispatch only `design-skill-lens-near-duplicates`
-
-Each agent returns one block headed `### [Lens Name] Findings`.
-
----
-
-## Phase 3 — Aggregate Findings
-
-Collect all returned findings blocks. Parse each line:
+Collect all returned findings blocks from the parallel lens dispatch. Parse each line:
 `- **[subject]** | [Severity] | [observation] | [fix]`
 
 Group by lens type to produce candidate lists for Phase 4:
@@ -130,10 +53,10 @@ Keep the raw findings lines — they form the basis of Phase 4 suggestions.
 
 ---
 
-## Phase 5 — Draft Suggestions, Inventory Tables, Diagram and Map
+## Phase 3 — Draft Suggestions, Inventory Tables, Diagram and Map
 
 Invoke `/draft-map-suggestions --type skill`. Pass as context:
-- The candidate lists from Phase 3 (Connect/Promote, Atomise/Absorb, Merge, Extend candidates with raw finding lines)
+- The candidate lists from Phase 2 (Connect/Promote, Atomise/Absorb, Merge, Extend candidates with raw finding lines)
 - The working lists from Phase 1 (agent usage counts, phase counts, file handoff chains,
   no-agent skills, pre-planning tributaries, Layer 1 diagram content)
 
@@ -142,7 +65,7 @@ dispatching the diagram generator, and writing to `docs/al-dev-plugin-map.md`.
 
 ---
 
-## Phase 6 — Present to User
+## Phase 4 — Present to User
 
 After Phase 5 invocation completes and both files are written:
 

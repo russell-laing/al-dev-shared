@@ -24,92 +24,21 @@ Run `/review-agent-map` first if the map may be out of date.
 
 ---
 
-## Phase 1 — Read the Agent Map and Build Working Lists
+## Phase 1 — Discovery
 
-Read `docs/al-dev-agent-map.md` in full. Build these working lists:
+Invoke `/discover-agent-design`. Pass the focus argument if one was supplied.
 
-1. **Tool inventory** — for every agent, record its tools list from the map.
-2. **Model assignments** — for every agent, record its model.
-3. **Caller map** — for every agent, record which skills spawn it.
-4. **Single-use agents** — agents spawned by exactly one skill.
-5. **Shared agents** — agents spawned by 2+ skills.
-6. **Undocumented agents** — agents with "Not documented" for both Inputs and Outputs.
-7. **Existing inline candidates** — agents already listed in `### Inline candidates`
-   in `docs/al-dev-agent-map.md`.
-
-If an argument was passed, restrict analysis to that lens:
-`trim`, `remodel`, `split`, `inline`, `align`, or `all` / no argument = `all`.
-
-Also run this command to get agent file paths:
-
-```bash
-find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents -name "*.md" | sort
-```
+Receive from `/discover-agent-design`:
+- **working_lists**: `tool_inventory`, `model_assignments`, `caller_map`,
+  `single_use_agents`, `shared_agents`, `undocumented_agents`,
+  `existing_inline_candidates`
+- **candidate_lists**: Trim, Remodel, Split, Align, Inline candidates
 
 ---
 
-## Phase 2 — Parallel Lens Dispatch
+## Phase 2 — Aggregate Findings (in parallel from Phase 1 dispatch)
 
-Dispatch the relevant lens agents in a **single response** (parallel Agent tool calls).
-
-For each lens, pass only the context fields it requires (per `knowledge/lens-invocation-patterns.md`).
-Construct one dispatch prompt per lens:
-
-**design-agent-lens-tool-hygiene:**
-```
-Analyze the following agent files. Apply your lens and return a findings block.
-File list: [one path per line]
-tool_inventory: {agent → [tools]}
-```
-
-**design-agent-lens-model-fit:**
-```
-Analyze the following agent files. Apply your lens and return a findings block.
-File list: [one path per line]
-model_assignments: {agent → model}
-```
-
-**design-agent-lens-scope-isolation:**
-```
-Analyze the following agent files. Apply your lens and return a findings block.
-File list: [one path per line]
-```
-
-**design-agent-lens-caller-alignment:**
-```
-Analyze the following agent files. Apply your lens and return a findings block.
-File list: [one path per line]
-caller_map: {agent → [spawning skills]}
-```
-
-**design-agent-lens-usage-patterns:**
-```
-Analyze the following agent files. Apply your lens and return a findings block.
-File list: [one path per line]
-single_use_agents: [list]
-already_inline_candidates: [list from docs/al-dev-agent-map.md]
-```
-
-Agents to dispatch based on the focus argument:
-- `all` or no argument: dispatch all five simultaneously
-  - `design-agent-lens-tool-hygiene`
-  - `design-agent-lens-model-fit`
-  - `design-agent-lens-scope-isolation`
-  - `design-agent-lens-caller-alignment`
-  - `design-agent-lens-usage-patterns`
-- `trim`: dispatch only `design-agent-lens-tool-hygiene`
-- `remodel`: dispatch only `design-agent-lens-model-fit`
-- `split`: dispatch only `design-agent-lens-scope-isolation`
-- `align`: dispatch only `design-agent-lens-caller-alignment`
-- `inline`: dispatch only `design-agent-lens-usage-patterns`
-
-Each agent returns one block headed `### [Lens Name] Findings`.
-
----
-
-## Phase 3 — Aggregate Findings
-
-Collect all returned findings blocks. Parse each line:
+Collect all returned findings blocks from the parallel lens dispatch. Parse each line:
 `- **[agent-name]** | [Severity] | [observation] | [fix]`
 
 Group by lens type to produce candidate lists for Phase 4:
@@ -123,10 +52,10 @@ Keep the raw findings lines — they form the basis of Phase 4 suggestions.
 
 ---
 
-## Phase 5 — Draft Suggestions, Inventory Tables, Diagram and Map
+## Phase 3 — Draft Suggestions, Inventory Tables, Diagram and Map
 
 Invoke `/draft-map-suggestions --type agent`. Pass as context:
-- The candidate lists from Phase 3 (Trim, Remodel, Split, Align, Inline candidates with raw finding lines)
+- The candidate lists from Phase 2 (Trim, Remodel, Split, Align, Inline candidates with raw finding lines)
 - The working lists from Phase 1 (tool inventory, model assignments, caller map,
   single-use agents, undocumented agents, existing inline candidates from docs/al-dev-agent-map.md)
 
@@ -135,7 +64,7 @@ dispatching the diagram generator, and writing to `docs/al-dev-agent-map.md`.
 
 ---
 
-## Phase 6 — Present to User
+## Phase 4 — Present to User
 
 After Phase 5 invocation completes and both files are written:
 
