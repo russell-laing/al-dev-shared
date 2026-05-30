@@ -20,8 +20,8 @@ which to update, applies changes.
 Dispatch both audits to run in parallel:
 
 ```
-Spawn: /audit-skills-against-map
-Spawn: /audit-agents-against-map
+Spawn: /review-skill-map --no-update
+Spawn: /review-agent-map --no-update
 ```
 
 Wait for both to complete. Collect audit findings for each map.
@@ -34,10 +34,10 @@ Display findings from both audits in a summary table:
 
 ```
 Skills Map Audit:
-  [findings summary from /audit-skills-against-map]
+  [findings summary from /review-skill-map --no-update]
 
 Agent Map Audit:
-  [findings summary from /audit-agents-against-map]
+  [findings summary from /review-agent-map --no-update]
 ```
 
 If both maps are accurate with no discrepancies, report:
@@ -69,20 +69,20 @@ Based on user's choice from Phase 3, dispatch the appropriate update skills:
 
 **If skills map selected:**
 ```
-Spawn: /update-skill-map
+Spawn: /review-skill-map
 Wait for completion
 ```
 
 **If agent map selected:**
 ```
-Spawn: /update-agent-map
+Spawn: /review-agent-map
 Wait for completion
 ```
 
 **If both selected:**
 ```
-Spawn: /update-skill-map
-Spawn: /update-agent-map
+Spawn: /review-skill-map
+Spawn: /review-agent-map
 Wait for both to complete
 ```
 
@@ -160,10 +160,10 @@ User: /sync-documentation-maps --skip-commit
 - Pre-review checks before `/analyze-skill-design` or `/analyze-agent-design`
 
 **For audit-only (no updates):**
-- Use `/audit-skills-against-map` and `/audit-agents-against-map` directly
+- Use `/review-skill-map --no-update` and `/review-agent-map --no-update`
 
 **For individual map updates:**
-- Use `/update-skill-map` or `/update-agent-map` directly if you've already run audits
+- Use `/review-skill-map` or `/review-agent-map` directly if you've already run audits
 
 ---
 

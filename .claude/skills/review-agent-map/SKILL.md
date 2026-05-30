@@ -4,10 +4,12 @@ description: >-
   Review profile-al-dev-shared agents for accuracy and update
   docs/al-dev-agent-map.md. Use whenever agents are added, removed, or
   restructured in the plugin, or when you want to verify the map reflects
-  the current state of agent files.
+  the current state of agent files. Pass --no-update to audit-only mode:
+  reports discrepancies and suggests fixes without modifying any files.
+  Replaces /audit-agents-against-map (use --no-update) and /update-agent-map.
   Triggers on: "review agent map", "update agent map", "sync agent map",
   "is the agent map accurate".
-argument-hint: "[optional: agent name to focus on]"
+argument-hint: "[--no-update] [optional: agent name to focus on]"
 ---
 
 # Review Agent Map
@@ -15,6 +17,16 @@ argument-hint: "[optional: agent name to focus on]"
 Audit `profile-al-dev-shared/agents/` and update `docs/al-dev-agent-map.md`
 so it accurately reflects the current active agents, their models, tools,
 and caller relationships.
+
+---
+
+## Phase 0: Parse Arguments
+
+Read `$ARGUMENTS`:
+- If `--no-update` is present, set `NO_UPDATE=true`.
+- If an agent name is present (not a flag), set it as `TARGET_AGENT` and
+  focus all subsequent phases on that agent only.
+- Flags are not exclusive: `--no-update al-dev-developer` is valid.
 
 ---
 
@@ -126,6 +138,29 @@ Stale in map:    [agents in map but now archived]
 ```
 
 If everything is accurate, say so and stop.
+
+---
+
+## Phase 5b: Audit-Only Exit (--no-update)
+
+If `NO_UPDATE=true`:
+
+For each discrepancy found in Phase 5, suggest specific fixes without modifying files:
+
+**For Layer 1 (Catalog table):**
+- To add an agent row: insert name, model, tools, spawned-by columns
+- To remove an agent row: delete the table row
+- To fix values: correct model, tools list, or spawned-by list
+
+**For Layer 2 (Per-agent profiles):**
+- To update a profile: rewrite the `### agent-name` section with corrected content
+- To add a missing profile: insert a new section following the existing template
+- To remove a stale profile: delete its `### agent-name` section entirely
+
+**Present all suggested fixes without modifying files.** The user may:
+- Run `/review-agent-map` (without `--no-update`) to apply all fixes.
+
+Then stop. Do not proceed to Phase 6 or 7.
 
 ---
 

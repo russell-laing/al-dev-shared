@@ -8,6 +8,10 @@ description: >-
 argument-hint: "[optional: skill name to focus on]"
 ---
 
+> **ARCHIVED 2026-05-31** — Use `/review-skill-map --no-update` instead.
+
+---
+
 # Audit Skills Against Map
 
 Audit `profile-al-dev-shared` and verify `docs/al-dev-skills-map.md` accurately

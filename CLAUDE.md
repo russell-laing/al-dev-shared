@@ -212,8 +212,8 @@ When skills or agents change, synchronize the documentation:
 
 For audit-only (no updates):
 ```bash
-/audit-skills-against-map   # Verify skills map accuracy without modifying
-/audit-agents-against-map   # Verify agent map accuracy without modifying
+/review-skill-map --no-update   # Verify skills map accuracy without modifying
+/review-agent-map --no-update   # Verify agent map accuracy without modifying
 ```
 
 These skills write findings to:

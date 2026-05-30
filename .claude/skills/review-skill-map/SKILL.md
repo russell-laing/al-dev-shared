@@ -4,9 +4,12 @@ description: >-
   Review profile-al-dev-shared for accuracy and update docs/al-dev-skills-map.md.
   Use whenever skills or agents are added, removed, or restructured in the plugin,
   or when you want to verify the map reflects the current state of the codebase.
+  Pass --no-update to audit-only mode: reports discrepancies and suggests fixes
+  without modifying any files.
+  Replaces /audit-skills-against-map (use --no-update) and /update-skill-map.
   Triggers on: "review skill map", "update skill map", "sync skill map",
   "is the skill map accurate", "update the map", "check the map".
-argument-hint: "[optional: skill name to focus on]"
+argument-hint: "[--no-update] [optional: skill name to focus on]"
 ---
 
 # Review Skill Map
@@ -14,6 +17,16 @@ argument-hint: "[optional: skill name to focus on]"
 Audit `profile-al-dev-shared` and update `docs/al-dev-skills-map.md` so it
 accurately reflects the current active skills, agents, phases, file handoffs,
 and generated projection surfaces under `profile-al-dev-shared/generated/agents/`.
+
+---
+
+## Phase 0: Parse Arguments
+
+Read `$ARGUMENTS`:
+- If `--no-update` is present, set `NO_UPDATE=true`.
+- If a skill name is present (not a flag), set it as `TARGET_SKILL` and
+  focus all subsequent phases on that skill only.
+- Flags are not exclusive: `--no-update al-dev-develop` is valid.
 
 ---
 
@@ -106,6 +119,29 @@ Stale in map:    [skills in map but now archived]
 ```
 
 If everything is accurate, say so and stop.
+
+---
+
+## Phase 4b: Audit-Only Exit (--no-update)
+
+If `NO_UPDATE=true`:
+
+For each discrepancy found in Phase 4, suggest specific fixes without modifying files:
+
+**For Layer 1 fixes:**
+- To add a skill: add a node and edge in the flowchart, add a `style` directive
+- To remove a skill: remove its node declaration, all edges, and its `style` directive — leave no orphaned `style` lines
+- To fix a handoff label: update the `-->|label|` on the relevant edge
+
+**For Layer 2 fixes:**
+- To update a drill-down: rewrite the affected `flowchart LR` block
+- To add a missing skill: insert a new `### /skill-name` section following existing style conventions
+- To remove a stale skill: delete its `### /skill-name` section entirely
+
+**Present all suggested fixes without modifying files.** The user may:
+- Run `/review-skill-map` (without `--no-update`) to apply all fixes.
+
+Then stop. Do not proceed to Phase 5, 6, or 7.
 
 ---
 

@@ -8,6 +8,10 @@ description: >-
 argument-hint: "[optional: agent name to focus on]"
 ---
 
+> **ARCHIVED 2026-05-31** — Use `/review-agent-map --no-update` instead.
+
+---
+
 # Audit Agents Against Map
 
 Audit `profile-al-dev-shared/agents/` and verify `docs/al-dev-agent-map.md`

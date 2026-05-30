@@ -7,6 +7,10 @@ description: >-
 argument-hint: "[optional: skill name to focus on]"
 ---
 
+> **ARCHIVED 2026-05-31** — Use `/review-skill-map` instead.
+
+---
+
 # Update Skill Map
 
 Apply audit findings from `/audit-skills-against-map` to update `docs/al-dev-skills-map.md`.

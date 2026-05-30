@@ -7,6 +7,10 @@ description: >-
 argument-hint: "[optional: agent name to focus on]"
 ---
 
+> **ARCHIVED 2026-05-31** — Use `/review-agent-map` instead.
+
+---
+
 # Update Agent Map
 
 Apply audit findings from `/audit-agents-against-map` to update `docs/al-dev-agent-map.md`.
