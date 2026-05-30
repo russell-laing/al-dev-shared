@@ -19,7 +19,7 @@ Take structured research findings from al-dev-support-researcher and produce a c
 | QUERY_TYPE | **Yes** | `ticket`, `file`, or `freetext` |
 | QUERY_CONTEXT | **Yes** | Original customer question or symptom |
 | TICKET_FILE | No | Path to ticket context file, or `NONE` |
-| RESEARCHER_FINDINGS | **Yes** | Full structured output block from al-dev-support-researcher |
+| RESEARCHER_FINDINGS | **Yes** | Full structured output block from al-dev-support-researcher (passed as text block in dispatch prompt, not as a file path) |
 
 ## Outputs
 
@@ -31,6 +31,8 @@ Take structured research findings from al-dev-support-researcher and produce a c
 ## Process
 
 **Step 1:** Parse `RESEARCHER_FINDINGS` — extract root cause, evidence, workarounds, recommended resolution, BC_VERSION_SCOPE, SOURCES.
+
+**Tool Contract Note:** `RESEARCHER_FINDINGS` is embedded as a text block in the dispatch prompt (see `/al-dev-ticket` Phase 7). Parse it directly from the prompt; no file I/O needed. Only `Write` tool is required to produce the output file.
 
 **Step 1.5:** Critical reading of researcher findings
 

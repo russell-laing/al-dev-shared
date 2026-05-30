@@ -91,6 +91,10 @@ For complete structure and template content, read `knowledge/solution-plan-templ
 - **Acceptance Criteria section:** Add a numbered `Acceptance Criteria` section where each
   criterion uses one of the allowed forms: structural, gate, pattern, or `[manual]`. Do not
   write free-form prose criteria. See `knowledge/solution-plan-template.md` for examples.
+- **Implementation Tasks section:** Add a `### Implementation Tasks` section listing each logical implementation unit. For each task include:
+  - `Files:` — files to create or modify
+  - `Gotcha:` — the most likely project-specific pitfall for this task. Consult `knowledge/al-developer-patterns.md` for known AL/BC traps (object name length, var parameter verification, bash regex line-collapse). Write one concrete warning; write `none — [rationale]` if no pitfall applies.
+  - `Validate:` — an exact shell command the developer runs after completing this task to confirm it is done. Prefer `grep`, `wc -l`, or `al-compile` checks. Write `[manual] — [description]` if no shell command suffices.
 
 Target output detail by complexity:
 - **SIMPLE:** 50-100 lines, no diagrams, no alternatives
