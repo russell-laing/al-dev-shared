@@ -1,7 +1,7 @@
 ---
 name: review-skill-map
 description: >-
-  Review profile-al-dev-shared for accuracy and update docs/al-dev-plugin-map.md.
+  Review profile-al-dev-shared for accuracy and update docs/al-dev-skills-map.md.
   Use whenever skills or agents are added, removed, or restructured in the plugin,
   or when you want to verify the map reflects the current state of the codebase.
   Triggers on: "review skill map", "update skill map", "sync skill map",
@@ -11,7 +11,7 @@ argument-hint: "[optional: skill name to focus on]"
 
 # Review Skill Map
 
-Audit `profile-al-dev-shared` and update `docs/al-dev-plugin-map.md` so it
+Audit `profile-al-dev-shared` and update `docs/al-dev-skills-map.md` so it
 accurately reflects the current active skills, agents, phases, file handoffs,
 and generated projection surfaces under `profile-al-dev-shared/generated/agents/`.
 
@@ -66,7 +66,7 @@ If `$ARGUMENTS` is a skill name, focus only on that skill and skip the rest.
 
 ## Phase 3: Compare Against Plugin Map
 
-Read `docs/al-dev-plugin-map.md`.
+Read `docs/al-dev-skills-map.md`.
 
 Check each layer:
 
@@ -111,7 +111,7 @@ If everything is accurate, say so and stop.
 
 ## Phase 5: Update the Map
 
-Make targeted edits to `docs/al-dev-plugin-map.md` to fix each discrepancy.
+Make targeted edits to `docs/al-dev-skills-map.md` to fix each discrepancy.
 
 **For Layer 1 fixes:**
 - To add a skill: add a node and edge in the flowchart, add a `style` directive
@@ -135,16 +135,16 @@ Run a quick sanity check:
 
 ```bash
 # Expect one section per active lifecycle skill
-grep -c "^### /" docs/al-dev-plugin-map.md
+grep -c "^### /" docs/al-dev-skills-map.md
 
 # Expect no archived skill names to appear
-grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/al-dev-plugin-map.md
+grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/al-dev-skills-map.md
 ```
 
 If checks pass, commit:
 
 ```bash
-git -C . add docs/al-dev-plugin-map.md
+git -C . add docs/al-dev-skills-map.md
 git -C . commit -m "docs: sync plugin map with current plugin state"
 ```
 
@@ -178,9 +178,9 @@ Agents are not scanned separately. If a flagged skill is the sole caller of an a
 
 ### Output
 
-First, ensure `docs/al-dev-plugin-map.md` has a `### Architectural suggestions` section. If it does not exist, create it at the end of the document before appending.
+First, ensure `docs/al-dev-skills-map.md` has a `### Architectural suggestions` section. If it does not exist, create it at the end of the document before appending.
 
-For each Move candidate, append inside the `### Architectural suggestions` section of `docs/al-dev-plugin-map.md`. For each signal, mark ✓ if present in the skill, ✗ if absent:
+For each Move candidate, append inside the `### Architectural suggestions` section of `docs/al-dev-skills-map.md`. For each signal, mark ✓ if present in the skill, ✗ if absent:
 
 ```markdown
 **Move: /skill-name → .claude/skills/**
@@ -203,7 +203,7 @@ None detected.
 If one or more candidates were found:
 
 ```bash
-git -C . add docs/al-dev-plugin-map.md
+git -C . add docs/al-dev-skills-map.md
 git -C . commit -m "docs: add Move candidates to plugin map architectural suggestions"
 ```
 

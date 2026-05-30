@@ -20,7 +20,7 @@ Converts aggregated lens findings into structured map observations. Requires
 
 Read the required `--type` argument:
 - `--type agent` → writes to `docs/al-dev-agent-map.md`; uses Trim/Remodel/Split/Inline/Align vocabulary
-- `--type skill` → writes to `docs/al-dev-plugin-map.md`; uses Atomise/Connect/Merge/Promote/Extend vocabulary
+- `--type skill` → writes to `docs/al-dev-skills-map.md`; uses Atomise/Connect/Merge/Promote/Extend vocabulary
 
 If `--type` is missing or not `agent`/`skill`, report the error and stop.
 
@@ -188,7 +188,7 @@ The generator writes `docs/al-dev-workflow-diagrams.md`.
 
 Update `**Last updated:**` in the document header to today's date.
 
-**For `--type skill`** — replace the entire `## Observations` section of `docs/al-dev-plugin-map.md`:
+**For `--type skill`** — replace the entire `## Observations` section of `docs/al-dev-skills-map.md`:
 
 ```markdown
 ## Observations

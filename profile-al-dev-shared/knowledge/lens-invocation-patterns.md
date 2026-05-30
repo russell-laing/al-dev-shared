@@ -75,7 +75,7 @@ phase_counts: {mapping of skill → phase count}
 no_agent_skills: [list of skills with zero spawned agents]
 handoff_chains: {mapping of skill → [output files]}
 preplanning_skills: [pre-planning skill names — skills shown with dashed arrows in Layer 1]
-layer1_diagram_content: [raw text of the Layer 1 Mermaid diagram from docs/al-dev-plugin-map.md]
+layer1_diagram_content: [raw text of the Layer 1 Mermaid diagram from docs/al-dev-skills-map.md]
 ```
 
 ---

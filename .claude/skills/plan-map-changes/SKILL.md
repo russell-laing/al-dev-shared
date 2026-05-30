@@ -1,7 +1,7 @@
 ---
 name: plan-map-changes
 description: >-
-  Use when the Observations section of docs/al-dev-plugin-map.md or
+  Use when the Observations section of docs/al-dev-skills-map.md or
   docs/al-dev-agent-map.md has suggestions that need implementing.
   Rubber-ducks each suggestion against the live codebase before any plan
   is written. Run /review-skill-map and /review-agent-map first if
@@ -16,7 +16,7 @@ argument-hint: "[optional: connect | merge | trim | remodel | inline | align | a
 
 # Plan Map Changes
 
-Translates suggestions from `docs/al-dev-plugin-map.md` and
+Translates suggestions from `docs/al-dev-skills-map.md` and
 `docs/al-dev-agent-map.md` into a verified implementation plan. The
 rubber-ducking phase is **mandatory** — no plan task is written until the
 live codebase state behind each suggestion is confirmed. This prevents
@@ -26,7 +26,7 @@ plans based on suggestion text that diverges from actual code.
 
 ## Prerequisites
 
-- `docs/al-dev-plugin-map.md` and/or `docs/al-dev-agent-map.md` exist
+- `docs/al-dev-skills-map.md` and/or `docs/al-dev-agent-map.md` exist
   with an `## Observations` section
 - Run `/review-skill-map` and `/review-agent-map` first if skills or
   agents have changed since the maps were last updated — stale suggestions
@@ -37,11 +37,11 @@ plans based on suggestion text that diverges from actual code.
 
 ## Argument Routing
 
-**Default (no argument):** process both `docs/al-dev-plugin-map.md` and
+**Default (no argument):** process both `docs/al-dev-skills-map.md` and
 `docs/al-dev-agent-map.md`. Collect suggestions from all Observations
 sections and rubber-duck them together before writing a single unified plan.
 
-**`--plugin-map`:** process only `docs/al-dev-plugin-map.md`. Suggestion
+**`--plugin-map`:** process only `docs/al-dev-skills-map.md`. Suggestion
 vocabulary: Connect, Merge, Promote, Move, Extend.
 
 **`--agents`:** process only `docs/al-dev-agent-map.md`:
@@ -59,7 +59,7 @@ checklist — stays identical across all routing modes.
 
 Apply the Argument Routing rules above to determine which documents to read.
 
-**From `docs/al-dev-plugin-map.md`** (default or `--plugin-map`), collect
+**From `docs/al-dev-skills-map.md`** (default or `--plugin-map`), collect
 every open item from:
 - `### Architectural suggestions` (Connect, Merge, Promote)
 - `### Move candidates`

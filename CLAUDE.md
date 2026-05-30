@@ -204,23 +204,28 @@ python3 scripts/generate-agent-projections.py
 When skills or agents change, synchronize the documentation:
 
 ```bash
-# Within Claude Code, use these skills in sequence:
-/review-skill-map        # Update profile-al-dev-shared skills vs. docs/al-dev-plugin-map.md
-/review-agent-map        # Update profile-al-dev-shared agents vs. docs/al-dev-agent-map.md
-/analyze-skill-design    # Generate architecture improvement suggestions
-/analyze-agent-design    # Generate agent design improvement suggestions
+# Primary workflow within Claude Code:
+/sync-documentation-maps  # Audits and updates both maps (interactive or --all)
+/analyze-skill-design     # Generate architecture improvement suggestions
+/analyze-agent-design     # Generate agent design improvement suggestions
+```
+
+For audit-only (no updates):
+```bash
+/audit-skills-against-map   # Verify skills map accuracy without modifying
+/audit-agents-against-map   # Verify agent map accuracy without modifying
 ```
 
 These skills write findings to:
 
-- `docs/al-dev-plugin-map.md` — Skill inventory and relationships
+- `docs/al-dev-skills-map.md` — Skill inventory and relationships
 - `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
 - `docs/al-dev-skill-quality.md` — Skill clarity and structural issues
 - `docs/al-dev-agent-quality.md` — Agent quality audit results
 
 ## Plugin Architecture Quick Reference
 
-**Start here:** `docs/al-dev-plugin-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
+**Start here:** `docs/al-dev-skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
 **Active skills:** 19 distributed skills covering three main flows:
 
