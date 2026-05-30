@@ -29,7 +29,7 @@ Extract the `tools` field from YAML frontmatter. Read the system prompt body
 **Red flags — a tool present in frontmatter but unused in the body:**
 - Agent described as "read-only" or analysis-only but has `Write` or `Edit` in tools
 - Agent has `Bash` but no commands or shell operations are mentioned in the body
-- Agent has `mcp__`-prefixed tools but no MCP usage is described in the body
+- Agent has `MCP: <capability>` tools (the shared source form) but no MCP usage is described in the body
 - Any tool listed in frontmatter with no corresponding usage verb or code block in body
 
 A tool present in frontmatter but unused in the system prompt body is a Trim candidate.
