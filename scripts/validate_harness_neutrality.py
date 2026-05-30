@@ -7,6 +7,7 @@ from pathlib import Path
 from dataclasses import dataclass
 import re
 import sys
+import yaml
 
 SCAN_DIRS = ("skills", "agents", "knowledge", "markdown", "bc-code-intel-knowledge")
 SCAN_SUFFIXES = {".md", ".yaml", ".yml"}
@@ -24,7 +25,7 @@ FORBIDDEN_PATTERNS = {
     "Copilot dispatch token": re.compile(
         r"""\bagent_type:\s*(?:['"][^'"\n]+['"]|[^\s#][^\n#]*)"""
     ),
-    "Claude MCP token": re.compile(r"\bmcp__plugin_profile-claude\b"),
+    "MCP tool token": re.compile(r"mcp__\w+"),
     "Claude settings path": re.compile(r"~/\.claude\b"),
     "Copilot settings path": re.compile(r"~/\.copilot\b"),
 }
@@ -63,9 +64,9 @@ _RULE_FIX: dict[str, str] = {
         "replace the agent_type: dispatch syntax with the generic equivalent "
         "from knowledge/harness-concepts.md"
     ),
-    "Claude MCP token": (
-        'replace "mcp__plugin_profile-claude" with the generic identifier '
-        "from knowledge/harness-concepts.md"
+    "MCP tool token": (
+        'remove the harness-native "mcp__"-prefixed tool token; shared files '
+        'use the "MCP: <capability>" form from knowledge/harness-concepts.md'
     ),
     "Claude settings path": (
         'remove "~/.claude" or move the reference to .claude/ '
@@ -76,6 +77,11 @@ _RULE_FIX: dict[str, str] = {
     ),
     "Unreadable file": (
         "check file encoding (must be UTF-8) or fix file permissions"
+    ),
+    "Non-canonical model": (
+        "set the agent's model: to a canonical tier alias "
+        "(haiku, sonnet, opus) listed in shared_model_aliases in "
+        "knowledge/agent-tool-projection-policy.md"
     ),
 }
 
@@ -109,6 +115,34 @@ def should_skip(relative_path: str) -> bool:
     return relative_path in ALLOWLIST
 
 
+def load_model_aliases(plugin_root: Path) -> set[str]:
+    """Load the allowed model tier aliases from the projection policy."""
+    policy = plugin_root / "knowledge" / "agent-tool-projection-policy.md"
+    fm = re.match(r"^---\n(.*?)\n---", policy.read_text(encoding="utf-8"), re.DOTALL)
+    if not fm:
+        return set()
+    data = yaml.safe_load(fm.group(1))
+    return set(data.get("shared_model_aliases", []))
+
+
+def scan_models(plugin_root: Path) -> list[Finding]:
+    """Fail any agents/*.md whose model: value is not a canonical tier alias."""
+    findings: list[Finding] = []
+    aliases = load_model_aliases(plugin_root)
+    agents_dir = plugin_root / "agents"
+    if not aliases or not agents_dir.exists():
+        return findings
+    for path in sorted(agents_dir.glob("*.md")):
+        relative_path = path.relative_to(plugin_root).as_posix()
+        match = re.search(r"^model:\s*(.+)$", path.read_text(encoding="utf-8"), re.MULTILINE)
+        if not match:
+            continue
+        value = match.group(1).split("#", 1)[0].strip()
+        if value not in aliases:
+            findings.append(Finding(relative_path, "Non-canonical model", value))
+    return findings
+
+
 def scan_paths(plugin_root: Path) -> list[Finding]:
     """Scan the plugin root for harness-specific tokens in shared content."""
     findings: list[Finding] = []
@@ -129,6 +163,7 @@ def scan_paths(plugin_root: Path) -> list[Finding]:
             if match:
                 findings.append(Finding(relative_path, rule, match.group(0)))
 
+    findings.extend(scan_models(plugin_root))
     return findings
 
 
