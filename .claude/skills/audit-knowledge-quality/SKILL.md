@@ -1,6 +1,9 @@
 ---
 name: audit-knowledge-quality
-description: Audit knowledge files for stub sections and structural issues.
+description: >-
+  Audit knowledge files for stub sections and structural issues.
+  Dispatches parallel agents for large audit scopes (4+ files).
+argument-hint: "[--path <directory>] [--verbose]"
 ---
 
 # Audit Knowledge Quality
@@ -38,11 +41,11 @@ Extract flagged files and issue codes from output. Group by issue type: [THIN], 
 
 #### Progress Tracking
 
-Before analyzing any file, create one TodoWrite todo per flagged file named `[issue-type] [filename]`. Mark each todo in-progress when analysis begins, complete when the file analysis is written to findings.
+Before analyzing any file, create one task per flagged file using `TaskCreate` named `[issue-type] [filename]`. Update each task to `in_progress` when analysis begins, `completed` when the file analysis is written to findings.
 
 #### Parallel Exploration
 
-When 4+ files are flagged, invoke `superpowers:dispatching-parallel-agents` before starting sequential analysis. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each agent returns a structured analysis record. Collect all records before proceeding to Phase 3.
+When 4+ files are flagged, invoke `superpowers:dispatching-parallel-agents` before starting sequential analysis. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
 
 For ≤3 flagged files (or files with ordering dependencies), the sequential inline path is fine — keep it as the fallback.
 

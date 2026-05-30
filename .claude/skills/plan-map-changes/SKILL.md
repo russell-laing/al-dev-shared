@@ -154,6 +154,8 @@ Scope gap:    [anything the suggestion underspecifies, or "none"]
 Verdict:      proceed | modify [reason] | skip [reason]
 ```
 
+If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do not create a plan task for it. Record skipped suggestions in a `## Skipped` section at the end of the plan file with the reason noted.
+
 ---
 
 ## Phase 3: Write the Implementation Plan
