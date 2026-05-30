@@ -42,12 +42,12 @@ Three specialist agents (sonnet):
 
 ## Execution Order
 
-Phases run in this order: **5 → 8 → 8.5 → 6-7 → 9 → 10**.
-Phase headers are numbered to match the parent workflow's phase map; run them in the order above, not in header-number order.
+Phases run in this order: **5 → 8 → 8.5 → 6-7 → 9 → 10** (see Run labels on each header).
+Phase headers retain parent-workflow numbering; execute in the order shown, not by header number.
 
 ---
 
-## Phase 5: Prepare Review Context
+## Phase 5 (Run 1st): Prepare Review Context
 
 **Input:** Phase 4 handoff artifact from `/al-dev-develop`.
 
@@ -79,7 +79,7 @@ Phase headers are numbered to match the parent workflow's phase map; run them in
 
 ---
 
-## Phase 8: Compile Verification
+## Phase 8 (Run 2nd): Compile Verification
 
 Run `al-compile` and handle errors. This phase must pass before the review panel is spawned.
 
@@ -128,7 +128,7 @@ Run `al-compile` and handle errors. This phase must pass before the review panel
 
 ---
 
-## Phase 8.5: Pre-Review Staging
+## Phase 8.5 (Run 3rd): Pre-Review Staging
 
 Verify all prerequisites are met before spawning the review panel.
 
@@ -138,7 +138,7 @@ Verify all prerequisites are met before spawning the review panel.
 
 ---
 
-## Phase 6-7: Dispatch Review Panel
+## Phase 6-7 (Run 4th): Dispatch Review Panel
 
 Spawn all three specialist reviewer agents simultaneously — do not wait for one agent to return before spawning the next. Pass each agent the same `CHANGED_FILES` list and implementation context from the Phase 4 handoff.
 
@@ -169,7 +169,7 @@ Collect all three outputs before proceeding to Phase 9.
 
 ---
 
-## Phase 9: Write Code-Review Artifact
+## Phase 9 (Run 5th): Write Code-Review Artifact
 
 Synthesize findings from all three reviewers into a single dated code-review file.
 
@@ -234,7 +234,7 @@ Synthesize findings from all three reviewers into a single dated code-review fil
 
 ---
 
-## Phase 10: Present Review Findings
+## Phase 10 (Run 6th): Present Review Findings
 
 1. **Display a summary** of the code-review artifact:
 
