@@ -23,6 +23,12 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git commit.*)",
+        "command": "al-compile --output .dev/compile-errors.log && markdownlint profile-al-dev-shared/**/*.md .claude/skills/**/*.md 2>&1 | head -10 && echo \"Verification passed\""
+      }
     ]
   }
 }
