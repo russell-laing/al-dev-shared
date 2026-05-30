@@ -83,34 +83,23 @@ Build a list of absolute paths (`file_list`).
 
 Dispatch all five lens agents in a **single response** (five parallel Agent tool calls).
 
-**For agents, pass this prompt (substitute actual paths):**
+Pass this prompt to each of the five lenses (substitute `{file_list}` with paths from Phase 1):
+
 ```
-Analyze the following agent files. Apply your lens to every file and return a findings block.
+Analyze the following files. Apply your lens to every file and return a findings block.
 
 File list:
-/absolute/path/to/agent1.md
-/absolute/path/to/agent2.md
-[one path per line — paste all paths from Phase 1 here]
+{file_list}
 ```
 
-Agents to dispatch simultaneously (spawn each in parallel):
+**For `--type agent`**, dispatch these five agents simultaneously:
 - `quality-agent-lens-clarity`
 - `quality-agent-lens-structure`
 - `quality-agent-lens-description`
 - `quality-agent-lens-bloat`
 - `quality-agent-lens-name-fit`
 
-**For skills, pass this prompt (substitute actual paths):**
-```
-Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
-
-File list:
-/absolute/path/to/skills/skill-name/SKILL.md
-/absolute/path/to/skills/other-skill/SKILL.md
-[one path per line — paste all paths from Phase 1 here]
-```
-
-Agents to dispatch simultaneously (spawn each in parallel):
+**For `--type skill`**, dispatch these five agents simultaneously:
 - `quality-skill-lens-clarity`
 - `quality-skill-lens-structure`
 - `quality-skill-lens-description`

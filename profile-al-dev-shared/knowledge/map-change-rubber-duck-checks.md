@@ -1,10 +1,34 @@
 # Map Change Rubber-Duck Checks
 
-Type-specific verification checks for the `/plan-map-changes` skill Phase 2.
-Apply these after completing the Universal checks (U1–U3) documented in the
-skill body. Each section corresponds to one suggestion type.
+Verification checks for the `/plan-map-changes` skill Phase 2. The Universal
+checks (U1–U3) below apply to every suggestion type. Each section below the
+separator is a type-specific check.
 
 ---
+
+## Universal checks (all suggestion types)
+
+**U1. Read the affected files in full.**
+Do NOT infer current state from the plugin map — read the actual SKILL.md
+or knowledge file. The map is a snapshot; the code is the truth.
+
+**U2. Verify referenced artifacts exist.**
+If the suggestion mentions a validator script, helper file, or Python tool:
+run `ls` on the directory. Build plans around files that exist, not files
+that are assumed to exist.
+
+```bash
+ls profile-al-dev-shared/skills/<skill-name>/
+```
+
+**U3. Check whether the suggested flag, name, or path captures the full scope.**
+Read the source skill. List every structural difference between the skills being
+merged or connected. A flag named after one feature but activating three is a
+scope gap — rename or expand the scope in the plan.
+
+---
+
+## Type-specific checks
 
 ## Connect — "document a shared pattern used by two skills"
 

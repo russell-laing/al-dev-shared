@@ -111,35 +111,12 @@ Collect all records before writing any plan content.
 For ≤2 suggestions (or suggestions with ordering dependencies), the sequential
 inline path is fine — keep it as the fallback.
 
-### Universal checks (all suggestion types)
+### Checks
 
-**U1. Read the affected files in full.**
-Do NOT infer current state from the plugin map — read the actual SKILL.md
-or knowledge file. The map is a snapshot; the code is the truth.
-
-**U2. Verify referenced artifacts exist.**
-If the suggestion mentions a validator script, helper file, or Python
-tool: run `ls` on the directory. Build plans around files that exist,
-not files that are assumed to exist.
-
-```bash
-ls profile-al-dev-shared/skills/<skill-name>/
-```
-
-**U3. Check whether the suggested flag, name, or path captures the full scope.**
-Read the source skill. List every structural difference between the
-skills being merged or connected. A flag named after one feature but
-activating three is a scope gap — rename or expand the scope in the plan.
-
-### Type-specific checks
-
-For type-specific checks (Connect, Extend, Merge, Move, Promote, Trim, Remodel,
-Split, Inline, Align), see:
+For all checks — Universal (U1–U3) and type-specific (Connect, Extend, Merge,
+Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
 
 `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
-
-Each section in that file corresponds to one suggestion type and lists the
-questions to answer before writing the rubber-duck record.
 
 ### Rubber duck record
 
