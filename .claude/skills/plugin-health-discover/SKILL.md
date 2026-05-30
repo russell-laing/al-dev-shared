@@ -59,10 +59,65 @@ Extract context from documentation maps before dispatching lenses.
 - `already_inline_candidates`: filter of `single_use_agents`
 - `no_agent_skills`: skills with zero spawned agents
 
-## Phase 3 — Dispatch lenses (per surface, per dimension)
+## Phase 3 — Resume detection (if --resume flag)
 
-Dispatch in a single response (parallel agent calls). Use per-lens minimal context
-per `knowledge/lens-invocation-patterns.md`.
+If invoked with `--resume` flag:
+
+1. **Scan `.dev/` directory for existing lens output files:**
+   ```bash
+   ls -1 .dev/plugin-health-lens-*.json 2>/dev/null
+   ```
+
+2. **Extract completed lens names:**
+   - For each `.json` file, parse the `"lens"` field
+   - Build `completed_lenses` set
+
+3. **Filter remaining lenses:**
+   - `remaining_lenses = [l for l in ALL_LENSES if l not in completed_lenses]`
+   - Log: `"Resuming: X lenses already completed, Y remaining"`
+
+If NOT invoked with `--resume`:
+- `remaining_lenses = ALL_LENSES`
+
+## Phase 3a — Dispatch lenses with per-lens disk streaming (batched by token budget)
+
+Dispatch lenses in waves to stay within session token limits. After each lens
+completes, write its result immediately to disk.
+
+**Token budget calculation:**
+```python
+per_lens_token_budget = 5000  # Typical lens cost (varies by scope)
+remaining_budget = budget.remaining()
+lenses_per_wave = max(1, remaining_budget // (per_lens_token_budget * 1.2))
+```
+
+**For each wave:**
+
+1. **Log wave progress:**
+   ```
+   Wave 1: Running 3 lenses (1-3 of 21 total)
+   ```
+
+2. **Dispatch this wave's lenses in parallel.**
+
+3. **For each completed lens, immediately write result to disk:**
+   ```python
+   timestamp = datetime.now().isoformat()
+   output_file = f".dev/2026-05-31-plugin-health-lens-{lens_name}.json"
+   with open(output_file, 'w') as f:
+       json.dump({
+           "lens": lens_name,
+           "findings": lens_result,
+           "completed_at": timestamp
+       }, f, indent=2)
+   ```
+
+4. **Check remaining budget:**
+   - If `budget.remaining() < 10000`: Log "Approaching budget limit; call with
+     `--resume` in a fresh session to complete"
+   - Halt if approaching limit; remaining lenses will be picked up by --resume
+
+Use per-lens minimal context per `knowledge/lens-invocation-patterns.md`.
 
 **For design-agent-lens-* agents** (when `--dimension design` or `all`):
 
@@ -91,29 +146,54 @@ Pass file list only. For naming-convention-lens, also pass:
 A lens that returns a malformed or empty block is recorded as `lens <name>: no result`
 and the sweep continues — a failed lens never aborts discovery.
 
-## Phase 4 — Write findings file (per surface)
+## Phase 4 — Assemble findings file from disk
 
-For each swept surface, write:
-`docs/health/YYYY-MM-DD-<surface>-findings.md` (substitute today's date and `plugin`/`tooling`)
+For each surface that had lenses run:
 
-Structure:
-```markdown
-# <Surface> Findings — YYYY-MM-DD
+1. **Collect all lens output files from `.dev/`:**
+   ```bash
+   ls -1 .dev/plugin-health-lens-*.json | sort
+   ```
 
-## Raw lens output
+2. **Read and assemble findings:**
+   - For each `.json` file, load and extract `"findings"` field
+   - Parse any "Failed lenses" entries (returned by failed lens agents)
+   - Build findings markdown blocks in order
 
-### <Lens Name> Findings
-[findings block returned by the lens agent, verbatim]
+3. **Write findings file:**
+   `docs/health/YYYY-MM-DD-<surface>-findings.md` (substitute today's date and
+   `plugin`/`tooling`)
 
----
+   Structure:
+   ```markdown
+   # <Surface> Findings — YYYY-MM-DD
 
-### <Lens Name> Findings
-[next block]
+   ## Raw lens output
 
----
+   ### <Lens Name> Findings
+   [findings block from .dev/ file]
 
-## Failed lenses
-[one line per "lens <name>: no result", or "None" if all returned results]
-```
+   ---
 
-After writing, print the file path and line count, then return to the caller.
+   ### <Lens Name> Findings
+   [next block]
+
+   ---
+
+   ## Failed lenses
+   [one line per failed lens, or "None" if all returned results]
+   
+   ## Resume information
+   - Total lenses in scope: N
+   - Completed this session: M
+   - Completed in prior sessions: P (from --resume)
+   - Status: [COMPLETE / INCOMPLETE — call with --resume to finish]
+   ```
+
+4. **Clean up disk files after assembly:**
+   ```bash
+   rm .dev/plugin-health-lens-*.json
+   ```
+
+5. **Return to caller:**
+   Print the findings file path, line count, and resume status.

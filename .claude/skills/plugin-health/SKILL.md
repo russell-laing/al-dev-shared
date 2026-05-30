@@ -6,7 +6,7 @@ description: >-
   and writes one dossier per surface to docs/health/. Always refreshes the
   dependency graph for the plugin surface. Never auto-edits source. Triggers on:
   "plugin health", "health sweep", "audit the plugin", "check plugin health".
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 ---
 
 # Skill: /plugin-health
@@ -17,8 +17,25 @@ auto-edited — the loop is: `/plugin-health` (detect) → dossier (review) →
 `/plan-map-changes` (rubber-duck accepted items) → plan → execute.
 
 Implemented as two sub-skills:
-- `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses, writes findings file
+- `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
 - `/plugin-health-report` — reads findings file, ranks, writes dossier, refreshes graph, presents
+
+## Resuming Incomplete Sweeps
+
+If a sweep is interrupted by session limits:
+
+1. **Check existing lens output:**
+   ```bash
+   ls -1 .dev/plugin-health-lens-*.json | wc -l
+   ```
+
+2. **Re-invoke with resume flag:**
+   ```bash
+   /plugin-health --surface <same-surface> --dimension <same-dimension> --resume
+   ```
+   The skill detects completed lenses from prior session, skips them, and runs only missing ones.
+
+3. **Final dossier will aggregate all lens results** (prior session + current session)
 
 ## Phase 1 — Run discover
 
