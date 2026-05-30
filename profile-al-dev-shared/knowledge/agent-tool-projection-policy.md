@@ -2,6 +2,10 @@
 shared_capabilities:
   - USER_GATE
   - shared `tools:` metadata
+shared_model_aliases:
+  - haiku
+  - sonnet
+  - opus
 projection_rules:
   claude:
     USER_GATE:
@@ -18,6 +22,12 @@ projection_rules:
       tool: Grep
     Bash:
       tool: Bash
+    "MCP: al-mcp-server":
+      tool: "mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>"
+    "MCP: bc-code-intelligence":
+      tool: "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"
+    "MCP: microsoft-docs":
+      tool: "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>"
   copilot:
     USER_GATE:
       tool: ask_user
@@ -33,21 +43,33 @@ projection_rules:
       tool: grep
     Bash:
       tool: execute
+    "MCP: al-mcp-server":
+      tool: "al-mcp-server-<tool>"
+    "MCP: bc-code-intelligence":
+      tool: "bc-code-intelligence-mcp-<tool>"
+    "MCP: microsoft-docs":
+      tool: "microsoft_docs_mcp-<tool>"
   codex:
     USER_GATE:
       developer_instruction: request_user_input
     Read:
-      native_capability: read-only file access through the active Codex session
+      native_capability: read files available in the active Codex session
     Write:
-      native_capability: apply_patch or equivalent file-edit capability in the active Codex session
+      native_capability: edit files available in the active Codex session
     Edit:
-      native_capability: apply_patch or equivalent file-edit capability in the active Codex session
+      native_capability: edit files available in the active Codex session
     Glob:
-      native_capability: search files through the active Codex session
+      native_capability: search files available in the active Codex session
     Grep:
-      native_capability: search file contents through the active Codex session
+      native_capability: search file contents available in the active Codex session
     Bash:
       native_capability: run shell commands allowed by the active Codex session
+    "MCP: al-mcp-server":
+      native_capability: use the AL symbol lookup MCP capability available in the active Codex session
+    "MCP: bc-code-intelligence":
+      native_capability: use the BC code intelligence MCP capability available in the active Codex session
+    "MCP: microsoft-docs":
+      native_capability: use the Microsoft Docs MCP capability available in the active Codex session
 failure_policy:
   - Generation fails if a shared capability has no documented harness mapping.
   - Codex output must use documented TOML keys only; do not invent a synthetic tools field.
