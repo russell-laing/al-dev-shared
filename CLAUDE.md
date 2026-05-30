@@ -162,6 +162,26 @@ python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowl
 python3 scripts/validate_artifact_contracts.py
 ```
 
+### Pre-commit Neutrality Gate
+
+A checked-in hook at `.githooks/pre-commit` blocks any commit that fails
+harness neutrality, lens-policy sync, or leaves generated projections stale.
+Enable it once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The hook runs, in order:
+
+- `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`
+- `python3 scripts/validate-lens-agents.py`
+- a projections-current check (regenerates to a temp dir and diffs against
+  `profile-al-dev-shared/generated/`)
+
+Bypass with `git commit --no-verify` only when intentionally committing a
+work-in-progress; the hook is fast local feedback, not a security control.
+
 ### Projection (Harness-Native Artifacts)
 
 ```bash
