@@ -317,6 +317,29 @@ Every plan task must end with a verification step before its commit:
 When dispatching subagents to execute plan tasks (both Claude Code and Copilot CLI),
 pass the above checklist in the dispatch prompt so subagents self-verify before returning.
 
+## Subagent-Driven Development Best Practices
+
+When dispatching subagents via `superpowers:subagent-driven-development`:
+
+**Permission Pre-Flight:** Before dispatching, verify required tool permissions are
+pre-authorized:
+
+- File creation/modification → `Write`, `Edit`
+- Code compilation → `Bash` with `al-compile` allowed
+- Testing → `Bash` with test runner allowed
+
+Check `.claude/settings.json` for the `allowedTools` list. If required tools are
+missing, prompt the user to grant permissions before dispatch to avoid permission
+blocks forcing fallback to serial execution.
+
+**Output Verification:** After subagents complete, independently verify all files:
+
+1. Check file existence: `ls -la <claimed-file-path>`
+2. Verify content matches claims (function signatures present, no truncation)
+3. If a file is missing or empty, re-dispatch the subagent with error context
+
+This prevents silent subagent failures from being discovered downstream.
+
 ## Planning Routing
 
 For tasks that need a design decision:
