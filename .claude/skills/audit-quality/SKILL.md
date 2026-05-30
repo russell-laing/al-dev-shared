@@ -93,7 +93,7 @@ File list:
 [one path per line — paste all paths from Phase 1 here]
 ```
 
-Agents to dispatch simultaneously (use `subagent_type` for each):
+Agents to dispatch simultaneously (spawn each in parallel):
 - `quality-agent-lens-clarity`
 - `quality-agent-lens-structure`
 - `quality-agent-lens-description`
@@ -110,7 +110,7 @@ File list:
 [one path per line — paste all paths from Phase 1 here]
 ```
 
-Agents to dispatch simultaneously (use `subagent_type` for each):
+Agents to dispatch simultaneously (spawn each in parallel):
 - `quality-skill-lens-clarity`
 - `quality-skill-lens-structure`
 - `quality-skill-lens-description`
