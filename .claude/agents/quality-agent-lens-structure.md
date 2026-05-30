@@ -26,9 +26,12 @@ agent name from the filename (strip directory path and `.md` extension).
 - Agent filename (without `.md`) matches the `al-dev-<name>` prefix convention
 - `description` field is present in YAML frontmatter and is a single sentence
 - `model` field is present in YAML frontmatter
-- `tools` field is present in YAML frontmatter and contains only canonical names:
-  `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `Agent`, `AskUserQuestion`,
-  `WebSearch`, `WebFetch`, or `mcp__`-prefixed tool names
+- `tools` field is present in YAML frontmatter and contains only canonical
+  **source-vocabulary** capability names — the harness-neutral terms, not any
+  harness's projected tool names. The canonical set is:
+  <!-- canonical-tools:start -->
+  `USER_GATE`, `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `MCP: al-mcp-server`, `MCP: bc-code-intelligence`, `MCP: microsoft-docs`
+  <!-- canonical-tools:end -->
 - Frontmatter contains no skill-only fields (`argument-hint`, `triggers`) that
   are invalid in agents
 - `## Inputs` and `## Outputs` sections are present, or a stated reason explains
