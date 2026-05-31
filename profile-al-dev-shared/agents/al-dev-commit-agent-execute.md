@@ -61,6 +61,4 @@ GROUP_2: <SHA> [message summary]
 SKIPPED: [N groups]
 
 HOOK_FAILURES: [group_id: raw_output] (or NONE)
-
-STRIPPED_ATTRIBUTIONS: [count] lines removed (or NONE)
 ```
