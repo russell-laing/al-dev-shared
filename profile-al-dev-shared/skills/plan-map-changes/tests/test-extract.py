@@ -12,11 +12,8 @@ Tests the extract-suggestions.py script's core functionality:
 Run: python3 profile-al-dev-shared/skills/plan-map-changes/tests/test-extract.py
 """
 
-import json
 import sys
-import tempfile
-from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 
 class TestSuggestionExtraction:
