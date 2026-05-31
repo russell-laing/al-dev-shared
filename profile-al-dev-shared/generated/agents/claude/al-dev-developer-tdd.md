@@ -1,6 +1,6 @@
 ---
 description: "Implement AL code using test-driven development (RED-GREEN-REFACTOR cycle). Spawned when a test plan exists. Creates and modifies AL files and test codeunits with per-cycle approval gates."
-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Grep", "Bash"]
 ---
 
 

@@ -1,6 +1,6 @@
 ---
 description: "OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit (Step 9.5b) after lint preflight. Read-only: never modifies files."
-tools: ["Bash", "Read"]
+tools: ["Bash"]
 ---
 
 

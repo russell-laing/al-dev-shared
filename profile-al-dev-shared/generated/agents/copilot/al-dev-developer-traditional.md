@@ -1,7 +1,7 @@
 ---
 name: "al-dev-developer-traditional"
 description: "Implement AL code following an implementation plan without test-driven development. Spawned when no test plan exists. Creates and modifies AL files using a build-verify workflow."
-tools: ["read", "edit", "edit", "glob", "grep", "execute"]
+tools: ["read", "edit", "grep", "execute"]
 ---
 
 

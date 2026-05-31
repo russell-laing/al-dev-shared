@@ -1,6 +1,6 @@
 ---
 description: "Implement AL code following an implementation plan without test-driven development. Spawned when no test plan exists. Creates and modifies AL files using a build-verify workflow."
-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Grep", "Bash"]
 ---
 
 

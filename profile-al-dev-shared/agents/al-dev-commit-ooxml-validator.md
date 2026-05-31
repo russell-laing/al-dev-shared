@@ -6,7 +6,7 @@ description: >-
   Dispatched sequentially by al-dev-commit (Step 9.5b) after lint preflight.
   Read-only: never modifies files.
 model: haiku
-tools: ["Bash", "Read"]
+tools: ["Bash"]
 ---
 
 # Agent: al-dev-commit-ooxml-validator

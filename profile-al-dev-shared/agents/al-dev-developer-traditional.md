@@ -5,7 +5,7 @@ description: >-
   test-driven development. Spawned when no test plan exists. Creates
   and modifies AL files using a build-verify workflow.
 model: sonnet
-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Grep", "Bash"]
 ---
 
 # Agent: al-dev-developer-traditional

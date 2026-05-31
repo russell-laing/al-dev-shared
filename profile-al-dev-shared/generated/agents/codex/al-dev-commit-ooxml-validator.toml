@@ -56,5 +56,4 @@ OOXML_FAILURES: NONE
 If OOXML_FAILURES is not NONE, the calling skill must stop and require human resolution before re-staging.
 
 Codex capability notes:
-- run shell commands allowed by the active Codex session
-- read files available in the active Codex session"""
+- run shell commands allowed by the active Codex session"""

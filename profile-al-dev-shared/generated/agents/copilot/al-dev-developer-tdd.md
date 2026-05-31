@@ -1,7 +1,7 @@
 ---
 name: "al-dev-developer-tdd"
 description: "Implement AL code using test-driven development (RED-GREEN-REFACTOR cycle). Spawned when a test plan exists. Creates and modifies AL files and test codeunits with per-cycle approval gates."
-tools: ["read", "edit", "edit", "glob", "grep", "execute"]
+tools: ["read", "edit", "grep", "execute"]
 ---
 
 

@@ -5,7 +5,7 @@ description: >-
   schema rebuild). Dispatched by /commit-recover Step 2 with one verifier spawned per
   corruption incident found in .dev/commit-integrity.log.
 model: sonnet
-tools: ["Bash", "Read", "Write"]
+tools: ["Write"]
 ---
 
 # Agent: al-dev-commit-recover-verifier

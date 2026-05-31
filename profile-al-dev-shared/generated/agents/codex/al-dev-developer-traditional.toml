@@ -128,7 +128,5 @@ When running `al-compile --output .dev/compile-errors.log`:
 Codex capability notes:
 - read files available in the active Codex session
 - edit files available in the active Codex session
-- edit files available in the active Codex session
-- search files available in the active Codex session
 - search file contents available in the active Codex session
 - run shell commands allowed by the active Codex session"""
