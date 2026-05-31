@@ -91,7 +91,7 @@
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `MANIFESTS` and `PROPOSED_GROUPS` from analysis phase |
+| Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /al-dev-commit |
 | Project context | No | `.dev/project-context.md` for domain knowledge |
 
 **Outputs:**
@@ -548,7 +548,7 @@
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `REPO` | **Yes** | Project root directory |
+| `REPO` | No | Inferred from working directory; not passed explicitly by /commit-recover |
 | `CORRUPTION_LOG` | **Yes** | Path to `.dev/commit-integrity.log` with flagged files |
 | `auto_fix` | No | If true, apply auto-fixes; if false, report findings only |
 
