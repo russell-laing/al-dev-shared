@@ -100,6 +100,13 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 All three contexts enforce the symbol preflight checklist (`knowledge/al-symbol-pre-flight.md`).
 
+```text
+SYMBOL_PREFLIGHT_GATE:
+- Summary required before implementation
+- Evidence source named per symbol
+- Stop if any required symbol remains unverified
+```
+
 Developer must:
 
 1. Report pre-flight summary before writing any AL code

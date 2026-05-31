@@ -8,6 +8,11 @@ Referenced by: `al-dev-code-review` and `al-dev-expert-reviewer` agents
 
 **Pattern:** Object names must be ≤30 characters; use AL prefix conventions.
 
+```al
+codeunit 50100 "LongNameViolationCodeunitPostFix" { }
+codeunit 50101 "PurchaseApprovalProcessor" { }
+```
+
 Bad:
 - `VeryLongDescriptiveNameThatExceedsTheCharacterLimit` (too long)
 - `veryLongName` (lowercase; AL prefers PascalCase)
@@ -17,6 +22,10 @@ Good:
 - `ARRAnalyzer` (prefix convention for array processing)
 
 #### Examples in AL Code
+
+Use the examples below to distinguish a validator-worthy naming defect from a
+review note that is only stylistic.
+Prefer examples that match the kind of object names the reviewer is assessing.
 
 ##### BAD: Violates character limit (>30 chars) and post-fix naming
 

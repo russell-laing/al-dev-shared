@@ -73,6 +73,12 @@ When a new skill needs to fetch Freshdesk tickets, it should:
 
 ## Related Files
 
+```text
+profile-al-dev-shared/agents/al-dev-ticket-agent.md
+profile-al-dev-shared/skills/al-dev-ticket/SKILL.md
+profile-al-dev-shared/skills/al-dev-support/SKILL.md
+```
+
 - Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-agent.md`
 - Skills using this pattern:
   - `/al-dev-ticket` — Fetch ticket context (Phase 3)
@@ -133,7 +139,7 @@ When the ticket skill spawns the ticket agent, it passes context in this structu
   "priority": "p1|p2|p3",
   "severity": "critical|high|medium|low",
   "affected_systems": ["Customer", "Sales Order", "Reports"],
-  "context_files": ["path/to/al/file.al", "docs/knowledge/related-doc.md"]
+  "context_files": ["path/to/al/file.al", "profile-al-dev-shared/knowledge/ticket-agent-invocation-pattern.md"]
 }
 ```
 

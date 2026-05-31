@@ -107,11 +107,19 @@ For each hit, ask: **does this instruction duplicate or conflict with
 
 After removing duplicates, add to the project instructions file:
 
-```markdown
-## Commit Conventions
+```text
+Commit Conventions
 project-type: <al|vault|tool>
 Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 ```
+
+This declaration makes the project type explicit for every harness instead of
+leaving commit behavior to repo-name inference or agent guesswork.
+
+Checklist:
+- Add it once.
+- Keep the value accurate.
+- Place it where maintainers can find it quickly.
 
 ---
 

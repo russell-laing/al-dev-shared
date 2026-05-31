@@ -25,6 +25,10 @@
 Solution plans describe WHAT to build and WHY, not HOW (code). Code is written by al-developer during implementation.
 
 #### Requirements (50-75 lines)
+
+Use this structure when the task is simple enough that the implementer does
+not need architectural debate but still needs concrete scope and acceptance.
+
 ```markdown
 # Requirements: [Feature Name]
 
@@ -59,6 +63,10 @@ Solution plans describe WHAT to build and WHY, not HOW (code). Code is written b
 - Add multiple NFR sections
 
 #### Solution Plan (50-75 lines)
+
+The solution plan should stay implementation-directed: enough detail to build
+the change safely, without turning the planning artifact into source code.
+
 ```markdown
 # Solution Plan: [Feature Name]
 

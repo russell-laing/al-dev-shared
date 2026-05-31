@@ -83,6 +83,12 @@ Whenever an agent reports that something was done — a file written, code compi
 
 ### Verification Pattern
 
+```bash
+ls -la .dev/output.md
+wc -l .dev/output.md
+sed -n '1,20p' .dev/output.md
+```
+
 For each claim, follow this pattern:
 
 1. **Don't rely on tool return codes alone** — a tool returning exit code 0 does NOT prove the claim
@@ -98,6 +104,9 @@ After every file-write action:
 - If verification fails, escalate to user immediately — do NOT silently retry the write
 
 ### Example
+
+Treat the contrast below as the minimum bar for phrasing verified versus
+unverified completion claims.
 
 **Wrong:** "Code review written to `.dev/2026-05-19-code-review.md`" (claims without verifying)
 
@@ -211,6 +220,10 @@ For complex architectural decisions, use adversarial planning: architect agents 
 
 ### The Three Architect Outputs
 
+```text
+Proposal -> Critique -> Falsification
+```
+
 Each architect MUST produce all three. Architects without all three are excluded from the final decision phase.
 
 **1. Proposal** — The recommended approach
@@ -231,6 +244,10 @@ Each architect MUST produce all three. Architects without all three are excluded
 - Example: "Event handling adds ~50ms per order in high-concurrency scenarios"
 
 #### Example: Architect Debate on Caching Strategy
+
+```text
+Question: Is a cache warranted, and if so, what scope keeps the design honest?
+```
 
 **Proposal (Architect A):**
 > "Use in-memory cache with 5-minute TTL. Pros: fast, simple. Cons: stale data risk if config changes during window."
@@ -254,6 +271,9 @@ Each architect MUST produce all three. Architects without all three are excluded
 
 Critiques and falsifications must be substantive enough to force re-evaluation of a design. Weak outputs ("might be slow", "could be hard to maintain") do not meet the bar.
 
+Use this as a rejection threshold: if the critique does not identify a concrete
+failure mode, it is not strong enough to influence the decision.
+
 ### The Facilitation Process
 
 After all architects submit proposals:
@@ -274,6 +294,11 @@ After all architects submit proposals:
 Push architects to think deeper. Superficial solutions are not acceptable.
 
 ### Example: Architect Debate on Caching Strategy
+
+```text
+Scenario framing matters: define the performance symptom, the scale, and the
+candidate design boundaries before comparing proposals.
+```
 
 **Problem Statement:** Sales order posting takes 2.5 seconds for 100+ lines due to repeated customer balance lookups.
 
@@ -346,6 +371,7 @@ Rationale: Proposal 1 insufficient (doesn't scale), Proposal 3 over-scoped (intr
 ### Example: Architect Debate Output — Caching Strategy Decision Document
 
 After the debate resolves, the architect creates a one-page decision document:
+The goal is not prose volume; it is decision traceability in a compact form.
 
 ```markdown
 # Caching Strategy for Sales Order Posting
@@ -353,9 +379,16 @@ After the debate resolves, the architect creates a one-page decision document:
 ## Decision: In-Memory Customer Balance Cache
 
 ### Context
+
+State the operating constraint in one or two lines so a later reader can tell
+why this decision existed without rereading the full debate transcript.
+
 Sales order posting (100+ lines) takes 2.5s due to repeated ledger lookups.
 
 ### Rejected Alternatives
+
+Record only the alternatives that were seriously considered and why they lost;
+this keeps the document concise but still auditable.
 - Query optimization alone (Proposal 1): insufficient scaling past 500 lines
 - Materialized view (Proposal 3): over-scoped, introduces stale-data risk
 
@@ -377,6 +410,9 @@ end;
 \`\`\`
 
 ### Test Coverage
+
+List the smallest tests that prove the chosen design works and the one or two
+regression risks that would justify rollback if they fail.
 - test_PostSalesOrder_UsesCache() — verify cache loaded once
 - test_PostSalesOrder_Performance() — confirm < 0.5s for 100-line order
 

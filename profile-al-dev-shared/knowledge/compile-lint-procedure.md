@@ -100,6 +100,10 @@ An empty log (zero bytes or no `Error`/`Warning` lines) means a clean compile.
 
 ### ⚠️ Anti-Patterns: What NOT to Do
 
+These mistakes are dangerous because they look harmless in the terminal while
+quietly expanding the captured session payload.
+Avoid them even when you only want a quick glance at compile output.
+
 **❌ DO NOT pipe `al-compile` output to terminal viewers:**
 
 ```bash
@@ -116,6 +120,9 @@ al-compile 2>&1 | grep -E "(error|warning)"
 - The `--output` flag already writes diagnostics silently to file
 - Piping to `head/tail/grep` causes the **entire stdout to be captured in session context** (4.7MB+ for this codebase)
 - Terminal viewers only display first/last N lines to user ✓, but the Bash tool captures the entire output ✗
+- The safer pattern is: write to file first, then inspect the file with a
+  targeted reader or filtered follow-up command.
+- This keeps compile evidence durable without flooding the active session.
 - Result: forced context compacts and session restarts after 2–3 compile checks
 
 **✅ DO: Write to file, then inspect via Read or grep the file if needed:**

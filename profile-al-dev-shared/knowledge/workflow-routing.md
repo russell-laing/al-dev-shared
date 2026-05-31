@@ -157,6 +157,11 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 
 #### COMPLEX Workflow Example: Approval Workflow Feature
 
+```text
+Approval routing touches schema, UI, business logic, notifications, and
+verification, so the workflow must stay phased and explicit.
+```
+
 **Feature:** Add multi-step approval routing for purchase orders (requires table modification, page redesign, event subscribers, auto-notification).
 
 **Classification:** 4 subsystems + novel architecture + unclear performance impact → COMPLEX

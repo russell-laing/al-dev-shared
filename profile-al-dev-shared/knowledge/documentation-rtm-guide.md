@@ -81,6 +81,10 @@ The format, completeness, and content of the RTM table varies by target audience
   - Example: "Feature delivers 8 requirements: 7 verified, 1 in progress"
 - This maintains traceability for internal review while keeping user/executive docs focused on value, not mechanics.
 
+```markdown
+Requirements summary: 8 delivered, 7 verified, 1 in progress.
+```
+
 ---
 
 ## Inline Requirement References
@@ -95,10 +99,16 @@ In feature documentation narrative sections, reference requirements by ID immedi
 
 ### Examples
 
+The examples below show the same requirement traced at different audience
+depths so writers can choose detail deliberately instead of improvising.
+
 **Technical audience:**
 
 ```markdown
 ### User Perspective
+
+For end-user documentation, keep the focus on what the user can do next rather
+than on internal IDs, SLA wording, or implementation terms.
 
 Users can set a per-customer credit limit (REQ-001). The system prevents 
 saving sales orders if the total exceeds this limit (REQ-002).
@@ -140,6 +150,9 @@ and prevents saving if it does (ACC-002).
 ### RTM Detail by Audience
 
 How much RTM detail to include depends on who will read the documentation.
+
+Use the sections below as a slider: increase detail for technical readers and
+reduce traceability noise for user-facing material.
 
 #### RTM Reference Example
 

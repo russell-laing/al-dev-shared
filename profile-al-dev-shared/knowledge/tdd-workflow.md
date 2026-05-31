@@ -328,6 +328,10 @@ Improve code quality without changing behavior.
 
 ### Cycle 1: Basic Within-Limit Validation
 
+Start with the smallest passing business path so the first cycle proves the
+testing harness, fixture setup, and primary production entrypoint all connect.
+Do not add edge cases until this baseline cycle is green.
+
 #### RED Phase ✓
 - Test: `Test_ValidateCreditLimit_WithinLimit`
 - Status: ❌ FAILS as expected
@@ -395,6 +399,9 @@ TaskUpdate: "TDD REFACTOR: [test]" → addBlockedBy: ["TDD GREEN: [test]"]
 
 ### Auto-Detection from app.json
 
+Prefer auto-detection when available because it keeps test execution aligned
+with the project's declared configuration instead of local developer memory.
+
 **bc-test automatically detects test frameworks and codeunit ranges:**
 
 #### AL Test Framework Detection
@@ -429,6 +436,9 @@ bc-test
 
 #### External Test Framework Detection
 
+This fallback matters for mixed-language repos where TDD guidance still applies
+even though the execution path is not the AL test runner.
+
 For non-AL projects, bc-test detects external frameworks:
 
 ```bash
@@ -453,6 +463,9 @@ bc-test
 
 #### Fallback Logic
 
+The fallback order should be deterministic so two agents in the same repo do
+not silently pick different test commands.
+
 If auto-detection fails, bc-test tries fallback patterns:
 
 ```bash
@@ -474,9 +487,15 @@ If auto-detection fails, bc-test tries fallback patterns:
 
 ### File Output Options
 
+Use file output whenever the raw test stream is large enough to drown the
+session transcript or when later phases need durable evidence.
+
 **Write detailed results to file instead of flooding console:**
 
 #### AL Test Framework Output Structure
+
+Each output format serves a different consumer: humans read text, automation
+parses JSON, and CI tooling usually expects XML.
 
 When running AL tests via bc-test, the tool produces multiple output files:
 
@@ -498,6 +517,9 @@ bc-test -o .dev/test-results.xml -f xml
 ```
 
 #### .dev/ Naming Convention
+
+Timestamped output files make repeated RED/GREEN/REFACTOR runs comparable
+without destroying the prior cycle's evidence.
 
 Test runs coexist without overwriting by using timestamped filenames:
 
@@ -623,9 +645,15 @@ Each test phase and framework produces separate files — no overwrites:
 
 ### Failures-Only Filter
 
+This filter is an iteration aid, not a replacement for full-run verification at
+important gates such as GREEN completion or pre-commit checks.
+
 **Focus on what needs attention during development:**
 
 #### Full Run vs Failures-Only Commands
+
+Choose between these modes based on the decision you are making: diagnosis
+needs focus, while sign-off needs the complete picture.
 
 ```bash
 # FULL RUN: See all test results (recommended for initial verification)
@@ -732,9 +760,15 @@ This pattern balances speed during development with thorough verification before
 
 ### CI/CD Integration
 
+The same test command should produce artifacts that local agents and CI systems
+can both inspect without special-case parsing rules.
+
 **Automate test execution in GitHub Actions and Azure Pipelines:**
 
 #### GitHub Actions Integration
+
+This example shows the minimum publish-and-fail pattern needed for PR checks to
+surface broken tests clearly.
 
 ```yaml
 # .github/workflows/test.yml
@@ -782,6 +816,9 @@ jobs:
 Result: GitHub shows test failures in PR checks, blocks merge until passing.
 
 #### Azure Pipelines Integration
+
+Use the same result artifact idea in Azure so failures are visible in standard
+pipeline reporting instead of hidden in raw log text.
 
 ```yaml
 # azure-pipelines.yml
@@ -837,6 +874,9 @@ Result: Azure Pipelines shows test pass/fail in build logs and blocks merge unti
 
 #### JSON-Based Verification
 
+JSON output is the easiest way to gate automation on exact pass/fail counts
+without brittle string matching in logs.
+
 ```bash
 # Export test results for CI/CD parsing
 bc-test -o test-results.json -f json
@@ -882,6 +922,10 @@ Example PR check output:
 ```
 
 ### Example Workflows
+
+These scenarios show how the command patterns above combine into an actual TDD
+loop rather than remaining isolated command snippets.
+Use them as templates, not as a mandate to copy every command verbatim.
 
 #### Scenario 1: New Feature (Red-Green-Refactor Cycle)
 

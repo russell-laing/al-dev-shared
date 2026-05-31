@@ -322,6 +322,9 @@ When inspecting a known specific file, use the Read tool. This avoids path const
 
 ### Rule 2: Multi-file search — use recursive patterns with `.`
 
+This pattern keeps the command portable across repos and avoids permission
+prompts caused by explicit directory names with spaces.
+
 Use `--include` glob patterns with `.` as the root. `grep` and `find` traverse directories transparently, so no spaced path ever appears in the command.
 
 ```bash
@@ -336,6 +339,9 @@ grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
 ```
 
 ### Rule 3: When an explicit path is unavoidable — double-quote it
+
+Quoting is the safe fallback when a command must target one concrete file and
+cannot rely on recursive traversal from the current directory.
 
 If you must reference a file by path directly, always wrap in double quotes.
 
