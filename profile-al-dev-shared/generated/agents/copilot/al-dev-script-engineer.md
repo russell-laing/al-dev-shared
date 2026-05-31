@@ -48,6 +48,9 @@ Reference `knowledge/script-engineer-conventions.md` for:
 - **Error handling** — Meaningful messages to stderr, structured output to stdout
 - **Language selection** — Detect project stack; default to Python
 
+When shell search or structured-file inspection is required, prefer `rg` and
+`jq` before falling back to broader shell text processing.
+
 ## Standards
 
 ### Language-Specific Patterns
