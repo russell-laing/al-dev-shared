@@ -4,12 +4,7 @@ description: >-
   Design BC-integrated solutions and create detailed implementation
   plans. Spawned in parallel by the al-dev-plan skill.
 model: opus
-tools: [
-  "Read", "Write", "Glob", "Grep",
-  "MCP: bc-code-intelligence",
-  "MCP: microsoft-docs",
-  "MCP: al-mcp-server"
-]
+tools: ["Read", "Write", "Glob", "Grep"]
 ---
 
 # Agent: al-dev-solution-architect

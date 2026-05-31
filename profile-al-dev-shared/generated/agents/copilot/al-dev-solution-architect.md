@@ -1,7 +1,7 @@
 ---
 name: "al-dev-solution-architect"
 description: "Design BC-integrated solutions and create detailed implementation plans. Spawned in parallel by the al-dev-plan skill."
-tools: ["read", "edit", "glob", "grep", "bc-code-intelligence-mcp-<tool>", "microsoft_docs_mcp-<tool>", "al-mcp-server-<tool>"]
+tools: ["read", "edit", "glob", "grep"]
 ---
 
 

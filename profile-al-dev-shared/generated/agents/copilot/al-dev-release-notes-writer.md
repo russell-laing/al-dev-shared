@@ -1,7 +1,7 @@
 ---
 name: "al-dev-release-notes-writer"
 description: "Run git diff analysis between two hashes, research AL object context, and write release notes. Dispatched by the al-dev-release-notes skill."
-tools: ["execute", "edit", "read", "al-mcp-server-<tool>", "bc-code-intelligence-mcp-<tool>"]
+tools: ["execute", "edit", "read"]
 ---
 
 

@@ -5,7 +5,7 @@ description: >-
   and data exposure risks. Spawned in parallel by the
   al-dev-develop skill.
 model: sonnet
-tools: ["Read", "Grep"]
+tools: ["Read"]
 ---
 
 # Agent: al-dev-security-reviewer

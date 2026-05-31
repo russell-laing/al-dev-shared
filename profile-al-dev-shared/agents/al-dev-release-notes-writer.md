@@ -5,11 +5,7 @@ description: >-
   context, and write release notes. Dispatched by the
   al-dev-release-notes skill.
 model: sonnet
-tools: [
-  "Bash", "Write", "Read",
-  "MCP: al-mcp-server",
-  "MCP: bc-code-intelligence"
-]
+tools: ["Bash", "Write", "Read"]
 ---
 
 # Agent: al-dev-release-notes-writer

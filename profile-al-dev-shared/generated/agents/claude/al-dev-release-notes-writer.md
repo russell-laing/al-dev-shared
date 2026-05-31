@@ -1,6 +1,6 @@
 ---
 description: "Run git diff analysis between two hashes, research AL object context, and write release notes. Dispatched by the al-dev-release-notes skill."
-tools: ["Bash", "Write", "Read", "mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>", "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"]
+tools: ["Bash", "Write", "Read"]
 ---
 
 

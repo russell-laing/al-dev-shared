@@ -5,7 +5,7 @@ description: >-
   workflows. Defaults to Python with al-analysis-toolkit patterns; also
   supports Bash, Node.js/TypeScript, and Go when the task calls for it.
 model: sonnet
-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 # Agent: al-dev-script-engineer

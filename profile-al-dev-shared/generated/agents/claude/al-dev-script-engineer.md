@@ -1,6 +1,6 @@
 ---
 description: "Write, validate, and run scripts for AL development and documentation workflows. Defaults to Python with al-analysis-toolkit patterns; also supports Bash, Node.js/TypeScript, and Go when the task calls for it."
-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 

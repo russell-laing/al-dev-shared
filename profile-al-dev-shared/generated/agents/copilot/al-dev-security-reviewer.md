@@ -1,7 +1,7 @@
 ---
 name: "al-dev-security-reviewer"
 description: "Review AL code for security vulnerabilities, permission issues, and data exposure risks. Spawned in parallel by the al-dev-develop skill."
-tools: ["read", "grep"]
+tools: ["read"]
 ---
 
 

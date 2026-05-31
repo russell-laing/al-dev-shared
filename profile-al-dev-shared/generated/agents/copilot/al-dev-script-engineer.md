@@ -1,7 +1,7 @@
 ---
 name: "al-dev-script-engineer"
 description: "Write, validate, and run scripts for AL development and documentation workflows. Defaults to Python with al-analysis-toolkit patterns; also supports Bash, Node.js/TypeScript, and Go when the task calls for it."
-tools: ["read", "edit", "edit", "glob", "grep", "execute"]
+tools: ["read", "edit", "execute"]
 ---
 
 
