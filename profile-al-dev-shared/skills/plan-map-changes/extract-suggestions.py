@@ -26,7 +26,7 @@ class SuggestionExtractor:
     # Suggestion type keywords (used in bold headers)
     SUGGESTION_TYPES = {
         'trim', 'merge', 'split', 'inline', 'align', 'connect',
-        'promote', 'extend', 'atomise', 'implemented'
+        'promote', 'implemented'
     }
 
     def __init__(self, docs_dir: str = None):
@@ -118,9 +118,6 @@ class SuggestionExtractor:
             'align': 'align',
             'connect': 'connect',
             'promote': 'promote',
-            'extend': 'extend',
-            'atomise': 'atomise',
-            'atomize': 'atomise',
         }
 
         return mappings.get(raw_type)
@@ -193,7 +190,7 @@ def main():
     )
     parser.add_argument(
         '--filter',
-        choices=['all', 'trim', 'merge', 'split', 'inline', 'align', 'connect', 'promote', 'extend', 'atomise'],
+        choices=['all', 'trim', 'merge', 'split', 'inline', 'align', 'connect', 'promote'],
         default='all',
         help='Suggestion type filter (default: all)'
     )
@@ -239,7 +236,7 @@ def main():
         else:
             print(output_json)
 
-        sys.exit(0)
+        sys.exit(0 if filtered else 1)
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
