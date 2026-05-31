@@ -124,7 +124,7 @@ python3 profile-al-dev-shared/skills/plan-map-changes/extract-suggestions.py \
   --surface both \
   --filter all \
   --output .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json
-```
+```yaml
 
 **Script behavior:**
 
@@ -149,7 +149,7 @@ python3 profile-al-dev-shared/skills/plan-map-changes/validate-suggestions.py \
   --suggestion-queue .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json \
   --output .dev/plan-map-changes-runs/<run-id>/duck-records/ \
   --manifest .dev/plan-map-changes-runs/<run-id>/manifest.json
-```
+```yaml
 
 **Script behavior:**
 

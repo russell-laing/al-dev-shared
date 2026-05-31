@@ -41,11 +41,11 @@ Approval gate: User reviews findings, approves plan with noted constraints
 
 ## Dispatch Pattern
 
-```
+```markdown
 # Pseudo for reference (actual implementation uses Agent tool in skill body)
 for each critic_type in [security, testability, type_safety, rollback_safety, api_contracts, edge_cases]:
   spawn Agent(critic_prompt, plan_content) -> findings_json
 merge all findings -> ranked_list
 apply auto_fixes(plan) -> updated_plan
 ask user approval
-```
+```text

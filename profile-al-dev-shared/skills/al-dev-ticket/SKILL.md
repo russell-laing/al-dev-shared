@@ -21,7 +21,7 @@ and reply drafting via `--mode=full`.
 /al-dev-ticket 1234           — load ticket #1234
 /al-dev-ticket                — auto-detect from branch name or prompt
 /al-dev-ticket search terms   — search tickets by subject/description
-```
+```markdown
 
 ## Branch Naming Convention
 
@@ -29,7 +29,7 @@ Include `FD<number>` in your branch name for auto-detection:
 
 ```text
 feature/#CU86d0dnfx2-FD1234-description
-```
+```text
 
 ---
 
@@ -57,7 +57,7 @@ if [[ ! "$MODE" =~ ^(context-only|full)$ ]]; then
   echo "ERROR: Invalid mode '$MODE'. Allowed: context-only, full"
   exit 1
 fi
-```
+```text
 
 ---
 
@@ -90,7 +90,7 @@ ENCODED=$(python3 -c \
   "$SEARCH_TERMS")
 curl -s -f -u "$FRESHDESK_API_KEY:X" \
   "https://$FRESHDESK_DOMAIN/api/v2/search/tickets?query=\"$ENCODED\""
-```
+```yaml
 
 Extract and display up to 10 results:
 
@@ -100,7 +100,7 @@ SEARCH RESULTS: "[query]"
 #[ID] | [status label] | [subject]
 #[ID] | [status label] | [subject]
 ...
-```
+```text
 
 Ask the user which ticket to load. If they choose one, proceed
 from Step 2 with that ticket ID. Otherwise exit — do not
@@ -129,7 +129,7 @@ Add to your harness settings file (global user settings, never committed):
 
 Restart your AI coding agent session after saving.
 See your harness profile's Freshdesk setup guide for details.
-```
+```text
 
 ---
 
@@ -160,7 +160,7 @@ Prompt:
    SUMMARY: <2-3 sentence plain English summary>
    ATTACHMENTS: <count> | <name (size, type)> | ... (NONE if none)
    FILE: .dev/$DATE-al-dev-ticket-ticket-context.md"
-```
+```yaml
 
 **See:** `../../knowledge/ticket-agent-invocation-pattern.md` for canonical dispatch pattern.
 
@@ -186,7 +186,7 @@ Freshdesk #[ID] loaded →
 [SUMMARY]
 
 Context is ready — run /al-dev-interview or /al-dev-plan to continue.
-```
+```yaml
 
 If `ATTACHMENTS` is not `NONE`, ask:
 
@@ -195,7 +195,7 @@ ATTACHMENTS ([count]):
   [list from agent output]
 
 Download to .dev/attachments/? [y/n]
-```
+```yaml
 
 **Download decision logic:**
 
@@ -221,13 +221,13 @@ Prompt:
    Return:
    DOWNLOADS_COMPLETE: <count> files
    FILES: <comma-separated list>"
-```
+```yaml
 
 Append to the user summary:
 
 ```text
 Attachments saved to .dev/attachments/ ([count] files).
-```
+```yaml
 
 **If no (user declines to download):**
 - Proceed directly to Phase 5 without downloading attachments
@@ -268,7 +268,7 @@ Assemble the research prompt using the ticket context loaded in Step 3:
 QUERY_TYPE: ticket
 QUERY_CONTEXT: <SUMMARY from agent output in Step 3>
 TICKET_FILE: <FILE from agent output in Step 3>
-```
+```yaml
 
 Dispatch:
 
@@ -278,7 +278,7 @@ Agent tool:
   description: "BC support research: <60-char query summary>"
 
 Prompt: <assembled prompt above>
-```
+```text
 
 ---
 
@@ -291,7 +291,7 @@ QUERY_TYPE: ticket
 QUERY_CONTEXT: <SUMMARY from ticket loaded in Step 3>
 TICKET_FILE: <FILE from ticket loaded in Step 3>
 RESEARCHER_FINDINGS: <full structured output block from al-dev-support-researcher>
-```
+```yaml
 
 Dispatch:
 
@@ -301,7 +301,7 @@ Agent tool:
   description: "Draft customer reply: <60-char query summary>"
 
 Prompt: <assembled prompt above>
-```
+```text
 
 ---
 
@@ -316,7 +316,7 @@ BC_VERSION_SCOPE: <scope or "not version-specific">
 SOURCES: MS Docs (<n> pages) | BC History (<n> commits or NONE)
          | AL Symbols (<n> objects)
 SUMMARY: <1-2 sentence plain English summary of findings>
-```
+```yaml
 
 Present to user:
 
@@ -329,4 +329,4 @@ Support research complete →
 
 Findings and draft reply written. Review and copy-paste
 the Draft Customer Reply section into Freshdesk.
-```
+```text
