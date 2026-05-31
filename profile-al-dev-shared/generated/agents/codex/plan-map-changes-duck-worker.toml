@@ -303,15 +303,15 @@ If unrecoverable error occurs:
 
 ```json
 {
-  "suggestion_id": "<id>",
-  "type": "<trim|merge|split|inline|align|connect|promote>",
-  "status": "<file_not_found|parse_error|check_failure|timeout>",
-  "error": "<short error title>",
-  "error_detail": "<long-form error message with context>",
-  "attempted_checks": ["<check name>", ...],
-  "completed_checks": ["<check name>", ...],
-  "worker_id": "<optional worker identifier>",
-  "failed_at": "<ISO 8601 timestamp>"
+  "suggestion_id": "trim-001",
+  "type": "trim",
+  "status": "file_not_found",
+  "error": "File not found",
+  "error_detail": "Target file does not exist at specified path",
+  "attempted_checks": ["U1", "U2"],
+  "completed_checks": [],
+  "worker_id": "worker-42",
+  "failed_at": "2026-05-31T14:23:45Z"
 }
 ```
 
