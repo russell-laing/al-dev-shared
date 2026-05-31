@@ -1,4 +1,5 @@
 ---
+name: al-dev-developer-traditional
 description: >-
   Implement AL code following an implementation plan without
   test-driven development. Spawned when no test plan exists. Creates

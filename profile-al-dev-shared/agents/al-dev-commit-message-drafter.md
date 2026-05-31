@@ -1,4 +1,5 @@
 ---
+name: al-dev-commit-message-drafter
 description: >-
   Git commit message drafter agent. Consumes manifests from al-dev-commit-agent-analysis,
   proposes atomic commit groups, and drafts commit messages. Dispatched by

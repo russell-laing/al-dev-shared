@@ -1,4 +1,5 @@
 ---
+name: al-dev-expert-reviewer
 description: >-
   Review AL code for adherence to naming conventions, AL patterns,
   and BC design patterns. Spawned in parallel by the

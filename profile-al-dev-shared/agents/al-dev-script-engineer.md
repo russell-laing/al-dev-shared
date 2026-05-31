@@ -1,4 +1,5 @@
 ---
+name: al-dev-script-engineer
 description: >-
   Write, validate, and run scripts for AL development and documentation
   workflows. Defaults to Python with al-analysis-toolkit patterns; also

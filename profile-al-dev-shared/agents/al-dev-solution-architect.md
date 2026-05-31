@@ -1,4 +1,5 @@
 ---
+name: al-dev-solution-architect
 description: >-
   Design BC-integrated solutions and create detailed implementation
   plans. Spawned in parallel by the al-dev-plan skill.

@@ -1,4 +1,5 @@
 ---
+name: al-dev-ticket-agent
 description: >-
   Fetch a Freshdesk ticket via API, write .dev/context file,
   and optionally download attachments. Dispatched by the

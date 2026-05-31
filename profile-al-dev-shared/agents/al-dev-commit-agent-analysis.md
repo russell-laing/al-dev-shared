@@ -1,4 +1,5 @@
 ---
+name: al-dev-commit-agent-analysis
 description: >-
   Git commit analyzer agent. Reads staged diffs and builds per-file manifests
   with object IDs and change signatures. Dispatched by al-dev-commit

@@ -1,4 +1,5 @@
 ---
+name: al-dev-performance-reviewer
 description: >-
   Review AL code for performance issues, inefficient queries,
   N+1 patterns, and resource consumption. Spawned in parallel by the

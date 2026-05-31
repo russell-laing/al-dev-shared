@@ -1,4 +1,5 @@
 ---
+name: al-dev-interview
 description: >-
   Interview the user to extract complete BC/AL implementation
   details through structured questioning. Spawned by the

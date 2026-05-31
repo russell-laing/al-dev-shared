@@ -1,4 +1,5 @@
 ---
+name: al-dev-docs-writer
 description: >-
   Generate and maintain AL project documentation — feature docs,
   API references, and setup guides. Spawned by the

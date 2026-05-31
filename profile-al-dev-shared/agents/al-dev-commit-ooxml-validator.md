@@ -1,4 +1,5 @@
 ---
+name: al-dev-commit-ooxml-validator
 description: >-
   OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx,
   .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES.

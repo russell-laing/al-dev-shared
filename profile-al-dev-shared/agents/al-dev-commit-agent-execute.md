@@ -1,4 +1,5 @@
 ---
+name: al-dev-commit-agent-execute
 description: >-
   Git commit execution agent. Executes git commits from an approved plan,
   handling hook failures and retry logic. Dispatched by al-dev-commit

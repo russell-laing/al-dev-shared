@@ -1,4 +1,5 @@
 ---
+name: al-dev-code-review
 description: >-
   General code review specialist — finds bugs, logic errors, and security
   issues with high signal-to-noise ratio. Available for standalone use;

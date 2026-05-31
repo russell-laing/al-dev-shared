@@ -1,4 +1,5 @@
 ---
+name: al-dev-commit-lint-fixer
 description: >-
   Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs
   Python lint (ruff), trailing whitespace fixes on text files, and line-count
