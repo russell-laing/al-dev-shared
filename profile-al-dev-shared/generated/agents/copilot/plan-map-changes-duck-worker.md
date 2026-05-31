@@ -65,7 +65,10 @@ checks.
     - Extract YAML keys for markdown files
     - For skill/agent markdown: Verify required keys exist (`name`, `description`)
     - If parse fails: Record U1 failure and proceed to verdict
-  - If directory: Verify it contains expected child files
+  - If directory target (e.g., skill directory):
+    - Verify directory exists and contains SKILL.md
+    - Verify SKILL.md has valid YAML frontmatter with required keys (`name`, `description`)
+    - If directory structure invalid: Record U1 failure and proceed
 - Record: U1 PASS or U1 FAIL with file path and reason
 
 **U2: Artifact Presence Verification**
@@ -74,7 +77,7 @@ checks.
 - For skills: Verify `profile-al-dev-shared/skills/<name>/SKILL.md` exists
 - For agents: Verify `profile-al-dev-shared/agents/<name>.md` exists
 - For knowledge: Verify `profile-al-dev-shared/knowledge/<name>.md` exists
-- For generated projections: Verify all three projection files exist (claude, copilot, codex)
+- Focus on authored artifacts only (do not check generated projections unless explicitly in target_files)
 - If any artifact is missing: Record U2 failure
 - Record: U2 PASS or U2 FAIL with artifact and reason
 
@@ -95,7 +98,11 @@ checks.
 **Phase 3: Type-Specific Checks**
 
 Only run if U1, U2, U3 all pass. Execute checks specific to suggestion type.
-Reference checks are defined in the reference document.
+
+**Reference Authority:** All universal and type-specific check procedures are defined
+verbatim in `map-change-rubber-duck-checks.md`. Follow that document's procedures
+exactly. This spec summarizes the checks; the reference document is authoritative
+for implementation details.
 
 **Type: Trim**
 
@@ -105,9 +112,11 @@ Reference checks are defined in the reference document.
   - Count total references
 - If zero references: Artifact is unused → Record ACCEPT
 - If references found: Verify they are not in comments/examples only
-  - If all references are comment-only: Artifact is unused → Record ACCEPT
-  - If references are in active code: Artifact is in use → Record REJECT with evidence
-- Record: Trim check PASS or FAIL with grep results
+  - If all references appear only within markdown code blocks, examples sections,
+    or architectural explanations (not in active agent/skill invocations): 
+    Artifact is unused → Record ACCEPT
+  - If references are in active code/invocations: Artifact is in use → Record REJECT with evidence
+- Record: Trim check ACCEPT or REJECT with grep results
 
 **Type: Merge**
 
@@ -238,29 +247,52 @@ Create duck record artifact at:
 ```json
 {
   "suggestion_id": "<id>",
-  "suggestion_type": "<Trim|Merge|Split|Inline|Align|Connect|Promote>",
-  "suggestion_text": "<original suggestion>",
+  "type": "<trim|merge|split|inline|align|connect|promote>",
   "verdict": "<ACCEPT|DEFER|REJECT>",
-  "timestamp": "<ISO 8601 datetime>",
-  "checks_passed": [
-    { "check": "U1", "status": "PASS" },
-    { "check": "U2", "status": "PASS" },
-    { "check": "U3", "status": "PASS" }
+  "state": "<comma-separated check phases passed>",
+  "side_effects": [
+    "<side effect or impact warning>",
+    "<side effect or impact warning>"
   ],
-  "type_specific_checks": [
+  "evidence": [
     {
-      "check": "<check_name>",
-      "status": "<PASS|FAIL>",
-      "finding": "<concise finding>"
+      "check": "<check name>",
+      "result": "<pass|warning|fail>",
+      "message": "<human-readable check result>",
+      "findings": "<detailed findings if applicable>"
     }
   ],
-  "blocking_check": "<check_name_if_reject_defer>",
-  "evidence": [
-    "<file location or grep output>",
-    "<specific line numbers or references>"
+  "worker_id": "<optional worker identifier>",
+  "completed_at": "<ISO 8601 timestamp>"
+}
+```
+
+**Example of a successful ACCEPT verdict:**
+
+```json
+{
+  "suggestion_id": "s-001",
+  "type": "trim",
+  "verdict": "ACCEPT",
+  "state": "u1_passed,u2_passed,u3_passed,type_checks_passed",
+  "side_effects": [
+    "Removes --output flag documentation from agent argument-hint"
   ],
-  "recommendation": "<guidance if DEFER>",
-  "runtime_seconds": <elapsed_time>
+  "evidence": [
+    {
+      "check": "U1: File accessibility",
+      "result": "pass",
+      "message": "All 1 target files are readable and syntactically valid"
+    },
+    {
+      "check": "Trim: Unused verification",
+      "result": "pass",
+      "message": "Flag --output is mentioned only in documentation. No external references found.",
+      "findings": "Searched all agents and skills; no callers detected"
+    }
+  ],
+  "worker_id": "worker-42",
+  "completed_at": "2026-05-31T14:24:10Z"
 }
 ```
 
@@ -276,18 +308,42 @@ If unrecoverable error occurs:
 ```json
 {
   "suggestion_id": "<id>",
-  "error_status": "<file_not_found|parse_error|timeout|unknown>",
-  "error_message": "<human-readable error>",
-  "attempted_checks": ["<check_name>", ...],
-  "timestamp": "<ISO 8601 datetime>"
+  "type": "<trim|merge|split|inline|align|connect|promote>",
+  "status": "<file_not_found|parse_error|check_failure|timeout>",
+  "error": "<short error title>",
+  "error_detail": "<long-form error message with context>",
+  "attempted_checks": ["<check name>", ...],
+  "completed_checks": ["<check name>", ...],
+  "worker_id": "<optional worker identifier>",
+  "failed_at": "<ISO 8601 timestamp>"
+}
+```
+
+**Example error record (file not found):**
+
+```json
+{
+  "suggestion_id": "s-003",
+  "type": "split",
+  "status": "file_not_found",
+  "error": "Target file not accessible",
+  "error_detail": "profile-al-dev-shared/agents/al-dev-develop.md: file does not exist or is not readable (permission denied on parent directory)",
+  "attempted_checks": [
+    "U1: File accessibility",
+    "U2: Artifact presence",
+    "U3: Reference validity"
+  ],
+  "completed_checks": [],
+  "worker_id": "worker-44",
+  "failed_at": "2026-05-31T14:26:00Z"
 }
 ```
 
 3. Possible error statuses:
    - `file_not_found`: Required input file not accessible
    - `parse_error`: Failed to parse reference document or suggestion object
-   - `timeout`: Exceeded 5-minute time limit
-   - `unknown`: Other unhandled error
+   - `check_failure`: Error during check execution
+   - `timeout`: Exceeded time limit for a check
 
 Never fail silently — always write a record (success or error).
 
@@ -306,6 +362,14 @@ Never fail silently — always write a record (success or error).
 - Wrap each type-specific check in try-catch; record failure but continue other checks
 - If all steps complete successfully, write success record
 - If unhandled error occurs at any phase, write error record with attempted_checks list
+
+**Timeout Guidance:**
+For grep-based searches (Trim, Inline, Connect checks), apply a 30-second timeout per
+search. If timeout is exceeded, mark the check as DEFER (in verdict, not REJECT) with
+a note in the error record about search complexity. Record error status as `timeout`
+with error message indicating which check timed out and why (e.g., "Trim pattern search
+across 12 skill files exceeded 30-second limit; codebase may be too large or pattern
+too generic").
 
 ## Success Criteria
 
