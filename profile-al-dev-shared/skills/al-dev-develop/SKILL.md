@@ -140,7 +140,7 @@ al_search_object_members — for event signatures and methods:
 
 al_find_references — to detect existing similar extensions:
   avoids duplicate subscriber registration
-```
+```text
 
 3. `text search` through scoped `rg` only when no semantic provider
    is available. Label it as weaker evidence and include file:line
@@ -171,7 +171,7 @@ Use this format:
 - Evidence source: unverified
 - Reason: [not found in semantic provider / ambiguous match / no provider available]
 - Risk: Developer must not guess this signature
-```
+```text
 
 A procedure is "required" if it is explicitly referenced in the approved solution plan
 and the assigned developer task must call it.
@@ -207,7 +207,7 @@ developer spawn prompt:
 Optional unverified signatures — do NOT guess these:
 - [ProcedureName]: [reason not verified; not required for assigned task]
 STOP and report back if the implementation would need to call this procedure.
-```
+```text
 
 If not in autonomous mode, skip this step and proceed to Phase 2.
 
@@ -336,7 +336,7 @@ dispatching a developer before proceeding.
 rg -rn -e \
   '^(table|page|codeunit|report|enum|interface|xmlport|query|permissionset)\s+[0-9]+\s+' \
   --glob="*.al" .
-```
+```text
 
 For each match, the object name is everything after the numeric
 ID. Count its characters. Flag any name exceeding 30 characters
@@ -346,7 +346,7 @@ as a CRITICAL issue.
 
 ```bash
 rg -rn -e '#if|#else|#endif' --glob="*.al" .
-```
+```yaml
 
 For each `#if` directive, read the surrounding block. Verify:
 
@@ -360,7 +360,7 @@ Flag any inverted condition or unmatched directive as CRITICAL.
 
 ```bash
 rg -rn -m 50 -e 'label|Error\(|Message\(|FieldCaption' --glob="*.al" .
-```
+```text
 
 Cross-reference against the solution plan's feature descriptions.
 Flag any label using different terminology than the plan as a HIGH issue.
@@ -389,7 +389,7 @@ Write to:
 ### Summary
 CRITICAL issues: N (must fix before review)
 HIGH issues: N (flagged in code review)
-```
+```yaml
 
 If CRITICAL issues found: dispatch a developer with the specific
 violations. Wait for fixes. Re-run the relevant check before

@@ -48,7 +48,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ```bash
 /fix "Customer validation not working for negative credit limits"
-```
+```text
 
 ---
 
@@ -102,7 +102,7 @@ NON-TRIVIAL (10% of fixes):
 Example: "Posting fails intermittently"
 Example: "Event subscriber not triggering"
 Example: "Performance degradation after upgrade"
-```
+```markdown
 
 ### Step 2: Trivial Fix (2-5 min)
 
@@ -165,7 +165,7 @@ For trivial fixes:
     Lint: [✅ Clean / N unresolved items → lint-report.md]
 
     Ready to test?"
-```
+```text
 
 **No approval gate - present fix directly.**
 
@@ -298,7 +298,7 @@ For non-trivial fixes:
     Risks to watch: [from architect analysis]
 
     Ready to test?"
-```
+```text
 
 **Still no approval gate, but more context provided.**
 
@@ -326,7 +326,7 @@ You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
         ├─→ Verify compilation
         ├─→ Scope check
         └─→ Present to user ✅
-```
+```text
 
 ---
 
@@ -360,14 +360,14 @@ This command intentionally **skips approval gates** for fast iteration:
 ```text
 Fix → Code Review → User Approval → Testing
 (Slow but thorough)
-```
+```yaml
 
 **/fix workflow:**
 
 ```text
 Fix → Compilation Check → Present to User → User Tests
 (Fast but requires user to verify)
-```
+```yaml
 
 **Trade-off accepted:**
 - ✅ Faster feedback loop
@@ -392,7 +392,7 @@ scope.
 ✅ Compilation successful
 ❌ Compilation failed: [error]
 ⚠️  Compilation not verified (al-compile unavailable)
-```
+```yaml
 
 If compilation fails: for trivial fixes, fix only errors caused by the small
 change and re-run compile once; for non-trivial fixes, keep compile correction

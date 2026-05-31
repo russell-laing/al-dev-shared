@@ -165,7 +165,7 @@ MEDIUM: [notable issues to address]
 LOW: [minor improvements]
 
 If no issues found in your specialty: return "NONE" under each severity.
-```
+```yaml
 
 Spawn these three agents with the above prompt adapted to each specialty:
 - `al-dev-shared:al-dev-security-reviewer` — focus: permissions, data exposure, auth checks

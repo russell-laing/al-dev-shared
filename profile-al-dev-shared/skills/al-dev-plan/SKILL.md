@@ -221,7 +221,7 @@ Design considerations:
 6. Upgrade considerations
 
 Your assigned approach: [specific approach for this architect]
-```
+```markdown
 
 ## Architect Output Requirements
 
@@ -310,7 +310,7 @@ PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
 [ -f "$VALIDATOR" ] && [ -n "$REQ" ] && [ -n "$PLAN" ] && \
   python3 "$VALIDATOR" "$PLAN" "$REQ" \
   || echo "Validator not found or files missing — skipping"
-```
+```text
 
 The script auto-detects files in the same directory.
 
@@ -340,7 +340,7 @@ Evaluated [N] competing approaches:
 Selected Approach [X] because [key rationale].
 
 Ready to proceed to development?
-```
+```yaml
 
 USER_GATE — ask the user with options:
 - Approve - Proceed to development
