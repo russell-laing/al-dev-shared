@@ -80,6 +80,8 @@ failure_policy:
 This policy defines how shared agent capability declarations are projected into
 harness-native tool metadata. Shared files keep the canonical vocabulary.
 Harness-specific instructions files and profile repos perform the projection.
+For a repo-local maintainer walkthrough of the broader architecture and
+historical context, see `docs/projection-layer-readme.md`.
 
 ## Canonical Shared Vocabulary
 
@@ -89,6 +91,49 @@ Harness-specific instructions files and profile repos perform the projection.
   capabilities.
 - Shared files must not replace canonical vocabulary with harness-native tool
   names.
+
+## Maintainer Boundary and Regeneration Rules
+
+### Authored vs. Generated Files
+
+- Edit shared authored source directly in:
+  - `profile-al-dev-shared/agents/*.md`
+  - `profile-al-dev-shared/skills/<name>/SKILL.md`
+  - `profile-al-dev-shared/knowledge/*.md`
+- Never hand-edit generated projections in:
+  - `profile-al-dev-shared/generated/agents/claude/`
+  - `profile-al-dev-shared/generated/agents/copilot/`
+  - `profile-al-dev-shared/generated/agents/codex/`
+
+Generated projection files are derived artifacts. Any manual edits there will
+be overwritten the next time projections are regenerated.
+
+### When to Regenerate Projections
+
+Regenerate projections after either of these changes:
+
+- You edit shared agent source in `profile-al-dev-shared/agents/*.md`
+- You change implemented projection behavior in
+  `scripts/generate-agent-projections.py`
+
+Policy-only or knowledge-only documentation edits do not require regeneration
+by themselves. If you change the intended mapping contract, keep the generator
+implementation aligned with that contract. The generator remains the runtime
+source of truth for emitted projection artifacts.
+
+### Minimum Projection Integrity Checks
+
+Run these checks when changing shared projection behavior or the shared
+authored surface around it:
+
+```bash
+python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
+python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/tests/test_generate_agent_projections.py
+```
+
+Use `profile-al-dev-shared/knowledge/harness-concepts.md` for the generic
+vocabulary contract when replacing harness-specific names in shared source.
 
 ## Projection Rules
 

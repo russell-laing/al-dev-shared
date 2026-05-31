@@ -2,7 +2,7 @@
 description: >-
   Resolve AL lint warnings and compile errors surfaced by
   al-compile. Groups issues by rule ID and applies auto-fixes.
-  Dispatched directly by the al-dev-lint skill.
+  Dispatched by al-dev-lint and al-dev-fix skills.
 model: sonnet
 tools: ["Read", "Edit", "Glob", "Grep", "Bash"]
 ---
