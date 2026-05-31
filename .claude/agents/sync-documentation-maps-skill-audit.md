@@ -46,6 +46,9 @@ Valid `type` values: `missing_from_map`, `stale_in_map`, `phase_count_mismatch`,
 
 ## Instructions
 
+All relative paths in these instructions are from the repository root:
+`/Users/russelllaing/al-dev-shared`. Adjust paths if the working directory differs.
+
 ### Step 1 — Build active skill list
 
 Run `ls profile-al-dev-shared/skills/` to get all skill directory names.
@@ -79,7 +82,14 @@ Compare the active skill list and extracted metadata against the map data:
 - **`stale_in_map`** — a `### /skill-name` Layer 2 section exists for a skill
   that is archived (not in the active list).
 - **`phase_count_mismatch`** — the phase count extracted from `SKILL.md` does not
-  match the phase label stated in the map's Layer 2 section for that skill.
+  match the phase count implied by the map. Because the skills map has no
+  explicit "phase count" field, derive the map's phase count from the `flowchart
+  LR` Mermaid diagram in the skill's Layer 2 section: scan node IDs for the
+  pattern `Phase<N>` (e.g. `Phase0`, `Phase4`) and take the highest N as the
+  map's phase count; compare against the highest `## Phase N` heading number in
+  `SKILL.md`. If the diagram is absent or the node IDs are ambiguous, record the
+  discrepancy with `type: phase_count_mismatch` and a `detail` that describes
+  the ambiguity (e.g. `"map shows phases 0–3, skill file has phases 0–5"`).
 - **`agent_name_mismatch`** — an agent name extracted from `SKILL.md`
   (`al-dev-shared:<name>`) does not appear in the map's Layer 2 section for
   that skill.
@@ -95,5 +105,7 @@ plain-English `summary` field (e.g. "3 discrepancies found: 2 missing_from_map,
 Write the report to `<result_dir>/audit/skill-audit.json`.
 
 Verify the file exists: `ls -la <result_dir>/audit/skill-audit.json`.
+If the file is not found, stop and report the failure — do not return a path
+for a file that does not exist on disk.
 
 Return only the absolute file path — no other prose.
