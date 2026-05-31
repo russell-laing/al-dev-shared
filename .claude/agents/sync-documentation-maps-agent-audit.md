@@ -65,46 +65,72 @@ For each active agent, Read `profile-al-dev-shared/agents/<name>.md`.
 Extract from frontmatter:
 
 - **model:** the `model:` field value.
-- **tools:** the `tools:` list (all entries).
+- **tools:** the `tools:` list (all entries). If `tools` is an empty list `[]`,
+  normalize it to the string `(none)` for comparison against the map.
 - **description:** the first sentence of the `description:` field.
 
 ### Step 3 — Cross-reference callers
 
 For each active agent, derive `<agent-name>` by stripping the `.md` extension.
-Run both grep commands and union the results to build the caller list:
+Run both grep commands against active (non-archived) skill directories and union
+the results to build the caller list. Exclude archived skill directories to avoid
+false positives from stale references:
 
 ```bash
 grep -rl "al-dev-shared:<agent-name>" \
-  profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
+  profile-al-dev-shared/skills/ 2>/dev/null
+find .claude/skills/ -not -path "*/archived/*" -type f | \
+  xargs grep -l "al-dev-shared:<agent-name>" 2>/dev/null
+
 grep -rl "<agent-name>" \
-  profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
+  profile-al-dev-shared/skills/ 2>/dev/null
+find .claude/skills/ -not -path "*/archived/*" -type f | \
+  xargs grep -l "<agent-name>" 2>/dev/null
 ```
 
-The caller list is the union of files returned by both commands.
+After running all four commands, deduplicate the combined results: `sort -u`
+the final caller list to remove duplicates from overlapping grep patterns.
+The caller list is the deduplicated union of all files returned.
 
 ### Step 4 — Parse docs/al-dev-agent-map.md
 
 Read `docs/al-dev-agent-map.md`. Extract:
 
 - **Layer 1 Catalog table rows:** agent names listed in the Layer 1 table.
-- **Layer 2 sections:** collect all `### <agent-name>` headings (the agent name
-  immediately follows the `###` prefix). Also note the `model:` and `tools:`
-  values recorded in each Layer 2 section, and the `Spawned by:` field.
+- **Layer 2 sections:** collect only `###` headings whose text matches the agent
+  name pattern (starts with `al-dev-` or another defined agent prefix). Use:
+
+  ```bash
+  grep "^### al-dev-" docs/al-dev-agent-map.md
+  ```
+
+  Skip generic headings like "Quality suggestions", "Agents used by only one
+  skill", or any other non-agent headings that appear in the Observations section.
+  For each matched heading, also note the `model:` and `tools:` values recorded
+  in that Layer 2 section, and the `Spawned by:` field.
 
 ### Step 5 — Identify discrepancies
 
 Compare the active agent list and extracted metadata against the map data:
 
-- **`missing_from_map`** — an active agent has no corresponding `### <agent-name>`
-  section in the Layer 2 portion of `docs/al-dev-agent-map.md`.
-- **`stale_in_map`** — a `### <agent-name>` Layer 2 section exists for an agent
-  that is archived (not in the active list).
+- **`missing_from_map`** — an active agent has no entry in the Layer 1 Catalog
+  table OR no `### <agent-name>` section in Layer 2. Flag as `missing_from_map`
+  if either layer is absent.
+- **`stale_in_map`** — an archived agent (not in the active list) still has a
+  row in the Layer 1 Catalog table OR a `### <agent-name>` section in Layer 2
+  (or both). Flag as `stale_in_map` if either stale artifact remains.
 - **`model_mismatch`** — the `model:` value in the agent frontmatter does not
   match the model recorded in the Layer 2 section for that agent.
-- **`tools_mismatch`** — the `tools:` list in the agent frontmatter does not
-  match the tools recorded in the Layer 2 section for that agent.
+- **`tools_mismatch`** — before comparing, normalize: if the map records
+  `(none)` for tools and the frontmatter `tools:` list is empty `[]`, treat
+  these as matching (not a mismatch). Only flag `tools_mismatch` when the
+  normalized values differ.
 - **`caller_mismatch`** — the `Spawned by:` field in the Layer 2 section does
-  not match the caller list derived from grep in Step 3. Record both the map
+  not match the caller list derived from grep in Step 3. When comparing,
+  consider only files where the agent is invoked as `al-dev-shared:<agent-name>`
+  (a functional call). If grep found the agent name mentioned only in
+  documentation prose and not as a functional invocation, note this distinction
+  in the `detail` field rather than flagging as a mismatch. Record both the map
   value and the grep-derived value in `detail`.
 
 ### Step 6 — Write JSON report and return path
