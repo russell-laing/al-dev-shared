@@ -204,6 +204,13 @@ New fields to add or update:
 | `skill_update_team_id` | `SKILL_UPDATE_TEAM_ID` or `null` |
 | `agent_update_team_id` | `AGENT_UPDATE_TEAM_ID` or `null` |
 
+**Merge strategy:** Read the existing checkpoint JSON, add or update only the five
+fields listed above (skill_update_team_id, agent_update_team_id, update_choice,
+phase, status), and write the result back. Preserve all pre-existing fields
+(e.g., `run_id`, `auto_update`, `skip_commit`, `result_dir`). Recommended
+approach: use `jq` to update individual keys without re-serializing the whole
+object, or read-mutate-write via script.
+
 Verify both files were written:
 
 ```bash
