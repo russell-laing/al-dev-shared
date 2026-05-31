@@ -4,7 +4,7 @@ Referenced by: `al-dev-docs-writer` agent and `/al-dev-document` skill
 
 ## Overview
 
-This guide documents how to parse, track, and render **Requirements Traceability Matrix (RTM)** data in feature documentation. The RTM system links documented requirements to implementation status, ensures completeness, and provides traceability for stakeholder sign-off.
+This guide documents how to parse source requirements, track status, and render **Requirements Traceability Matrix (RTM)** data in feature documentation. The RTM system links documented requirements to implementation status, ensures completeness, and provides traceability for stakeholder sign-off.
 
 ---
 
@@ -36,6 +36,8 @@ ACC-001: Credit limit field accepts zero or positive numbers only
 ACC-002: Error message displayed if limit is exceeded
 ```
 
+The token examples above are internal parsing patterns, not output examples. Use the later RTM table templates and audience rules when rendering documentation.
+
 ### Parsing Rules
 
 1. Scan the latest `*-al-dev-interview-requirements.md` file for all `REQ-NNN` and `ACC-NNN` tokens.
@@ -47,7 +49,7 @@ ACC-002: Error message displayed if limit is exceeded
 
 ## Status Inference
 
-The RTM status for each requirement is inferred from the **presence of `.dev/` files** in the project. The inferred status **overrides** any `status:` field in the requirements file itself.
+The RTM status for each requirement is inferred from the **presence of `.dev/` files** in the project. The inferred status **overrides** any `status:` field in the requirements file itself for RTM rendering.
 
 ### Status Rules
 

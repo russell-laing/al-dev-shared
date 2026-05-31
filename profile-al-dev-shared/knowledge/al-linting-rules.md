@@ -11,7 +11,9 @@ tags:
 # AL Linting Rules Reference
 
 Quick reference for AL code analyser rules.
-Use rule IDs to look up fixes for `al-compile` output.
+Use rule IDs to look up fixes for compile or lint output.
+
+The quick reference below lists the most common fixes only. Use the detailed tables when the top list is incomplete or when you need the authoritative rule details.
 
 ## Quick Reference — Most Common Fixes
 
@@ -36,7 +38,7 @@ Use rule IDs to look up fixes for `al-compile` output.
 
 ---
 
-## AL Compile Errors (AL prefix)
+## AL Compiler Diagnostics (AL prefix)
 
 | Rule ID | Severity | Title | Fix | Applies To |
 | --- | --- | --- | --- | --- |

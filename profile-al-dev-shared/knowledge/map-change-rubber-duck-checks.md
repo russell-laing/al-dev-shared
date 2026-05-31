@@ -5,12 +5,15 @@ evaluating suggestions from the plugin health sweep and architecture analysis
 phases. Each suggestion is rubber-ducked against the live codebase before any
 implementation plan is written.
 
+This guide applies after a suggestion has already entered rubber-duck review; it
+does not replace the initial analysis or sweep that produced the suggestion.
+
 ## Universal Checks (All Suggestion Types)
 
 All suggestions must pass three universal validation gates before proceeding to
 type-specific checks.
 
-### U1: File Accessibility and Syntax Validation
+### U1: File Parseability and Basic Access
 
 **Goal:** Verify the referenced artifact exists on disk and is parseable.
 
@@ -31,7 +34,7 @@ type-specific checks.
 **Example fail:** A Merge suggestion references agent
 `profile-al-dev-shared/agents/agent-y.md` that does not exist on disk.
 
-### U2: Artifact Presence Verification
+### U2: Live Artifact Presence
 
 **Goal:** Verify all artifacts named in the suggestion are still present in the
 codebase (not deleted between analysis and duck check).
@@ -104,7 +107,7 @@ TRIM: Remove <artifact> (tool/agent/skill) from <surface> — tool/feature is un
 2. **Actual usage verification:**
    - If `grep` finds zero references, the artifact is truly unused → ACCEPT
    - If `grep` finds references, extract the context (2 lines before/after)
-   - For each reference, verify it is not a comment or template example
+   - For each reference, verify it is not a comment, example, or template placeholder
    - If all references are in comments/examples only, functionally unused → ACCEPT
    - If references indicate active use, mark as REJECT with reason "artifact is
      actively used"
@@ -281,6 +284,7 @@ CONNECT: Extract shared pattern into reusable agent — <agents> share <pattern>
 1. **Pattern identification:**
    - Read the agents mentioned in the suggestion
    - Extract the shared procedural steps or tool sequences
+   - Treat structural workflow similarity as more important than exact string matches
 2. **Pattern frequency:**
    - Search entire codebase for this pattern in other agents/skills
    - Count occurrences
@@ -329,6 +333,7 @@ PROMOTE: Extract skill to shared surface — pattern repeated, needs canonical f
 4. **Knowledge dependencies:**
    - Verify all knowledge files are in the shared knowledge directory
    - If artifact references harness-specific knowledge → DEFER
+   - Treat equivalent shared workflow behavior as reuse even when the caller text differs
 5. **Verdict:**
    - ACCEPT if used 2+ times, harness-neutral, dependencies available
    - DEFER if harness-specific tokens or dependencies need removal/migration

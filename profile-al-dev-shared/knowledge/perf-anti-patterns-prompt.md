@@ -34,14 +34,14 @@ PATTERN: [P1–P8 ID]
 SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
 FILE: [exact path]
 LINE: [line number]
-CODE: [3–5 lines of the problematic code]
+CODE: [the smallest excerpt that still shows the loop or condition context, usually 3–5 lines]
 FIX: [3–5 lines of the corrected version]
 IMPACT: [estimated frequency — per record, per batch, etc.]
 
 Do NOT flag:
 - CalcFields outside loops
 - Get() inside loops where the key value is unchanged
-  (same record fetched intentionally, e.g., re-read after Modify)
+  (same record fetched intentionally for an explicit reason, e.g., re-read after Modify)
 - SetLoadFields when the procedure reads most fields anyway
 - FindSet(true) when the loop body calls Modify(), Delete(),
   or Rename()
@@ -235,7 +235,7 @@ end;
 
 **Decision:** The safe fix pre-validates once (header-level), then skips per-line checks. No business logic changes; same validations, better order.
 
-### Batch Processor vs. UI code paths — Different Trade-off Rules
+### Batch Processing vs. UI code paths — Different Trade-off Rules
 
 **Batch Processing (Codeunit::RunBatch) Trade-offs:**
 - Can sacrifice user-facing latency for throughput (10 seconds for 1M records is OK)

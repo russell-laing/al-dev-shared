@@ -18,7 +18,7 @@
 - Clear implementation path
 - Examples: Add field to extension, simple validation, UI field addition
 
-**Planning Target: 100-150 lines total**
+**Planning Target: 100-150 lines total (target range)**
 
 **⚠️ CRITICAL: NO COMPLETE CODE IN PLANNING**
 
@@ -127,7 +127,7 @@ the change safely, without turning the planning artifact into source code.
 - Multiple integration points
 - Examples: Multi-file validation, event subscribers, moderate business logic
 
-**Planning Target: 200-400 lines total**
+**Planning Target: 200-400 lines total (target range)**
 
 **⚠️ CRITICAL: DESCRIBE CODE, DON'T WRITE IT**
 
@@ -176,7 +176,7 @@ Solution plans explain WHAT fields/procedures are needed and WHY, not the comple
 - Unclear requirements need exploration
 - Examples: Approval workflows, API integrations, new posting routines
 
-**Planning Target: 400-800 lines total**
+**Planning Target: 400-800 lines total (target range)**
 
 **⚠️ CRITICAL: ARCHITECTURAL DOCUMENTATION, NOT CODE**
 
@@ -278,7 +278,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 1. ASCII diagrams ONLY if genuinely helpful (not decorative)
 2. Brief alternatives section (2-3 options, 1 paragraph each)
 3. Architecture overview (text-based, 1-2 paragraphs)
-4. Code templates for non-obvious patterns
+4. Short illustrative snippets or pattern sketches for non-obvious cases
 5. Integration points documented
 6. Basic error handling approach
 
@@ -289,7 +289,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 4. Comprehensive code templates
 5. Performance considerations
 6. Error handling strategy
-7. Rollback and migration plans
+7. Rollback and migration plans when relevant
 8. Extensive troubleshooting guide
 
 ---
@@ -314,6 +314,8 @@ Even complex features: Describe the design comprehensively, but don't write the 
 ---
 
 ## Examples
+
+These examples are illustrative patterns, not mandatory templates.
 
 ### ❌ BAD: SIMPLE Feature with 946-line Plan
 
