@@ -29,6 +29,9 @@ improvement here is session-freeing, not parallelism.
 
 Read the arguments supplied by the user:
 
+AUTO_UPDATE=false
+SKIP_COMMIT=false
+
 - If `--all` is present, set `AUTO_UPDATE=true`.
 - If `--skip-commit` is present, set `SKIP_COMMIT=true`.
 
@@ -40,6 +43,7 @@ Create a timestamped run directory to hold all artifacts for this operation:
 
 ```bash
 RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)
+SPAWNED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 RUN_DIR="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/${RUN_ID}"
 mkdir -p "${RUN_DIR}/audit"
 mkdir -p "${RUN_DIR}/updates"
@@ -71,10 +75,10 @@ other). Use RemoteTrigger to launch each audit as an independent remote agent.
 
 - **Skills audit:** dispatch agent `.claude/agents/sync-documentation-maps-skill-audit.md`
   - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
-    `${RUN_DIR}/audit/skills-audit.md`
+    `${RUN_DIR}/audit/skill-audit.json`
 - **Agent audit:** dispatch agent `.claude/agents/sync-documentation-maps-agent-audit.md`
   - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
-    `${RUN_DIR}/audit/agents-audit.md`
+    `${RUN_DIR}/audit/agent-audit.json`
 
 Capture the returned task IDs as `SKILL_TEAM_ID` and `AGENT_TEAM_ID`.
 
@@ -91,7 +95,7 @@ Write `.dev/sync-documentation-maps-checkpoint.json` with the following fields:
 |---|---|
 | `operation` | `"sync-documentation-maps"` |
 | `run_id` | `RUN_ID` |
-| `spawned_at` | current UTC timestamp |
+| `spawned_at` | `"${SPAWNED_AT}"` |
 | `skill_audit_team_id` | `SKILL_TEAM_ID` |
 | `agent_audit_team_id` | `AGENT_TEAM_ID` |
 | `phase` | `"audit"` |
@@ -112,11 +116,12 @@ ls -la "${RUN_DIR}/manifest.json"
 
 Append a progress entry to `.dev/progress.md`:
 
-```text
-[RUN_ID] sync-documentation-maps dispatched
-  skill_audit_team_id: SKILL_TEAM_ID
-  agent_audit_team_id: AGENT_TEAM_ID
-  next: /sync-documentation-maps-collect --team-ids SKILL_TEAM_ID,AGENT_TEAM_ID
+```bash
+cat >> .dev/progress.md << 'EOF'
+[2026-05-31] sync-documentation-maps (run ${RUN_ID}): Spawned skill-audit
+  (${SKILL_TEAM_ID}) and agent-audit (${AGENT_TEAM_ID}) teams.
+  Next: /sync-documentation-maps-collect --team-ids ${SKILL_TEAM_ID},${AGENT_TEAM_ID}
+EOF
 ```
 
 ---
