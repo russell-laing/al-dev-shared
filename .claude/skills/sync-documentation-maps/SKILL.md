@@ -2,174 +2,152 @@
 name: sync-documentation-maps
 description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
-  or to verify accuracy after adding/removing skills or agents. Coordinates
-  skill and agent map audits and updates in one unified workflow.
-argument-hint: "[optional: --all | --skip-commit]"
+  or to verify accuracy after adding/removing skills or agents. Dispatches
+  parallel remote audit teams via RemoteTrigger and exits — session freed after
+  ~5 minutes. Collect results with /sync-documentation-maps-collect.
+  Triggers: "sync documentation maps", "update maps", "are the maps accurate".
+argument-hint: "[--all] [--skip-commit]"
 ---
 
 # Sync Documentation Maps
 
-Unified entry point that coordinates audits and updates of both `docs/al-dev-skills-map.md`
-and `docs/al-dev-agent-map.md`. Runs audits in parallel, presents findings, asks user
-which to update, applies changes.
+Lightweight dispatch coordinator. Spawns parallel remote audit teams for skills
+and agents via RemoteTrigger, writes a checkpoint with team IDs and artifact
+paths, then exits — freeing the session after roughly 5 minutes. The audits
+themselves already ran in parallel in the previous implementation; the
+improvement here is session-freeing, not parallelism.
+
+**Three-skill workflow:**
+
+1. `/sync-documentation-maps` — dispatch audit teams (this skill, ~5 min)
+2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
+3. `/sync-documentation-maps-finalize --team-ids <ids>` — write maps, commit
 
 ---
 
-## Phase 1: Parallel Audits
+## Phase 0 — Parse Arguments
 
-Dispatch both audits to run in parallel:
+Read the arguments supplied by the user:
 
-```
-Spawn: /review-skill-map --no-update
-Spawn: /review-agent-map --no-update
-```
-
-Wait for both to complete. Collect audit findings for each map.
+- If `--all` is present, set `AUTO_UPDATE=true`.
+- If `--skip-commit` is present, set `SKIP_COMMIT=true`.
 
 ---
 
-## Phase 2: Present Findings
+## Phase 1 — Generate Run Context
 
-Display findings from both audits in a summary table:
+Create a timestamped run directory to hold all artifacts for this operation:
 
+```bash
+RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)
+RUN_DIR="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/${RUN_ID}"
+mkdir -p "${RUN_DIR}/audit"
+mkdir -p "${RUN_DIR}/updates"
+ls -la "${RUN_DIR}/"
 ```
-Skills Map Audit:
-  [findings summary from /review-skill-map --no-update]
 
-Agent Map Audit:
-  [findings summary from /review-agent-map --no-update]
-```
-
-If both maps are accurate with no discrepancies, report:
-**"Both documentation maps are accurate. No updates needed."** and stop.
+Record `RUN_ID` and `RUN_DIR` for use in all subsequent phases.
 
 ---
 
-## Phase 3: Ask User What to Update
+## Phase 2 — Build File Lists
 
-**If `--all` argument was passed:** Skip to Phase 4 and update both maps.
+Enumerate the current skills and agents (including archived surfaces) so the
+audit teams have a complete inventory to compare against the maps:
 
-**Otherwise, ask the user:**
-
+```bash
+ls profile-al-dev-shared/skills/
+ls profile-al-dev-shared/archived/skills/ 2>/dev/null
+ls profile-al-dev-shared/agents/
+ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 ```
-Which map would you like to update?
-  [1] Skills map only (docs/al-dev-skills-map.md)
-  [2] Agent map only (docs/al-dev-agent-map.md)
-  [3] Both maps
-  [4] Neither (skip updates)
-```
-
-Record user's choice.
 
 ---
 
-## Phase 4: Conditional Updates
+## Phase 3 — Spawn Audit Teams via RemoteTrigger
 
-Based on user's choice from Phase 3, dispatch the appropriate update skills:
+Dispatch **both** tasks simultaneously (do not wait for one before starting the
+other). Use RemoteTrigger to launch each audit as an independent remote agent.
 
-**If skills map selected:**
-```
-Spawn: /review-skill-map
-Wait for completion
-```
+- **Skills audit:** dispatch agent `.claude/agents/sync-documentation-maps-skill-audit.md`
+  - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
+    `${RUN_DIR}/audit/skills-audit.md`
+- **Agent audit:** dispatch agent `.claude/agents/sync-documentation-maps-agent-audit.md`
+  - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
+    `${RUN_DIR}/audit/agents-audit.md`
 
-**If agent map selected:**
-```
-Spawn: /review-agent-map
-Wait for completion
-```
-
-**If both selected:**
-```
-Spawn: /review-skill-map
-Spawn: /review-agent-map
-Wait for both to complete
-```
-
-**If neither selected:**
-Skip to Phase 5.
+Capture the returned task IDs as `SKILL_TEAM_ID` and `AGENT_TEAM_ID`.
 
 ---
 
-## Phase 5: Finalize
+## Phase 4 — Write Checkpoint
 
-**If `--skip-commit` was passed:** Display changes that would be committed, then stop.
+Write a checkpoint file so `/sync-documentation-maps-collect` can locate the
+running teams and their artifact paths.
 
-**Otherwise:**
-- Refresh the dependency graph (plugin surface):
-  ```bash
-  python3 scripts/generate-agent-projections.py
-  ```
-- Present summary of all changes made
-- Report: "Documentation maps synchronized successfully."
+Write `.dev/sync-documentation-maps-checkpoint.json` with the following fields:
+
+| Field | Value |
+|---|---|
+| `operation` | `"sync-documentation-maps"` |
+| `run_id` | `RUN_ID` |
+| `spawned_at` | current UTC timestamp |
+| `skill_audit_team_id` | `SKILL_TEAM_ID` |
+| `agent_audit_team_id` | `AGENT_TEAM_ID` |
+| `phase` | `"audit"` |
+| `status` | `"dispatched"` |
+| `auto_update` | `AUTO_UPDATE` (true/false) |
+| `skip_commit` | `SKIP_COMMIT` (true/false) |
+| `result_dir` | `RUN_DIR` |
+| `manifest_path` | `${RUN_DIR}/manifest.json` |
+
+Also write the identical JSON to `${RUN_DIR}/manifest.json`.
+
+Verify both files exist:
+
+```bash
+ls -la .dev/sync-documentation-maps-checkpoint.json
+ls -la "${RUN_DIR}/manifest.json"
+```
+
+Append a progress entry to `.dev/progress.md`:
+
+```text
+[RUN_ID] sync-documentation-maps dispatched
+  skill_audit_team_id: SKILL_TEAM_ID
+  agent_audit_team_id: AGENT_TEAM_ID
+  next: /sync-documentation-maps-collect --team-ids SKILL_TEAM_ID,AGENT_TEAM_ID
+```
+
+---
+
+## Phase 5 — Return to User
+
+Print a summary and exit:
+
+```text
+Audit teams dispatched.
+
+  Run ID:            RUN_ID
+  Skills team ID:    SKILL_TEAM_ID
+  Agents team ID:    AGENT_TEAM_ID
+  Run directory:     RUN_DIR
+  Checkpoint:        .dev/sync-documentation-maps-checkpoint.json
+
+Next step (collect results when teams complete):
+  /sync-documentation-maps-collect --team-ids SKILL_TEAM_ID,AGENT_TEAM_ID
+```
+
+Exit. Do not wait for team completion.
 
 ---
 
 ## Arguments
 
 **`--all`** (optional)
-- Update both maps without asking user which to update
-- Useful for CI workflows or automated syncs
+Set `AUTO_UPDATE=true` — passed through to the collect and finalize steps so
+that both maps are updated without prompting the user.
 
 **`--skip-commit`** (optional)
-- Show what changes would be made, but don't commit
-- Useful for review before applying updates
-- Implies dry-run mode
-
----
-
-## Workflow Examples
-
-### Example 1: Full sync (interactive)
-```
-User: /sync-documentation-maps
-→ Audits both maps in parallel
-→ Shows findings
-→ Asks user which to update
-→ Updates selected maps
-→ Refreshes dependency graph
-→ Commits
-```
-
-### Example 2: Update both without asking
-```
-User: /sync-documentation-maps --all
-→ Audits both maps in parallel
-→ Updates both maps automatically
-→ Refreshes dependency graph
-→ Commits
-```
-
-### Example 3: Dry-run (no commit)
-```
-User: /sync-documentation-maps --skip-commit
-→ Audits both maps
-→ Shows findings
-→ Asks which to update
-→ Shows what changes would be made
-→ Stops without committing
-```
-
----
-
-## When to Use
-
-**Primary entry point for:**
-- Verifying maps after adding/removing skills or agents
-- Regular map synchronization
-- Pre-review checks before `/analyze-skill-design` or `/analyze-agent-design`
-
-**For audit-only (no updates):**
-- Use `/review-skill-map --no-update` and `/review-agent-map --no-update`
-
-**For individual map updates:**
-- Use `/review-skill-map` or `/review-agent-map` directly if you've already run audits
-
----
-
-## Next Steps
-
-After maps are synchronized, typically:
-1. Run `/analyze-skill-design` to suggest architectural improvements
-2. Run `/analyze-agent-design` to suggest agent quality improvements
-3. Run `/plan-map-changes` to implement accepted suggestions
+Set `SKIP_COMMIT=true` — passed through to the finalize step so that map
+changes are written but not committed (dry-run / review mode).
