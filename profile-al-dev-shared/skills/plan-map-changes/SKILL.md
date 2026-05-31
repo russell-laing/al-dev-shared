@@ -61,6 +61,14 @@ Parse map Observations sections and build suggestion queue. Determine paralleliz
 - 0 if suggestions found
 - 1 if no suggestions in queue or extraction failed
 
+**Checkpoint update (Phase 1 complete):**
+
+After extraction completes, update `.dev/progress.md` with:
+- `phase: extracting`
+- `status: completed`
+- `suggestion_count: <count>`
+- `manifest_path: .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json`
+
 ### Phase 2: Dispatch or Inline Verify
 
 ## Path A: Inline verification (1-2 suggestions)
@@ -142,6 +150,7 @@ def main():
         docs_dir='docs'
     )
 
+    # Handle empty suggestions queue
     if not suggestions:
         print("No suggestions found in map Observations.")
         return 1
@@ -151,8 +160,9 @@ def main():
     write_json(queue_file, {
         'run_id': run_id,
         'surface': args.surface,
-        'filter': args.filter,
+        'type_filter': args.filter,
         'suggestion_count': len(suggestions),
+        'extracted_at': datetime.now().isoformat(),
         'suggestions': suggestions
     })
 
@@ -182,17 +192,18 @@ def phase_2_inline(run_id, suggestions, run_dir):
 
     # Create manifest
     manifest = {
-        'operation': 'verify_suggestions',
+        'operation': 'inline',
         'run_id': run_id,
-        'phase': 3,  # Ready for collection
+        'phase': 'phase2',
         'status': 'completed',
+        'dispatched_at': datetime.now().isoformat(),
+        'suggestion_count': len(suggestions),
         'suggestions': [
             {
                 'id': s['id'],
                 'type': s['type'],
                 'status': 'completed',
-                'duck_record_path': str(duck_dir / f"{s['id']}.json"),
-                'error': None
+                'duck_record_path': str(duck_dir / f"{s['id']}.json")
             }
             for s in suggestions
         ]
@@ -236,7 +247,7 @@ def inline_verify_suggestion(sugg):
         return success_duck_record(
             sugg_id=sugg['id'],
             sugg_type=sugg['type'],
-            verdict='VERIFIED',
+            verdict='ACCEPT',
             state=type_checks_result['state'],
             side_effects=type_checks_result['side_effects'],
             evidence=type_checks_result['evidence']
@@ -287,10 +298,14 @@ def phase_2_dispatch(run_id, suggestions, run_dir):
     """Remote team dispatch for 3+ suggestions."""
 
     # Build team context JSON
+    duck_records_dir = run_dir / 'duck-records'
+    duck_records_dir.mkdir(parents=True, exist_ok=True)
+    
     team_context = {
         'run_id': run_id,
         'suggestions': suggestions,
         'repo_path': get_repo_root(),
+        'duck_records_dir': str(duck_records_dir),
         'knowledge_url': 'https://github.com/.../map-change-rubber-duck-checks.md'
     }
 
@@ -299,18 +314,20 @@ def phase_2_dispatch(run_id, suggestions, run_dir):
 
     # Create initial manifest (status=dispatched)
     manifest = {
-        'operation': 'verify_suggestions',
+        'operation': 'remote',
         'run_id': run_id,
         'team_id': str(uuid.uuid4()),
-        'phase': 2,
-        'status': 'dispatched',
+        'phase': 'phase2',
+        'status': 'in_progress',
+        'dispatched_at': datetime.now().isoformat(),
+        'expected_completion': (datetime.now() + timedelta(minutes=5)).isoformat(),
+        'suggestion_count': len(suggestions),
         'suggestions': [
             {
                 'id': s['id'],
                 'type': s['type'],
                 'status': 'pending',
-                'duck_record_path': str(run_dir / 'duck-records' / f"{s['id']}.json"),
-                'error': None
+                'duck_record_path': str(run_dir / 'duck-records' / f"{s['id']}.json")
             }
             for s in suggestions
         ]
@@ -328,8 +345,8 @@ def phase_2_dispatch(run_id, suggestions, run_dir):
     # Update .dev/progress.md checkpoint
     update_progress_md(
         run_id=run_id,
-        phase='2_dispatched',
-        status='awaiting_team_completion',
+        phase='dispatched',
+        status='waiting',
         manifest_path=str(run_dir / 'manifest.json')
     )
 
@@ -357,6 +374,36 @@ def spawn_duck_team(team_context, manifest_path, num_agents):
     #     agent="al-dev-shared:plan-map-changes-duck-worker",
     #     context=team_context
     # )
+    pass
+```
+
+### Phase 3: Resume & Collect (Task 8 Placeholders)
+
+```python
+def phase_3_resume():
+    """
+    Resume from .dev/progress.md checkpoint.
+
+    - Read checkpoint state (run_id, manifest path)
+    - Validate manifest exists and is readable
+    - Call phase_3_collect()
+    
+    TODO: Implement in Task 8
+    """
+    pass
+
+def phase_3_collect(run_id, run_dir):
+    """
+    Collect duck records and aggregate verification results.
+
+    - Poll manifest until all suggestions completed or timeout
+    - Read all duck records from duck-records/
+    - Filter by verdict (ACCEPT/DEFER/REJECT)
+    - Call superpowers:writing-plans with aggregated context
+    - Update progress.md to mark complete
+    
+    TODO: Implement in Task 8
+    """
     pass
 ```
 
@@ -398,7 +445,7 @@ def update_progress_md(run_id, phase, status, manifest_path):
     ## Plan-Map-Changes State
 
   - **Run ID:** <run-id>
-  - **Phase:** <phase> (1_extracted, 2_dispatched, 3_collecting, 3_complete)
+  - **Phase:** <phase> (extracting, dispatched, collecting, completed)
   - **Status:** <status>
   - **Manifest Path:** <path>
   - **Created At:** <timestamp>
