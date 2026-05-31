@@ -72,6 +72,16 @@ The interview agent MUST:
 5. **GATE: The interview agent must explicitly state "INTERVIEW COMPLETE" and
    confirm questions were asked in all 11 categories listed above. Upon this
    explicit signal, proceed to Phase 3.**
+   
+   **Fallback if INTERVIEW COMPLETE is NOT received:**
+   - Monitor the agent output during interview conversation
+   - If agent output does NOT include "INTERVIEW COMPLETE" statement and category confirmation:
+     - Ask the agent to resume: "Please explicitly state INTERVIEW COMPLETE and confirm which of the 11 categories were covered in this interview."
+     - If agent still does not provide explicit INTERVIEW COMPLETE:
+       - Check which categories are missing from the conversation
+       - Ask agent to resume and cover missing categories (e.g., "I didn't see questions about Testing & UAT or Deployment. Can you ask questions in those areas?")
+       - Continue interview until all 11 categories are covered
+     - Only after receiving explicit "INTERVIEW COMPLETE" with category list, proceed to Phase 3
 
 ## Phase 3: Write Requirements (only after interview)
 

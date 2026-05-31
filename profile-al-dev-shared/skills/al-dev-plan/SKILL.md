@@ -82,6 +82,12 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 - Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
+**Clarification retry logic:**
+- **First vague response:** Ask for clarification once. Expected context: (1) business goal, (2) key workflows, (3) affected BC objects.
+- **Second vague response:** Ask for clarification a second time with specific prompt: "Please provide: (1) the business goal (what problem does this solve?), (2) the key user workflows (who does what?), and (3) the BC objects affected (which tables/pages/events?)."
+- **Third vague response:** Stop and escalate to user with message: "I've asked twice for clarification. To proceed, I need these three pieces of information: (1) business goal — what problem this solves, (2) key workflows — who does what and when, (3) affected BC objects — which tables/pages/events. Please provide all three, or consider running /interview first for guided discovery."
+- Do NOT proceed to architect spawn if after 2 clarification attempts the description remains too vague (e.g., "make it better", "improve the system").
+
 1. **Read input from $ARGUMENTS** — Extract the user's feature request and preliminary scope. If missing, gate requires clarification.
 2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` and continue without it. If requirements are unclear/complex, suggest `/interview`.
 3. **Gather symbol evidence** — use the strongest available AL symbol evidence before spawning architects: prefer `AL LSP` semantic navigation (go-to-definition, find-references, document symbols, hover/type) when the active harness exposes it; otherwise AL MCP via `al-mcp-server` (`al_search_objects`, `al_get_object_definition`, `al_search_object_members`); otherwise tightly scoped `rg` labeled as `text search`. Include findings and evidence source (`AL LSP`, `AL MCP`, `text search`, or `unverified`) in every architect prompt. If no provider/result is available, proceed to Phase 2 using general AL knowledge unless a required symbol is `unverified`.

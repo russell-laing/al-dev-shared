@@ -366,11 +366,20 @@ Never fail silently — always write a record (success or error).
 
 **Timeout Guidance:**
 For grep-based searches (Trim, Inline, Connect checks), apply a 30-second timeout per
-search. If timeout is exceeded, mark the check as DEFER (in verdict, not REJECT) with
-a note in the error record about search complexity. Record error status as `timeout`
-with error message indicating which check timed out and why (e.g., "Trim pattern search
-across 12 skill files exceeded 30-second limit; codebase may be too large or pattern
-too generic").
+search.
+
+**Timeout decision tree:**
+- If timeout is exceeded during a check:
+  1. Record the check result as `timeout` in the evidence block
+  2. Mark the verdict as `DEFER` (not REJECT) — verification stalled but no blocker detected
+  3. Include timeout reason in findings: "Pattern search across [N] files exceeded 30-second limit; codebase may be too large or pattern too generic"
+  4. Write error record with error_status: `timeout` and include attempted/completed check lists
+
+**Overall time limit:**
+- If entire verification (all checks) exceeds 5 minutes:
+  - Record verdict as `DEFER` with message: "Verification stalled after [N] minutes; [which checks completed, which timed out]"
+  - Include recommendation: "Manual review or smaller batch may be needed"
+  - Return duck record with completed checks and timeout status
 
 ## Success Criteria
 

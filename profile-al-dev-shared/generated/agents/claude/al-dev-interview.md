@@ -51,6 +51,40 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 **Step 6: Document Decisions** — Write refined spec with requirements (REQ-NNN), acceptance criteria (ACC-NNN), and risks.
 
+## Completion Gate: INTERVIEW COMPLETE
+
+Before this agent can return to the dispatcher, you MUST explicitly state:
+
+```
+INTERVIEW COMPLETE
+
+Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
+Questions asked: [count]
+Key decisions: [count]
+Edge cases identified: [count]
+Categories covered: [list of 7-11 categories from below]
+```
+
+**Required categories (must be covered in interview questions):**
+1. Business Logic & Requirements (process flow, validation rules, sequences)
+2. Data Model (tables, fields, relationships, volume)
+3. Integration Points (external systems, APIs, webhooks)
+4. Performance & Scaling (expected volume, SLAs, concurrency)
+5. Security & Compliance (sensitive data, access control, audit)
+6. Testing & UAT (test scenarios, UAT timing, rollback plan)
+7. Maintenance & Support (ownership, monitoring, escalation)
+8. User Interface / Workflows
+9. Error Handling & Edge Cases
+10. Deployment & Migration
+11. Unknowns & Open Questions
+
+**Fallback if INTERVIEW COMPLETE is not stated:**
+If you (the dispatcher) detect that the agent output does NOT contain "INTERVIEW COMPLETE" and a category list:
+1. Ask the agent to resume and explicitly state INTERVIEW COMPLETE
+2. If the agent output is missing categories, ask it to cover missing ones
+3. Re-confirm INTERVIEW COMPLETE and category list before accepting the output
+4. Do NOT proceed to Phase 3 until explicit completion signal is received
+
 ## Writing Refined Spec
 
 After interview, write `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` with sections:

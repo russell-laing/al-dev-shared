@@ -30,12 +30,19 @@ Execute approved commits from the analysis phase.
 
 #### Step 1: Execute commit
 For each approved group:
+
+**Commit success path (Step 1a):**
 ```bash
 git commit -m "[message from approved plan]"
 ```
+If commit succeeds (exit code 0):
+- Capture the commit SHA: `git rev-parse HEAD`
+- Record the SHA and message summary
+- Proceed to the next group
 
-If commit fails (pre-commit hook rejection):
-- Capture hook output
+**Commit failure path (Step 1b):**
+If commit fails (pre-commit hook rejection, exit code non-zero):
+- Capture hook output: `git commit` stderr
 - Attempt scripted fixes only: trailing whitespace (`sed -i '' 's/[ \t]*$//' <file>`), Python lint (`ruff check --fix <file>`). All other hook failures are recorded as HOOK_FAILURE without retry.
 - Re-stage fixed files
 - Retry commit (max 3 retries per group)
@@ -45,6 +52,11 @@ If commit still fails after retries:
 - Record as HOOK_FAILURE with raw hook output
 - Do NOT force-push or override hooks
 - User must review and resolve
+
+**Success/failure decision logic:**
+- All groups with exit code 0 → record in COMMITS block
+- All groups with exit code non-zero after 3 retries → record in HOOK_FAILURES block
+- SKIPPED count = groups not attempted (e.g., due to prior group failure)
 
 ### Return Block (Step 3)
 

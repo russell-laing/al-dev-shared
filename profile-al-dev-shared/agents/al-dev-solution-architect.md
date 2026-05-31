@@ -46,6 +46,20 @@ Transform requirements into a complete solution plan that includes architectural
      if it is available: **AL LSP** (semantic correctness, preferred when harness exposes it)
      → **AL MCP** (base app / package symbols) → **text search** (pattern matching, weakest).
      Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
+   
+   **Definition of "best existing analogue":**
+   - Performs the same business function as the proposed feature, OR
+   - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
+   - Variable/field names may differ; focus on structural similarity
+   
+   **Search order (apply in sequence, stop when a match is found):**
+   1. Exact pattern match (same table/event being extended, same design pattern)
+   2. Similar pattern in same module/feature area (e.g., other pages extending the same base)
+   3. Similar pattern in different module (broader codebase search)
+   4. If no analogue found after exhaustive search, record as `none — no existing pattern in codebase for [pattern type]`
+   
+   **Evidence documentation:** Always document the analogue reference with file:line and a one-sentence explanation of why it is the best match (not just "similar code" but "similar because [reason]").
+   
    - AL semantic navigation: use `AL LSP` when the active harness exposes it
      for definitions, references, document symbols, hover/type information,
      and rename/refactor impact checks

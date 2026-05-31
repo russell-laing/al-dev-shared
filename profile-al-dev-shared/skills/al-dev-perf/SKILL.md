@@ -231,6 +231,13 @@ No critical issues found. Findings in perf-analysis.md.
   document symbols when available, otherwise use `AL MCP`, then scoped text
   search. If no lookup can be performed, fall back to equal-weight analysis and
   label classification evidence as `unverified`.
+  
+  **Definition of "equal-weight analysis":** When semantic providers (AL LSP, AL MCP) are unavailable and no specific context about the procedure/table can be determined:
+  - Classify all findings at baseline severity without context escalation
+  - Do not apply severity escalation for Batch Processor context (no context known)
+  - Do not apply severity escalation for high-row-count tables (unknown row count)
+  - Mark evidence source as `unverified — semantic context unavailable`
+  - Include note: "Severity may be under-reported; verify context with AL symbols if available"
 - The +1 severity escalation applies once per finding — a LOW finding
   in a Batch Processor becomes MEDIUM, not CRITICAL
 - P8 (full table scan) is most useful on tables > ~1000 rows; do not

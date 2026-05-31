@@ -118,9 +118,33 @@ ATTACHMENTS: [Count or "None"]
 INLINE_IMAGES_COUNT: [N or "None"]
 ```
 
+## Download Phase (Conditional)
+
+If the dispatcher asks to download attachments (separate invocation with `Phase: download-attachments`):
+
+1. **Parse attachment list** from the dispatch prompt
+2. **Create target directory:** `.dev/attachments/` if it does not exist
+3. **Download each file:**
+   ```bash
+   curl -s -u "$FRESHDESK_API_KEY:x" \
+     -o ".dev/attachments/[filename]" \
+     "[attachment_url_from_api]"
+   ```
+4. **Return summary:**
+   ```
+   DOWNLOADS_COMPLETE: [N] files
+   FILES: [comma-separated list of downloaded filenames]
+   ```
+
+**Decision logic for attachment downloads:**
+- If dispatcher asks to download → fetch all attachments and write to disk
+- If dispatcher declines or does not ask → do NOT download; rely on URL references in context file
+- Missing or inaccessible attachments → record in output with count and reason (e.g., "expired URL", "access denied")
+
 ## Notes
 
 - Ticket operations are sequential (API rate limiting)
 - Authentication via Freshdesk API key (never commit keys)
-- Attachments are referenced by URL only (not downloaded by default)
+- Attachments are referenced by URL only in context file (not downloaded by default)
+- Downloads are triggered by separate dispatcher call, not automatic
 - Custom fields are included if present in the ticket

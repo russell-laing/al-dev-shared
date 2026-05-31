@@ -197,7 +197,10 @@ ATTACHMENTS ([count]):
 Download to .dev/attachments/? [y/n]
 ```
 
-If yes, dispatch `al-dev-ticket-agent` again (download phase):
+**Download decision logic:**
+
+**If yes (user opts to download):**
+Dispatch `al-dev-ticket-agent` again (download phase):
 
 ```text
 Agent tool:
@@ -225,6 +228,20 @@ Append to the user summary:
 ```text
 Attachments saved to .dev/attachments/ ([count] files).
 ```
+
+**If no (user declines to download):**
+- Proceed directly to Phase 5 without downloading attachments
+- Append note to user summary:
+  ```text
+  Attachments not downloaded. References available in ticket context file:
+  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
+  
+  Note: Steps 5-7 (research and reply drafting) may have incomplete context
+  if critical information was only in attachments. You can return here later
+  with /al-dev-ticket <id> --download to retrieve them.
+  ```
+- If MODE is `context-only`: Exit after this note
+- If MODE is `full`: Continue to Phase 6 with available context only
 
 ---
 
