@@ -38,7 +38,7 @@
 ### al-dev-code-review
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
