@@ -87,3 +87,58 @@ if not success:
 ```
 
 The skill now delegates to dispatch.py for all orchestration logic.
+
+## Phase 3: Collection & Reporting (Resume Path)
+
+### Step 1: Load checkpoint
+
+Resume mode allows collection to happen in a new session after dispatch completes:
+
+```python
+from dispatch import load_checkpoint
+from pathlib import Path
+
+checkpoint_path = Path("/Users/russelllaing/al-dev-shared/.dev/plugin-health-team-checkpoint.json")
+checkpoint = load_checkpoint(str(checkpoint_path))
+
+if checkpoint is None:
+    print("Error: No resumable plugin-health run found. Start a new sweep with /plugin-health.")
+    return
+
+print(f"Resuming team {checkpoint.team_id}: run_id={checkpoint.run_id}")
+```
+
+### Step 2: Poll for remote team completion (optional)
+
+If implementation chooses to poll:
+
+```python
+# Poll remote team status or check manifest directly
+manifest_path = checkpoint.manifest_path
+manifest = json.load(open(manifest_path))
+
+if manifest['status'] == 'in_progress':
+    print("Remote team still executing. Check back in a few minutes.")
+    print("Run /plugin-health --resume again to collect when ready.")
+    return
+```
+
+### Step 3: Aggregate findings and write output files
+
+```python
+from collect import collect_results
+
+success = collect_results(checkpoint)
+if success:
+    print(f"Findings written to {checkpoint.findings_file}")
+    print(f"Dossier written to {checkpoint.dossier_file}")
+    
+    if checkpoint.status == "partial":
+        print("\nNote: Some lenses remain pending. Run /plugin-health --resume to complete.")
+    else:
+        print("\nNext step: Use /superpowers:writing-plans to implement top recommendations.")
+else:
+    print("Error: Collection failed. Check logs above.")
+```
+
+This adds the full collection path that runs when user calls `/plugin-health --resume`.
