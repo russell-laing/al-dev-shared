@@ -40,14 +40,13 @@ Three specialist agents (sonnet):
 
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md` — synthesized review findings from all three reviewers; this file is also the downstream handoff artifact named in `knowledge/artifact-contracts.md` and must be read before any final clean/ready claim.
 
-## Execution Order
+## Phase Sequence
 
-Phases run in this order: **5 → 8 → 8.5 → 6-7 → 9 → 10** (see Run labels on each header).
-Phase headers retain parent-workflow numbering; execute in the order shown, not by header number.
+Phases run in this order: **1 → 2 → 3 → 4 → 5 → 6** (semantically mapped from parent al-dev-develop workflow).
 
 ---
 
-## Phase 5 (Run 1st): Prepare Review Context
+## Phase 1: Prepare Review Context
 
 **Input:** Phase 4 handoff artifact from `/al-dev-develop`.
 
@@ -79,7 +78,7 @@ Phase headers retain parent-workflow numbering; execute in the order shown, not 
 
 ---
 
-## Phase 8 (Run 2nd): Compile Verification
+## Phase 2: Compile Verification
 
 Run `al-compile` and handle errors. This phase must pass before the review panel is spawned.
 
@@ -128,7 +127,7 @@ Run `al-compile` and handle errors. This phase must pass before the review panel
 
 ---
 
-## Phase 8.5 (Run 3rd): Pre-Review Staging
+## Phase 3: Pre-Review Staging
 
 Verify all prerequisites are met before spawning the review panel.
 
@@ -138,7 +137,7 @@ Verify all prerequisites are met before spawning the review panel.
 
 ---
 
-## Phase 6-7 (Run 4th): Dispatch Review Panel
+## Phase 4: Dispatch Review Panel
 
 Spawn all three specialist reviewer agents simultaneously — do not wait for one agent to return before spawning the next. Pass each agent the same `CHANGED_FILES` list and implementation context from the Phase 4 handoff.
 
@@ -169,7 +168,7 @@ Collect all three outputs before proceeding to Phase 9.
 
 ---
 
-## Phase 9 (Run 5th): Write Code-Review Artifact
+## Phase 5: Write Code-Review Artifact
 
 Synthesize findings from all three reviewers into a single dated code-review file.
 
@@ -234,7 +233,7 @@ Synthesize findings from all three reviewers into a single dated code-review fil
 
 ---
 
-## Phase 10 (Run 6th): Present Review Findings
+## Phase 6: Present Review Findings
 
 1. **Display a summary** of the code-review artifact:
 
