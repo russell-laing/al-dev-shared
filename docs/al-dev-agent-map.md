@@ -1,21 +1,22 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-05-31 (21 agents; al-dev-commit-preflight split into al-dev-commit-lint-fixer + al-dev-commit-ooxml-validator; al-dev-commit-agent-execute model corrected to haiku; reviewer agent callers corrected to al-dev-review-develop; reviewer agent models corrected to sonnet; al-dev-developer caller list extended with al-dev-review-develop autonomous mode; al-dev-diagnostics-fixer caller list corrected to al-dev-lint only)
+**Last updated:** 2026-05-31 (22 agents; `al-dev-developer` split into `al-dev-developer-tdd` and `al-dev-developer-traditional`; plugin graph generator corrected to use typed Mermaid node ids and broader direct-agent reference extraction)
 
 ## Layer 1: Agent Catalog
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-code-review | haiku | Read | (none found) |
+| al-dev-code-review | sonnet | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
 | al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
 | al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-ooxml-validator | haiku | Bash, Read | /al-dev-commit (Step 9.5b — OOXML validation) |
 | al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
-| al-dev-developer | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
-| al-dev-diagnostics-fixer | haiku | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
-| al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | (not spawned — skill mentions but doesn't dispatch) |
+| al-dev-developer-tdd | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop and /al-dev-fix when `.dev/*-al-dev-test-test-plan.md` exists |
+| al-dev-developer-traditional | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop and /al-dev-fix when no test plan exists; /al-dev-review-develop autonomous compile-error correction |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
+| al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | /al-dev-document (operator instruction: "Spawn docs-writer"; no formal `al-dev-shared:al-dev-docs-writer` dispatch literal found) |
 | al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
 | al-dev-interview | haiku | Read, Write, USER_GATE | /al-dev-interview |
@@ -35,7 +36,7 @@
 ### al-dev-code-review
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
@@ -167,9 +168,35 @@
 
 ---
 
-### al-dev-developer
+### al-dev-developer-tdd
 
-**Description:** Implement AL code following an implementation plan.
+**Description:** Implement AL code using test-driven development with RED-GREEN-REFACTOR cycle gates.
+**Model:** sonnet
+**Tools:** Read, Write, Edit, Glob, Grep, Bash
+**Spawned by:** /al-dev-develop and /al-dev-fix when `.dev/*-al-dev-test-test-plan.md` exists
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `.dev/*-al-dev-plan-solution-plan.md` or confirmed fix scope | **Yes** | Implementation scope |
+| `.dev/*-al-dev-test-test-plan.md` | **Yes** | Test behaviours driving RED-GREEN-REFACTOR cycles |
+| `.dev/project-context.md` | No | Project memory |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| AL source files | Implemented code |
+| Test codeunits | Test implementation |
+| `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md` | TDD cycle log |
+| `.dev/session-log.md` | Session entry |
+
+---
+
+### al-dev-developer-traditional
+
+**Description:** Implement AL code using a build-verify workflow when no test plan exists, and perform minimal compile-error correction in review autonomous mode.
 **Model:** sonnet
 **Tools:** Read, Write, Edit, Glob, Grep, Bash
 **Spawned by:** /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
@@ -178,26 +205,24 @@
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** (from /al-dev-develop) · Inline prompt (from /al-dev-fix) | Implementation plan |
-| `.dev/*-al-dev-test-test-plan.md` | **Yes** (from /al-dev-develop) · Not used (from /al-dev-fix) | Test specs from test-engineer |
-| `.dev/project-context.md` | No | Project memory (saves exploration) |
-| `.dev/*-al-dev-develop-code-review.md` | No | Review findings when iterating |
+| `.dev/*-al-dev-plan-solution-plan.md` or confirmed fix scope | **Yes** | Implementation scope |
+| `.dev/compile-errors.log` | **Yes** for review autonomous mode | Compile errors to correct |
+| `.dev/project-context.md` | No | Project memory |
 
 **Outputs:**
 
 | Output | Description |
 |--------|-------------|
-| AL source files | **Primary** — Implemented code in `src/` |
-| Test codeunits | Test code in `src/Tests/` |
-| `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md` | TDD log |
-| `.dev/session-log.md` | Append entry per file |
+| AL source files | Implemented or corrected code |
+| `.dev/session-log.md` | Session entry |
+| Return summary | Files changed, verification, blockers |
 
 ---
 
 ### al-dev-diagnostics-fixer
 
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Edit, Glob, Grep, Bash
 **Spawned by:** /al-dev-lint
 
@@ -222,7 +247,7 @@
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
 **Tools:** Read, Write, Glob, Grep
-**Spawned by:** (not dispatched — /al-dev-document skill mentions "docs-writer" in prose but contains no Agent() spawn call)
+**Spawned by:** /al-dev-document via operator instruction to "Spawn docs-writer"; no formal `al-dev-shared:al-dev-docs-writer` dispatch literal was found in the skill file.
 
 **Inputs:**
 
@@ -547,7 +572,7 @@
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition)
 - **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b: OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
-- **al-dev-docs-writer** — used only by /al-dev-document (prose reference; no formal Agent() spawn call found)
+- **al-dev-docs-writer** — used only by /al-dev-document (operator instruction to spawn docs-writer; no formal `al-dev-shared:al-dev-docs-writer` dispatch literal found)
 - **al-dev-interview** — used only by /al-dev-interview
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase); /al-dev-support is a deprecated alias
@@ -555,11 +580,12 @@
 
 ### Agents with no inputs/outputs documentation
 
-None — all 21 agents have documented Inputs and Outputs tables.
+None — all 22 agents have documented Inputs and Outputs tables.
 
 ### Potential shared agents
 
-- **al-dev-developer** — used by /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
+- **al-dev-developer-tdd** — used by /al-dev-develop and /al-dev-fix when a test plan exists
+- **al-dev-developer-traditional** — used by /al-dev-develop and /al-dev-fix when no test plan exists; used by /al-dev-review-develop for autonomous compile-error correction
 - **al-dev-expert-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
 - **al-dev-performance-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
 - **al-dev-security-reviewer** — used only by /al-dev-review-develop (prose reference in /al-dev-develop body does not constitute a spawn call)
@@ -569,7 +595,7 @@ None — all 21 agents have documented Inputs and Outputs tables.
 
 ### Quality suggestions
 
-All suggestions confirmed implemented as of 2026-05-29. Parallel Explore subagents read each affected file; every open suggestion was already live in the codebase.
+Suggestions in the original 2026-05-29 review were confirmed implemented at that time. This section now also includes 2026-05-31 refresh entries; treat older model-history notes as historical when a later entry or the Layer 1 catalog disagrees.
 
 **✅ Confirmed implemented: Remodel al-dev-solution-architect** (2026-05-29)
 Both /al-dev-plan and /al-dev-fix already conditionally pass `model: sonnet` for SIMPLE tier and omit the model parameter (defaulting to opus) for MEDIUM/COMPLEX. No spawning-skill change needed.
@@ -583,8 +609,8 @@ Inputs table line 23 already reads: "Inferred from working directory; not passed
 **✅ Confirmed implemented: Align al-dev-ticket-agent** (2026-05-29)
 Inputs table rows already document FRESHDESK_API_KEY and FRESHDESK_DOMAIN as "available as shell environment variable in agent bash context" with a Note block explaining the injection mechanism.
 
-**✅ Confirmed implemented: Align al-dev-developer TDD activation** (2026-05-29)
-Inputs table already marks test-plan as Optional. Agent body correctly implements dual-path logic (TDD if file present, traditional if absent).
+**✅ Confirmed implemented: Split al-dev-developer by workflow mode** (2026-05-31)
+The old unified `al-dev-developer` agent was split into `al-dev-developer-tdd` for test-plan-driven RED-GREEN-REFACTOR implementation and `al-dev-developer-traditional` for build-verify implementation plus autonomous compile-error correction.
 
 **✅ Confirmed implemented: Align al-dev-review-develop stub** (2026-05-29)
 al-dev-review-develop/SKILL.md is fully implemented with all Phases 5–10 including reviewer spawn calls in Phase 6-7. Not a stub.
@@ -598,8 +624,8 @@ None detected. All single-purpose agents have documented Inputs/Outputs sections
 **✅ Restored al-dev-commit-recover-verifier agent** (2026-05-29)
 Agent file was empty; now restored with proper YAML frontmatter (haiku, Bash/Read/Write) and full recovery system prompt.
 
-**✅ Remodelled 9 sonnet agents to haiku** (2026-05-27)
-Downgraded: code-review, commit-agent-analysis, commit-message-drafter, diagnostics-fixer, expert-reviewer, interview, performance-reviewer, security-reviewer, support-reply-drafter. ~60% cost reduction for single-task agents.
+**✅ Historical-only: Remodelled 9 sonnet agents to haiku** (2026-05-27; superseded for several agents)
+This records a past model state, not the current inventory. Current frontmatter/catalog has `al-dev-code-review`, `al-dev-diagnostics-fixer`, `al-dev-expert-reviewer`, `al-dev-performance-reviewer`, and `al-dev-security-reviewer` as `sonnet`; do not infer current model assignments from this historical note.
 
 **✅ Trimmed al-dev-support-reply-drafter tools** (2026-05-27)
 Removed unused `Read` from tools list. Agent receives all input via dispatch block; no file reads needed.
@@ -607,8 +633,8 @@ Removed unused `Read` from tools list. Agent receives all input via dispatch blo
 **✅ Trimmed al-dev-commit-message-drafter tools** (2026-05-27)
 Removed unused `Read` from tools list. Agent analyzes manifests from dispatch prompt without file I/O.
 
-**✅ Upgraded al-dev-commit-agent-execute** (2026-05-22)
-Model changed from haiku → sonnet for multi-phase orchestration (lint + validation + commit + retry) with error recovery.
+**✅ Historical-only: Upgraded al-dev-commit-agent-execute** (2026-05-22; superseded)
+At the time, the model changed from haiku to sonnet for multi-phase orchestration. Current frontmatter/catalog has `al-dev-commit-agent-execute` as `haiku` after lint and OOXML preflight were split into separate agents and execution scope narrowed to commit invocation and hook retry logic.
 
 **✅ Split al-dev-commit into three sequential agents** (2026-05-22)
 - al-dev-commit-agent-analysis (manifest extraction, read-only)
