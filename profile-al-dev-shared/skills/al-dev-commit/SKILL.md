@@ -41,7 +41,9 @@ success evidence named in `knowledge/artifact-contracts.md` for
 
 ---
 
-## Step 1 — Guard: Verify Project Context
+## Phase 0 — Setup & Validation
+
+### 0.1 — Guard: Verify Project Context
 
 Check whether the project instructions file exists in the current directory (use your harness's concrete filename).
 
@@ -54,7 +56,7 @@ messages. Would you like me to create it now via
 
 - **yes** — invoke the `al-dev-init-context` skill via the
   Skill tool (not a subagent), wait for it to complete, then
-  proceed to Step 2 to load the newly created project
+  proceed to 0.2 to load the newly created project
   instructions file
 - **init-context fails** — stop with: "Could not create
   the project instructions file automatically. Please run
@@ -64,9 +66,7 @@ messages. Would you like me to create it now via
   instructions file manually or run `/al-dev-init-context`,
   then re-run `/al-dev-commit`."
 
----
-
-## Step 2 — Load Project Context
+### 0.2 — Load Project Context
 
 Load the project instructions file from these standard locations
 (earlier files provide defaults, later files override):
@@ -93,9 +93,7 @@ TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
 Extract ticket number from `TICKET: #<number>` if present.
 Hold as **FD ticket number**.
 
----
-
-## Step 3 — Verify File Integrity
+### 0.3 — Verify File Integrity
 
 For each staged modified file (ACMRT):
 
@@ -119,9 +117,7 @@ Check your edits before committing."
 
 **Stop.** Do not proceed.
 
----
-
-## Step 4 — Verify Staged Files
+### 0.4 — Verify Staged Files
 
 Check what is staged:
 
@@ -145,7 +141,7 @@ AL_STAGED=$(git diff --cached --name-only --diff-filter=ACMRDT \
   | grep -E '(^|/)(app\.json|[^/]+\.al|[^/]+\.al\.json)$')
 ```
 
-If `$AL_STAGED` is non-empty, run the compile gate before dispatching commit agents:
+If `$AL_STAGED` is non-empty, run the compile gate before proceeding:
 
 1. Apply `knowledge/compile-lint-procedure.md`
 2. Produce a fresh `.dev/compile-errors.log` if the current log is absent or stale
@@ -161,9 +157,7 @@ Critical rule: never claim the staged set is ready, "clean compile", or "zero er
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.
 
----
-
-## Step 4b — Verify Acceptance Criteria (If Solution Plan Exists)
+### 0.5 — Verify Acceptance Criteria (If Solution Plan Exists)
 
 Check whether a solution plan exists:
 
@@ -181,11 +175,9 @@ Do not treat `[manual]` criteria as automatic blockers. Surface any pending manu
 
 If verification of any directly checkable criterion fails, stop the commit workflow and report the failure to the user.
 
-If no solution plan exists, skip this step and continue to Step 5.
+If no solution plan exists, skip this step and continue to 0.6.
 
----
-
-## Step 5 — Establish Gitmoji Style and Advisory Alignment Check
+### 0.6 — Establish Gitmoji Style and Advisory Alignment Check
 
 Check the project's recent commit style:
 
@@ -228,11 +220,15 @@ If `$KNOWLEDGE_ADVISORY` contains "WARNINGS", surface a note:
 ⚠️  Knowledge quality: stub sections detected. Run /audit-knowledge-quality for full report.
 ```
 
-Continue to Step 6 regardless — both alignment and knowledge checks above are advisory only.
+Continue to Phase 1 regardless — both alignment and knowledge checks above are advisory only.
 
 ---
 
-## Step 6 — Dispatch Analysis Agent (Manifest Extraction)
+## Phase 1 — Analysis & Message Drafting
+
+### 1.1 — Dispatch Analysis Agent (Manifest Extraction)
+
+Dispatch the analysis agent to extract manifests from staged changes:
 
 ```text
 Agent tool:
@@ -245,24 +241,22 @@ Prompt:
    Phase: analysis
 
    PROJECT_CONTEXT:
-   - Valid scopes: [list from Step 2]
-   - Object ID prefix: [from Step 2]
-   - AL naming pattern: [from Step 2]
-   - Gitmoji style: [from Step 5]
+   - Valid scopes: [list from Phase 0.2]
+   - Object ID prefix: [from Phase 0.2]
+   - AL naming pattern: [from Phase 0.2]
+   - Gitmoji style: [from Phase 0.6]
 
-   FD_TICKET: [ticket number from Step 2, or empty]
+   FD_TICKET: [ticket number from Phase 0.2, or empty]
 
    Follow the analysis phase instructions in your agent definition.
 
    Return output in exactly the format specified (MANIFESTS block,
-   DELETIONS, WARNINGS). Message drafting is handled in the next phase."
+   DELETIONS, WARNINGS). Message drafting is handled in the next step."
 ```
 
----
+### 1.2 — Deletion Audit Gate
 
-## Step 7 — Deletion Audit Gate
-
-Read the `DELETIONS` block from the agent output.
+Read the `DELETIONS` block from the analysis agent output.
 
 If **any deleted files** appear, display them prominently:
 
@@ -279,18 +273,18 @@ If **any deleted files** appear, display them prominently:
 
 Wait for user response:
 
-- **yes** — continue to Step 7a
+- **yes** — continue to 1.3
 - **no** — run `git restore --staged <file>` for every deleted
   file, then **stop** (user must re-run `/al-dev-commit` after
   reviewing their staged files)
 - **list-to-keep** — user names files to unstage; run
   `git restore --staged <file>` for each, then **stop**
 
-If no deleted files: continue to Step 7a.
+If no deleted files: continue to 1.3.
 
----
+### 1.3 — Dispatch Message-Drafting Agent
 
-## Step 7a — Dispatch Message-Drafting Agent
+Dispatch the message-drafting agent with the analysis results:
 
 ```text
 Agent tool:
@@ -303,12 +297,12 @@ Prompt:
    Phase: message-drafting
 
    PROJECT_CONTEXT:
-   - Valid scopes: [list from Step 2]
-   - Object ID prefix: [from Step 2]
-   - AL naming pattern: [from Step 2]
-   - Gitmoji style: [from Step 5]
+   - Valid scopes: [list from Phase 0.2]
+   - Object ID prefix: [from Phase 0.2]
+   - AL naming pattern: [from Phase 0.2]
+   - Gitmoji style: [from Phase 0.6]
 
-   FD_TICKET: [ticket number from Step 2, or empty]
+   FD_TICKET: [ticket number from Phase 0.2, or empty]
 
    MANIFESTS FROM ANALYSIS PHASE:
    [paste the MANIFESTS block from the analysis agent output]
@@ -319,14 +313,16 @@ Prompt:
    with commit messages for each group)."
 ```
 
-Continue to Step 8.
+Continue to Phase 2.
 
 ---
 
-## Step 8 — Present Manifests and Confirm Commit Groups
+## Phase 2 — Confirmation
 
-Display the `MANIFESTS` block from the analysis agent output (Step 6), then the
-`PROPOSED_GROUPS` block from the message-drafting agent output (Step 7a):
+### 2.1 — Present Manifests and Confirm Plan
+
+Display the `MANIFESTS` block from the analysis agent output (Phase 1.1), then the
+`PROPOSED_GROUPS` block from the message-drafting agent output (Phase 1.3):
 
 ```text
 Change manifests:
@@ -348,19 +344,16 @@ Confirm this plan? (yes / adjust / cancel)
 
 Wait for user response:
 
-- **yes** — continue to Step 9
+- **yes** — continue to 2.2
 - **adjust** — user provides revised groupings; update your
   working copy of the plan and re-present, then wait for
   confirmation again
 - **cancel** — abort everything, leave all files staged unchanged
 
----
+### 2.2 — Confirm and Refine Each Commit Message
 
-## Step 9 — Confirm Each Commit Message
-
-For each group, display the draft message from the agent output
-alongside the change manifest for that group, and ask for
-confirmation:
+For each group in the plan, display the draft message from the agent output
+alongside the change manifest for that group, and ask for confirmation:
 
 ```text
 Commit [N] of [total]:
@@ -379,6 +372,8 @@ Confirm? (yes / edit / skip / cancel-all)
 - **skip** — skip this group; leave its files staged
 - **cancel-all** — abort all remaining; leave all files staged
 
+### 2.3 — Check Mixed AL/DOCX Warning
+
 After all groups are confirmed or skipped, check the analysis agent output `WARNINGS` block for a `MIXED_AL_DOCX` entry.
 
 If present, show:
@@ -392,25 +387,25 @@ High-risk pattern: automated tool rewrites of Word layouts can produce malformed
 Confirm all `.docx` files were edited and saved in Microsoft Word (not scripted),
 and that OOXML ZIP validation has passed.
 
-Proceed to execution? (yes / no)
+Proceed to preflight? (yes / no)
 ```
 
 User response:
 
-- `yes` — proceed to Step 9.5
+- `yes` — proceed to Phase 3
 - `no` — stop; leave staged files unchanged (user must re-run `/al-dev-commit` after reviewing staged files)
 
-If no `MIXED_AL_DOCX` warning exists, proceed directly to Step 9.5.
+If no `MIXED_AL_DOCX` warning exists, proceed directly to Phase 3.
 
 ---
 
-## Step 9.5 — Dispatch Preflight Agents
+## Phase 3 — Preflight
 
 Run preflight sequentially: lint fixes first, then OOXML validation.
 
-### Step 9.5a — Dispatch Lint Preflight Agent
+### 3.1 — Dispatch Lint Preflight Agent
 
-Dispatch `al-dev-shared:al-dev-commit-lint-fixer` with the approved plan:
+Dispatch the lint fixer agent with the approved plan from Phase 2:
 
 ```text
 Agent tool:
@@ -421,7 +416,7 @@ Prompt:
   "Perform LINT-PREFLIGHT phase for git commit workflow.
 
    APPROVED_PLAN:
-   [paste the approved plan from Step 9]
+   [paste the approved plan from Phase 2]
 
    CRITICAL RULES:
    - NEVER use Write or Edit on staged source files — all fixes via Bash only
@@ -431,11 +426,11 @@ Prompt:
    Return output in exactly the format specified (LINT_FIXES)."
 ```
 
-Store the `LINT_FIXES` value for display in Step 11.
+Store the `LINT_FIXES` value for display in Phase 4.
 
-### Step 9.5b — Dispatch OOXML Validation Agent
+### 3.2 — Dispatch OOXML Validation Agent
 
-Dispatch `al-dev-shared:al-dev-commit-ooxml-validator` with the approved plan:
+Dispatch the OOXML validator agent with the approved plan:
 
 ```text
 Agent tool:
@@ -446,7 +441,7 @@ Prompt:
   "Perform OOXML-VALIDATE phase for git commit workflow.
 
    APPROVED_PLAN:
-   [paste the approved plan from Step 9]
+   [paste the approved plan from Phase 2]
 
    Return output in exactly the format specified (OOXML_FAILURES)."
 ```
@@ -462,13 +457,15 @@ The following files failed ZIP validation and cannot be committed:
 Resolve these files (save in Microsoft Word, not via script), re-stage, and re-run.
 ```
 
-Stop if any OOXML failures — do not proceed to Step 10.
+Stop if any OOXML failures — do not proceed to Phase 4.
 
 ---
 
-## Step 10 — Dispatch Execution Agent
+## Phase 4 — Execution & Summary
 
-Construct the approved plan from Step 9:
+### 4.1 — Dispatch Execution Agent
+
+Construct the approved plan from Phase 2:
 
 ```text
 GROUP_1:
@@ -478,6 +475,8 @@ GROUP_1:
 GROUP_2:
   ...
 ```
+
+Dispatch the execution agent:
 
 ```text
 Agent tool:
@@ -503,11 +502,9 @@ Prompt:
    HOOK_FAILURES)."
 ```
 
----
+### 4.2 — Summary
 
-## Step 11 — Summary
-
-Parse the agent output. Display:
+Parse the agent output and display the final summary:
 
 ```text
 Commit workflow complete.
@@ -516,7 +513,7 @@ Commit workflow complete.
   [sha] [emoji] [type(scope)]: [subject]
 
 [N] commits created. [N] skipped.
-[If LINT_FIXES from Step 9.5 is not NONE:]
+[If LINT_FIXES from Phase 3.1 is not NONE:]
   Files re-staged after lint: [LINT_FIXES]
 [If HOOK_FAILURES is not NONE:]
   Hook failures:
