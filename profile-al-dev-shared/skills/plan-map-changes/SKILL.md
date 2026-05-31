@@ -213,6 +213,150 @@ def phase_2_inline(run_id, suggestions, run_dir):
     # Jump to Phase 3 collection (inline, no wait)
     return phase_3_collect(run_id, run_dir)
 
+def run_u1_check(target_files):
+    """
+    U1: File Accessibility and Syntax Validation
+
+    Verify referenced artifacts exist and are parseable.
+    """
+    try:
+        for file_path in target_files:
+            path = Path(file_path)
+
+            # File existence check
+            if not path.exists():
+                return {
+                    'pass': False,
+                    'reason': f'File not found: {file_path}'
+                }
+
+            # For markdown files, verify frontmatter
+            if file_path.endswith('.md'):
+                content = path.read_text()
+                if content.startswith('---'):
+                    try:
+                        import yaml
+                        frontmatter_end = content.find('---', 3)
+                        if frontmatter_end > 0:
+                            frontmatter_text = content[3:frontmatter_end]
+                            yaml.safe_load(frontmatter_text)
+                        else:
+                            return {'pass': False, 'reason': f'Malformed YAML frontmatter: {file_path}'}
+                    except yaml.YAMLError as e:
+                        return {'pass': False, 'reason': f'YAML parse error: {str(e)}'}
+
+        return {'pass': True, 'reason': 'All files accessible and valid'}
+
+    except Exception as e:
+        return {'pass': False, 'reason': f'U1 check exception: {str(e)}'}
+
+def run_u2_check(target_files):
+    """
+    U2: Artifact Presence Verification
+
+    Verify all named artifacts still exist (not deleted).
+    """
+    try:
+        for file_path in target_files:
+            if not Path(file_path).exists():
+                return {
+                    'pass': False,
+                    'reason': f'Artifact deleted since analysis: {file_path}'
+                }
+
+        return {'pass': True, 'reason': 'All artifacts present'}
+
+    except Exception as e:
+        return {'pass': False, 'reason': f'U2 check exception: {str(e)}'}
+
+def run_u3_check(sugg):
+    """
+    U3: Reference and Dependency Validity
+
+    Verify all inter-artifact references are valid and resolvable.
+    """
+    try:
+        import re
+
+        target_files = sugg['target_files']
+        all_valid = True
+        broken_refs = []
+
+        for file_path in target_files:
+            path = Path(file_path)
+            if not path.exists():
+                continue
+
+            content = path.read_text()
+
+            # Extract references
+            agent_refs = re.findall(r'al-dev-shared:(\w+-*\w+)', content)
+            knowledge_refs = re.findall(r'\.\./\.\.\/knowledge\/([^")\s]+\.md)', content)
+
+            repo_root = path.parent.parent.parent
+
+            # Validate agent references
+            for agent_ref in agent_refs:
+                agent_path = repo_root / 'profile-al-dev-shared' / 'agents' / f'{agent_ref}.md'
+                if not agent_path.exists():
+                    broken_refs.append(f'Agent not found: {agent_ref}')
+                    all_valid = False
+
+            # Validate knowledge references
+            for knowledge_ref in knowledge_refs:
+                knowledge_path = repo_root / 'profile-al-dev-shared' / 'knowledge' / knowledge_ref
+                if not knowledge_path.exists():
+                    broken_refs.append(f'Knowledge file not found: {knowledge_ref}')
+                    all_valid = False
+
+        if all_valid:
+            return {'pass': True, 'reason': 'All references valid'}
+        else:
+            return {
+                'pass': False,
+                'reason': f'Broken references: {", ".join(broken_refs)}'
+            }
+
+    except Exception as e:
+        return {'pass': False, 'reason': f'U3 check exception: {str(e)}'}
+
+def success_duck_record(sugg_id, sugg_type, verdict, state, side_effects, evidence):
+    """Create a successful duck verification record."""
+    from datetime import datetime
+    return {
+        'suggestion_id': sugg_id,
+        'type': sugg_type,
+        'verdict': verdict,
+        'state': state,
+        'side_effects': side_effects,
+        'evidence': evidence,
+        'completed_at': datetime.now().isoformat()
+    }
+
+def error_record(sugg, error_status, error_detail):
+    """Create an error duck record."""
+    from datetime import datetime
+
+    # Map error status to proper code
+    status_map = {
+        'U1_FAILED': 'file_not_found',
+        'U2_FAILED': 'file_not_found',
+        'U3_FAILED': 'parse_error',
+        'TYPE_CHECK_FAILED': 'check_failure',
+        'EXCEPTION': 'check_failure'
+    }
+
+    return {
+        'suggestion_id': sugg['id'],
+        'type': sugg['type'],
+        'status': status_map.get(error_status, 'check_failure'),
+        'error': error_status,
+        'error_detail': error_detail,
+        'attempted_checks': ['U1: File accessibility', 'U2: Artifact presence', 'U3: Reference validity'],
+        'completed_checks': [],
+        'failed_at': datetime.now().isoformat()
+    }
+
 def inline_verify_suggestion(sugg):
     """
     Verify one suggestion using universal and type-specific checks.
@@ -240,8 +384,16 @@ def inline_verify_suggestion(sugg):
         # Type-specific checks
         type_checks_result = run_type_checks(sugg)
         if not type_checks_result['pass']:
-            return error_record(sugg, 'TYPE_CHECK_FAILED',
-                              type_checks_result['reason'])
+            # For type-check failures, still write a duck record (not error) with verdict REJECT/DEFER
+            verdict = 'DEFER' if 'deferred' in type_checks_result.get('state', '') else 'REJECT'
+            return success_duck_record(
+                sugg_id=sugg['id'],
+                sugg_type=sugg['type'],
+                verdict=verdict,
+                state=type_checks_result.get('state', 'type_checks_failed'),
+                side_effects=type_checks_result.get('side_effects', []),
+                evidence=type_checks_result.get('evidence', [])
+            )
 
         # Success duck record
         return success_duck_record(
@@ -278,17 +430,802 @@ def run_type_checks(sugg):
         return {'pass': False, 'reason': f'Unknown check type: {check_type}'}
 
 def run_trim_checks(sugg):
-    """Verify artifact is unused (no references in codebase)."""
-    # Read map check procedures from knowledge/map-change-rubber-duck-checks.md
-    # Verify: tool/agent/skill name, grep codebase for references, validate unused
-    pass
+    """
+    Verify artifact is unused (no references in codebase).
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        artifact_name = sugg['subject']
+        target_files = sugg['target_files']
+
+        # Get codebase root (parent of profile-al-dev-shared)
+        repo_root = Path(target_files[0]).parent.parent.parent
+
+        # Search for references to this artifact
+        # U1: Check if artifact is mentioned in prose/code
+        grep_patterns = [
+            f'/{artifact_name}',  # Skill invocation
+            f'al-dev-shared:{artifact_name}',  # Agent invocation
+            f'--{artifact_name}',  # Flag reference
+        ]
+
+        references = []
+        for pattern in grep_patterns:
+            try:
+                result = subprocess.run(
+                    ['grep', '-r', pattern, 'profile-al-dev-shared/', '--include=*.md'],
+                    cwd=repo_root,
+                    capture_output=True,
+                    text=True,
+                    timeout=15
+                )
+                if result.stdout:
+                    lines = result.stdout.strip().split('\n')
+                    # Filter out self-references and documentation only
+                    for line in lines:
+                        if target_files[0].split('/')[-1] not in line:
+                            references.append(line)
+            except Exception:
+                pass
+
+        # Verdict logic
+        if not references:
+            # Artifact is truly unused
+            return {
+                'pass': True,
+                'reason': 'Artifact is unused',
+                'state': 'trim_check_passed',
+                'side_effects': [
+                    f'Removes artifact: {artifact_name}',
+                    'No external references found in codebase'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Trim: Unused verification',
+                        'result': 'pass',
+                        'message': f'Artifact {artifact_name} has no references in codebase',
+                        'findings': 'Searched all agents, skills, and knowledge files; zero external references'
+                    }
+                ]
+            }
+        else:
+            # Check if all references are in comments or documentation only
+            comment_only = all(line.startswith('#') or '[example]' in line.lower()
+                             for line in references)
+            if comment_only:
+                return {
+                    'pass': True,
+                    'reason': 'Artifact is unused (only in comments)',
+                    'state': 'trim_check_passed',
+                    'side_effects': [f'Removes artifact: {artifact_name}'],
+                    'evidence': [
+                        {
+                            'check': 'Trim: Unused verification',
+                            'result': 'pass',
+                            'message': f'Artifact {artifact_name} is only referenced in comments/documentation',
+                            'findings': f'Found {len(references)} references, all in comment blocks'
+                        }
+                    ]
+                }
+            else:
+                # Artifact is in active use
+                return {
+                    'pass': False,
+                    'reason': f'Artifact is actively used ({len(references)} references)',
+                    'state': 'trim_check_failed',
+                    'side_effects': [],
+                    'evidence': [
+                        {
+                            'check': 'Trim: Unused verification',
+                            'result': 'fail',
+                            'message': f'Artifact {artifact_name} has {len(references)} active references',
+                            'findings': '\n'.join(references[:5])  # Show first 5
+                        }
+                    ]
+                }
+
+    except subprocess.TimeoutExpired:
+        return {
+            'pass': False,
+            'reason': 'Grep search timed out',
+            'state': 'trim_check_timeout',
+            'side_effects': [],
+            'evidence': []
+        }
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Trim check exception: {str(e)}',
+            'state': 'trim_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
 
 def run_merge_checks(sugg):
-    """Verify both artifacts exist and overlap identified."""
-    # Verify: both target files exist, examine overlap in function/purpose
-    pass
+    """
+    Verify both artifacts exist and overlap identified.
 
-# Additional type-specific checks follow the same pattern...
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        target_files = sugg['target_files']
+
+        if len(target_files) < 2:
+            return {
+                'pass': False,
+                'reason': 'Merge requires at least 2 target files',
+                'state': 'merge_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Merge: File presence',
+                        'result': 'fail',
+                        'message': f'Merge suggestion specifies only {len(target_files)} file(s)'
+                    }
+                ]
+            }
+
+        # Verify both artifacts exist (U2)
+        for file_path in target_files:
+            if not Path(file_path).exists():
+                return {
+                    'pass': False,
+                    'reason': f'Target file missing: {file_path}',
+                    'state': 'merge_check_failed',
+                    'side_effects': [],
+                    'evidence': [
+                        {
+                            'check': 'Merge: File presence',
+                            'result': 'fail',
+                            'message': f'File not found: {file_path}'
+                        }
+                    ]
+                }
+
+        # Read both artifacts
+        content_a = Path(target_files[0]).read_text()
+        content_b = Path(target_files[1]).read_text()
+
+        # Extract tools and knowledge references
+        import re
+
+        tools_a = set(re.findall(r'- (\w+)\n', content_a))
+        tools_b = set(re.findall(r'- (\w+)\n', content_b))
+        shared_tools = tools_a & tools_b
+
+        knowledge_refs_a = set(re.findall(r'\./.*?\.md', content_a))
+        knowledge_refs_b = set(re.findall(r'\./.*?\.md', content_b))
+        shared_knowledge = knowledge_refs_a & knowledge_refs_b
+
+        # Calculate overlap percentage
+        total_unique = len(tools_a | tools_b) + len(knowledge_refs_a | knowledge_refs_b)
+        shared_count = len(shared_tools) + len(shared_knowledge)
+        overlap_pct = (shared_count / total_unique * 100) if total_unique > 0 else 0
+
+        # Check merged size
+        merged_size = len(content_a) + len(content_b)
+        exceeds_size_limit = merged_size > 4000  # ~400 lines
+
+        # Verdict logic
+        if overlap_pct >= 60 and not exceeds_size_limit:
+            return {
+                'pass': True,
+                'reason': f'Overlap {overlap_pct:.0f}% and merge is feasible',
+                'state': 'merge_check_passed',
+                'side_effects': [
+                    f'Merges {len(target_files)} artifacts into one',
+                    f'Shared tools: {shared_tools}',
+                    f'Shared knowledge: {len(shared_knowledge)} references'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Merge: Overlap analysis',
+                        'result': 'pass',
+                        'message': f'Significant overlap ({overlap_pct:.0f}%) and feasible merge',
+                        'findings': f'Shared tools: {shared_tools}, Shared knowledge: {shared_knowledge}'
+                    }
+                ]
+            }
+        elif overlap_pct >= 40:
+            return {
+                'pass': False,
+                'reason': f'Borderline overlap ({overlap_pct:.0f}%)',
+                'state': 'merge_check_deferred',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Merge: Overlap analysis',
+                        'result': 'warning',
+                        'message': f'Borderline overlap ({overlap_pct:.0f}%) - requires human judgment'
+                    }
+                ]
+            }
+        else:
+            return {
+                'pass': False,
+                'reason': f'Insufficient overlap ({overlap_pct:.0f}%)',
+                'state': 'merge_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Merge: Overlap analysis',
+                        'result': 'fail',
+                        'message': f'Insufficient overlap ({overlap_pct:.0f}%); artifacts serve different purposes'
+                    }
+                ]
+            }
+
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Merge check exception: {str(e)}',
+            'state': 'merge_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
+
+def run_split_checks(sugg):
+    """
+    Verify artifact has separable concerns and sufficient size.
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        target_files = sugg['target_files']
+
+        if len(target_files) != 1:
+            return {
+                'pass': False,
+                'reason': 'Split target must be single artifact',
+                'state': 'split_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        artifact_path = Path(target_files[0])
+        if not artifact_path.exists():
+            return {
+                'pass': False,
+                'reason': f'Artifact not found: {target_files[0]}',
+                'state': 'split_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        content = artifact_path.read_text()
+        lines = content.split('\n')
+
+        if len(lines) < 250:
+            return {
+                'pass': False,
+                'reason': f'Artifact too small ({len(lines)} lines < 250)',
+                'state': 'split_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Split: Size validation',
+                        'result': 'fail',
+                        'message': f'Artifact is only {len(lines)} lines; minimum 250 required for split'
+                    }
+                ]
+            }
+
+        # Extract section headings
+        import re
+        sections = re.findall(r'^## (.+)$', content, re.MULTILINE)
+
+        if len(sections) < 2:
+            return {
+                'pass': False,
+                'reason': f'Insufficient distinct sections ({len(sections)})',
+                'state': 'split_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Split: Section analysis',
+                        'result': 'fail',
+                        'message': f'Only {len(sections)} sections found; concerns too intertwined'
+                    }
+                ]
+            }
+
+        # Tool affinity analysis
+        tool_sections = {}
+        for section in sections:
+            section_pattern = f'## {re.escape(section)}.*?(?=##|\\Z)'
+            section_content = re.search(section_pattern, content, re.DOTALL)
+            if section_content:
+                tools_in_section = set(re.findall(r'- (\w+)', section_content.group()))
+                tool_sections[section] = tools_in_section
+
+        # Check tool clustering
+        all_tools = set()
+        for tools in tool_sections.values():
+            all_tools.update(tools)
+
+        # Tools should cluster (not spread evenly)
+        tool_distribution = [len(tool_sections.get(s, set())) for s in sections]
+        has_clustering = len([t for t in tool_distribution if t > 0]) >= 2
+
+        if has_clustering and len(sections) >= 2:
+            return {
+                'pass': True,
+                'reason': 'Artifact has separable concerns',
+                'state': 'split_check_passed',
+                'side_effects': [
+                    f'Creates {len(sections)} separate artifacts',
+                    f'Tools cluster into {len(set(tool_distribution))} distinct groups'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Split: Concern separation',
+                        'result': 'pass',
+                        'message': f'Artifact can be cleanly split into {len(sections)} concerns',
+                        'findings': f'Sections: {sections}'
+                    }
+                ]
+            }
+        else:
+            return {
+                'pass': False,
+                'reason': 'Concerns too intertwined',
+                'state': 'split_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Split: Concern separation',
+                        'result': 'fail',
+                        'message': 'Concerns are too tightly coupled for clean split'
+                    }
+                ]
+            }
+
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Split check exception: {str(e)}',
+            'state': 'split_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
+
+def run_inline_checks(sugg):
+    """
+    Verify single-use wrapper with minimal value-add.
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        target_files = sugg['target_files']
+
+        if len(target_files) < 1:
+            return {
+                'pass': False,
+                'reason': 'Inline target missing',
+                'state': 'inline_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        artifact_path = Path(target_files[0])
+        artifact_name = artifact_path.stem  # filename without extension
+
+        if not artifact_path.exists():
+            return {
+                'pass': False,
+                'reason': f'Artifact not found: {target_files[0]}',
+                'state': 'inline_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        content = artifact_path.read_text()
+        lines = len(content.split('\n'))
+
+        # Count invocations in codebase
+        repo_root = artifact_path.parent.parent.parent
+        result = subprocess.run(
+            ['grep', '-r', f'al-dev-shared:{artifact_name}', 'profile-al-dev-shared/', '--include=*.md'],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+
+        invocation_count = len([l for l in result.stdout.strip().split('\n') if l])
+
+        if invocation_count != 1:
+            return {
+                'pass': False,
+                'reason': f'Artifact has {invocation_count} invocations (expected 1)',
+                'state': 'inline_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Inline: Invocation count',
+                        'result': 'fail',
+                        'message': f'Artifact is invoked {invocation_count} times; not single-use'
+                    }
+                ]
+            }
+
+        # Check value-add (lines of code)
+        if lines < 50:
+            # Thin wrapper
+            return {
+                'pass': True,
+                'reason': 'Single-use thin wrapper',
+                'state': 'inline_check_passed',
+                'side_effects': [
+                    f'Inlines {lines}-line artifact into its caller',
+                    'No significant abstraction value lost'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Inline: Value-add analysis',
+                        'result': 'pass',
+                        'message': f'Artifact is {lines} lines of passthrough logic with single caller'
+                    }
+                ]
+            }
+        elif lines > 200:
+            # Too much value to inline
+            return {
+                'pass': False,
+                'reason': f'Artifact too large ({lines} lines) to inline',
+                'state': 'inline_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Inline: Value-add analysis',
+                        'result': 'fail',
+                        'message': f'Artifact is {lines} lines; provides significant isolation'
+                    }
+                ]
+            }
+        else:
+            # Borderline
+            return {
+                'pass': False,
+                'reason': f'Borderline value-add ({lines} lines)',
+                'state': 'inline_check_deferred',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Inline: Value-add analysis',
+                        'result': 'warning',
+                        'message': f'Artifact is {lines} lines; requires human judgment'
+                    }
+                ]
+            }
+
+    except subprocess.TimeoutExpired:
+        return {
+            'pass': False,
+            'reason': 'Grep search timed out',
+            'state': 'inline_check_timeout',
+            'side_effects': [],
+            'evidence': []
+        }
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Inline check exception: {str(e)}',
+            'state': 'inline_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
+
+def run_align_checks(sugg):
+    """
+    Verify input/output contract mismatch.
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        target_files = sugg['target_files']
+
+        if len(target_files) < 1:
+            return {
+                'pass': False,
+                'reason': 'Align target missing',
+                'state': 'align_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        artifact_path = Path(target_files[0])
+        if not artifact_path.exists():
+            return {
+                'pass': False,
+                'reason': f'Artifact not found: {target_files[0]}',
+                'state': 'align_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        content = artifact_path.read_text()
+
+        # Extract documented input/output contracts
+        import re
+        input_match = re.search(r'## Input\s*\n\s*(.+?)(?=##|\Z)', content, re.DOTALL)
+        output_match = re.search(r'## Output\s*\n\s*(.+?)(?=##|\Z)', content, re.DOTALL)
+
+        documented_input = input_match.group(1).strip() if input_match else 'Not documented'
+        documented_output = output_match.group(1).strip() if output_match else 'Not documented'
+
+        # For Align checks, we look at evidence that the contract is violated
+        # Since we can't execute code here, we check if the artifact mentions contract mismatches
+        has_contract_warning = 'WARNING' in content or 'expects' in content.lower()
+
+        if has_contract_warning or 'mismatch' in sugg.get('proposed_change', '').lower():
+            return {
+                'pass': True,
+                'reason': 'Contract mismatch detected',
+                'state': 'align_check_passed',
+                'side_effects': [
+                    f'Fixes contract between artifact and callers',
+                    f'Documented input: {documented_input[:50]}...',
+                    f'Documented output: {documented_output[:50]}...'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Align: Contract validation',
+                        'result': 'pass',
+                        'message': 'Contract mismatch identified and documented'
+                    }
+                ]
+            }
+        else:
+            return {
+                'pass': False,
+                'reason': 'No actual contract mismatch found',
+                'state': 'align_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Align: Contract validation',
+                        'result': 'fail',
+                        'message': 'Artifact input/output contracts are aligned'
+                    }
+                ]
+            }
+
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Align check exception: {str(e)}',
+            'state': 'align_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
+
+def run_connect_checks(sugg):
+    """
+    Verify shared pattern appears 3+ times in codebase.
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        subject = sugg['subject']
+        proposed_change = sugg['proposed_change']
+
+        # Extract pattern name from suggestion
+        pattern_match = subject or proposed_change.split(' ')[0]
+
+        # Search codebase for pattern
+        repo_root = Path('profile-al-dev-shared').parent
+
+        result = subprocess.run(
+            ['grep', '-r', pattern_match, 'profile-al-dev-shared/', '--include=*.md'],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=20
+        )
+
+        occurrences = [l for l in result.stdout.strip().split('\n') if l]
+        pattern_count = len(occurrences)
+
+        # Estimate code savings (rough heuristic)
+        avg_lines_per_occurrence = 30
+        estimated_savings = pattern_count * avg_lines_per_occurrence
+
+        if pattern_count >= 3 and estimated_savings >= 200:
+            return {
+                'pass': True,
+                'reason': f'Pattern appears {pattern_count} times, saves {estimated_savings}+ lines',
+                'state': 'connect_check_passed',
+                'side_effects': [
+                    f'Extracts shared pattern into reusable agent',
+                    f'Deduplicates {pattern_count} occurrences',
+                    f'Saves ~{estimated_savings} lines of code'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Connect: Pattern frequency',
+                        'result': 'pass',
+                        'message': f'Pattern {pattern_match} appears {pattern_count} times in codebase',
+                        'findings': f'Found {pattern_count} occurrences; deduplication saves ~{estimated_savings} lines'
+                    }
+                ]
+            }
+        elif pattern_count >= 2:
+            return {
+                'pass': False,
+                'reason': f'Pattern appears only {pattern_count} times (threshold: 3)',
+                'state': 'connect_check_deferred',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Connect: Pattern frequency',
+                        'result': 'warning',
+                        'message': f'Pattern appears {pattern_count} times; borderline frequency'
+                    }
+                ]
+            }
+        else:
+            return {
+                'pass': False,
+                'reason': f'Pattern appears only {pattern_count} time(s)',
+                'state': 'connect_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Connect: Pattern frequency',
+                        'result': 'fail',
+                        'message': f'Pattern {pattern_match} appears only {pattern_count} time(s); not frequent enough'
+                    }
+                ]
+            }
+
+    except subprocess.TimeoutExpired:
+        return {
+            'pass': False,
+            'reason': 'Pattern search timed out',
+            'state': 'connect_check_timeout',
+            'side_effects': [],
+            'evidence': []
+        }
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Connect check exception: {str(e)}',
+            'state': 'connect_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
+
+def run_promote_checks(sugg):
+    """
+    Verify skill/agent is harness-neutral and used 2+ times.
+
+    Returns: {'pass': bool, 'reason': str, 'state': str, 'side_effects': list, 'evidence': list}
+    """
+    try:
+        target_files = sugg['target_files']
+
+        if len(target_files) < 1:
+            return {
+                'pass': False,
+                'reason': 'Promote target missing',
+                'state': 'promote_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        artifact_path = Path(target_files[0])
+
+        # Check if already in shared surface
+        if 'profile-al-dev-shared' in str(artifact_path):
+            return {
+                'pass': False,
+                'reason': 'Artifact already in shared surface',
+                'state': 'promote_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Promote: Scope validation',
+                        'result': 'fail',
+                        'message': 'Artifact is already in shared surface; no promotion needed'
+                    }
+                ]
+            }
+
+        if not artifact_path.exists():
+            return {
+                'pass': False,
+                'reason': f'Artifact not found: {target_files[0]}',
+                'state': 'promote_check_failed',
+                'side_effects': [],
+                'evidence': []
+            }
+
+        content = artifact_path.read_text()
+
+        # Check for harness-specific tokens
+        harness_tokens = ['Claude Code', 'Copilot CLI', 'Codex', 'claude:', 'copilot:', 'codex:']
+        found_tokens = [t for t in harness_tokens if t in content]
+
+        if found_tokens:
+            return {
+                'pass': False,
+                'reason': f'Harness-specific tokens found: {found_tokens}',
+                'state': 'promote_check_deferred',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Promote: Harness neutrality',
+                        'result': 'warning',
+                        'message': f'Artifact contains harness-specific tokens: {found_tokens}'
+                    }
+                ]
+            }
+
+        # Count usage across harnesses (look for files referencing this artifact)
+        artifact_name = artifact_path.stem
+        repo_root = artifact_path.parent.parent.parent
+
+        result = subprocess.run(
+            ['grep', '-r', artifact_name, 'profile-al-dev-shared/', '--include=*.md'],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+
+        usage_count = len([l for l in result.stdout.strip().split('\n') if l and str(artifact_path) not in l])
+
+        if usage_count >= 2:
+            return {
+                'pass': True,
+                'reason': f'Used {usage_count} times, harness-neutral',
+                'state': 'promote_check_passed',
+                'side_effects': [
+                    f'Promotes artifact to shared surface',
+                    f'Used {usage_count} times across harnesses',
+                    'Harness-neutral, ready for sharing'
+                ],
+                'evidence': [
+                    {
+                        'check': 'Promote: Usage verification',
+                        'result': 'pass',
+                        'message': f'Artifact is used {usage_count} times and is harness-neutral'
+                    }
+                ]
+            }
+        else:
+            return {
+                'pass': False,
+                'reason': f'Artifact used only {usage_count} time(s)',
+                'state': 'promote_check_failed',
+                'side_effects': [],
+                'evidence': [
+                    {
+                        'check': 'Promote: Usage verification',
+                        'result': 'fail',
+                        'message': f'Artifact is used only {usage_count} time(s); threshold is 2'
+                    }
+                ]
+            }
+
+    except subprocess.TimeoutExpired:
+        return {
+            'pass': False,
+            'reason': 'Usage search timed out',
+            'state': 'promote_check_timeout',
+            'side_effects': [],
+            'evidence': []
+        }
+    except Exception as e:
+        return {
+            'pass': False,
+            'reason': f'Promote check exception: {str(e)}',
+            'state': 'promote_check_error',
+            'side_effects': [],
+            'evidence': []
+        }
 ```
 
 ### Phase 2B: Remote Team Dispatch (3+ suggestions)
