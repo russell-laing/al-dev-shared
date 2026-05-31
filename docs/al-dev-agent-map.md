@@ -683,10 +683,8 @@ Observation: System prompt describes two separable concerns — (1) lens batch o
 Suggestion: Extract result collection into a new agent `plugin-health-result-collector`; have the orchestrator hand off a completion list and terminate; the collector reads and aggregates lens results independently.
 Trade-off: One new agent file to maintain; each agent's scope becomes narrower — orchestration failures can be diagnosed separately from collection failures.
 
-**Remodel: al-dev-code-review**
-Observation: Agent performs single-file code review via pattern matching (logic errors, security issues, structured output); currently assigned sonnet. Agent has no active caller — not integrated into any skill.
-Suggestion: Change model to haiku — task is read + categorize, no multi-file synthesis or architectural reasoning.
-Trade-off: Faster and cheaper; pattern-matching review tasks are within haiku's capability range.
+**✅ Implemented: Remodel al-dev-code-review** (2026-06-01)
+Agent model downgraded from sonnet to haiku. Justification: Single-file pattern-matching review task with no active callers requires only read + categorize capability — haiku is appropriately scoped and reduces cost without signal loss.
 
 ### Inline candidates
 
