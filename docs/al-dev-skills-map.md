@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-31 (21 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 deprecated alias `/al-dev-support` + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
+**Last updated:** 2026-06-01 (21 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 deprecated alias `/al-dev-support` + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. `/al-dev-diagram-generator`, `/align-harness-repos`, and `/plugin-health` are maintainer-only tools and are not part of the distributed plugin surface.
 
 ---
@@ -101,33 +101,56 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ```mermaid
 flowchart LR
-    Start([Start]) --> Decision{Mode?}
-    
-    Decision -->|context-only| Phase1F["Phase 1<br/>Fetch ticket"]
-    Phase1F --> Agent1F["al-dev-ticket-agent ×1"]
-    Agent1F --> Output1F([".dev/*-al-dev-ticket-ticket-context.md"])
-    
-    Decision -->|full| Phase1S["Phase 1<br/>Fetch ticket"]
-    Phase1S --> Agent1S["al-dev-ticket-agent ×1"]
-    Agent1S --> Phase2S["Phase 2<br/>Research"]
-    Phase2S --> Agent2S["al-dev-support-researcher ×1"]
-    Agent2S --> Phase3S["Phase 3<br/>Draft reply"]
-    Phase3S --> Agent3S["al-dev-support-reply-drafter ×1"]
-    Agent3S --> Output1S(["customer reply"])
+    Start([Start]) --> Phase05["Phase 0.5<br/>Resolve mode<br/>(context-only|full)"]
+    Phase05 --> SkillWork05["(skill itself)"]
+    SkillWork05 --> Phase1["Steps 1-4<br/>Resolve ticket +<br/>fetch context"]
+    Phase1 --> Agent1["al-dev-ticket-agent ×1"]
+    Agent1 --> Output1F([".dev/*-al-dev-ticket-ticket-context.md"])
+    Output1F --> Phase5{Mode?}
 
-    Output1F --> End([End])
-    Output1S --> End
+    Phase5 -->|context-only| End1([End])
+    Phase5 -->|full| Phase6["Phase 6<br/>Research"]
+    Phase6 --> Agent2["al-dev-support-researcher ×1"]
+    Agent2 --> Phase7["Phase 7<br/>Draft reply"]
+    Phase7 --> Agent3["al-dev-support-reply-drafter ×1"]
+    Agent3 --> Phase8["Phase 8<br/>Present result"]
+    Phase8 --> SkillWork8["(skill itself)"]
+    SkillWork8 --> Output2(["customer reply"])
+    Output2 --> End2([End])
 
-    style Decision fill:#fff9c4
-    style Phase1F fill:#e3f2fd
-    style Phase1S fill:#e3f2fd
-    style Agent1F fill:#bbdefb
-    style Agent1S fill:#bbdefb
-    style Agent2S fill:#bbdefb
-    style Agent3S fill:#bbdefb
+    style Phase05 fill:#e3f2fd
+    style Phase1 fill:#e3f2fd
+    style Phase5 fill:#fff9c4
+    style Phase6 fill:#e3f2fd
+    style Phase7 fill:#e3f2fd
+    style Phase8 fill:#e3f2fd
+    style SkillWork05 fill:#bbdefb
+    style SkillWork8 fill:#bbdefb
+    style Agent1 fill:#bbdefb
+    style Agent2 fill:#bbdefb
+    style Agent3 fill:#bbdefb
     style Output1F fill:#90caf9
-    style Output1S fill:#90caf9
+    style Output2 fill:#90caf9
 ```
+
+Agents spawned: `al-dev-shared:al-dev-ticket-agent`, `al-dev-shared:al-dev-support-researcher` (mode=full only), `al-dev-shared:al-dev-support-reply-drafter` (mode=full only)
+
+### /al-dev-support
+
+**Deprecated alias.** This skill has been consolidated into `/al-dev-ticket`. Use `/al-dev-ticket --mode=full` instead. The alias remains active for backward compatibility and redirects users to the consolidated entry point.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Redirect["Redirect to<br/>/al-dev-ticket --mode=full"]
+    Redirect --> SkillWork1["(skill itself)"]
+    SkillWork1 --> End(["→ /al-dev-ticket --mode=full"])
+
+    style Redirect fill:#ffecb3
+    style SkillWork1 fill:#ffe082
+    style End fill:#ffd54f
+```
+
+Agents spawned: None (delegates to `/al-dev-ticket --mode=full`)
 
 ### /al-dev-investigate
 
@@ -188,27 +211,53 @@ flowchart LR
 
 ### /al-dev-plan
 
-**Competitive design phase:** Multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan.
+**Competitive design phase:** Multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes complexity triage, optional external claims verification, and a user approval gate before handing off to `/al-dev-develop`.
 
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Context gather"]
+    Start([Start]) --> Phase0["Phase 0<br/>Resume check"]
+    Phase0 --> Phase05["Phase 0.5<br/>Complexity triage<br/>(SIMPLE|MEDIUM|COMPLEX)"]
+    Phase05 --> SkillWork05["(skill itself)"]
+    SkillWork05 --> Phase1["Phase 1<br/>Gather context<br/>(requirements, symbols,<br/>explore/perf findings)"]
     Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Competing designs"]
+    SkillWork1 --> Phase15["Phase 1.5<br/>Verify external claims<br/>(optional)"]
+    Phase15 --> Phase16["Phase 1.6<br/>Target confirmation<br/>(optional)"]
+    Phase16 --> Phase2["Phase 2<br/>Spawn architect team"]
     Phase2 --> ArchAgents["al-dev-solution-architect<br/>×2-3 parallel"]
-    ArchAgents --> Phase3["Phase 3<br/>Synthesise winner"]
+    ArchAgents --> Phase3["Phase 3<br/>Facilitate debate"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-plan-solution-plan.md"])
-    Output1 --> End([End])
+    SkillWork2 --> Phase4["Phase 4<br/>Evaluate + select<br/>winning approach"]
+    Phase4 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase5["Phase 5<br/>Write solution plan"]
+    Phase5 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1([".dev/*-al-dev-plan-solution-plan.md"])
+    Output1 --> Phase6["Phase 6<br/>Validate plan"]
+    Phase6 --> SkillWork5["(skill itself)"]
+    SkillWork5 --> Phase7["Phase 7<br/>Present to user<br/>(USER_GATE)"]
+    Phase7 --> End([End])
 
+    style Phase0 fill:#fff3e0
+    style Phase05 fill:#fff3e0
     style Phase1 fill:#fff3e0
+    style Phase15 fill:#fff3e0
+    style Phase16 fill:#fff3e0
     style Phase2 fill:#fff3e0
     style Phase3 fill:#fff3e0
+    style Phase4 fill:#fff3e0
+    style Phase5 fill:#fff3e0
+    style Phase6 fill:#fff3e0
+    style Phase7 fill:#fff3e0
+    style SkillWork05 fill:#ffe0b2
     style SkillWork1 fill:#ffe0b2
     style SkillWork2 fill:#ffe0b2
+    style SkillWork3 fill:#ffe0b2
+    style SkillWork4 fill:#ffe0b2
+    style SkillWork5 fill:#ffe0b2
     style ArchAgents fill:#ffcc80
     style Output1 fill:#ffb74d
 ```
+
+Agents spawned: `al-dev-shared:al-dev-solution-architect` (×2-3 parallel in Phase 2)
 
 ### /al-dev-develop
 
@@ -244,37 +293,37 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 8) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 8.5) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user.
+**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 2) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 3) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user. Phases use local numbering 1–6.
 
 ```mermaid
 flowchart LR
-    Start([Handoff<br/>Phase 4]) --> Phase5["Phase 5<br/>Prepare review<br/>context"]
-    Phase5 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase8["Phase 8<br/>Compile verify<br/>(gates panel)"]
-    Phase8 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase85["Phase 8.5<br/>Pre-review<br/>staging"]
-    Phase85 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase67["Phase 6–7<br/>Review panel<br/>in parallel"]
+    Start([Handoff<br/>Phase 4]) --> Phase1["Phase 1<br/>Prepare review<br/>context"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase2["Phase 2<br/>Compile verify<br/>(gates panel)"]
+    Phase2 --> SkillWork2["(skill itself + optional<br/>al-dev-developer-traditional<br/>for --autonomous error fix)"]
+    SkillWork2 --> Phase3["Phase 3<br/>Pre-review<br/>staging"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase4["Phase 4<br/>Review panel<br/>in parallel"]
 
-    Phase67 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase67 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase67 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+    Phase4 --> SecReview["al-dev-security-reviewer<br/>×1"]
+    Phase4 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
+    Phase4 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
 
-    SecReview --> Phase9["Phase 9<br/>Write code review"]
-    ExpertReview --> Phase9
-    PerfReview --> Phase9
+    SecReview --> Phase5["Phase 5<br/>Write code review"]
+    ExpertReview --> Phase5
+    PerfReview --> Phase5
 
-    Phase9 --> SkillWork4["(skill itself)"]
+    Phase5 --> SkillWork4["(skill itself)"]
     SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
-    Output1 --> Phase10["Phase 10<br/>Present findings"]
-    Phase10 --> End([End])
+    Output1 --> Phase6["Phase 6<br/>Present findings"]
+    Phase6 --> End([End])
 
+    style Phase1 fill:#ff8a65
+    style Phase2 fill:#ff8a65
+    style Phase3 fill:#ff8a65
+    style Phase4 fill:#ff8a65
     style Phase5 fill:#ff8a65
-    style Phase8 fill:#ff8a65
-    style Phase85 fill:#ff8a65
-    style Phase67 fill:#ff8a65
-    style Phase9 fill:#ff8a65
-    style Phase10 fill:#ff8a65
+    style Phase6 fill:#ff8a65
     style SkillWork1 fill:#ff7043
     style SkillWork2 fill:#ff7043
     style SkillWork3 fill:#ff7043
@@ -284,6 +333,8 @@ flowchart LR
     style PerfReview fill:#ff5722
     style Output1 fill:#d84315
 ```
+
+Agents spawned: `al-dev-shared:al-dev-security-reviewer`, `al-dev-shared:al-dev-expert-reviewer`, `al-dev-shared:al-dev-performance-reviewer` (all in Phase 4 parallel), `al-dev-shared:al-dev-developer-traditional` (Phase 2 `--autonomous` mode only)
 
 ### /al-dev-commit
 
@@ -345,23 +396,29 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Pre-research"]
+    Start([Start]) --> Phase1["Phase 1<br/>Pre-research<br/>(AL symbols lookup)"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Phase 2<br/>Interview"]
     Phase2 --> Agent1["al-dev-interview ×1"]
     Agent1 --> Phase3["Phase 3<br/>Write requirements"]
     Phase3 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Output1([".dev/*-al-dev-interview-requirements.md"])
-    Output1 --> End([End])
+    Output1 --> Phase4["Phase 4<br/>Summary"]
+    Phase4 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> End([End])
 
     style Phase1 fill:#e8f5e9
     style Phase2 fill:#e8f5e9
     style Phase3 fill:#e8f5e9
+    style Phase4 fill:#e8f5e9
     style SkillWork1 fill:#c8e6c9
     style SkillWork2 fill:#c8e6c9
+    style SkillWork3 fill:#c8e6c9
     style Agent1 fill:#a5d6a7
     style Output1 fill:#81c784
 ```
+
+Agents spawned: `al-dev-shared:al-dev-interview`
 
 ### /al-dev-lint
 
@@ -413,17 +470,27 @@ flowchart LR
 flowchart LR
     Start([Start]) --> Phase1["Phase 1<br/>Parse args"]
     Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Generate notes"]
+    SkillWork1 --> Phase15["Phase 1.5<br/>Read project context"]
+    Phase15 --> SkillWork15["(skill itself)"]
+    SkillWork15 --> Phase2["Phase 2<br/>Generate notes"]
     Phase2 --> Agent1["al-dev-release-notes-writer ×1"]
     Agent1 --> Output1([".dev/YYYY-MM-DD-[app-id]-al-dev-release-notes-[short-hash].md"])
-    Output1 --> End([End])
+    Output1 --> Phase3["Phase 3<br/>Present to user<br/>(handle AMBIGUOUS)"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> End([End])
 
     style Phase1 fill:#e3f2fd
+    style Phase15 fill:#e3f2fd
     style Phase2 fill:#e3f2fd
+    style Phase3 fill:#e3f2fd
     style SkillWork1 fill:#bbdefb
+    style SkillWork15 fill:#bbdefb
+    style SkillWork3 fill:#bbdefb
     style Agent1 fill:#90caf9
     style Output1 fill:#64b5f6
 ```
+
+Agents spawned: `al-dev-shared:al-dev-release-notes-writer`
 
 ### /al-dev-perf
 
@@ -647,6 +714,71 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
+### /plan-map-changes
+
+**Maintainer tool — not part of the main development lifecycle.** Rubber-ducks architectural suggestions from the map Observations sections using parallel remote agent teams. Reduces session token burn from 1-1.5 hours to 40-50 minutes via async verification and multi-session checkpoint/resume workflow.
+
+Writes `.dev/YYYY-MM-DD-al-dev-plan-plan.md` (generated by `superpowers:writing-plans`).
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Decision{--resume?}
+    Decision -->|No| Phase1["Phase 1<br/>Extract suggestions<br/>from map Observations"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> SizeCheck{1-2 or 3+<br/>suggestions?}
+    SizeCheck -->|1-2| Phase2a["Phase 2A<br/>Inline verify"]
+    SizeCheck -->|3+| Phase2b["Phase 2B<br/>Dispatch remote<br/>duck-worker team"]
+    Phase2a --> Phase3["Phase 3<br/>Collect + plan"]
+    Phase2b --> ReturnUser(["Return to user<br/>(async; run --resume when ready)"])
+    Decision -->|--resume| Phase3
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1([".dev/YYYY-MM-DD-al-dev-plan-plan.md"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#e8eaf6
+    style Phase2a fill:#e8eaf6
+    style Phase2b fill:#e8eaf6
+    style Phase3 fill:#e8eaf6
+    style SkillWork1 fill:#c5cae9
+    style SkillWork3 fill:#c5cae9
+    style SizeCheck fill:#fff9c4
+    style Decision fill:#fff9c4
+    style ReturnUser fill:#9fa8da
+    style Output1 fill:#9fa8da
+```
+
+Agents spawned: `al-dev-shared:plan-map-changes-duck-worker` (×N parallel, Phase 2B remote path only)
+
+### /plugin-health
+
+**Maintainer tool — not part of the main development lifecycle.** Parallelized health sweep of the al-dev-shared plugin surfaces (skills and agents). Dispatches remote design and quality lenses, ranks findings, and writes dossiers to `docs/health/`. Supports resume workflow to collect results in a separate session.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Decision{--resume?}
+    Decision -->|No| Phase1["Phase 1<br/>Parse args +<br/>build work queue"]
+    Phase1 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Dispatch["Spawn remote<br/>lens agent team"]
+    Dispatch --> Checkpoint([".dev/plugin-health-team-checkpoint.json"])
+    Checkpoint --> ReturnUser(["Return to user<br/>(async; run --resume when ready)"])
+    Decision -->|--resume| Phase3["Phase 3<br/>Collect findings +<br/>write dossiers"]
+    Phase3 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Output1(["docs/health/<surface>-dossier.md"])
+    Output1 --> End([End])
+
+    style Phase1 fill:#e8eaf6
+    style Phase3 fill:#e8eaf6
+    style SkillWork1 fill:#c5cae9
+    style SkillWork3 fill:#c5cae9
+    style Decision fill:#fff9c4
+    style Dispatch fill:#c5cae9
+    style Checkpoint fill:#9fa8da
+    style ReturnUser fill:#9fa8da
+    style Output1 fill:#9fa8da
+```
+
+Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent names defined in `knowledge/plugin-health-lenses.md`)
+
 ---
 
 ## Observations
@@ -668,9 +800,9 @@ flowchart LR
 - **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a; lint pre-flight)
 - **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b; OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
-- **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
-- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
-- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
+- **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
+- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
+- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
 
 ### Skills with no dedicated agent (skill does the work itself)
 
@@ -694,7 +826,7 @@ flowchart LR
 
 Status: Confirmed in current sweep. The live workflow now splits implementation from review:
 - `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` produces a Phase 4 handoff for `/al-dev-review-develop`
-- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` owns the post-implementation review orchestration (Phase 5-10)
+- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` owns the post-implementation review orchestration (Phase 1-6 local numbering)
 
 Impact: This is no longer remaining implementation scope. The map should treat review-workflow independence as current state, not future work.
 
