@@ -38,10 +38,6 @@ This skill is governed by `knowledge/artifact-contracts.md`.
 
 Do not claim the work is complete or ready for implementation until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
 
-## Phase Numbering Rationale
-
-The skill uses fractional phase numbers (Phase 0, Phase 0.5, Phase 1–7) to reflect semantic workflow layers rather than strict sequential numbering. Each fractional phase represents a distinct decision point or checkpoint within the broader workflow. This allows precise specification of where handoff points occur without forcing artificially sequential numbering.
-
 ## Phase 0: Check for Existing Progress
 
 Per the Phase 0 Read Protocol in
@@ -52,7 +48,9 @@ Per the Phase 0 Read Protocol in
 ## Phase 0.5: Complexity Triage
 
 Classify the request before gathering full context.
-Use these signals from `knowledge/workflow-routing.md`:
+See `knowledge/al-dev-plan-phase-routing.md` for full complexity classification rules and model assignment logic.
+
+Quick reference:
 
 | Signal | SIMPLE | MEDIUM / COMPLEX |
 | --- | --- | --- |
@@ -61,16 +59,13 @@ Use these signals from `knowledge/workflow-routing.md`:
 | New architecture needed | No | Yes |
 | Requirements ambiguous | No | Yes |
 
-"SIMPLE" here maps to TRIVIAL or SIMPLE in `knowledge/workflow-routing.md`;
-MEDIUM / COMPLEX maps to MEDIUM or COMPLEX.
+When in doubt, default to `opus` (MEDIUM / COMPLEX tier).
 
 Note `architect_model` for use in Phase 2:
 
 - **SIMPLE** → `sonnet`
 - **MEDIUM / COMPLEX** → `opus`
 
-When in doubt, default to `opus` — over-provisioning is safer
-than under-provisioning for architecture work.
 Do not surface this decision to the user.
 
 ---
@@ -84,56 +79,19 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 - Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
-1. Read user's request from $ARGUMENTS
-2. Check for dated requirements file (from /interview)
-   - Use: `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null
-     | sort | tail -1)`
-   - If requirements are unclear/complex, suggest /interview
-   - Simple requests can proceed without formal requirements
-3. Check for `.dev/project-context.md`
-   - If exists, read it for object ID ranges, naming
-     conventions, architectural patterns, base app
-     integration points
-   - If not exists, suggest `/al-dev-init-context` and
-     continue without it
-4. Pre-research base app and project integration points using
-   the strongest available AL symbol evidence before spawning
-   architects:
-   - Prefer `AL semantic navigation` when the active harness exposes
-     an `AL LSP` provider or adapter. Use go-to-definition,
-     find-references, document symbols, and hover/type information.
-   - If `AL LSP` is unavailable, use AL MCP through the AL Symbols
-     MCP server (`al-mcp-server`): `al_search_objects`,
-     `al_get_object_definition`, and `al_search_object_members`.
-   - If no semantic provider is available, use tightly scoped `rg`
-     searches and label the result as `text search`, not semantically
-     verified.
-
-   Include the findings and evidence source (`AL LSP`, `AL MCP`,
-   `text search`, or `unverified`) in every architect prompt so
-   architects start from explicit evidence, not assumptions.
-
-   If no provider is available or no results are returned, proceed
-   directly to Phase 2 using general AL knowledge unless a required
-   symbol is `unverified`.
-
-5. Load performance constraints if available:
+1. **Input Validation Gate** (mandatory) — ensure requirements are present and understood (see the gate above; do not proceed without a substantive feature description).
+2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` and continue without it. If requirements are unclear/complex, suggest `/interview`.
+3. **Gather symbol evidence** — use the strongest available AL symbol evidence before spawning architects: prefer `AL LSP` semantic navigation (go-to-definition, find-references, document symbols, hover/type) when the active harness exposes it; otherwise AL MCP via `al-mcp-server` (`al_search_objects`, `al_get_object_definition`, `al_search_object_members`); otherwise tightly scoped `rg` labeled as `text search`. Include findings and evidence source (`AL LSP`, `AL MCP`, `text search`, or `unverified`) in every architect prompt. If no provider/result is available, proceed to Phase 2 using general AL knowledge unless a required symbol is `unverified`.
+4. **Load performance and exploration findings** — if available, integrate findings from `/al-dev-explore` or `/al-dev-perf` pre-planning phases:
    ```bash
    PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
-   ```
-   If a file is found, read the CRITICAL and HIGH severity findings.
-   Include them as **"Performance constraints from prior analysis:"** in every
-   architect prompt in Phase 2. If no file exists, skip silently.
-
-6. Load exploration findings if available:
-   ```bash
    EXPLORE=$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)
    ```
-   If a file is found, read the findings and synthesized recommendations.
-   Include them as **"Codebase exploration findings from prior investigation:"** in every
-   architect prompt in Phase 2. If no file exists, skip silently.
+   If a perf file is found, read CRITICAL/HIGH findings and include them as **"Performance constraints from prior analysis:"** in every architect prompt in Phase 2. If an explore file is found, read the findings and synthesized recommendations and include them as **"Codebase exploration findings from prior investigation:"** in every architect prompt. If neither exists, skip silently.
 
 ## Phase 1.5: Verify External Claims
+
+**Phase 1.5 (Optional — External Claims Verification):** If the user request references a findings file, codeburn output, lint report, or third-party analysis, execute this phase to verify claims before forwarding to architects. Otherwise, skip to Phase 2.
 
 If the request references a findings file, codeburn output, lint report,
 or any third-party analysis, verify the claims before forwarding to architects:
@@ -174,6 +132,8 @@ or any third-party analysis, verify the claims before forwarding to architects:
    - <50% verified → gate with USER_GATE decision (proceed as hypotheses / re-run investigation / proceed anyway)
 
 ## Phase 1.6: Target Confirmation
+
+**Phase 1.6 (Optional — Pre-Research Base App):** If Phase 1's pre-research via AL LSP or MCP returns results, consolidate findings. If no results, skip to Phase 2. If results are incomplete and a required symbol remains unverified, note it for architect input in Phase 2.
 
 Before acting on any findings file or context document:
 

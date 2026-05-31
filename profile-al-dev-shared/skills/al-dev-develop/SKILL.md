@@ -44,64 +44,6 @@ Do not claim implementation is complete or ready for `/al-dev-review-develop`
 until the success evidence named in `knowledge/artifact-contracts.md` for
 `al-dev-develop` has been produced and read for the current run.
 
-## Glossary
-
-**Scope Expansion Gate:** A governance checkpoint enforced during
-development that prevents out-of-scope changes. Before editing any
-file or line not explicitly named in the approved solution plan, you
-must stop and present proposed changes to the user for per-item
-approval. Prevents scope creep and ensures the solution stays true
-to the plan.
-
-**Developer Spawn Prompt:** The structured prompt dispatched to each
-spawned `al-dev-developer-tdd` or `al-dev-developer-traditional` agent. Contains the module assignment,
-object list, object ID range, naming conventions, code patterns,
-and the Scope Expansion Gate rules. Ensures consistency across
-parallel developers.
-
-**Phase 0–10:** Semantic workflow layers of the /al-dev-develop skill.
-Phase 0 checks for resumed progress; Phase 0.5 establishes the
-resume pack; Phases 1–3 prepare context, checklist, scope, and
-developer assignments; Phases 4–4.5 verify implementation
-ownership and optional autonomous checks; Phase 5 prepares the
-review entry and compile discipline; Phases 8 and 8.5 must pass
-before the review panel is spawned; Phases 6–7 then synthesize and
-manage review findings; Phase 9 writes the review artifact
-(success review or blocking note); Phase 10 presents to the
-user. Each phase is a checkpoint with specific
-inputs and outputs.
-
-**Phase 1.5 (Autonomous):** Optional signature verification phase
-activated by `--autonomous`; uses strongest available AL symbol
-evidence before developers are spawned: `AL LSP` through active
-harness/adapter when available, otherwise AL Symbols MCP, otherwise
-scoped text search labeled as weaker evidence.
-
-**Phase 4.5 (Autonomous):** Optional static validation phase that
-runs after developer completion but before the review team is spawned.
-Checks object name lengths, compile guards, and label consistency
-against the solution plan.
-
-**Phase 8 Compile-Verify Loop:** Extended compilation strategy used
-in autonomous mode. Runs up to 5 sequential compile-fix-compile
-cycles with detailed error tracking per attempt. After each compile,
-parses errors, spawns a developer to fix them, and re-compiles.
-Stop when: (1) compilation succeeds with zero errors, OR (2) 5 attempts
-exhausted. If exhausted, escalate to the user with the final compile error log.
-
-**Review Panel:** The three-specialist review team spawned only after
-Phases 8 and 8.5 complete cleanly:
-**al-dev-security-reviewer** (permission/auth/data exposure),
-**al-dev-expert-reviewer** (AL conventions/BC patterns), and
-**al-dev-performance-reviewer** (N+1/SetLoadFields/efficiency).
-Each reviewer reads all implemented AL files independently.
-
-**Autonomous Mode:** Optional hardened workflow activated by the
-`--autonomous` flag. Adds Phase 1.5 (signature verification),
-Phase 4.5 (static validation), and a 5-attempt compile loop in Phase 8.
-Produces verified signatures and validation reports before review,
-reducing review iteration.
-
 ## Scope Expansion Gate
 
 The full gate rules (procedure, in-scope/out-of-scope definitions, and propagation
@@ -181,7 +123,7 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-## Phase 1.5: Signature Verification (Autonomous Mode — activated by Phase 1)
+## Phase 1.5: Signature Verification (Autonomous Mode Only — activated by Phase 1)
 
 Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
 mode, Phase 1 skips this phase entirely and proceeds to Phase 2.
@@ -309,65 +251,13 @@ Before spawning developers, write
 Reviewers validate the implementation against this scope file,
 not memory alone.
 
-For each developer, include in the prompt:
+See `knowledge/al-dev-develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
 
-```text
-Implement [module name] from the latest solution plan
-(.dev/*-al-dev-plan-solution-plan.md).
-
-Your assigned objects:
-- [Object list from partition]
-
-SYMBOL_PREFLIGHT_GATE — Complete BEFORE writing any AL code.
-Follow `knowledge/al-symbol-pre-flight.md` for the full checklist; that file is
-the authoritative source. If the inline list below and the knowledge file diverge,
-the knowledge file takes precedence.
-Use the strongest available evidence source and label every item as
-`AL LSP`, `AL MCP`, `text search`, or `unverified`.
-Required checks:
-1. Field references: verify each base field, exact field name,
-   spacing, and capitalisation.
-2. Event signatures: verify every event publisher signature; every
-   var parameter in the publisher MUST be declared var in your
-   subscriber; missing var = AL0118 compile error.
-3. Object names: verify each name and count characters; each must
-   be ≤30.
-4. Object IDs: verify all IDs are in your assigned range with no
-   duplicates.
-
-Report your pre-flight summary before writing a single line of AL:
-"Pre-flight complete.
-Evidence sources used: [AL LSP / AL MCP / text search].
-Fields: [field + source].
-Events: [event + source].
-Objects: [object name + source].
-Names/IDs: [name/ID + source].
-Unverified: [none or list]."
-
-DO NOT proceed past pre-flight if any item is unverified. Stop and
-report back to the orchestrator with the unverified item.
-
-Follow AL best practices:
-- SetLoadFields for record retrieval
-- Error handling with FieldCaption
-- Dependency injection for testability
-- Events for extensibility
-
-Object IDs: [range from plan]
-Naming prefix: [from plan or project-context.md]
-Project patterns: [from project-context.md if available]
-
-IMPORTANT: Do NOT run git commit. Your role is to implement
-and verify compilation only. Commits are handled separately
-by /al-dev-commit after user approval.
-
-SCOPE EXPANSION GATE: Apply the full gate procedure from
-`knowledge/scope-expansion-gate.md`. Before editing any file or line
-not in the plan: stop, list proposed changes, present to the user,
-and wait for per-item approval. Do NOT continue writing code until
-confirmed. Do NOT silently fix lint warnings, deprecated APIs, or
-unrelated issues not named in the plan.
-```
+For each module in the solution plan:
+1. Gather module-specific context (objects, ID range, symbols)
+2. Instantiate the spawn prompt template
+3. Detect test plan: `ls .dev/*-al-dev-test-test-plan.md`
+4. Dispatch al-dev-developer-tdd (if test plan) or al-dev-developer-traditional (if no test plan)
 
 Before spawning each developer, check for a test plan and route to
 the matching specialized agent:
@@ -419,7 +309,7 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
-## Phase 4.5: Static Validation (Autonomous Mode — activated by Phase 1)
+## Phase 4.5: Static Validation (Autonomous Mode Only — activated by Phase 1)
 
 Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
 mode, Phase 1 skips this phase entirely and proceeds to review dispatch.
