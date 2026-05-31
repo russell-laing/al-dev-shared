@@ -80,7 +80,7 @@ def test_find_health_detects_orphan_dead_and_missing() -> None:
 
 
 def test_node_id_sanitizes_hyphens() -> None:
-    assert _mod.node_id("al-dev-worker") == "al_dev_worker"
+    assert _mod.node_id("agent", "al-dev-worker") == "agent_al_dev_worker"
 
 
 def test_node_id_supports_typed_prefixes() -> None:
@@ -108,6 +108,29 @@ def test_extract_edges_finds_namespaced_and_unqualified_agent_refs() -> None:
 
         assert ("al-dev-lint", "al-dev-diagnostics-fixer") in edges["skill_agent"]
         assert ("al-dev-lint", "al-dev-developer-traditional") in edges["skill_agent"]
+
+
+def test_extract_edges_ignores_unqualified_agent_refs_in_reference_text() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        plugin = Path(td) / "profile-al-dev-shared"
+        (plugin / "skills" / "al-dev-help").mkdir(parents=True)
+        (plugin / "agents").mkdir(parents=True)
+        (plugin / "knowledge").mkdir(parents=True)
+        (plugin / "skills" / "al-dev-help" / "SKILL.md").write_text(
+            "| Agent | Purpose |\n"
+            "| --- | --- |\n"
+            "| al-dev-script-engineer | Maintains helper scripts. |\n"
+            "This skill documents when al-dev-script-engineer exists, but does not dispatch it.\n",
+            encoding="utf-8",
+        )
+        (plugin / "agents" / "al-dev-script-engineer.md").write_text(
+            "script engineer\n", encoding="utf-8"
+        )
+
+        skills, _, _ = _mod.discover(plugin)
+        edges = _mod.extract_edges(plugin, skills)
+
+        assert ("al-dev-help", "al-dev-script-engineer") not in edges["skill_agent"]
 
 
 def test_render_dependency_graph_does_not_merge_same_named_skill_and_agent() -> None:
