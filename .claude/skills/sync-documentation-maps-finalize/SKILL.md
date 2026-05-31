@@ -17,7 +17,8 @@ canonical docs/ maps, refreshes the dependency graph, and commits.
 
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-finalize --team-ids <ids>` — write maps, commit (this skill)
+3. `/sync-documentation-maps-finalize --team-ids <ids>` —
+   write maps, commit (this skill)
 
 **Working directory assumption:** All relative paths are resolved from
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
@@ -242,11 +243,11 @@ Set `phase` to `"complete"` and `status` to `"done"` in both checkpoint files:
 Use `jq` to update only the two fields; preserve all pre-existing fields:
 
 ```bash
+CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json"
 jq '.phase = "complete" | .status = "done"' \
-    /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json \
+    "$CHECKPOINT_FILE" \
     > /tmp/sdm-checkpoint-tmp.json && \
-    mv /tmp/sdm-checkpoint-tmp.json \
-       /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
+    mv /tmp/sdm-checkpoint-tmp.json "$CHECKPOINT_FILE"
 
 jq '.phase = "complete" | .status = "done"' \
     "${RUN_DIR}/manifest.json" \
