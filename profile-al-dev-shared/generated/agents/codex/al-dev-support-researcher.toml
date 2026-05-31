@@ -88,7 +88,4 @@ SUMMARY: [one-sentence root cause or workaround]
 ```
 
 Codex capability notes:
-- read files available in the active Codex session
-- use the AL symbol lookup MCP capability available in the active Codex session
-- use the Microsoft Docs MCP capability available in the active Codex session
-- use the BC code intelligence MCP capability available in the active Codex session"""
+"""

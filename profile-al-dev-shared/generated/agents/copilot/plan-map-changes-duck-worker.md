@@ -1,7 +1,7 @@
 ---
 name: "plan-map-changes-duck-worker"
 description: "Verify one map change suggestion by running universal and type-specific rubber-duck checks. Executes autonomously on remote teams."
-tools: ["read", "execute", "edit"]
+tools: ["read", "edit"]
 ---
 
 

@@ -5,12 +5,7 @@ description: >-
   Produces internal technical findings. Dispatched by /al-dev-ticket
   (--mode=full, research phase). Pairs with al-dev-support-reply-drafter.
 model: sonnet
-tools: [
-  "Read",
-  "MCP: al-mcp-server",
-  "MCP: microsoft-docs",
-  "MCP: bc-code-intelligence"
-]
+tools: []
 ---
 
 # Agent: al-dev-support-researcher

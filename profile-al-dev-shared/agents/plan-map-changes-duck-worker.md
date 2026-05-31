@@ -4,7 +4,7 @@ description: >-
   Verify one map change suggestion by running universal and type-specific
   rubber-duck checks. Executes autonomously on remote teams.
 model: sonnet
-tools: ["Read", "Bash", "Write"]
+tools: ["Read", "Write"]
 ---
 
 # Agent: plan-map-changes-duck-worker
