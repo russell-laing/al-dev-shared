@@ -11,7 +11,7 @@ description: >-
   "implement the observations", "implement the skill map",
   "implement agent map suggestions", "plan agent map changes",
   "implement the agent map".
-argument-hint: "[optional: connect | merge | trim | remodel | inline | align | all | --agents | --plugin-map]"
+argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
 ---
 
 # Plan Map Changes
@@ -41,7 +41,7 @@ plans based on suggestion text that diverges from actual code.
 `docs/al-dev-agent-map.md`. Collect suggestions from all Observations
 sections and rubber-duck them together before writing a single unified plan.
 
-**`--plugin-map`:** process only `docs/al-dev-skills-map.md`. Suggestion
+**`--skills`:** process only `docs/al-dev-skills-map.md`. Suggestion
 vocabulary: Connect, Merge, Promote, Move, Extend.
 
 **`--agents`:** process only `docs/al-dev-agent-map.md`:
@@ -59,7 +59,7 @@ checklist — stays identical across all routing modes.
 
 Apply the Argument Routing rules above to determine which documents to read.
 
-**From `docs/al-dev-skills-map.md`** (default or `--plugin-map`), collect
+**From `docs/al-dev-skills-map.md`** (default or `--skills`), collect
 every open item from:
 - `### Architectural suggestions` (Connect, Merge, Promote)
 - `### Move candidates`

@@ -2,7 +2,7 @@
 
 > Maintainer reference for how shared agent source becomes harness-native artifacts for Claude Code, Copilot CLI, and Codex.
 
-**Last updated:** 2026-05-24
+**Last updated:** 2026-05-31
 
 ---
 
@@ -17,7 +17,7 @@ The `al-dev-shared` plugin is consumed by three different AI harnesses: Claude C
 The projection layer solves this by maintaining **one canonical authored surface** with generic, harness-neutral definitions, then **automatically translating them** into harness-native versions at build time.
 
 - Shared source (`profile-al-dev-shared/agents/*.md`) uses generic capability names (e.g., `Read`, `Bash`, `USER_GATE`)
-- The projection **policy doc** (`knowledge/agent-tool-projection-policy.md`) documents the intended mapping from each generic capability to each harness's native tool or behavior
+- The projection **policy doc** (`knowledge/agent-tool-projection-policy.md`) documents the intended mapping from each generic capability to each harness's native tool or behavior, plus the canonical shared maintainer boundary rules
 - The **generator** reads the shared source and applies the currently implemented mapping logic from `scripts/generate-agent-projections.py`, then outputs three sets of harness-specific versions
 
 This means maintainers edit once, and all three harnesses get consistent, synchronized agents automatically.
@@ -49,6 +49,12 @@ The diagram above shows the core insight: shared source (left) is projected by t
 ---
 
 ## Section 2: Sacred vs. Generated Files (Critical Boundary Rules)
+
+The canonical shared rule set for projection boundaries, regeneration triggers,
+and minimum projection checks now lives in
+`profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`. This
+section keeps the maintainer mental model in one place, but the policy file is
+the authoritative shared contract.
 
 ### Sacred Files: Always Edit Directly
 
@@ -233,6 +239,10 @@ graph LR
 ## Section 4: Regenerating Projections Safely
 
 ### When to Regenerate
+
+The authoritative shared trigger rules live in
+`profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`. This
+section summarizes the maintainer workflow around those rules.
 
 You must regenerate projections after either of these changes:
 
@@ -728,23 +738,15 @@ Quick lookup for file locations and purposes:
 
 ---
 
-## Boundary Rules
+## Canonical Shared Rule Docs
 
-Keep these boundaries strict:
+For the canonical shared contract, use:
 
-- `profile-al-dev-shared/agents/*.md` is the canonical authored source
-- `profile-al-dev-shared/generated/agents/**` is derived output only
-- generated artifacts must not be hand-edited
-- harness-specific naming belongs in:
-  - generated projections
-  - projection policy docs
-  - harness-mapping docs such as `knowledge/harness-concepts.md`
-
-The validator for shared-surface neutrality is:
-
-```bash
-python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-```
+- `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` for
+  mapping rules, authored-vs-generated boundaries, regeneration triggers, and
+  minimum projection checks
+- `profile-al-dev-shared/knowledge/harness-concepts.md` for the generic
+  capability vocabulary used by shared agents and skills
 
 ---
 
@@ -805,7 +807,9 @@ This projection layer is described in three parallel harness-specific guidance f
 
 All three reference this document for understanding the projection mechanism itself. Shared content stays harness-agnostic; harness-specific guidance lives in those three files.
 
-When updating this document, ensure the three guidance files are kept in sync regarding the overall multi-harness architecture (even if implementation details differ per harness).
+When updating this document, keep it aligned with the canonical shared rule
+documents in `profile-al-dev-shared/knowledge/`, especially
+`agent-tool-projection-policy.md` and `harness-concepts.md`.
 
 ---
 
