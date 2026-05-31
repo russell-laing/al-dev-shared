@@ -3,7 +3,7 @@ description: >-
   Interview the user to extract complete BC/AL implementation
   details through structured questioning. Spawned by the
   al-dev-interview skill.
-model: haiku
+model: sonnet
 tools: ["Read", "Write", "USER_GATE"]
 ---
 
