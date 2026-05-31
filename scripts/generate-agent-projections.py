@@ -33,6 +33,13 @@ def load_projection_policy(policy_path: Path) -> dict:
     return policy
 
 
+def default_projection_policy() -> dict:
+    """Load the repository-default agent tool projection policy."""
+    repo_root = Path(__file__).resolve().parents[1]
+    return load_projection_policy(
+        repo_root / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
+    )
+
 
 def _project_tools(shared_tools: list[str], mapping: dict[str, Any]) -> list[Any]:
     projected: list[object] = []
