@@ -44,6 +44,9 @@ Do not claim implementation is complete or ready for `/al-dev-review-develop`
 until the success evidence named in `knowledge/artifact-contracts.md` for
 `al-dev-develop` has been produced and read for the current run.
 
+When shell search or structured-file inspection is required, prefer `rg` and
+`jq` before falling back to broader shell text processing.
+
 ## Scope Expansion Gate
 
 The full gate rules (procedure, in-scope/out-of-scope definitions, and propagation
@@ -316,9 +319,9 @@ a developer before proceeding.
 ### Check 1: Object Name Length
 
 ```bash
-grep -rn -E \
+rg -rn -e \
   '^(table|page|codeunit|report|enum|interface|xmlport|query|permissionset)\s+[0-9]+\s+' \
-  --include="*.al" .
+  --glob="*.al" .
 ```
 
 For each match, the object name is everything after the numeric
@@ -328,7 +331,7 @@ as a CRITICAL issue.
 ### Check 2: Compile Guard Logic
 
 ```bash
-grep -rn '#if\|#else\|#endif' --include="*.al" .
+rg -rn -e '#if|#else|#endif' --glob="*.al" .
 ```
 
 For each `#if` directive, read the surrounding block. Verify:
@@ -342,8 +345,7 @@ Flag any inverted condition or unmatched directive as CRITICAL.
 ### Check 3: Label and Message Consistency
 
 ```bash
-grep -rn "label\|Error(\|Message(\|FieldCaption" \
-  --include="*.al" . | head -50
+rg -rn -m 50 -e 'label|Error\(|Message\(|FieldCaption' --glob="*.al" .
 ```
 
 Cross-reference against the solution plan's feature descriptions.

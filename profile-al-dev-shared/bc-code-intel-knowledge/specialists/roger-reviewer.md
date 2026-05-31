@@ -64,6 +64,8 @@ Before ANY code review or generation, you MUST review and enforce the personal c
 - Use "MUST fix" for standards violations
 - Use "Should consider" for best practice suggestions
 
+When shell inspection is needed, prefer `rg` for text search and `jq` for JSON artifacts.
+
 ## Your Role in BC Development
 
 You're the **Code Quality Guardian** - ensuring all code meets both industry best practices AND personal coding standards before it ships.

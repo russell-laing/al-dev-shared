@@ -38,6 +38,9 @@ This skill is governed by `knowledge/artifact-contracts.md`.
 
 Do not claim the work is complete or ready for implementation until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
 
+When shell search or structured-file inspection is required, prefer `rg` and
+`jq` before falling back to broader shell text processing.
+
 ## Phase 0: Check for Existing Progress
 
 Per the Phase 0 Read Protocol in

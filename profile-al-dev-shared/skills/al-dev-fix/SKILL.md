@@ -39,6 +39,9 @@ step until the success evidence named in
 `knowledge/artifact-contracts.md` for `al-dev-fix` has been produced and read
 for the current run.
 
+When shell search or structured-file inspection is required, prefer `rg` and
+`jq` before falling back to broader shell text processing.
+
 ---
 
 ## Usage

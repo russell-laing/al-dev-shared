@@ -174,6 +174,17 @@ The parent process or skill can poll `.dev/progress.json` to show progress; on c
 
 All three patterns follow the rule: **Make your output machine-parseable, not human-readable.** Humans read JSON fine; machines struggle with prose.
 
+### Preferred CLI Tools
+
+Use `rg` first for text search, file discovery, and log inspection.
+Use `jq` first for JSON inspection and JSON field updates.
+Use `grep`, `find`, `sed`, or Python only when they are a better fit or when `rg`/`jq` are unavailable.
+
+Examples:
+
+- `rg -n "pattern" profile-al-dev-shared`
+- `jq '.version' .claude/settings.json`
+
 ### Strict Typing
 Define input/output schemas; validate at boundaries. For Python, use type hints. For TypeScript, use explicit types. Document expected schema in comments.
 

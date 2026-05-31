@@ -24,6 +24,9 @@ ready for the next workflow step until the success evidence named in
 `knowledge/artifact-contracts.md` for `al-dev-lint` has been produced and read
 for the current run.
 
+When shell search or structured-file inspection is required, prefer `rg` and
+`jq` before falling back to broader shell text processing.
+
 ## Step 1: Compile (if needed)
 
 Ensure output directory exists:

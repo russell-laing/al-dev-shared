@@ -51,7 +51,7 @@ considerations]
 **Task 1: [name]**
 Files: [files to create or modify]
 Gotcha: [one project-specific pitfall — e.g., "object names must be ≤30 chars; verify before creating" or "var parameters from AL MCP must be verified before use in subscribers"]
-Validate: [exact shell command confirming this task is done — e.g., `grep -rn "procedure ValidatePostingDate" src/` or `grep -c "error AL" .dev/compile-errors.log | grep -q "^0$"`]
+Validate: [exact shell command confirming this task is done — e.g., `rg -rn "procedure ValidatePostingDate" src/` or `jq -r '.version' .dev/output.json`]
 
 **Task 2: [name]**
 Files: ...
@@ -68,7 +68,7 @@ Validate: ...
 #### Gotcha and Validate Rules
 
 - `Gotcha:` is required. Write `Gotcha: none — [rationale]` rather than omitting it.
-- `Validate:` is required. Write `Validate: [manual] — [description]` rather than omitting it.
+- `Validate:` is required. Use an exact shell command when the task can be machine-checked; use `Validate: [manual] — [description]` only when the validation cannot be automated.
 - Tasks here are the architect's logical implementation units. They inform (but do not replace) the detailed sub-task checklist produced by `writing-plans`.
 
 ### Acceptance Criteria

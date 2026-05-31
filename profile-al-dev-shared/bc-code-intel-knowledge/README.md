@@ -31,6 +31,12 @@ bc-code-intel-knowledge/
 - **Table extensions**: Fields MUST have prefix affixes (e.g., `ABCCustomField`)
 - **Never use suffixes**: Always `ABCFieldName`, never `FieldNameABC`
 
+### Preferred CLI Tools
+
+- Use `rg` for evidence gathering, search, and scoped pattern checks.
+- Use `jq` for JSON inspection and structured updates.
+- Prefer these before `grep` or manual parsing when the environment supports them.
+
 ## Examples
 
 ### ✅ CORRECT

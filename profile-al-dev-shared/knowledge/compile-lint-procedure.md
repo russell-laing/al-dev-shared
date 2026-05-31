@@ -39,7 +39,7 @@ al-compile --output .dev/compile-baseline.log 2>/dev/null || true
 
 # 2. After edits — compile and diff
 al-compile --output .dev/compile-errors.log
-diff .dev/compile-baseline.log .dev/compile-errors.log | grep '^[<>]'
+diff .dev/compile-baseline.log .dev/compile-errors.log | rg '^[<>]'
 ```
 
 Lines prefixed `>` are new diagnostics introduced by your edits.
@@ -132,10 +132,10 @@ al-compile 2>&1 | grep -E "(error|warning)"
 al-compile --output .dev/compile-errors.log
 
 # If you need to inspect a subset of errors:
-grep -E "error|warning" .dev/compile-errors.log | grep -E "\.(Page|PageExt)\.al"
+rg -n -e "error|warning" .dev/compile-errors.log | rg '\.(Page|PageExt)\.al'
 
 # If you need a summary count:
-grep -c '^Error' .dev/compile-errors.log
+rg -c '^Error' .dev/compile-errors.log
 ```
 
 **Always include a `description` parameter on Bash tool calls invoking `al-compile`:**
@@ -174,8 +174,8 @@ Parse `.dev/compile-errors.log` to separate actionable items from noise:
 1. **Count errors and warnings separately:**
 
    ```bash
-   grep -c '^Error' .dev/compile-errors.log   # must be 0 before merging
-   grep -c '^Warning' .dev/compile-errors.log  # drive lint-fix pass
+   rg -c '^Error' .dev/compile-errors.log   # must be 0 before merging
+   rg -c '^Warning' .dev/compile-errors.log  # drive lint-fix pass
    ```
 
 2. **Extract file and line references** for each diagnostic using the bracketed suffix
@@ -189,7 +189,7 @@ Parse `.dev/compile-errors.log` to separate actionable items from noise:
 Example parse pipeline:
 
 ```bash
-grep '^Error' .dev/compile-errors.log | sed 's/.*\[\(.*\)\]/\1/' | sort -u
+rg '^Error' .dev/compile-errors.log | sed 's/.*\[\(.*\)\]/\1/' | sort -u
 ```
 
 This extracts unique `file(line,col)` locations for all errors.
@@ -264,7 +264,7 @@ Splitting a long procedure requires understanding intent; log as Unresolved.
 
 ## Step 2 — Spawn diagnostics-fixer
 
-If compile errors were found, spawn `al-dev-developer` to fix
+If compile errors were found, spawn `al-dev-develop` to fix
 them first, re-compile, then continue.
 
 If only warnings remain after a clean compile, spawn

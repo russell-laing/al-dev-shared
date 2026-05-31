@@ -91,6 +91,11 @@ historical context, see `docs/projection-layer-readme.md`.
   capabilities.
 - Shared files must not replace canonical vocabulary with harness-native tool
   names.
+- `rg` and `jq` are local CLI conventions, not shared capabilities and not
+  projection targets.
+- Shared skills and knowledge may recommend them inside Bash-based workflows.
+- If `rg` or `jq` is unavailable, fall back to `grep` or Python in the workflow
+  body rather than changing the projection contract.
 
 ## Maintainer Boundary and Regeneration Rules
 
