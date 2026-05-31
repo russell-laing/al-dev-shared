@@ -26,7 +26,6 @@ Execute approved commits from the analysis phase.
 | `COMMITS` block | SHA and message for each committed group |
 | `SKIPPED` | Number of skipped groups |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
-| `STRIPPED_ATTRIBUTIONS` | Removed AI attribution lines (or `NONE`) |
 
 ⚠️ **CRITICAL:** Never use Write or Edit on staged source files. All fixes via Bash only. Reading file content into context then writing it back WILL corrupt the file (collapses newlines). If a fix cannot be made via Bash, record as HOOK_FAILURE and stop.
 
