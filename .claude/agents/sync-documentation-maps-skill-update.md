@@ -36,7 +36,7 @@ If the file does not exist, stop immediately and report:
 `ERROR: skill-audit.json not found at <result_dir>/audit/skill-audit.json — cannot proceed.`
 
 Parse the `discrepancies` array. Note the `type` and associated `skill` field
-for each entry. If `discrepancies` is empty, skip Steps 3 and 4 (no edits
+for each entry. If `discrepancies` is empty, skip Step 3 (no edits
 needed) and proceed directly to Step 4 to update the last-updated date.
 
 ### Step 2 — Read the current skills map
