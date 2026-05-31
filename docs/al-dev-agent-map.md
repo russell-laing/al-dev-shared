@@ -6,7 +6,7 @@
 
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-code-review | sonnet | Read | (none found) |
+| al-dev-code-review | haiku | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
 | al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
