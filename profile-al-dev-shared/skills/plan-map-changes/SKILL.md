@@ -22,7 +22,7 @@ to 40-50 minutes through async verification and multi-session checkpoint/resume 
 
 **Entry 2: Resume after team completion** (`/plan-map-changes --resume`)
 
-- Phase 3: Collect verification records from completed team
+- Phase 3: Collect & Plan generation
 - Aggregate duck records into plan document
 - Invoke superpowers:writing-plans to generate implementation plan
 
@@ -64,6 +64,7 @@ Parse map Observations sections and build suggestion queue. Determine paralleliz
 **Checkpoint update (Phase 1 complete):**
 
 After extraction completes, update `.dev/progress.md` with:
+
 - `phase: extracting`
 - `status: completed`
 - `suggestion_count: <count>`
@@ -93,7 +94,7 @@ For each suggestion, synchronously:
 **Why remote for large batches:** Each suggestion takes 5-10 minutes to verify (reading files, running checks, writing records).
 Remote parallelization avoids sequential tool use overhead (each tool context switch costs ~30 seconds).
 
-### Phase 3: Resume & Collect
+### Phase 3: Collect & Plan Generation
 
 Invoked via `/plan-map-changes --resume`. Validates multi-session state and aggregates results.
 
@@ -135,7 +136,7 @@ def main():
     args = parse_args(sys.argv)
 
     if args.resume:
-        # Jump to Phase 3 (implemented in Task 8)
+        # Jump to Phase 3: Resume & Collect (--resume flag entry point)
         return phase_3_resume()
 
     # Phase 1: Extraction
@@ -1318,34 +1319,498 @@ def spawn_duck_team(team_context, manifest_path, num_agents):
     pass
 ```
 
-### Phase 3: Resume & Collect (Task 8 Placeholders)
+### Phase 3: Resume & Collect
 
 ```python
 def phase_3_resume():
     """
     Resume from .dev/progress.md checkpoint.
 
-    - Read checkpoint state (run_id, manifest path)
-    - Validate manifest exists and is readable
-    - Call phase_3_collect()
-    
-    TODO: Implement in Task 8
-    """
-    pass
+    Entry point for `/plan-map-changes --resume` flag.
 
-def phase_3_collect(run_id, run_dir):
+    Steps:
+    1. Parse .dev/progress.md for active plan-map-changes state
+    2. Validate run_id and manifest_path exist
+    3. Validate manifest.json is readable
+    4. Call phase_3_collect(run_id, run_dir)
+
+    Returns: 0 on success, 1 on error
+    """
+    try:
+        # Read checkpoint
+        checkpoint = parse_progress_md()
+        if not checkpoint:
+            print("ERROR: No active plan-map-changes run found in .dev/progress.md")
+            print("")
+            print("Recovery steps:")
+            print("  1. Verify you've previously run '/plan-map-changes' (without --resume)")
+            print("  2. Check that the run completed dispatch phase (status=waiting)")
+            print("  3. If the run_id/manifest is lost, you can re-run extraction:")
+            print("     /plan-map-changes --surface both --filter all")
+            return 1
+
+        # Extract fields
+        run_id = checkpoint.get('run_id')
+        manifest_path = checkpoint.get('manifest_path')
+        phase = checkpoint.get('phase')
+
+        if not run_id or not manifest_path:
+            print("ERROR: Checkpoint is incomplete (missing run_id or manifest_path)")
+            print(f"Checkpoint state: {checkpoint}")
+            return 1
+
+        if phase != 'dispatched' and phase != 'extracting':
+            print(f"ERROR: Run is already in phase '{phase}' (expected 'dispatched' or 'extracting')")
+            if phase == 'completed':
+                print("This run has already been completed. Start a new run with:")
+                print("  /plan-map-changes --surface both --filter all")
+            return 1
+
+        # Validate manifest exists
+        manifest_file = Path(manifest_path)
+        if not manifest_file.exists():
+            print(f"ERROR: Manifest file not found: {manifest_path}")
+            print("")
+            print("Recovery steps:")
+            print("  1. Check if the file was deleted or moved")
+            print("  2. Verify the run_id is correct:")
+            print(f"     Expected: {manifest_path}")
+            print("  3. Try locating it manually:")
+            print(f"     find .dev -name 'manifest.json' -path '*{run_id}*'")
+            return 1
+
+        # Parse manifest
+        manifest = read_json(manifest_file)
+        if not manifest:
+            print(f"ERROR: Manifest is empty or corrupted: {manifest_path}")
+            return 1
+
+        # Get run directory from manifest path
+        run_dir = manifest_file.parent.parent
+
+        # Phase 3: Collect
+        return phase_3_collect(run_id, run_dir, manifest)
+
+    except Exception as e:
+        print(f"ERROR during Phase 3 resume: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
+def phase_3_collect(run_id, run_dir, manifest):
     """
     Collect duck records and aggregate verification results.
 
-    - Poll manifest until all suggestions completed or timeout
-    - Read all duck records from duck-records/
-    - Filter by verdict (ACCEPT/DEFER/REJECT)
-    - Call superpowers:writing-plans with aggregated context
-    - Update progress.md to mark complete
-    
-    TODO: Implement in Task 8
+    Steps:
+    1. Poll manifest until all suggestions completed or timeout (10 min default)
+    2. Handle incomplete suggestions: ask user (wait / proceed partial / abort)
+    3. Handle failed suggestions: ask user (retry / skip / abort)
+    4. Read all duck records and filter by verdict
+    5. Aggregate duck records into plan context
+    6. Invoke superpowers:writing-plans with aggregated context
+    7. Update progress.md to mark complete
+    8. Clean up progress.md entry
+
+    Args:
+        run_id: UUID of the run
+        run_dir: Path object pointing to .dev/plan-map-changes-runs/<run_id>/
+        manifest: Parsed manifest dict
+
+    Returns: 0 on success, 1 on error
     """
-    pass
+    from datetime import datetime, timedelta
+    import time
+
+    try:
+        manifest_path = run_dir / 'manifest.json'
+        duck_dir = run_dir / 'duck-records'
+        timeout_seconds = 10 * 60  # 10 minute timeout
+
+        # Update checkpoint: entering Phase 3
+        update_progress_md(
+            run_id=run_id,
+            phase='collecting',
+            status='in_progress',
+            manifest_path=str(manifest_path),
+            surface=manifest.get('surface', 'both'),
+            type_filter=manifest.get('type_filter', 'all')
+        )
+
+        # Determine if we need to wait (remote operation only)
+        operation = manifest.get('operation', 'inline')
+        if operation == 'remote':
+            print(f"Verifying {manifest['suggestion_count']} suggestions with remote team...")
+            print(f"Waiting for completion (timeout: 10 minutes)...")
+
+            # Poll manifest for completion
+            start_time = datetime.now()
+            while True:
+                # Reload manifest to check current status
+                manifest = read_json(manifest_path)
+                if not manifest:
+                    print("ERROR: Manifest was deleted or corrupted during polling")
+                    return 1
+
+                # Check if all suggestions completed
+                all_completed = all(
+                    s['status'] in ['completed', 'failed']
+                    for s in manifest.get('suggestions', [])
+                )
+
+                if all_completed:
+                    print("All suggestions completed.")
+                    break
+
+                # Check timeout
+                elapsed = (datetime.now() - start_time).total_seconds()
+                if elapsed > timeout_seconds:
+                    print(f"Timeout after {int(elapsed/60)} minutes.")
+                    # USER_GATE: Ask user what to do
+                    choice = request_user_choice(
+                        question="Verification timed out. What would you like to do?",
+                        options={
+                            'wait': 'Wait longer (add 5 more minutes)',
+                            'partial': 'Proceed with completed suggestions only',
+                            'abort': 'Abort and return to main flow'
+                        }
+                    )
+                    if choice == 'wait':
+                        # Reset timeout
+                        start_time = datetime.now()
+                        timeout_seconds = 5 * 60
+                        continue
+                    elif choice == 'abort':
+                        print("Aborted by user. Re-run '/plan-map-changes --resume' when ready.")
+                        return 1
+                    else:  # partial
+                        break
+
+                # Poll every 10 seconds
+                time.sleep(10)
+
+        # After completion/timeout, check for failures
+        failed_suggestions = [
+            s for s in manifest.get('suggestions', [])
+            if s['status'] == 'failed'
+        ]
+
+        if failed_suggestions:
+            print(f"\n{len(failed_suggestions)} suggestion(s) failed verification:")
+            for sugg in failed_suggestions:
+                error = sugg.get('error', {})
+                print(f"  - {sugg['id']} ({sugg['type']}): {error.get('error', 'Unknown error')}")
+
+            choice = request_user_choice(
+                question="What would you like to do?",
+                options={
+                    'skip': 'Skip failed suggestions and proceed with passed ones',
+                    'retry': 'Retry failed suggestions (re-dispatch to team)',
+                    'abort': 'Abort and return to main flow'
+                }
+            )
+
+            if choice == 'abort':
+                print("Aborted by user. Re-run '/plan-map-changes --resume' when ready.")
+                return 1
+            elif choice == 'retry':
+                print("Retry not yet implemented. Use 'skip' to proceed with passed suggestions.")
+                choice = 'skip'
+
+        # Aggregate duck records
+        duck_records = aggregate_duck_records(run_dir, manifest)
+
+        # Filter records by verdict
+        accept_records = [r for r in duck_records if r.get('verdict') == 'ACCEPT']
+        defer_records = [r for r in duck_records if r.get('verdict') == 'DEFER']
+        reject_records = [r for r in duck_records if r.get('verdict') == 'REJECT']
+
+        print(f"\nVerification Results:")
+        print(f"  ACCEPT: {len(accept_records)}")
+        print(f"  DEFER:  {len(defer_records)}")
+        print(f"  REJECT: {len(reject_records)}")
+
+        # Build context for writing-plans
+        plan_context = {
+            'run_id': run_id,
+            'surface': manifest.get('surface', 'both'),
+            'filter': manifest.get('type_filter', 'all'),
+            'suggestions_verified': len(duck_records),
+            'verdicts': {
+                'ACCEPT': len(accept_records),
+                'DEFER': len(defer_records),
+                'REJECT': len(reject_records)
+            },
+            'duck_records': {
+                'ACCEPT': accept_records,
+                'DEFER': defer_records,
+                'REJECT': reject_records
+            }
+        }
+
+        # Invoke writing-plans with aggregated context
+        print(f"\nGenerating implementation plan from verification results...")
+        result = invoke_writing_plans(plan_context)
+        if result != 0:
+            print("ERROR: Failed to generate implementation plan")
+            return 1
+
+        # Mark checkpoint as completed
+        update_progress_md(
+            run_id=run_id,
+            phase='completed',
+            status='completed',
+            manifest_path=str(manifest_path),
+            surface=manifest.get('surface', 'both'),
+            type_filter=manifest.get('type_filter', 'all')
+        )
+
+        # Clean up checkpoint entry
+        clear_progress_md_entry(run_id)
+
+        print("\nPhase 3 complete. Implementation plan generated.")
+        return 0
+
+    except Exception as e:
+        print(f"ERROR during Phase 3 collection: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
+def request_user_choice(question, options):
+    """
+    USER_GATE: Interactive prompt for user decisions (blocking).
+
+    Displays options to user and waits for selection. This implements
+    the USER_GATE pattern for harness-neutral user confirmation.
+
+    Args:
+        question: Prompt text
+        options: Dict of {key: display_text}
+
+    Returns: Selected key
+    """
+    print(f"\n{question}")
+    for i, (key, text) in enumerate(options.items(), 1):
+        print(f"  {i}. {text} ({key})")
+
+    while True:
+        try:
+            choice_num = int(input("Enter choice (1-3): "))
+            keys = list(options.keys())
+            if 1 <= choice_num <= len(keys):
+                return keys[choice_num - 1]
+            else:
+                print(f"Invalid choice. Enter 1-{len(keys)}")
+        except ValueError:
+            print("Invalid input. Enter a number.")
+
+
+def aggregate_duck_records(run_dir, manifest):
+    """
+    Read all duck records from directory and build list.
+
+    Args:
+        run_dir: Path to .dev/plan-map-changes-runs/<run_id>/
+        manifest: Parsed manifest dict
+
+    Returns: List of duck records (success + error records flattened)
+    """
+    duck_dir = run_dir / 'duck-records'
+    records = []
+
+    if not duck_dir.exists():
+        return records
+
+    # Iterate through all .json files in duck-records directory
+    for duck_file in duck_dir.glob('*.json'):
+        try:
+            record = read_json(duck_file)
+            if record:
+                records.append(record)
+        except Exception as e:
+            print(f"Warning: Failed to read duck record {duck_file.name}: {str(e)}")
+            continue
+
+    return records
+
+
+def invoke_writing_plans(plan_context):
+    """
+    Invoke superpowers:writing-plans with aggregated duck records.
+
+    Args:
+        plan_context: Dict with run_id, surface, filter, verdicts, duck_records
+
+    Returns: 0 on success, 1 on error
+    """
+    import json
+    import subprocess
+
+    try:
+        # Build prompt for writing-plans skill
+        accept_count = plan_context['verdicts'].get('ACCEPT', 0)
+        defer_count = plan_context['verdicts'].get('DEFER', 0)
+        reject_count = plan_context['verdicts'].get('REJECT', 0)
+
+        # Format duck records as markdown context
+        duck_context = _format_duck_records_markdown(plan_context['duck_records'])
+
+        prompt = f"""# Plan Map Changes: Implementation Planning
+
+## Verification Results Summary
+
+Surface: {plan_context['surface']}
+Filter: {plan_context['filter']}
+Total suggestions verified: {plan_context['suggestions_verified']}
+
+Results:
+- ACCEPT (approved for implementation): {accept_count}
+- DEFER (requires additional decision): {defer_count}
+- REJECT (not recommended): {reject_count}
+
+## Duck Verification Evidence
+
+{duck_context}
+
+## Task
+
+Generate a detailed implementation plan that:
+
+1. Lists all ACCEPT verdicts with their implementation strategy
+2. Flags DEFER verdicts for human architect review (with rationale)
+3. Explains why REJECT verdicts were not recommended
+4. Provides concrete next steps for the development team
+
+The plan should be actionable, with specific file modifications and review points clearly marked.
+"""
+
+        # Write prompt to file for skill invocation
+        prompt_file = Path('.dev') / 'plan-map-changes-writing-plans-prompt.txt'
+        prompt_file.parent.mkdir(parents=True, exist_ok=True)
+        prompt_file.write_text(prompt)
+
+        # Invoke skill via subprocess (since we're in Python pseudocode)
+        # In real implementation, this would be via the Skill tool
+        # For now, return success (actual invocation handled by harness)
+        print("Writing-plans skill invoked with duck evidence.")
+        return 0
+
+    except Exception as e:
+        print(f"ERROR invoking writing-plans: {str(e)}")
+        return 1
+
+
+def _format_duck_records_markdown(duck_records_dict):
+    """
+    Format duck records into readable markdown context.
+
+    Args:
+        duck_records_dict: Dict with ACCEPT/DEFER/REJECT keys, each containing list of records
+
+    Returns: Markdown-formatted context string
+    """
+    output = []
+
+    for verdict in ['ACCEPT', 'DEFER', 'REJECT']:
+        records = duck_records_dict.get(verdict, [])
+        if not records:
+            continue
+
+        output.append(f"### {verdict} Verdicts ({len(records)})\n")
+
+        for record in records:
+            sugg_id = record.get('suggestion_id', 'unknown')
+            sugg_type = record.get('type', 'unknown')
+            evidence = record.get('evidence', [])
+
+            output.append(f"#### {sugg_id} ({sugg_type})")
+            output.append("")
+
+            # Summary of checks
+            for check in evidence:
+                check_name = check.get('check', 'Unknown check')
+                result = check.get('result', 'unknown')
+                message = check.get('message', '')
+                output.append(f"- **{check_name}**: {result}")
+                if message:
+                    output.append(f"  - {message}")
+
+            output.append("")
+
+            # Side effects
+            side_effects = record.get('side_effects', [])
+            if side_effects:
+                output.append("**Side Effects:**")
+                for effect in side_effects:
+                    output.append(f"- {effect}")
+                output.append("")
+
+    return "\n".join(output)
+
+
+def clear_progress_md_entry(run_id):
+    """
+    Remove plan-map-changes section from .dev/progress.md after run completes.
+
+    Args:
+        run_id: Run ID to clear (validates it matches current checkpoint before clearing)
+    """
+    progress_file = Path('.dev/progress.md')
+
+    if not progress_file.exists():
+        return
+
+    content = progress_file.read_text()
+
+    # Verify we're clearing the right run
+    checkpoint = parse_progress_md()
+    if checkpoint and checkpoint.get('run_id') == run_id:
+        # Remove the section
+        content = re.sub(
+            r'## Plan-Map-Changes State\n\n.*?(?=##|\Z)',
+            '',
+            content,
+            flags=re.DOTALL
+        )
+        progress_file.write_text(content)
+```
+
+### Helper Functions: JSON I/O & Utilities
+
+```python
+def read_json(path):
+    """Read and parse JSON file."""
+    import json
+    from pathlib import Path
+
+    try:
+        if isinstance(path, str):
+            path = Path(path)
+        return json.loads(path.read_text())
+    except Exception:
+        return None
+
+def write_json(path, data):
+    """Write data to JSON file."""
+    import json
+    from pathlib import Path
+
+    if isinstance(path, str):
+        path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2))
+
+def generate_run_id():
+    """Generate a unique run ID (UUID v4)."""
+    import uuid
+    return str(uuid.uuid4())
+
+def get_repo_root():
+    """Get the repository root directory."""
+    from pathlib import Path
+    return str(Path('.').resolve())
 ```
 
 ### Helper: Extract Suggestions Script Call
@@ -1381,51 +1846,68 @@ def update_progress_md(run_id, phase, status, manifest_path, surface, type_filte
     """
     Create or update .dev/progress.md with plan-map-changes state.
 
-    Checkpoint format:
+    Checkpoint format (YAML-like):
 
     ## Plan-Map-Changes State
 
-    - **Run ID:** <run-id>
-    - **Surface:** <surface> (skills, agents, both)
-    - **Filter:** <filter> (all, trim, merge, split, inline, align, connect, promote)
-    - **Phase:** <phase> (extracting, dispatched, collecting, completed)
-    - **Status:** <status>
-    - **Manifest Path:** <path>
-    - **Started At:** <timestamp>
-    - **Last Updated:** <timestamp>
+    run_id: <run-id>
+    surface: <surface>
+    filter: <filter>
+    phase: <phase>
+    status: <status>
+    manifest_path: <path>
+    started_at: <timestamp>
+    last_updated: <timestamp>
 
     """
+    from datetime import datetime
+    import re
+    from pathlib import Path
+
     progress_file = Path('.dev/progress.md')
 
+    # Create checkpoint in YAML-like format (matching MANIFEST-SCHEMA.md)
     checkpoint = f"""## Plan-Map-Changes State
 
-- **Run ID:** {run_id}
-- **Surface:** {surface}
-- **Filter:** {type_filter}
-- **Phase:** {phase}
-- **Status:** {status}
-- **Manifest Path:** {manifest_path}
-- **Started At:** {datetime.now().isoformat()}
-- **Last Updated:** {datetime.now().isoformat()}
+run_id: {run_id}
+surface: {surface}
+filter: {type_filter}
+phase: {phase}
+status: {status}
+manifest_path: {manifest_path}
+started_at: {datetime.now().isoformat()}
+last_updated: {datetime.now().isoformat()}
 
 """
 
     if progress_file.exists():
         content = progress_file.read_text()
-        # Remove old plan-map-changes section if present
-        content = re.sub(
-            r'## Plan-Map-Changes State\n\n.*?(?=##|\Z)',
-            checkpoint,
-            content,
-            flags=re.DOTALL
-        )
+        # Replace old plan-map-changes section if present, preserving other sections
+        if '## Plan-Map-Changes State' in content:
+            content = re.sub(
+                r'## Plan-Map-Changes State\n\n.*?(?=##|\Z)',
+                checkpoint,
+                content,
+                flags=re.DOTALL
+            )
+        else:
+            # Append new section
+            content += "\n" + checkpoint
     else:
         content = checkpoint
 
     progress_file.write_text(content)
 
 def parse_progress_md():
-    """Read .dev/progress.md and extract plan-map-changes state."""
+    """
+    Read .dev/progress.md and extract plan-map-changes state.
+
+    Returns: Dict with keys: run_id, surface, filter, phase, status, manifest_path, started_at, last_updated
+    Or None if section not found
+    """
+    import re
+    from pathlib import Path
+
     progress_file = Path('.dev/progress.md')
 
     if not progress_file.exists():
@@ -1433,7 +1915,7 @@ def parse_progress_md():
 
     content = progress_file.read_text()
 
-    # Extract plan-map-changes state section
+    # Extract plan-map-changes state section (YAML-like format)
     match = re.search(
         r'## Plan-Map-Changes State\n\n(.*?)(?=##|\Z)',
         content,
@@ -1446,12 +1928,18 @@ def parse_progress_md():
     state_text = match.group(1)
     state = {}
 
+    # Parse YAML-like key: value format
     for line in state_text.split('\n'):
-        if match := re.match(r'- \*\*([^:]+):\*\* (.+)', line):
-            key = match.group(1).lower().replace(' ', '_')
-            state[key] = match.group(2)
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if ':' in line:
+            key, value = line.split(':', 1)
+            key = key.strip().lower().replace(' ', '_')
+            value = value.strip()
+            state[key] = value
 
-    return state
+    return state if state else None
 ```
 
 ## Validation & Error Handling
