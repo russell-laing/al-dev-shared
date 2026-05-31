@@ -10,7 +10,7 @@ argument-hint: ""
 
 # Review-Develop Skill
 
-Post-implementation review orchestration for /al-dev-develop Phase 5–10.
+Post-implementation review orchestration for /al-dev-develop phases (mapped to local Phase 1–6).
 
 Dispatched by /al-dev-develop after Phase 4 (developer dispatch and implementation completion).
 
@@ -71,10 +71,10 @@ Phases run in this order: **1 → 2 → 3 → 4 → 5 → 6** (semantically mapp
 4. **Write progress checkpoint:**
 
    ```bash
-   echo "Phase 5 complete — $(date +%Y-%m-%d %H:%M): context loaded, CHANGED_FILES identified" >> .dev/progress.md
+   echo "Phase 1 complete — $(date +%Y-%m-%d %H:%M): context loaded, CHANGED_FILES identified" >> .dev/progress.md
    ```
 
-5. Proceed to Phase 8.
+5. Proceed to Phase 2.
 
 ---
 
@@ -122,7 +122,7 @@ Run `al-compile` and handle errors. This phase must pass before the review panel
 5. **Write progress checkpoint:**
 
    ```bash
-   echo "Phase 8 complete — $(date +%Y-%m-%d %H:%M): compile verification passed" >> .dev/progress.md
+   echo "Phase 2 complete — $(date +%Y-%m-%d %H:%M): compile verification passed" >> .dev/progress.md
    ```
 
 ---
@@ -133,7 +133,7 @@ Verify all prerequisites are met before spawning the review panel.
 
 1. **Confirm compile passed** (zero `error AL` lines in `.dev/compile-errors.log`).
 2. **Confirm `CHANGED_FILES` list is non-empty** — if empty, stop and tell the user no changed AL files were detected.
-3. If both checks pass, proceed to Phase 6-7.
+3. If both checks pass, proceed to Phase 4.
 
 ---
 
@@ -164,7 +164,7 @@ Spawn these three agents with the above prompt adapted to each specialty:
 - `al-dev-shared:al-dev-expert-reviewer` — focus: AL conventions, naming, BC patterns
 - `al-dev-shared:al-dev-performance-reviewer` — focus: N+1 queries, SetLoadFields, resource loops
 
-Collect all three outputs before proceeding to Phase 9.
+Collect all three outputs before proceeding to Phase 5.
 
 ---
 
@@ -228,7 +228,7 @@ Synthesize findings from all three reviewers into a single dated code-review fil
 4. **Write progress checkpoint:**
 
    ```bash
-   echo "Phase 9 complete — $(date +%Y-%m-%d %H:%M): code-review artifact written" >> .dev/progress.md
+   echo "Phase 5 complete — $(date +%Y-%m-%d %H:%M): code-review artifact written" >> .dev/progress.md
    ```
 
 ---
