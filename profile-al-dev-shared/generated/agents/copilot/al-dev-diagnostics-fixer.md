@@ -1,7 +1,7 @@
 ---
 name: "al-dev-diagnostics-fixer"
 description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID and applies auto-fixes. Dispatched by al-dev-lint and al-dev-fix skills."
-tools: ["read", "edit", "glob", "grep", "execute"]
+tools: ["read", "edit"]
 ---
 
 

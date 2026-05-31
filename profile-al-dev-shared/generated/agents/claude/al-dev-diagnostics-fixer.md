@@ -1,6 +1,6 @@
 ---
 description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID and applies auto-fixes. Dispatched by al-dev-lint and al-dev-fix skills."
-tools: ["Read", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Edit"]
 ---
 
 

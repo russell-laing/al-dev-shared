@@ -1,6 +1,6 @@
 ---
 description: "Generate and maintain AL project documentation — feature docs, API references, and setup guides. Spawned by the al-dev-document skill."
-tools: ["Read", "Write", "Glob", "Grep"]
+tools: ["Read", "Write"]
 ---
 
 

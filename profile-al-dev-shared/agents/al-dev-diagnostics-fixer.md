@@ -5,7 +5,7 @@ description: >-
   al-compile. Groups issues by rule ID and applies auto-fixes.
   Dispatched by al-dev-lint and al-dev-fix skills.
 model: sonnet
-tools: ["Read", "Edit", "Glob", "Grep", "Bash"]
+tools: ["Read", "Edit"]
 ---
 
 # Agent: al-dev-diagnostics-fixer

@@ -1,6 +1,6 @@
 ---
 description: "Review AL code for adherence to naming conventions, AL patterns, and BC design patterns. Spawned in parallel by the al-dev-develop skill."
-tools: ["Read", "Grep"]
+tools: ["Read"]
 ---
 
 

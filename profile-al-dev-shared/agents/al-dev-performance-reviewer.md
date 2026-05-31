@@ -5,7 +5,7 @@ description: >-
   N+1 patterns, and resource consumption. Spawned in parallel by the
   al-dev-develop skill.
 model: sonnet
-tools: ["Read", "Grep"]
+tools: ["Read"]
 ---
 
 # Agent: al-dev-performance-reviewer
