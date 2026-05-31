@@ -98,10 +98,18 @@ Run `al-compile` and handle errors. This phase must pass before the review panel
 
    - **Standard mode:** Show the errors and stop. Ask the user to fix compilation errors before proceeding to code review.
 
-   - **`--autonomous` mode:** Spawn `al-dev-shared:al-dev-developer` to fix errors:
+   - **`--autonomous` mode:** Spawn a developer to fix errors.
+
+     See `knowledge/developer-invocation-patterns.md` (Context 3: Error
+     Correction) for dispatcher consistency. This is autonomous
+     error-fixing mode — no test plan, minimal scope (fix only compile
+     errors, do not refactor).
+
+     Spawn `al-dev-shared:al-dev-developer-traditional` for error fixes
+     (compile errors don't require TDD):
 
      ```text
-     Agent: al-dev-shared:al-dev-developer
+     Agent: al-dev-shared:al-dev-developer-traditional
      Prompt:
        "Fix compilation errors in .dev/compile-errors.log for the current Phase 4 handoff.
         Read the errors, identify root causes, and apply minimal fixes.

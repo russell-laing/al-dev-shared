@@ -110,7 +110,9 @@ For trivial fixes:
    - Use Grep/Read to locate the problem
    - Verify you understand the issue
 
-2. Spawn single al-dev-shared:al-dev-developer:
+2. Spawn single al-dev-shared:al-dev-developer-traditional
+   (trivial fixes have no test plan — see
+   `knowledge/developer-invocation-patterns.md`, Context 2):
    "Fix [specific issue] in [file path].
 
     Issue: [description]
@@ -219,7 +221,23 @@ For non-trivial fixes:
      one more pass, re-present once; if still unclear after
      that, ask the user to decide directly
 
-5. Spawn al-dev-shared:al-dev-developer with confirmed approach:
+5. Spawn the developer with the confirmed approach.
+
+   See `knowledge/developer-invocation-patterns.md` (Context 2: Trivial
+   Direct Fix) for dispatcher consistency when spawning a developer.
+
+   For non-trivial fixes: check for a test plan (same as /al-dev-develop),
+   then dispatch al-dev-developer-tdd or al-dev-developer-traditional
+   accordingly:
+
+   ```bash
+   TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
+   ```
+
+   - Test plan present → `al-dev-shared:al-dev-developer-tdd`
+   - No test plan → `al-dev-shared:al-dev-developer-traditional`
+
+   Dispatch prompt:
    "Implement fix based on this approach:
 
     Root cause: [from architect]

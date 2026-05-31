@@ -294,6 +294,9 @@ of repeatedly re-reading the full solution plan.
 
 ## Phase 3: Spawn Developer Team
 
+See `knowledge/developer-invocation-patterns.md` for dispatcher consistency
+across all developer spawns.
+
 ### Phase 3.0: Write Scope Boundary Document
 
 Before spawning developers, write
@@ -366,8 +369,39 @@ confirmed. Do NOT silently fix lint warnings, deprecated APIs, or
 unrelated issues not named in the plan.
 ```
 
-Spawn developers as **al-dev-developer** agents. If parallel,
-spawn all at once.
+Before spawning each developer, check for a test plan and route to
+the matching specialized agent:
+
+1. Check for test plan:
+
+   ```bash
+   TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
+   ```
+
+2. If a test plan exists, spawn **al-dev-developer-tdd**:
+
+   ```text
+   Agent: al-dev-shared:al-dev-developer-tdd
+   ```
+
+   Include in the prompt: reference to the test plan, TDD cycle
+   expectations (RED-GREEN-REFACTOR), and the `TDD_CYCLE_GATE` approval
+   gates after each phase.
+
+3. If no test plan exists, spawn **al-dev-developer-traditional**:
+
+   ```text
+   Agent: al-dev-shared:al-dev-developer-traditional
+   ```
+
+   Include in the prompt: the traditional build-verify workflow and
+   compilation after each file or logical group.
+
+If parallel, spawn all developers at once (each routed per the test-plan
+check above).
+
+Dispatch context reference: `knowledge/developer-invocation-patterns.md`
+(Context 1: Full Scope Implementation).
 
 ## Phase 4: Verify on Completion
 
