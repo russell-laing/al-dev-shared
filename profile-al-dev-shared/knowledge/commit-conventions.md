@@ -1,7 +1,7 @@
 # Commit Conventions
 
 Authoritative spec for commit message format across all projects.
-Referenced by `al-dev-commit-agent.md` and each project's project instructions file.
+Referenced by the commit agents and each project's project instructions file.
 
 ---
 
@@ -18,7 +18,7 @@ Every commit uses this format, regardless of project type:
 | **emoji** | Required. Must match the canonical table below. Never free-hand. |
 | **type** | Required. Lowercase word from the canonical type list. |
 | **scope** | Required. Lowercase. Valid values depend on project type (see below). |
-| **subject** | Imperative mood ("add field", not "added field"). Max 72 chars total including emoji and type. No trailing period. |
+| **subject** | Imperative mood ("add field", not "added field"). Max 72 chars total for the full subject line, including emoji, type, scope, and subject. No trailing period. |
 
 **No AI attribution.** Never append `Co-Authored-By`, `Generated with [harness name]`, or any AI footer to commit messages.
 
@@ -116,6 +116,8 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 This declaration makes the project type explicit for every harness instead of
 leaving commit behavior to repo-name inference or agent guesswork.
 
+If the repository has multiple harness-specific instruction files, add the declaration to the file used by the active harness (`AGENTS.md`, `CLAUDE.md`, or `CODEX.md` as applicable).
+
 Checklist:
 - Add it once.
 - Keep the value accurate.
@@ -161,7 +163,7 @@ project-type: tool
 **Detection (if not explicitly specified):**
 1. Check for `app.json` → project-type: `al`
 2. Check for `package.json` or `pyproject.toml` → project-type: `tool`
-3. Check for `knowledge/` or `docs/` directory as primary content → project-type: `vault`
+3. Check for `knowledge/` or `docs/` directory as primary content only when the repository is documentation-centric and lacks `app.json`, `package.json`, or `pyproject.toml` → project-type: `vault`
 4. If unclear, ask the user to declare in their project instructions file
 
 ---

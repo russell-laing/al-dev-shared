@@ -69,7 +69,9 @@ fi
 ```
 
 If the log is absent, empty, or contains no `Warning` or `Error`
-lines, report clean and stop.
+lines, treat that as incomplete evidence. A missing log is not a clean
+compile; re-run Step 1 and only report clean after a current log exists
+and contains no warnings or errors.
 
 ### al-compile Command Options and Output Format
 
@@ -138,18 +140,13 @@ rg -n -e "error|warning" .dev/compile-errors.log | rg '\.(Page|PageExt)\.al'
 rg -c '^Error' .dev/compile-errors.log
 ```
 
-**Always include a `description` parameter on Bash tool calls invoking `al-compile`:**
+**Always include a short `description` on Bash tool calls invoking `al-compile`:**
 
-The description helps the harness track intent (logging vs. inspection) and prevents re-reading large log files:
+Use a description that clearly states whether the call is compiling,
+inspecting, or diffing the log, for example:
 
-```json
-{
-  "tool": "Bash",
-  "input": {
-    "command": "al-compile --output .dev/compile-errors.log",
-    "description": "Compile AL project and write results to log file"
-  }
-}
+```text
+Compile AL project and write results to log file
 ```
 
 ### Session Reporting Rule
@@ -264,8 +261,8 @@ Splitting a long procedure requires understanding intent; log as Unresolved.
 
 ## Step 2 — Spawn diagnostics-fixer
 
-If compile errors were found, spawn `al-dev-develop` to fix
-them first, re-compile, then continue.
+If compile errors were found, spawn `al-dev-fix` to fix them first,
+re-compile, then continue.
 
 If only warnings remain after a clean compile, spawn
 `al-dev-diagnostics-fixer`:

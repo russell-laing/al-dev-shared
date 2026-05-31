@@ -8,7 +8,7 @@
 ```
 1. Check if .dev/project-context.md exists
 2. If exists: Read it completely (saves 5-10 minutes of exploration)
-3. If not exists: Create it during first workflow run
+3. If not exists: Run `/al-dev-init-context` first to create it
 ```
 
 ## Complexity Classification
@@ -76,7 +76,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 8. Update project-context.md if learned something
 9. Done
 
-**Agents used:** requirements-engineer (brief), solution-planner (lightweight), al-developer, code-reviewer
+**Internal workflow roles used:** requirements-engineer (brief), solution-planner (lightweight), al-developer, code-reviewer
 **Planning style:** See `knowledge/proportional-planning.md` - SIMPLE guidelines (100-150 lines total)
 **Phases skipped:** testing (unless critical)
 **Time saved:** 10-20 minutes vs full workflow
@@ -108,7 +108,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 7. Update project-context.md
 8. Done
 
-**Agents used:** requirements-engineer (balanced), solution-planner (balanced), al-developer, code-reviewer, diagnostics-fixer
+**Internal workflow roles used:** requirements-engineer (balanced), solution-planner (balanced), al-developer, code-reviewer, diagnostics-fixer
 **Planning style:** See `knowledge/proportional-planning.md` - MEDIUM guidelines (200-400 lines total)
 **Phases skipped:** test-engineer (unless critical)
 **Time saved:** 10-15 minutes vs full workflow
@@ -121,7 +121,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 ---
 
 ### 🔴 COMPLEX (Use Full Pipeline - 45-90 min)
-**Route:** `/al-dev-dev-cycle` full workflow
+**Route:** `/al-dev-develop` full workflow
 
 **Criteria:**
 - New feature (not extension of existing)
@@ -294,7 +294,7 @@ User can force a specific path:
 - `/al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
 - `/al-dev-develop` → SIMPLE/MEDIUM path (no requirements phase)
 - `/al-dev-plan` → MEDIUM path (planning only)
-- `/al-dev-dev-cycle` → COMPLEX path (full pipeline)
+- COMPLEX path → full pipeline workflow
 
 But AI should suggest if path seems wrong:
 ```

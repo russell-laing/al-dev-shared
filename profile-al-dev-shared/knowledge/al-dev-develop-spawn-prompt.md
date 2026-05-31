@@ -44,7 +44,7 @@ substitute the bracketed placeholders before dispatching.
 
 ---
 
-**If test plan exists (`$TEST_PLAN` is non-empty) — use al-dev-developer-tdd:**
+**If test plan exists (`$TEST_PLAN` is non-empty) — use `al-dev-developer-tdd`:**
 
 ```text
 Agent: al-dev-shared:al-dev-developer-tdd
@@ -106,7 +106,7 @@ Expected Output:
 
 ---
 
-**If no test plan exists (`$TEST_PLAN` is empty) — use al-dev-developer-traditional:**
+**If no test plan exists (`$TEST_PLAN` is empty) — use `al-dev-developer-traditional`:**
 
 ```text
 Agent: al-dev-shared:al-dev-developer-traditional

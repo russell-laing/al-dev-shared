@@ -1,6 +1,6 @@
 # AL Developer Patterns and Conventions
 
-Referenced by: `al-dev-developer` agent
+Referenced by: `al-dev-developer-tdd` and `al-dev-developer-traditional` agents
 
 ## Standard AL Patterns
 
@@ -13,9 +13,10 @@ var
     RecRef: RecordRef;
     FieldRef: FieldRef;
 begin
+    RecRef.Open(TableId);
     if not RecRef.Get(RecordId) then
         exit('');
-    
+
     FieldRef := RecRef.Field(FieldNo);
     exit(FieldRef.Value);
 end;
@@ -29,9 +30,9 @@ Key operations:
 - Always wrap in `if RecRef.Get()` guards — RecordRef operations fail silently otherwise
 
 ### Query Performance Best Practices
-When writing queries, use filters to reduce record set scope; always use `SetLoadFields` to limit column reads.
+When writing queries, use filters to reduce record set scope; use `SetLoadFields` when you only need a subset of fields to limit column reads.
 
-**SetLoadFields Pattern:** Specify only the fields you need before calling FindSet. Omitting SetLoadFields loads ALL columns from the table, which is expensive with large tables.
+**SetLoadFields Pattern:** Specify only the fields you need before calling FindSet when the procedure reads a small subset of the record. Omitting SetLoadFields loads ALL columns from the table, which is expensive with large tables.
 
 ```al
 procedure GetOrderAmountsByCustomer(CustomerId: Code[20]) Total: Decimal
@@ -62,7 +63,7 @@ begin
 end;
 ```
 
-**Why it matters:** `SetLoadFields` limits the query to specified fields; without it, SQL reads entire rows. For tables with BLOBs, memos, or many columns, this difference is dramatic.
+**Why it matters:** `SetLoadFields` limits the query to specified fields; without it, SQL reads entire rows. For tables with BLOBs, memos, or many columns, this difference is dramatic. Skip it when you will read most or all fields anyway.
 
 **Avoid FINDSET in loops:** Never call FindSet inside a loop — collect IDs first, then process:
 
@@ -89,7 +90,7 @@ end;
 
 ### Record Modification Patterns
 
-**Single-record updates:** Always call `LockTable` before `Get` to prevent concurrent modifications. Then call `Modify` with `true` to allow triggers/validations.
+**Single-record updates:** Call `LockTable` before `Get` when you need pessimistic locking for a read-modify-write cycle. Then call `Modify` with `true` to allow triggers/validations.
 
 ```al
 procedure SetCreditLimit(CustomerId: Code[20]; NewLimit: Decimal)
@@ -103,7 +104,7 @@ begin
 end;
 ```
 
-**Why:** Without `LockTable`, another user can modify the record between your Get and Modify, causing lost updates or stale data. LockTable holds a database lock until the transaction ends.
+**Why:** Without `LockTable`, another user can modify the record between your Get and Modify, causing lost updates or stale data. Use it only when that concurrency protection is required, because it holds a database lock until the transaction ends.
 
 **Batch updates:** Use `ModifyAll` for multiple records matching a filter — it's optimized for bulk operations.
 

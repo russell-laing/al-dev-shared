@@ -5,7 +5,7 @@ Referenced by: `al-dev-script-engineer` agent
 ## Script Conventions (follow strictly)
 
 ### Async-First Design
-Write async code patterns when possible; use proper concurrency primitives. For Python, use `asyncio`. For Node.js, use `async/await` or Promises. For Bash, use background processes sparingly and document cleanup.
+Write async code patterns when possible; use proper concurrency primitives. For Python, use `asyncio` (with `aiohttp` or similar async libraries when network I/O is involved). For Node.js, use `async/await` or Promises. For Bash, use background processes sparingly and document cleanup.
 
 **Python asyncio example:**
 ```python
@@ -30,10 +30,11 @@ if __name__ == "__main__":
 ```
 
 **Why:** Sequential requests are slow — fetching 10 URLs one-by-one takes 10× the time of parallel. Use `asyncio.gather()` for true concurrency.
+This example uses `aiohttp`; include it as a dependency when the script actually performs HTTP requests.
 
 ### Protocol-Based Integration
 
-Scripts often need to communicate results to parent processes (the active harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output (JSON/CSV) that parses cleanly. Always include an exit code that indicates success/failure.
+Scripts often need to communicate results to parent processes (the active harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output, preferably JSON first and CSV when tabular output is enough, that parses cleanly. Always include an exit code that indicates success/failure.
 
 **Protocol patterns:**
 
@@ -235,7 +236,7 @@ else
 fi
 ```
 
-If toolkit is not found, script should continue with reduced capability or provide clear error messages.
+If toolkit is not found, script should continue with reduced capability or provide clear error messages. This discovery pattern is intentionally shell-based because the toolkit path is not known up front.
 
 ## Language Selection
 
