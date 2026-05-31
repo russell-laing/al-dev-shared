@@ -79,11 +79,11 @@ Strict rules (from the mermaid helper — do not deviate):
 
 Class definitions to use:
 
-```
+```yaml
 classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
 classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
 classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-```
+```yaml
 
 Diagram structure for the combined view:
 
@@ -108,7 +108,7 @@ flowchart LR
   class ... skillNode
   class ... agentNode
   class ... knowledgeNode
-```
+```text
 
 For the split view, generate two separate `flowchart LR` blocks.
 

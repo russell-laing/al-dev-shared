@@ -22,7 +22,7 @@ Create complete documentation for implemented features:
 
 ```bash
 /al-dev-document
-```
+```yaml
 
 **Prerequisites:**
 - Implementation must be complete (AL code exists)
@@ -68,7 +68,7 @@ Which audience are you writing for?
    (step-by-step, navigation, troubleshooting)
 4. executive — one-page summary
    (what was built, business value)
-```
+```yaml
 
 Wait for the user's response. Then set:
 
@@ -81,7 +81,7 @@ Verify the template exists:
 ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/[AUDIENCE].md 2>/dev/null \
   || echo "Template not found — docs-writer will use inline structure from Step 2"
 # Non-zero exit here is expected and normal — do not retry.
-```
+```text
 If the echo fires, omit `TEMPLATE_PATH` from the spawn prompt and let the docs-writer use the inline documentation structure defined in Step 2.
 
 ### Step 1: Identify Documentation Scope (1-2 min)
@@ -99,7 +99,7 @@ Determine what needs documenting:
    - `*-al-dev-plan-solution-plan.md` present → IN-PROGRESS
    - `*-al-dev-develop-code-review.md` present → IMPLEMENTED
 5. Identify target audience (developers, users, admins)
-```
+```markdown
 
 ### Step 2: Spawn Docs-Writer Teammate (10-30 min)
 
@@ -187,7 +187,7 @@ Documentation structure:
 [Any constraints, edge cases not handled, future enhancements]
 
 Output to: docs/Features/[FeatureName]-[AUDIENCE].md"
-```
+```markdown
 
 ### Step 3: Review Documentation (3-5 min)
 
@@ -215,17 +215,17 @@ When docs-writer completes:
    - Can a new developer understand this?
    - Are examples helpful?
    - Is jargon explained?
-```
+```text
 
 **MANDATORY before presenting to user** — spot-check three sections and output
 this block (do NOT present to user until all three rows are filled in):
 
-```
+```text
 VERIFICATION
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
-```
+```text
 
 If any row shows `no`, send the specific mismatch back to docs-writer before
 presenting. Skipping this block is visible to the user — do not omit it.
@@ -253,13 +253,13 @@ Iterate until documentation is comprehensive.
 When applying fixes with the Edit tool: include 2–3 lines of surrounding
 context to ensure the match is unique, or use `replace_all: true` when
 updating all instances of a repeated string (e.g. markdown lint directives).
-```
+```markdown
 
 ### Step 5: Clean Up
 
 ```text
 The docs-writer agent terminates automatically when it returns its result. No explicit shutdown is needed. Proceed to Step 6.
-```
+```markdown
 
 ### Step 6: Present to User
 
@@ -284,7 +284,7 @@ Documentation includes:
 Ready for review?"
 
 (No formal approval needed - documentation is reference material)
-```
+```text
 
 ---
 
@@ -299,7 +299,7 @@ Include:
 - Extension points (events, procedures)
 - How to modify or extend
 - Testing approach
-```
+```markdown
 
 ### For Business Audiences (Users/Admins)
 
@@ -310,7 +310,7 @@ Include:
 - Step-by-step workflows
 - Configuration requirements
 - Troubleshooting common issues
-```
+```markdown
 
 ### Code Examples
 
@@ -320,7 +320,7 @@ Show actual AL code snippets for:
 - Event usage
 - API integration patterns
 - Test examples
-```
+```markdown
 
 ### Visual Aids
 
@@ -330,7 +330,7 @@ Consider including:
 - Workflow flowcharts
 - UI screenshots (if available)
 - Data flow diagrams
-```
+```text
 
 ---
 

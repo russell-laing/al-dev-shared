@@ -20,7 +20,7 @@ integrates with `project-context.md`.
 /explore How does validation work for sales orders?
 /explore What tables extend Customer?
 /explore How is error handling implemented?
-```
+```text
 
 ---
 
@@ -157,7 +157,7 @@ missing from `project-context.md`:
 "These findings include [N] objects/patterns not yet in project-context.md.
  Update project-context.md to capture them? [Yes/No]
  If yes: append under a `## Recent Discoveries — [date]` section at the end of the file."
-```
+```text
 
 If yes, append under a `## Recent Discoveries — [date]` section at the end of the file.
 
@@ -166,7 +166,7 @@ If yes, append under a `## Recent Discoveries — [date]` section at the end of 
 ```text
 "Run /al-dev-init-context to create a project context document.
  Future explorations will be significantly faster."
-```
+```text
 
 ---
 
@@ -188,7 +188,7 @@ Key files:
 [Suggest next command if applicable — e.g., "Ready to design
 a solution? Run /plan." or "Start requirements gathering with
 /interview."]
-```
+```text
 
 ---
 
