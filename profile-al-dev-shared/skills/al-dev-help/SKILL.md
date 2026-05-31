@@ -20,7 +20,7 @@ Two modes: **situation-aware recommendation** and **capability reference**.
 /al-dev-help skills                   -- list all skills with descriptions
 /al-dev-help agents                   -- list all agents with descriptions
 /al-dev-help all                      -- full capability reference
-```
+```text
 
 ---
 
@@ -63,7 +63,7 @@ Available Skills (lazy-loaded, invoked with /):
 | /al-dev-ticket        | Load Freshdesk ticket context for this session        |
 | /al-dev-explore       | Fast codebase exploration with persistent output      |
 | /al-dev-help          | Contextual profile guidance (this skill)              |
-```
+```yaml
 
 **For `agents`:**
 
@@ -83,7 +83,7 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |
 | al-dev-script-engineer    | Python and shell scripts for AL tooling          |
-```
+```yaml
 
 **For `all`:** Show all three tables in sequence.
 
@@ -91,7 +91,7 @@ After any reference output, append:
 
 ```text
 Tip: Run /al-dev-help <description> for a personalized workflow recommendation.
-```
+```text
 
 ---
 
@@ -148,7 +148,7 @@ Suggested sequence:
   3. /al-dev-develop                              -- implement + review
 
 Or skip to /al-dev-plan directly if requirements are already clear.
-```
+```text
 
 ---
 
@@ -180,7 +180,7 @@ Recommendation: Run /al-dev-develop to implement the solution plan.
 
 The plan exists — the next step is parallel implementation
 followed by 3-specialist code review.
-```
+```yaml
 
 **Step 4: Always append the quick-reference table:**
 
@@ -196,4 +196,4 @@ Quick reference:
   /al-dev-commit        -- atomic gitmoji commit workflow
   /al-dev-explore <q>   -- fast codebase exploration
   /al-dev-help          -- this skill
-```
+```text

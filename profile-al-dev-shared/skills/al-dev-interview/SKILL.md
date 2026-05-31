@@ -141,4 +141,4 @@ Key constraints: [notable limitations]
 Open questions: [any remaining, or "None"]
 
 Next step: /plan to generate solution design
-```
+```text

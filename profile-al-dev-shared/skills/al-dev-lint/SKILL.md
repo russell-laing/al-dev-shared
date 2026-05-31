@@ -33,13 +33,13 @@ Ensure output directory exists:
 
 ```bash
 mkdir -p .dev
-```
+```yaml
 
 If `$ARGUMENTS` is provided and points to an existing log file, copy it:
 
 ```bash
 cp "$ARGUMENTS" .dev/compile-errors.log
-```
+```yaml
 
 Otherwise run:
 
@@ -50,7 +50,7 @@ else
   al compile /project:. /packagecachepath:.alpackages \
     /errorlog:.dev/compile-errors.log
 fi
-```
+```yaml
 
 **Note:** Use `al-compile` if available (preferred—faster and simpler). If `al-compile` is not in PATH, fall back to `al compile`. Both produce the same output log format.
 
@@ -61,7 +61,7 @@ If the log is absent, empty, or contains no lines matching
 
 ```text
 No lint issues found in the current compile output. Current-run success evidence read from `.dev/compile-errors.log` and the lint report when one is produced.
-```
+```text
 
 Stop here.
 
@@ -78,7 +78,7 @@ fixed/unresolved summary structured as:
 - Fixed (direct): rules fixed via Edit tool with file:line references
 - Unresolved: rules requiring human judgment with reason
 - Compile Status: post-fix compile result
-```
+```markdown
 
 ## Step 3: Present summary
 
@@ -91,7 +91,7 @@ Unresolved:         N issues requiring judgment
 
 Compile status: [✅ Clean / ⚠️ N warnings / ❌ N errors]
 Full report → `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md`
-```
+```yaml
 
 If unresolved items exist, list them inline:
 
@@ -101,4 +101,4 @@ Unresolved items needing input:
   → Choose a DataClassification value and apply manually
 - PTE0001 (Object ID range): src/Codeunits/Mgt.al:1
   → Assign an ID in range 50901–50950
-```
+```text

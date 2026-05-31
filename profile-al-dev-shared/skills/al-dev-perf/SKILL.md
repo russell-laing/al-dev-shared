@@ -34,7 +34,7 @@ From user args:
 
 ```bash
 find src/ -iname "*.codeunit.al" 2>/dev/null
-```
+```markdown
 
 - **"scan all"** or no args: find all codeunit files in `src/`
 
@@ -79,7 +79,7 @@ Codeunit classifications:
 - CreateJobV6.Codeunit.al → Entry Point (has OnRun; evidence source: AL LSP)
 - BatchPostSales.Codeunit.al → Batch Processor (name heuristic; evidence source: text search)
 - StringHelper.Codeunit.al → Utility (no indicators found; evidence source: AL MCP)
-```
+```text
 
 ---
 
@@ -123,7 +123,7 @@ Prompt:
    CODE: [3–5 lines of the problematic code]
    FIX: [3–5 lines of the corrected version]
    IMPACT: [estimated frequency — per record, per batch, etc.]"
-```
+```text
 
 ---
 
@@ -191,7 +191,7 @@ Design fixes with: `/al-dev-plan fix performance issues in [scope]`
 
 [If only LOW findings:]
 No critical issues. Low findings documented for reference.
-```
+```text
 
 ---
 
@@ -213,7 +213,7 @@ Ready to plan fixes? /al-dev-plan fix performance issues in [scope]
 
 [If LOW only:]
 No critical issues found. Findings in perf-analysis.md.
-```
+```text
 
 ---
 

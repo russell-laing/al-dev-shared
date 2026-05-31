@@ -153,7 +153,7 @@ H3: Upgrade tag already applied but data fix not re-run —
     one-time correction did not cover this scenario
 H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
     fully-invoiced lines included in aggregation
-```
+```text
 
 ---
 
@@ -204,7 +204,7 @@ Prompt:
    EVIDENCE: [file path, line number, code snippet]
    REASONING: [1-2 sentences]
    GAPS: [what cannot be verified from local code alone]"
-```
+```yaml
 
 **Agent 1:** H1 and H2 with their test targets.
 **Agent 2:** H3 and H4 with their test targets.
@@ -335,7 +335,7 @@ Next:
   Fix is in this repo → /al-dev-plan [fix description]
   Fix is in another repo → /al-dev-handoff [path to target repo]
   More data needed → [specific check]
-```
+```text
 
 ---
 
