@@ -83,6 +83,51 @@ def test_node_id_sanitizes_hyphens() -> None:
     assert _mod.node_id("al-dev-worker") == "al_dev_worker"
 
 
+def test_node_id_supports_typed_prefixes() -> None:
+    assert _mod.node_id("skill", "al-dev-explore") == "skill_al_dev_explore"
+    assert _mod.node_id("agent", "al-dev-explore") == "agent_al_dev_explore"
+    assert _mod.node_id("knowledge", "workflow-routing.md") == "knowledge_workflow_routing_md"
+
+
+def test_extract_edges_finds_namespaced_and_unqualified_agent_refs() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        plugin = Path(td) / "profile-al-dev-shared"
+        (plugin / "skills" / "al-dev-lint").mkdir(parents=True)
+        (plugin / "agents").mkdir(parents=True)
+        (plugin / "knowledge").mkdir(parents=True)
+        (plugin / "skills" / "al-dev-lint" / "SKILL.md").write_text(
+            "Spawn `al-dev-diagnostics-fixer`.\n"
+            "Agent: al-dev-shared:al-dev-developer-traditional\n",
+            encoding="utf-8",
+        )
+        (plugin / "agents" / "al-dev-diagnostics-fixer.md").write_text("fixer\n", encoding="utf-8")
+        (plugin / "agents" / "al-dev-developer-traditional.md").write_text("dev\n", encoding="utf-8")
+
+        skills, _, _ = _mod.discover(plugin)
+        edges = _mod.extract_edges(plugin, skills)
+
+        assert ("al-dev-lint", "al-dev-diagnostics-fixer") in edges["skill_agent"]
+        assert ("al-dev-lint", "al-dev-developer-traditional") in edges["skill_agent"]
+
+
+def test_render_dependency_graph_does_not_merge_same_named_skill_and_agent() -> None:
+    rendered = _mod.render_dependency_graph(
+        skills=["al-dev-explore"],
+        agents=["al-dev-explore"],
+        edges={
+            "skill_agent": {("al-dev-explore", "al-dev-explore")},
+            "skill_skill": set(),
+            "skill_knowledge": set(),
+            "agent_knowledge": set(),
+            "skill_artifact": set(),
+        },
+    )
+
+    assert "skill_al_dev_explore[al-dev-explore]" in rendered
+    assert "agent_al_dev_explore[al-dev-explore]" in rendered
+    assert "skill_al_dev_explore --> agent_al_dev_explore" in rendered
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
