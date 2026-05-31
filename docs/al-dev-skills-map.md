@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-05-31 (21 profile skills on disk: 20 workflow/support skills plus maintenance-oriented `/al-dev-diagram-generator`; `/al-dev-support` remains a deprecated alias for `/al-dev-ticket --mode=full`)
-**Scope:** Active skills only. Archived items (al-dev-test, test-engineer agents, al-dev-test-coverage-reviewer, al-dev-align) excluded. `/align-harness-repos` and `/plugin-health` are project-local maintenance tools in `.claude/skills/`, not distributed in the plugin.
+**Last updated:** 2026-05-31 (21 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 deprecated alias `/al-dev-support` + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. `/al-dev-diagram-generator`, `/align-harness-repos`, and `/plugin-health` are maintainer-only tools and are not part of the distributed plugin surface.
 
 ---
 
@@ -86,7 +86,7 @@ flowchart TD
 
 ## Layer 2: Per-Skill Drill-Downs
 
-Each skill is shown with its internal phases, spawned agents, and key outputs. Agents are referenced by their full type name (e.g., `al-dev-shared:al-dev-developer-traditional`).
+Each skill is shown with its internal phases, spawned agents, and key outputs. Agents are referenced by their full type name (for example, `al-dev-shared:al-dev-developer-tdd`).
 
 ### Notation
 
@@ -160,7 +160,7 @@ flowchart LR
     Start([Start]) --> Decision{Complex?}
 
     Decision -->|Trivial| Phase1T["Phase 1<br/>Implement"]
-    Phase1T --> DevAgent["al-dev-developer-traditional ×1"]
+    Phase1T --> DevAgent["al-dev-developer-traditional<br/>or -tdd ×1"]
     DevAgent --> Phase2T["Phase 2<br/>Compile + lint"]
     Phase2T --> SkillT["(skill itself)"]
     SkillT --> End([End])
@@ -168,7 +168,7 @@ flowchart LR
     Decision -->|Non-trivial| Phase1C["Phase 1<br/>Analyse"]
     Phase1C --> ArchAgent["al-dev-solution-architect<br/>×1 (5 min)"]
     ArchAgent --> Phase2C["Phase 2<br/>Implement"]
-    Phase2C --> DevAgent2["al-dev-developer-tdd<br/>or traditional ×1"]
+    Phase2C --> DevAgent2["al-dev-developer-traditional<br/>or -tdd ×1"]
     DevAgent2 --> Phase3C["Phase 3<br/>Compile + lint"]
     Phase3C --> SkillC["(skill itself)"]
     SkillC --> End
@@ -222,7 +222,7 @@ flowchart LR
     SkillWork1 --> Phase2["Phase 2<br/>Partition work"]
     Phase2 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Phase3["Phase 3<br/>Spawn developers"]
-    Phase3 --> DevAgent["al-dev-developer-tdd<br/>or traditional ×1-4<br/>(scaled by module count)"]
+    Phase3 --> DevAgent["al-dev-developer-tdd or<br/>al-dev-developer-traditional ×1-4<br/>(scaled by object count)"]
     DevAgent --> Phase4["Phase 4<br/>Verify completion<br/>+ optional static validation"]
     Phase4 --> SkillWork3["(skill itself)"]
     SkillWork3 --> Handoff(["Phase 4 handoff<br/>(.dev/*-al-dev-develop-phase4-handoff.md)"])
@@ -244,45 +244,41 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`, prepares review context, runs compile verification and pre-review staging, then dispatches the three-specialist review panel in parallel. In `--autonomous` mode, compile-error correction before the review panel dispatches `al-dev-developer-traditional`; TDD is not used for compile-error repair.
+**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 8) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 8.5) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user.
 
 ```mermaid
 flowchart LR
-    Start([Handoff<br/>from /al-dev-develop<br/>Phase 4]) --> Phase1["Phase 1<br/>Prepare review context"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Compile verification"]
-    Phase2 --> CompileDecision{Compile<br/>errors?}
-    CompileDecision -->|Yes, --autonomous| CompileFix["al-dev-developer-traditional<br/>compile repair ×1"]
-    CompileFix --> Phase2
-    CompileDecision -->|Yes, standard| Stop["Stop + ask user"]
-    CompileDecision -->|No| Phase3["Phase 3<br/>Pre-review staging"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase4["Phase 4<br/>Review panel<br/>in parallel"]
+    Start([Handoff<br/>Phase 4]) --> Phase5["Phase 5<br/>Prepare review<br/>context"]
+    Phase5 --> SkillWork1["(skill itself)"]
+    SkillWork1 --> Phase8["Phase 8<br/>Compile verify<br/>(gates panel)"]
+    Phase8 --> SkillWork2["(skill itself)"]
+    SkillWork2 --> Phase85["Phase 8.5<br/>Pre-review<br/>staging"]
+    Phase85 --> SkillWork3["(skill itself)"]
+    SkillWork3 --> Phase67["Phase 6–7<br/>Review panel<br/>in parallel"]
 
-    Phase4 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase4 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase4 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+    Phase67 --> SecReview["al-dev-security-reviewer<br/>×1"]
+    Phase67 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
+    Phase67 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
 
-    SecReview --> Phase5["Phase 5<br/>Write code review"]
-    ExpertReview --> Phase5
-    PerfReview --> Phase5
-    Phase5 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1([".dev/*-al-dev-develop-code-review.md"])
-    Output1 --> Phase6["Phase 6<br/>Present findings"]
-    Phase6 --> End([End])
+    SecReview --> Phase9["Phase 9<br/>Write code review"]
+    ExpertReview --> Phase9
+    PerfReview --> Phase9
 
-    style Phase1 fill:#ff8a65
-    style Phase2 fill:#ff8a65
-    style Phase3 fill:#ff8a65
-    style Phase4 fill:#ff8a65
+    Phase9 --> SkillWork4["(skill itself)"]
+    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
+    Output1 --> Phase10["Phase 10<br/>Present findings"]
+    Phase10 --> End([End])
+
     style Phase5 fill:#ff8a65
-    style Phase6 fill:#ff8a65
+    style Phase8 fill:#ff8a65
+    style Phase85 fill:#ff8a65
+    style Phase67 fill:#ff8a65
+    style Phase9 fill:#ff8a65
+    style Phase10 fill:#ff8a65
     style SkillWork1 fill:#ff7043
     style SkillWork2 fill:#ff7043
     style SkillWork3 fill:#ff7043
-    style CompileDecision fill:#ffccbc
-    style CompileFix fill:#ff7043
-    style Stop fill:#ffcdd2
+    style SkillWork4 fill:#ff7043
     style SecReview fill:#ff5722
     style ExpertReview fill:#ff5722
     style PerfReview fill:#ff5722
@@ -461,7 +457,7 @@ flowchart LR
     Phase2 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Phase3["Step 3<br/>Write prompt"]
     Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["handoff-prompt.md"])
+    SkillWork3 --> Output1([".dev/*-al-dev-handoff-handoff-prompt.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#fff3e0
@@ -505,7 +501,7 @@ flowchart LR
     Phase2 --> Agent1["al-dev-commit-recover-verifier<br/>×N (per incident)"]
     Agent1 --> Phase3["Step 3<br/>Update learnings"]
     Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["learnings.md"])
+    SkillWork2 --> Output1([".dev/learnings.md"])
     Output1 --> End([End])
 
     style Phase1 fill:#e0f2f1
@@ -615,7 +611,7 @@ flowchart LR
 
 ### /al-dev-diagram-generator
 
-**Maintenance-oriented tool — not part of the main development lifecycle.** `/al-dev-diagram-generator` is maintenance-oriented and called from repo-local analysis workflows, but it currently lives under the profile `skills/` directory and is part of the plugin skill surface unless packaging adds an explicit exclusion.
+**Maintainer tool — not part of the main development lifecycle.** Dispatched by `/analyze-agent-design` and `/analyze-skill-design` after their analysis phases complete. Does not appear in the Layer 1 lifecycle diagram because it is called from project-local maintainer tooling (`.claude/skills/`), not from distributed plugin skills.
 
 Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, and knowledge files connect. Writes `docs/al-dev-workflow-diagrams.md`.
 
@@ -672,9 +668,9 @@ flowchart LR
 - **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a; lint pre-flight)
 - **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b; OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
-- **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched after compile verification and pre-review staging)
-- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched after compile verification and pre-review staging)
-- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched after compile verification and pre-review staging)
+- **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
+- **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
+- **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 6–7)
 
 ### Skills with no dedicated agent (skill does the work itself)
 
@@ -686,11 +682,11 @@ flowchart LR
 ### Potential shared agents (with documented patterns)
 
 - **al-dev-ticket-agent** — used by /al-dev-ticket and the deprecated /al-dev-support alias; invocation patterns in `knowledge/ticket-agent-invocation-pattern.md` ← implemented
-- **Developer agents** — `/al-dev-develop` and `/al-dev-fix` route to `al-dev-developer-tdd` when a test plan exists and `al-dev-developer-traditional` otherwise; `/al-dev-review-develop --autonomous` uses `al-dev-developer-traditional` for compile-error correction. Dispatch patterns live in `knowledge/developer-invocation-patterns.md`.
+- **al-dev-developer-tdd / al-dev-developer-traditional** — spawned by /al-dev-fix and /al-dev-develop based on test-plan presence; /al-dev-review-develop autonomous compile-fix loops use the traditional variant. Patterns in `knowledge/developer-invocation-patterns.md` ← implemented
 - **al-dev-solution-architect** — spawned by /al-dev-plan, /al-dev-fix; patterns in `knowledge/architect-invocation-patterns.md` ← implemented
 - **Explore subagent** — invoked by /al-dev-investigate (×2 parallel), /al-dev-explore (×1), /al-dev-perf (×1); canonical template in `knowledge/explore-subagent-pattern.md` ← implemented
 - **al-dev-diagnostics-fixer** — used by /al-dev-lint; /al-dev-develop returns compile corrections to developers instead of dispatching the fixer
-- **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — parallel composition in /al-dev-review-develop; canonical definition in `knowledge/review-panel-pattern.md` ← implemented
+- **Three-reviewer panel** (al-dev-security-reviewer + al-dev-expert-reviewer + al-dev-performance-reviewer) — parallel composition in /al-dev-develop; canonical definition in `knowledge/review-panel-pattern.md` ← implemented
 
 ### Architectural suggestions
 
@@ -698,7 +694,7 @@ flowchart LR
 
 Status: Confirmed in current sweep. The live workflow now splits implementation from review:
 - `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` produces a Phase 4 handoff for `/al-dev-review-develop`
-- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` owns the post-implementation review orchestration using local Phase 1-6 headings
+- `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` owns the post-implementation review orchestration (Phase 5-10)
 
 Impact: This is no longer remaining implementation scope. The map should treat review-workflow independence as current state, not future work.
 
@@ -755,13 +751,12 @@ Impact: No follow-up work needed unless the team wants to refine the exact wordi
 
 ---
 
-**✅ Confirmed: /al-dev-develop to /al-dev-review-develop compile strategy is explicit**
+**✅ Confirmed: /al-dev-develop compile strategy is already explicit**
 
 Status: Confirmed in current sweep. The live skill now states:
-- `/al-dev-develop` owns implementation dispatch and produces the Phase 4 handoff after developer work completes
-- `/al-dev-review-develop` consumes that handoff and owns compile verification before review
-- in `--autonomous` mode, `/al-dev-review-develop` runs bounded compile repair through `al-dev-developer-traditional`
-- pre-review staging must pass before `/al-dev-review-develop` dispatches the three-reviewer panel
+- normal mode = one implementation compile pass, one batched developer fix pass, then one more compile
+- `--autonomous` = bounded compile-fix loop with up to five attempts
+- reviewers are spawned only after Phase 8 compile handling and Phase 8.5 staging both pass
 
 Impact: No clarification task remains. The maintainer opportunity here is optional future refactoring, not missing current-state documentation.
 
@@ -829,13 +824,13 @@ The plugin maintains healthy separation of concerns:
 - Split /al-dev-commit into analysis, message-drafting, execution
 - Documented architect and pattern invocations
 
-**Historical analysis snapshot (2026-05-27):** Five lenses were re-applied across the same 18 skills that were in scope at that time. Current state captured then was:
+**Current analysis (2026-05-27):** Five lenses re-applied across the same 18 skills. Current state is:
 - **Implemented: /al-dev-review-develop extraction** (review workflow independence is now live)
 - **Narrow follow-up: `/al-dev-fix` symbol-rigor wording** (non-trivial path already uses symbol pre-flight; routing docs still need alignment)
 - **Deferred: /al-dev-publish** (blocked on scope clarification)
 - **Implemented: lint feedback into `/al-dev-fix`** (unresolved lint items already surface to the architect)
 - **Confirmed: /al-dev-plan interview guidance already present**
-- **Confirmed: /al-dev-develop to /al-dev-review-develop compile strategy documented**
+- **Confirmed: /al-dev-develop compile/staging gates already documented**
 - **Confirmed: /al-dev-explore integration working** (outdated observation removed)
 - **Confirmed: Patterns documented** (architect, explore, ticket-agent, review-panel)
 
