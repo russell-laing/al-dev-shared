@@ -4,7 +4,7 @@ Canonical pattern for dispatching `al-dev-ticket-agent` from skills that interac
 
 ## Pattern Summary
 
-Both `/al-dev-ticket` and `/al-dev-support` dispatch `al-dev-ticket-agent` with identical environment variables and phase parameters. This document captures the canonical pattern to prevent drift.
+The `/al-dev-ticket` skill (with `--mode=full` option) dispatches `al-dev-ticket-agent` with environment variables and phase parameters. This document captures the canonical pattern to prevent drift.
 
 ## Dispatch Block Template
 
@@ -76,13 +76,11 @@ When a new skill needs to fetch Freshdesk tickets, it should:
 ```text
 profile-al-dev-shared/agents/al-dev-ticket-agent.md
 profile-al-dev-shared/skills/al-dev-ticket/SKILL.md
-profile-al-dev-shared/skills/al-dev-support/SKILL.md
 ```
 
 - Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-agent.md`
-- Skills using this pattern:
-  - `/al-dev-ticket` — Fetch ticket context (Phase 3)
-  - `/al-dev-support` → redirects to `/al-dev-ticket --mode=full` (Phase 2)
+- Skill using this pattern:
+  - `/al-dev-ticket` — Fetch and research ticket (with `--mode=context-only` or `--mode=full`)
 
 ### Ticket Type → Affected Files Mapping
 

@@ -2,8 +2,8 @@
 name: al-dev-support-reply-drafter
 description: >-
   Draft a customer-facing reply from internal BC support research findings.
-  Writes the combined findings + reply file. Dispatched by /al-dev-support
-  (reply phase). Pairs with al-dev-support-researcher.
+  Writes the combined findings + reply file. Dispatched by /al-dev-ticket
+  (--mode=full, reply phase). Pairs with al-dev-support-researcher.
 model: haiku
 tools: ["Write"]
 ---
@@ -114,7 +114,7 @@ The draft is always the customer's first communication about this issue — noth
 
 ## Return Block
 
-Return to `/al-dev-support` with:
+Return to `/al-dev-ticket` with:
 
 ```text
 FILE: .dev/YYYY-MM-DD-support-<slug>.md

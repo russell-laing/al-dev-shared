@@ -1,0 +1,19 @@
+{
+  "surface": "agents",
+  "run_id": "20260531T115645Z",
+  "total_files": 24,
+  "map_entries": 22,
+  "discrepancies": [
+    {
+      "type": "missing_from_map",
+      "agent": "plan-map-changes-duck-worker",
+      "detail": "Active agent has no Layer 1 Catalog table row and no Layer 2 section (### plan-map-changes-duck-worker) in docs/al-dev-agent-map.md. Frontmatter: model=sonnet, tools=[Read, Bash, Write]. Spawned by plan-map-changes/SKILL.md (reference is commented out; no active functional al-dev-shared: invocation found)."
+    },
+    {
+      "type": "missing_from_map",
+      "agent": "plugin-health-team",
+      "detail": "Active agent has no Layer 1 Catalog table row and no Layer 2 section (### plugin-health-team) in docs/al-dev-agent-map.md. Frontmatter: model=opus, tools=[Bash, Read, Write]. Referenced by profile-al-dev-shared/skills/plugin-health/ files (collect.py, dispatch.py, SKILL.md) but not as an al-dev-shared: functional invocation."
+    }
+  ],
+  "summary": "2 discrepancies found: 2 missing_from_map."
+}

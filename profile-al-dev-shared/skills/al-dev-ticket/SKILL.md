@@ -4,7 +4,7 @@ description: >-
   Fetch and contextualise a Freshdesk ticket, optionally research
   and draft a support reply. Use --mode=context-only to load ticket
   context only (default behavior), or --mode=full to include
-  research and reply drafting (equivalent to al-dev-support).
+  research and reply drafting.
 argument-hint: "[ticket-id or search-term] [--mode=context-only|full]"
 ---
 
@@ -38,7 +38,7 @@ feature/#CU86d0dnfx2-FD1234-description
 Parse the `--mode` argument:
 
 - `--mode=context-only` (default) → Run Steps 1–4 only (fetch and contextualize ticket)
-- `--mode=full` → Run all steps including research + reply drafting (equivalent to /al-dev-support)
+- `--mode=full` → Run all steps including research + reply drafting
 
 If `--mode=` is not specified, default to `context-only`.
 

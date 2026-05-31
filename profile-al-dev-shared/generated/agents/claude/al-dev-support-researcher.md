@@ -1,5 +1,5 @@
 ---
-description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-support (research phase). Pairs with al-dev-support-reply-drafter."
+description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-ticket (--mode=full, research phase). Pairs with al-dev-support-reply-drafter."
 tools: ["Read", "mcp__plugin_profile-claude-al-dev_al-mcp-server__<tool>", "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>", "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"]
 ---
 
@@ -25,7 +25,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured internal findings returned inline to /al-dev-support |
+| Return block | Structured internal findings returned inline to /al-dev-ticket |
 
 ## Research Process
 
@@ -64,7 +64,7 @@ If available, search BC history for:
 
 ## Return Block
 
-Return to `/al-dev-support` with:
+Return to `/al-dev-ticket` with:
 
 ```text
 RESEARCH_COMPLETE: yes

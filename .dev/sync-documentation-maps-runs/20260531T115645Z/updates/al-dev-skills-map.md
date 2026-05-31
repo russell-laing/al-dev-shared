@@ -2,7 +2,7 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-06-01 (20 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
+**Last updated:** 2026-06-01 (21 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 deprecated alias `/al-dev-support` + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. `/al-dev-diagram-generator`, `/align-harness-repos`, and `/plugin-health` are maintainer-only tools and are not part of the distributed plugin surface.
 
 ---
@@ -97,7 +97,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch + research + reply drafting).
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch + research + reply drafting). `/al-dev-support` remains as a deprecated alias that points users to `--mode=full`.
 
 ```mermaid
 flowchart LR
@@ -134,6 +134,23 @@ flowchart LR
 ```
 
 Agents spawned: `al-dev-shared:al-dev-ticket-agent`, `al-dev-shared:al-dev-support-researcher` (mode=full only), `al-dev-shared:al-dev-support-reply-drafter` (mode=full only)
+
+### /al-dev-support
+
+**Deprecated alias.** This skill has been consolidated into `/al-dev-ticket`. Use `/al-dev-ticket --mode=full` instead. The alias remains active for backward compatibility and redirects users to the consolidated entry point.
+
+```mermaid
+flowchart LR
+    Start([Start]) --> Redirect["Redirect to<br/>/al-dev-ticket --mode=full"]
+    Redirect --> SkillWork1["(skill itself)"]
+    SkillWork1 --> End(["→ /al-dev-ticket --mode=full"])
+
+    style Redirect fill:#ffecb3
+    style SkillWork1 fill:#ffe082
+    style End fill:#ffd54f
+```
+
+Agents spawned: None (delegates to `/al-dev-ticket --mode=full`)
 
 ### /al-dev-investigate
 
@@ -771,7 +788,7 @@ Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent n
 
 ### Agents used by only one skill
 
-- **al-dev-ticket-agent** — used by /al-dev-ticket (`--mode=context-only|full`)
+- **al-dev-ticket-agent** — used by /al-dev-ticket (`--mode=context-only|full`) and /al-dev-support (deprecated alias path to `--mode=full`)
 - **al-dev-support-researcher** — used only by /al-dev-ticket (`--mode=full`)
 - **al-dev-support-reply-drafter** — used only by /al-dev-ticket (`--mode=full`)
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (message-drafting phase)
@@ -796,7 +813,7 @@ Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent n
 
 ### Potential shared agents (with documented patterns)
 
-- **al-dev-ticket-agent** — used by /al-dev-ticket; invocation patterns in `knowledge/ticket-agent-invocation-pattern.md` ← implemented
+- **al-dev-ticket-agent** — used by /al-dev-ticket and the deprecated /al-dev-support alias; invocation patterns in `knowledge/ticket-agent-invocation-pattern.md` ← implemented
 - **al-dev-developer-tdd / al-dev-developer-traditional** — spawned by /al-dev-fix and /al-dev-develop based on test-plan presence; /al-dev-review-develop autonomous compile-fix loops use the traditional variant. Patterns in `knowledge/developer-invocation-patterns.md` ← implemented
 - **al-dev-solution-architect** — spawned by /al-dev-plan, /al-dev-fix; patterns in `knowledge/architect-invocation-patterns.md` ← implemented
 - **Explore subagent** — invoked by /al-dev-investigate (×2 parallel), /al-dev-explore (×1), /al-dev-perf (×1); canonical template in `knowledge/explore-subagent-pattern.md` ← implemented
@@ -882,6 +899,7 @@ Impact: No clarification task remains. The maintainer opportunity here is option
 Status: Completed in Task 4. The live interface is:
 - `/al-dev-ticket --mode=context-only` (default) for fetch/context only
 - `/al-dev-ticket --mode=full` for fetch + research + reply drafting
+- `/al-dev-support` retained as a deprecated alias that points users to `--mode=full`
 
 Impact: Single primary entry point for ticket workflows without removing the compatibility alias.
 
@@ -934,7 +952,7 @@ The plugin maintains healthy separation of concerns:
 ### Status summary
 
 **Previous analysis (2026-05-22):** Five lenses applied; 18 skills documented. Three high-leverage suggestions implemented:
-- Consolidated /al-dev-support into /al-dev-ticket (removed deprecated alias)
+- Merged /al-dev-ticket + /al-dev-support
 - Split /al-dev-commit into analysis, message-drafting, execution
 - Documented architect and pattern invocations
 

@@ -50,7 +50,7 @@
 - **Fix:** Add actionable examples with real output structure
 
 ### 3. ticket-agent-invocation-pattern.md — Missing File Relationship Mapping
-- **Referenced by:** al-dev-ticket-agent, al-dev-ticket skill, al-dev-support skill
+- **Referenced by:** al-dev-ticket-agent, al-dev-ticket skill
 - **Issue:** [NO-CODE] Related Files section
 - **Problem:** Three workflow components reference this file for understanding ticket context relationships, but guidance is empty
 - **Missing:** Ticket type → affected files mapping, invocation pattern examples

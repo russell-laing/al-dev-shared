@@ -301,12 +301,6 @@ Fix: Update hint to `"[no user args — dispatched by al-dev-develop]"` to clari
 
 ---
 
-### /al-dev-support
-
-**[Medium] Structure**
-Observation: `argument-hint` references `--mode=full` but the skill is deprecated in favor of `/al-dev-ticket`; frontmatter does not reflect deprecation status.
-Fix: Update argument-hint to reference `/al-dev-ticket` or archive the skill.
-
 ---
 
 ### /commit-recover
