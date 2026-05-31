@@ -12,17 +12,17 @@ Recovers corrupted AL files from commit integrity failures. Analyzes incidents i
 
 ```bash
 /commit-recover
-```
+```yaml
 Read-only mode: shows incidents and proposed recoveries without making changes.
 
 ```bash
 /commit-recover --auto-fix
-```
+```yaml
 Execute recovery: restores files with fallback strategies and creates repair commits.
 
 ```bash
 /commit-recover --file=path/to/file.al
-```
+```text
 Analyze specific file only.
 
 ## Steps
@@ -55,13 +55,13 @@ Prompt:
    - Proposed fallback strategy
    - Recovery plan steps
    - Expected result after recovery"
-```
+```markdown
 
 ### Step 3: Present analysis (read-only mode)
 
 Display the verifier output for each incident:
 
-```
+```text
 Commit Integrity Analysis
 ══════════════════════════════════════
 
@@ -80,7 +80,7 @@ Incident 1: codeunit.al
   Next Step: Run with --auto-fix to execute recovery
 
 Summary: 1 incident ready for recovery
-```
+```text
 
 If `--auto-fix` was not passed, stop here and prompt the user to re-run with `--auto-fix`.
 
@@ -95,7 +95,7 @@ For each incident approved for recovery:
 
 Display the recovery result:
 
-```
+```text
 Commit Integrity Recovery
 ══════════════════════════════════════
 
@@ -109,7 +109,7 @@ Incident 1: codeunit.al
     Updated .dev/learnings.md with recovery record
 
 Summary: 1 incident recovered, learnings updated
-```
+```markdown
 
 ### Step 5: Update learnings
 
