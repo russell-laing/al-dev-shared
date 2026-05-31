@@ -303,6 +303,8 @@ def phase_2_dispatch(run_id, suggestions, run_dir):
     
     team_context = {
         'run_id': run_id,
+        'surface': args.surface,
+        'type_filter': args.filter,
         'suggestions': suggestions,
         'repo_path': get_repo_root(),
         'duck_records_dir': str(duck_records_dir),
@@ -347,7 +349,9 @@ def phase_2_dispatch(run_id, suggestions, run_dir):
         run_id=run_id,
         phase='dispatched',
         status='waiting',
-        manifest_path=str(run_dir / 'manifest.json')
+        manifest_path=str(run_dir / 'manifest.json'),
+        surface=team_context['surface'],
+        type_filter=team_context['type_filter']
     )
 
     # Return to user
@@ -436,7 +440,7 @@ def extract_suggestions(surface, filter_type, docs_dir):
 ### Progress Checkpoint Management
 
 ```python
-def update_progress_md(run_id, phase, status, manifest_path):
+def update_progress_md(run_id, phase, status, manifest_path, surface, type_filter):
     """
     Create or update .dev/progress.md with plan-map-changes state.
 
@@ -444,12 +448,14 @@ def update_progress_md(run_id, phase, status, manifest_path):
 
     ## Plan-Map-Changes State
 
-  - **Run ID:** <run-id>
-  - **Phase:** <phase> (extracting, dispatched, collecting, completed)
-  - **Status:** <status>
-  - **Manifest Path:** <path>
-  - **Created At:** <timestamp>
-  - **Last Updated:** <timestamp>
+    - **Run ID:** <run-id>
+    - **Surface:** <surface> (skills, agents, both)
+    - **Filter:** <filter> (all, trim, merge, split, inline, align, connect, promote)
+    - **Phase:** <phase> (extracting, dispatched, collecting, completed)
+    - **Status:** <status>
+    - **Manifest Path:** <path>
+    - **Started At:** <timestamp>
+    - **Last Updated:** <timestamp>
 
     """
     progress_file = Path('.dev/progress.md')
@@ -457,10 +463,12 @@ def update_progress_md(run_id, phase, status, manifest_path):
     checkpoint = f"""## Plan-Map-Changes State
 
 - **Run ID:** {run_id}
+- **Surface:** {surface}
+- **Filter:** {type_filter}
 - **Phase:** {phase}
 - **Status:** {status}
 - **Manifest Path:** {manifest_path}
-- **Created At:** {datetime.now().isoformat()}
+- **Started At:** {datetime.now().isoformat()}
 - **Last Updated:** {datetime.now().isoformat()}
 
 """
