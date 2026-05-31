@@ -1990,3 +1990,122 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 - Writing-plans: ~20-30 min for architecture plan generation
 
 **Total:** 40-50 minutes for full workflow (vs 1-1.5 hours sequential).
+
+## Troubleshooting
+
+### Skill not triggering
+
+**Symptom:** `/plan-map-changes` command not recognized or fails to start.
+
+**Verification:**
+1. Confirm skill is registered in harness settings for `al-dev-shared`
+2. Restart the harness session or reload settings
+3. Verify skill file exists: `profile-al-dev-shared/skills/plan-map-changes/SKILL.md`
+
+**Solution:** Run `/sync-documentation-maps` to refresh skill registration, then retry.
+
+### Extraction produces empty queue
+
+**Symptom:** "No suggestions found in map Observations" — extraction exits with status 1.
+
+**Root causes:**
+- Map files have no Observations sections
+- Observations sections are empty or malformed
+- Filter is too restrictive (no suggestions match)
+
+**Solution:**
+1. Verify maps exist: `ls docs/al-dev-skills-map.md docs/al-dev-agent-map.md`
+2. Check Observations are populated: `grep -A 5 "## Observations" docs/al-dev-*-map.md`
+3. Try `--filter all` to remove filtering: `/plan-map-changes --filter all`
+4. If still empty, run `/analyze-skill-design` or `/analyze-agent-design` first to generate suggestions
+
+### Team dispatch fails
+
+**Symptom:** RemoteTrigger API error during Phase 2 dispatch, or "Failed to spawn duck team".
+
+**Root causes:**
+- RemoteTrigger service unavailable
+- `.dev/` directory not writable
+- Team context JSON too large (>5MB)
+
+**Solution:**
+1. Verify `.dev/` writable: `touch .dev/test-write && rm .dev/test-write`
+2. Check `.dev/progress.md` is created: `cat .dev/progress.md`
+3. If RemoteTrigger unavailable, fallback to inline: manually run duck checks on 1-2 suggestions
+4. For large batches, split into smaller runs: `/plan-map-changes --surface skills --filter trim` then separate agent run
+
+### Inline verification hangs
+
+**Symptom:** Inline verification (1-2 suggestions) appears stuck or takes >5 minutes.
+
+**Root causes:**
+- Large file reads (artifact > 1MB)
+- Grep timeout during reference checking (slow filesystem)
+- Regex engine backtracking on complex patterns
+
+**Solution:**
+1. Check file sizes: `wc -l profile-al-dev-shared/skills/**/*.md | sort -n | tail -10`
+2. Check disk health: `df -h` and `du -sh .dev/`
+3. Increase timeout in extract-suggestions.py: change `timeout=15` to `timeout=30` in grep calls
+4. If stuck, interrupt (Ctrl+C) and retry specific suggestion: `/plan-map-changes --filter trim --surface skills`
+
+### Resume can't find run
+
+**Symptom:** "No active plan-map-changes run found in .dev/progress.md" when running `--resume`.
+
+**Root causes:**
+- `.dev/progress.md` was deleted or overwritten
+- Run completed and checkpoint was cleared
+- Wrong directory (not at repo root)
+
+**Solution:**
+1. Verify working directory: `pwd` should show `al-dev-shared` at path end
+2. Check if run completed: `ls .dev/plan-map-changes-runs/` — if directory empty, run already completed
+3. Look for orphaned runs: `find .dev -name 'manifest.json' | head -5`
+4. Restart workflow: `/plan-map-changes --surface both --filter all` to begin new run
+
+### Duck records missing after collection
+
+**Symptom:** "No duck records found in run directory" or "Manifest is empty" after team returns.
+
+**Root causes:**
+- Remote agents failed silently (no duck-records/*.json files created)
+- Run directory permissions restrict read access
+- Team context JSON corrupted during dispatch
+
+**Solution:**
+1. Verify directory exists: `ls -la .dev/plan-map-changes-runs/<run-id>/duck-records/`
+2. Check manifest status: `cat .dev/plan-map-changes-runs/<run-id>/manifest.json | grep -E 'status|suggestions'`
+3. Check for failed suggestions: look for `"status": "failed"` in manifest
+4. If all failed, check worker agent logs (if available) or re-dispatch with smaller batch
+
+### Manifest timeout
+
+**Symptom:** "Verification timed out" after 10 minutes of polling; team hasn't completed.
+
+**Root causes:**
+- Remote team processing slower than expected (5-10 min verification per suggestion)
+- Network latency or intermittent connectivity
+- Remote agent crash (no visible error message)
+
+**Solution:**
+1. Choose "Wait longer" option when prompted (adds 5 more minutes)
+2. Check manifest status manually: `cat .dev/plan-map-changes-runs/<run-id>/manifest.json`
+3. If suggestions still pending after 20 minutes total, choose "Proceed with completed" and manually retry failed ones
+4. For large batches (8+ suggestions), split into two runs to reduce team coordination overhead
+
+### Plan generation failed
+
+**Symptom:** "Failed to generate implementation plan" or "writing-plans skill invocation error" during Phase 3.
+
+**Root causes:**
+- `superpowers:writing-plans` not available or failed
+- Duck record context format incompatible with writing-plans input schema
+- Disk space exhausted when writing plan output
+
+**Solution:**
+1. Verify writing-plans skill exists: `/writing-plans --help` (test command)
+2. Check duck records format: `cat .dev/plan-map-changes-runs/<run-id>/duck-records/*.json | head -20`
+3. Verify disk space: `df -h .dev`
+4. Try manual plan generation: copy duck records context and invoke writing-plans separately
+5. If writing-plans unavailable, ask user to review duck records manually and create plan document
