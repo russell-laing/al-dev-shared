@@ -58,17 +58,12 @@ proposed out-of-scope changes as numbered items, present to the user for per-ite
 approval, and wait before resuming. If no out-of-scope changes are proposed,
 proceed.
 
-## Phase 0: Check for Existing Progress
+## Phase 0: Initialize and Resume
 
-Per the Phase 0 Read Protocol in
-`knowledge/workflow-resilience.md`.
+Per the Phase 0 Read Protocol in `knowledge/workflow-resilience.md`.
 
----
-
-## Phase 0.5: Context Preservation Checkpoint
-
-**Purpose:** Establish the resume pack that `/al-dev-develop`
-maintains through the run so context compaction and session
+**Purpose:** Check for existing progress and establish the resume pack that
+`/al-dev-develop` maintains through the run so context compaction and session
 hand-off do not require a full re-read of the solution plan.
 
 **Resume pack artifacts:**
@@ -82,8 +77,8 @@ At fresh start:
    `knowledge/workflow-resilience.md`
 2. Create the dated progress snapshot for the current run
 3. Continue building the rest of the resume pack in later phases:
-   - Phase 2.5 writes the checklist artifact
-   - Phase 3.0 writes the scope artifact
+   - Phase 2 writes the checklist artifact
+   - Phase 2 writes the scope artifact
 4. Refresh the resume pack at each named phase boundary
 
 If resuming:
@@ -97,23 +92,21 @@ If resuming:
 
 ---
 
-## Phase 1: Read Context
+## Phase 1: Read Context & Route Mode
 
-**Autonomous mode detection:**
-Check `$ARGUMENTS` for `--autonomous`. If present:
-- After Step 3 below, run Phase 1.5 (Signature Verification) before
-  proceeding to Phase 2
-- After Phase 4 (Verify on Completion), run Phase 4.5 (Static Validation)
-  before spawning the review team
-- In Phase 8, use the 5-attempt compile-verify loop instead of the
-  single compile pass
-- In Phase 9, use the extended code review template (includes autonomous
-  verification results section)
+**Mode detection:**
+Check `$ARGUMENTS` for `--autonomous`. If present, autonomous-mode routing applies
+throughout this run:
+- After Step 3 below, run signature verification (inlined below)
+- After Phase 4 (Verify on Completion), run static validation (inlined in Phase 4)
+- Signature verification and static validation gates must pass before proceeding to review dispatch
 
 If `$ARGUMENTS` is provided, treat it as a scope override
 (e.g. "data-model-only", "UI layer", "integration module").
 Apply that scope when partitioning work in Phase 2 — skip
 modules outside the specified scope.
+
+**Step 1: Read Solution Plan**
 
 1. Read the latest solution plan:
    `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
@@ -126,13 +119,10 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-## Phase 1.5: Signature Verification (Autonomous Mode Only — activated by Phase 1)
+**Step 2: Signature Verification (Autonomous Mode Only)**
 
-Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
-mode, Phase 1 skips this phase entirely and proceeds to Phase 2.
-
-Before dispatching any developer, verify every external procedure
-signature using the strongest available AL symbol evidence.
+If `--autonomous` is present in `$ARGUMENTS`, before dispatching any developer,
+verify every external procedure signature using the strongest available AL symbol evidence.
 
 Preferred evidence order:
 1. `AL LSP` through active harness/adapter semantic operations:
@@ -199,7 +189,11 @@ Optional unverified signatures — do NOT guess these:
 STOP and report back if the implementation would need to call this procedure.
 ```
 
-## Phase 2: Partition Work
+If not in autonomous mode, skip this step and proceed to Phase 2.
+
+---
+
+## Phase 2: Partition and Prepare
 
 Analyze the plan and partition into independent modules.
 Each module must own different files — no overlap.
@@ -221,7 +215,7 @@ Partition boundaries:
 For small solutions (1-3 objects), skip partitioning and
 spawn a single developer.
 
-### Phase 2.5: Extract Implementation Checklist
+**Step 1: Extract Implementation Checklist**
 
 Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md`
 from the approved solution plan.
@@ -237,15 +231,9 @@ Required sections:
 Developers and reviewers must reference this checklist instead
 of repeatedly re-reading the full solution plan.
 
-## Phase 3: Spawn Developer Team
+**Step 2: Write Scope Boundary Document**
 
-See `knowledge/developer-invocation-patterns.md` for dispatcher consistency
-across all developer spawns.
-
-### Phase 3.0: Write Scope Boundary Document
-
-Before spawning developers, write
-`.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` with:
+Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` with:
 - `Files in scope`
 - `Permitted change types per file`
 - `Files explicitly out of scope`
@@ -254,9 +242,16 @@ Before spawning developers, write
 Reviewers validate the implementation against this scope file,
 not memory alone.
 
+---
+
+## Phase 3: Spawn Developers
+
+See `knowledge/developer-invocation-patterns.md` for dispatcher consistency
+across all developer spawns.
+
 See `knowledge/al-dev-develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
 
-### Developer Spawn Routing: Detailed Steps
+**Developer Spawn Routing: Detailed Steps**
 
 For each module in the solution plan, execute these routing steps:
 
@@ -291,7 +286,9 @@ check above).
 Dispatch context reference: `knowledge/developer-invocation-patterns.md`
 (Context 1: Full Scope Implementation).
 
-## Phase 4: Verify on Completion
+---
+
+## Phase 4: Verify and Handoff
 
 When all developers complete, verify before proceeding:
 
@@ -307,14 +304,11 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
-## Phase 4.5: Static Validation (Autonomous Mode Only — activated by Phase 1)
+**Step 2: Static Validation (Autonomous Mode Only)**
 
-Phase 1 routes here when `--autonomous` is present in `$ARGUMENTS`. In standard
-mode, Phase 1 skips this phase entirely and proceeds to review dispatch.
-
-Run these checks on all newly created AL files before the
-review team is spawned. Fix CRITICAL issues by dispatching
-a developer before proceeding.
+If `--autonomous` is present in `$ARGUMENTS`, run these checks on all newly
+created AL files before the review team is spawned. Fix CRITICAL issues by
+dispatching a developer before proceeding.
 
 ### Check 1: Object Name Length
 
@@ -381,11 +375,13 @@ If CRITICAL issues found: dispatch a developer with the specific
 violations. Wait for fixes. Re-run the relevant check before
 proceeding to review.
 
+If not in autonomous mode, skip this step and proceed directly to handoff.
+
 ---
 
 ## Phase 4 Output: Handoff to /al-dev-review-develop
 
-After Phase 4 (or Phase 4.5 if autonomous), all developers have completed implementation:
+After Phase 4 completes (including autonomous static validation if enabled), all developers have completed implementation:
 
 **Handoff artifact:**
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-phase4-handoff.md`
