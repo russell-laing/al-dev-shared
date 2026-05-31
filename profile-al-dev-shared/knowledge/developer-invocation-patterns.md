@@ -114,10 +114,14 @@ When dispatching in any context, include:
 
 ## Dispatch Prompt Template
 
-Use this structure when spawning `al-dev-developer` from any of the three contexts:
+Use this structure when spawning a developer agent from any of the three contexts.
+Note: the bare agent name below is a placeholder — resolve it based on test-plan presence:
 
 ```text
-Agent: al-dev-shared:al-dev-developer
+Agent: al-dev-shared:al-dev-developer-tdd (if test plan exists)
+Agent: al-dev-shared:al-dev-developer-traditional (if no test plan)
+
+For Context 3 (error correction): always use al-dev-developer-traditional.
 
 Context: [CONTEXT 1 | CONTEXT 2 | CONTEXT 3]
 

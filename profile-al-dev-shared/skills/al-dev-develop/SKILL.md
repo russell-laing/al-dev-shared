@@ -54,7 +54,7 @@ approval. Prevents scope creep and ensures the solution stays true
 to the plan.
 
 **Developer Spawn Prompt:** The structured prompt dispatched to each
-spawned `al-dev-developer` agent. Contains the module assignment,
+spawned `al-dev-developer-tdd` or `al-dev-developer-traditional` agent. Contains the module assignment,
 object list, object ID range, naming conventions, code patterns,
 and the Scope Expansion Gate rules. Ensures consistency across
 parallel developers.

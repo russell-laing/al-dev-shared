@@ -52,7 +52,7 @@ for the current run.
 ## How This Command Works (v3.0)
 
 **Your Role:** Engineering Manager (but streamlined)
-**Teammates:** Usually 1 al-dev-shared:al-dev-developer, sometimes 1 al-dev-shared:al-dev-solution-architect for complex fixes
+**Teammates:** Usually 1 al-dev-shared:al-dev-developer-traditional (or -tdd if test plan), sometimes 1 al-dev-shared:al-dev-solution-architect for complex fixes
 **You:** Quick analysis, delegate implementation, verify fix, present
 
 ### ❌ DON'T
@@ -309,7 +309,7 @@ User: "/fix [issue]"
 You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
     ↓
     ├─→ TRIVIAL (simple, obvious, single-file)
-    │   ├─→ Spawn 1 al-dev-shared:al-dev-developer
+    │   ├─→ Spawn 1 al-dev-shared:al-dev-developer-traditional
     │   ├─→ Fix implemented
     │   ├─→ Verify compilation
     │   ├─→ Scope check
@@ -318,7 +318,7 @@ You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
     └─→ NON-TRIVIAL (complex, unclear)
         ├─→ Spawn al-dev-shared:al-dev-solution-architect (5 min analysis)
         ├─→ Review approach yourself
-        ├─→ Spawn al-dev-shared:al-dev-developer with approach
+        ├─→ Spawn al-dev-shared:al-dev-developer-tdd (if test plan) or al-dev-developer-traditional (if no test plan) with approach
         ├─→ Fix implemented
         ├─→ Verify compilation
         ├─→ Scope check
