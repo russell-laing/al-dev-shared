@@ -11,7 +11,7 @@ Read this when: running `/al-dev-plan`, building multi-phase skills, or implemen
 
 ## Plan Task Verification
 
-Every plan task must end with a verification step before its commit. This is the completion criteria for task execution.
+Every plan task must end with a verification step before it is considered complete. This is the completion criteria for task execution.
 
 ### The 4-Step Verification Checklist
 
@@ -25,10 +25,11 @@ Every plan task must end with a verification step before its commit. This is the
 Scan all changed files for patterns that indicate incomplete work. Use grep to find:
 
 ```bash
-# Build a combined file list from both unstaged and staged changes
+# Build a combined file list from tracked and untracked changes
 CHANGED_FILES="$(printf '%s\n%s\n' \
   "$(git diff --name-only --diff-filter=ACM)" \
-  "$(git diff --cached --name-only --diff-filter=ACM)" | sort -u)"
+  "$(git diff --cached --name-only --diff-filter=ACM)" \
+  "$(git ls-files --others --exclude-standard)" | sort -u)"
 
 # Check for unrendered date placeholders ([date], [YYYY-MM-DD])
 printf '%s\n' "$CHANGED_FILES" | sed '/^$/d' | xargs grep -l "\[date\]\|\[YYYY-MM-DD\]" 2>/dev/null && echo "FAIL: Found unrendered date placeholders"
@@ -167,7 +168,7 @@ This structure lets agents:
 
 ## Target Confirmation (Step 0)
 
-Before acting on any user request, investigation findings, or requirements, confirm the target. This prevents cross-talk where the current context doesn't match the stated task.
+Before acting on investigation findings or plan-driven work, confirm the target. This prevents cross-talk where the current context doesn't match the stated task.
 
 ### Three Targets to Match
 
@@ -466,6 +467,6 @@ When updating skill behavior across Claude Code, Copilot CLI, and Codex, use thi
 
 ## References
 
-- **project instructions file** → "Plan Task Verification Standard" and "Write-Persistence Verification" sections
+- **project instructions file** → the repository's harness-specific instructions file (`AGENTS.md`, `CLAUDE.md`, or `CODEX.md` as applicable), especially the "Plan Task Verification Standard" and "Write-Persistence Verification" sections
 - **skills/al-dev-investigate/SKILL.md** → Step 0 — Target Confirmation (workflow implementation)
 - **skills/al-dev-plan/SKILL.md** → Phase 2–4 architect briefing and facilitation (workflow implementation)
