@@ -16,7 +16,8 @@ conditionally spawns remote update teams.
 **Three-skill workflow:**
 
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
-2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates (this skill)
+2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results,
+   spawn updates (this skill)
 3. `/sync-documentation-maps-finalize --team-ids <ids>` — write maps, commit
 
 **Working directory assumption:** All relative paths are resolved from

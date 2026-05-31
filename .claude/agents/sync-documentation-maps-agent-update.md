@@ -8,6 +8,8 @@ model: claude-sonnet-4-6
 tools: ["Read", "Bash", "Write"]
 ---
 
+# Sync Documentation Maps: Agent Map Update
+
 ## Inputs
 
 | Field | Description |
@@ -33,7 +35,8 @@ All relative paths in these instructions are from the repository root:
 Read `<result_dir>/audit/agent-audit.json`.
 
 If the file does not exist, stop immediately and report:
-`ERROR: agent-audit.json not found at <result_dir>/audit/agent-audit.json — cannot proceed.`
+`ERROR: agent-audit.json not found at <result_dir>/audit/agent-audit.json`
+`— cannot proceed.`
 
 Parse the `discrepancies` array. Note the `type` and associated `agent` field
 for each entry. If `discrepancies` is empty, skip Step 3 (no edits
