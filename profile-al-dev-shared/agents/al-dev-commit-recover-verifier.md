@@ -4,7 +4,7 @@ description: >-
   Recover corrupted AL files using fallback strategies (git restore, regex reconstruction,
   schema rebuild). Dispatched by /commit-recover Step 2 with one verifier spawned per
   corruption incident found in .dev/commit-integrity.log.
-model: haiku
+model: sonnet
 tools: ["Bash", "Read", "Write"]
 ---
 
