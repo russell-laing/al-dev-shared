@@ -1,0 +1,30 @@
+{
+  "run_id": "20260531T23431-5bf11cdd",
+  "team_id": "",
+  "status": "dispatched",
+  "total_lenses": 20,
+  "completed": [],
+  "pending": [
+    "design-agent-lens-tool-hygiene",
+    "design-agent-lens-model-fit",
+    "design-agent-lens-scope-isolation",
+    "design-agent-lens-caller-alignment",
+    "design-agent-lens-usage-patterns",
+    "design-skill-lens-complexity",
+    "design-skill-lens-handoff-gaps",
+    "design-skill-lens-near-duplicates",
+    "design-skill-lens-preplanning",
+    "design-skill-lens-shared-backbone",
+    "quality-agent-lens-bloat",
+    "quality-agent-lens-clarity",
+    "quality-agent-lens-description",
+    "quality-agent-lens-name-fit",
+    "quality-agent-lens-structure",
+    "quality-skill-lens-bloat",
+    "quality-skill-lens-clarity",
+    "quality-skill-lens-description",
+    "quality-skill-lens-name-fit",
+    "quality-skill-lens-structure"
+  ],
+  "failed": []
+}
