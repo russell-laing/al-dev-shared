@@ -29,28 +29,14 @@ WORKFLOW_PATHS = {
 }
 
 AGENT_REF = re.compile(r"al-dev-shared:(al-dev-[a-z0-9-]+)")
-AGENT_DISPATCH_CONTEXT = re.compile(r"\b(?:Spawn|Dispatch|[Aa]gent:)")
 SKILL_REF = re.compile(r"/([a-z][a-z0-9-]+)")
 KNOWLEDGE_REF = re.compile(r"knowledge/([a-z0-9-]+\.md)")
 ARTIFACT_REF = re.compile(r"\.dev/([A-Za-z0-9._-]+\.md)")
 
 
-def node_id(kind: str, name: str) -> str:
-    """Mermaid-safe node id with type prefix to avoid skill/agent collisions."""
-    normalized = re.sub(r"[^A-Za-z0-9_]", "_", name)
-    return f"{kind}_{normalized}"
-
-
-def extract_agent_refs(text: str, known_agents: set[str]) -> set[str]:
-    """Find namespaced and explicit unqualified agent references in skill text."""
-    refs = set(AGENT_REF.findall(text))
-    for line in text.splitlines():
-        if not AGENT_DISPATCH_CONTEXT.search(line):
-            continue
-        for agent in known_agents:
-            if re.search(rf"(?<![A-Za-z0-9_-]){re.escape(agent)}(?![A-Za-z0-9_-])", line):
-                refs.add(agent)
-    return refs
+def node_id(name: str) -> str:
+    """Mermaid-safe node id: letters, numbers, underscores only."""
+    return re.sub(r"[^A-Za-z0-9_]", "_", name)
 
 
 def discover(plugin_dir: Path) -> tuple[list[str], list[str], list[str]]:
@@ -60,11 +46,7 @@ def discover(plugin_dir: Path) -> tuple[list[str], list[str], list[str]]:
     return skills, agents, knowledge
 
 
-def extract_edges(
-    plugin_dir: Path,
-    skills: list[str],
-    agents: list[str] | None = None,
-) -> dict[str, set[tuple[str, str]]]:
+def extract_edges(plugin_dir: Path, skills: list[str]) -> dict[str, set[tuple[str, str]]]:
     edges: dict[str, set[tuple[str, str]]] = {
         "skill_agent": set(),
         "skill_skill": set(),
@@ -73,11 +55,10 @@ def extract_edges(
         "skill_artifact": set(),
     }
     skill_set = set(skills)
-    known_agents = set(agents or [p.stem for p in (plugin_dir / "agents").glob("*.md")])
     for skill_md in (plugin_dir / "skills").glob("*/SKILL.md"):
         src = skill_md.parent.name
         text = skill_md.read_text(encoding="utf-8")
-        for dst in extract_agent_refs(text, known_agents):
+        for dst in AGENT_REF.findall(text):
             edges["skill_agent"].add((src, dst))
         for dst in SKILL_REF.findall(text):
             if dst != src and dst in skill_set:
@@ -150,34 +131,31 @@ def render_dependency_graph(
         "    subgraph Skills[Skills]",
     ]
     for s in skills:
-        lines.append(f"        {node_id('skill', s)}[{s}]")
+        lines.append(f"        {node_id(s)}[{s}]")
     lines.append("    end")
     lines.append("    subgraph Agents[Agents]")
     for a in agents:
-        lines.append(f"        {node_id('agent', a)}[{a}]")
+        lines.append(f"        {node_id(a)}[{a}]")
     lines.append("    end")
     lines.append("    subgraph Knowledge[Knowledge Files]")
     for k in referenced_knowledge:
-        lines.append(f"        {node_id('knowledge', k)}[{k[:-3]}]")
+        lines.append(f"        {node_id(k)}[{k[:-3]}]")
     lines.append("    end")
     lines.append("")
     for src, dst in sorted(edges["skill_skill"]):
-        lines.append(f"    {node_id('skill', src)} --> {node_id('skill', dst)}")
+        lines.append(f"    {node_id(src)} --> {node_id(dst)}")
     for src, dst in sorted(edges["skill_agent"]):
-        lines.append(f"    {node_id('skill', src)} --> {node_id('agent', dst)}")
-    for src, dst in sorted(edges["skill_knowledge"]):
+        lines.append(f"    {node_id(src)} --> {node_id(dst)}")
+    for src, dst in sorted(edges["skill_knowledge"] | edges["agent_knowledge"]):
         if dst in referenced_knowledge:
-            lines.append(f"    {node_id('skill', src)} --> {node_id('knowledge', dst)}")
-    for src, dst in sorted(edges["agent_knowledge"]):
-        if dst in referenced_knowledge:
-            lines.append(f"    {node_id('agent', src)} --> {node_id('knowledge', dst)}")
+            lines.append(f"    {node_id(src)} --> {node_id(dst)}")
     lines.append("")
     for s in skills:
-        lines.append(f"    class {node_id('skill', s)} skillNode")
+        lines.append(f"    class {node_id(s)} skillNode")
     for a in agents:
-        lines.append(f"    class {node_id('agent', a)} agentNode")
+        lines.append(f"    class {node_id(a)} agentNode")
     for k in referenced_knowledge:
-        lines.append(f"    class {node_id('knowledge', k)} knowledgeNode")
+        lines.append(f"    class {node_id(k)} knowledgeNode")
     lines.append("```")
     return "\n".join(lines)
 
@@ -187,12 +165,9 @@ def render_workflow_overlays() -> str:
     for title, path in WORKFLOW_PATHS.items():
         lines = ["```mermaid", "flowchart LR"]
         for i in range(len(path) - 1):
-            lines.append(
-                f"    {node_id('skill', path[i])}[{path[i]}] --> "
-                f"{node_id('skill', path[i + 1])}[{path[i + 1]}]"
-            )
+            lines.append(f"    {node_id(path[i])}[{path[i]}] --> {node_id(path[i + 1])}[{path[i + 1]}]")
         if len(path) == 1:
-            lines.append(f"    {node_id('skill', path[0])}[{path[0]}]")
+            lines.append(f"    {node_id(path[0])}[{path[0]}]")
         lines.append("```")
         blocks.append(f"### {title}\n\n" + "\n".join(lines))
     return "\n\n".join(blocks)
@@ -243,7 +218,7 @@ def main() -> int:
     incomplete = False
     try:
         skills, agents, knowledge = discover(PLUGIN)
-        edges = extract_edges(PLUGIN, skills, agents)
+        edges = extract_edges(PLUGIN, skills)
         health = find_health(skills, agents, knowledge, edges)
     except Exception as exc:  # noqa: BLE001 — partial graph is the documented fallback
         sys.stderr.write(f"generate-plugin-graph: parse error: {exc}\n")
