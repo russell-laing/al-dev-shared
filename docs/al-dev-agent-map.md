@@ -11,24 +11,24 @@
 | al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
 | al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
-| al-dev-commit-ooxml-validator | haiku | Bash, Read | /al-dev-commit (Step 9.5b — OOXML validation) |
-| al-dev-commit-recover-verifier | haiku | Bash, Read, Write | /commit-recover |
-| al-dev-developer-tdd | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-developer-traditional | sonnet | Read, Write, Edit, Glob, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit, Glob, Grep, Bash | /al-dev-lint |
-| al-dev-docs-writer | sonnet | Read, Write, Glob, Grep | /al-dev-document |
-| al-dev-expert-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
+| al-dev-commit-ooxml-validator | haiku | Bash | /al-dev-commit (Step 9.5b — OOXML validation) |
+| al-dev-commit-recover-verifier | sonnet | Write | /commit-recover |
+| al-dev-developer-tdd | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix |
+| al-dev-developer-traditional | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit | /al-dev-lint |
+| al-dev-docs-writer | sonnet | Read, Write | /al-dev-document |
+| al-dev-expert-reviewer | sonnet | Read | /al-dev-review-develop |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
-| al-dev-interview | haiku | Read, Write, USER_GATE | /al-dev-interview |
-| al-dev-performance-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server, MCP: bc-code-intelligence | /al-dev-release-notes |
-| al-dev-script-engineer | sonnet | Read, Write, Edit, Glob, Grep, Bash | (none found) |
-| al-dev-security-reviewer | sonnet | Read, Grep | /al-dev-review-develop |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep, MCP: bc-code-intelligence, MCP: microsoft-docs, MCP: al-mcp-server | /al-dev-plan, /al-dev-fix |
+| al-dev-interview | sonnet | Read, Write, USER_GATE | /al-dev-interview |
+| al-dev-performance-reviewer | sonnet | Read | /al-dev-review-develop |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read | /al-dev-release-notes |
+| al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
+| al-dev-security-reviewer | sonnet | Read | /al-dev-review-develop |
+| al-dev-solution-architect | opus | Read, Write, Glob, Grep | /al-dev-plan, /al-dev-fix |
 | al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase) |
-| al-dev-support-researcher | sonnet | Read, MCP: al-mcp-server, MCP: microsoft-docs, MCP: bc-code-intelligence | /al-dev-ticket (support mode: research phase) |
+| al-dev-support-researcher | sonnet | (none) | /al-dev-ticket (support mode: research phase) |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (fetch + attachment-download phases in `context-only` and `full` modes) |
-| plan-map-changes-duck-worker | sonnet | Read, Bash, Write | /plan-map-changes (skill reference is commented out; no active al-dev-shared: invocation found) |
+| plan-map-changes-duck-worker | sonnet | Read, Write | /plan-map-changes (skill reference is commented out; no active al-dev-shared: invocation found) |
 | plugin-health-team | opus | Bash, Read, Write | /plugin-health (referenced by plugin-health skill files; no active al-dev-shared: invocation found) |
 
 ---
@@ -153,7 +153,7 @@
 
 **Description:** OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit (Step 9.5b) after lint preflight. Read-only: never modifies files.
 **Model:** haiku
-**Tools:** Bash, Read
+**Tools:** Bash
 **Spawned by:** /al-dev-commit (Step 9.5b — OOXML validation)
 
 **Inputs:**
@@ -174,7 +174,7 @@
 
 **Description:** Implement AL code using test-driven development when a test plan exists.
 **Model:** sonnet
-**Tools:** Read, Write, Edit, Glob, Grep, Bash
+**Tools:** Read, Write, Grep, Bash
 **Spawned by:** /al-dev-develop, /al-dev-fix
 
 **Inputs:**
@@ -201,7 +201,7 @@
 
 **Description:** Implement AL code following an implementation plan without test-driven development.
 **Model:** sonnet
-**Tools:** Read, Write, Edit, Glob, Grep, Bash
+**Tools:** Read, Write, Grep, Bash
 **Spawned by:** /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
 
 **Inputs:**
@@ -225,7 +225,7 @@
 
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** sonnet
-**Tools:** Read, Edit, Glob, Grep, Bash
+**Tools:** Read, Edit
 **Spawned by:** /al-dev-lint
 
 **Inputs:**
@@ -248,7 +248,7 @@
 
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
-**Tools:** Read, Write, Glob, Grep
+**Tools:** Read, Write
 **Spawned by:** /al-dev-document (Step 2 — docs-writer specialist)
 
 **Inputs:**
@@ -278,7 +278,7 @@
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 **Model:** sonnet
-**Tools:** Read, Grep
+**Tools:** Read
 **Spawned by:** /al-dev-review-develop
 
 **Inputs:**
@@ -325,7 +325,7 @@
 ### al-dev-interview
 
 **Description:** Interview the user to extract complete BC/AL implementation details through structured questioning.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Write, USER_GATE
 **Spawned by:** /al-dev-interview
 
@@ -350,7 +350,7 @@
 
 **Description:** Review AL code for performance issues, inefficient queries, N+1 patterns, and resource consumption.
 **Model:** sonnet
-**Tools:** Read, Grep
+**Tools:** Read
 **Spawned by:** /al-dev-review-develop
 
 **Inputs:**
@@ -372,7 +372,7 @@
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read, MCP: al-mcp-server, MCP: bc-code-intelligence
+**Tools:** Bash, Write, Read
 **Spawned by:** /al-dev-release-notes
 
 **Inputs:**
@@ -398,7 +398,7 @@
 
 **Description:** Write, validate, and run scripts for AL development and documentation workflows.
 **Model:** sonnet
-**Tools:** Read, Write, Edit, Glob, Grep, Bash
+**Tools:** Read, Write, Bash
 **Spawned by:** (none found in skill files)
 
 **Inputs:**
@@ -421,7 +421,7 @@
 
 **Description:** Review AL code for security vulnerabilities, permission issues, and data exposure risks.
 **Model:** sonnet
-**Tools:** Read, Grep
+**Tools:** Read
 **Spawned by:** /al-dev-review-develop
 
 **Inputs:**
@@ -443,7 +443,7 @@
 
 **Description:** Design BC-integrated solutions and create detailed implementation plans.
 **Model:** opus
-**Tools:** Read, Write, Glob, Grep, MCP: bc-code-intelligence, MCP: microsoft-docs, MCP: al-mcp-server
+**Tools:** Read, Write, Glob, Grep
 **Spawned by:** /al-dev-plan, /al-dev-fix
 
 **Inputs:**
@@ -468,7 +468,7 @@
 
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
-**Tools:** Read, MCP: al-mcp-server, MCP: microsoft-docs, MCP: bc-code-intelligence
+**Tools:** (none)
 **Spawned by:** /al-dev-ticket (support mode: research phase)
 
 **Inputs:**
@@ -540,8 +540,8 @@
 ### al-dev-commit-recover-verifier
 
 **Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
-**Model:** haiku
-**Tools:** Bash, Read, Write
+**Model:** sonnet
+**Tools:** Write
 **Spawned by:** /commit-recover
 
 **Inputs:**
@@ -565,7 +565,7 @@
 
 **Description:** Verify one map change suggestion (architecture improvement) by running universal (U1-U3) and type-specific rubber-duck checks against the live codebase. Executes autonomously on remote teams, writing a duck record artifact with verdict (ACCEPT, DEFER, or REJECT).
 **Model:** sonnet
-**Tools:** Read, Bash, Write
+**Tools:** Read, Write
 **Spawned by:** /plan-map-changes (skill reference is commented out; no active al-dev-shared: invocation found)
 
 **Inputs:**
@@ -646,6 +646,20 @@ None — all 24 agents have documented Inputs and Outputs tables.
 - **al-dev-developer-traditional** — used by /al-dev-develop, /al-dev-fix, and /al-dev-review-develop (autonomous compile-fix loops)
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
+
+### Audit Sync: 20 Discrepancies Resolved (2026-06-01)
+
+Based on agent audit from `20260531T222851Z`, the map has been synchronized with ground-truth agent file declarations:
+
+**Tools drift (13 agents) — resolved:**
+All 13 agents with undeclared tools have been updated to reflect their actual tool declarations in agent files. Removed inferred tools that are not in agent frontmatter (Edit, Glob, Grep, MCP: * tools) to ensure map accuracy aligns with implementation.
+
+**Model drift (2 agents) — resolved:**
+- `al-dev-interview`: Updated from haiku → sonnet (agent file specifies sonnet)
+- `al-dev-commit-recover-verifier`: Updated from haiku → sonnet (agent file specifies sonnet)
+
+**Archived agents (5 agents) — noted:**
+Archived test engineer agents are missing the `name` field in YAML frontmatter. These agents are not active in the current system and are archived; their files are in `profile-al-dev-shared/archived/agents/`. No action required for the active agent map.
 
 ### Quality suggestions
 
