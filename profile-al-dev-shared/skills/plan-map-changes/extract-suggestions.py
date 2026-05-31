@@ -13,7 +13,6 @@ Usage:
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -29,7 +28,7 @@ class SuggestionExtractor:
         'promote', 'implemented'
     }
 
-    def __init__(self, docs_dir: str = None):
+    def __init__(self, docs_dir: str | None = None):
         """Initialize with path to docs directory."""
         if docs_dir is None:
             # Default to docs/ relative to cwd
@@ -105,7 +104,7 @@ class SuggestionExtractor:
 
         return suggestions
 
-    def _normalize_type(self, raw_type: str) -> str:
+    def _normalize_type(self, raw_type: str) -> str | None:
         """Normalize suggestion type to canonical form."""
         raw_type = raw_type.lower().strip()
 
