@@ -253,14 +253,9 @@ not memory alone.
 
 See `knowledge/al-dev-develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
 
-For each module in the solution plan:
-1. Gather module-specific context (objects, ID range, symbols)
-2. Instantiate the spawn prompt template
-3. Detect test plan: `ls .dev/*-al-dev-test-test-plan.md`
-4. Dispatch al-dev-developer-tdd (if test plan) or al-dev-developer-traditional (if no test plan)
+### Developer Spawn Routing: Detailed Steps
 
-Before spawning each developer, check for a test plan and route to
-the matching specialized agent:
+For each module in the solution plan, execute these routing steps:
 
 1. Check for test plan:
 

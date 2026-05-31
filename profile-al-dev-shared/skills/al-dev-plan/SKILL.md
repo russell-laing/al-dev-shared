@@ -79,7 +79,7 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 - Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
-1. **Input Validation Gate** (mandatory) — ensure requirements are present and understood (see the gate above; do not proceed without a substantive feature description).
+1. **Read input from $ARGUMENTS** — Extract the user's feature request and preliminary scope. If missing, gate requires clarification.
 2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` and continue without it. If requirements are unclear/complex, suggest `/interview`.
 3. **Gather symbol evidence** — use the strongest available AL symbol evidence before spawning architects: prefer `AL LSP` semantic navigation (go-to-definition, find-references, document symbols, hover/type) when the active harness exposes it; otherwise AL MCP via `al-mcp-server` (`al_search_objects`, `al_get_object_definition`, `al_search_object_members`); otherwise tightly scoped `rg` labeled as `text search`. Include findings and evidence source (`AL LSP`, `AL MCP`, `text search`, or `unverified`) in every architect prompt. If no provider/result is available, proceed to Phase 2 using general AL knowledge unless a required symbol is `unverified`.
 4. **Load performance and exploration findings** — if available, integrate findings from `/al-dev-explore` or `/al-dev-perf` pre-planning phases:
@@ -133,7 +133,7 @@ or any third-party analysis, verify the claims before forwarding to architects:
 
 ## Phase 1.6: Target Confirmation
 
-**Phase 1.6 (Optional — Pre-Research Base App):** If Phase 1's pre-research via AL LSP or MCP returns results, consolidate findings. If no results, skip to Phase 2. If results are incomplete and a required symbol remains unverified, note it for architect input in Phase 2.
+**Phase 1.6 (Optional — Target Confirmation):** If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before architect dispatch. Otherwise, skip to Phase 2.
 
 Before acting on any findings file or context document:
 

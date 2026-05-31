@@ -31,13 +31,85 @@ Each instantiated developer prompt must carry the following elements:
 - **Test plan indication** — whether a test plan exists, which determines
   agent routing and workflow.
 
-## Template
+## Template — Dispatch routing based on test plan
 
-Instantiate this template per module, substituting the bracketed
-placeholders:
+Check for a test plan before instantiating the prompt:
+
+```bash
+TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
+```
+
+Choose the matching path below. Do not emit both — select one and
+substitute the bracketed placeholders before dispatching.
+
+---
+
+**If test plan exists (`$TEST_PLAN` is non-empty) — use al-dev-developer-tdd:**
 
 ```text
-Agent: al-dev-shared:[al-dev-developer-tdd | al-dev-developer-traditional]
+Agent: al-dev-shared:al-dev-developer-tdd
+
+Implement [module name] from the latest solution plan
+(.dev/*-al-dev-plan-solution-plan.md).
+
+Your assigned objects:
+- [Object list from the Phase 2 partition]
+
+Object IDs: [assigned range from plan]
+Naming prefix: [from plan or project-context.md]
+Project patterns: [from project-context.md if available]
+
+Test plan: [path from $TEST_PLAN]
+
+SYMBOL_PREFLIGHT_GATE — Complete BEFORE writing any AL code.
+Follow `knowledge/al-symbol-pre-flight.md` for the full checklist; that
+file is the authoritative source. Use the strongest available evidence
+source and label every item as `AL LSP`, `AL MCP`, `text search`, or
+`unverified`.
+
+Symbol evidence collected during planning:
+- [Verified signatures / fields / events from planning, with sources]
+- [Any optional unverified item: do NOT guess; STOP and report if needed]
+
+Report your pre-flight summary before writing a single line of AL.
+DO NOT proceed past pre-flight if any required item is unverified — stop
+and report back to the orchestrator with the unverified item.
+
+AL Code Patterns & Standards:
+Follow `knowledge/al-developer-patterns.md`:
+- SetLoadFields for record retrieval
+- Error handling with FieldCaption
+- Dependency injection for testability
+- Events for extensibility
+
+SCOPE EXPANSION GATE: Apply the full gate procedure from
+`knowledge/scope-expansion-gate.md`. Before editing any file or line not
+in the plan: stop, list proposed changes as numbered items, present to
+the user, and wait for per-item approval. Do NOT continue writing code
+until confirmed. Do NOT silently fix lint warnings, deprecated APIs, or
+unrelated issues not named in the plan.
+
+Workflow: TDD cycle (RED-GREEN-REFACTOR). Apply TDD_CYCLE_GATE approval
+gates after each phase.
+
+IMPORTANT: Do NOT run git commit. Your role is to implement and verify
+compilation only. Commits are handled separately by /al-dev-commit after
+user approval.
+
+Expected Output:
+- All assigned objects implemented per the plan and patterns
+- Pre-flight summary reported before code was written
+- Compilation verified for the assigned module
+- Any out-of-scope proposals surfaced through the Scope Expansion Gate
+- Report of files created/modified for Phase 4 ownership verification
+```
+
+---
+
+**If no test plan exists (`$TEST_PLAN` is empty) — use al-dev-developer-traditional:**
+
+```text
+Agent: al-dev-shared:al-dev-developer-traditional
 
 Implement [module name] from the latest solution plan
 (.dev/*-al-dev-plan-solution-plan.md).
@@ -77,11 +149,8 @@ the user, and wait for per-item approval. Do NOT continue writing code
 until confirmed. Do NOT silently fix lint warnings, deprecated APIs, or
 unrelated issues not named in the plan.
 
-Workflow:
-- [If test plan: TDD cycle expectations (RED-GREEN-REFACTOR) and the
-  TDD_CYCLE_GATE approval gates after each phase.]
-- [If no test plan: the traditional build-verify workflow with
-  compilation after each file or logical group.]
+Workflow: Traditional build-verify. Compile after each file or logical
+group to catch errors early.
 
 IMPORTANT: Do NOT run git commit. Your role is to implement and verify
 compilation only. Commits are handled separately by /al-dev-commit after
