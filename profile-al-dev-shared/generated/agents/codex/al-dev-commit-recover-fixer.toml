@@ -29,6 +29,7 @@ When an AL file becomes corrupted during commit (broken OOXML, syntax errors, tr
 **Step 1:** Parse `CORRUPTION_LOG` — extract corrupted file paths and error details.
 
 **Step 2:** For each corrupted file:
+
 1. **Fallback 1 (git restore):** Attempt `git checkout HEAD~1 -- <file>` to restore from previous commit
 2. **Fallback 2 (regex reconstruction):** If file is AL source, attempt to reconstruct from backup patterns (e.g., stored in `.dev/` analysis files)
 3. **Fallback 3 (schema rebuild):** If file is AL codeunit/table, attempt to rebuild from AL metadata schema
@@ -47,4 +48,5 @@ REPORT_FILE: .dev/YYYY-MM-DD-al-dev-commit-recover-report.md
 ```text
 
 Codex capability notes:
-- edit files available in the active Codex session"""
+- edit files available in the active Codex session
+- run shell commands allowed by the active Codex session"""
