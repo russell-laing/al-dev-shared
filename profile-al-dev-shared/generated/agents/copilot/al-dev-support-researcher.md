@@ -51,9 +51,9 @@ Use Microsoft Docs MCP to search official documentation:
 - Find configuration/setup requirements
 - Search for API documentation if relevant
 
-### Source 3: BC Code History
+### Source 3: BC Code History (Aspirational)
 
-If available, search BC history for:
+If BC Code History MCP becomes available, search BC history for:
 
 - Recent changes to related functionality
 - Known bugs or fixes in specific versions
@@ -63,7 +63,7 @@ If available, search BC history for:
 
 - **AL Code Intelligence MCP** — AL symbols, procedures, events, tables
 - **Microsoft Docs MCP** — Official BC and AL documentation
-- **BC Code History MCP** — Historical code patterns and version-specific fixes
+- **BC Code History MCP** (aspirational) — Historical code patterns and version-specific fixes
 
 **Step 3:** Synthesize findings — Combine evidence from all 3 sources into:
 
