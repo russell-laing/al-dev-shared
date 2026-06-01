@@ -32,10 +32,11 @@ grep -rn "knowledge/" profile-al-dev-shared/skills/ --include="*.md"
 
 # 4. Agent → Knowledge: knowledge file refs in agent bodies
 grep -rn "knowledge/" profile-al-dev-shared/agents/ --include="*.md"
-```text
+```
 
 For each result, extract the source name (from the file path) and target name (from the
 matched line content):
+
 - Source skill = directory name under `skills/`
 - Source agent = filename under `agents/` without `.md`
 - Target agent = the `al-dev-*` suffix after `al-dev-shared:`
@@ -43,6 +44,7 @@ matched line content):
 - Target knowledge = the filename after `knowledge/` (strip any trailing path)
 
 Deduplicate. Build four relationship sets:
+
 - `skill_spawns_agent` — skill → agent (grep 1)
 - `skill_invokes_skill` — skill → skill, excluding self-references (grep 2)
 - `skill_reads_knowledge` — skill → knowledge file (grep 3)
@@ -53,10 +55,12 @@ Deduplicate. Build four relationship sets:
 ## Phase 2 — Sub-step B: Complexity Check
 
 Count:
+
 - `unique_nodes` = unique skills + unique agents + unique knowledge files
 - `total_relationships` = all edges across all four sets
 
 Decision:
+
 - `unique_nodes ≤ 25` **and** `total_relationships ≤ 35` → **one combined diagram**
 - Otherwise → **two focused diagrams**:
   - Diagram 1 (Skills → Agents): `skill_spawns_agent` + `skill_invokes_skill`
@@ -69,6 +73,7 @@ Decision:
 Read `../../markdown/md-mermaid-helper.md` before generating any diagram block.
 
 Strict rules (from the mermaid helper — do not deviate):
+
 - Use `flowchart LR`
 - Node IDs: replace `-` with `_` (letters, numbers, underscores only)
 - Labels: short display name in brackets — e.g. `al_dev_plan[al-dev-plan]`
@@ -83,7 +88,7 @@ Class definitions to use:
 classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
 classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
 classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-```yaml
+```
 
 Diagram structure for the combined view:
 
@@ -108,7 +113,7 @@ flowchart LR
   class ... skillNode
   class ... agentNode
   class ... knowledgeNode
-```text
+```
 
 For the split view, generate two separate `flowchart LR` blocks.
 
@@ -135,9 +140,10 @@ Write `docs/al-dev-workflow-diagrams.md`:
 [diagram block — or two blocks with headings:
 ### Skills → Agents
 ### Skills & Agents → Knowledge]
-```text
+```
 
 Substitute:
+
 - `<CALLER_NAME>` with the value from `--caller-name` parameter
 - `[today's date]` with the actual date
 

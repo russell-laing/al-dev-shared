@@ -51,4 +51,4 @@ for each critic_type in [security, testability, type_safety, rollback_safety, ap
 merge all findings -> ranked_list
 apply auto_fixes(plan) -> updated_plan
 ask user approval
-```text
+```

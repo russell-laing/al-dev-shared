@@ -35,13 +35,13 @@ SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
 if [ -f "$SCRIPT" ]; then
   ALIGN_ADVISORY=$(python3 "$SCRIPT" --mode advisory)
 fi
-```yaml
+```
 
 If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning before handoff (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```yaml
 ⚠️  Alignment advisory: N issue(s) found in shared files. Run /align-harness-repos to inspect and fix before handing off.
-```text
+```
 
 Continue to Step 2 regardless — this check is advisory only.
 
@@ -61,7 +61,7 @@ table:
   echo "Path not found — verify target repo path" >&2
   exit 1
 }
-```text
+```
 
 ---
 
@@ -71,13 +71,13 @@ List existing `.dev/` files:
 
 ```bash
 ls .dev/*.md 2>/dev/null
-```text
+```
 
 Copy these files if they exist:
 
 | Source (this repo) | Target (destination repo) |
 | --- | --- |
-| `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)` | `.dev/source-ticket-context.md` |
+| `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-ticket-context.md` |
 | `$(ls .dev/*-al-dev-explore-… ...)` | `.dev/source-explore-findings.md` |
 | `.dev/project-context.md` | `.dev/source-project-context.md` |
 | `$(ls .dev/*-al-dev-plan-solution… ...)` | `.dev/source-solution-plan.md` |
@@ -132,7 +132,7 @@ REQUIREMENTS=$(ls .dev/*-al-dev-interview-requirements.md \
   echo "⏭ requirements.md (not found)"
 
 ls "$TARGET/.dev/"
-```text
+```
 
 ---
 
@@ -193,7 +193,7 @@ Or if more investigation of this repo is needed first:
 ~~~text
 /al-dev-investigate [specific question about this repo's code]
 ~~~
-```text
+```
 
 Write this to `.dev/$(date +%Y-%m-%d)-al-dev-handoff-handoff-prompt.md`
 in the current (source) repo.
@@ -216,7 +216,7 @@ To continue in [target repo name]:
 1. Open a new session rooted at: [target-repo-path]
 2. Paste the prompt from .dev/[date]-al-dev-handoff-handoff-prompt.md
    (preview: cat .dev/[date]-al-dev-handoff-handoff-prompt.md)
-```text
+```
 
 ---
 

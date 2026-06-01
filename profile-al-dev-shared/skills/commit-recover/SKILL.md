@@ -12,17 +12,20 @@ Recovers corrupted AL files from commit integrity failures. Analyzes incidents i
 
 ```bash
 /commit-recover
-```yaml
+```
+
 Read-only mode: shows incidents and proposed recoveries without making changes.
 
 ```bash
 /commit-recover --auto-fix
-```yaml
+```
+
 Execute recovery: restores files with fallback strategies and creates repair commits.
 
 ```bash
 /commit-recover --file=path/to/file.al
-```text
+```
+
 Analyze specific file only.
 
 ## Steps
@@ -55,7 +58,7 @@ Prompt:
    - Proposed fallback strategy
    - Recovery plan steps
    - Expected result after recovery"
-```markdown
+```
 
 ### Step 3: Present analysis (read-only mode)
 
@@ -80,7 +83,7 @@ Incident 1: codeunit.al
   Next Step: Run with --auto-fix to execute recovery
 
 Summary: 1 incident ready for recovery
-```text
+```
 
 If `--auto-fix` was not passed, stop here and prompt the user to re-run with `--auto-fix`.
 
@@ -109,7 +112,7 @@ Incident 1: codeunit.al
     Updated .dev/learnings.md with recovery record
 
 Summary: 1 incident recovered, learnings updated
-```markdown
+```
 
 ### Step 5: Update learnings
 
@@ -123,18 +126,21 @@ Append successful recovery patterns to `.dev/learnings.md`:
 **Triggered by:** `User: /commit-recover` or `/commit-recover --auto-fix`
 
 **Fixer subagent receives:**
+
 - Incident file path
 - Baseline/current line count
 - Git history (last 3-5 commits for file)
 - Current `.dev/learnings.md` content
 
 **Fixer returns:**
+
 - Root cause hypothesis
 - Fallback strategy to use
 - Success/failure result
 - Learning record (pattern, strategy, success rate)
 
 **Post-recovery:**
+
 - Create repair commit with prefix `fix(commit-integrity):`
 - Append to `.dev/learnings.md`:
   - Date, file, pattern matched, recovery method, success

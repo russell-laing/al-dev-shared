@@ -46,6 +46,7 @@ Before acting on any findings file or context document:
    - Your request: target from user request
    - Output path: where investigation output will be written
 2. **Validate match:**
+
    ```text
    > **Target check:**
    > - Findings reference: [extracted from findings]
@@ -153,7 +154,7 @@ H3: Upgrade tag already applied but data fix not re-run —
     one-time correction did not cover this scenario
 H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
     fully-invoiced lines included in aggregation
-```text
+```
 
 ---
 
@@ -163,6 +164,7 @@ H4: Missing Outstanding Quantity filter in GetUninvoiceKg —
 > Hypothesis-testing prompt structure is below; spawn ×2 in parallel.
 
 Route by hypothesis count:
+
 - **1–2 hypotheses:** spawn 1 agent with all hypotheses.
 - **3–4 hypotheses:** spawn 2 agents in parallel (H1+H2 → agent 1; H3+H4 → agent 2).
 - **5+ hypotheses:** spawn 3 agents, distributing hypotheses evenly.
@@ -204,7 +206,7 @@ Prompt:
    EVIDENCE: [file path, line number, code snippet]
    REASONING: [1-2 sentences]
    GAPS: [what cannot be verified from local code alone]"
-```yaml
+```
 
 **Agent 1:** H1 and H2 with their test targets.
 **Agent 2:** H3 and H4 with their test targets.
@@ -313,7 +315,7 @@ in `Cod50741.al:471`.
 - Inconclusive — specific data needed →
   [exact query or check to run]
 
-```text
+```
 
 ---
 
@@ -335,7 +337,7 @@ Next:
   Fix is in this repo → /al-dev-plan [fix description]
   Fix is in another repo → /al-dev-handoff [path to target repo]
   More data needed → [specific check]
-```text
+```
 
 ---
 

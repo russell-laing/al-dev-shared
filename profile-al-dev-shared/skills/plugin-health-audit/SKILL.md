@@ -58,7 +58,7 @@ if resume:
     else:
         print(f"Error: {message}")
     return
-```markdown
+```
 
 ### Step 2: Parse arguments
 
@@ -73,7 +73,7 @@ valid, error = validate_arguments(surface, dimension)
 if not valid:
     print(f"Argument error: {error}")
     return
-```markdown
+```
 
 ### Step 3: Build file lists and work queue
 
@@ -85,7 +85,7 @@ success, message = dispatch_work(surface, dimension, resume=False)
 print(message)
 if not success:
     print(f"Dispatch failed: {message}")
-```text
+```
 
 The skill now delegates to dispatch.py for all orchestration logic.
 
@@ -107,7 +107,7 @@ if checkpoint is None:
     return
 
 print(f"Resuming team {checkpoint.team_id}: run_id={checkpoint.run_id}")
-```markdown
+```
 
 ### Step 2: Poll for remote team completion (optional)
 
@@ -122,7 +122,7 @@ if manifest['status'] == 'in_progress':
     print("Remote team still executing. Check back in a few minutes.")
     print("Run /plugin-health-audit --resume again to collect when ready.")
     return
-```markdown
+```
 
 ### Step 3: Aggregate findings and write output files
 
@@ -140,6 +140,6 @@ if success:
         print("\nNext step: Use /superpowers:writing-plans to implement top recommendations.")
 else:
     print("Error: Collection failed. Check logs above.")
-```text
+```
 
 This adds the full collection path that runs when user calls `/plugin-health-audit --resume`.

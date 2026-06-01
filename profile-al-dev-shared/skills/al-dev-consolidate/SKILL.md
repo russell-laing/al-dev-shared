@@ -32,7 +32,7 @@ if [ -f ".dev/sessions/sessions-index.md" ]; then
   grep '^\|' .dev/sessions/sessions-index.md \
     | grep -v '^| Date' | grep -v '^|---' | wc -l
 fi
-```yaml
+```
 
 If `.dev/sessions/sessions-index.md` exists, count the rows (N) and ask:
 
@@ -43,7 +43,7 @@ Options:
   1. Re-run all — regenerate every session summary from scratch
   2. Update — rebuild changed summaries and add newly discovered sessions
   3. Cancel
-```markdown
+```
 
 - **1 (Re-run all)** — proceed to Phase 1; process all sessions
 - **2 (Update)** — proceed to Phase 1; in Phase 3 skip any dated session
@@ -61,7 +61,7 @@ If no index exists, proceed directly to Phase 1.
 
 ```bash
 find .dev -maxdepth 1 -name "*.md" | sort
-```markdown
+```
 
 ### Step 2: Resolve repo name
 
@@ -70,7 +70,7 @@ REPO_NAME=$(python3 -c \
   "import json; print(json.load(open('app.json'))['name'])" \
   2>/dev/null || basename "$PWD")
 echo "$REPO_NAME"
-```text
+```
 
 Hold `REPO_NAME` in working memory.
 
@@ -113,6 +113,7 @@ belong to their base session date with a `(variant)` label — not separate
 sessions.
 
 Hold in working memory:
+
 - `DATE_GROUPS`: list of `(date, [file paths])` pairs, sorted newest-first
 - `PERSISTENT_FILES`: list of file paths in the persistent group
 
@@ -147,7 +148,7 @@ Set `file="<path>"` then apply:
 ```bash
 grep -E 'TEST-[0-9]+|UNIT\||INTEGRATION\||SCENARIO\||PERFORMANCE\|' \
   "$file" | head -20
-```markdown
+```
 
 ### Group C — Ticket-context files
 
@@ -162,7 +163,7 @@ Also run Vault Candidates detection (group-specific):
 grep -i \
   'customer\|feedback\|user reported\|workaround\|pain point\|request\|complaint' \
   "$file" | head -10
-```yaml
+```
 
 Set `vault_promote: true` for this session if Vault Candidates extraction
 returns any non-empty lines.
@@ -213,7 +214,7 @@ if [ -f "$existing" ]; then
   done
   [ "$needs_rebuild" -eq 0 ] && echo "skip"
 fi
-```text
+```
 
 Skip writing if no source file is newer and the summary already exists.
 For newly discovered session dates not yet in the existing index, always
@@ -266,7 +267,7 @@ vault_promote: true
 
 ## Vault Candidates
 [Feedback/customer/user language from ticket-context; omit section if empty]
-```text
+```
 
 **Omit any section entirely when no files of that group are present for the
 session.** Set `vault_promote: false` when the Vault Candidates section is
@@ -276,7 +277,7 @@ empty.
 
 ```bash
 mkdir -p .dev/sessions
-```markdown
+```
 
 ### Write persistent summary
 
@@ -300,9 +301,10 @@ Assemble and write `.dev/sessions/sessions-index.md`.
 | [[persistent-summary\|Persistent]] | project-context, learnings | — |
 | [[2026-05-19-session-summary\|2026-05-19]] | ticket, plan, code-review | ✅ |
 | [[2026-05-12-session-summary\|2026-05-12]] | explore, plan | ❌ |
-```yaml
+```
 
 Rules:
+
 - Persistent row is always first (pinned)
 - Dated rows ordered newest-first
 - Artifacts Present: comma-separated short names of matched artifact types
@@ -323,4 +325,4 @@ Sessions processed: N
 
 Persistent: .dev/sessions/persistent-summary.md
 Index:      .dev/sessions/sessions-index.md
-```text
+```

@@ -125,7 +125,7 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/extract-sugge
   --surface both \
   --filter all \
   --output .dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json
-```yaml
+```
 
 **Script behavior:**
 
@@ -136,7 +136,7 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/extract-sugge
 
 **Schema reference:** See `./MANIFEST-SCHEMA.md` for full suggestion object structure.
 
-### Phase 2: Dispatch or Inline Verify
+### Phase 2: Route Verification
 
 **Logic:**
 
@@ -150,7 +150,7 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/validate-sugg
   --suggestion-queue .dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json \
   --output .dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/ \
   --manifest .dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json
-```yaml
+```
 
 **Script behavior:**
 
@@ -165,6 +165,7 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/validate-sugg
 See `../../knowledge/remote-trigger-duck-team-dispatch.md` for remote agent spawning details.
 
 High-level steps:
+
 1. Write team context JSON to `.dev/al-dev-map-suggestions-verify-runs/<run-id>/team-context.json`
 2. Dispatch 1 remote duck worker agent per suggestion via RemoteTrigger API
 3. Each agent reads suggestion, runs checks, writes duck record
@@ -191,6 +192,7 @@ Entry point: `/al-dev-map-suggestions-verify --resume`
 **Plan generation:**
 
 Invoke `superpowers:writing-plans` with aggregated duck records and context:
+
 - ACCEPT records: recommended implementations
 - DEFER records: requires architect review
 - REJECT records: rationale for rejection

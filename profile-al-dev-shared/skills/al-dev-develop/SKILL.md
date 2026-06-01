@@ -67,12 +67,14 @@ Per the Phase 0 Read Protocol in `knowledge/workflow-resilience.md`.
 hand-off do not require a full re-read of the solution plan.
 
 **Resume pack artifacts:**
+
 - `.dev/progress.md` — latest phase checkpoint, overwritten each phase
 - `.dev/$(date +%Y-%m-%d)-al-dev-develop-progress.md` — dated session snapshot
 - `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md` — implementation checklist extracted from plan
 - `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` — file-level scope contract
 
 At fresh start:
+
 1. Create or overwrite `.dev/progress.md` per
    `knowledge/workflow-resilience.md`
 2. Create the dated progress snapshot for the current run
@@ -82,6 +84,7 @@ At fresh start:
 4. Refresh the resume pack at each named phase boundary
 
 If resuming:
+
 1. Read `.dev/progress.md`
 2. Read the latest dated `*-al-dev-develop-progress.md` if present
 3. Read the latest dated `*-al-dev-develop-checklist.md` if present
@@ -97,6 +100,7 @@ If resuming:
 **Mode detection:**
 Check `$ARGUMENTS` for `--autonomous`. If present, autonomous-mode routing applies
 throughout this run:
+
 - After Step 3 below, run signature verification (inlined below)
 - After Phase 4 (Verify on Completion), run static validation (inlined in Phase 4)
 - Signature verification and static validation gates must pass before proceeding to review dispatch
@@ -106,7 +110,7 @@ If `$ARGUMENTS` is provided, treat it as a scope override
 Apply that scope when partitioning work in Phase 2 — skip
 modules outside the specified scope.
 
-**Step 1: Read Solution Plan**
+### Step 1: Read Solution Plan
 
 1. Read the latest solution plan:
    `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
@@ -119,12 +123,13 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-**Step 2: Signature Verification (Autonomous Mode Only)**
+### Step 2: Signature Verification (Autonomous Mode Only)
 
 If `--autonomous` is present in `$ARGUMENTS`, before dispatching any developer,
 verify every external procedure signature using the strongest available AL symbol evidence.
 
 Preferred evidence order:
+
 1. `AL LSP` through active harness/adapter semantic operations:
    go-to-definition, find-references, document symbols, and
    hover/type information.
@@ -140,7 +145,7 @@ al_search_object_members — for event signatures and methods:
 
 al_find_references — to detect existing similar extensions:
   avoids duplicate subscriber registration
-```text
+```
 
 3. `text search` through scoped `rg` only when no semantic provider
    is available. Label it as weaker evidence and include file:line
@@ -171,15 +176,17 @@ Use this format:
 - Evidence source: unverified
 - Reason: [not found in semantic provider / ambiguous match / no provider available]
 - Risk: Developer must not guess this signature
-```text
+```
 
 A procedure is "required" if it is explicitly referenced in the approved solution plan
 and the assigned developer task must call it.
 
 **Decision tree if any required external procedure is NOT VERIFIED:**
+
 1. Stop developer spawn immediately — do not proceed to Phase 3
 2. Generate report block with exact procedure name and reason for non-verification:
-   ```
+
+   ```text
    SIGNATURE_VERIFICATION_FAILED
    
    Unverified required signature: [ProcedureName]
@@ -194,7 +201,8 @@ and the assigned developer task must call it.
    - Consult BC documentation or base app source
    - Confirm exact parameter names and types (including var modifiers)
    - Rerun /al-dev-develop with --autonomous after verification
-   ```text
+   ```
+
 3. Escalate to user with this report
 4. Do NOT spawn developers until signature is verified
 
@@ -207,7 +215,7 @@ developer spawn prompt:
 Optional unverified signatures — do NOT guess these:
 - [ProcedureName]: [reason not verified; not required for assigned task]
 STOP and report back if the implementation would need to call this procedure.
-```text
+```
 
 If not in autonomous mode, skip this step and proceed to Phase 2.
 
@@ -219,6 +227,7 @@ Analyze the plan and partition into independent modules.
 Each module must own different files — no overlap.
 
 Partition boundaries:
+
 - Data model (tables, table extensions, enums)
 - Business logic (codeunits, interfaces)
 - UI (pages, page extensions)
@@ -235,12 +244,13 @@ Partition boundaries:
 For small solutions (1-3 objects), skip partitioning and
 spawn a single developer.
 
-**Step 1: Extract Implementation Checklist**
+### Step 1: Extract Implementation Checklist
 
 Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md`
 from the approved solution plan.
 
 Required sections:
+
 - `File` — each in-scope file path
 - `Module Variables / Objects` — concrete additions expected
 - `Procedures / Triggers` — concrete additions or edits expected
@@ -251,9 +261,10 @@ Required sections:
 Developers and reviewers must reference this checklist instead
 of repeatedly re-reading the full solution plan.
 
-**Step 2: Write Scope Boundary Document**
+### Step 2: Write Scope Boundary Document
 
 Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` with:
+
 - `Files in scope`
 - `Permitted change types per file`
 - `Files explicitly out of scope`
@@ -271,7 +282,7 @@ across all developer spawns.
 
 See `knowledge/al-dev-develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
 
-**Developer Spawn Routing: Detailed Steps**
+### Developer Spawn Routing: Detailed Steps
 
 For each module in the solution plan, execute these routing steps:
 
@@ -324,7 +335,7 @@ When all developers complete, verify before proceeding:
 
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
-**Step 2: Static Validation (Autonomous Mode Only)**
+### Step 2: Static Validation (Autonomous Mode Only)
 
 If `--autonomous` is present in `$ARGUMENTS`, run these checks on all newly
 created AL files before the review team is spawned. Fix CRITICAL issues by
@@ -336,7 +347,7 @@ dispatching a developer before proceeding.
 rg -rn -e \
   '^(table|page|codeunit|report|enum|interface|xmlport|query|permissionset)\s+[0-9]+\s+' \
   --glob="*.al" .
-```text
+```
 
 For each match, the object name is everything after the numeric
 ID. Count its characters. Flag any name exceeding 30 characters
@@ -346,7 +357,7 @@ as a CRITICAL issue.
 
 ```bash
 rg -rn -e '#if|#else|#endif' --glob="*.al" .
-```yaml
+```
 
 For each `#if` directive, read the surrounding block. Verify:
 
@@ -360,7 +371,7 @@ Flag any inverted condition or unmatched directive as CRITICAL.
 
 ```bash
 rg -rn -m 50 -e 'label|Error\(|Message\(|FieldCaption' --glob="*.al" .
-```text
+```
 
 Cross-reference against the solution plan's feature descriptions.
 Flag any label using different terminology than the plan as a HIGH issue.
@@ -389,7 +400,7 @@ Write to:
 ### Summary
 CRITICAL issues: N (must fix before review)
 HIGH issues: N (flagged in code review)
-```yaml
+```
 
 If CRITICAL issues found: dispatch a developer with the specific
 violations. Wait for fixes. Re-run the relevant check before
@@ -407,6 +418,7 @@ After Phase 4 completes (including autonomous static validation if enabled), all
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-phase4-handoff.md`
 
 This document is created at Phase 4 completion and includes:
+
 - List of developers and their module assignments
 - File ownership verification (no overlap)
 - Naming consistency status

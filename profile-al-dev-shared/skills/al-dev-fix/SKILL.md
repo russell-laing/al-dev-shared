@@ -5,13 +5,14 @@ argument-hint: "[description of the bug or issue]"
 ---
 
 
-**Lightweight bug fix workflow without formal approval gates.**
+# Lightweight bug fix workflow without formal approval gates
 
 ---
 
 ## Purpose
 
 Quick iteration for bug fixes and small changes:
+
 - Fast analysis (1-2 min)
 - Minimal planning for non-trivial fixes
 - Direct implementation
@@ -48,7 +49,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ```bash
 /fix "Customer validation not working for negative credit limits"
-```text
+```
 
 ---
 
@@ -102,27 +103,29 @@ NON-TRIVIAL (10% of fixes):
 Example: "Posting fails intermittently"
 Example: "Event subscriber not triggering"
 Example: "Performance degradation after upgrade"
-```markdown
+```
 
 ### Step 2: Trivial Fix (2-5 min)
 
-```text
 For trivial fixes:
 
 1. Identify the file and issue
    - Use Grep/Read to locate the problem
    - Verify you understand the issue
 
-2. Spawn single al-dev-shared:al-dev-developer-traditional
+2. Spawn single `al-dev-shared:al-dev-developer-traditional`
    (trivial fixes have no test plan — see
    `knowledge/developer-invocation-patterns.md`, Context 2):
-   "Fix [specific issue] in [file path].
 
-    Issue: [description]
-    Expected fix: [what needs to change]
+   ```text
+   Fix [specific issue] in [file path].
 
-    Verify the fix compiles.
-    Keep it minimal - only change what's necessary."
+   Issue: [description]
+   Expected fix: [what needs to change]
+
+   Verify the fix compiles.
+   Keep it minimal - only change what's necessary.
+   ```
 
 3. Developer implements fix
 
@@ -137,15 +140,15 @@ For trivial fixes:
    below from the `git status` output — list every modified or new
    file, classified as in- or out-of-scope:
 
-   ~~~text
-   **Scope diff:**
+   ```text
+   Scope diff:
 
    In scope (directly fixes the reported symptom):
    - path/to/file1.al — [one-line reason]
 
    Out of scope (encountered while fixing, not in original request):
    - path/to/extra.al — [what was changed and why]
-   ~~~
+   ```
 
    **Decision rule:**
 
@@ -156,16 +159,18 @@ For trivial fixes:
      before presenting.
 
 6. Present fix to user:
-   "Fix complete → [file path]
 
-    Changed: [1-line description]
-    [Show code diff if small]
+   ```text
+   Fix complete → [file path]
 
-    Compilation: [✅ Success / Not verified]
-    Lint: [✅ Clean / N unresolved items → lint-report.md]
+   Changed: [1-line description]
+   [Show code diff if small]
 
-    Ready to test?"
-```text
+   Compilation: [pass / Not verified]
+   Lint: [Clean / N unresolved items → lint-report.md]
+
+   Ready to test?
+   ```
 
 **No approval gate - present fix directly.**
 
@@ -174,17 +179,16 @@ For trivial fixes:
 Follow the **Quick Analysis** pattern in
 `knowledge/architect-invocation-patterns.md`.
 
-```text
 For non-trivial fixes:
 
 0. Load performance constraints if available:
-   PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
+   `PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)`
    If found: read CRITICAL/HIGH findings. Pass them as
    "Known performance constraints: [findings]" in the architect prompt (step 1).
    If not found: skip this step.
 
 0.5. Load prior lint findings if available:
-   LINT=$(ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1)
+   `LINT=$(ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1)`
    If found: parse UNRESOLVED items and include in the architect dispatch prompt
    as "Known linting constraints: [list of UNRESOLVED items]".
    If not found: skip this step.
@@ -193,7 +197,7 @@ For non-trivial fixes:
    - **SIMPLE tier** (use sonnet): root cause is obvious, 1-2 files, < 20 lines to change
    - **COMPLEX tier** (use opus — default): root cause is unclear, multi-file, ≥ 20 lines, or architectural impact
 
-   Spawn al-dev-shared:al-dev-solution-architect for quick analysis.
+   Spawn `al-dev-shared:al-dev-solution-architect` for quick analysis.
    - If complexity = SIMPLE: include `model: sonnet` in the Agent tool invocation
    - If complexity = COMPLEX: omit model parameter (agent default opus applies)
 
@@ -212,12 +216,14 @@ For non-trivial fixes:
 
 4. Present root-cause confirmation to the user:
 
-   "Root cause hypothesis: [architect's 2-3 sentences]
-    Evidence: [key evidence points]
-    Alternative considered: [one alternative]
-    Estimated scope: [files that will change]
+   ```text
+   Root cause hypothesis: [architect's 2-3 sentences]
+   Evidence: [key evidence points]
+   Alternative considered: [one alternative]
+   Estimated scope: [files that will change]
 
-    Proceed with this fix approach? (yes / revise)"
+   Proceed with this fix approach? (yes / revise)
+   ```
 
    - yes → proceed to step 5
    - revise → feed user's correction back to architect for
@@ -241,14 +247,17 @@ For non-trivial fixes:
    - No test plan → `al-dev-shared:al-dev-developer-traditional`
 
    Dispatch prompt:
-   "Implement fix based on this approach:
 
-    Root cause: [from architect]
-    Fix approach: [from architect]
-    Files to change: [from architect]
+   ```text
+   Implement fix based on this approach:
 
-    Follow the recommended approach.
-    Verify compilation after changes."
+   Root cause: [from architect]
+   Fix approach: [from architect]
+   Files to change: [from architect]
+
+   Follow the recommended approach.
+   Verify compilation after changes.
+   ```
 
 6. Developer implements fix
 
@@ -263,15 +272,15 @@ For non-trivial fixes:
    below from the `git status` output — list every modified or new
    file, classified as in- or out-of-scope:
 
-   ~~~text
-   **Scope diff:**
+   ```text
+   Scope diff:
 
    In scope (directly fixes the reported symptom):
    - path/to/file1.al — [one-line reason]
 
    Out of scope (encountered while fixing, not in original request):
    - path/to/extra.al — [what was changed and why]
-   ~~~
+   ```
 
    **Decision rule:**
 
@@ -283,22 +292,23 @@ For non-trivial fixes:
 
 9. Present fix to user:
 
-   "Fix complete → [files changed]
+   ```text
+   Fix complete → [files changed]
 
-    Root cause: [brief explanation]
-    Fix approach: [1-2 sentences]
+   Root cause: [brief explanation]
+   Fix approach: [1-2 sentences]
 
-    Changed files:
-    - [file 1]: [change description]
-    - [file 2]: [change description]
+   Changed files:
+   - [file 1]: [change description]
+   - [file 2]: [change description]
 
-    Compilation: [✅ Success / Not verified]
-    Lint: [✅ Clean / N unresolved items → lint-report.md]
+   Compilation: [pass / Not verified]
+   Lint: [Clean / N unresolved items → lint-report.md]
 
-    Risks to watch: [from architect analysis]
+   Risks to watch: [from architect analysis]
 
-    Ready to test?"
-```text
+   Ready to test?
+   ```
 
 **Still no approval gate, but more context provided.**
 
@@ -326,13 +336,14 @@ You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
         ├─→ Verify compilation
         ├─→ Scope check
         └─→ Present to user ✅
-```text
+```
 
 ---
 
 ## When to Use /al-dev-fix vs Other Commands
 
 **✅ Use /al-dev-fix for:**
+
 - Bug fixes
 - Small corrections
 - Logic errors
@@ -341,6 +352,7 @@ You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
 - Anything you'd call a "fix" not a "feature"
 
 **❌ Don't use /al-dev-fix for:**
+
 - New features → Use `/al-dev-plan` then `/al-dev-develop`
 - Architectural changes → Use `/al-dev-plan` first
 - Multiple related changes → Use `/al-dev-plan` for coordination
@@ -360,16 +372,17 @@ This command intentionally **skips approval gates** for fast iteration:
 ```text
 Fix → Code Review → User Approval → Testing
 (Slow but thorough)
-```yaml
+```
 
 **/fix workflow:**
 
 ```text
 Fix → Compilation Check → Present to User → User Tests
 (Fast but requires user to verify)
-```yaml
+```
 
 **Trade-off accepted:**
+
 - ✅ Faster feedback loop
 - ✅ Less overhead for small changes
 - ❌ User must verify fix works (testing phase)
@@ -392,7 +405,7 @@ scope.
 ✅ Compilation successful
 ❌ Compilation failed: [error]
 ⚠️  Compilation not verified (al-compile unavailable)
-```yaml
+```
 
 If compilation fails: for trivial fixes, fix only errors caused by the small
 change and re-run compile once; for non-trivial fixes, keep compile correction

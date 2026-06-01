@@ -70,7 +70,7 @@ Prompt:
    EXCLUDED: <commit (reason)>, ... (or NONE)
    DIAGRAMS: <change title(s)> (or NONE)
    AMBIGUOUS: <change title(s)> (or NONE)"
-```text
+```
 
 ---
 
@@ -92,7 +92,7 @@ Excluded commits:
 
 [If DIAGRAMS is not NONE:]
 Diagrams included for: [list]
-```text
+```
 
 If `AMBIGUOUS` is not `NONE`, ask the user to decide on each
 flagged change before considering the notes final:
@@ -100,7 +100,7 @@ flagged change before considering the notes final:
 ```text
 These changes were uncertain to classify — include or exclude?
   [list from agent output]
-```text
+```
 
 If the user changes any classification, re-dispatch the agent
 with explicit classification instructions appended to the prompt.

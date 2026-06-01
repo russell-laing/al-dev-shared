@@ -88,7 +88,7 @@ Check for a Freshdesk ticket:
 TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
   | sort | tail -1)
 [ -n "$TICKET" ] && head -10 "$TICKET"
-```text
+```
 
 Extract ticket number from `TICKET: #<number>` if present.
 Hold as **FD ticket number**.
@@ -99,19 +99,19 @@ For each staged modified file (ACMRT):
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRT
-```text
+```
 
 For each file listed, run:
 
 ```bash
 wc -l <file>
-```text
+```
 
 Compare against file's last recorded size in `.dev/file-sizes.json` (if exists).
 
 If **any modified file's line count collapsed** (e.g., newlines stripped):
 
-Tell the user: "File integrity check failed — <file> lost lines
+Tell the user: "File integrity check failed — FILE lost lines
 during edit. This may indicate a bash heredoc or perl regex issue.
 Check your edits before committing."
 
@@ -123,7 +123,7 @@ Check what is staged:
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRDT
-```text
+```
 
 If empty:
 
@@ -139,7 +139,7 @@ changelog, or manifest-only edits.
 ```bash
 AL_STAGED=$(git diff --cached --name-only --diff-filter=ACMRDT \
   | grep -E '(^|/)(app\.json|[^/]+\.al|[^/]+\.al\.json)$')
-```yaml
+```
 
 If `$AL_STAGED` is non-empty, run the compile gate before proceeding:
 
@@ -190,7 +190,7 @@ Check whether a solution plan exists:
 
 ```bash
 PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)
-```yaml
+```
 
 If a solution plan file is found, read its Acceptance Criteria section. For each directly checkable criterion (structural, gate, pattern forms):
 
@@ -210,7 +210,7 @@ Check the project's recent commit style:
 
 ```bash
 git log -5 --oneline
-```text
+```
 
 Extract the emoji pattern (e.g., `✨ feat:`, `🐛 fix:`, `📝 docs:`).
 
@@ -224,13 +224,13 @@ SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
 if [ -f "$SCRIPT" ]; then
   ALIGN_ADVISORY=$(python3 "$SCRIPT" --mode advisory)
 fi
-```yaml
+```
 
 If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning (N = `len(forbidden_tokens) + len(missing_mappings)`):
 
 ```yaml
 ⚠️  Alignment advisory: N issue(s) found. Run /align-harness-repos to inspect and fix.
-```text
+```
 
 Run knowledge quality check in advisory mode (non-blocking).
 
@@ -239,13 +239,13 @@ VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/scripts/validate-knowledge-quality.py"
 if [ -f "$VALIDATOR" ]; then
   KNOWLEDGE_ADVISORY=$(python3 "$VALIDATOR" --path "$AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge" 2>&1)
 fi
-```yaml
+```
 
 If `$KNOWLEDGE_ADVISORY` contains "WARNINGS", surface a note:
 
 ```yaml
 ⚠️  Knowledge quality: stub sections detected. Run /audit-knowledge-quality for full report.
-```text
+```
 
 Continue to Phase 1 regardless — both alignment and knowledge checks above are advisory only.
 
@@ -279,7 +279,7 @@ Prompt:
 
    Return output in exactly the format specified (MANIFESTS block,
    DELETIONS, WARNINGS). Message drafting is handled in the next step."
-```markdown
+```
 
 ### 1.2 — Deletion Audit Gate
 
@@ -296,7 +296,7 @@ If **any deleted files** appear, display them prominently:
 
   Were ALL of these deletions explicitly approved?
   (yes / no / list-to-keep)
-```yaml
+```
 
 Wait for user response:
 
@@ -339,7 +339,7 @@ Prompt:
 
    Return output in exactly the format specified (PROPOSED_GROUPS block
    with commit messages for each group)."
-```text
+```
 
 Continue to Phase 2.
 
@@ -368,7 +368,7 @@ Commit 2 of N — [type(scope)]
   Reason: [reason from agent]
 
 Confirm this plan? (yes / adjust / cancel)
-```yaml
+```
 
 Wait for user response:
 
@@ -392,7 +392,7 @@ CHANGED COMPONENTS:
 [Component lines from agent's PROPOSED_GROUPS block]
 
 Confirm? (yes / edit / skip / cancel-all)
-```markdown
+```
 
 - **yes** — record the approved message, move to next group
 - **edit** — user provides revised message text; re-display and
@@ -416,7 +416,7 @@ Confirm all `.docx` files were edited and saved in Microsoft Word (not scripted)
 and that OOXML ZIP validation has passed.
 
 Proceed to preflight? (yes / no)
-```yaml
+```
 
 User response:
 
@@ -452,7 +452,7 @@ Prompt:
    - Stop immediately if corruption detected (line count collapses)
 
    Return output in exactly the format specified (LINT_FIXES)."
-```text
+```
 
 Store the `LINT_FIXES` value for display in Phase 4.
 
@@ -472,7 +472,7 @@ Prompt:
    [paste the approved plan from Phase 2]
 
    Return output in exactly the format specified (OOXML_FAILURES)."
-```yaml
+```
 
 If `OOXML_FAILURES` is not `NONE`, show:
 
@@ -483,7 +483,7 @@ The following files failed ZIP validation and cannot be committed:
 [OOXML_FAILURES output]
 
 Resolve these files (save in Microsoft Word, not via script), re-stage, and re-run.
-```text
+```
 
 Stop if any OOXML failures — do not proceed to Phase 4.
 
@@ -502,7 +502,7 @@ GROUP_1:
     [approved message verbatim]
 GROUP_2:
   ...
-```yaml
+```
 
 Dispatch the execution agent:
 
@@ -528,7 +528,7 @@ Prompt:
 
    Return output in exactly the format specified (COMMITS, SKIPPED,
    HOOK_FAILURES)."
-```markdown
+```
 
 ### 4.2 — Summary
 
@@ -546,4 +546,4 @@ Commit workflow complete.
 [If HOOK_FAILURES is not NONE:]
   Hook failures:
     [HOOK_FAILURES block]
-```text
+```

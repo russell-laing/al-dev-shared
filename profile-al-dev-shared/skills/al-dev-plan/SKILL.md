@@ -333,7 +333,7 @@ Design considerations:
 6. Upgrade considerations
 
 Your assigned approach: [specific approach for this architect]
-```markdown
+```
 
 ## Architect Output Requirements
 
@@ -422,12 +422,13 @@ PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
 [ -f "$VALIDATOR" ] && [ -n "$REQ" ] && [ -n "$PLAN" ] && \
   python3 "$VALIDATOR" "$PLAN" "$REQ" \
   || echo "Validator not found or files missing — skipping"
-```text
+```
 
 The script auto-detects files in the same directory.
 
 Fix any issues the validator reports before presenting to the
 user. Common issues:
+
 - Missing required sections (add them)
 - Duplicate object IDs (reconcile from architect merge)
 - Untraced requirements (add REQ-NNN references to plan)
@@ -452,9 +453,10 @@ Evaluated [N] competing approaches:
 Selected Approach [X] because [key rationale].
 
 Ready to proceed to development?
-```yaml
+```
 
 USER_GATE — ask the user with options:
+
 - Approve - Proceed to development
 - Refine - Adjust plan (what needs changing?)
 - Review Alternatives - Show me other architect approaches

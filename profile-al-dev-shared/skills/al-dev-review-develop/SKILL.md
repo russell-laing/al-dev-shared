@@ -32,6 +32,7 @@ produced and read for the current run.
 ## Review Panel
 
 Three specialist agents (sonnet):
+
 - **al-dev-security-reviewer** — permission/auth/data exposure
 - **al-dev-expert-reviewer** — AL conventions/BC patterns
 - **al-dev-performance-reviewer** — N+1/SetLoadFields/efficiency
@@ -165,9 +166,10 @@ MEDIUM: [notable issues to address]
 LOW: [minor improvements]
 
 If no issues found in your specialty: return "NONE" under each severity.
-```yaml
+```
 
 Spawn these three agents with the above prompt adapted to each specialty:
+
 - `al-dev-shared:al-dev-security-reviewer` — focus: permissions, data exposure, auth checks
 - `al-dev-shared:al-dev-expert-reviewer` — focus: AL conventions, naming, BC patterns
 - `al-dev-shared:al-dev-performance-reviewer` — focus: N+1 queries, SetLoadFields, resource loops

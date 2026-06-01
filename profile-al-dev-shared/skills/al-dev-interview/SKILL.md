@@ -72,7 +72,7 @@ The interview agent MUST:
 5. **GATE: The interview agent must explicitly state "INTERVIEW COMPLETE" and
    confirm questions were asked in all 11 categories listed above. Upon this
    explicit signal, proceed to Phase 3.**
-   
+
    **Fallback if INTERVIEW COMPLETE is NOT received:**
    - Monitor the agent output during interview conversation
    - If agent output does NOT include "INTERVIEW COMPLETE" statement and category confirmation:
@@ -141,4 +141,4 @@ Key constraints: [notable limitations]
 Open questions: [any remaining, or "None"]
 
 Next step: /plan to generate solution design
-```text
+```
