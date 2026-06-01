@@ -926,7 +926,25 @@ Impact: Pre-planning tributary is fully integrated; diagram matches implementati
 
 ### Move candidates
 
-None detected. One false positive: `al-dev-commit` scored 2 signals, but both are triggered by advisory side-effects (runtime `$AL_DEV_SHARED_PLUGIN_ROOT` lookup and "alignment" wording in an advisory step), not the skill's core purpose (commit creation for AL developers).
+Three skills scored 2+ signals and qualify as move candidates to `.claude/skills/`:
+
+**Move: /plan-map-changes → .claude/skills/**
+Observation: Plugin-maintenance orchestrator. Reads architectural suggestions from the map Observations sections, rubber-ducks them with remote agent teams, and generates plans. No value to distributed AL developers; only used internally by maintainers analyzing the plugin itself.
+Signals: internal path refs (✓), self-audit purpose (✓), no spawned al-dev-shared agents (✓).
+Suggestion: Move `profile-al-dev-shared/skills/plan-map-changes/` to `.claude/skills/plan-map-changes/` and remove from the plugin scope statement. Update Layer 1 diagram to remove the node.
+Trade-off: Skill remains available in this repo for maintainer use; removed from the distributed plugin.
+
+**Move: /al-dev-diagram-generator → .claude/skills/**
+Observation: Plugin-analysis tool. Generates Mermaid diagrams showing how the plugin's skills, agents, and knowledge files connect. Dispatched exclusively by `/analyze-agent-design` and `/analyze-skill-design` (both maintainer tools). Produces `docs/al-dev-workflow-diagrams.md`. No use case for distributed AL developers.
+Signals: internal path refs (✓), self-audit purpose (✓), no spawned al-dev-shared agents (✓).
+Suggestion: Move `profile-al-dev-shared/skills/al-dev-diagram-generator/` to `.claude/skills/al-dev-diagram-generator/` and remove from the plugin scope statement. Update Layer 2 to remove the section or relocate to a maintainer-tools appendix.
+Trade-off: Skill remains available for local analysis workflows; removed from the distributed plugin.
+
+**Move: /plugin-health → .claude/skills/**
+Observation: Plugin health-check and quality-audit tool. Dispatches remote lens agents to audit design, quality, complexity, and naming across the plugin surfaces; writes dossiers to `docs/health/`. Purely for maintainer use; no value to AL developers.
+Signals: self-audit purpose (✓), no spawned al-dev-shared agents (✓).
+Suggestion: Move `profile-al-dev-shared/skills/plugin-health/` to `.claude/skills/plugin-health/` and remove from the plugin scope statement. Update Layer 2 to remove the section.
+Trade-off: Skill remains available for periodic health sweeps; removed from the distributed plugin.
 
 ---
 
