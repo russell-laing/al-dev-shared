@@ -2,6 +2,8 @@
 
 **Last updated:** 2026-06-01 (22 agents; analysis refreshed with 5 new suggestions)
 
+> **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
+
 ## Layer 1: Agent Catalog
 
 <!-- BEGIN GENERATED: agent-catalog-table -->

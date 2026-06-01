@@ -885,11 +885,30 @@ def render_workflow_knowledge(inv: Inventory) -> str:
     return _mermaid_block(lines)
 
 
+def _extract_phases(skill_body: str) -> list[str]:
+    """Extract phase numbers from skill body (e.g., '## Phase 0', '## Phase 1.5').
+
+    Parses skill SKILL.md bodies for Phase heading markers and returns a sorted
+    list of phase numbers (as strings). Used by render_skill_drilldown() to
+    generate Phase<N> nodes in Layer 2 Mermaid diagrams.
+
+    Phases are sorted numerically by integer and decimal parts separately to
+    ensure natural ordering (0, 0.5, 1, 1.5, etc.) regardless of string form.
+    """
+    phase_pattern = re.compile(r"^## Phase\s+([\d.]+)", re.MULTILINE)
+    phases = []
+    for match in phase_pattern.finditer(skill_body):
+        phase_num = match.group(1)
+        phases.append(phase_num)
+    return sorted(set(phases), key=lambda x: (float(x.split('.')[0]), float(x.split('.')[1] if '.' in x else '0')))
+
+
 def render_skill_drilldown(inv: Inventory, skill_name: str) -> str:
     skill_refs = _sorted_destinations(_internal_skill_edges(inv), skill_name)
     agent_refs = _sorted_destinations(_internal_skill_agent_edges(inv), skill_name)
     knowledge_refs = _sorted_destinations(_internal_skill_knowledge_edges(inv), skill_name)
     artifact_refs = _sorted_destinations(inv.skill_to_artifact, skill_name)
+    phases = _extract_phases(inv.skill_bodies.get(skill_name, ""))
 
     lines = [
         "flowchart LR",
@@ -897,10 +916,14 @@ def render_skill_drilldown(inv: Inventory, skill_name: str) -> str:
         "    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold",
         "    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold",
         "    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold",
+        "    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold",
         "",
         f"    {_typed_node_id('skill', skill_name)}[{skill_name}]",
     ]
 
+    for phase in phases:
+        phase_id = f"Phase{phase.replace('.', '_')}"
+        lines.append(f"    {phase_id}[\"Phase {phase}\"]")
     for other_skill in skill_refs:
         lines.append(f"    {_typed_node_id('skill', other_skill)}[{other_skill}]")
     for agent in agent_refs:
@@ -911,6 +934,9 @@ def render_skill_drilldown(inv: Inventory, skill_name: str) -> str:
         lines.append(f"    {_typed_node_id('artifact', artifact)}[.dev/{artifact}]")
 
     lines.append("")
+    for phase in phases:
+        phase_id = f"Phase{phase.replace('.', '_')}"
+        lines.append(f"    {_typed_node_id('skill', skill_name)} --> {phase_id}")
     for other_skill in skill_refs:
         lines.append(f"    {_typed_node_id('skill', skill_name)} -.-> {_typed_node_id('skill', other_skill)}")
     for agent in agent_refs:
@@ -922,6 +948,9 @@ def render_skill_drilldown(inv: Inventory, skill_name: str) -> str:
 
     lines.append("")
     lines.append(f"    class {_typed_node_id('skill', skill_name)} skillNode")
+    for phase in phases:
+        phase_id = f"Phase{phase.replace('.', '_')}"
+        lines.append(f"    class {phase_id} phaseNode")
     for other_skill in skill_refs:
         lines.append(f"    class {_typed_node_id('skill', other_skill)} skillNode")
     for agent in agent_refs:

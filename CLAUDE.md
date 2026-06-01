@@ -192,6 +192,25 @@ python3 scripts/generate-agent-projections.py
 # (run after any projection policy or agent updates)
 ```
 
+### Documentation Maps (Mermaid Diagrams)
+
+The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `docs/al-dev-plugin-graph.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
+
+```bash
+# Regenerate all documentation map sections
+# - Layer 1 lifecycle diagrams
+# - Layer 2 per-skill drilldowns (now with Phase<N> nodes)
+# - Agent catalog and dependency graphs
+python3 scripts/generate-map-doc-sections.py
+
+# Regenerate plugin dependency graph separately
+python3 scripts/generate-plugin-graph.py
+```
+
+**Phase<N> node generation:** Layer 2 skill diagrams now extract phase information from each skill's SKILL.md file (e.g., "## Phase 0", "## Phase 1.5") and automatically generate Phase<N> nodes in the Mermaid diagrams. This ensures phase count mismatches are impossible — the diagrams always match the source.
+
+**Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
+
 ### Plugin Health and Documentation
 
 ```bash
