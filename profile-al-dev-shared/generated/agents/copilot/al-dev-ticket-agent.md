@@ -129,7 +129,7 @@ If the dispatcher asks to download attachments (separate invocation with `Phase:
      "[attachment_url_from_api]"
    ```
 4. **Return summary:**
-   ```
+   ```text
    DOWNLOADS_COMPLETE: [N] files
    FILES: [comma-separated list of downloaded filenames]
    ```

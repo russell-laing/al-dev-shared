@@ -194,7 +194,7 @@ and the assigned developer task must call it.
    - Consult BC documentation or base app source
    - Confirm exact parameter names and types (including var modifiers)
    - Rerun /al-dev-develop with --autonomous after verification
-   ```
+   ```text
 3. Escalate to user with this report
 4. Do NOT spawn developers until signature is verified
 

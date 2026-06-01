@@ -151,7 +151,7 @@ Before acting on any findings file or context document:
    - Your request: Extract target from user message (skill, repo, file, or project)
    - Output path: Absolute path where work will land
 2. **Validate match:**
-   ```
+   ```text
    > **Target check:**
    > - Findings reference: [extracted from findings]
    > - Your request: [extracted from your message]

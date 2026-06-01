@@ -46,7 +46,7 @@ Before acting on any findings file or context document:
    - Your request: target from user request
    - Output path: where investigation output will be written
 2. **Validate match:**
-   ```
+   ```text
    > **Target check:**
    > - Findings reference: [extracted from findings]
    > - Your request: [extracted from your message]
