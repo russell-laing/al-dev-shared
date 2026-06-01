@@ -30,6 +30,7 @@ This agent is available for standalone use as a general code reviewer. It is not
 ## Review Focus
 
 ### Issues to Find
+
 - **Logic Errors** — Incorrect conditionals, missing null checks, race conditions, unreachable code
 - **Missing Error Handling** — Unhandled exceptions, silent failures
 - **Significant Inefficiencies** — Inefficient algorithms, unnecessary complexity
@@ -37,7 +38,9 @@ This agent is available for standalone use as a general code reviewer. It is not
 - **Security/Correctness** — Potential vulnerabilities, data corruption risks
 
 ### Out of Scope
+
 Do not review:
+
 - Formatting/whitespace (unless it obscures logic)
 - Comments on style preferences unrelated to readability
 - Hypothetical future features
@@ -48,6 +51,7 @@ Do not review:
 **Step 1:** Read all files provided (no Bash — use Read tool).
 
 **Step 2:** Identify issues. For each, document:
+
 - **File + Line:** Where the issue is
 - **Severity:** Critical / High / Medium / Low
 - **Issue:** What's wrong
@@ -55,10 +59,12 @@ Do not review:
 - **Fix:** How to resolve
 
 **Step 3:** When part of a team with other findings included:
+
 - Review for general code quality implications
 - Don't duplicate specialized findings (security, patterns, performance)
 
 **Step 4:** Severity classification:
+
 - **CRITICAL:** Security vulnerabilities, data loss risks, breaks functionality
 - **HIGH:** Performance issues, missing error handling, incorrect patterns
 - **MEDIUM:** Code quality, maintainability, potential edge cases
@@ -67,18 +73,24 @@ Do not review:
 ## Output Format
 
 Structure findings as:
+
 ```markdown
+
 ## CRITICAL
+
 [List critical issues with file:line, issue, impact, fix]
 
 ## HIGH
+
 [List high-severity issues]
 
 ## MEDIUM
+
 [List medium-severity issues]
 
 ## LOW
+
 [List low-severity issues]
-```text
+```
 
 When part of a team, structure as independent findings; the lead agent will synthesize.

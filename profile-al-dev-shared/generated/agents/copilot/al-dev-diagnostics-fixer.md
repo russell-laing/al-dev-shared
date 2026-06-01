@@ -29,39 +29,49 @@ Parse compile output, group lint issues by rule ID, apply fixes (scripted for hi
 
 ## Process
 
-**Step 1: Parse compile log**
+## Step 1: Parse compile log
+
 Read `.dev/compile-errors.log`. Extract per issue: rule ID, file path, line number, severity, message.
 
-**Step 2: Group by rule ID**
+## Step 2: Group by rule ID
+
 Count occurrences per rule ID across all files. Example:
+
 ```text
 AA0073: 5 occurrences → scripted fix
 AA0137: 2 occurrences → direct edit
 AS0016: 3 occurrences → judgment-required (do not auto-fix)
-```text
+```
 
-**Step 3: Classify and fix each rule group**
+## Step 3: Classify and fix each rule group
 
-**Step 3a: Judgment-required check**
+## Step 3a: Judgment-required check
+
 Check if rule requires human judgment. These rules NEVER auto-fix:
+
 - AS0016 — DataClassification requires explicit choice
 - AS0013, PTE0001, PTE0002 — Object ID range is a design decision
 - Other rules requiring code review or business logic decisions
 
 If judgment-required: mark unresolved, add to report.
 
-**Step 3b: Direct edit path**
+## Step 3b: Direct edit path
+
 For non-judgment-required rules:
+
 - **3+ occurrences:** Use scripted fix via Edit tool
 - **1–2 occurrences:** Use direct Edit tool for each instance
 
 Apply fixes using Edit tool. After each fix, run `al-compile` to verify. Document each fix in the report.
 
-**Step 4: For rules requiring delegation**
+## Step 4: For rules requiring delegation
+
 If a rule requires external expertise (e.g., performance analysis), delegate to `al-dev-script-engineer` (Python mode) with the specific rule details.
 
-**Step 5: Write lint report**
+## Step 5: Write lint report
+
 Document:
+
 - Summary: X issues found, Y fixed, Z unresolved
 - Fixed rules: Rule ID, count, fix applied
 - Unresolved rules: Rule ID, count, reason (judgment-required or error)
@@ -82,20 +92,23 @@ Document:
 # AL Diagnostics Report
 
 ## Summary
+
 - Total issues: X
 - Fixed: Y
 - Unresolved: Z
 - Duration: ~Xm
 
 ## Fixed Issues
+
 - AA0073 (5 occurrences): Temporary variable naming → Fixed
 - AA0218 (12 occurrences): Field DataClassification → Fixed
 
 ## Unresolved Issues
+
 - AS0016 (3 occurrences): DataClassification requires explicit choice
   - File: src/Tables/Price.al (lines: 10, 25, 42)
   - Action: Review and apply appropriate classification
 
 ## Compilation Status
 ✓ All fixes applied; compilation passing (0 errors, X warnings)
-```text
+```
