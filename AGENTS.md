@@ -41,15 +41,23 @@ profile-al-dev-shared/          # Canonical authored plugin surface
   knowledge/                    # Generic workflow knowledge
   bc-code-intel-knowledge/      # BC Code Intelligence specialist knowledge
   markdown/                     # Markdown and Mermaid style guides
+.claude-plugin/marketplace.json # Marketplace registration
 ```
 
 ## Generated Projection Artifacts (Per-Harness Native Formats)
 
-For harness-native tool execution, the projection layer generates harness-specific artifacts in `profile-al-dev-shared/generated/agents/copilot/` that map generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) to Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
-.claude/agents/                 # Repo-local Claude maintainer agents for this source repo
-.claude/skills/                 # Repo-local Claude maintainer skills for this source repo
-.claude-plugin/marketplace.json # Marketplace registration schema
+For harness-native tool execution, the projection layer generates harness-specific artifacts:
+
+```text
+profile-al-dev-shared/generated/agents/
+  claude/                       # Claude Code-native agent projections (Markdown)
+  copilot/                      # Copilot CLI-native agent projections (Markdown)
+  codex/                        # Codex-native agent projections (TOML)
 ```
+
+Each projection applies the mappings from `knowledge/agent-tool-projection-policy.md` to translate generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) into Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
+
+**Key rule:** Shared source is canonical; generated artifacts are derived output and must never be hand-edited.
 
 ## Repo-Local Maintainer Tooling
 
@@ -58,17 +66,12 @@ tooling. They help audit, document, and iteratively improve this repository,
 but they are not part of the distributed `al-dev-shared` plugin and must not
 be treated as projection inputs or downstream harness-consumer artifacts.
 
-## Generated Projection Artifacts (Per-Harness Native Formats)
+**Output boundary rule:** While the maintainer tooling is harness-specific, its **outputs must be harness-agnostic**:
+- Any documents written to the shared surface or `.dev/` directory must not contain harness-specific tokens
+- Changes made to shared files must use generic vocabulary (from `knowledge/harness-concepts.md`)
+- Generated artifacts remain the output of the projection layer, never hand-edited by maintainer tooling
 
-For harness-native tool execution, the projection layer generates harness-specific artifacts in `profile-al-dev-shared/generated/agents/copilot/` that map generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) to Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
-
-## Repo-Local Maintainer Tooling
-
-`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
-tooling. They help audit, document, and iteratively improve this repository,
-but they are not part of the distributed `al-dev-shared` plugin and must not
-be treated as projection inputs, expected generated output, or downstream
-harness-consumer artifacts.
+Repo-local tooling may *inspect* shared source and generated projection outputs for analysis, but its modifications or documents must maintain neutrality across all three harnesses.
 
 ## Skill File Format
 
