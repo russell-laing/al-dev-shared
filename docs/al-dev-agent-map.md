@@ -171,11 +171,33 @@
 
 ---
 
+### al-dev-commit-hook-fixer
+
+**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-agent-execute by handling error recovery in isolation.
+**Model:** sonnet
+**Tools:** Read, Write, Bash
+**Spawned by:** /al-dev-commit (Phase 4 — error recovery)
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `.dev/hook-failures.json` | **Yes** | Hook execution output and error logs from the failed commit attempt (hook name, exit code, captured stderr/stdout) |
+| `.dev/commits.json` | **Yes** | Commit details that triggered the hooks (group id, files, approved message) |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `HOOK_FAILURES` block | Per-failure diagnosis, recovery status, and the next step for the caller |
+
+---
+
 ### al-dev-developer-tdd
 
 **Description:** Implement AL code using test-driven development when a test plan exists.
 **Model:** sonnet
-**Tools:** Read, Write, Grep, Bash
+**Tools:** Read, Write, Bash
 **Spawned by:** /al-dev-develop, /al-dev-fix
 
 **Inputs:**
@@ -202,7 +224,7 @@
 
 **Description:** Implement AL code following an implementation plan without test-driven development.
 **Model:** sonnet
-**Tools:** Read, Write, Grep, Bash
+**Tools:** Read, Write, Bash
 **Spawned by:** /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
 
 **Inputs:**
@@ -617,6 +639,7 @@ Based on agent audit from `20260531T222851Z`, the map has been synchronized with
 All 13 agents with undeclared tools have been updated to reflect their actual tool declarations in agent files. Removed inferred tools that are not in agent frontmatter (Edit, Glob, Grep, MCP: * tools) to ensure map accuracy aligns with implementation.
 
 **Model drift (2 agents) — resolved:**
+
 - `al-dev-interview`: Updated from haiku → sonnet (agent file specifies sonnet)
 - `al-dev-commit-recover-fixer`: Updated from haiku → sonnet (agent file specifies sonnet)
 

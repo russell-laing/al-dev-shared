@@ -90,7 +90,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`.
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-ticket -->
 ```mermaid
@@ -99,8 +99,12 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_ticket[al-dev-ticket]
+    Phase0["Phase 0"]
+    Phase0_5["Phase 0.5"]
+    Phase5["Phase 5"]
     skill_al_dev_interview[al-dev-interview]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_support_reply[al-dev-support-reply]
@@ -109,6 +113,9 @@ flowchart LR
     artifact_ticket_context_md[.dev/ticket-context.md]
     artifact_ticket_reply_md[.dev/ticket-reply.md]
 
+    skill_al_dev_ticket --> Phase0
+    skill_al_dev_ticket --> Phase0_5
+    skill_al_dev_ticket --> Phase5
     skill_al_dev_ticket -.-> skill_al_dev_interview
     skill_al_dev_ticket -.-> skill_al_dev_plan
     skill_al_dev_ticket -.-> skill_al_dev_support_reply
@@ -118,6 +125,9 @@ flowchart LR
     skill_al_dev_ticket --> artifact_ticket_reply_md
 
     class skill_al_dev_ticket skillNode
+    class Phase0 phaseNode
+    class Phase0_5 phaseNode
+    class Phase5 phaseNode
     class skill_al_dev_interview skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_support_reply skillNode
@@ -132,7 +142,7 @@ Agents spawned: `al-dev-shared:al-dev-ticket-agent`
 
 ### /al-dev-support-reply
 
-Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream.
+Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0–3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-support-reply -->
 ```mermaid
@@ -141,14 +151,23 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_support_reply[al-dev-support-reply]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
     skill_al_dev_ticket[al-dev-ticket]
     agent_al_dev_support_reply_drafter[al-dev-support-reply-drafter]
     agent_al_dev_support_researcher[al-dev-support-researcher]
     artifact_2026_06_01_al_dev_ticket_ticket_context_md[.dev/2026-06-01-al-dev-ticket-ticket-context.md]
     artifact_ticket_reply_md[.dev/ticket-reply.md]
 
+    skill_al_dev_support_reply --> Phase0
+    skill_al_dev_support_reply --> Phase1
+    skill_al_dev_support_reply --> Phase2
+    skill_al_dev_support_reply --> Phase3
     skill_al_dev_support_reply -.-> skill_al_dev_ticket
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
@@ -156,6 +175,10 @@ flowchart LR
     skill_al_dev_support_reply --> artifact_ticket_reply_md
 
     class skill_al_dev_support_reply skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
     class skill_al_dev_ticket skillNode
     class agent_al_dev_support_reply_drafter agentNode
     class agent_al_dev_support_researcher agentNode
@@ -175,6 +198,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_investigate[al-dev-investigate]
     skill_al_dev_handoff[al-dev-handoff]
@@ -212,6 +236,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_fix[al-dev-fix]
     skill_al_dev_develop[al-dev-develop]
@@ -257,7 +282,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes user approval gate before handing off to `/al-dev-develop`.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–7.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
@@ -266,8 +291,16 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_plan[al-dev-plan]
+    Phase0["Phase 0"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
+    Phase5["Phase 5"]
+    Phase6["Phase 6"]
+    Phase7["Phase 7"]
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
     agent_al_dev_solution_architect[al-dev-solution-architect]
     knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
@@ -278,6 +311,13 @@ flowchart LR
     artifact_preflight_context_md[.dev/preflight-context.md]
     artifact_progress_md[.dev/progress.md]
 
+    skill_al_dev_plan --> Phase0
+    skill_al_dev_plan --> Phase2
+    skill_al_dev_plan --> Phase3
+    skill_al_dev_plan --> Phase4
+    skill_al_dev_plan --> Phase5
+    skill_al_dev_plan --> Phase6
+    skill_al_dev_plan --> Phase7
     skill_al_dev_plan -.-> skill_al_dev_plan_preflight
     skill_al_dev_plan --> agent_al_dev_solution_architect
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
@@ -289,6 +329,13 @@ flowchart LR
     skill_al_dev_plan --> artifact_progress_md
 
     class skill_al_dev_plan skillNode
+    class Phase0 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
+    class Phase5 phaseNode
+    class Phase6 phaseNode
+    class Phase7 phaseNode
     class skill_al_dev_plan_preflight skillNode
     class agent_al_dev_solution_architect agentNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
@@ -305,7 +352,7 @@ Agents spawned: `al-dev-shared:al-dev-solution-architect`
 
 ### /al-dev-plan-preflight
 
-Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`.
+Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0, 0.5, 1, 1.5, 1.6.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-preflight -->
 ```mermaid
@@ -314,8 +361,14 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
+    Phase0["Phase 0"]
+    Phase0_5["Phase 0.5"]
+    Phase1["Phase 1"]
+    Phase1_5["Phase 1.5"]
+    Phase1_6["Phase 1.6"]
     knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_workflow_resilience_md[workflow-resilience]
@@ -324,6 +377,11 @@ flowchart LR
     artifact_progress_md[.dev/progress.md]
     artifact_project_context_md[.dev/project-context.md]
 
+    skill_al_dev_plan_preflight --> Phase0
+    skill_al_dev_plan_preflight --> Phase0_5
+    skill_al_dev_plan_preflight --> Phase1
+    skill_al_dev_plan_preflight --> Phase1_5
+    skill_al_dev_plan_preflight --> Phase1_6
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
@@ -333,6 +391,11 @@ flowchart LR
     skill_al_dev_plan_preflight --> artifact_project_context_md
 
     class skill_al_dev_plan_preflight skillNode
+    class Phase0 phaseNode
+    class Phase0_5 phaseNode
+    class Phase1 phaseNode
+    class Phase1_5 phaseNode
+    class Phase1_6 phaseNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
@@ -345,7 +408,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
@@ -354,8 +417,14 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_develop[al-dev-develop]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
     skill_al_dev_review_develop[al-dev-review-develop]
     agent_al_dev_developer_tdd[al-dev-developer-tdd]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
@@ -368,6 +437,11 @@ flowchart LR
     artifact_progress_md[.dev/progress.md]
     artifact_project_context_md[.dev/project-context.md]
 
+    skill_al_dev_develop --> Phase0
+    skill_al_dev_develop --> Phase1
+    skill_al_dev_develop --> Phase2
+    skill_al_dev_develop --> Phase3
+    skill_al_dev_develop --> Phase4
     skill_al_dev_develop -.-> skill_al_dev_review_develop
     skill_al_dev_develop --> agent_al_dev_developer_tdd
     skill_al_dev_develop --> agent_al_dev_developer_traditional
@@ -381,6 +455,11 @@ flowchart LR
     skill_al_dev_develop --> artifact_project_context_md
 
     class skill_al_dev_develop skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
     class skill_al_dev_review_develop skillNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
@@ -399,7 +478,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-review-develop
 
-**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 2) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 3) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user. Phases use local numbering 1–6.
+**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 2) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 3) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user. Phases: 1–6.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
@@ -408,8 +487,15 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_review_develop[al-dev-review-develop]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
+    Phase5["Phase 5"]
+    Phase6["Phase 6"]
     skill_al_dev_commit[al-dev-commit]
     skill_al_dev_develop[al-dev-develop]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
@@ -421,6 +507,12 @@ flowchart LR
     artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_progress_md[.dev/progress.md]
 
+    skill_al_dev_review_develop --> Phase1
+    skill_al_dev_review_develop --> Phase2
+    skill_al_dev_review_develop --> Phase3
+    skill_al_dev_review_develop --> Phase4
+    skill_al_dev_review_develop --> Phase5
+    skill_al_dev_review_develop --> Phase6
     skill_al_dev_review_develop -.-> skill_al_dev_commit
     skill_al_dev_review_develop -.-> skill_al_dev_develop
     skill_al_dev_review_develop --> agent_al_dev_developer_traditional
@@ -433,6 +525,12 @@ flowchart LR
     skill_al_dev_review_develop --> artifact_progress_md
 
     class skill_al_dev_review_develop skillNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
+    class Phase5 phaseNode
+    class Phase6 phaseNode
     class skill_al_dev_commit skillNode
     class skill_al_dev_develop skillNode
     class agent_al_dev_developer_traditional agentNode
@@ -450,7 +548,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-
 
 ### /al-dev-commit
 
-**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities.
+**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit -->
 ```mermaid
@@ -459,8 +557,14 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_commit[al-dev-commit]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
     agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
     agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
     agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
@@ -475,6 +579,11 @@ flowchart LR
     artifact_file_sizes_json[.dev/file-sizes.json]
     artifact_hook_failures_json[.dev/hook-failures.json]
 
+    skill_al_dev_commit --> Phase0
+    skill_al_dev_commit --> Phase1
+    skill_al_dev_commit --> Phase2
+    skill_al_dev_commit --> Phase3
+    skill_al_dev_commit --> Phase4
     skill_al_dev_commit --> agent_al_dev_commit_agent_analysis
     skill_al_dev_commit --> agent_al_dev_commit_agent_execute
     skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
@@ -490,6 +599,11 @@ flowchart LR
     skill_al_dev_commit --> artifact_hook_failures_json
 
     class skill_al_dev_commit skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
     class agent_al_dev_commit_agent_analysis agentNode
     class agent_al_dev_commit_agent_execute agentNode
     class agent_al_dev_commit_hook_fixer agentNode
@@ -517,6 +631,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_explore[al-dev-explore]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
@@ -536,6 +651,8 @@ flowchart LR
 
 ### /al-dev-interview
 
+Phases: 1–4.
+
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-interview -->
 ```mermaid
 flowchart LR
@@ -543,13 +660,26 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_interview[al-dev-interview]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
     agent_al_dev_interview[al-dev-interview]
 
+    skill_al_dev_interview --> Phase1
+    skill_al_dev_interview --> Phase2
+    skill_al_dev_interview --> Phase3
+    skill_al_dev_interview --> Phase4
     skill_al_dev_interview --> agent_al_dev_interview
 
     class skill_al_dev_interview skillNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
     class agent_al_dev_interview agentNode
 ```
 
@@ -565,6 +695,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_lint[al-dev-lint]
     agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
@@ -599,6 +730,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_document[al-dev-document]
 
@@ -609,6 +741,8 @@ flowchart LR
 
 ### /al-dev-release-notes
 
+Phases: 1, 1.5, 2, 3.
+
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-release-notes -->
 ```mermaid
 flowchart LR
@@ -616,15 +750,28 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_release_notes[al-dev-release-notes]
+    Phase1["Phase 1"]
+    Phase1_5["Phase 1.5"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
     agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
     artifact_project_context_md[.dev/project-context.md]
 
+    skill_al_dev_release_notes --> Phase1
+    skill_al_dev_release_notes --> Phase1_5
+    skill_al_dev_release_notes --> Phase2
+    skill_al_dev_release_notes --> Phase3
     skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
     skill_al_dev_release_notes --> artifact_project_context_md
 
     class skill_al_dev_release_notes skillNode
+    class Phase1 phaseNode
+    class Phase1_5 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
     class agent_al_dev_release_notes_writer agentNode
     class artifact_project_context_md artifactNode
 ```
@@ -641,6 +788,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_perf[al-dev-perf]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
@@ -667,6 +815,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_handoff[al-dev-handoff]
     artifact_explore_findings_md[.dev/explore-findings.md]
@@ -707,6 +856,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_help[al-dev-help]
     skill_al_dev_develop[al-dev-develop]
@@ -744,6 +894,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_commit_recover[commit-recover]
     agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
@@ -774,6 +925,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
     artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
@@ -796,6 +948,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_verify_commits[verify-commits]
 
@@ -808,7 +961,7 @@ flowchart LR
 
 Standalone utility skill. No agents spawned. Consolidates `.dev/` artifacts
 into vault-ready session summaries and an Obsidian-compatible sessions index,
-using only bash extraction — file content is never read into LLM context.
+using only bash extraction — file content is never read into LLM context. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-consolidate -->
 ```mermaid
@@ -817,13 +970,29 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_consolidate[al-dev-consolidate]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
     knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
 
+    skill_al_dev_consolidate --> Phase0
+    skill_al_dev_consolidate --> Phase1
+    skill_al_dev_consolidate --> Phase2
+    skill_al_dev_consolidate --> Phase3
+    skill_al_dev_consolidate --> Phase4
     skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
 
     class skill_al_dev_consolidate skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
     class knowledge_consolidate_extraction_patterns_md knowledgeNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-consolidate -->
@@ -832,7 +1001,7 @@ flowchart LR
 
 **Maintainer tool — not part of the main development lifecycle.** Dispatched by `/analyze-agent-design` and `/analyze-skill-design` after their analysis phases complete. Does not appear in the Layer 1 lifecycle diagram because it is called from project-local maintainer tooling (`.claude/skills/`), not from distributed plugin skills.
 
-Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, and knowledge files connect. Writes `docs/al-dev-workflow-diagrams.md`.
+Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, and knowledge files connect. Writes `docs/al-dev-workflow-diagrams.md`. Phases: 1–4.
 
 | Field | Value |
 |---|---|
@@ -848,11 +1017,24 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_diagram_generator[al-dev-diagram-generator]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
 
+    skill_al_dev_diagram_generator --> Phase1
+    skill_al_dev_diagram_generator --> Phase2
+    skill_al_dev_diagram_generator --> Phase3
+    skill_al_dev_diagram_generator --> Phase4
 
     class skill_al_dev_diagram_generator skillNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-diagram-generator -->
 
@@ -869,6 +1051,7 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
     knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
@@ -888,7 +1071,7 @@ flowchart LR
 
 ### /plugin-health-audit
 
-**Maintainer tool — not part of the main development lifecycle.** Parallelized health sweep of the al-dev-shared plugin surfaces (skills and agents). Dispatches remote design and quality lenses, ranks findings, and writes dossiers to `docs/health/`. Supports resume workflow to collect results in a separate session.
+**Maintainer tool — not part of the main development lifecycle.** Parallelized health sweep of the al-dev-shared plugin surfaces (skills and agents). Dispatches remote design and quality lenses, ranks findings, and writes dossiers to `docs/health/`. Supports resume workflow to collect results in a separate session. Phases: 1, 3.
 
 <!-- BEGIN GENERATED: skill-drilldown-plugin-health-audit -->
 ```mermaid
@@ -897,13 +1080,20 @@ flowchart LR
     classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
     classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_plugin_health_audit[plugin-health-audit]
+    Phase1["Phase 1"]
+    Phase3["Phase 3"]
     artifact_plugin_health_team_checkpoint_json[.dev/plugin-health-team-checkpoint.json]
 
+    skill_plugin_health_audit --> Phase1
+    skill_plugin_health_audit --> Phase3
     skill_plugin_health_audit --> artifact_plugin_health_team_checkpoint_json
 
     class skill_plugin_health_audit skillNode
+    class Phase1 phaseNode
+    class Phase3 phaseNode
     class artifact_plugin_health_team_checkpoint_json artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-plugin-health-audit -->
