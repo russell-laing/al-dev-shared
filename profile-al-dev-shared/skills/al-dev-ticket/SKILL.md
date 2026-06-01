@@ -263,13 +263,14 @@ Attachments saved to .dev/attachments/ ([count] files).
   Attachments not downloaded. References available in ticket context file:
   .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
   
-  Note: Steps 5-7 (research and reply drafting) may have incomplete context
-  if critical information was only in attachments. You can return here later
-  with /al-dev-ticket <id> --download to retrieve them.
+  Note: /al-dev-support-reply (research and reply drafting) may have
+  incomplete context if critical information was only in attachments.
+  You can return here later with /al-dev-ticket <id> --download to
+  retrieve them.
   ```
 
 - If MODE is `context-only`: Exit after this note
-- If MODE is `full`: Continue to Phase 6 with available context only
+- If MODE is `full`: Continue to Phase 5 and chain to `/al-dev-support-reply` with available context only
 
 ---
 
@@ -291,16 +292,16 @@ SUMMARY: <SUMMARY from agent output in Step 3>
 
 If mode is `context-only` (default):
 
-- Write the CONTEXT block to `.dev/ticket-context.md`
+- Write the CONTEXT block to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
 - Exit (workflow complete) — output ticket context only
 
 If mode is `full`:
 
-- Write the CONTEXT block to `.dev/ticket-context.md`
-- Dispatch `/al-dev-support-reply` with the CONTEXT block path:
+- Write the CONTEXT block to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
+- Dispatch `/al-dev-support-reply` with the dated CONTEXT block path:
 
   ```text
-  /al-dev-support-reply .dev/ticket-context.md
+  /al-dev-support-reply .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
   ```
 
 - Read the REPLY block from the skill's response
