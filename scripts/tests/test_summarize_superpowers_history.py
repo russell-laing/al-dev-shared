@@ -10,8 +10,16 @@ def load_module():
     module_path = Path(__file__).resolve().parents[1] / "summarize_superpowers_history.py"
     spec = importlib.util.spec_from_file_location("summarize_superpowers_history", module_path)
     module = importlib.util.module_from_spec(spec)
+    previous = sys.modules.get(spec.name)
     sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        if previous is None:
+            sys.modules.pop(spec.name, None)
+        else:
+            sys.modules[spec.name] = previous
+        raise
     return module
 
 
