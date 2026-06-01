@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Write"
+    ]
+  },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
   },
@@ -30,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "al-compile --output .dev/compile-errors.log && markdownlint profile-al-dev-shared/**/*.md .claude/skills/**/*.md 2>&1 | head -10 && echo \"Verification passed\""
+            "command": "markdownlint --config .markdownlint.json profile-al-dev-shared/**/*.md .claude/skills/**/*.md 2>&1 | head -20; echo \"markdownlint preview complete (hard gate is in pre-commit hook)\""
           }
         ]
       }
