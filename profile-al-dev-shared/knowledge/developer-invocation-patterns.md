@@ -6,7 +6,8 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 **Caller:** `/al-dev-develop` (Phase 4: Developer Dispatch and Implementation)
 
-**Trigger:** User has approved a solution plan and /al-dev-develop is orchestrating parallel developer agents to implement it.
+**Trigger:** User has approved a solution plan and /al-dev-develop is
+orchestrating parallel developer agents to implement it.
 
 **Developer is responsible for:**
 
@@ -30,7 +31,8 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 - All assigned objects implemented and compiling cleanly
 - Session log updated
-- Code ready for review panel (al-dev-security-reviewer, al-dev-expert-reviewer, al-dev-performance-reviewer)
+- Code ready for review panel (al-dev-security-reviewer,
+  al-dev-expert-reviewer, al-dev-performance-reviewer)
 
 ---
 
@@ -38,7 +40,9 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 **Caller:** `/al-dev-fix` (Steps 3–5: Non-Trivial Implementation Path)
 
-**Trigger:** User approved a trivial fix scope (single file, obvious implementation), and /al-dev-fix is dispatching a developer for quick implementation.
+**Trigger:** User approved a trivial fix scope (single file, obvious
+implementation), and /al-dev-fix is dispatching a developer for quick
+implementation.
 
 **Developer is responsible for:**
 
@@ -62,22 +66,26 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 - File modified and compiling cleanly
 - Fix verified to resolve the stated issue
-- Code ready for optional code review (developer quality check, not multi-reviewer panel)
+- Code ready for optional code review (developer quality check, not
+  multi-reviewer panel)
 
 ---
 
 ## Context 3: Error Correction (al-dev-review-develop Phase 2, Autonomous Mode)
 
-**Caller:** `/al-dev-review-develop` (Phase 2: Compile Verification, --autonomous mode only)
+**Caller:** `/al-dev-review-develop` (Phase 2: Compile Verification,
+--autonomous mode only)
 
-**Trigger:** Compilation has errors after Phase 4 implementation, and /al-dev-review-develop --autonomous is dispatching a developer to fix them before the review panel runs.
+**Trigger:** Compilation has errors after Phase 4 implementation, and
+/al-dev-review-develop --autonomous is dispatching a developer to fix them
+before the review panel runs.
 
 **Developer is responsible for:**
 
 - Reading `.dev/compile-errors.log` and identifying root causes
 - Applying minimal, targeted fixes
 - Re-compiling after each fix (5-cycle limit)
-- Returning: files changed, errors resolved (or unresolvable errors for escalation)
+- Returning: files changed, errors resolved (or errors for escalation)
 
 **Dispatch prompt structure:**
 
@@ -98,23 +106,27 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 ## Model Parameter Routing
 
-The `model` parameter in Agent tool invocations can override agent-level defaults at dispatch time. This enables complexity-aware routing without modifying agent files.
+The `model` parameter in Agent tool invocations can override agent-level
+defaults at dispatch time. This enables complexity-aware routing without
+modifying agent files.
 
 ### When to route Haiku vs. Sonnet
 
 **Route `model: claude-haiku-4-5`** when:
+
 - Task is TRIVIAL (single file, obvious fix, no judgment required)
 - Decision tree is linear (no branching based on symbol analysis)
 - Context is minimal (one file, one function, one issue)
 
 **Route `model: claude-sonnet-4-6`** when:
+
 - Task is SIMPLE or COMPLEX (requires analysis, planning, multi-step reasoning)
 - Code change crosses file boundaries or affects multiple objects
 - Risk assessment needed (performance, security, patterns)
 
 ### Example: Conditional routing in spawning skill
 
-```
+```text
 ## Determine developer model based on complexity
 
 IF scope crosses 2+ files OR symbols unknown:
@@ -134,11 +146,13 @@ Agent(
 
 ### Current implementation status
 
-- `/al-dev-fix`: Uses architect for non-trivial path (implicit sonnet upgrade via architect dispatch)
+- `/al-dev-fix`: Uses architect for non-trivial path (implicit sonnet
+  upgrade via architect dispatch)
 - `/al-dev-develop`: Always uses developer; complexity routing not yet wired
 - `/al-dev-review-develop`: Always uses developer; complexity routing not yet wired
 
-This pattern is reserved for future enhancement; current spawning skills do not yet implement conditional routing.
+This pattern is reserved for future enhancement; current spawning skills
+do not yet implement conditional routing.
 
 ---
 
@@ -156,8 +170,10 @@ SYMBOL_PREFLIGHT_GATE:
 Developer must:
 
 1. Report pre-flight summary before writing any AL code
-2. Name the evidence source for each required symbol (AL LSP, AL MCP, text search, or unverified)
-3. **Stop before implementation if any required symbol remains unverified**
+2. Name the evidence source for each required symbol (AL LSP, AL MCP,
+   text search, or unverified)
+3. **Stop before implementation if any required symbol remains
+   unverified**
 
 When dispatching in any context, include:
 
@@ -167,12 +183,13 @@ When dispatching in any context, include:
 
 ## Dispatch Prompt Template
 
-Use this structure when spawning a developer agent from any of the three contexts.
-Note: the bare agent name below is a placeholder — resolve it based on test-plan presence:
+Use this structure when spawning a developer agent from any of the three
+contexts. Note: the bare agent name below is a placeholder — resolve it
+based on test-plan presence:
 
 ```text
-Agent: al-dev-shared:al-dev-developer-tdd (if test plan exists)
-Agent: al-dev-shared:al-dev-developer-traditional (if no test plan)
+Agent: al-dev-shared:al-dev-developer-tdd (test plan present)
+Agent: al-dev-shared:al-dev-developer-traditional (no test plan)
 
 For Context 3 (error correction): always use al-dev-developer-traditional.
 
@@ -187,7 +204,8 @@ Module Assignment / Object List: [specific objects to implement or fix]
 Implementation Notes:
 - [Key pattern from solution plan or /al-dev-fix scope]
 - [AL symbol evidence from preflight or prior search]
-- [Code quality standards: labels for errors, symbol preflight, compile after each file]
+- [Code quality standards: labels for errors, symbol preflight, compile
+  after each file]
 
 [Append SYMBOL_PREFLIGHT_GATE requirement]
 
