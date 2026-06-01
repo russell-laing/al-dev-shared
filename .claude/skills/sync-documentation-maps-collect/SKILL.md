@@ -25,35 +25,26 @@ conditionally spawns remote update teams.
 
 ---
 
-## Phase 0 — Parse Arguments
+## Phase 1 — Load & Resume
 
-Read the arguments supplied by the user.
-
-Split `--team-ids` on comma to extract exactly two values:
-
-- `SKILL_TEAM_ID` — first value
-- `AGENT_TEAM_ID` — second value
-
-Set `WAIT_MODE=false` (default). If `--wait` is present, set `WAIT_MODE=true`.
+**Parse arguments.** Split `--team-ids` on comma to extract exactly two
+values: `SKILL_TEAM_ID` (first) and `AGENT_TEAM_ID` (second). Set
+`WAIT_MODE=false` by default; if `--wait` is present, set `WAIT_MODE=true`.
 
 Error and stop if `--team-ids` is absent or produces fewer than two values.
-Print a clear usage hint:
+Print the usage hint:
 
 ```text
 Usage: /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id> [--wait]
 ```
 
----
-
-## Phase 1 — Load Checkpoint
-
-Read the checkpoint written by `/sync-documentation-maps`:
+**Load checkpoint.** Read the checkpoint written by `/sync-documentation-maps`:
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
 ```
 
-Extract the following fields:
+Extract these fields:
 
 | Field | Variable |
 |---|---|
@@ -65,27 +56,35 @@ Extract the following fields:
 Error and stop if the checkpoint file is absent. Advise the user to run
 `/sync-documentation-maps` first to generate it.
 
+**Resume / restart.** If the checkpoint `status` is already `"dispatched"`,
+`"complete"`, or `"skipped"`, this collect step has already run. Use a
+`USER_GATE` prompt to offer:
+
+```text
+A previous collect run reached status "<status>". How would you like to proceed?
+
+[1] Resume — re-read artifacts and continue from where it left off
+[2] Restart — re-run the full collect step from a clean state
+[3] Cancel — stop without changes
+```
+
+On Resume, continue with the existing `update_choice` and team IDs already in
+the checkpoint. On Restart, ignore prior update fields and proceed fresh. On
+Cancel, stop. If `status` is unset or `"audit"`, proceed normally.
+
 ---
 
-## Phase 2 — Optionally Poll Teams
+## Phase 2 — Poll & Read
 
-If `WAIT_MODE=true`:
+**Poll (only if `WAIT_MODE=true`).** Poll both `SKILL_TEAM_ID` and
+`AGENT_TEAM_ID` using `TaskGet` until each reports `completed` or `failed`.
+Log status after each check. Do not wait more than 30 minutes total; if the
+timeout is reached, advise the user to retry later and stop.
 
-Poll both `SKILL_TEAM_ID` and `AGENT_TEAM_ID` using `TaskGet` until each
-reports `completed` or `failed`. Log status after each check. Do not wait
-more than 30 minutes total; if the timeout is reached, advise the user to
-retry later and stop.
+If `WAIT_MODE=false`, skip polling — the read step below handles any absent
+artifacts.
 
-If `WAIT_MODE=false`:
-
-Skip polling and proceed immediately to Phase 3. The audit artifacts may or
-may not be present yet; Phase 3 handles the absent-file case.
-
----
-
-## Phase 3 — Read Audit Artifacts
-
-Verify artifact presence:
+**Read audit artifacts.** Verify presence of both audit results:
 
 ```bash
 ls -la "${RUN_DIR}/audit/skill-audit.json" 2>/dev/null
@@ -98,24 +97,25 @@ For each present file, read and parse the JSON. Extract:
 - `discrepancies` — array of discrepancy objects
 - `summary` — human-readable summary string
 
-For each absent file, note it as "pending" — the audit team has not yet
+For each absent file, note it as "pending" — that audit team has not yet
 written its result.
 
-If **both** files are absent, advise the user that audits are still running
-and suggest re-running with `--wait` or waiting a few minutes:
+If **both** files are absent, advise the user and stop:
 
 ```text
 Audit results not yet available. Re-run with --wait to block until complete,
 or wait for the teams to finish and then re-run this collect step.
 ```
 
-Stop if both files are absent.
-
 ---
 
-## Phase 4 — Present Findings
+## Phase 3 — Prep Results
 
-For each surface with a completed audit result, display:
+Merge the parsed findings from both surfaces into a single working set. For
+each surface, sort its `discrepancies` by object name and deduplicate by
+`(object, type)` so the same finding reported twice is shown once.
+
+Display the prepared findings. For each surface with a completed audit:
 
 ```text
 Skills Map Audit — <summary>
@@ -126,28 +126,28 @@ Agent Map Audit — <summary>
   • <discrepancy type>: <detail>
 ```
 
-For any surface still pending, display:
+For any surface still pending:
 
 ```text
 Skills Map Audit — pending (team still running)
 ```
 
-If **both** surfaces have zero discrepancies, report:
+If **both** surfaces have completed with zero discrepancies, report and stop:
 
 ```text
 Both documentation maps are accurate. No updates needed.
 ```
 
-Update the checkpoint `status` to `"complete"` and stop.
+In that case, update the checkpoint `status` to `"complete"` and exit without
+dispatching update teams.
 
 ---
 
-## Phase 5 — Ask User What to Update
+## Phase 4 — User Gate & Dispatch
 
-If `AUTO_UPDATE=true` (passed through from `/sync-documentation-maps --all`),
-set `UPDATE_CHOICE=both` and skip the prompt.
-
-Otherwise, use a `USER_GATE` prompt to ask:
+**Choose maps to update.** If `AUTO_UPDATE=true` (passed through from
+`/sync-documentation-maps --all`), set `UPDATE_CHOICE=both` and skip the
+prompt. Otherwise, use a `USER_GATE` prompt:
 
 ```text
 Which documentation map would you like to update?
@@ -159,43 +159,25 @@ Which documentation map would you like to update?
 ```
 
 Map the response to `UPDATE_CHOICE`: `skills`, `agents`, `both`, or `neither`.
+If `UPDATE_CHOICE=neither`, update the checkpoint `status` to `"skipped"` and
+stop.
 
-If `UPDATE_CHOICE=neither`, update the checkpoint `status` to `"skipped"` and stop.
+**Dispatch update teams via RemoteTrigger.** Both dispatches run in parallel —
+do not wait for one before starting the other.
 
----
-
-## Phase 6 — Spawn Update Teams via RemoteTrigger
-
-Based on `UPDATE_CHOICE`, dispatch one or both update agents. Both dispatches
-must run in parallel — do not wait for one before starting the other.
-
-**Skills update** (if `UPDATE_CHOICE` is `skills` or `both`):
-
-Dispatch agent `.claude/agents/sync-documentation-maps-skill-update.md` with
-a prompt that includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
-`SKILL_UPDATE_TEAM_ID`.
-
-**Agents update** (if `UPDATE_CHOICE` is `agents` or `both`):
-
-Dispatch agent `.claude/agents/sync-documentation-maps-agent-update.md` with
-a prompt that includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
-`AGENT_UPDATE_TEAM_ID`.
+- **Skills update** (if `UPDATE_CHOICE` is `skills` or `both`): dispatch agent
+  `.claude/agents/sync-documentation-maps-skill-update.md` with a prompt that
+  includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
+  `SKILL_UPDATE_TEAM_ID`.
+- **Agents update** (if `UPDATE_CHOICE` is `agents` or `both`): dispatch agent
+  `.claude/agents/sync-documentation-maps-agent-update.md` with a prompt that
+  includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
+  `AGENT_UPDATE_TEAM_ID`.
 
 For surfaces not selected, set the corresponding variable to `null`.
 
----
-
-## Phase 7 — Write Updated Checkpoint
-
-Merge the new update team IDs into the existing checkpoint fields and write
-the updated checkpoint:
-
-```bash
-# Update .dev/sync-documentation-maps-checkpoint.json
-# Update ${RUN_DIR}/manifest.json
-```
-
-New fields to add or update:
+**Write updated checkpoint.** Merge the new update team IDs into the existing
+checkpoint and `${RUN_DIR}/manifest.json`. Add or update only these fields:
 
 | Field | Value |
 |---|---|
@@ -205,26 +187,19 @@ New fields to add or update:
 | `skill_update_team_id` | `SKILL_UPDATE_TEAM_ID` or `null` |
 | `agent_update_team_id` | `AGENT_UPDATE_TEAM_ID` or `null` |
 
-**Merge strategy:** Read the existing checkpoint JSON, add or update only the five
-fields listed above (skill_update_team_id, agent_update_team_id, update_choice,
-phase, status), and write the result back. Preserve all pre-existing fields
-(e.g., `run_id`, `auto_update`, `skip_commit`, `result_dir`). Recommended
-approach: use `jq` to update individual keys without re-serializing the whole
-object, or read-mutate-write via script.
-
-Verify both files were written:
+**Merge strategy:** Read the existing checkpoint JSON, update only the five
+fields above, and write the result back. Preserve all pre-existing fields
+(e.g., `run_id`, `auto_update`, `skip_commit`, `result_dir`). Use `jq` to
+update individual keys, or read-mutate-write via script. Verify both files
+were written:
 
 ```bash
 ls -la /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
 ls -la "${RUN_DIR}/manifest.json"
 ```
 
----
-
-## Phase 8 — Return to User
-
-Print a summary and exit. Build the finalize command using only the non-null
-update team IDs:
+**Return to user.** Print a summary and exit. Build the finalize command
+using only the non-null update team IDs:
 
 ```text
 Update teams dispatched.
