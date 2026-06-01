@@ -2,6 +2,29 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-02
+
+### Architectural Corrections Implementation Plan
+
+- Path: `docs/superpowers/plans/2026-06-02-al-dev-architectural-corrections.md`
+- Kind: plan
+- Status: implemented
+- Summary: Fix runtime capability declarations and map generation defects, then extend artifact-contract coverage to close completion-gate gaps.
+
+### Maintainer Tooling README Implementation Plan
+
+- Path: `docs/superpowers/plans/2026-06-02-maintainer-tooling-readme.md`
+- Kind: plan
+- Status: historical
+- Summary: Create `docs/maintainer-tooling.md` as a repo-local maintainer reference for the `.claude/` self-healing tool surface, covering entry points, internal sub-skills, agent dispatch, and recommended run order.
+
+### June 2 `.dev` Audit Report Cleanup
+
+- Path: `.dev/artifact-contract-audit.md`, `.dev/coupling-verification.md`
+- Kind: tracked `.dev` report/log cleanup
+- Status: historical
+- Summary: Remove two unreferenced June 2 audit reports after capturing their role in the architectural-corrections planning round. Keep active workflow state and resumable plugin-health run artifacts in place.
+
 ## 2026-06-01
 
 ### Superpowers History Cleanup Implementation Plan
