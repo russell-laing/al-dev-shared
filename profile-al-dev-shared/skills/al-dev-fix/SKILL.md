@@ -174,143 +174,25 @@ For trivial fixes:
 
 **No approval gate - present fix directly.**
 
-### Step 3: Non-Trivial Fix (10-20 min)
+### Step 3: Test-Plan Routing
 
-Follow the **Quick Analysis** pattern in
-`knowledge/architect-invocation-patterns.md`.
+After classification (Step 1):
 
-For non-trivial fixes:
+```text
+IF complexity == "trivial":
+  └─ Test via direct verification (no test plan needed)
+  └─ Skip to Step 4
 
-0. Load performance constraints if available:
-   `PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)`
-   If found: read CRITICAL/HIGH findings. Pass them as
-   "Known performance constraints: [findings]" in the architect prompt (step 1).
-   If not found: skip this step.
+IF complexity == "simple":
+  └─ Check if .dev/test-plan.md exists
+  │   ├─ If exists: Read test plan and execute tests
+  │   └─ If not exists: Create simple test case inline, execute, verify
+  └─ Move to Step 4
 
-0.5. Load prior lint findings if available:
-   `LINT=$(ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1)`
-   If found: parse UNRESOLVED items and include in the architect dispatch prompt
-   as "Known linting constraints: [list of UNRESOLVED items]".
-   If not found: skip this step.
-
-1. Assess fix complexity to determine architect model tier:
-   - **SIMPLE tier** (use sonnet): root cause is obvious, 1-2 files, < 20 lines to change
-   - **COMPLEX tier** (use opus — default): root cause is unclear, multi-file, ≥ 20 lines, or architectural impact
-
-   Spawn `al-dev-shared:al-dev-solution-architect` for quick analysis.
-   - If complexity = SIMPLE: include `model: sonnet` in the Agent tool invocation
-   - If complexity = COMPLEX: omit model parameter (agent default opus applies)
-
-   Include this in the dispatch prompt:
-   "**Fix Complexity Tier:** [SIMPLE|COMPLEX]
-   Follow `knowledge/al-symbol-pre-flight.md` for symbol verification rigor. Ensure all proposed changes reference verified AL symbol definitions."
-
-2. Review architect's analysis yourself:
-   - Does root cause make sense?
-   - Is fix approach sound?
-   - Are there risks?
-
-3. If approach unclear, refine with the architect:
-   "Your hypothesis about [X] doesn't account for [Y].
-    Re-analyze considering [constraint]."
-
-4. Present root-cause confirmation to the user:
-
-   ```text
-   Root cause hypothesis: [architect's 2-3 sentences]
-   Evidence: [key evidence points]
-   Alternative considered: [one alternative]
-   Estimated scope: [files that will change]
-
-   Proceed with this fix approach? (yes / revise)
-   ```
-
-   - yes → proceed to step 5
-   - revise → feed user's correction back to architect for
-     one more pass, re-present once; if still unclear after
-     that, ask the user to decide directly
-
-5. Spawn the developer with the confirmed approach.
-
-   See `knowledge/developer-invocation-patterns.md` (Context 2: Trivial
-   Direct Fix) for dispatcher consistency when spawning a developer.
-
-   For non-trivial fixes: check for a test plan (same as /al-dev-develop),
-   then dispatch al-dev-developer-tdd or al-dev-developer-traditional
-   accordingly:
-
-   ```bash
-   TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
-   ```
-
-   - Test plan present → `al-dev-shared:al-dev-developer-tdd`
-   - No test plan → `al-dev-shared:al-dev-developer-traditional`
-
-   Dispatch prompt:
-
-   ```text
-   Implement fix based on this approach:
-
-   Root cause: [from architect]
-   Fix approach: [from architect]
-   Files to change: [from architect]
-
-   Follow the recommended approach.
-   Verify compilation after changes.
-   ```
-
-6. Developer implements fix
-
-7. Run compile + lint pass per
-   `knowledge/compile-lint-procedure.md`.
-   (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
-   If compilation fails, keep compile correction bounded to the
-   confirmed root-cause scope.
-
-8. Pre-commit scope check — run `git status` and classify every
-   changed file against the original symptom. Populate each entry
-   below from the `git status` output — list every modified or new
-   file, classified as in- or out-of-scope:
-
-   ```text
-   Scope diff:
-
-   In scope (directly fixes the reported symptom):
-   - path/to/file1.al — [one-line reason]
-
-   Out of scope (encountered while fixing, not in original request):
-   - path/to/extra.al — [what was changed and why]
-   ```
-
-   **Decision rule:**
-
-   - If "Out of scope" is empty → proceed to step 9.
-   - If "Out of scope" has entries → STOP. Show the list to the
-     user and ask: "These are outside the original fix. Keep, revert,
-     or split into a separate commit?" Wait for per-item decisions
-     before presenting.
-
-9. Present fix to user:
-
-   ```text
-   Fix complete → [files changed]
-
-   Root cause: [brief explanation]
-   Fix approach: [1-2 sentences]
-
-   Changed files:
-   - [file 1]: [change description]
-   - [file 2]: [change description]
-
-   Compilation: [pass / Not verified]
-   Lint: [Clean / N unresolved items → lint-report.md]
-
-   Risks to watch: [from architect analysis]
-
-   Ready to test?
-   ```
-
-**Still no approval gate, but more context provided.**
+IF complexity == "medium" or "complex":
+  └─ [ERROR] Non-trivial fixes require /al-dev-develop workflow
+  └─ Escalate to /al-dev-plan → /al-dev-develop
+```
 
 ---
 
