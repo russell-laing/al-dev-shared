@@ -192,6 +192,8 @@ flowchart LR
     style SkillC fill:#4caf50
 ```
 
+Agents spawned: `al-dev-shared:al-dev-developer-traditional` (trivial path), `al-dev-shared:al-dev-developer-tdd` (non-trivial path when test plan present), `al-dev-shared:al-dev-solution-architect` (non-trivial path only)
+
 ### /al-dev-plan
 
 **Competitive design phase:** Multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes complexity triage, optional external claims verification, and a user approval gate before handing off to `/al-dev-develop`.
@@ -321,37 +323,45 @@ Agents spawned: `al-dev-shared:al-dev-security-reviewer`, `al-dev-shared:al-dev-
 
 ### /al-dev-commit
 
-**Multi-pass execution:** Analysis pass builds manifests and proposes commit groups; message-drafting pass creates commit messages; preflight passes run lint fixes and OOXML validation; execution pass runs the commits with hook support. Five agents with focused responsibilities.
+**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities.
 
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Analysis pass"]
+    Start([Start]) --> Phase0["Phase 0<br/>Setup & Validation<br/>(context, integrity,<br/>staged files, AC check)"]
+    Phase0 --> SkillWork0["(skill itself)"]
+    SkillWork0 --> Phase1["Phase 1<br/>Analysis &<br/>Message Drafting"]
     Phase1 --> Agent1["al-dev-commit-agent-analysis ×1<br/>(manifest only)"]
     Agent1 --> Interim1["(per-file manifests<br/>+ group proposals)"]
-    Interim1 --> Phase2["Phase 2<br/>Message drafting"]
-    Phase2 --> Agent2["al-dev-commit-message-drafter ×1"]
+    Interim1 --> Agent2["al-dev-commit-message-drafter ×1"]
     Agent2 --> Interim2["(commit messages)"]
-    Interim2 --> Phase35a["Step 9.5a<br/>Lint pre-flight"]
-    Phase35a --> Agent4["al-dev-commit-lint-fixer ×1"]
-    Agent4 --> Phase35b["Step 9.5b<br/>OOXML validation"]
-    Phase35b --> Agent5["al-dev-commit-ooxml-validator ×1"]
-    Agent5 --> Phase3["Phase 3<br/>Execution pass"]
-    Phase3 --> Agent3["al-dev-commit-agent-execute ×1<br/>(haiku)"]
+    Interim2 --> Phase2["Phase 2<br/>Confirmation"]
+    Phase2 --> SkillWork2["(skill itself)<br/>(USER_GATE)"]
+    SkillWork2 --> Phase3["Phase 3<br/>Preflight"]
+    Phase3 --> Agent4["al-dev-commit-lint-fixer ×1"]
+    Agent4 --> Agent5["al-dev-commit-ooxml-validator ×1"]
+    Agent5 --> Phase4["Phase 4<br/>Execution & Summary"]
+    Phase4 --> Agent3["al-dev-commit-agent-execute ×1<br/>(haiku)"]
     Agent3 --> Output1(["(git commits)"])
     Output1 --> End([End])
 
+    style Phase0 fill:#e0f2f1
     style Phase1 fill:#e0f2f1
     style Phase2 fill:#e0f2f1
-    style Phase35a fill:#e0f2f1
-    style Phase35b fill:#e0f2f1
     style Phase3 fill:#e0f2f1
+    style Phase4 fill:#e0f2f1
+    style SkillWork0 fill:#80cbc4
+    style SkillWork2 fill:#80cbc4
     style Agent1 fill:#80cbc4
     style Agent2 fill:#4db8a8
     style Agent3 fill:#80cbc4
     style Agent4 fill:#4db8a8
     style Agent5 fill:#4db8a8
+    style Interim1 fill:#b2dfdb
+    style Interim2 fill:#b2dfdb
     style Output1 fill:#26a69a
 ```
+
+Agents spawned: `al-dev-shared:al-dev-commit-agent-analysis` (Phase 1), `al-dev-shared:al-dev-commit-message-drafter` (Phase 1), `al-dev-shared:al-dev-commit-lint-fixer` (Phase 3), `al-dev-shared:al-dev-commit-ooxml-validator` (Phase 3), `al-dev-shared:al-dev-commit-agent-execute` (Phase 4)
 
 ### /al-dev-explore
 
@@ -779,9 +789,9 @@ Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent n
 - **al-dev-docs-writer** — used only by /al-dev-document
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-commit-agent-analysis** — used only by /al-dev-commit (Phase 1; read-only)
-- **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 3; runs git commits)
-- **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a; lint pre-flight)
-- **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b; OOXML validation)
+- **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 4; runs git commits)
+- **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Phase 3; lint pre-flight)
+- **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Phase 3; OOXML validation)
 - **al-dev-commit-recover-verifier** — used only by /commit-recover
 - **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
 - **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
