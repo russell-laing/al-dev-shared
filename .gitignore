@@ -10,4 +10,8 @@ __pycache__/
 *.html
 .dev/projection-sync-progress.md
 docs/superpowers/plans/
+docs/superpowers/specs/
+!docs/superpowers/
+!docs/superpowers/README.md
+!docs/superpowers/history.md
 docs/health/*-findings.md
