@@ -58,8 +58,6 @@ flowchart LR
         al_dev_support_reply_drafter[al-dev-support-reply-drafter]
         al_dev_support_researcher[al-dev-support-researcher]
         al_dev_ticket_agent[al-dev-ticket-agent]
-        plan_map_changes_duck_worker[plan-map-changes-duck-worker]
-        plugin_health_team[plugin-health-team]
     end
     subgraph Knowledge[Knowledge Files]
         al_dev_develop_spawn_prompt_md[al-dev-develop-spawn-prompt]
@@ -83,6 +81,7 @@ flowchart LR
         performance_review_examples_md[performance-review-examples]
         plugin_health_lenses_md[plugin-health-lenses]
         release_notes_template_md[release-notes-template]
+        remote_trigger_duck_team_dispatch_md[remote-trigger-duck-team-dispatch]
         scope_expansion_gate_md[scope-expansion-gate]
         script_engineer_conventions_md[script-engineer-conventions]
         security_review_examples_md[security-review-examples]
@@ -192,7 +191,7 @@ flowchart LR
     al_dev_ticket --> ticket_agent_invocation_pattern_md
     al_dev_ticket_agent --> ticket_agent_invocation_pattern_md
     plan_map_changes --> map_change_rubber_duck_checks_md
-    plan_map_changes_duck_worker --> map_change_rubber_duck_checks_md
+    plan_map_changes --> remote_trigger_duck_team_dispatch_md
     plugin_health --> plugin_health_lenses_md
 
     class al_dev_commit skillNode
@@ -239,8 +238,6 @@ flowchart LR
     class al_dev_support_reply_drafter agentNode
     class al_dev_support_researcher agentNode
     class al_dev_ticket_agent agentNode
-    class plan_map_changes_duck_worker agentNode
-    class plugin_health_team agentNode
     class al_dev_develop_spawn_prompt_md knowledgeNode
     class al_dev_fix_examples_md knowledgeNode
     class al_dev_plan_phase_routing_md knowledgeNode
@@ -262,6 +259,7 @@ flowchart LR
     class performance_review_examples_md knowledgeNode
     class plugin_health_lenses_md knowledgeNode
     class release_notes_template_md knowledgeNode
+    class remote_trigger_duck_team_dispatch_md knowledgeNode
     class scope_expansion_gate_md knowledgeNode
     class script_engineer_conventions_md knowledgeNode
     class security_review_examples_md knowledgeNode
@@ -306,8 +304,6 @@ flowchart LR
 - `al-dev-explore`
 - `al-dev-interview`
 - `al-dev-script-engineer`
-- `plan-map-changes-duck-worker`
-- `plugin-health-team`
 
 **Dead knowledge (referenced by nothing):**
 
@@ -351,4 +347,5 @@ flowchart LR
 **Missing refs (referenced but not on disk):**
 
 - `knowledge: plugin-health-lenses.md`
+- `knowledge: remote-trigger-duck-team-dispatch.md`
 
