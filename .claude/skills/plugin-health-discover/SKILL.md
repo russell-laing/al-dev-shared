@@ -4,7 +4,7 @@ description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
   context from documentation maps, dispatches all design and quality lenses,
   and writes structured findings to docs/health/YYYY-MM-DD-<surface>-findings.md.
-  Called by /plugin-health; can also be run standalone to refresh findings
+  Called by /plugin-health-audit; can also be run standalone to refresh findings
   without re-running the report phase.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]"
 ---

@@ -1,5 +1,5 @@
 ---
-name: plugin-health
+name: plugin-health-audit
 description: >-
   Suggestions-only health sweep of the al-dev-shared plugin surfaces. Dispatches
   design + quality + naming lenses with a per-surface file list, ranks findings,
@@ -9,11 +9,11 @@ description: >-
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 ---
 
-# Skill: /plugin-health
+# Skill: /plugin-health-audit
 
-Standing self-healing entry point. Detects drift across both plugin surfaces and
+Standing suggestions-only entry point. Detects drift across both plugin surfaces and
 consolidates suggestions into one ranked dossier per surface. Nothing is
-auto-edited — the loop is: `/plugin-health` (detect) → dossier (review) →
+auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review) →
 `/al-dev-map-suggestions-verify` (rubber-duck accepted items) → plan → execute.
 
 Implemented as two sub-skills:
@@ -31,7 +31,7 @@ If a sweep is interrupted by session limits:
 
 2. **Re-invoke with resume flag:**
    ```bash
-   /plugin-health --surface <same-surface> --dimension <same-dimension> --resume
+   /plugin-health-audit --surface <same-surface> --dimension <same-dimension> --resume
    ```
    The skill detects completed lenses from prior session, skips them, and runs only missing ones.
 

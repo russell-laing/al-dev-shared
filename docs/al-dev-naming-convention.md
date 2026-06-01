@@ -3,7 +3,7 @@
 **Last updated:** 2026-05-29
 
 This document defines how maintainer tools and their outputs are named. The
-`naming-convention-lens` agent flags drift against it on every `/plugin-health`
+`naming-convention-lens` agent flags drift against it on every `/plugin-health-audit`
 run; `scripts/tests/test_naming_convention.py` enforces the **lens-agent** rule
 mechanically. Keep this doc and those two checkers in sync.
 

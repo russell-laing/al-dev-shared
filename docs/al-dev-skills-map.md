@@ -3,7 +3,7 @@
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
 **Last updated:** 2026-06-01 (22 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -940,10 +940,10 @@ Signals: internal path refs (✓), self-audit purpose (✓), no spawned al-dev-s
 Suggestion: Move `profile-al-dev-shared/skills/al-dev-diagram-generator/` to `.claude/skills/al-dev-diagram-generator/` and remove from the plugin scope statement. Update Layer 2 to remove the section or relocate to a maintainer-tools appendix.
 Trade-off: Skill remains available for local analysis workflows; removed from the distributed plugin.
 
-**Move: /plugin-health → .claude/skills/**
+**Move: /plugin-health-audit → .claude/skills/**
 Observation: Plugin health-check and quality-audit tool. Dispatches remote lens agents to audit design, quality, complexity, and naming across the plugin surfaces; writes dossiers to `docs/health/`. Purely for maintainer use; no value to AL developers.
 Signals: self-audit purpose (✓), no spawned al-dev-shared agents (✓).
-Suggestion: Move `profile-al-dev-shared/skills/plugin-health/` to `.claude/skills/plugin-health/` and remove from the plugin scope statement. Update Layer 2 to remove the section.
+Suggestion: Move `profile-al-dev-shared/skills/plugin-health-audit/` to `.claude/skills/plugin-health-audit/` and remove from the plugin scope statement. Update Layer 2 to remove the section.
 Trade-off: Skill remains available for periodic health sweeps; removed from the distributed plugin.
 
 ---

@@ -196,7 +196,7 @@ python3 scripts/generate-agent-projections.py
 
 ```bash
 # Run the suggestions-only health sweep (writes per-surface dossiers; never auto-edits)
-/plugin-health --surface both
+/plugin-health-audit --surface both
 ```
 
 ### Updating Documentation Maps

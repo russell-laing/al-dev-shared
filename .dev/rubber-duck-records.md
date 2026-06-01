@@ -117,7 +117,7 @@ System prompt describes 4 phases:
 - **Phase D (Completion)**: Mark final status, return team status
 
 **Side-effects:**  
-Used only by `/plugin-health` skill. Proposal requires updating `/plugin-health` to coordinate between two agents (orchestrator + collector) with a handoff artifact (list of completed lenses).
+Used only by `/plugin-health-audit` skill. Proposal requires updating `/plugin-health-audit` to coordinate between two agents (orchestrator + collector) with a handoff artifact (list of completed lenses).
 
 **Scope gap:**  
 The suggestion identifies Phases B and C as the split boundary, but Phase B ("collect results") and Phase C ("write findings") are the normal orchestrator workflow: **spawn work → collect outputs → write results**. Splitting here creates an awkward handoff after each lens completes (incomplete vs complete state).
@@ -134,7 +134,7 @@ This requires 2–3 cleaner handoff points (manifest with completion list) rathe
 *Reasoning:* The suggestion is technically correct that orchestration and collection are distinct concerns, but the proposed split point is suboptimal:
 - Current boundary (after Phase C) forces a per-lens handoff — awkward and chatty
 - Better boundary would be: orchestrator writes "completed_lenses" list in manifest; collector reads manifest and aggregates
-- Cost: One new agent + coordination complexity in `/plugin-health` dispatch
+- Cost: One new agent + coordination complexity in `/plugin-health-audit` dispatch
 - Benefit: Failure diagnosis separation (orchestrator failures vs collection failures)
 
 Recommend **DEFER** unless there's evidence that collection failures are blocking orchestration retries. Otherwise, the complexity cost exceeds the benefit.

@@ -4,7 +4,7 @@ description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
   /plugin-health-discover, ranks findings, writes the dossier, optionally
   refreshes the dependency graph, and presents results to the user.
-  Called by /plugin-health; can also be run standalone against an existing
+  Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
 ---
@@ -22,7 +22,7 @@ Otherwise, find the most recent findings file for each surface requested:
 ls -t /Users/russelllaing/al-dev-shared/docs/health/*-findings.md 2>/dev/null | head -2
 ```
 
-If no findings file exists, report: "No findings file found. Run /plugin-health-discover first." and stop.
+If no findings file exists, report: "No findings file found. Run /plugin-health-audit first." and stop.
 
 ## Phase 1 — Parse findings
 

@@ -6,7 +6,7 @@ description: >-
   agents", "design review for the plugin", "should skills be split or merged?",
   "plugin has grown" / "feels bloated", or "cross-surface design analysis".
   Runs /analyze-skill-design then /analyze-agent-design sequentially and produces
-  a synthesized cross-surface view. Distinct from /plugin-health (holistic
+  a synthesized cross-surface view. Distinct from /plugin-health-audit (holistic
   quality/naming/drift sweep); this skill focuses solely on structural coherence
   and fit between the skill and agent layers.
 argument-hint: "[--skill-only | --agent-only]"
@@ -36,7 +36,7 @@ Determine analysis scope from the user's request and any `--skill-only` or
 
 ## Step 1 — Prior-Run Awareness
 
-Before dispatching, check for recent plugin-health findings:
+Before dispatching, check for recent plugin-health-audit findings:
 
 ```bash
 ls -t docs/health/*-health.md 2>/dev/null | head -2

@@ -1,29 +1,30 @@
 ---
-name: plugin-health
+name: plugin-health-audit
 description: >-
   Suggestions-only health sweep of the al-dev-shared plugin surfaces (skills and agents).
+  Generates findings and recommendations but never auto-fixes source files.
   Dispatches design and quality lenses, ranks findings, and writes dossiers to docs/health/.
   Parallelized via agent teams: dispatch phase spawns remote lenses, collection phase
   fetches results via --resume flag.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 ---
 
-# Skill: /plugin-health
+# Skill: /plugin-health-audit
 
-Run a parallelized health sweep of the al-dev-shared plugin surfaces. The sweep dispatches remote
-agent teams to analyze skills and agents against design and quality lenses, collects results,
-and writes ranked findings to docs/health/. Supports resume workflow to collect results in a
-separate session after dispatch.
+Run a parallelized suggestions-only health sweep of the al-dev-shared plugin surfaces. The sweep
+dispatches remote agent teams to analyze skills and agents against design and quality lenses,
+collects results, and writes ranked findings to docs/health/. Supports resume workflow to collect
+results in a separate session after dispatch. Never auto-edits source files.
 
 ## Overview: Dispatch-and-Resume Workflow
 
-**Entry 1: Initial dispatch** (`/plugin-health` or `/plugin-health --surface agents --dimension design`)
+**Entry 1: Initial dispatch** (`/plugin-health-audit` or `/plugin-health-audit --surface agents --dimension design`)
 
 - Phase 1: Parse arguments, build file lists and work queue, spawn remote agent team
 - Returns immediately; user freed to work while team analyzes in background
 - Writes checkpoint to `.dev/plugin-health-team-checkpoint.json`
 
-**Entry 2: Resume collection** (`/plugin-health --resume`)
+**Entry 2: Resume collection** (`/plugin-health-audit --resume`)
 
 - Phase 3: Fetch results from repo artifacts, aggregate findings, rank by severity, write dossiers
 - Continues from the dispatch checkpoint created in Entry 1
@@ -102,7 +103,7 @@ checkpoint_path = Path("/Users/russelllaing/al-dev-shared/.dev/plugin-health-tea
 checkpoint = load_checkpoint(str(checkpoint_path))
 
 if checkpoint is None:
-    print("Error: No resumable plugin-health run found. Start a new sweep with /plugin-health.")
+    print("Error: No resumable plugin-health-audit run found. Start a new sweep with /plugin-health-audit.")
     return
 
 print(f"Resuming team {checkpoint.team_id}: run_id={checkpoint.run_id}")
@@ -119,7 +120,7 @@ manifest = json.load(open(manifest_path))
 
 if manifest['status'] == 'in_progress':
     print("Remote team still executing. Check back in a few minutes.")
-    print("Run /plugin-health --resume again to collect when ready.")
+    print("Run /plugin-health-audit --resume again to collect when ready.")
     return
 ```markdown
 
@@ -134,11 +135,11 @@ if success:
     print(f"Dossier written to {checkpoint.dossier_file}")
     
     if checkpoint.status == "partial":
-        print("\nNote: Some lenses remain pending. Run /plugin-health --resume to complete.")
+        print("\nNote: Some lenses remain pending. Run /plugin-health-audit --resume to complete.")
     else:
         print("\nNext step: Use /superpowers:writing-plans to implement top recommendations.")
 else:
     print("Error: Collection failed. Check logs above.")
 ```text
 
-This adds the full collection path that runs when user calls `/plugin-health --resume`.
+This adds the full collection path that runs when user calls `/plugin-health-audit --resume`.

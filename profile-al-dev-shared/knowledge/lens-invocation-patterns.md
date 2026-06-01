@@ -121,7 +121,7 @@ Convention doc:
 
 ## Background
 
-`/plugin-health` Phase 2.1 historically passed all 10 context structures to
+`/plugin-health-audit` Phase 2.1 historically passed all 10 context structures to
 every design and quality lens. This created maintenance burden: callers that
 needed 2 fields received 8 inert ones. This file canonicalizes the minimum
 required context per lens class so dispatchers pass lean, correct prompts.
