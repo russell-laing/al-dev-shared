@@ -8,8 +8,10 @@ description: >-
   when they describe a requirement, ask "how should I build
   this", or say "plan this" or "design this". Produces
   .dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md. Prefer this
-  over ad-hoc planning.
-argument-hint: "[feature description]"
+  over ad-hoc planning. Supports resuming directly to Phase 2
+  (architect debate) if you already have a finalized spec:
+  `--resume-from=phase2`.
+argument-hint: "[feature description] [--resume-from=phase2]"
 ---
 
 # Plan Skill
@@ -43,8 +45,87 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ## Phase 0: Check for Existing Progress
 
-Per the Phase 0 Read Protocol in
-`knowledge/workflow-resilience.md`.
+This skill has two preflight groups:
+
+- **Preflight phases (0–1.6):** requirements gathering, complexity
+  triage, context loading, external-claim verification, and target
+  confirmation. These produce the state needed to begin architect
+  debate.
+- **Architect-debate phases (2–7):** competitive design, debate
+  facilitation, evaluation, synthesis, validation, and approval.
+  These phases consume only the checkpoint state listed below — they
+  do not read intermediate state from the preflight phases directly.
+
+### Resume modes
+
+**Mode A — `--resume-from=phase2` passed in $ARGUMENTS:**
+The caller is asserting the spec is already finalized and wants to
+skip preflight and go straight to architect debate.
+
+1. Read `.dev/al-dev-plan-checkpoint.json`.
+2. If the file is **missing or unreadable**, STOP and report:
+   *"No checkpoint to resume from. Run /al-dev-plan without
+   --resume-from to perform preflight (phases 0–1.6) first."*
+   Do not fabricate checkpoint state.
+3. If present, load the checkpoint fields (see schema below) into the
+   working state used by Phase 2, skip phases 0.5–1.6 entirely, and
+   jump to **Phase 2**. Honour `no_crit_swarm` if set.
+
+**Mode B — no `--resume-from`, but `.dev/al-dev-plan-checkpoint.json`
+exists:**
+Offer resume via USER_GATE:
+
+> A prior planning checkpoint exists (saved [timestamp]) for:
+> [one-line requirements summary].
+>
+> - **Resume** — skip preflight and go to architect debate (Phase 2)
+> - **Restart** — discard the checkpoint and gather context fresh
+
+- **Resume** → load checkpoint, skip to Phase 2 (same as Mode A).
+- **Restart** → delete `.dev/al-dev-plan-checkpoint.json`, then also
+  apply the standard `.dev/progress.md` Read Protocol below before
+  Phase 0.5.
+
+**Mode C — no `--resume-from` and no checkpoint:**
+Apply the standard Phase 0 Read Protocol in
+`knowledge/workflow-resilience.md` (handles `.dev/progress.md`
+mid-run resume), then proceed to Phase 0.5.
+
+### Checkpoint schema
+
+The preflight phases write `.dev/al-dev-plan-checkpoint.json` once
+context gathering and any optional verification phases complete (see
+the **end of Phase 1.6** write step). It captures every input Phase 2
+needs so the debate phases never depend on skipped-phase state:
+
+```json
+{
+  "phase": 2,
+  "requirements": "user feature requirement and preliminary scope",
+  "scope": "estimated file count, affected BC objects, patterns",
+  "architect_model": "opus",
+  "user_context": "object ID range, naming prefix, key patterns, perf/explore findings",
+  "external_findings_status": "summary of verified/unverified claims, or null",
+  "timestamp": "2026-06-01T00:00:00Z",
+  "no_crit_swarm": false
+}
+```
+
+When resuming (Mode A or Mode B → Resume), treat these fields as the
+authoritative substitute for the corresponding preflight outputs:
+
+- `requirements` + `scope` → the user requirement and scope for the
+  architect prompts.
+- `architect_model` → the model assignment from Phase 0.5 (do not
+  re-triage).
+- `user_context` → the project-context inputs (object ID range,
+  naming prefix, key patterns) and any perf/explore findings.
+- `external_findings_status` → the **External findings status:**
+  block forwarded to architects (Phase 1.5 output); skip if null.
+
+If a required field is missing from the checkpoint, fall back to
+re-running the specific preflight step that produces it rather than
+proceeding with empty state.
 
 ---
 
@@ -77,12 +158,14 @@ Do not surface this decision to the user.
 
 **Input Validation Gate (run before any other step):**
 Check whether $ARGUMENTS contains a meaningful feature description.
+
 - If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Sufficient context requires: (1) a feature name or description, AND (2) at least one functional requirement. Example: "Add a credit limit check during posting." Ask the user exactly one question:
   > "What AL feature or fix should I plan? Please describe the requirement or paste a spec."
 - Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
 **Clarification retry logic:**
+
 - **First vague response:** Ask for clarification once. Expected context: (1) business goal, (2) key workflows, (3) affected BC objects.
 - **Second vague response:** Ask for clarification a second time with specific prompt: "Please provide: (1) the business goal (what problem does this solve?), (2) the key user workflows (who does what?), and (3) the BC objects affected (which tables/pages/events?)."
 - **Third vague response:** Stop and escalate to user with message: "I've asked twice for clarification. To proceed, I need these three pieces of information: (1) business goal — what problem this solves, (2) key workflows — who does what and when, (3) affected BC objects — which tables/pages/events. Please provide all three, or consider running /interview first for guided discovery."
@@ -92,10 +175,12 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` and continue without it. If requirements are unclear/complex, suggest `/interview`.
 3. **Gather symbol evidence** — use the strongest available AL symbol evidence before spawning architects: prefer `AL LSP` semantic navigation (go-to-definition, find-references, document symbols, hover/type) when the active harness exposes it; otherwise AL MCP via `al-mcp-server` (`al_search_objects`, `al_get_object_definition`, `al_search_object_members`); otherwise tightly scoped `rg` labeled as `text search`. Include findings and evidence source (`AL LSP`, `AL MCP`, `text search`, or `unverified`) in every architect prompt. If no provider/result is available, proceed to Phase 2 using general AL knowledge unless a required symbol is `unverified`.
 4. **Load performance and exploration findings** — if available, integrate findings from `/al-dev-explore` or `/al-dev-perf` pre-planning phases:
+
    ```bash
    PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
    EXPLORE=$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)
    ```
+
    If a perf file is found, read CRITICAL/HIGH findings and include them as **"Performance constraints from prior analysis:"** in every architect prompt in Phase 2. If an explore file is found, read the findings and synthesized recommendations and include them as **"Codebase exploration findings from prior investigation:"** in every architect prompt. If neither exists, skip silently.
 
 ## Phase 1.5: Verify External Claims
@@ -151,6 +236,7 @@ Before acting on any findings file or context document:
    - Your request: Extract target from user message (skill, repo, file, or project)
    - Output path: Absolute path where work will land
 2. **Validate match:**
+
    ```text
    > **Target check:**
    > - Findings reference: [extracted from findings]
@@ -159,12 +245,38 @@ Before acting on any findings file or context document:
    >
    > Do these match? If findings and request disagree, stop and confirm before proceeding.
    ```
+
 3. **Decision:**
    - If all align → continue
    - If findings/request disagree → flag mismatch and wait
    - If mismatch is fundamental → stop and escalate to user
 
+### Preflight checkpoint write
+
+Once preflight (phases 0.5–1.6) is complete and before spawning
+architects, write `.dev/al-dev-plan-checkpoint.json` using the schema
+in Phase 0. This captures the full state Phase 2 needs so a later run
+can resume with `--resume-from=phase2`:
+
+```bash
+mkdir -p .dev
+```
+
+Populate `requirements`, `scope`, `architect_model`, `user_context`,
+`external_findings_status` (or `null` if Phase 1.5 was skipped),
+`timestamp` (ISO 8601), and `no_crit_swarm`. Set `phase` to `2`.
+Overwrite any existing checkpoint — latest state wins.
+
 ## Phase 2: Spawn Architect Team (2-3 agents)
+
+**State source:** Use the checkpoint state when this run resumed via
+`--resume-from=phase2` (or Mode B → Resume); otherwise use the
+preflight outputs from phases 0.5–1.6. Either way, Phase 2 draws on
+exactly these inputs — requirement (`requirements`), scope/objects
+(`scope`), `architect_model`, project context (`user_context`), and
+the **External findings status:** block (`external_findings_status`).
+Phase 2 must not read intermediate preflight working state beyond
+these fields, so a resumed run is equivalent to a fresh one.
 
 Follow the **Competitive Debate** pattern in
 `knowledge/architect-invocation-patterns.md`.
