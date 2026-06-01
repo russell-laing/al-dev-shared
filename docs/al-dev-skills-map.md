@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-06-01 (20 active skill directories in `profile-al-dev-shared/skills`: 18 primary distributed skills + 1 distributed utility `/al-dev-consolidate` + 1 maintainer-only utility `/al-dev-diagram-generator`)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. `/al-dev-diagram-generator`, `/align-harness-repos`, and `/plugin-health` are maintainer-only tools and are not part of the distributed plugin surface.
+**Last updated:** 2026-06-01 (23 active skill directories in `profile-al-dev-shared/skills`: 16 primary distributed skills + 5 development-workflow tools + 2 maintainer-only utilities)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Maintainer-only tools (`/al-dev-diagram-generator`, `/plugin-health`) are documented but not part of the distributed plugin surface. Development-workflow tools (`/plan-with-critic-swarm`, `/verify-commits`, `/al-dev-consolidate`, `/plan-map-changes`, `/al-dev-help`) are included in the distributed surface.
 
 ---
 
@@ -35,6 +35,10 @@ flowchart TD
     Develop -->|.dev/*-phase4-handoff| ReviewDevelop("al-dev-review-develop")
     ReviewDevelop -->|.dev/*-al-dev-develop-code-review.md| Commit
 
+    %% Optional plan red-teaming
+    Plan -.->|optional red-team| CriticSwarm("plan-with-critic-swarm")
+    CriticSwarm -.->|.dev/plan-critique-YYYYMMDD.md| Develop
+
     %% Lint feedback loop
     Develop -.->|optional compile cleanup| Lint("al-dev-lint")
     Lint -.->|.dev/*-al-dev-lint-lint-report.md| FixDirect
@@ -43,7 +47,8 @@ flowchart TD
     Note["Trivial requests<br/>route to /fix"] -.-> Plan
 
     %% Outputs
-    Commit --> Git(["✓ git commit"])
+    Commit --> Verify("verify-commits")
+    Verify -->|commits match plan| Git(["✓ git commit"])
     Git -.-> ReleaseNotes("al-dev-release-notes")
     ReleaseNotes --> Notes(["✓ release notes"])
     Git -.-> Handoff("al-dev-handoff")
@@ -80,6 +85,8 @@ flowchart TD
     style Consolidate fill:#e8eaf6
     style ConsolidateOut fill:#c8e6c9
     style Decision1 fill:#ffe0b2
+    style CriticSwarm fill:#f8bbd0
+    style Verify fill:#e0f2f1
 ```
 
 ---
