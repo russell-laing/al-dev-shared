@@ -2,11 +2,12 @@
 name: plugin-health-discover
 description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
-  context from documentation maps, dispatches all design and quality lenses,
+  context from documentation maps, dispatches all design, quality, and naming
+  lenses,
   and writes structured findings to docs/health/YYYY-MM-DD-<surface>-findings.md.
   Called by /plugin-health-audit; can also be run standalone to refresh findings
   without re-running the report phase.
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 ---
 
 # Skill: /plugin-health-discover
@@ -18,6 +19,7 @@ that `/plugin-health-report` consumes.
 
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
 - `--dimension` ∈ `design` | `quality` | `all` (default `all`)
+- `--resume` ∈ present | absent (default absent)
 
 Surface → directory mapping:
 - `plugin` → `profile-al-dev-shared/`
@@ -65,7 +67,7 @@ If invoked with `--resume` flag:
 
 1. **Scan `.dev/` directory for existing lens output files:**
    ```bash
-   ls -1 .dev/plugin-health-lens-*.json 2>/dev/null
+   ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
    ```
 
 2. **Extract completed lens names:**
@@ -75,11 +77,14 @@ If invoked with `--resume` flag:
 3. **Filter remaining lenses:**
    - `remaining_lenses = [l for l in ALL_LENSES if l not in completed_lenses]`
    - Log: `"Resuming: X lenses already completed, Y remaining"`
+   - If `remaining_lenses` is empty, log: `"Resuming: all lenses already complete; skipping dispatch and assembling findings from disk."`
 
 If NOT invoked with `--resume`:
 - `remaining_lenses = ALL_LENSES`
 
-## Phase 3a — Dispatch lenses via Workflow (isolated contexts)
+## Phase 3b — Dispatch lenses via Workflow (isolated contexts)
+
+If `remaining_lenses` is empty, skip this phase entirely and proceed to Phase 4.
 
 Lenses run in a Workflow to isolate agent conversations. The Workflow receives
 a list of lens prompts (built in this phase) and fans them out via `pipeline()`,
@@ -234,7 +239,7 @@ For each surface that had lenses run:
 
 1. **Collect all lens output files from `.dev/`:**
    ```bash
-   ls -1 .dev/plugin-health-lens-*.json | sort
+   ls -1 .dev/*-plugin-health-lens-*.json | sort
    ```
 
 2. **Read and assemble findings:**
@@ -274,7 +279,7 @@ For each surface that had lenses run:
 
 4. **Clean up disk files after assembly:**
    ```bash
-   rm .dev/plugin-health-lens-*.json
+   rm -f .dev/*-plugin-health-lens-*.json
    ```
 
 5. **Return to caller:**

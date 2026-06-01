@@ -165,13 +165,25 @@ Do not revert — partial content is better than the stale previous version.
 
 ---
 
-## Phase 5 — Regenerate Agent Projections and Refresh Dependency Graph
+## Phase 5 — Regenerate Diagrams, Agent Projections, and Refresh Dependency Graph
 
 When documentation maps are updated, agent definitions and relationships may have changed.
-Regenerate harness-native projections and refresh the plugin dependency graph to keep
-derived artifacts in sync.
+Regenerate Mermaid diagrams, harness-native projections, and the plugin dependency graph to
+keep all derived artifacts in sync.
 
-First, regenerate agent projections:
+First, regenerate all Mermaid diagrams (Layer 1 lifecycle, Layer 2 drilldowns, agent catalog):
+
+```bash
+python3 /Users/russelllaing/al-dev-shared/scripts/generate-map-doc-sections.py
+```
+
+Capture the exit code. If non-zero, report:
+
+```text
+Mermaid diagram regeneration failed (exit <code>).
+```
+
+Then regenerate agent projections:
 
 ```bash
 python3 /Users/russelllaing/al-dev-shared/scripts/generate-agent-projections.py
@@ -195,9 +207,9 @@ Capture the exit code. If non-zero, report:
 Dependency graph refresh failed (exit <code>).
 ```
 
-If BOTH operations succeed, continue to Phase 6.
+If all THREE operations succeed, continue to Phase 6.
 
-If either fails, report:
+If any fail, report:
 
 ```text
 One or more artifact updates failed. Maps have been written; derived artifacts
@@ -223,6 +235,7 @@ Sync finalized.
     docs/al-dev-agent-map.md        — <N> lines  (or "skipped")
 
   Derived artifacts:
+    Mermaid diagrams: regenerated   (or "regeneration failed — see above")
     Agent projections: regenerated  (or "regeneration failed — see above")
     Dependency graph: refreshed     (or "refresh failed — see above")
 ```

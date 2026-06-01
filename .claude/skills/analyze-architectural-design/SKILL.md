@@ -80,9 +80,26 @@ Using `skill_candidates` and `agent_candidates`, answer:
 Write a `## Cross-Surface Synthesis` section to `docs/al-dev-plugin-graph.md`
 with one row per finding: `[surface] | [finding] | [linked suggestion]`.
 
-## Step 5 — Present Results
+## Step 5 — Regenerate Diagrams
+
+After all analyses are complete and findings are written to docs/, regenerate the Mermaid
+diagrams to reflect the updated map content:
+
+```bash
+python3 /Users/russelllaing/al-dev-shared/scripts/generate-map-doc-sections.py
+```
+
+This regenerates:
+- Layer 1 lifecycle diagrams in `docs/al-dev-skills-map.md`
+- Layer 2 per-skill drilldowns with Phase<N> nodes
+- Agent catalog and dependency graphs in `docs/al-dev-agent-map.md`
+
+If the script exits non-zero, report the error but continue to Step 6 (results presentation).
+
+## Step 6 — Present Results
 
 1. Print the skill suggestions summary (one line each, highest-leverage marked).
 2. Print the agent suggestions summary (one line each, highest-leverage marked).
 3. Print the cross-surface synthesis table.
-4. Ask: "Would you like to act on any of these now?"
+4. Confirm: "Diagrams regenerated."
+5. Ask: "Would you like to act on any of these now?"
