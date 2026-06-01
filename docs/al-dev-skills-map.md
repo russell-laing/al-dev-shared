@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-01 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Last updated:** 2026-06-02 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 20 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
 
 ---
@@ -735,10 +735,15 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_document[al-dev-document]
+    agent_al_dev_docs_writer[al-dev-docs-writer]
 
+    skill_al_dev_document --> agent_al_dev_docs_writer
 
     class skill_al_dev_document skillNode
+    class agent_al_dev_docs_writer agentNode
 ```
+
+Agents spawned: `al-dev-shared:al-dev-docs-writer`
 <!-- END GENERATED: skill-drilldown-al-dev-document -->
 
 ### /al-dev-release-notes
@@ -1056,15 +1061,24 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
     knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
     artifact_YYYY_MM_DD_al_dev_plan_plan_md[.dev/YYYY-MM-DD-al-dev-plan-plan.md]
     artifact_progress_md[.dev/progress.md]
 
+    skill_al_dev_map_suggestions_verify --> Phase1
+    skill_al_dev_map_suggestions_verify --> Phase2
+    skill_al_dev_map_suggestions_verify --> Phase3
     skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_map_suggestions_verify --> artifact_YYYY_MM_DD_al_dev_plan_plan_md
     skill_al_dev_map_suggestions_verify --> artifact_progress_md
 
     class skill_al_dev_map_suggestions_verify skillNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
     class knowledge_map_change_rubber_duck_checks_md knowledgeNode
     class artifact_YYYY_MM_DD_al_dev_plan_plan_md artifactNode
     class artifact_progress_md artifactNode

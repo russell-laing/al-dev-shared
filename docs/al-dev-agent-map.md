@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-01 (22 agents; analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-02 (22 agents; analysis refreshed with 5 new suggestions)
 
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
@@ -494,7 +494,7 @@
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
 **Tools:** (none)
-**Spawned by:** /al-dev-ticket (support mode: research phase)
+**Spawned by:** /al-dev-support-reply (research phase)
 
 **Inputs:**
 
@@ -517,7 +517,7 @@
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
 **Model:** sonnet
 **Tools:** Write
-**Spawned by:** /al-dev-ticket (support mode: reply phase)
+**Spawned by:** /al-dev-support-reply (reply phase)
 
 **Inputs:**
 
@@ -606,8 +606,8 @@
 - **al-dev-performance-reviewer** — used only by /al-dev-review-develop
 - **al-dev-release-notes-writer** — used only by /al-dev-release-notes
 - **al-dev-security-reviewer** — used only by /al-dev-review-develop
-- **al-dev-support-reply-drafter** — used only by /al-dev-ticket (support mode: reply phase)
-- **al-dev-support-researcher** — used only by /al-dev-ticket (support mode: research phase)
+- **al-dev-support-reply-drafter** — used only by /al-dev-support-reply (reply phase)
+- **al-dev-support-researcher** — used only by /al-dev-support-reply (research phase)
 
 ### Agents with no inputs/outputs documentation
 
@@ -619,6 +619,15 @@ None — all 22 agents have documented Inputs and Outputs tables.
 - **al-dev-developer-traditional** — used by /al-dev-develop, /al-dev-fix, and /al-dev-review-develop (autonomous compile-fix loops)
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
+
+### Audit Sync: 2 Discrepancies Resolved (2026-06-02)
+
+Based on agent audit from `20260601T194258Z`, the Layer 2 profile sections have been corrected to match grep-derived caller evidence:
+
+**Caller mismatch (2 agents) — resolved:**
+
+- `al-dev-support-researcher`: Layer 2 `**Spawned by:**` updated from `/al-dev-ticket (support mode: research phase)` to `/al-dev-support-reply (research phase)`. Grep confirms the qualified invocation (`al-dev-shared:al-dev-support-researcher`) appears only in `/al-dev-support-reply/SKILL.md`. Layer 1 Catalog was already correct.
+- `al-dev-support-reply-drafter`: Layer 2 `**Spawned by:**` updated from `/al-dev-ticket (support mode: reply phase)` to `/al-dev-support-reply (reply phase)`. Grep confirms the qualified invocation (`al-dev-shared:al-dev-support-reply-drafter`) appears only in `/al-dev-support-reply/SKILL.md`. Layer 1 Catalog was already correct.
 
 ### Audit Sync: 3 Discrepancies Resolved (2026-06-01)
 
