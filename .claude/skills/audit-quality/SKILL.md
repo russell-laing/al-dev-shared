@@ -27,28 +27,7 @@ only that agent or skill is audited and only its section is updated in the repor
 
 ## Parsing Arguments
 
-Parse the input to extract `--type` and optional object name:
-
-```python
-# Reference only — this parsing logic is embedded in the skill's runtime.
-# Do not execute this block directly.
-import sys
-args = sys.argv[1:]  # Get arguments after command name
-audit_type = None
-object_name = None
-
-if '--type' in args:
-    idx = args.index('--type')
-    if idx + 1 < len(args):
-        audit_type = args[idx + 1]
-        # Object name may follow --type <type>
-        if idx + 2 < len(args) and not args[idx + 2].startswith('-'):
-            object_name = args[idx + 2]
-
-if not audit_type or audit_type not in ('agent', 'skill'):
-    print("Error: --type must be 'agent' or 'skill'")
-    sys.exit(1)
-```
+Parse the input to extract `--type` and optional object name.
 
 After parsing:
 - `audit_type` = `'agent'` or `'skill'`
