@@ -96,6 +96,52 @@ Reference document for the three contexts in which `al-dev-developer` is spawned
 
 ---
 
+## Model Parameter Routing
+
+The `model` parameter in Agent tool invocations can override agent-level defaults at dispatch time. This enables complexity-aware routing without modifying agent files.
+
+### When to route Haiku vs. Sonnet
+
+**Route `model: claude-haiku-4-5`** when:
+- Task is TRIVIAL (single file, obvious fix, no judgment required)
+- Decision tree is linear (no branching based on symbol analysis)
+- Context is minimal (one file, one function, one issue)
+
+**Route `model: claude-sonnet-4-6`** when:
+- Task is SIMPLE or COMPLEX (requires analysis, planning, multi-step reasoning)
+- Code change crosses file boundaries or affects multiple objects
+- Risk assessment needed (performance, security, patterns)
+
+### Example: Conditional routing in spawning skill
+
+```
+## Determine developer model based on complexity
+
+IF scope crosses 2+ files OR symbols unknown:
+  model = claude-sonnet-4-6
+ELSE IF scope is 1 file AND symbols are known:
+  model = claude-haiku-4-5
+ELSE:
+  model = claude-sonnet-4-6  (default to safer choice)
+
+Agent(
+  agent: al-dev-shared:al-dev-developer-tdd
+  model: <model>
+  description: "Implement TDD workflow"
+  prompt: "...dispatch prompt..."
+)
+```
+
+### Current implementation status
+
+- `/al-dev-fix`: Uses architect for non-trivial path (implicit sonnet upgrade via architect dispatch)
+- `/al-dev-develop`: Always uses developer; complexity routing not yet wired
+- `/al-dev-review-develop`: Always uses developer; complexity routing not yet wired
+
+This pattern is reserved for future enhancement; current spawning skills do not yet implement conditional routing.
+
+---
+
 ## Shared Pattern: SYMBOL_PREFLIGHT_GATE
 
 All three contexts enforce the symbol preflight checklist (`knowledge/al-symbol-pre-flight.md`).
