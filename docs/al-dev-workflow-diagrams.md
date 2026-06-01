@@ -140,6 +140,7 @@ flowchart LR
         skill_al_dev_develop[al-dev-develop]
         skill_al_dev_explore[al-dev-explore]
         skill_al_dev_fix[al-dev-fix]
+        skill_al_dev_interview[al-dev-interview]
         skill_al_dev_investigate[al-dev-investigate]
         skill_al_dev_lint[al-dev-lint]
         skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
@@ -203,12 +204,14 @@ flowchart LR
     skill_al_dev_develop --> knowledge_intent_preflight_md
     skill_al_dev_develop --> knowledge_scope_expansion_gate_md
     skill_al_dev_develop --> knowledge_workflow_resilience_md
+    skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
     skill_al_dev_fix --> knowledge_artifact_contracts_md
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
@@ -226,6 +229,7 @@ flowchart LR
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
     skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     agent_al_dev_developer_tdd --> knowledge_al_developer_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_symbol_pre_flight_md
@@ -253,6 +257,7 @@ flowchart LR
     class skill_al_dev_develop skillNode
     class skill_al_dev_explore skillNode
     class skill_al_dev_fix skillNode
+    class skill_al_dev_interview skillNode
     class skill_al_dev_investigate skillNode
     class skill_al_dev_lint skillNode
     class skill_al_dev_map_suggestions_verify skillNode

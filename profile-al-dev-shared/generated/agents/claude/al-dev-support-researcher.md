@@ -1,6 +1,6 @@
 ---
 description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-ticket (--mode=full, research phase). Pairs with al-dev-support-reply-drafter."
-tools: []
+tools: ["mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>", "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>"]
 ---
 
 

@@ -100,4 +100,5 @@ SUMMARY: [one-sentence root cause or workaround]
 ```
 
 Codex capability notes:
-"""
+- use the BC code intelligence MCP capability available in the active Codex session
+- use the Microsoft Docs MCP capability available in the active Codex session"""

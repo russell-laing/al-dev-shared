@@ -1,7 +1,7 @@
 ---
 name: "al-dev-support-researcher"
 description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by /al-dev-ticket (--mode=full, research phase). Pairs with al-dev-support-reply-drafter."
-tools: []
+tools: ["bc-code-intelligence-mcp-<tool>", "microsoft_docs_mcp-<tool>"]
 ---
 
 

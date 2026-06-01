@@ -16,10 +16,10 @@
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
-| al-dev-commit-recover-fixer | sonnet | Write | `/commit-recover` |
+| al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix`, `/al-dev-review-develop` |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit | `/al-dev-lint` |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-expert-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
@@ -30,7 +30,7 @@
 | al-dev-security-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
 | al-dev-support-reply-drafter | sonnet | Write | `/al-dev-support-reply` |
-| al-dev-support-researcher | sonnet | (none) | `/al-dev-support-reply` |
+| al-dev-support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/al-dev-support-reply` |
 | al-dev-ticket-agent | haiku | Bash, Write | `/al-dev-ticket` |
 <!-- END GENERATED: agent-catalog-table -->
 
@@ -250,7 +250,7 @@
 
 **Description:** Resolve AL lint warnings and compile errors surfaced by al-compile.
 **Model:** sonnet
-**Tools:** Read, Edit
+**Tools:** Read, Edit, Bash
 **Spawned by:** /al-dev-lint
 
 **Inputs:**
@@ -493,7 +493,7 @@
 
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
-**Tools:** (none)
+**Tools:** MCP: bc-code-intelligence, MCP: microsoft-docs
 **Spawned by:** /al-dev-support-reply (research phase)
 
 **Inputs:**
@@ -566,7 +566,7 @@
 
 **Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
 **Model:** sonnet
-**Tools:** Write
+**Tools:** Write, Bash
 **Spawned by:** /commit-recover
 
 **Inputs:**
@@ -619,6 +619,16 @@ None — all 22 agents have documented Inputs and Outputs tables.
 - **al-dev-developer-traditional** — used by /al-dev-develop, /al-dev-fix, and /al-dev-review-develop (autonomous compile-fix loops)
 - **al-dev-solution-architect** — used by /al-dev-plan, /al-dev-fix
 - **al-dev-ticket-agent** — used by /al-dev-ticket (all three modes)
+
+### Audit Sync: 3 Discrepancies Resolved (2026-06-02)
+
+Based on agent audit from `20260601T210259Z`, three tools_mismatch discrepancies have been corrected to match agent frontmatter declarations:
+
+**Tools mismatch (3 agents) — resolved:**
+
+- `al-dev-commit-recover-fixer`: Layer 1 and Layer 2 `**Tools:**` updated from `Write` to `Write, Bash`. Frontmatter declares `["Write", "Bash"]`.
+- `al-dev-diagnostics-fixer`: Layer 1 and Layer 2 `**Tools:**` updated from `Read, Edit` to `Read, Edit, Bash`. Frontmatter declares `["Read", "Edit", "Bash"]`.
+- `al-dev-support-researcher`: Layer 1 and Layer 2 `**Tools:**` updated from `(none)` to `MCP: bc-code-intelligence, MCP: microsoft-docs`. Frontmatter declares these two MCP tools.
 
 ### Audit Sync: 2 Discrepancies Resolved (2026-06-02)
 

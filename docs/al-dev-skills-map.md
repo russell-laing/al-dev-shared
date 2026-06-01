@@ -111,6 +111,7 @@ flowchart LR
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_support_reply[al-dev-support-reply]
     agent_al_dev_ticket_agent[al-dev-ticket-agent]
+    knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
     artifact_ticket_context_md[.dev/ticket-context.md]
     artifact_ticket_reply_md[.dev/ticket-reply.md]
@@ -122,6 +123,7 @@ flowchart LR
     skill_al_dev_ticket -.-> skill_al_dev_plan
     skill_al_dev_ticket -.-> skill_al_dev_support_reply
     skill_al_dev_ticket --> agent_al_dev_ticket_agent
+    skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     skill_al_dev_ticket --> artifact_ticket_context_md
     skill_al_dev_ticket --> artifact_ticket_reply_md
@@ -134,6 +136,7 @@ flowchart LR
     class skill_al_dev_plan skillNode
     class skill_al_dev_support_reply skillNode
     class agent_al_dev_ticket_agent agentNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class artifact_ticket_context_md artifactNode
     class artifact_ticket_reply_md artifactNode
@@ -636,15 +639,18 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_explore[al-dev-explore]
+    knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     artifact_2026_05_19_al_dev_explore_findings_md[.dev/2026-05-19-al-dev-explore-findings.md]
     artifact_project_context_md[.dev/project-context.md]
 
+    skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_explore --> artifact_2026_05_19_al_dev_explore_findings_md
     skill_al_dev_explore --> artifact_project_context_md
 
     class skill_al_dev_explore skillNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class artifact_2026_05_19_al_dev_explore_findings_md artifactNode
     class artifact_project_context_md artifactNode
@@ -670,12 +676,14 @@ flowchart LR
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     agent_al_dev_interview[al-dev-interview]
+    knowledge_artifact_contracts_md[artifact-contracts]
 
     skill_al_dev_interview --> Phase1
     skill_al_dev_interview --> Phase2
     skill_al_dev_interview --> Phase3
     skill_al_dev_interview --> Phase4
     skill_al_dev_interview --> agent_al_dev_interview
+    skill_al_dev_interview --> knowledge_artifact_contracts_md
 
     class skill_al_dev_interview skillNode
     class Phase1 phaseNode
@@ -683,6 +691,7 @@ flowchart LR
     class Phase3 phaseNode
     class Phase4 phaseNode
     class agent_al_dev_interview agentNode
+    class knowledge_artifact_contracts_md knowledgeNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-interview`
@@ -735,15 +744,10 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_document[al-dev-document]
-    agent_al_dev_docs_writer[al-dev-docs-writer]
 
-    skill_al_dev_document --> agent_al_dev_docs_writer
 
     class skill_al_dev_document skillNode
-    class agent_al_dev_docs_writer agentNode
 ```
-
-Agents spawned: `al-dev-shared:al-dev-docs-writer`
 <!-- END GENERATED: skill-drilldown-al-dev-document -->
 
 ### /al-dev-release-notes
@@ -1061,24 +1065,15 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
     knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
     artifact_YYYY_MM_DD_al_dev_plan_plan_md[.dev/YYYY-MM-DD-al-dev-plan-plan.md]
     artifact_progress_md[.dev/progress.md]
 
-    skill_al_dev_map_suggestions_verify --> Phase1
-    skill_al_dev_map_suggestions_verify --> Phase2
-    skill_al_dev_map_suggestions_verify --> Phase3
     skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_map_suggestions_verify --> artifact_YYYY_MM_DD_al_dev_plan_plan_md
     skill_al_dev_map_suggestions_verify --> artifact_progress_md
 
     class skill_al_dev_map_suggestions_verify skillNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
     class knowledge_map_change_rubber_duck_checks_md knowledgeNode
     class artifact_YYYY_MM_DD_al_dev_plan_plan_md artifactNode
     class artifact_progress_md artifactNode
