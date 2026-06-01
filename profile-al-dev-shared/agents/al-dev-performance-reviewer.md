@@ -44,6 +44,7 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 **Step 1:** Read all AL files created (provided in spawn prompt).
 
 **Step 2:** Identify performance issues. For each, document:
+
 - **File + Line:** Where the issue is
 - **Severity:** Critical (blocks scaling) / High (measurable regression) / Medium (optimization opportunity) / Low (minor improvement)
 - **Issue:** What's slow or inefficient
@@ -51,10 +52,12 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 - **Fix:** How to optimize
 
 **Step 3:** When other reviewers' findings are included:
+
 - Do their findings have performance implications?
 - Could their fixes introduce performance regressions?
 
 **Step 4:** If disagreeing on severity, provide performance rationale:
+
 - "This is CRITICAL because it will cause timeout on tables >100K rows"
 - "This is LOW because it's a one-time startup operation"
 
@@ -65,6 +68,7 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 **Code examples:** `knowledge/performance-review-examples.md` — Visual AL code examples for each pattern (before/after comparisons).
 
 **Key patterns to look for:**
+
 - N+1 query loops — queries inside loops
 - SetLoadFields optimization — loading only necessary columns
 - Inefficient FINDSET/CALCS — missing indexes, wrong sort keys
@@ -75,6 +79,7 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 ## Output Format
 
 Structure findings as:
+
 ```text
 ## CRITICAL
 [List critical performance issues with file:line, issue, impact, fix]
@@ -87,6 +92,6 @@ Structure findings as:
 
 ## LOW
 [List low-severity improvements]
-```text
+```
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.

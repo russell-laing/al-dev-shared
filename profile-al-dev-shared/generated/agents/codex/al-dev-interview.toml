@@ -32,6 +32,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 **Step 2: Question Selection** — Read `knowledge/interview-question-bank.md` for comprehensive question categories and examples. Adapt questions to the specific project context.
 
 **Question Categories (reference knowledge file):**
+
 - Business Logic & Requirements (process flow, validation rules, roles, permissions, sequences)
 - Data Model (tables, fields, relationships, transformations, volume, retention)
 - Integration Points (external systems, APIs, webhooks, failure modes)
@@ -60,9 +61,10 @@ Questions asked: [count]
 Key decisions: [count]
 Edge cases identified: [count]
 Categories covered: [list of 7-11 categories from below]
-```text
+```
 
 **Required categories (must be covered in interview questions):**
+
 1. Business Logic & Requirements (process flow, validation rules, sequences)
 2. Data Model (tables, fields, relationships, volume)
 3. Integration Points (external systems, APIs, webhooks)
@@ -77,6 +79,7 @@ Categories covered: [list of 7-11 categories from below]
 
 **Fallback if INTERVIEW COMPLETE is not stated:**
 If you (the dispatcher) detect that the agent output does NOT contain "INTERVIEW COMPLETE" and a category list:
+
 1. Ask the agent to resume and explicitly state INTERVIEW COMPLETE
 2. If the agent output is missing categories, ask it to cover missing ones
 3. Re-confirm INTERVIEW COMPLETE and category list before accepting the output
@@ -85,6 +88,7 @@ If you (the dispatcher) detect that the agent output does NOT contain "INTERVIEW
 ## Writing Refined Spec
 
 After interview, write `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` with sections:
+
 - **Overview:** What is being built and why (1-2 paragraphs)
 - **Business Requirements:** REQ tokens with type, priority, status, requirement text
 - **Acceptance Criteria:** ACC tokens linked to requirements
@@ -97,24 +101,28 @@ After interview, write `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md`
 ## Output Format
 
 Example requirements entry:
+
 ```markdown
 REQ:REQ-001|FUNCTIONAL|HIGH|DEFINED|Validate customer credit limit before posting sales orders exceeding limit
 
 ACC:ACC-001|REQ-001|Given: Customer with $10,000 credit limit | When: Posting $12,000 order | Then: Posting is blocked with error message
 
 ACC:ACC-002|REQ-001|Given: Customer with $10,000 credit limit | When: Posting $8,000 order | Then: Posting succeeds
-```text
+```
 
 Session log entry:
+
 ```markdown
 ## [HH:MM:SS] al-dev-interview
+
 - Interview duration: ~30 minutes
 - Requirements gathered: X features
 - Edge cases identified: Y
 - Open questions: Z (for stakeholder resolution)
 - Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
 - Status: ✓ Complete
-```text
+
+```
 
 Codex capability notes:
 - read files available in the active Codex session

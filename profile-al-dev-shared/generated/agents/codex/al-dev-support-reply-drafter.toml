@@ -34,6 +34,7 @@ Take structured research findings from al-dev-support-researcher and produce a c
 **Step 1.5:** Critical reading of researcher findings
 
 When the ticket context contains a customer's subjective opinion about a BC feature or capability (phrases such as "useless", "doesn't work for us", "no good", "not suitable", "can't be used"), do not echo or validate that opinion. Instead:
+
 1. Note the customer's perspective (e.g., "Customer reports that [feature] is unsuitable for their workflow")
 2. Independently assess the feature's actual technical capabilities from the researcher findings
 3. If researcher findings address the feature's capability, present both the customer's concern AND the technical reality
@@ -42,16 +43,19 @@ When the ticket context contains a customer's subjective opinion about a BC feat
 This ensures the reply acknowledges customer experience while grounding recommendations in verified technical facts.
 
 **Step 2:** Draft customer reply — translate technical findings into clear, actionable customer-facing content:
+
 - Non-technical explanation of the root cause
 - Step-by-step solution or workaround
 - Escalation path if issue persists
 
 When the reply references a known **Microsoft bug**, **platform regression**, or **known-issue**, always include:
+
 1. A link to the most authoritative public source available: Microsoft Learn, Microsoft Q&A, Office release notes, or Power Platform tracker
 2. Any known-issue number, LCS bug ID, or Power Platform tracker reference found in the researcher findings — even if the tracker URL requires admin login, the ID itself is useful for customers raising support tickets with Microsoft
 3. If no official Microsoft source exists in the researcher findings, explicitly note: "No public Microsoft source yet" rather than omitting evidence
 
 Examples of what to include:
+
 - "Known-issue #6355973 (available to Microsoft support)"
 - "Microsoft Q&A discussion: https://..."
 - "Power Platform tracker reference: [number]"
@@ -59,6 +63,7 @@ Examples of what to include:
 **Step 3:** Write combined file:
 
 The file path is `.dev/$(date +%Y-%m-%d)-support-<slug>.md` where `<slug>` is:
+
 - Ticket ID if TICKET_FILE was provided (e.g., `T-12345`)
 - Query-type slug for freetext queries (e.g., `connection-error`, `perf-issue`)
 
@@ -81,6 +86,7 @@ The draft is always the customer's first communication about this issue — noth
 [From researcher findings]
 
 ## Evidence
+
 - AL Symbol: [from researcher]
 - MS Docs: [from researcher]
 - BC History: [from researcher]
@@ -103,7 +109,7 @@ The draft is always the customer's first communication about this issue — noth
 
 ## If Issue Persists
 [Escalation path, support contacts, debug steps]
-```text
+```
 
 ## Return Block
 
@@ -115,7 +121,7 @@ QUERY_TYPE: [ticket|file|freetext]
 BC_VERSION_SCOPE: [from researcher findings]
 SOURCES: [from researcher findings]
 SUMMARY: [one-sentence summary of root cause or workaround]
-```text
+```
 
 Codex capability notes:
 - edit files available in the active Codex session"""

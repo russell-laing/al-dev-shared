@@ -38,30 +38,38 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 **Step 2: Research** — Investigate across 3 MCP-based sources (no web search):
 
 ### Source 1: AL Symbols
+
 Use AL Code Intelligence to search for relevant symbols:
+
 - Search for error messages or class names mentioned in the issue
 - Find related procedures, tables, fields
 - Check procedure signatures and documentation
 
 ### Source 2: MS Docs
+
 Use Microsoft Docs MCP to search official documentation:
+
 - Search for the feature or error mentioned in the ticket
 - Look for known issues or breaking changes
 - Find configuration/setup requirements
 - Search for API documentation if relevant
 
 ### Source 3: BC Code History
+
 If available, search BC history for:
+
 - Recent changes to related functionality
 - Known bugs or fixes in specific versions
 - Patterns from similar issues
 
 **MCP Tool Mapping:**
+
 - **AL Code Intelligence MCP** — AL symbols, procedures, events, tables
 - **Microsoft Docs MCP** — Official BC and AL documentation
 - **BC Code History MCP** — Historical code patterns and version-specific fixes
 
 **Step 3:** Synthesize findings — Combine evidence from all 3 sources into:
+
 1. Root cause (if identifiable)
 2. Workaround(s) if available
 3. Recommended resolution path
@@ -80,16 +88,20 @@ SUMMARY: [one-sentence root cause or workaround]
 ## Internal Findings
 
 ### Root Cause
+
 [Technical analysis of what's causing the issue]
 
 ### Evidence
+
 - AL Symbol: [findings from code intelligence]
 - MS Docs: [findings from official docs]
 - BC History: [findings from code history, if available]
 
 ### Workarounds
+
 [If available, actionable workarounds]
 
 ### Recommended Resolution
+
 [Recommended path to fix]
-```text
+```

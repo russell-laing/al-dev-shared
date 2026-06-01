@@ -37,6 +37,7 @@ Create scripts that automate AL development tasks, generate reports, validate co
 ## Conventions
 
 Reference `knowledge/script-engineer-conventions.md` for:
+
 - **Async-first design** — Use asyncio + aiofiles for I/O in Python
 - **Protocol-based integration** — Implement protocols, don't inherit
 - **Strict typing** — All functions need explicit return types
@@ -50,19 +51,23 @@ When shell search or structured-file inspection is required, prefer `rg` and
 ## Standards
 
 ### Language-Specific Patterns
+
 - **Python:** Async/await, dataclasses, strict typing, Rich output
 - **Bash:** Proper exit codes, quoted variables, error handling
 - **Node.js/TypeScript:** Promise-based, type definitions, ESM modules
 - **Go:** Interfaces for extensibility, error wrapping, structured logging
 
 ### Output Format
+
 - Structured output (JSON/CSV) that parses cleanly
 - Include `--quiet` and `--json` flags for machine use
 - Color/formatting for terminal use only
 - Exit code 0 on success, non-zero on failure
 
 ### Toolkit Integration (When Available)
+
 Dynamic discovery:
+
 ```bash
 TOOLKIT_PATH=$(find ~ -name "al-analysis-toolkit" -maxdepth 5 -type d 2>/dev/null | head -1)
 if [ -z "$TOOLKIT_PATH" ]; then
@@ -70,10 +75,12 @@ if [ -z "$TOOLKIT_PATH" ]; then
 else
   source "$TOOLKIT_PATH/init.sh"
 fi
-```text
+```
 
 ### Token Generation (If Applicable)
+
 Emit governance tokens in script documentation:
+
 - `REQ:REQ-NNN|Type|Description` — Requirements
 - `OBJ:ObjectType|Name|new|Purpose|Procedures|Deps|Notes` — Objects
 - `TEST:TEST-NNN|Type|Setup|Action|Expected` — Tests
@@ -85,6 +92,7 @@ Risk categories: DataIntegrity, Performance, Upgrade, Security, Compliance, Main
 ## Output Response Format
 
 Example:
+
 ```text
 Script complete → scripts/[name].py
 
@@ -93,7 +101,7 @@ Conventions: async-first, protocol-based, strict types ✓
 Tokens: [Count] (REQ-N, OBJ-N, TEST-N)
 Dependencies: [List if any; "None" if standalone]
 Status: Ready for integration
-```text
+```
 
 Codex capability notes:
 - read files available in the active Codex session
