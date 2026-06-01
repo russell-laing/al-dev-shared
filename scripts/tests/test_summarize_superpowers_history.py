@@ -73,6 +73,42 @@ def test_explicit_draft_status_is_historical(tmp_path):
     assert item.status == "historical"
 
 
+def test_body_status_after_heading_does_not_override_fallback(tmp_path):
+    module = load_module()
+    artifact = tmp_path / "2026-05-31-implemented.md"
+    artifact.write_text(
+        "# Implemented Plan\n\nImplemented cleanup.\n\n## Notes\n\nStatus: Draft\n",
+        encoding="utf-8",
+    )
+
+    item = module.inspect_artifact(artifact, tmp_path)
+
+    assert item.status == "implemented"
+
+
+def test_unknown_preamble_status_falls_back_to_body_inference(tmp_path):
+    module = load_module()
+    artifact = tmp_path / "2026-05-31-unclear.md"
+    artifact.write_text(
+        "# Unclear Plan\n\nStatus: Needs triage\n\nImplemented cleanup.\n",
+        encoding="utf-8",
+    )
+
+    item = module.inspect_artifact(artifact, tmp_path)
+
+    assert item.status == "implemented"
+
+
+def test_ready_revised_and_parked_status_phrases_are_bucketed(tmp_path):
+    module = load_module()
+
+    assert module.classify_status("Status: Ready for implementation") == "ready"
+    assert module.classify_status("Status: Ready for plan authoring") == "ready"
+    assert module.classify_status("Status: Revised for implementation planning") == "ready"
+    assert module.classify_status("Status: Revised after claim verification") == "historical"
+    assert module.classify_status("Status: Parked") == "deferred"
+
+
 def test_main_prints_absolute_output_outside_root(tmp_path):
     module = load_module()
     root = tmp_path / "repo"
@@ -107,6 +143,31 @@ def test_reference_detection_excludes_superpowers_tree(tmp_path):
     references = module.find_external_references(root, [spec])
 
     assert references[spec.as_posix()] == ["profile-al-dev-shared/archived/README.md"]
+
+
+def test_reference_detection_excludes_nested_worktree_docs(tmp_path):
+    module = load_module()
+    root = tmp_path
+    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-archive-test-skills-design.md"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("# Archive Test Skills\n", encoding="utf-8")
+    nested_worktree_doc = (
+        root
+        / ".worktrees"
+        / "other"
+        / "docs"
+        / "superpowers"
+        / "history.md"
+    )
+    nested_worktree_doc.parent.mkdir(parents=True)
+    nested_worktree_doc.write_text(
+        "See `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`.\n",
+        encoding="utf-8",
+    )
+
+    references = module.find_external_references(root, [spec])
+
+    assert references[spec.as_posix()] == []
 
 
 def test_render_history_groups_by_date(tmp_path):

@@ -10,6 +10,19 @@ from pathlib import Path
 
 
 SUPERPOWERS_DIRS = (Path("docs/superpowers/plans"), Path("docs/superpowers/specs"))
+EXCLUDED_SCAN_PARTS = {
+    ".dev",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    ".worktrees",
+    "__pycache__",
+    "generated",
+    "node_modules",
+}
 
 
 @dataclass(frozen=True)
@@ -61,8 +74,21 @@ def classify_kind(path: Path) -> str:
     return "unknown"
 
 
+def preamble_text(text: str) -> str:
+    lines: list[str] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if re.match(r"^##\s+", line) or (stripped == "---" and lines):
+            break
+        lines.append(line)
+    return "\n".join(lines)
+
+
 def extract_explicit_status(text: str) -> str | None:
-    status_match = re.search(r"(?im)^\s*(?:\*\*)?Status:(?:\*\*)?\s*(.+?)\s*$", text)
+    status_match = re.search(
+        r"(?im)^\s*(?:\*\*)?Status:(?:\*\*)?\s*(.+?)\s*$",
+        preamble_text(text),
+    )
     if status_match:
         return status_match.group(1).strip()
     return None
@@ -74,6 +100,16 @@ def normalize_status(status_text: str) -> str:
         return "superseded"
     if re.search(r"\bimplemented\b", lowered):
         return "implemented"
+    if re.search(r"\b(abandoned|cancelled|canceled|rejected)\b", lowered):
+        return "abandoned"
+    if re.search(r"\bparked\b", lowered):
+        return "deferred"
+    if re.search(r"\bready\s+for\b", lowered):
+        return "ready"
+    if re.search(r"\brevised\s+for\s+implementation\s+planning\b", lowered):
+        return "ready"
+    if re.search(r"\brevised\s+after\s+claim\s+verification\b", lowered):
+        return "historical"
     if re.search(r"\b(completed|complete)\b", lowered) and not re.search(
         r"\b(pending|awaiting|needs?)\b.{0,40}\b(implementation\s+plan|plan)\b",
         lowered,
@@ -87,7 +123,9 @@ def normalize_status(status_text: str) -> str:
 def classify_status(text: str) -> str:
     explicit_status = extract_explicit_status(text)
     if explicit_status is not None:
-        return normalize_status(explicit_status)
+        status = normalize_status(explicit_status)
+        if status != "unknown":
+            return status
     return normalize_status(text)
 
 
@@ -160,14 +198,19 @@ def _is_under(path: Path, directory: Path) -> bool:
     return True
 
 
+def should_scan_reference_file(path: Path, excluded_dirs: tuple[Path, ...]) -> bool:
+    if any(part in EXCLUDED_SCAN_PARTS for part in path.parts):
+        return False
+    return not any(_is_under(path, directory) for directory in excluded_dirs)
+
+
 def find_external_references(root: Path, paths: list[Path]) -> dict[str, list[str]]:
     references = {path.as_posix(): [] for path in paths}
     excluded_dirs = tuple(root / directory for directory in SUPERPOWERS_DIRS)
     search_files = [
         path
         for path in root.rglob("*.md")
-        if not any(_is_under(path, directory) for directory in excluded_dirs)
-        and ".git" not in path.parts
+        if should_scan_reference_file(path, excluded_dirs)
     ]
 
     targets: list[tuple[str, str]] = []
