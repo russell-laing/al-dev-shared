@@ -264,14 +264,14 @@ flowchart TD
 |-------|--------|
 | `/review-skill-map` | `docs/al-dev-skills-map.md` |
 | `/review-agent-map` | `docs/al-dev-agent-map.md` |
-| `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` |
+| `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and refreshes dependency graph (when applicable) |
 | `/analyze-skill-design` | `docs/al-dev-plugin-map.md` (Observations section) |
 | `/analyze-agent-design` | `docs/al-dev-agent-map.md` (Observations section) |
 | `/analyze-architectural-design` | `docs/al-dev-plugin-graph.md` (cross-surface synthesis) |
 | `/audit-quality --type skill` | `docs/al-dev-skill-quality.md` |
 | `/audit-quality --type agent` | `docs/al-dev-agent-quality.md` |
 | `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
-| `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` |
+| `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md`; for `plugin` surface may also refresh `docs/al-dev-plugin-graph.md` |
 | `/projection-sync` | `profile-al-dev-shared/generated/agents/claude/`, `copilot/`, `codex/` |
 
 ---
@@ -287,6 +287,6 @@ flowchart TD
 | Want a design health check | `/review-skill-map` → `/review-agent-map` → `/plugin-health-audit` |
 | Want to plan improvements | `/analyze-architectural-design` → `/audit-quality` → `/al-dev-map-suggestions-verify` |
 | Suggestion list is stale | `/al-dev-map-suggestions-verify` before planning |
-| Maps are out of sync, no rush | `/sync-documentation-maps` (async, frees session) |
+| Maps are out of sync, no rush | `/sync-documentation-maps` (async — step 1 only; follow with `/sync-documentation-maps-collect` then `/sync-documentation-maps-finalize`) |
 | Maps are out of sync, fix now | `/review-skill-map` + `/review-agent-map` (in-session) |
 
