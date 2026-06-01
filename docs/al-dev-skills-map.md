@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-06-01 (23 active skill directories in `profile-al-dev-shared/skills`: 16 primary distributed skills + 5 development-workflow tools + 2 maintainer-only utilities)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Maintainer-only tools (`/al-dev-diagram-generator`, `/plugin-health`) are documented but not part of the distributed plugin surface. Development-workflow tools (`/plan-with-critic-swarm`, `/verify-commits`, `/al-dev-consolidate`, `/plan-map-changes`, `/al-dev-help`) are included in the distributed surface.
+**Last updated:** 2026-06-01 (22 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/plan-map-changes`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -32,7 +32,7 @@ flowchart TD
 
     %% Main development spine
     Plan -->|.dev/*-al-dev-plan-solution-plan.md| Develop("al-dev-develop")
-    Develop -->|.dev/*-phase4-handoff| ReviewDevelop("al-dev-review-develop")
+    Develop -->|.dev/*-al-dev-develop-phase4-handoff.md| ReviewDevelop("al-dev-review-develop")
     ReviewDevelop -->|.dev/*-al-dev-develop-code-review.md| Commit
 
     %% Optional plan red-teaming
