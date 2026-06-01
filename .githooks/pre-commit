@@ -23,4 +23,20 @@ if ! diff -r --exclude="README.md" "$tmp" profile-al-dev-shared/generated/agents
   exit 1
 fi
 
+echo "pre-commit: checking staged agents/ and skills/ for markdown violations..."
+staged_md=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && staged_md+=("$line")
+done < <(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^profile-al-dev-shared/(agents|skills)/.*\.md$' || true)
+if [ ${#staged_md[@]} -gt 0 ]; then
+  if ! markdownlint --config .markdownlint.json "${staged_md[@]}" 2>&1; then
+    echo "ERROR: markdownlint violations in staged files above." >&2
+    echo "  Fix violations and re-stage before committing." >&2
+    echo "  Tip: markdownlint --config .markdownlint.json <file>" >&2
+    exit 1
+  fi
+  echo "pre-commit: markdownlint: OK (${#staged_md[@]} file(s) checked)"
+fi
+
 echo "pre-commit: all neutrality checks passed."
