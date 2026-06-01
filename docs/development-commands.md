@@ -69,6 +69,8 @@ python3 scripts/generate-plugin-graph.py
 /plugin-health-audit --surface both
 ```
 
+Dossiers are written to `docs/health/YYYY-MM-DD-<surface>-findings.md`.
+
 ## Updating Documentation Maps
 
 When skills or agents change, synchronize the documentation:
@@ -78,6 +80,8 @@ When skills or agents change, synchronize the documentation:
 /sync-documentation-maps  # Audits and updates both maps (interactive or --all)
 /analyze-skill-design     # Generate architecture improvement suggestions
 /analyze-agent-design     # Generate agent design improvement suggestions
+/audit-quality --type skill   # Audit skill quality (clarity, structure, bloat, drift)
+/audit-quality --type agent   # Audit agent quality (clarity, structure, bloat, drift)
 ```
 
 For audit-only (no updates):
@@ -91,5 +95,6 @@ These skills write findings to:
 
 - `docs/al-dev-skills-map.md` — Skill inventory and relationships
 - `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
+- `docs/al-dev-plugin-map.md` — Skill architecture improvement suggestions
 - `docs/al-dev-skill-quality.md` — Skill clarity and structural issues
 - `docs/al-dev-agent-quality.md` — Agent quality audit results
