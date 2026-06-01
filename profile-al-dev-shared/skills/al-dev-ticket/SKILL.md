@@ -298,6 +298,7 @@ Dispatch:
 ```text
 Agent tool:
   agent: al-dev-shared:al-dev-support-reply-drafter
+  model: claude-sonnet-4-6
   description: "Draft customer reply: <60-char query summary>"
 
 Prompt: <assembled prompt above>
