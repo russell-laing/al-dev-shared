@@ -32,6 +32,7 @@ orchestrating parallel developer agents to implement it.
 - All assigned objects implemented and compiling cleanly
 - Session log updated
 - Code ready for review panel (al-dev-security-reviewer,
+
   al-dev-expert-reviewer, al-dev-performance-reviewer)
 
 ---
@@ -67,6 +68,7 @@ implementation.
 - File modified and compiling cleanly
 - Fix verified to resolve the stated issue
 - Code ready for optional code review (developer quality check, not
+
   multi-reviewer panel)
 
 ---
@@ -114,7 +116,7 @@ modifying agent files.
 
 **Route `model: claude-haiku-4-5`** when:
 
-- Task is TRIVIAL (single file, obvious fix, no judgment required)
+- Task is TRIVIAL (single file, obvious fix, symbol locations already known)
 - Decision tree is linear (no branching based on symbol analysis)
 - Context is minimal (one file, one function, one issue)
 
@@ -123,6 +125,10 @@ modifying agent files.
 - Task is SIMPLE or COMPLEX (requires analysis, planning, multi-step reasoning)
 - Code change crosses file boundaries or affects multiple objects
 - Risk assessment needed (performance, security, patterns)
+
+Note: The MEDIUM tier also routes to sonnet. The haiku/sonnet boundary
+aligns with single-file/multi-file scope, not the complexity taxonomy.
+See workflow-routing.md for the full tiers (TRIVIAL/SIMPLE/MEDIUM/COMPLEX).
 
 ### Example: Conditional routing in spawning skill
 
@@ -137,22 +143,36 @@ ELSE:
   model = claude-sonnet-4-6  (default to safer choice)
 
 Agent(
-  agent: al-dev-shared:al-dev-developer-tdd
+  agent: al-dev-shared:al-dev-developer-<variant>
+  # variant selection is separate (see Context 2)
   model: <model>
-  description: "Implement TDD workflow"
+  description: "Implement development workflow"
   prompt: "...dispatch prompt..."
 )
+
+# Note: <variant> (tdd vs. traditional) is determined by test plan presence.
+# <model> (haiku vs. sonnet) is determined by complexity tier and scope.
+# Both selections are orthogonal.
 ```
 
 ### Current implementation status
 
-- `/al-dev-fix`: Uses architect for non-trivial path (implicit sonnet
-  upgrade via architect dispatch)
+- `/al-dev-fix`: Has explicit conditional routing on the *architect* spawn
+  (sonnet for SIMPLE, opus for COMPLEX). Developer routing is not yet
+  conditional — the spawn does not vary model by scope complexity.
+
 - `/al-dev-develop`: Always uses developer; complexity routing not yet wired
 - `/al-dev-review-develop`: Always uses developer; complexity routing not yet wired
 
-This pattern is reserved for future enhancement; current spawning skills
-do not yet implement conditional routing.
+This pattern is reserved for future enhancement. When wired, it will apply to:
+
+- Context 1 (`/al-dev-develop`, Phase 3 dispatch) — model selection for
+  developer spawn
+- Context 3 (`/al-dev-review-develop`, Phase 2 dispatch) — model selection
+  for developer spawn
+
+No spawning skills currently use conditional developer routing; the
+architect in `/al-dev-fix` has explicit routing already wired.
 
 ---
 
@@ -162,17 +182,22 @@ All three contexts enforce the symbol preflight checklist (`knowledge/al-symbol-
 
 ```text
 SYMBOL_PREFLIGHT_GATE:
+
 - Summary required before implementation
 - Evidence source named per symbol
 - Stop if any required symbol remains unverified
+
 ```
 
 Developer must:
 
 1. Report pre-flight summary before writing any AL code
 2. Name the evidence source for each required symbol (AL LSP, AL MCP,
+
    text search, or unverified)
+
 3. **Stop before implementation if any required symbol remains
+
    unverified**
 
 When dispatching in any context, include:
@@ -202,9 +227,11 @@ Solution Plan / Scope: [reference to .dev/*.md or direct scope statement]
 Module Assignment / Object List: [specific objects to implement or fix]
 
 Implementation Notes:
+
 - [Key pattern from solution plan or /al-dev-fix scope]
 - [AL symbol evidence from preflight or prior search]
 - [Code quality standards: labels for errors, symbol preflight, compile
+
   after each file]
 
 [Append SYMBOL_PREFLIGHT_GATE requirement]
