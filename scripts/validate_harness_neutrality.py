@@ -118,6 +118,8 @@ def should_skip(relative_path: str) -> bool:
 def load_model_aliases(plugin_root: Path) -> set[str]:
     """Load the allowed model tier aliases from the projection policy."""
     policy = plugin_root / "knowledge" / "agent-tool-projection-policy.md"
+    if not policy.exists():
+        return set()
     fm = re.match(r"^---\n(.*?)\n---", policy.read_text(encoding="utf-8"), re.DOTALL)
     if not fm:
         return set()
