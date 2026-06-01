@@ -147,7 +147,7 @@ Update the checkpoint `status` to `"complete"` and stop.
 If `AUTO_UPDATE=true` (passed through from `/sync-documentation-maps --all`),
 set `UPDATE_CHOICE=both` and skip the prompt.
 
-Otherwise, use `AskUserQuestion` to ask:
+Otherwise, use a `USER_GATE` prompt to ask:
 
 ```text
 Which documentation map would you like to update?
