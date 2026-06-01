@@ -1,196 +1,162 @@
 # Plugin Health — 2026-06-01
 
-> Comprehensive health sweep of profile-al-dev-shared plugin surface.
-> All lenses completed; 73 findings ranked by severity and dimension.
-
----
-
 ## Summary
 
 | Severity | Design | Quality | Naming | Total |
 |----------|--------|---------|--------|-------|
-| **High** | 0 | 5 | 3 | **8** |
-| **Medium** | 5 | 4 | 2 | **11** |
-| **Low** | 3 | 1 | 0 | **4** |
+| High     | 1      | 31      | 0      | 32    |
+| Medium   | 8      | 38      | 1      | 47    |
+| Low      | 7      | 116     | 0      | 123   |
 
-### Top 5 Ranked Actions
+**Top 5 ranked actions:**
 
-1. **[HIGH] Add `name:` field to 20 agents** — Required for canonical registration
-   - Files: All agents in `profile-al-dev-shared/agents/`
-   - Fix: Add `name: <agent-name>` to YAML frontmatter (20 × 1 min)
+1. **[High / Structure]** Remove stray `# test` headers from `al-dev-fix/SKILL.md` (lines 444–445) — structural corruption that will confuse all readers and tools immediately
+2. **[High / Design]** Atomise `/al-dev-plan` (9 phases): add `--resume-from=phase2` or split into preflight + architect phases — pre-planning (phases 0–1.6) and architect debate (phases 2–7) are independently invocable units; full re-runs waste token budget
+3. **[High / Name-fit]** Rename `al-dev-commit-recover-verifier` → `al-dev-commit-recover-fixer` — "verifier" is misleading; the agent applies active recovery strategies (git restore, regex reconstruction, schema rebuild), not passive verification
+4. **[High / Name-fit]** Rename `plan-map-changes` → `al-dev-map-suggestions-verify` and `plan-with-critic-swarm` → `al-dev-plan-swarm-validate` — both names misrepresent primary behavior as plan-creation when primary behavior is review/verification of an existing plan
+5. **[High / Bloat]** Extract identical "Compile Output — Critical Safeguard" block from `al-dev-developer-tdd` and `al-dev-developer-traditional` into `knowledge/compile-output-safeguard.md` — two agents with identical 20-line blocks will diverge; each skill currently references the other's behavior independently
 
-2. **[HIGH] Fix al-dev-code-review critical model mismatch** — File declares `haiku`, map documents `sonnet`
-   - File: `profile-al-dev-shared/agents/al-dev-code-review.md`
-   - Fix: Update to match map specification (1 min)
-
-3. **[MEDIUM] Label 160+ unlabeled code blocks** — Affects all agents and skills
-   - Files: All of `profile-al-dev-shared/agents/` and `profile-al-dev-shared/skills/`
-   - Fix: Add language specifiers (bash, json, python, al, yaml) to code blocks (~90 min)
-
-4. **[MEDIUM] Trim unused tools from 14 agents** — Improve clarity of actual capabilities
-   - Affects: al-dev-commit-ooxml-validator, al-dev-commit-recover-verifier, al-dev-developer-tdd, al-dev-developer-traditional, al-dev-diagnostics-fixer, al-dev-docs-writer, al-dev-expert-reviewer, al-dev-performance-reviewer, al-dev-release-notes-writer, al-dev-script-engineer, al-dev-security-reviewer, al-dev-support-researcher, plan-map-changes-duck-worker, plugin-health-team
-   - Fix: Remove unused tools from frontmatter (5 min each)
-
-5. **[HIGH] Clarify ambiguous instructions in 6 agents + 22 skills** — Blocks usability and testing
-   - Top blockers: al-dev-commit-recover-verifier, al-dev-developer-tdd, al-dev-interview
-   - Fix: Resolve conditional paths, bounds, and failure cases per file
+Failed lenses: None.
 
 ---
 
-## Design Suggestions
+## Design suggestions
 
-### Tool Hygiene: 14 Agents with Unused Declarations
+### Trim (Tool Hygiene)
 
-Trim unused tools to improve clarity of actual capabilities:
+- **al-dev-developer-tdd** | Low | `Grep` declared in frontmatter but no grep usage in body; workflow uses Read/Write/Bash | Remove `Grep` from tools list or add explicit symbol search step
+- **al-dev-developer-traditional** | Low | Same issue — `Grep` declared but no grep usage in workflow | Remove `Grep` from tools list or add explicit grep usage
 
-- **al-dev-commit-ooxml-validator**: Remove `Read`
-- **al-dev-commit-recover-verifier**: Remove `Bash`, `Read`
-- **al-dev-developer-tdd**: Remove `Edit`, `Glob`
-- **al-dev-developer-traditional**: Remove `Edit`, `Glob`
-- **al-dev-diagnostics-fixer**: Audit `Glob`, `Grep`, `Bash` usage
-- **al-dev-docs-writer**: Audit `Glob`, `Grep` usage
-- **al-dev-expert-reviewer**: Remove `Grep`
-- **al-dev-performance-reviewer**: Remove `Grep`
-- **al-dev-release-notes-writer**: Remove unused MCP declarations
-- **al-dev-script-engineer**: Audit `Edit`, `Glob`, `Grep` usage
-- **al-dev-security-reviewer**: Remove `Grep`
-- **al-dev-support-researcher**: Audit `Read`, MCP usage
-- **plan-map-changes-duck-worker**: Remove `Bash`
-- **plugin-health-team**: Remove `Bash`, `Read`
+### Remodel (Model Fit)
 
-### Model Fit: 4 Agents Need Stronger Models
+- **al-dev-support-reply-drafter** | Medium | `sonnet` assigned for mechanical format transformation (parse findings → write two-section reply, no novel reasoning) | Downgrade to `haiku` — task is structured rewrite with tight constraints, not synthesis
+- **al-dev-code-review** | Low | `haiku` assigned for multi-file review requiring cross-file severity judgment; however this was an intentional 2026-06-01 remodel decision | Verify if haiku quality is acceptable; upgrade to `sonnet` if calibration issues surface
 
-Upgrade to match task complexity:
+### Split (Scope Isolation)
 
-| Agent | Current | Recommended | Justification |
-|-------|---------|-------------|---------------|
-| al-dev-interview | haiku | sonnet | Conduct 40+ deep technical questions with iterative refinement |
-| al-dev-support-reply-drafter | haiku | sonnet | Requires critical judgment to distinguish customer opinions from technical facts |
-| al-dev-code-review | haiku | sonnet | "Comprehensive" code review with "high signal-to-noise ratio" |
-| al-dev-commit-recover-verifier | haiku | sonnet | Choose fallback strategy and determine unrecoverability under uncertainty |
+- **al-dev-commit-agent-execute** | Medium | Combines git commit execution (success path) with hook-failure retry recovery (error path); both produce unrelated outputs (COMMITS block vs HOOK_FAILURES block) | Extract hook-failure retry into `al-dev-commit-hook-fixer`; agent handles only success path
+- **al-dev-support-researcher** | Medium | Combines (1) multi-source research and (2) synthesis of findings into structured block | Extract synthesis into a separate agent or fold into reply drafter
+- **al-dev-support-reply-drafter** | Medium | Combines validation of researcher findings (step 1.5 tone/framing constraints) with draft-writing | Separate into validator + drafter, or collapse validation into researcher's synthesis step
 
-### Scope Isolation: 7 Agents with Separable Concerns
+### Align (Caller Alignment)
 
-Consider splitting to isolate concerns:
+- **al-dev-support-reply-drafter** | Medium | `RESEARCHER_FINDINGS` must be an inline text block in dispatch prompt; if `/al-dev-ticket` Phase 7 omits it, parsing fails silently | Verify `/al-dev-ticket` Phase 7 explicitly passes full `RESEARCHER_FINDINGS` block as text in dispatch prompt
+- **al-dev-developer-tdd / al-dev-developer-traditional** | Low | Inputs table implies caller passes explicit file paths but agents locate files via glob | Clarify Inputs: "Files auto-located via glob in `.dev/`; callers do not pass explicit paths"
+- **al-dev-solution-architect** | Low | Inputs table implies explicit requirements file path passing but agent uses glob discovery | Same clarification needed in Inputs table
 
-- **al-dev-commit-agent-analysis**: Analysis / Validation checking
-- **al-dev-diagnostics-fixer**: Parse / Apply fixes
-- **al-dev-solution-architect**: Complexity classification / Design phase
-- **al-dev-ticket-agent**: Fetch metadata / Parse images
-- **al-dev-support-researcher**: Research / Synthesize findings
-- **plan-map-changes-duck-worker**: Universal checks / Type-specific checks
-- **plugin-health-team**: Batch orchestration / Result aggregation
+### Connect (Shared Backbone)
 
-### Caller Alignment: 2 Agent Map Corrections
+- **al-dev-plan** | Low | Phase 2 spawns `al-dev-solution-architect` competitively but does not reference `knowledge/architect-invocation-patterns.md` (only `/al-dev-fix` references it) | Add reference to `knowledge/architect-invocation-patterns.md` in `/al-dev-plan` Phase 2
 
-- **al-dev-commit-message-drafter** (line 94): `PROPOSED_GROUPS` should be OUTPUT not INPUT
-- **al-dev-commit-recover-verifier** (line 551): `REPO` should be optional not required
+### Atomise / Absorb (Complexity)
 
-### Skill Complexity: 3 Skills Over-Phased
+- **al-dev-plan** | High | 9 phases split cleanly at phase 1.6 boundary: pre-planning (phases 0–1.6) is context gathering; architect debate (phases 2–7) is synthesis | Add `--resume-from=phase2` flag to skip preflight; or split into `al-dev-plan-preflight` + `al-dev-plan-architect`
+- **al-dev-ticket** | Medium | 8 phases with mode gate at phase 5; phases 0.5–4 are complete self-contained context-fetch; phases 6–8 are optional extension | Consider split: `al-dev-ticket` (phases 0.5–4) + `al-dev-support-reply` (phases 6–8); or add `--resume-from=phase5`
+- **verify-commits** | Medium | 2–3 steps, no agents, logic is thin (count expected commits, compare git log, reset if mismatch); overlaps with `/al-dev-commit` post-execution responsibilities | Absorb into `/al-dev-commit` as post-commit verification phase or optional `--verify` flag
 
-Atomise into layered concerns:
+### Extend (Handoff Gaps)
 
-- **al-dev-plan** (8 phases): Split discovery (0–1.6) from debate/synthesis (2–6)
-- **al-dev-review-develop** (6 phases): Split compile gate (1–2) from review panel (3–6)
-- **al-dev-develop** (5 phases): Split preparation (0–2) from execution (3–4)
-
-### Skill Merge Candidates: 2 Pairs
-
-- **al-dev-explore + al-dev-perf**: Both pre-analysis tributaries with identical structure
-- **al-dev-document + al-dev-release-notes**: Both light orchestrators with single writer agent
-
-### Skill Handoff Gaps: 1 Orphaned Output
-
-- **al-dev-release-notes**: Output never consumed downstream; natural next: `/plugin-publish` (deferred)
+- **Commit → deploy chain gap** | Medium | Release notes chain (`al-dev-commit` → `verify-commits` → git → `al-dev-release-notes`) ends with no downstream consumer; release notes are a complete deliverable with no publish/deploy step | Add optional `/al-dev-deploy` skill consuming `*-al-dev-release-notes-*.md` for deployment orchestration; deferred pending scope clarity
+- **al-dev-consolidate output orphaned** | Low | `.dev/sessions/` output has no downstream consumer; intentional terminal utility | Document as standalone archival terminal or add note in Layer 1 diagram
 
 ---
 
-## Quality Findings
+## Quality findings
 
-### Critical: Model Mismatch in al-dev-code-review
-
-File `profile-al-dev-shared/agents/al-dev-code-review.md` declares `model: haiku-4-5` but docs/al-dev-agent-map.md documents `model: sonnet-4-6`. This creates a contract violation: callers expect sonnet-level code review quality. Immediate action required.
-
-### Bloat: 8 Agents and 7 Skills Over-Instrumented
+### Bloat
 
 **Agents:**
-- **plan-map-changes-duck-worker** (397 lines): 131-line procedure block should extract to knowledge file
-- **al-dev-solution-architect** (151 lines): Evidence hierarchy repeated 3 times
-- **al-dev-developer-tdd & al-dev-developer-traditional**: Duplicate AL standards; reference shared knowledge
-- **al-dev-commit-agent-analysis** (151 lines): Highly procedural; could reference template
+
+- **al-dev-ticket-agent** | High | "Workflow" section is 87 lines; inline-image detection embedded without boundary | Extract image-detection block (lines 55–68); move context file template to `knowledge/`
+- **al-dev-commit-message-drafter** | High | "Phase: message-drafting" is 110 lines; gitmoji table and guidelines consume most of it | Extract gitmoji table to `knowledge/`; keep only grouping logic in agent
+- **al-dev-developer-tdd + al-dev-developer-traditional** | High | "Standards" section is 51 lines each; "Compile Output — Critical Safeguard" block is identical in both (20 lines) | Extract to `knowledge/compile-output-safeguard.md`; reference from both agents
+- **al-dev-commit-lint-fixer** | High | "Phase: lint-preflight" is 47 lines | Split into "Line Count Capture" and "Lint & Whitespace Fixing" subsections
+- **al-dev-security-reviewer** | High | "Review Focus" is 47 lines with inline vulnerability taxonomy | Extract taxonomy to `knowledge/`
+- **al-dev-solution-architect** | High | "Workflow" is 40 lines with Symbol Evidence hierarchy and MCP tools table inline | Extract both to `knowledge/`
+- **al-dev-diagnostics-fixer** | High | "Process" is 39 lines with judgment-required rules reference table inline | Extract reference table to separate section
+- **al-dev-interview** | High | "Interview Process" is 38 lines with question categories inline | Extract categories to `knowledge/`
+- **al-dev-commit-agent-analysis** | High | "Manifest Extraction (Steps 1–3)" is 31 lines | Extract extraction patterns into reference table
+- **al-dev-script-engineer** | High | "Standards" is 32 lines with language-specific patterns inline | Extract to `knowledge/`
 
 **Skills:**
-- al-dev-commit, al-dev-fix, al-dev-develop, plan-map-changes, al-dev-plan, al-dev-review-develop, al-dev-consolidate
 
-### Clarity: 6 Agents with Ambiguous Instructions
+- **al-dev-commit** | High | Phase 0 is 160+ lines with 7 sub-steps; compile-gate instructions repeated in multiple sections | Consolidate Phase 0; extract compile-gate to reusable knowledge reference
+- **al-dev-consolidate** | High | Phase 2 is 74 lines with bash patterns repeated for groups A–D | Extract to `knowledge/consolidate-extraction-patterns.md`; use single parameterized step
+- **al-dev-develop** | High | Phase 1 signature verification spans 58 lines; Phase 4 static validation adds 70+ lines | Extract verification and validation to dedicated knowledge files
+- **al-dev-fix** | High | Step 3 alone is 100+ lines; compile-lint references duplicated across trivial and non-trivial paths | Extract complexity classification to `knowledge/fix-complexity-classifier.md`
+- **al-dev-plan** | High | Phase 1 is 50+ lines; Phase 1.5 (External Claims) adds 38 lines repeating symbol verification | Extract input validation and claims verification to reusable `knowledge/` patterns
+- **al-dev-review-develop** | Medium | Phase 2 and Phase 4 have identical agent dispatch template headers; Phase 5 repeats artifact-contracts.md contract | Extract review-panel dispatch template to knowledge file
+- **al-dev-ticket** | Medium | Steps 1–2 have overlapping auto-detection and credential verification blocks | Consolidate into single "Resolve & Load" step
+- **al-dev-document** | Medium | Step 0 and Step 2 both include identical documentation structure outline (22 lines); RTM instructions appear twice | Extract to external template file
+- **al-dev-perf** | Medium | Step 1a (40+ lines) overlaps with Step 2 agent prompt on performance entry-point classification | Extract to `knowledge/perf-anti-patterns-prompt.md`
+- **plan-map-changes** | Medium | Phase 1, 2, 3 each define same validation pattern (35+ lines each) | Extract universal checks to knowledge file
+- **plugin-health** | Medium | Phase 1 and Phase 3 both include identical checkpoint loading and status-checking patterns | Consolidate checkpoint logic to single knowledge file
 
-- **al-dev-commit-recover-verifier**: "Previous commit" ambiguous
-- **al-dev-developer-tdd**: Incomplete pre-flight verification conditional
-- **al-dev-interview**: "Expect 40+ questions" lacks bounds
-- **al-dev-solution-architect**: "If it is available" vague
-- **plan-map-changes-duck-worker**: Universal check failure path not specified
-- **plugin-health-team**: "Pending for resume" is pseudo-code
+### Clarity
 
-### Clarity: All 22 Skills with Ambiguous Instructions
+**Agents — High severity:**
 
-Examples: advisory mode failure (al-dev-commit), multi-match tiebreaker (al-dev-consolidate), deduplication logic (al-dev-develop), lint-halt condition (al-dev-fix), suggestion vs requirement (al-dev-help), question batching (al-dev-interview), partial response handling (al-dev-investigate), unverified classification (al-dev-perf), clarification retry count (al-dev-plan), unexpected fields (al-dev-release-notes), reviewer timeout (al-dev-review-develop), curl error handling (al-dev-ticket), retry logic (commit-recover), U1–U3 details (plan-map-changes), dispatch mechanism (plan-with-critic-swarm), dispatch.py failure (plugin-health), group membership (verify-commits).
+- **al-dev-ticket-agent** | High | "Detect Inline Image Attachments" specifies regex patterns but does not define what tool/language to use | Specify: "Use bash `grep -oE` to extract `src="[^"]+"` from HTML; filter for `cdn.freshdesk.com` or `cid:` patterns"
+- **al-dev-interview** | High | "INTERVIEW COMPLETE" gate has no terminal failure condition after retry | Add: "After 2 retry rounds with uncovered categories, escalate to user with list of missing categories"
+- **al-dev-interview** | High | "Ask 40+ questions (typical)" uses vague qualifier | Clarify: "40+ for COMPLEX features, 25–35 for MEDIUM, 10–15 for SIMPLE"
+- **al-dev-solution-architect** | High | Schema mapping requires UNVERIFIED → BLOCKED but "verification" is undefined | Clarify: "VERIFIED = found via AL LSP, AL MCP, or exact text search with file:line"
+- **al-dev-commit-agent-analysis** | High | Diff extraction logic ("names on both `-` and `+` lines") is ambiguous for modified vs added procedures | Define: "procs_modified = names in both `-` and `+` hunks; procs_added = `+` only; procs_removed = `-` only"
+- **al-dev-commit-lint-fixer** | High | "`\s` is dangerous in sed" warning lacks context for when the risk applies | Clarify: "Never use `\s` in sed regex on any platform; `[ \t]` is the safe portable form"
 
-### Description Mismatch: 3 Agents
+**Skills — High severity:**
 
-- **CRITICAL: al-dev-code-review**: Model mismatch (file haiku vs. map sonnet)
-- **al-dev-commit-agent-execute**: Outputs include `STRIPPED_ATTRIBUTIONS` but caller skill doesn't consume it
-- **al-dev-explore**: Description incomplete (explores but also writes; should say "explores and documents")
+- **al-dev-plan** | High | Phase 1 incomplete conditional: "STOP immediately" if vague input, no terminal condition after retry | Add terminal: "After second vague response, offer user: (1) provide specific context, (2) run /interview first, (3) cancel"
+- **al-dev-fix** | High | Step 2 "spawn traditional (trivial, no test plan)" contradicts Step 3 "check for a test plan" for non-trivial | Clarify: "TRIVIAL: skip test plan check; always use traditional. NON-TRIVIAL: dispatch TDD if test plan present, else traditional"
+- **al-dev-interview** | High | "Fallback if INTERVIEW COMPLETE not received" — retry logic exists but no terminal condition | Add terminal condition after 2 retry rounds
+- **al-dev-commit** | High | "If `$AL_STAGED` is non-empty, run compile gate" lacks `else` clause for non-AL-only staged changes | Add: "If `$AL_STAGED` is empty, skip compile gate and proceed to Phase 1"
+- **plan-map-changes** | High | Phase 2 decision tree has no failure handling for either inline or remote verification path | Add: "If inline fails: write error record, offer (skip / retry / abort). If remote fails: offer (inline verify / abort)"
 
-### Name Fit: 6 Agents
+**Medium severity (selection):** vague qualifiers in al-dev-commit "representative diagnostics", al-dev-fix "minimal", al-dev-help "multiple", al-dev-perf "high-volume"; missing `else` clauses in al-dev-consolidate, al-dev-develop, al-dev-release-notes, commit-recover; case-sensitivity ambiguity in al-dev-ticket mode flag; `verify-commits` `<N>` placeholder undefined.
 
-- **al-dev-developer-tdd & al-dev-developer-traditional**: Better: `al-dev-implement-{tdd|traditional}`
-- **al-dev-ticket-agent**: No verb; better: `al-dev-ticket-fetcher`
-- **plan-map-changes-duck-worker**: Methodology in name; better: `al-dev-duck-verifier`
-- **plugin-health-team**: Role not verb; better: `plugin-health-orchestrator`
-- **al-dev-commit-agent-{analysis|execute}**: "Agent" redundant; better: `al-dev-commit-{analyzer|executor}`
+### Description drift
 
-### Name Fit: 7 Skills
+**Medium severity:**
+- **al-dev-diagnostics-fixer** | Medium | Description says "applies auto-fixes" but body documents judgment-required rules NOT auto-fixed as core output | Add: judgment-required rule identification to description
+- **al-dev-interview** | Medium | Description omits INTERVIEW_COMPLETE signal requirement and mandatory 11-category coverage gate | Add gate requirement to description
+- **al-dev-solution-architect** | Medium | Description omits that testability architecture is mandatory | Add: "Testability architecture is mandatory; plan must include structured RTM acceptance criteria"
+- **al-dev-commit-recover-verifier** | Medium | Description names all three fallback strategies but body only documents git restore in detail | Expand body to detail all three strategies
+- **al-dev-support-reply-drafter** | Medium | Description omits independent customer-claim assessment and mandatory Microsoft source citation | Add both to description
+- **al-dev-ticket-agent** | Medium | Description omits inline image detection via `src=` and `cid:` HTML scanning | Add to description
+- **al-dev-commit-lint-fixer** | Medium | Description omits line-count corruption detection and baseline capture | Add to description
+- **al-dev-fix (skill)** | Medium | Description promises "lightweight workflow" but body includes architect dispatch for non-trivial fixes | Clarify dual-path nature
+- **al-dev-ticket (skill)** | Medium | "optionally research" misleads — attachment download is conditional, `--mode=full` controls research | Clarify both gates
 
-- **al-dev-diagram-generator**: Better: `al-dev-generate-diagrams`
-- **al-dev-perf**: Abbreviated; better: `al-dev-analyze-perf`
-- **al-dev-release-notes**: Implicit verb; better: `al-dev-generate-release-notes`
-- **al-dev-ticket**: Scope overloaded
-- **plan-map-changes**: Better: `implement-map-suggestions`
-- **plan-with-critic-swarm**: Better: `al-dev-plan-with-review`
-- **plugin-health**: Better: `plugin-audit` or `plugin-health-sweep`
+### Name fit
 
-### Structure Issues: Critical Gaps
+**High severity:**
+- **al-dev-commit-recover-verifier** | High | "Verifier" implies passive check; agent applies active recovery strategies (git restore, regex, schema rebuild) | Rename to `al-dev-commit-recover-fixer`
+- **plan-map-changes** | High | "Plan" implies plan creation; primary behavior is rubber-duck verification of existing suggestions | Rename to `al-dev-map-suggestions-verify`
+- **plan-with-critic-swarm** | High | "Plan" implies creation; primary behavior is red-teaming/critiquing an existing plan | Rename to `al-dev-plan-swarm-validate`
 
-**20 agents missing `name:` field** — Required for canonical registration across all harnesses
+**Medium severity:**
+- **al-dev-commit-agent-analysis** | Medium | "agent-analysis" is generic; scope is narrowly parsing staged git diffs into per-file manifests | Rename to `al-dev-commit-manifest-analyzer`
+- **al-dev-ticket-agent** | Medium | "agent" provides no scope information; scope is fetching Freshdesk tickets and writing context files | Rename to `al-dev-ticket-fetcher`
+- **al-dev-diagram-generator** | Medium | Name implies user-facing but skill is dispatched exclusively by analyze-\* maintainer tools | Clarify as internal tool or rename to signal internal dispatch
+- **commit-recover** | Medium | "Recover" implies active remediation but execution is inspection-first (recovery only with `--auto-fix`) | Rename to `al-dev-commit-integrity-verify` or clarify `--auto-fix` requirement
 
-**160+ unlabeled code blocks** — All agents and skills; missing language specifiers (bash, json, python, al, yaml, etc.)
+### Structure
 
-**Missing Outputs sections** — 1 agent (plugin-health-team) missing explicit documentation; multiple skills lack documented `.dev/` artifact list
+**High severity:**
+- **al-dev-fix/SKILL.md** | High | Lines 444–445 contain stray `# test` headers — debugging artifacts | Remove immediately
 
----
-
-## Naming Violations
-
-1. **20 agents**: missing `name:` in frontmatter (required field)
-2. **2 agents**: non-canonical model names (opus → claude-opus-4-7)
-3. **3 files**: output file naming violations (template literals not rendered, redundancy, undated artifacts)
-
----
-
-## Graph Deltas
-
-No orphaned agents or dead links detected in plugin surface. All 24 agents referenced by skills are properly registered and documented.
-
-Pre-planning skills (al-dev-explore, al-dev-interview, al-dev-perf) correctly positioned as optional tributaries to main Layer 1 lifecycle.
-
----
-
-## Next Steps
-
-1. Review this dossier and prioritize findings
-2. Run `/plan-map-changes` to scope improvements against live codebase
-3. Execute via issue-driven workflow or planning skill
+**Low severity (widespread):**
+- **al-dev-explore/SKILL.md** | Low | `argument-hint: ""` (empty string) but body references argument `[question or area to explore]` | Correct to `argument-hint: "[question or area to explore]"`
+- All 22 agents and 22 skills | Low | Missing code block language tags (`text` instead of `bash`, `al`, `markdown`, `yaml`) throughout | Apply correct language specifiers to all code blocks
 
 ---
 
-**Generated by /plugin-health-report on 2026-06-01**
+## Naming violations
+
+- **plugin-health-discover (SKILL.md) output path** | Medium | Intermediate lens output `.dev/YYYY-MM-DD-plugin-health-lens-{name}.json` uses `-lens-` separator, `.json` extension, and `plugin-health` as surface identifier — doesn't match pattern `{dir}/YYYY-MM-DD-{surface}-{kind}.md` | Change to `.dev/YYYY-MM-DD-plugin-{name}-findings.json` or consolidate all lens results into single findings file
+- All other agents and skills | ✓ No violations | All names follow established conventions
+
+---
+
+## Graph deltas
+
+Dependency graph refreshed → `docs/al-dev-plugin-graph.md` (exit 0). Review that file for any newly detected orphans or dead links.
