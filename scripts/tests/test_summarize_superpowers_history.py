@@ -188,6 +188,33 @@ def test_reference_detection_scans_repo_root_under_worktrees(tmp_path):
     assert references[spec.as_posix()] == ["profile-al-dev-shared/archived/README.md"]
 
 
+def test_reference_detection_excludes_history_output_file(tmp_path):
+    module = load_module()
+    root = tmp_path
+    plan = root / "docs" / "superpowers" / "plans" / "2026-05-16-example-plan.md"
+    plan.parent.mkdir(parents=True)
+    plan.write_text("# Example Plan\n", encoding="utf-8")
+    history = root / "docs" / "superpowers" / "history.md"
+    history.parent.mkdir(parents=True, exist_ok=True)
+    history.write_text(
+        "See `docs/superpowers/plans/2026-05-16-example-plan.md`.\n",
+        encoding="utf-8",
+    )
+    outside = root / "docs" / "notes.md"
+    outside.write_text(
+        "See `docs/superpowers/plans/2026-05-16-example-plan.md`.\n",
+        encoding="utf-8",
+    )
+
+    references = module.find_external_references(
+        root,
+        [plan],
+        excluded_files=(history,),
+    )
+
+    assert references[plan.as_posix()] == ["docs/notes.md"]
+
+
 def test_render_history_groups_by_date(tmp_path):
     module = load_module()
     artifact = tmp_path / "docs" / "superpowers" / "plans" / "2026-05-31-plugin-health-top-5.md"

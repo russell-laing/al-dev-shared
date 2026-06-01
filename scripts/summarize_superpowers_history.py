@@ -205,13 +205,18 @@ def should_scan_reference_file(path: Path, root: Path, excluded_dirs: tuple[Path
     return not any(_is_under(path, directory) for directory in excluded_dirs)
 
 
-def find_external_references(root: Path, paths: list[Path]) -> dict[str, list[str]]:
+def find_external_references(
+    root: Path,
+    paths: list[Path],
+    excluded_files: tuple[Path, ...] = (),
+) -> dict[str, list[str]]:
     references = {path.as_posix(): [] for path in paths}
     excluded_dirs = tuple(root / directory for directory in SUPERPOWERS_DIRS)
     search_files = [
         path
         for path in root.rglob("*.md")
         if should_scan_reference_file(path, root, excluded_dirs)
+        and path not in excluded_files
     ]
 
     targets: list[tuple[str, str]] = []
@@ -278,7 +283,11 @@ def main(argv: list[str] | None = None) -> int:
     output_path = output if output.is_absolute() else root / output
     artifacts = collect_artifacts(root)
     artifact_paths = [root / artifact.path for artifact in artifacts]
-    references_by_path = find_external_references(root, artifact_paths)
+    references_by_path = find_external_references(
+        root,
+        artifact_paths,
+        excluded_files=(output_path,),
+    )
     references = {
         path.relative_to(root).as_posix(): refs
         for path, refs in ((Path(key), value) for key, value in references_by_path.items())
