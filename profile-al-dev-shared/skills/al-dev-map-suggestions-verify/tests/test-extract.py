@@ -9,7 +9,7 @@ Tests the extract-suggestions.py script's core functionality:
 - Filter flag behavior
 - Multiple surface handling
 
-Run: python3 profile-al-dev-shared/skills/plan-map-changes/tests/test-extract.py
+Run: python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/tests/test-extract.py
 """
 
 import sys

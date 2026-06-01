@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Manifest validator for plan-map-changes skill.
+Manifest validator for al-dev-map-suggestions-verify skill.
 
 Validates manifest.json structure and content against MANIFEST-SCHEMA.md.
 
@@ -21,7 +21,7 @@ from typing import Dict, Any, Tuple, List
 
 
 class ManifestValidator:
-    """Validates plan-map-changes manifest JSON structure."""
+    """Validates al-dev-map-suggestions-verify manifest JSON structure."""
 
     # Valid enum values
     VALID_OPERATIONS = {'inline', 'remote'}
@@ -269,7 +269,7 @@ class ManifestValidator:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Validate plan-map-changes manifest.json'
+        description='Validate al-dev-map-suggestions-verify manifest.json'
     )
     parser.add_argument(
         '--manifest',
