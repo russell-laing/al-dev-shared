@@ -530,7 +530,57 @@ Prompt:
    HOOK_FAILURES)."
 ```
 
-### 4.2 — Summary
+### 4.2 — Branch on Execution Result
+
+Inspect the execution agent output:
+
+- **`HOOK_FAILURES` is not `NONE`** (one or more groups rejected by a
+  pre-commit hook) — proceed to 4.3 for error recovery before any summary.
+- **`HOOK_FAILURES` is `NONE`** (clean `COMMITS` block) — skip 4.3 and proceed
+  directly to 4.4 to summarize.
+
+### 4.3 — Dispatch Hook-Failure Recovery (Error Path)
+
+Persist the failure context for the recovery agent:
+
+```bash
+# Write the execution agent's HOOK_FAILURES output to .dev/hook-failures.json
+# Write the approved plan (groups, files, messages) to .dev/commits.json
+```
+
+Dispatch the hook-fixer agent:
+
+```text
+Agent tool:
+  agent: al-dev-shared:al-dev-commit-hook-fixer
+  description: "Diagnose and recover from pre-commit hook failures"
+
+Prompt:
+  "Diagnose and recover from the pre-commit hook failures from the commit
+   execution phase.
+
+   Inputs:
+   - .dev/hook-failures.json (hook output and error logs)
+   - .dev/commits.json (commit details that triggered the hooks)
+
+   HOOK_FAILURES from execution agent (fallback if files are missing):
+   [paste the HOOK_FAILURES block from the execution agent output]
+
+   Follow your agent definition. Return output in exactly the format specified
+   (HOOK_FAILURES block with failures array, recovery_status, next_step)."
+```
+
+Read the returned `recovery_status` and act:
+
+- **`ready-to-retry`** — scripted fixes were applied and re-staged. Re-dispatch
+  the execution agent (4.1) for the affected groups, then re-enter 4.2.
+- **`needs-manual-intervention`** — surface each `manual-review` failure
+  (`root_cause` + `recommendation`) to the user and stop. Do not retry until
+  the user resolves and re-runs `/al-dev-commit`.
+- **`non-recoverable`** — report the condition (e.g., a broken hook) to the
+  user and abort the commit workflow.
+
+### 4.4 — Summary
 
 Parse the agent output and display the final summary:
 
@@ -543,7 +593,6 @@ Commit workflow complete.
 [N] commits created. [N] skipped.
 [If LINT_FIXES from Phase 3.1 is not NONE:]
   Files re-staged after lint: [LINT_FIXES]
-[If HOOK_FAILURES is not NONE:]
-  Hook failures:
-    [HOOK_FAILURES block]
+[If a hook-fixer recovery ran:]
+  Hook recovery: [recovery_status] — [next_step]
 ```

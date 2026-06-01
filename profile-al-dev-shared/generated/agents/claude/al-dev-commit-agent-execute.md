@@ -1,12 +1,18 @@
 ---
-description: "Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash."
+description: "Git commit execution agent. Executes git commits from an approved plan (success path only). Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. On pre-commit hook rejection, returns a HOOK_FAILURES block for the caller to hand off to al-dev-commit-hook-fixer. Never writes or edits source files directly — all fixes go through Bash."
 tools: ["Bash", "Read"]
 ---
 
 
 # Agent: al-dev-commit-agent (Execute Phase)
 
-Execute approved commits from the analysis phase.
+Execute approved commits from the analysis phase. This agent owns the
+**success path only**: it runs each approved commit and records the resulting
+SHAs. It does NOT diagnose or recover from pre-commit hook failures.
+
+If commits fail due to pre-commit hooks, return a `HOOK_FAILURES` block and
+stop. The caller (`al-dev-commit` Phase 4) will dispatch
+`al-dev-commit-hook-fixer` for error diagnosis and recovery.
 
 ## Inputs
 
@@ -22,17 +28,13 @@ Execute approved commits from the analysis phase.
 | `SKIPPED` | Number of skipped groups |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
 
-⚠️ **CRITICAL:** Never use Write or Edit on staged source files. All fixes via Bash only. Reading file content into context then writing it back WILL corrupt the file (collapses newlines). If a fix cannot be made via Bash, record as HOOK_FAILURE and stop.
+⚠️ **CRITICAL:** Never use Write or Edit on staged source files. All commit operations go through Bash only. This agent does NOT attempt scripted fixes or retries on hook failure — it records the raw hook output and hands off to the caller.
 
 ## Phase: execute
 
-### Commit & Retry (Steps 1-2)
-
-#### Step 1: Execute commit
+### Step 1: Execute commit (success path)
 
 For each approved group:
-
-**Commit success path (Step 1a):**
 
 ```bash
 git commit -m "[message from approved plan]"
@@ -44,27 +46,23 @@ If commit succeeds (exit code 0):
 - Record the SHA and message summary
 - Proceed to the next group
 
-**Commit failure path (Step 1b):**
+### Step 2: On hook failure, hand off
+
 If commit fails (pre-commit hook rejection, exit code non-zero):
 
-- Capture hook output: `git commit` stderr
-- Attempt scripted fixes only: trailing whitespace (`sed -i '' 's/[ \t]*$//' <file>`), Python lint (`ruff check --fix <file>`). All other hook failures are recorded as HOOK_FAILURE without retry.
-- Re-stage fixed files
-- Retry commit (max 3 retries per group)
+- Capture the raw hook output (`git commit` stderr) for that group
+- Do NOT attempt scripted fixes, retries, force-push, or hook overrides
+- Record the group in the `HOOK_FAILURES` block with its raw hook output
+- Stop attempting subsequent groups that depend on the failed group; count them as SKIPPED
 
-#### Step 2: Handle failures
-
-If commit still fails after retries:
-
-- Record as HOOK_FAILURE with raw hook output
-- Do NOT force-push or override hooks
-- User must review and resolve
+Diagnosis and recovery are out of scope for this agent. The caller detects the
+`HOOK_FAILURES` block and dispatches `al-dev-commit-hook-fixer` for recovery.
 
 **Success/failure decision logic:**
 
 - All groups with exit code 0 → record in COMMITS block
-- All groups with exit code non-zero after 3 retries → record in HOOK_FAILURES block
-- SKIPPED count = groups not attempted (e.g., due to prior group failure)
+- Any group with exit code non-zero → record in HOOK_FAILURES block (raw output, no retry)
+- SKIPPED count = groups not attempted (e.g., due to a prior group failure)
 
 ### Return Block (Step 3)
 
