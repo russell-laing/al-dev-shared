@@ -270,8 +270,8 @@ flowchart TD
 | `/analyze-architectural-design` | `docs/al-dev-plugin-graph.md` (cross-surface synthesis) |
 | `/audit-quality --type skill` | `docs/al-dev-skill-quality.md` |
 | `/audit-quality --type agent` | `docs/al-dev-agent-quality.md` |
-| `/plugin-health-discover` | `docs/health/YYYY-MM-DD-<surface>-findings.md` |
-| `/plugin-health-report` | `docs/health/YYYY-MM-DD-<surface>-health.md` |
+| `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
+| `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` |
 | `/projection-sync` | `profile-al-dev-shared/generated/agents/claude/`, `copilot/`, `codex/` |
 
 ---
