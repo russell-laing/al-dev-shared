@@ -1,3 +1,5 @@
+import contextlib
+import io
 import tempfile
 import sys
 import unittest
@@ -46,6 +48,47 @@ def test_classify_status_from_keywords(tmp_path):
     item = module.inspect_artifact(artifact, tmp_path)
 
     assert item.status == "superseded"
+
+
+def test_explicit_approved_status_is_historical_not_implemented(tmp_path):
+    module = load_module()
+    artifact = tmp_path / "2026-05-31-approved.md"
+    artifact.write_text(
+        "# Approved Idea\n\n**Status:** Approved (brainstorming complete; pending implementation plan)\n",
+        encoding="utf-8",
+    )
+
+    item = module.inspect_artifact(artifact, tmp_path)
+
+    assert item.status == "historical"
+
+
+def test_explicit_draft_status_is_historical(tmp_path):
+    module = load_module()
+    artifact = tmp_path / "2026-05-31-draft.md"
+    artifact.write_text("# Draft Idea\n\nStatus: Draft\n", encoding="utf-8")
+
+    item = module.inspect_artifact(artifact, tmp_path)
+
+    assert item.status == "historical"
+
+
+def test_main_prints_absolute_output_outside_root(tmp_path):
+    module = load_module()
+    root = tmp_path / "repo"
+    artifact = root / "docs" / "superpowers" / "plans" / "2026-05-31-example.md"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("# Example\n\nImplemented cleanup.\n", encoding="utf-8")
+    output = tmp_path / "outside" / "history.md"
+    stdout = io.StringIO()
+
+    with contextlib.redirect_stdout(stdout):
+        result = module.main(["--root", str(root), "--output", str(output)])
+
+    assert result == 0
+    assert output.exists()
+    assert f"Wrote {output}" in stdout.getvalue()
+    assert "with 1 artifacts" in stdout.getvalue()
 
 
 def test_reference_detection_excludes_superpowers_tree(tmp_path):

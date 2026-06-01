@@ -61,21 +61,34 @@ def classify_kind(path: Path) -> str:
     return "unknown"
 
 
-def classify_status(text: str) -> str:
-    lowered = text.lower()
-    if "superseded" in lowered:
+def extract_explicit_status(text: str) -> str | None:
+    status_match = re.search(r"(?im)^\s*(?:\*\*)?Status:(?:\*\*)?\s*(.+?)\s*$", text)
+    if status_match:
+        return status_match.group(1).strip()
+    return None
+
+
+def normalize_status(status_text: str) -> str:
+    lowered = status_text.lower()
+    if re.search(r"\bsuperseded\b", lowered):
         return "superseded"
-    if "implemented" in lowered or "complete" in lowered:
+    if re.search(r"\bimplemented\b", lowered):
         return "implemented"
-    if "approved for implementation" in lowered or "approved" in lowered:
-        return "approved"
-    if "archived" in lowered:
-        return "archived"
-    if "draft" in lowered:
-        return "draft"
-    if "proposed" in lowered:
-        return "proposed"
+    if re.search(r"\b(completed|complete)\b", lowered) and not re.search(
+        r"\b(pending|awaiting|needs?)\b.{0,40}\b(implementation\s+plan|plan)\b",
+        lowered,
+    ):
+        return "implemented"
+    if re.search(r"\b(approved|draft|proposed|archived|pending)\b", lowered):
+        return "historical"
     return "unknown"
+
+
+def classify_status(text: str) -> str:
+    explicit_status = extract_explicit_status(text)
+    if explicit_status is not None:
+        return normalize_status(explicit_status)
+    return normalize_status(text)
 
 
 def extract_summary(text: str) -> str:
@@ -203,6 +216,13 @@ def render_history(artifacts: list[Artifact], references: dict[str, list[str]]) 
     return "\n".join(lines).rstrip() + "\n"
 
 
+def display_path(path: Path, root: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Summarize Superpowers plan/spec artifacts.")
     parser.add_argument("--root", default=".", help="Repository root to scan.")
@@ -221,8 +241,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(render_history(artifacts, references), encoding="utf-8")
-    relative_output = output_path.relative_to(root).as_posix()
-    print(f"Wrote {relative_output} with {len(artifacts)} artifacts")
+    print(f"Wrote {display_path(output_path, root)} with {len(artifacts)} artifacts")
     return 0
 
 
