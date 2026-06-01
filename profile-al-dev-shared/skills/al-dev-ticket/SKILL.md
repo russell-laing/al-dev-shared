@@ -275,89 +275,34 @@ Attachments saved to .dev/attachments/ ([count] files).
 
 ## Phase 5: Branch on Mode
 
-**Note:** This phase controls execution flow. If mode is context-only, the skill
-exits here. Otherwise, it continues to Phases 6 and 7 below.
+**Note:** This phase controls execution flow. Research and reply
+drafting have been extracted into the `/al-dev-support-reply` skill.
+Phase 5 either exits with context (default) or chains to that skill.
 
-If MODE is `context-only`:
-
-- Skip Phases 6 and 7
-- Output ticket context only
-- Exit
-
-If MODE is `full`:
-
-- Continue to Phase 6 (research)
-
----
-
-## Phase 6: Dispatch al-dev-support-researcher (research phase)
-
-Assemble the research prompt using the ticket context loaded in Step 3:
+Assemble the CONTEXT block from the ticket loaded in Step 3:
 
 ```text
-QUERY_TYPE: ticket
-QUERY_CONTEXT: <SUMMARY from agent output in Step 3>
+CONTEXT
 TICKET_FILE: <FILE from agent output in Step 3>
+SUMMARY: <SUMMARY from agent output in Step 3>
 ```
 
-Dispatch:
+**Mode gate:**
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-support-researcher
-  description: "BC support research: <60-char query summary>"
+If mode is `context-only` (default):
 
-Prompt: <assembled prompt above>
-```
+- Write the CONTEXT block to `.dev/ticket-context.md`
+- Exit (workflow complete) — output ticket context only
 
----
+If mode is `full`:
 
-## Phase 7: Dispatch al-dev-support-reply-drafter (reply phase)
+- Write the CONTEXT block to `.dev/ticket-context.md`
+- Dispatch `/al-dev-support-reply` with the CONTEXT block path:
 
-Assemble the reply prompt using the researcher's output:
+  ```text
+  /al-dev-support-reply .dev/ticket-context.md
+  ```
 
-```text
-QUERY_TYPE: ticket
-QUERY_CONTEXT: <SUMMARY from ticket loaded in Step 3>
-TICKET_FILE: <FILE from ticket loaded in Step 3>
-RESEARCHER_FINDINGS: <full structured output block from al-dev-support-researcher>
-```
-
-Dispatch:
-
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-support-reply-drafter
-  model: claude-sonnet-4-6
-  description: "Draft customer reply: <60-char query summary>"
-
-Prompt: <assembled prompt above>
-```
-
----
-
-## Phase 8: Present Result
-
-Parse the agent's returned summary:
-
-```text
-FILE: .dev/YYYY-MM-DD-support-<slug>.md
-QUERY_TYPE: <class>
-BC_VERSION_SCOPE: <scope or "not version-specific">
-SOURCES: MS Docs (<n> pages) | BC History (<n> commits or NONE)
-         | AL Symbols (<n> objects)
-SUMMARY: <1-2 sentence plain English summary of findings>
-```
-
-Present to user:
-
-```text
-Support research complete →
-<FILE value>
-
-<SUMMARY value>
-<QUERY_TYPE> | <BC_VERSION_SCOPE>
-
-Findings and draft reply written. Review and copy-paste
-the Draft Customer Reply section into Freshdesk.
-```
+- Read the REPLY block from the skill's response
+- Output the REPLY block to the caller (research complete, draft
+  reply written to `.dev/ticket-reply.md`)
