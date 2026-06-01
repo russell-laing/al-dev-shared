@@ -4,7 +4,7 @@ description: >-
   Draft a customer-facing reply from internal BC support research findings.
   Writes the combined findings + reply file. Dispatched by /al-dev-ticket
   (--mode=full, reply phase). Pairs with al-dev-support-researcher.
-model: haiku
+model: sonnet
 tools: ["Write"]
 ---
 
