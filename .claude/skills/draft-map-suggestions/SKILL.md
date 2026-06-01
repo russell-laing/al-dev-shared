@@ -71,18 +71,7 @@ Read `knowledge/map-suggestion-templates.md` for the exact template formats:
 
 ---
 
-## Phase 5 — Dispatch diagram generation
-
-Dispatch the `al-dev-diagram-generator` agent to generate the workflow diagram.
-Pass the caller name so the diagram references the correct re-run command:
-- For `--type agent`: pass `--caller-name analyze-agent-design`
-- For `--type skill`: pass `--caller-name analyze-skill-design`
-
-The generator writes `docs/al-dev-workflow-diagrams.md`.
-
----
-
-## Phase 6 — Write observations to the map file
+## Phase 5 — Write observations to the map file
 
 **For `--type agent`** — replace the entire `## Observations` section of `docs/al-dev-agent-map.md`:
 
@@ -147,11 +136,10 @@ Update `**Last updated:**` in the document header to today's date.
 
 ---
 
-## Phase 7 — Present to user
+## Phase 6 — Present to user
 
-After Phase 5 dispatch returns and the map file is written:
+After the map file is written:
 
 1. Print a one-line summary per suggestion (type + subject).
 2. Mark the **highest-leverage** suggestion with `← highest leverage`.
-3. Print: `Workflow diagram written to docs/al-dev-workflow-diagrams.md`
-4. Ask: "Would you like to act on any of these now?"
+3. Ask: "Would you like to act on any of these now?"
