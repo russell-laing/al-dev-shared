@@ -157,7 +157,34 @@ Critical rule: never claim the staged set is ready, "clean compile", or "zero er
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.
 
-### 0.5 — Verify Acceptance Criteria (If Solution Plan Exists)
+### 0.5 — Load Prior Lint Findings (Optional)
+
+If a prior lint report exists, load it to inform the commit workflow:
+
+1. **Check for lint report:**
+
+   ```bash
+   ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1
+   ```
+
+2. **If found, read the report:**
+
+   Show the user:
+
+   ```text
+   Prior lint findings found. Review before committing?
+
+   [paste lint report content — unresolved issues]
+
+   Note: These findings may inform your grouping decisions if lint fixes
+   need atomic separation.
+   ```
+
+3. **If not found, continue:** Proceed to next section.
+
+This is optional; missing lint report does not block commit workflow.
+
+### 0.6 — Verify Acceptance Criteria (If Solution Plan Exists)
 
 Check whether a solution plan exists:
 
@@ -175,9 +202,9 @@ Do not treat `[manual]` criteria as automatic blockers. Surface any pending manu
 
 If verification of any directly checkable criterion fails, stop the commit workflow and report the failure to the user.
 
-If no solution plan exists, skip this step and continue to 0.6.
+If no solution plan exists, skip this step and continue to 0.7.
 
-### 0.6 — Establish Gitmoji Style and Advisory Alignment Check
+### 0.7 — Establish Gitmoji Style and Advisory Alignment Check
 
 Check the project's recent commit style:
 
