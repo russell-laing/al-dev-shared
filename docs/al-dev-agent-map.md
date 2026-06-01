@@ -12,7 +12,7 @@
 | al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
 | al-dev-commit-message-drafter | sonnet | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-ooxml-validator | haiku | Bash | /al-dev-commit (Step 9.5b — OOXML validation) |
-| al-dev-commit-recover-verifier | sonnet | Write | /commit-recover |
+| al-dev-commit-recover-fixer | sonnet | Write | /commit-recover |
 | al-dev-developer-tdd | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix |
 | al-dev-developer-traditional | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit | /al-dev-lint |
@@ -535,7 +535,7 @@
 
 ---
 
-### al-dev-commit-recover-verifier
+### al-dev-commit-recover-fixer
 
 **Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
 **Model:** sonnet
@@ -571,7 +571,7 @@
 - **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Step 9.5a: lint pre-flight)
 - **al-dev-commit-message-drafter** — used only by /al-dev-commit (Phase 2: message composition)
 - **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Step 9.5b: OOXML validation)
-- **al-dev-commit-recover-verifier** — used only by /commit-recover
+- **al-dev-commit-recover-fixer** — used only by /commit-recover
 - **al-dev-diagnostics-fixer** — used only by /al-dev-lint
 - **al-dev-docs-writer** — used only by /al-dev-document (Step 2 — dispatched as docs-writer specialist)
 - **al-dev-expert-reviewer** — used only by /al-dev-review-develop
@@ -615,14 +615,14 @@ All 13 agents with undeclared tools have been updated to reflect their actual to
 
 **Model drift (2 agents) — resolved:**
 - `al-dev-interview`: Updated from haiku → sonnet (agent file specifies sonnet)
-- `al-dev-commit-recover-verifier`: Updated from haiku → sonnet (agent file specifies sonnet)
+- `al-dev-commit-recover-fixer`: Updated from haiku → sonnet (agent file specifies sonnet)
 
 **Archived agents (5 agents) — noted:**
 Archived test engineer agents are missing the `name` field in YAML frontmatter. These agents are not active in the current system and are archived; their files are in `profile-al-dev-shared/archived/agents/`. No action required for the active agent map.
 
 ### Quality suggestions
 
-**Remodel: al-dev-commit-recover-verifier**
+**Remodel: al-dev-commit-recover-fixer**
 Observation: Agent performs recovery strategy selection across three fallback methods (git restore, regex reconstruction, schema rebuild), per-file verdict documentation, and recovery report authoring; currently assigned haiku.
 Suggestion: Change model to sonnet — task requires multi-step judgment (strategy selection per file, evidence documentation, report synthesis), not simple mechanical execution.
 Trade-off: Slightly higher cost per recovery run; justified because wrong strategy selection or incomplete recovery reports are the most likely failure modes.
@@ -657,7 +657,7 @@ Both /al-dev-plan and /al-dev-fix already conditionally pass `model: sonnet` for
 **Confirmed implemented: Split al-dev-commit-agent-execute** (2026-05-29; preflight further split 2026-05-31)
 Pre-flight lint and OOXML validation extracted into two focused agents: `al-dev-commit-lint-fixer` (Step 9.5a — ruff, trailing whitespace, line-count corruption) and `al-dev-commit-ooxml-validator` (Step 9.5b — ZIP integrity). al-dev-commit-agent-execute handles only git commit invocation and hook retry logic.
 
-**Confirmed implemented: Align al-dev-commit-recover-verifier** (2026-05-29)
+**Confirmed implemented: Align al-dev-commit-recover-fixer** (2026-05-29)
 Inputs table line 23 already reads: "Inferred from working directory; not passed explicitly by /commit-recover."
 
 **Confirmed implemented: Align al-dev-ticket-agent** (2026-05-29)
@@ -669,7 +669,7 @@ Inputs table already marks test-plan as Optional. Agent body correctly implement
 **Confirmed implemented: Align al-dev-review-develop stub** (2026-05-29)
 al-dev-review-develop/SKILL.md is fully implemented with all Phases 5-10 including reviewer spawn calls in Phase 6-7. Not a stub.
 
-**Restored al-dev-commit-recover-verifier agent** (2026-05-29)
+**Restored al-dev-commit-recover-fixer agent** (2026-05-29)
 Agent file was empty; now restored with proper YAML frontmatter (haiku, Bash/Read/Write) and full recovery system prompt.
 
 **Remodelled sonnet agents to haiku** (2026-05-27)

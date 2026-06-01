@@ -1,7 +1,14 @@
-name = "al-dev-commit-recover-verifier"
-description = "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild). Dispatched by /commit-recover Step 2 with one verifier spawned per corruption incident found in .dev/commit-integrity.log."
-developer_instructions = """
-# Agent: al-dev-commit-recover-verifier
+---
+name: al-dev-commit-recover-fixer
+description: >-
+  Recover corrupted AL files using fallback strategies (git restore, regex reconstruction,
+  schema rebuild). Dispatched by /commit-recover Step 2 with one fixer spawned per
+  corruption incident found in .dev/commit-integrity.log.
+model: sonnet
+tools: ["Write"]
+---
+
+# Agent: al-dev-commit-recover-fixer
 
 Recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
 
@@ -45,6 +52,3 @@ UNRECOVERABLE: <file count> files
 STRATEGIES_USED: [git restore | regex reconstruction | schema rebuild]
 REPORT_FILE: .dev/YYYY-MM-DD-al-dev-commit-recover-report.md
 ```text
-
-Codex capability notes:
-- edit files available in the active Codex session"""

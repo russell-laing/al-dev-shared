@@ -37,7 +37,7 @@ was underspecified; sonnet provides appropriate sustained reasoning.
 **Reason:** Severity classification + tone synthesis for customer replies requires judgment.
 Haiku was underspecified for multi-step decision-making.
 
-### al-dev-commit-recover-verifier: sonnet (not haiku)
+### al-dev-commit-recover-fixer: sonnet (not haiku)
 
 **Decided:** 2026-06-01
 **Reason:** Chooses fallback recovery strategy across three methods, writes recovery report.

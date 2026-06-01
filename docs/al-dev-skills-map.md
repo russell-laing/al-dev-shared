@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-06-01 (23 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 2 distributed utilities + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 2 additional distributed utilities (`/al-dev-help`, `/maintaining-shared-knowledge`). Maintainer-only tools (`/al-dev-diagram-generator`, `/plan-map-changes`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
+**Last updated:** 2026-06-01 (22 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/plan-map-changes`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -558,14 +558,14 @@ flowchart LR
 
 ### /commit-recover
 
-Spawns one verifier per corrupted-file incident found in `.dev/commit-integrity.log`.
+Spawns one fixer per corrupted-file incident found in `.dev/commit-integrity.log`.
 
 ```mermaid
 flowchart LR
     Start([Start]) --> Phase1["Step 1<br/>Parse incidents"]
     Phase1 --> SkillWork1["(skill itself)"]
     SkillWork1 --> Phase2["Step 2<br/>Analyse + recover"]
-    Phase2 --> Agent1["al-dev-commit-recover-verifier<br/>×N (per incident)"]
+    Phase2 --> Agent1["al-dev-commit-recover-fixer<br/>×N (per incident)"]
     Agent1 --> Phase3["Step 3<br/>Update learnings"]
     Phase3 --> SkillWork2["(skill itself)"]
     SkillWork2 --> Output1([".dev/learnings.md"])
@@ -673,40 +673,6 @@ flowchart LR
     style SkillWork3 fill:#c5cae9
     style SkillWork4 fill:#c5cae9
     style Decision fill:#fff9c4
-    style Output1 fill:#9fa8da
-```
-
-### /maintaining-shared-knowledge
-
-Distributed utility skill — keeps shared knowledge current, harness-neutral, and projection-friendly. Use when `profile-al-dev-shared/knowledge/*.md`, `profile-al-dev-shared/agents/*.md`, or downstream harness instruction docs (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`) need to reflect the current state of the harnesses and the projection mapping.
-
-No agents spawned; no `.dev/` output. All verification steps run inline via bash validators.
-
-```mermaid
-flowchart LR
-    Start([Start]) --> Phase1["Step 1\nVerify source\nof truth"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2\nVerify live\nharness capabilities"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase3["Step 3\nUpdate shared\nauthored file"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase4["Step 4\nRegenerate\nprojections"]
-    Phase4 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Phase5["Step 5\nRun neutrality\n+ projection checks"]
-    Phase5 --> SkillWork5["(skill itself)"]
-    SkillWork5 --> Output1(["updated shared docs"])
-    Output1 --> End([End])
-
-    style Phase1 fill:#e8eaf6
-    style Phase2 fill:#e8eaf6
-    style Phase3 fill:#e8eaf6
-    style Phase4 fill:#e8eaf6
-    style Phase5 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork2 fill:#c5cae9
-    style SkillWork3 fill:#c5cae9
-    style SkillWork4 fill:#c5cae9
-    style SkillWork5 fill:#c5cae9
     style Output1 fill:#9fa8da
 ```
 
@@ -833,7 +799,7 @@ Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent n
 - **al-dev-commit-agent-execute** — used only by /al-dev-commit (Phase 4; runs git commits)
 - **al-dev-commit-lint-fixer** — used only by /al-dev-commit (Phase 3; lint pre-flight)
 - **al-dev-commit-ooxml-validator** — used only by /al-dev-commit (Phase 3; OOXML validation)
-- **al-dev-commit-recover-verifier** — used only by /commit-recover
+- **al-dev-commit-recover-fixer** — used only by /commit-recover
 - **al-dev-security-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
 - **al-dev-expert-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
 - **al-dev-performance-reviewer** — used only by /al-dev-review-develop (dispatched in Phase 4)
@@ -985,6 +951,8 @@ Trade-off: Skill remains available for periodic health sweeps; removed from the 
 ### Completed architectural moves
 
 **✅ Status: /al-dev-align** — Archived in `profile-al-dev-shared/archived/`. Python utility remains available without occupying skill registry slot.
+
+**✅ Status: /maintaining-shared-knowledge** — Moved to `.codex/skills/maintaining-shared-knowledge/` as repo-local Codex maintainer tooling. It remains available for maintaining this repository but is no longer part of the distributed `profile-al-dev-shared` skill surface.
 
 
 ---

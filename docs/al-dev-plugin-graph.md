@@ -42,7 +42,7 @@ flowchart LR
         al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
         al_dev_commit_message_drafter[al-dev-commit-message-drafter]
         al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
-        al_dev_commit_recover_verifier[al-dev-commit-recover-verifier]
+        al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
         al_dev_developer_tdd[al-dev-developer-tdd]
         al_dev_developer_traditional[al-dev-developer-traditional]
         al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
@@ -138,7 +138,7 @@ flowchart LR
     al_dev_ticket --> al_dev_support_reply_drafter
     al_dev_ticket --> al_dev_support_researcher
     al_dev_ticket --> al_dev_ticket_agent
-    commit_recover --> al_dev_commit_recover_verifier
+    commit_recover --> al_dev_commit_recover_fixer
     al_dev_commit --> artifact_contracts_md
     al_dev_commit --> compile_lint_procedure_md
     al_dev_commit --> intent_preflight_md
@@ -222,7 +222,7 @@ flowchart LR
     class al_dev_commit_lint_fixer agentNode
     class al_dev_commit_message_drafter agentNode
     class al_dev_commit_ooxml_validator agentNode
-    class al_dev_commit_recover_verifier agentNode
+    class al_dev_commit_recover_fixer agentNode
     class al_dev_developer_tdd agentNode
     class al_dev_developer_traditional agentNode
     class al_dev_diagnostics_fixer agentNode
@@ -312,6 +312,7 @@ flowchart LR
 - `code-review-template.md`
 - `commit-conventions.md`
 - `feedback-resolution.md`
+- `handoff-chain-map.md`
 - `harness-concepts.md`
 - `lens-invocation-patterns.md`
 - `map-suggestion-templates.md`

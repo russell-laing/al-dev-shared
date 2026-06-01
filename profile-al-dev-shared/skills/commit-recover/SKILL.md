@@ -6,7 +6,7 @@ argument-hint: "[--auto-fix] [--file=path]"
 
 # Skill: /commit-recover
 
-Recovers corrupted AL files from commit integrity failures. Analyzes incidents in `.dev/commit-integrity.log` and attempts recovery using learned fallback strategies. Spawns a focused verifier subagent to analyze root causes and propose recovery methods.
+Recovers corrupted AL files from commit integrity failures. Analyzes incidents in `.dev/commit-integrity.log` and attempts recovery using learned fallback strategies. Spawns a focused fixer subagent to analyze root causes and propose recovery methods.
 
 ## Usage
 
@@ -31,13 +31,13 @@ Analyze specific file only.
 
 Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" or "SYNTAX_ERROR". Skip entries whose status is already RESTORED and verified.
 
-### Step 2: Analyze each incident with a verifier subagent
+### Step 2: Analyze each incident with a fixer subagent
 
-For each unresolved incident, dispatch the verifier subagent:
+For each unresolved incident, dispatch the fixer subagent:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-commit-recover-verifier
+  agent: al-dev-shared:al-dev-commit-recover-fixer
   description: "Analyze incident: [file path]"
 
 Prompt:
@@ -59,7 +59,7 @@ Prompt:
 
 ### Step 3: Present analysis (read-only mode)
 
-Display the verifier output for each incident:
+Display the fixer output for each incident:
 
 ```text
 Commit Integrity Analysis
@@ -70,7 +70,7 @@ Incident 1: codeunit.al
   Status: CORRUPTION | baseline: 89 lines → now: 1 line (98.9% collapse)
   Previously: RESTORED by hook
 
-  Verifier Analysis:
+  Fixer Analysis:
     Root Cause Hypothesis: Perl regex [[:space:]]+$ strips newlines
     Pattern Found: Known pattern in .dev/learnings.md (2026-04-16)
     Proposed Fallback: Use sed with [ \t]+$ instead
@@ -122,13 +122,13 @@ Append successful recovery patterns to `.dev/learnings.md`:
 
 **Triggered by:** `User: /commit-recover` or `/commit-recover --auto-fix`
 
-**Verifier subagent receives:**
+**Fixer subagent receives:**
 - Incident file path
 - Baseline/current line count
 - Git history (last 3-5 commits for file)
 - Current `.dev/learnings.md` content
 
-**Verifier returns:**
+**Fixer returns:**
 - Root cause hypothesis
 - Fallback strategy to use
 - Success/failure result
