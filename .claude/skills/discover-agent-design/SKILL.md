@@ -1,9 +1,9 @@
 ---
 name: discover-agent-design
 description: >-
-  Discovery phase for agent design analysis. Reads the agent map, builds working
-  lists, and dispatches design-agent lens agents. Returns candidate lists and
-  working lists for synthesis. Called by /analyze-agent-design; can also be
+  Internal discovery phase for agent design analysis. Reads the agent map, builds
+  working lists, and dispatches design-agent lens agents. Returns candidate lists
+  and working lists for synthesis. Called by /analyze-agent-design; can also be
   invoked standalone by health sweeps or other synthesis consumers.
   Output: structured context returned to caller (no file written).
 argument-hint: "[focus: trim|remodel|split|inline|align|all]"
@@ -50,34 +50,34 @@ For each lens, pass only the context fields it requires (per `knowledge/lens-inv
 Construct one dispatch prompt per lens:
 
 **design-agent-lens-tool-hygiene:**
-```
+```text
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 tool_inventory: {agent → [tools]}
 ```
 
 **design-agent-lens-model-fit:**
-```
+```text
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 model_assignments: {agent → model}
 ```
 
 **design-agent-lens-scope-isolation:**
-```
+```text
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 ```
 
 **design-agent-lens-caller-alignment:**
-```
+```text
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 caller_map: {agent → [spawning skills]}
 ```
 
 **design-agent-lens-usage-patterns:**
-```
+```text
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 single_use_agents: [list]

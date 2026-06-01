@@ -1,14 +1,16 @@
 ---
 name: audit-knowledge-quality
 description: >-
-  Audit knowledge files for stub sections and structural issues.
-  Dispatches parallel agents for large audit scopes (4+ files).
+  Audit knowledge files for stub sections and structural issues. Dispatches
+  parallel agents for large audit scopes (4+ files) and can offer targeted fixes
+  after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
 ---
 
 # Audit Knowledge Quality
 
 Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues. Report findings and offer targeted fixes.
+This audit can offer targeted fixes after reporting; it is not read-only.
 
 ## Purpose
 
@@ -112,7 +114,7 @@ After writing the report:
 
 ## Output Format
 
-```
+```text
 ## Knowledge File Quality Audit
 
 Scanning profile-al-dev-shared/knowledge/ for structural issues...

@@ -31,13 +31,11 @@ Parse each finding line: `- **[name]** | [Severity] | [observation] | [fix]`
 
 Note any "Failed lenses" listed at the foot of the file.
 
-## Phase 2 — Rank
+## Phase 2 - Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality
 before naming), then by object (agent before skill). Pick the top 5 ranked actions
 for the summary.
-
-## Phase 3 — Write dossier
 
 Write `docs/health/YYYY-MM-DD-<surface>-health.md` (substitute today's date and
 `plugin`/`tooling` from the findings filename). The dossier must use generic
@@ -81,7 +79,7 @@ _No issues found._  ← if empty
 
 Record any failed lenses at the foot of the Summary section.
 
-## Phase 4 — Refresh dependency graph (plugin surface only)
+## Phase 3 — Refresh dependency graph (plugin surface only)
 
 If the findings file is for the plugin surface, run:
 
@@ -91,7 +89,7 @@ python3 /Users/russelllaing/al-dev-shared/scripts/generate-plugin-graph.py
 
 The generator writes `docs/al-dev-plugin-graph.md` and exits 0 even on parse errors.
 
-## Phase 5 — Present to user
+## Phase 4 — Present to user
 
 Print, per surface: dossier path + severity counts + the top action.
 List any failed lenses.

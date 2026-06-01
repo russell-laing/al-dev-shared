@@ -5,6 +5,7 @@ description: >-
   prompt clarity, structural conventions, description drift, bloat, and name fit.
   Reads each agent .md or SKILL.md directly and writes findings to
   docs/al-dev-agent-quality.md or docs/al-dev-skill-quality.md based on --type.
+  This audit can offer or apply fixes after reporting, so it is not read-only.
   Run after /analyze-agent-design or /analyze-skill-design for a complete picture.
   Triggers on: "audit quality", "check quality", "are agents/skills well written",
   "quality report", "check for quality drift", "bloat".
@@ -64,7 +65,7 @@ Dispatch all five lens agents in a **single response** (five parallel Agent tool
 
 Pass this prompt to each of the five lenses (substitute `{file_list}` with paths from Phase 1):
 
-```
+```text
 Analyze the following files. Apply your lens to every file and return a findings block.
 
 File list:

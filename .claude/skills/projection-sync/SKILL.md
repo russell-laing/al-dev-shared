@@ -1,9 +1,9 @@
 ---
 name: projection-sync
 description: >-
-  Validate shared agent source, regenerate harness-native projections,
-  summarize changes, and ask before committing. Use after editing
-  profile-al-dev-shared/agents/*.md files.
+  Validates shared agent source and unidirectionally regenerates harness-native projections
+  from the canonical agent source, summarizes changes, and asks before committing.
+  Use after editing profile-al-dev-shared/agents/*.md files.
 ---
 
 # Projection Sync Skill
@@ -119,7 +119,7 @@ changed_files:
 
 **Approval gate (ask user before any git add/commit):**
 
-```
+```text
 Projection regeneration is complete.
 
 Changed files:

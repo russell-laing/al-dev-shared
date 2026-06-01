@@ -60,15 +60,17 @@ Invoke `/draft-map-suggestions --type agent`. Pass as context:
   single-use agents, undocumented agents, existing inline candidates from docs/al-dev-agent-map.md)
 
 `/draft-map-suggestions` handles: drafting suggestions, completing inventory tables,
-dispatching the diagram generator, and writing to `docs/al-dev-agent-map.md`.
+dispatching the diagram generator, selecting the highest-leverage suggestion, and
+writing to `docs/al-dev-agent-map.md`.
 
 ---
 
 ## Phase 4 — Present to User
 
-After Phase 5 invocation completes and both files are written:
+After `/draft-map-suggestions` completes and both files are written:
 
 1. Print a one-line summary per suggestion (type + subject).
-2. Mark the **highest-leverage** suggestion with `← highest leverage`.
+2. `/draft-map-suggestions` owns highest-leverage selection; preserve its
+   `← highest leverage` marker rather than re-scoring here.
 3. Print: `Workflow diagram written to docs/al-dev-workflow-diagrams.md`
 4. Ask: "Would you like to act on any of these now?"

@@ -1,9 +1,10 @@
 ---
 name: align-harness-repos
 description: >-
-  Validate harness neutrality in al-dev-shared shared plugin surface. Scans for
-  forbidden harness-specific tokens (Claude Code, Copilot, etc.) that could
-  break distributable content. Run after changes to skills, agents, or knowledge.
+  Validate harness neutrality in the al-dev-shared single shared plugin surface.
+  Scans for forbidden harness-specific tokens (Claude Code, Copilot, etc.) that
+  could break distributable content. Run after changes to skills, agents, or
+  knowledge.
 argument-hint: ""
 ---
 
@@ -34,7 +35,7 @@ ALIGN_EXIT=$?
 
 If `ALIGN_EXIT` is 0 and the output contains "PASS":
 
-```
+```text
 ✓ All checks passed — no harness-specific leakage in shared plugin surface.
 ```
 
@@ -46,13 +47,13 @@ Stop.
 
 If `ALIGN_EXIT` is 1, parse the output line-by-line. Each line has format:
 
-```
+```text
 path/to/file.md: Rule Name: forbidden_token_or_excerpt
 ```
 
 Group findings by file, then by rule. Present them:
 
-```
+```text
 Harness-specific tokens found in shared files:
 
   skills/al-dev-foo/SKILL.md
@@ -81,7 +82,7 @@ Also list the forbidden rules being checked:
 
 Present a summary and offer to fix:
 
-```
+```text
 Found N forbidden token(s) across M file(s).
 
 Want me to attempt fixes?

@@ -4,7 +4,7 @@ description: >-
   Review profile-al-dev-shared agents for accuracy and update
   docs/al-dev-agent-map.md. Use whenever agents are added, removed, or
   restructured in the plugin, or when you want to verify the map reflects
-  the current state of agent files. Pass --no-update to audit-only mode:
+  the current state of agent files. Pass --no-update to run audit-only mode:
   reports discrepancies and suggests fixes without modifying any files.
   Replaces /audit-agents-against-map (use --no-update) and /update-agent-map.
   Triggers on: "review agent map", "update agent map", "sync agent map",
@@ -125,7 +125,7 @@ For each active agent, verify the `### <filename-without-.md>` section
 
 Before editing, summarise findings:
 
-```
+```text
 Agent map review findings:
 Layer 1:
   - [issue or "✅ accurate"]

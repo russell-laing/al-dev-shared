@@ -97,7 +97,7 @@ from workflow_utils import invoke_workflow, wait_for_workflow
 
 For each lens in scope (`remaining_lenses`), construct a prompt object:
 
-```
+```text
 lens_prompt_list = []
 
 for lens_name in remaining_lenses:
@@ -220,7 +220,7 @@ read and assemble them.
 
 If the Workflow result includes a `failed_lenses` list:
 
-```
+```text
 Log: "Failed lenses: {', '.join(failed_lenses)}"
 ```
 

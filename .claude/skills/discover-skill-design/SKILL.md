@@ -1,10 +1,11 @@
 ---
 name: discover-skill-design
 description: >-
-  Discovery phase for skill design analysis. Reads the plugin map, builds working
-  lists, and dispatches design-skill lens agents. Returns candidate lists and
-  working lists for synthesis. Called by /analyze-skill-design; can also be
-  invoked standalone by health sweeps or other synthesis consumers.
+  Internal discovery phase for skill design analysis. Reads the plugin map,
+  builds working lists, and dispatches design-skill lens agents. Returns
+  candidate lists and working lists for synthesis. Called by
+  /analyze-skill-design; can also be invoked standalone by health sweeps or other
+  synthesis consumers.
   Output: structured context returned to caller (no file written).
 argument-hint: "[focus: atomise|connect|merge|all]"
 ---
@@ -55,14 +56,14 @@ For each lens, pass only the context fields it requires (per `knowledge/lens-inv
 Construct one dispatch prompt per lens:
 
 **design-skill-lens-shared-backbone:**
-```
+```text
 Analyze the following SKILL.md files. Apply your lens and return a findings block.
 File list: [one path per line]
 agent_usage_counts: {agent-type → [skills that spawn it]}
 ```
 
 **design-skill-lens-complexity:**
-```
+```text
 Analyze the following SKILL.md files. Apply your lens and return a findings block.
 File list: [one path per line]
 phase_counts: {skill → phase count}
@@ -70,7 +71,7 @@ no_agent_skills: [list]
 ```
 
 **design-skill-lens-near-duplicates:**
-```
+```text
 Analyze the following SKILL.md files. Apply your lens and return a findings block.
 File list: [one path per line]
 agent_usage_counts: {agent-type → [skills that spawn it]}
@@ -78,14 +79,14 @@ phase_counts: {skill → phase count}
 ```
 
 **design-skill-lens-handoff-gaps:**
-```
+```text
 Analyze the following SKILL.md files. Apply your lens and return a findings block.
 File list: [one path per line]
 handoff_chains: {skill → [output files]}
 ```
 
 **design-skill-lens-preplanning:**
-```
+```text
 Analyze the following SKILL.md files. Apply your lens and return a findings block.
 File list: [one path per line]
 preplanning_skills: [list]

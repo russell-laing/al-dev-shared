@@ -4,8 +4,8 @@ description: >-
   Review profile-al-dev-shared for accuracy and update docs/al-dev-skills-map.md.
   Use whenever skills or agents are added, removed, or restructured in the plugin,
   or when you want to verify the map reflects the current state of the codebase.
-  Pass --no-update to audit-only mode: reports discrepancies and suggests fixes
-  without modifying any files.
+  Pass --no-update to run audit-only mode: reports discrepancies and suggests
+  fixes without modifying any files.
   Replaces /audit-skills-against-map (use --no-update) and /update-skill-map.
   Triggers on: "review skill map", "update skill map", "sync skill map",
   "is the skill map accurate", "update the map", "check the map".
@@ -106,7 +106,7 @@ For each active skill, check the matching drill-down diagram:
 
 Before editing, summarise what you found:
 
-```
+```text
 Plugin map review findings:
 Layer 1:
   - [issue or "✅ accurate"]

@@ -123,7 +123,7 @@ Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
 
 After each suggestion, write:
 
-```
+```text
 RUBBER DUCK: [Type — Subject]
 Claim:        [what the suggestion says]
 State:        [what reading the code reveals]
