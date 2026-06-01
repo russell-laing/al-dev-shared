@@ -10,7 +10,7 @@
 | al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
 | al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
-| al-dev-commit-message-drafter | haiku | (none) | /al-dev-commit (message-drafting phase) |
+| al-dev-commit-message-drafter | sonnet | (none) | /al-dev-commit (message-drafting phase) |
 | al-dev-commit-ooxml-validator | haiku | Bash | /al-dev-commit (Step 9.5b — OOXML validation) |
 | al-dev-commit-recover-verifier | sonnet | Write | /commit-recover |
 | al-dev-developer-tdd | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix |
@@ -25,7 +25,7 @@
 | al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read | /al-dev-review-develop |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | haiku | Write | /al-dev-ticket (support mode: reply phase) |
+| al-dev-support-reply-drafter | sonnet | Write | /al-dev-ticket (support mode: reply phase) |
 | al-dev-support-researcher | sonnet | (none) | /al-dev-ticket (support mode: research phase) |
 | al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (fetch + attachment-download phases in `context-only` and `full` modes) |
 
@@ -81,7 +81,7 @@
 ### al-dev-commit-message-drafter
 
 **Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
 
@@ -488,7 +488,7 @@
 ### al-dev-support-reply-drafter
 
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Write
 **Spawned by:** /al-dev-ticket (support mode: reply phase)
 
