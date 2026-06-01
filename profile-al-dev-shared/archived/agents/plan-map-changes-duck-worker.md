@@ -22,7 +22,7 @@ Write a duck record artifact documenting all checks run and verdict reached.
 
 ## Role Context
 
-This agent is spawned by the `plan-map-changes` skill on remote teams to
+This agent is spawned by the `al-dev-map-suggestions-verify` skill on remote teams to
 parallelize duck verification across multiple suggestions. Each agent works
 on one suggestion independently, with no user interaction required.
 
@@ -34,14 +34,14 @@ on one suggestion independently, with no user interaction required.
 | `reference_doc_path` | Yes | Absolute path | Path to `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` |
 | `repo_root` | Yes | Absolute path | Repository root (e.g., `/Users/username/al-dev-shared`) |
 | `run_id` | Yes | String | Run identifier for organizing output (e.g., `2026-05-31-run-001`) |
-| `manifest_path` | Yes | Absolute path | Path to manifest file for coordination (e.g., `.dev/plan-map-changes-runs/<run_id>/manifest.json`) |
+| `manifest_path` | Yes | Absolute path | Path to manifest file for coordination (e.g., `.dev/al-dev-map-suggestions-verify-runs/<run_id>/manifest.json`) |
 
 ## Outputs
 
 | Output | Path | When | Description |
 |--------|------|------|-------------|
-| Duck record (success) | `.dev/plan-map-changes-runs/<run_id>/duck-records/<id>.json` | All checks complete | Full verification results with verdict |
-| Duck record (error) | `.dev/plan-map-changes-runs/<run_id>/duck-records/<id>-error.json` | Unrecoverable error | Error details and attempted checks before failure |
+| Duck record (success) | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>.json` | All checks complete | Full verification results with verdict |
+| Duck record (error) | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>-error.json` | Unrecoverable error | Error details and attempted checks before failure |
 
 ## Execution Flow
 
@@ -242,7 +242,7 @@ Record the verdict and the primary blocking check (if REJECT/DEFER).
 **Phase 5: Write Duck Record**
 
 Create duck record artifact at:
-`<repo_root>/.dev/plan-map-changes-runs/<run_id>/duck-records/<suggestion_id>.json`
+`<repo_root>/.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<suggestion_id>.json`
 
 **Record format:**
 
@@ -303,7 +303,7 @@ Create duck record artifact at:
 If unrecoverable error occurs:
 
 1. Write error record to:
-   `<repo_root>/.dev/plan-map-changes-runs/<run_id>/duck-records/<suggestion_id>-error.json`
+   `<repo_root>/.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<suggestion_id>-error.json`
 
 2. Error record format:
 

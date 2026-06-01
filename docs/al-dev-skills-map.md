@@ -3,7 +3,7 @@
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
 **Last updated:** 2026-06-01 (22 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/plan-map-changes`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -36,7 +36,7 @@ flowchart TD
     ReviewDevelop -->|.dev/*-al-dev-develop-code-review.md| Commit
 
     %% Optional plan red-teaming
-    Plan -.->|optional red-team| CriticSwarm("plan-with-critic-swarm")
+    Plan -.->|optional red-team| CriticSwarm("al-dev-plan-swarm-validate")
     CriticSwarm -.->|.dev/plan-critique-YYYYMMDD.md| Develop
 
     %% Lint feedback loop
@@ -580,7 +580,7 @@ flowchart LR
     style Output1 fill:#26a69a
 ```
 
-### /plan-with-critic-swarm
+### /al-dev-plan-swarm-validate
 
 Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
 
@@ -714,7 +714,7 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
-### /plan-map-changes
+### /al-dev-map-suggestions-verify
 
 **Maintainer tool — not part of the main development lifecycle.** Rubber-ducks architectural suggestions from the map Observations sections using parallel remote agent teams. Reduces session token burn from 1-1.5 hours to 40-50 minutes via async verification and multi-session checkpoint/resume workflow.
 
@@ -747,7 +747,7 @@ flowchart LR
     style Output1 fill:#9fa8da
 ```
 
-Agents spawned: `al-dev-shared:plan-map-changes-duck-worker` (×N parallel, Phase 2B remote path only)
+Agents spawned: `al-dev-shared:al-dev-map-suggestions-verify-duck-worker` (×N parallel, Phase 2B remote path only)
 
 ### /plugin-health
 
@@ -928,10 +928,10 @@ Impact: Pre-planning tributary is fully integrated; diagram matches implementati
 
 Three skills scored 2+ signals and qualify as move candidates to `.claude/skills/`:
 
-**Move: /plan-map-changes → .claude/skills/**
+**Move: /al-dev-map-suggestions-verify → .claude/skills/**
 Observation: Plugin-maintenance orchestrator. Reads architectural suggestions from the map Observations sections, rubber-ducks them with remote agent teams, and generates plans. No value to distributed AL developers; only used internally by maintainers analyzing the plugin itself.
 Signals: internal path refs (✓), self-audit purpose (✓), no spawned al-dev-shared agents (✓).
-Suggestion: Move `profile-al-dev-shared/skills/plan-map-changes/` to `.claude/skills/plan-map-changes/` and remove from the plugin scope statement. Update Layer 1 diagram to remove the node.
+Suggestion: Move `profile-al-dev-shared/skills/al-dev-map-suggestions-verify/` to `.claude/skills/al-dev-map-suggestions-verify/` and remove from the plugin scope statement. Update Layer 1 diagram to remove the node.
 Trade-off: Skill remains available in this repo for maintainer use; removed from the distributed plugin.
 
 **Move: /al-dev-diagram-generator → .claude/skills/**
@@ -966,7 +966,7 @@ The plugin maintains healthy separation of concerns:
 - Pre-planning skills (interview/explore/perf) form a coherent optional enrichment layer feeding /al-dev-plan
 - Post-commit skills (release-notes/handoff/document/recover) handle orthogonal concerns
 - Shared agents (ticket-agent, developer, architect) are used strategically with documented patterns
-- New meta-skills (plan-with-critic-swarm, verify-commits) are well-integrated
+- New meta-skills (al-dev-plan-swarm-validate, verify-commits) are well-integrated
 
 ### Status summary
 

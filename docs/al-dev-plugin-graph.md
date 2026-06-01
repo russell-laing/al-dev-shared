@@ -30,8 +30,8 @@ flowchart LR
         al_dev_review_develop[al-dev-review-develop]
         al_dev_ticket[al-dev-ticket]
         commit_recover[commit-recover]
-        plan_map_changes[plan-map-changes]
-        plan_with_critic_swarm[plan-with-critic-swarm]
+        al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
+        al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
         plugin_health[plugin-health]
         verify_commits[verify-commits]
     end
@@ -340,8 +340,8 @@ flowchart LR
 - `al-dev-release-notes`
 - `al-dev-review-develop`
 - `commit-recover`
-- `plan-map-changes`
-- `plan-with-critic-swarm`
+- `al-dev-map-suggestions-verify`
+- `al-dev-plan-swarm-validate`
 - `plugin-health`
 - `verify-commits`
 

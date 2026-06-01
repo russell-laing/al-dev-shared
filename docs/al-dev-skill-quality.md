@@ -315,7 +315,7 @@ Fix: Tag with `bash` and `text`.
 
 ---
 
-### /plan-with-critic-swarm
+### /al-dev-plan-swarm-validate
 
 **[Medium] Prompt Clarity**
 Observation: Step 2 lists six "Critic" roles but does not clarify whether these are distinct agents or specializations within a single agent.

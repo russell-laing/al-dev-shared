@@ -1,4 +1,4 @@
-# plan-map-changes User Guide
+# al-dev-map-suggestions-verify User Guide
 
 Verify architectural change suggestions from documentation maps using parallel
 remote agent teams. Reduces session token burn from 1-1.5 hours to 40-50 minutes
@@ -9,7 +9,7 @@ through async verification and checkpoint/resume workflow.
 Initialize a verification run against both skill and agent map Observations:
 
 ```bash
-/plan-map-changes
+/al-dev-map-suggestions-verify
 ```text
 
 Expected output:
@@ -25,7 +25,7 @@ For 1-2 suggestions: inline verification (immediate, ~3 min)
 For 3+ suggestions: remote team dispatch (return now, verify later)
 
 Dispatched 5 suggestions to verification team.
-Run `/plan-map-changes --resume` when ready to collect results.
+Run `/al-dev-map-suggestions-verify --resume` when ready to collect results.
 ```text
 
 ## Resume & Collect Results
@@ -33,7 +33,7 @@ Run `/plan-map-changes --resume` when ready to collect results.
 After team completes verification (5-10 min), collect results and generate plan:
 
 ```bash
-/plan-map-changes --resume
+/al-dev-map-suggestions-verify --resume
 ```text
 
 The skill reads `.dev/progress.md` checkpoint, polls team completion, aggregates
@@ -50,7 +50,7 @@ Expected behavior:
 
 ## Command Reference
 
-### `/plan-map-changes`
+### `/al-dev-map-suggestions-verify`
 
 Initialize extraction and dispatch phases.
 
@@ -64,22 +64,22 @@ Initialize extraction and dispatch phases.
 
 ```bash
 # Verify all suggestions from both maps
-/plan-map-changes
+/al-dev-map-suggestions-verify
 
 # Verify only skill-related trim suggestions
-/plan-map-changes --surface skills --filter trim
+/al-dev-map-suggestions-verify --surface skills --filter trim
 
 # Verify agent-related split and merge suggestions
-/plan-map-changes --surface agents --filter split,merge
+/al-dev-map-suggestions-verify --surface agents --filter split,merge
 ```text
 
-### `/plan-map-changes --resume`
+### `/al-dev-map-suggestions-verify --resume`
 
 Resume from checkpoint and collect verification results.
 
 **When to use:**
 
-- After initial `/plan-map-changes` dispatch returns
+- After initial `/al-dev-map-suggestions-verify` dispatch returns
 - When remote team verification completes (5-10 minutes later)
 - If Phase 3 times out, can re-run to poll longer
 
@@ -147,11 +147,11 @@ Invoked via `--resume` flag:
 
 ### Run Artifacts
 
-- `.dev/plan-map-changes-runs/<run-id>/suggestion-queue.json` — Extracted
+- `.dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json` — Extracted
   suggestions list
-- `.dev/plan-map-changes-runs/<run-id>/manifest.json` — Status tracking across
+- `.dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json` — Status tracking across
   verification
-- `.dev/plan-map-changes-runs/<run-id>/duck-records/*.json` — Individual duck
+- `.dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/*.json` — Individual duck
   verification records
 
 ### Generated Output

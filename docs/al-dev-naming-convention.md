@@ -31,7 +31,7 @@ Pattern: `{verb}-{object}-{aspect}`
 - `verb` ∈ `review` | `analyze` | `audit` | `plan` | `sync` | …
 - `object` ∈ `skill` | `agent` | `knowledge` | `map` | `plugin`
 
-Examples: `audit-quality`, `review-agent-map`, `plan-map-changes`.
+Examples: `audit-quality`, `review-agent-map`, `al-dev-map-suggestions-verify`.
 
 This rule is advisory: pre-existing skills that predate the convention
 (`projection-sync`, `align-harness-repos`) are grandfathered. New skills SHOULD

@@ -599,7 +599,7 @@ Based on agent audit from `20260601T002200Z`, the map has been synchronized with
 
 **Archived agents removed (2 agents) — resolved:**
 
-- `plan-map-changes-duck-worker`: Removed from Layer 1 Catalog and Layer 2 profile. Agent is archived at `profile-al-dev-shared/archived/agents/plan-map-changes-duck-worker.md`.
+- `plan-map-changes-duck-worker`: Removed from Layer 1 Catalog and Layer 2 profile. Agent is archived at `profile-al-dev-shared/archived/agents/plan-map-changes-duck-worker.md`. (Skill renamed to `al-dev-map-suggestions-verify`.)
 - `plugin-health-team`: Removed from Layer 1 Catalog and Layer 2 profile. Agent is archived at `profile-al-dev-shared/archived/agents/plugin-health-team.md`.
 
 **Caller mismatch (1 agent) — resolved:**

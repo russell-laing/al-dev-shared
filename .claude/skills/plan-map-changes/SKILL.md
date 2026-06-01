@@ -1,6 +1,7 @@
 ---
-name: plan-map-changes
+name: al-dev-map-suggestions-verify
 description: >-
+  Verify and rubber-duck existing map suggestions before creating an implementation plan.
   Use when the Observations section of docs/al-dev-skills-map.md or
   docs/al-dev-agent-map.md has suggestions that need implementing.
   Rubber-ducks each suggestion against the live codebase before any plan

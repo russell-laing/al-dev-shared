@@ -1,6 +1,6 @@
-# Integration Test: plan-map-changes Skill
+# Integration Test: al-dev-map-suggestions-verify Skill
 
-End-to-end test covering all three phases of the plan-map-changes skill: extraction, verification dispatch/inline, and collection/planning.
+End-to-end test covering all three phases of the al-dev-map-suggestions-verify skill: extraction, verification dispatch/inline, and collection/planning.
 
 **Test Duration:** ~30-40 minutes (for full remote team path; 10-15 minutes for inline path)
 
@@ -76,12 +76,12 @@ cat > /tmp/al-dev-test/docs/al-dev-agent-map.md << 'EOF'
 
 ## Observations
 
-**Align: plan-map-changes Agent**
+**Align: al-dev-map-suggestions-verify Agent**
 
 Input expects --resume flag but documentation says --resume-from. Signature mismatch.
 
 - Target: Agent definition
-- Files: `profile-al-dev-shared/agents/plan-map-changes.md`
+- Files: `profile-al-dev-shared/agents/al-dev-map-suggestions-verify.md`
 
 EOF
 ```text
@@ -142,7 +142,7 @@ EOF
 ### 3. Create Test Directories
 
 ```bash
-mkdir -p /tmp/al-dev-test/.dev/plan-map-changes-runs
+mkdir -p /tmp/al-dev-test/.dev/al-dev-map-suggestions-verify-runs
 cd /tmp/al-dev-test
 ```text
 
@@ -154,7 +154,7 @@ cd /tmp/al-dev-test
 
 ```bash
 cd /tmp/al-dev-test
-python3 /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/plan-map-changes/extract-suggestions.py \
+python3 /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/al-dev-map-suggestions-verify/extract-suggestions.py \
   --surface both \
   --filter all \
   --output .dev/test-suggestion-queue.json
@@ -238,7 +238,7 @@ import json
 from pathlib import Path
 
 # Add skill directory to path
-sys.path.insert(0, '/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/plan-map-changes')
+sys.path.insert(0, '/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/al-dev-map-suggestions-verify')
 
 # Import the verification functions
 # (Assuming they're exposed as importable module)
@@ -311,7 +311,7 @@ cat /tmp/al-dev-test/.dev/duck-records-test/trim-001.json
 
 ```bash
 run_id=$(python3 -c "import uuid; print(uuid.uuid4())")
-run_dir=".dev/plan-map-changes-runs/$run_id"
+run_dir=".dev/al-dev-map-suggestions-verify-runs/$run_id"
 mkdir -p "$run_dir/duck-records"
 
 echo "Test run_id: $run_id"
@@ -388,7 +388,7 @@ EOF
 
 ### 2.4 Validation Checks
 
-- [ ] `.dev/progress.md` contains plan-map-changes checkpoint
+- [ ] `.dev/progress.md` contains al-dev-map-suggestions-verify checkpoint
 - [ ] Checkpoint has all required fields: run_id, surface, filter, phase, status, manifest_path
 - [ ] Manifest file exists at specified path
 - [ ] Manifest JSON is valid
@@ -594,10 +594,10 @@ import sys
 import json
 from pathlib import Path
 
-sys.path.insert(0, '/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/plan-map-changes')
+sys.path.insert(0, '/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/al-dev-map-suggestions-verify')
 
 # Read manifest to get run info
-run_dir = Path('.dev/plan-map-changes-runs/<run_id>')
+run_dir = Path('.dev/al-dev-map-suggestions-verify-runs/<run_id>')
 manifest_path = run_dir / 'manifest.json'
 
 with open(manifest_path) as f:
@@ -854,7 +854,7 @@ echo "Plan file created at .dev/2026-05-31-al-dev-plan-plan.md"
 
 ```bash
 # Clean up test run directory
-rm -rf /tmp/al-dev-test/.dev/plan-map-changes-runs
+rm -rf /tmp/al-dev-test/.dev/al-dev-map-suggestions-verify-runs
 
 # Clean up progress checkpoint
 sed -i '/## Plan-Map-Changes State/,/^$/d' /tmp/al-dev-test/.dev/progress.md

@@ -1,12 +1,13 @@
 ---
-name: plan-map-changes
+name: al-dev-map-suggestions-verify
 description: >-
+  Verify and rubber-duck existing map suggestions before creating an implementation plan.
   Rubber-duck architectural suggestions from map Observations using remote agent
   teams, reducing token burn from 1-1.5 hours to 40-50 min
 argument-hint: "[--resume] [--surface skills|agents|both] [--filter trim|merge|...]"
 ---
 
-# Skill: /plan-map-changes
+# Skill: /al-dev-map-suggestions-verify
 
 Verify architectural change suggestions from `docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md`
 Observations sections using parallel remote agent teams. Reduces session token burn from 1-1.5 hours
@@ -14,13 +15,13 @@ to 40-50 minutes through async verification and multi-session checkpoint/resume 
 
 ## Overview: Three Entry Points
 
-**Entry 1: Initial dispatch** (`/plan-map-changes` or `/plan-map-changes --surface agents --filter trim`)
+**Entry 1: Initial dispatch** (`/al-dev-map-suggestions-verify` or `/al-dev-map-suggestions-verify --surface agents --filter trim`)
 
 - Phase 1: Extract suggestions from map Observations
 - Phase 2: Dispatch remote team for 3+ suggestions, or inline verify 1-2
 - Returns early; user freed to work while team verifies in background
 
-**Entry 2: Resume after team completion** (`/plan-map-changes --resume`)
+**Entry 2: Resume after team completion** (`/al-dev-map-suggestions-verify --resume`)
 
 - Phase 3: Collect & Plan generation
 - Aggregate duck records into plan document
@@ -53,8 +54,8 @@ Parse map Observations sections and build suggestion queue. Determine paralleliz
 
 **Outputs:**
 
-- `.dev/plan-map-changes-runs/<run-id>/suggestion-queue.json` — Suggestions to verify
-- `.dev/plan-map-changes-runs/<run-id>/manifest.json` — Manifest with status tracking
+- `.dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json` — Suggestions to verify
+- `.dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json` — Manifest with status tracking
 
 **Exit status:**
 
@@ -68,7 +69,7 @@ After extraction completes, update `.dev/progress.md` with:
 - `phase: extracting`
 - `status: completed`
 - `suggestion_count: <count>`
-- `manifest_path: .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json`
+- `manifest_path: .dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json`
 
 ### Phase 2: Dispatch or Inline Verify
 
@@ -79,7 +80,7 @@ For each suggestion, synchronously:
 1. Read target files specified in suggestion
 2. Run universal checks (U1-U3): file accessibility, syntax, references
 3. Run type-specific checks (trim/merge/split/inline/align/connect/promote)
-4. Write duck record (success) or error record (failure) to `.dev/plan-map-changes-runs/<run-id>/duck-records/`
+4. Write duck record (success) or error record (failure) to `.dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/`
 5. Jump to Phase 3 collection
 
 **Why inline for small batches:** Avoids 5-minute remote team setup overhead for trivial batches.
@@ -89,16 +90,16 @@ For each suggestion, synchronously:
 1. Build team context JSON with all suggestions
 2. Spawn remote duck worker agents via RemoteTrigger (one agent per suggestion, parallel)
 3. Update `.dev/progress.md` checkpoint with run state (run_id, phase=2, status=dispatched)
-4. Return to user with message: "Dispatched X suggestions to verification team. Run `/plan-map-changes --resume` when ready."
+4. Return to user with message: "Dispatched X suggestions to verification team. Run `/al-dev-map-suggestions-verify --resume` when ready."
 
 **Why remote for large batches:** Each suggestion takes 5-10 minutes to verify (reading files, running checks, writing records).
 Remote parallelization avoids sequential tool use overhead (each tool context switch costs ~30 seconds).
 
 ### Phase 3: Collect & Plan Generation
 
-Invoked via `/plan-map-changes --resume`. Validates multi-session state and aggregates results.
+Invoked via `/al-dev-map-suggestions-verify --resume`. Validates multi-session state and aggregates results.
 
-1. Read `.dev/progress.md` for active plan-map-changes state (run_id, manifest path)
+1. Read `.dev/progress.md` for active al-dev-map-suggestions-verify state (run_id, manifest path)
 2. Validate manifest exists and is readable
 3. Poll manifest until all suggestions completed or timeout (10 min default)
 4. For incomplete suggestions: ask user (wait / proceed partial / abort)
@@ -120,10 +121,10 @@ Invoked via `/plan-map-changes --resume`. Validates multi-session state and aggr
 Call `extract-suggestions.py` to parse map Observations and build the suggestion queue:
 
 ```bash
-python3 profile-al-dev-shared/skills/plan-map-changes/extract-suggestions.py \
+python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/extract-suggestions.py \
   --surface both \
   --filter all \
-  --output .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json
+  --output .dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json
 ```yaml
 
 **Script behavior:**
@@ -145,10 +146,10 @@ python3 profile-al-dev-shared/skills/plan-map-changes/extract-suggestions.py \
 **Inline verification call:**
 
 ```bash
-python3 profile-al-dev-shared/skills/plan-map-changes/validate-suggestions.py \
-  --suggestion-queue .dev/plan-map-changes-runs/<run-id>/suggestion-queue.json \
-  --output .dev/plan-map-changes-runs/<run-id>/duck-records/ \
-  --manifest .dev/plan-map-changes-runs/<run-id>/manifest.json
+python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/validate-suggestions.py \
+  --suggestion-queue .dev/al-dev-map-suggestions-verify-runs/<run-id>/suggestion-queue.json \
+  --output .dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/ \
+  --manifest .dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json
 ```yaml
 
 **Script behavior:**
@@ -164,15 +165,15 @@ python3 profile-al-dev-shared/skills/plan-map-changes/validate-suggestions.py \
 See `../../knowledge/remote-trigger-duck-team-dispatch.md` for remote agent spawning details.
 
 High-level steps:
-1. Write team context JSON to `.dev/plan-map-changes-runs/<run-id>/team-context.json`
+1. Write team context JSON to `.dev/al-dev-map-suggestions-verify-runs/<run-id>/team-context.json`
 2. Dispatch 1 remote duck worker agent per suggestion via RemoteTrigger API
 3. Each agent reads suggestion, runs checks, writes duck record
 4. Update `.dev/progress.md` checkpoint with manifest path
-5. Return to user: "Dispatched N suggestions. Run `/plan-map-changes --resume` when ready."
+5. Return to user: "Dispatched N suggestions. Run `/al-dev-map-suggestions-verify --resume` when ready."
 
 ### Phase 3: Resume & Collect
 
-Entry point: `/plan-map-changes --resume`
+Entry point: `/al-dev-map-suggestions-verify --resume`
 
 **Manifest polling logic:**
 
@@ -183,7 +184,7 @@ Entry point: `/plan-map-changes --resume`
 
 **Duck record aggregation:**
 
-1. Read all `.json` files from `.dev/plan-map-changes-runs/<run-id>/duck-records/`
+1. Read all `.json` files from `.dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/`
 2. Filter by verdict: ACCEPT / DEFER / REJECT
 3. Format duck records as markdown context
 
@@ -197,7 +198,7 @@ Invoke `superpowers:writing-plans` with aggregated duck records and context:
 **Checkpoint cleanup:**
 
 1. Update `.dev/progress.md`: phase=completed, status=completed
-2. Remove plan-map-changes section from `.dev/progress.md`
+2. Remove al-dev-map-suggestions-verify section from `.dev/progress.md`
 3. Return success (plan document written by writing-plans)
 
 **Full script details:**
@@ -245,13 +246,13 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 ### Skill not triggering
 
-**Symptom:** `/plan-map-changes` command not recognized or fails to start.
+**Symptom:** `/al-dev-map-suggestions-verify` command not recognized or fails to start.
 
 **Verification:**
 
 1. Confirm skill is registered in harness settings for `al-dev-shared`
 2. Restart the harness session or reload settings
-3. Verify skill file exists: `profile-al-dev-shared/skills/plan-map-changes/SKILL.md`
+3. Verify skill file exists: `profile-al-dev-shared/skills/al-dev-map-suggestions-verify/SKILL.md`
 
 **Solution:** Run `/sync-documentation-maps` to refresh skill registration, then retry.
 
@@ -269,7 +270,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 1. Verify maps exist: `ls docs/al-dev-skills-map.md docs/al-dev-agent-map.md`
 2. Check Observations are populated: `grep -A 5 "## Observations" docs/al-dev-*-map.md`
-3. Try `--filter all` to remove filtering: `/plan-map-changes --filter all`
+3. Try `--filter all` to remove filtering: `/al-dev-map-suggestions-verify --filter all`
 4. If still empty, run `/analyze-skill-design` or `/analyze-agent-design` first to generate suggestions
 
 ### Team dispatch fails
@@ -287,7 +288,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 1. Verify `.dev/` writable: `touch .dev/test-write && rm .dev/test-write`
 2. Check `.dev/progress.md` is created: `cat .dev/progress.md`
 3. If RemoteTrigger unavailable, fallback to inline: manually run duck checks on 1-2 suggestions
-4. For large batches, split into smaller runs: `/plan-map-changes --surface skills --filter trim` then separate agent run
+4. For large batches, split into smaller runs: `/al-dev-map-suggestions-verify --surface skills --filter trim` then separate agent run
 
 ### Inline verification hangs
 
@@ -304,11 +305,11 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 1. Check file sizes: `wc -l profile-al-dev-shared/skills/**/*.md | sort -n | tail -10`
 2. Check disk health: `df -h` and `du -sh .dev/`
 3. Increase timeout in validate-suggestions.py: change `timeout=15` to `timeout=30` in grep calls
-4. If stuck, interrupt (Ctrl+C) and retry specific suggestion: `/plan-map-changes --filter trim --surface skills`
+4. If stuck, interrupt (Ctrl+C) and retry specific suggestion: `/al-dev-map-suggestions-verify --filter trim --surface skills`
 
 ### Resume can't find run
 
-**Symptom:** "No active plan-map-changes run found in .dev/progress.md" when running `--resume`.
+**Symptom:** "No active al-dev-map-suggestions-verify run found in .dev/progress.md" when running `--resume`.
 
 **Root causes:**
 
@@ -319,9 +320,9 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 **Solution:**
 
 1. Verify working directory: `pwd` should show `al-dev-shared` at path end
-2. Check if run completed: `ls .dev/plan-map-changes-runs/` — if directory empty, run already completed
+2. Check if run completed: `ls .dev/al-dev-map-suggestions-verify-runs/` — if directory empty, run already completed
 3. Look for orphaned runs: `find .dev -name 'manifest.json' | head -5`
-4. Restart workflow: `/plan-map-changes --surface both --filter all` to begin new run
+4. Restart workflow: `/al-dev-map-suggestions-verify --surface both --filter all` to begin new run
 
 ### Duck records missing after collection
 
@@ -335,8 +336,8 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 **Solution:**
 
-1. Verify directory exists: `ls -la .dev/plan-map-changes-runs/<run-id>/duck-records/`
-2. Check manifest status: `cat .dev/plan-map-changes-runs/<run-id>/manifest.json | grep -E 'status|suggestions'`
+1. Verify directory exists: `ls -la .dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/`
+2. Check manifest status: `cat .dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json | grep -E 'status|suggestions'`
 3. Check for failed suggestions: look for `"status": "failed"` in manifest
 4. If all failed, check worker agent logs (if available) or re-dispatch with smaller batch
 
@@ -353,7 +354,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 **Solution:**
 
 1. Choose "Wait longer" option when prompted (adds 5 more minutes)
-2. Check manifest status manually: `cat .dev/plan-map-changes-runs/<run-id>/manifest.json`
+2. Check manifest status manually: `cat .dev/al-dev-map-suggestions-verify-runs/<run-id>/manifest.json`
 3. If suggestions still pending after 20 minutes total, choose "Proceed with completed" and manually retry failed ones
 4. For large batches (8+ suggestions), split into two runs to reduce team coordination overhead
 
@@ -370,7 +371,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 **Solution:**
 
 1. Verify writing-plans skill exists: `/writing-plans --help` (test command)
-2. Check duck records format: `cat .dev/plan-map-changes-runs/<run-id>/duck-records/*.json | head -20`
+2. Check duck records format: `cat .dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/*.json | head -20`
 3. Verify disk space: `df -h .dev`
 4. Try manual plan generation: copy duck records context and invoke writing-plans separately
 5. If writing-plans unavailable, ask user to review duck records manually and create plan document

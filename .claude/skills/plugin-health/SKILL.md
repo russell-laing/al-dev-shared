@@ -14,7 +14,7 @@ argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]
 Standing self-healing entry point. Detects drift across both plugin surfaces and
 consolidates suggestions into one ranked dossier per surface. Nothing is
 auto-edited — the loop is: `/plugin-health` (detect) → dossier (review) →
-`/plan-map-changes` (rubber-duck accepted items) → plan → execute.
+`/al-dev-map-suggestions-verify` (rubber-duck accepted items) → plan → execute.
 
 Implemented as two sub-skills:
 - `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file

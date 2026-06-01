@@ -1,6 +1,6 @@
 # Plan-Map-Changes Artifact Schemas
 
-This document defines the JSON and markdown schemas for checkpoint, queue, manifest, and duck record artifacts used by the plan-map-changes skill and its remote verification team.
+This document defines the JSON and markdown schemas for checkpoint, queue, manifest, and duck record artifacts used by the al-dev-map-suggestions-verify skill and its remote verification team.
 
 ---
 
@@ -23,7 +23,7 @@ The checkpoint is a YAML-like section in `.dev/progress.md` that tracks the acti
 | `status` | string | yes | Status within phase | Enum: `in_progress`, `waiting`, `completed`, `failed` |
 | `started_at` | string | no | ISO 8601 timestamp when run started | e.g., `2026-05-31T14:22:35Z` |
 | `suggestion_count` | integer | no | Number of suggestions extracted | ≥ 0 |
-| `manifest_path` | string | no | Relative path to manifest.json | e.g., `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json` |
+| `manifest_path` | string | no | Relative path to manifest.json | e.g., `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json` |
 
 ### Checkpoint Update Protocol
 
@@ -44,7 +44,7 @@ phase: dispatched
 status: waiting
 started_at: 2026-05-31T14:22:35Z
 suggestion_count: 5
-manifest_path: .dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json
+manifest_path: .dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json
 ```text
 
 ### How Main Skill Reads/Updates
@@ -58,7 +58,7 @@ manifest_path: .dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/m
 
 ## Suggestion Queue Format
 
-**Location:** `.dev/plan-map-changes-runs/<run_id>/suggestion-queue.json`
+**Location:** `.dev/al-dev-map-suggestions-verify-runs/<run_id>/suggestion-queue.json`
 
 The suggestion queue is the output of Phase 1 extraction. It contains all unimplemented suggestions extracted from map Observations sections.
 
@@ -131,7 +131,7 @@ The suggestion queue is the output of Phase 1 extraction. It contains all unimpl
 
 ## Manifest Format
 
-**Location:** `.dev/plan-map-changes-runs/<run_id>/manifest.json`
+**Location:** `.dev/al-dev-map-suggestions-verify-runs/<run_id>/manifest.json`
 
 The manifest is created by Phase 2 (dispatch) and updated by Phase 3 (collection). It tracks the dispatch status of each suggestion and where its duck record is stored.
 
@@ -158,7 +158,7 @@ The manifest is created by Phase 2 (dispatch) and updated by Phase 3 (collection
 | `id` | string | yes | Matches suggestion queue id | e.g., `s-001` |
 | `type` | string | yes | Matches suggestion type | Enum: `trim`, `merge`, `split`, `inline`, `align`, `connect`, `promote` |
 | `status` | string | yes | Verification status | Enum: `pending`, `in_progress`, `completed`, `failed` |
-| `duck_record_path` | string | no | Relative path to duck record JSON | e.g., `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json` |
+| `duck_record_path` | string | no | Relative path to duck record JSON | e.g., `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json` |
 | `error` | object | no | Error details if status=failed | See Error Record schema below |
 
 ### Manifest Example
@@ -178,19 +178,19 @@ The manifest is created by Phase 2 (dispatch) and updated by Phase 3 (collection
       "id": "s-001",
       "type": "trim",
       "status": "completed",
-      "duck_record_path": ".dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json"
+      "duck_record_path": ".dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json"
     },
     {
       "id": "s-002",
       "type": "merge",
       "status": "in_progress",
-      "duck_record_path": ".dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-002.json"
+      "duck_record_path": ".dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-002.json"
     },
     {
       "id": "s-003",
       "type": "split",
       "status": "failed",
-      "duck_record_path": ".dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-003-error.json",
+      "duck_record_path": ".dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-003-error.json",
       "error": {
         "status": "file_not_found",
         "error": "Target file not accessible",
@@ -205,7 +205,7 @@ The manifest is created by Phase 2 (dispatch) and updated by Phase 3 (collection
 
 ## Duck Record Format
 
-**Location:** `.dev/plan-map-changes-runs/<run_id>/duck-records/<id>.json`
+**Location:** `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>.json`
 
 A successful duck record documents the verification result of one suggestion. Created by duck verification workers (either inline or remote team).
 
@@ -317,7 +317,7 @@ A successful duck record documents the verification result of one suggestion. Cr
 
 ## Error Record Format
 
-**Location:** `.dev/plan-map-changes-runs/<run_id>/duck-records/<id>-error.json`
+**Location:** `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>-error.json`
 
 An error record documents a failed verification attempt. Created when duck verification workers encounter unrecoverable errors.
 
@@ -425,7 +425,7 @@ All JSON artifacts must satisfy these validation constraints:
 ### Phase 1 (Extraction)
 
 1. Skill calls `extract-suggestions.py`
-2. Script writes `.dev/plan-map-changes-runs/<run_id>/suggestion-queue.json`
+2. Script writes `.dev/al-dev-map-suggestions-verify-runs/<run_id>/suggestion-queue.json`
 3. Skill updates checkpoint: `phase=extracting`, `status=completed`
 
 ### Phase 2 (Dispatch or Inline)
@@ -433,7 +433,7 @@ All JSON artifacts must satisfy these validation constraints:
 **If 1-2 suggestions (inline path):**
 
 1. Skill calls inline verification for each suggestion
-2. Workers write duck records directly to `.dev/plan-map-changes-runs/<run_id>/duck-records/<id>.json`
+2. Workers write duck records directly to `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>.json`
 3. Skill skips manifest creation and proceeds to Phase 3
 
 **If 3+ suggestions (remote path):**
@@ -445,9 +445,9 @@ All JSON artifacts must satisfy these validation constraints:
 
 ### Phase 3 (Collection)
 
-1. User invokes `/plan-map-changes --resume`
+1. User invokes `/al-dev-map-suggestions-verify --resume`
 2. Skill reads checkpoint, validates manifest, polls for completion
-3. Skill reads all duck records from `.dev/plan-map-changes-runs/<run_id>/duck-records/`
+3. Skill reads all duck records from `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/`
 4. Skill filters by verdict (ACCEPT/DEFER/REJECT)
 5. Skill invokes `superpowers:writing-plans` with filtered suggestions
 6. Skill updates checkpoint: `phase=completed`, `status=completed`
@@ -459,10 +459,10 @@ All JSON artifacts must satisfy these validation constraints:
 | Artifact | Path Pattern | Example |
 |----------|--------------|---------|
 | Checkpoint | `.dev/progress.md` (section within) | (section header: `## Plan-Map-Changes State`) |
-| Suggestion Queue | `.dev/plan-map-changes-runs/<run_id>/suggestion-queue.json` | `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/suggestion-queue.json` |
-| Manifest | `.dev/plan-map-changes-runs/<run_id>/manifest.json` | `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json` |
-| Duck Record (success) | `.dev/plan-map-changes-runs/<run_id>/duck-records/<suggestion_id>.json` | `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json` |
-| Duck Record (error) | `.dev/plan-map-changes-runs/<run_id>/duck-records/<suggestion_id>-error.json` | `.dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-003-error.json` |
+| Suggestion Queue | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/suggestion-queue.json` | `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/suggestion-queue.json` |
+| Manifest | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/manifest.json` | `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json` |
+| Duck Record (success) | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<suggestion_id>.json` | `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-001.json` |
+| Duck Record (error) | `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<suggestion_id>-error.json` | `.dev/al-dev-map-suggestions-verify-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/duck-records/s-003-error.json` |
 
 ---
 

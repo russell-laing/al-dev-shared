@@ -125,7 +125,7 @@ Checks:
 /plugin-health --surface both
 ```
 
-Dispatches design, quality, and naming lenses. Review the dossiers in `docs/health/` and use `/plan-map-changes` to act on accepted items.
+Dispatches design, quality, and naming lenses. Review the dossiers in `docs/health/` and use `/al-dev-map-suggestions-verify` to act on accepted items.
 
 ## Commit Conventions
 

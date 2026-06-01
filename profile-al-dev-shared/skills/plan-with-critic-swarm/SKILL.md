@@ -1,6 +1,8 @@
 ---
-name: plan-with-critic-swarm
-description: Generate plan with parallel critic swarm for defense-in-depth review
+name: al-dev-plan-swarm-validate
+description: >-
+  Validate an existing implementation plan by dispatching an adversarial critic swarm for review.
+  Generate plan with parallel critic swarm for defense-in-depth review.
 argument-hint: "<spec-file-or-description>"
 ---
 
@@ -30,6 +32,7 @@ Generate an implementation plan, then dispatch 6 parallel critic agents (securit
 Spec: "Add a new Table with fields linked to Customer"
 
 Critics find:
+
 - ❌ **Type-Safety:** Procedure modifying table has no `var` param in event subscriber
 - ❌ **Rollback-Safety:** New schema field is NOT NULL, no backfill strategy for existing rows
 - ⚠️ **API-Contract:** Field name uses suffix (BadgerCertExpires) instead of prefix (exp_BadgerCert)
