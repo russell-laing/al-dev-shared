@@ -2,8 +2,8 @@
 
 > A reference tool for understanding skill relationships, agent patterns, and file handoffs in profile-al-dev-shared. This document is for personal gap analysis and extension planning, not onboarding.
 
-**Last updated:** 2026-06-01 (22 active skill directories in `profile-al-dev-shared/skills`: 18 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 18 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
+**Last updated:** 2026-06-01 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 20 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -24,6 +24,13 @@ flowchart TD
     Ticket("al-dev-ticket<br/>(--mode=context-only|full)")
     Investigate("al-dev-investigate")
     FixDirect("al-dev-fix") -->|AL code| Commit("al-dev-commit")
+
+    %% Ticket reply chain (full mode)
+    Ticket -.->|--mode=full chains to| SupportReply("al-dev-support-reply")
+    SupportReply -.->|.dev/ticket-reply.md| Reply(["✓ customer reply"])
+
+    %% Plan preflight chain
+    Preflight("al-dev-plan-preflight") -.->|.dev/preflight-context.md| Plan
 
     %% Investigation path branches
     Investigate -->|.dev/*-al-dev-investigate-findings.md| Decision1{Needs<br/>full plan?}
@@ -59,7 +66,6 @@ flowchart TD
     Document --> DocOut(["✓ documentation"])
     Git -.-> Consolidate("al-dev-consolidate")
     Consolidate --> ConsolidateOut(["✓ .dev/sessions/\nsession-summary.md\nsessions-index.md"])
-    Ticket -.->|--mode=full| Reply(["✓ customer reply"])
 
     style Ticket fill:#e1f5ff
     style Investigate fill:#f3e5f5
@@ -87,6 +93,8 @@ flowchart TD
     style Decision1 fill:#ffe0b2
     style CriticSwarm fill:#f8bbd0
     style Verify fill:#e0f2f1
+    style SupportReply fill:#e1f5ff
+    style Preflight fill:#fff3e0
 ```
 
 ---
@@ -104,7 +112,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch + research + reply drafting).
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`.
 
 ```mermaid
 flowchart LR
@@ -116,31 +124,20 @@ flowchart LR
     Output1F --> Phase5{Mode?}
 
     Phase5 -->|context-only| End1([End])
-    Phase5 -->|full| Phase6["Phase 6<br/>Research"]
-    Phase6 --> Agent2["al-dev-support-researcher ×1"]
-    Agent2 --> Phase7["Phase 7<br/>Draft reply"]
-    Phase7 --> Agent3["al-dev-support-reply-drafter ×1"]
-    Agent3 --> Phase8["Phase 8<br/>Present result"]
-    Phase8 --> SkillWork8["(skill itself)"]
-    SkillWork8 --> Output2(["customer reply"])
-    Output2 --> End2([End])
+    Phase5 -->|full| Chain["Phase 5<br/>Chain to<br/>/al-dev-support-reply"]
+    Chain --> End2(["→ /al-dev-support-reply"])
 
     style Phase05 fill:#e3f2fd
     style Phase1 fill:#e3f2fd
     style Phase5 fill:#fff9c4
-    style Phase6 fill:#e3f2fd
-    style Phase7 fill:#e3f2fd
-    style Phase8 fill:#e3f2fd
+    style Chain fill:#e3f2fd
     style SkillWork05 fill:#bbdefb
-    style SkillWork8 fill:#bbdefb
     style Agent1 fill:#bbdefb
-    style Agent2 fill:#bbdefb
-    style Agent3 fill:#bbdefb
     style Output1F fill:#90caf9
-    style Output2 fill:#90caf9
+    style End2 fill:#90caf9
 ```
 
-Agents spawned: `al-dev-shared:al-dev-ticket-agent`, `al-dev-shared:al-dev-support-researcher` (mode=full only), `al-dev-shared:al-dev-support-reply-drafter` (mode=full only)
+Agents spawned: `al-dev-shared:al-dev-ticket-agent`
 
 ### /al-dev-investigate
 
@@ -203,18 +200,14 @@ Agents spawned: `al-dev-shared:al-dev-developer-traditional` (trivial path), `al
 
 ### /al-dev-plan
 
-**Competitive design phase:** Multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes complexity triage, optional external claims verification, and a user approval gate before handing off to `/al-dev-develop`.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes user approval gate before handing off to `/al-dev-develop`.
 
 ```mermaid
 flowchart LR
     Start([Start]) --> Phase0["Phase 0<br/>Resume check"]
-    Phase0 --> Phase05["Phase 0.5<br/>Complexity triage<br/>(SIMPLE|MEDIUM|COMPLEX)"]
-    Phase05 --> SkillWork05["(skill itself)"]
-    SkillWork05 --> Phase1["Phase 1<br/>Gather context<br/>(requirements, symbols,<br/>explore/perf findings)"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase15["Phase 1.5<br/>Verify external claims<br/>(optional)"]
-    Phase15 --> Phase16["Phase 1.6<br/>Target confirmation<br/>(optional)"]
-    Phase16 --> Phase2["Phase 2<br/>Spawn architect team"]
+    Phase0 --> Preflight["Dispatch<br/>/al-dev-plan-preflight"]
+    Preflight --> PreflightSkill(["PREFLIGHT_CONTEXT<br/>(.dev/preflight-context.md)"])
+    PreflightSkill --> Phase2["Phase 2<br/>Spawn architect team"]
     Phase2 --> ArchAgents["al-dev-solution-architect<br/>×2-3 parallel"]
     ArchAgents --> Phase3["Phase 3<br/>Facilitate debate"]
     Phase3 --> SkillWork2["(skill itself)"]
@@ -229,18 +222,14 @@ flowchart LR
     Phase7 --> End([End])
 
     style Phase0 fill:#fff3e0
-    style Phase05 fill:#fff3e0
-    style Phase1 fill:#fff3e0
-    style Phase15 fill:#fff3e0
-    style Phase16 fill:#fff3e0
     style Phase2 fill:#fff3e0
     style Phase3 fill:#fff3e0
     style Phase4 fill:#fff3e0
     style Phase5 fill:#fff3e0
     style Phase6 fill:#fff3e0
     style Phase7 fill:#fff3e0
-    style SkillWork05 fill:#ffe0b2
-    style SkillWork1 fill:#ffe0b2
+    style Preflight fill:#ffe0b2
+    style PreflightSkill fill:#ffcc80
     style SkillWork2 fill:#ffe0b2
     style SkillWork3 fill:#ffe0b2
     style SkillWork4 fill:#ffe0b2
@@ -249,7 +238,7 @@ flowchart LR
     style Output1 fill:#ffb74d
 ```
 
-Agents spawned: `al-dev-shared:al-dev-solution-architect` (×2-3 parallel in Phase 2)
+Agents spawned: `al-dev-shared:al-dev-solution-architect` (×2-3 parallel in Phase 2); `/al-dev-plan-preflight` dispatched in Phase 0 for context assembly
 
 ### /al-dev-develop
 
