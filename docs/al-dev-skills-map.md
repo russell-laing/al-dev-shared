@@ -11,91 +11,69 @@
 
 This diagram shows pre-planning tributaries (dashed, optional), the three main entry points, and the development spine through to post-commit output.
 
+<!-- BEGIN GENERATED: skill-lifecycle-mermaid -->
 ```mermaid
 flowchart TD
-    %% Pre-planning tributaries (optional)
-    Explore("al-dev-explore") -.->|.dev/*-al-dev-explore-findings.md| Investigate
-    Explore -.->|.dev/*-al-dev-explore-findings.md| Plan
-    Interview("al-dev-interview") -.->|.dev/*-al-dev-interview-requirements.md| Plan
-    Perf("al-dev-perf") -.->|.dev/*-al-dev-perf-perf-analysis.md| Plan
-    Perf -.->|.dev/*-al-dev-perf-perf-analysis.md| FixDirect
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    skill_al_dev_commit[al-dev-commit]
+    skill_al_dev_consolidate[al-dev-consolidate]
+    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_document[al-dev-document]
+    skill_al_dev_explore[al-dev-explore]
+    skill_al_dev_fix[al-dev-fix]
+    skill_al_dev_handoff[al-dev-handoff]
+    skill_al_dev_interview[al-dev-interview]
+    skill_al_dev_investigate[al-dev-investigate]
+    skill_al_dev_lint[al-dev-lint]
+    skill_al_dev_perf[al-dev-perf]
+    skill_al_dev_plan[al-dev-plan]
+    skill_al_dev_plan_preflight[al-dev-plan-preflight]
+    skill_al_dev_release_notes[al-dev-release-notes]
+    skill_al_dev_review_develop[al-dev-review-develop]
+    skill_al_dev_support_reply[al-dev-support-reply]
+    skill_al_dev_ticket[al-dev-ticket]
+    skill_commit_recover[commit-recover]
+    skill_verify_commits[verify-commits]
 
-    %% Entry points
-    Ticket("al-dev-ticket<br/>(--mode=context-only|full)")
-    Investigate("al-dev-investigate")
-    FixDirect("al-dev-fix") -->|AL code| Commit("al-dev-commit")
+    skill_al_dev_commit --> skill_verify_commits
+    skill_al_dev_commit -.-> skill_al_dev_consolidate
+    skill_al_dev_commit -.-> skill_al_dev_document
+    skill_al_dev_commit -.-> skill_al_dev_handoff
+    skill_al_dev_commit -.-> skill_al_dev_release_notes
+    skill_al_dev_develop --> skill_al_dev_review_develop
+    skill_al_dev_develop -.-> skill_al_dev_lint
+    skill_al_dev_explore -.-> skill_al_dev_plan
+    skill_al_dev_fix --> skill_al_dev_commit
+    skill_al_dev_interview -.-> skill_al_dev_plan
+    skill_al_dev_investigate --> skill_al_dev_plan
+    skill_al_dev_perf -.-> skill_al_dev_plan
+    skill_al_dev_plan --> skill_al_dev_develop
+    skill_al_dev_plan_preflight -.-> skill_al_dev_plan
+    skill_al_dev_review_develop --> skill_al_dev_commit
+    skill_al_dev_ticket --> skill_al_dev_support_reply
+    skill_commit_recover --> skill_al_dev_commit
 
-    %% Ticket reply chain (full mode)
-    Ticket -.->|--mode=full chains to| SupportReply("al-dev-support-reply")
-    SupportReply -.->|.dev/ticket-reply.md| Reply(["✓ customer reply"])
-
-    %% Plan preflight chain
-    Preflight("al-dev-plan-preflight") -.->|.dev/preflight-context.md| Plan
-
-    %% Investigation path branches
-    Investigate -->|.dev/*-al-dev-investigate-findings.md| Decision1{Needs<br/>full plan?}
-    Decision1 -->|Yes| Plan("al-dev-plan")
-    Decision1 -->|No| FixDirect
-
-    %% Main development spine
-    Plan -->|.dev/*-al-dev-plan-solution-plan.md| Develop("al-dev-develop")
-    Develop -->|.dev/*-al-dev-develop-phase4-handoff.md| ReviewDevelop("al-dev-review-develop")
-    ReviewDevelop -->|.dev/*-al-dev-develop-code-review.md| Commit
-
-    %% Optional plan red-teaming
-    Plan -.->|optional red-team| CriticSwarm("al-dev-plan-swarm-validate")
-    CriticSwarm -.->|.dev/plan-critique-YYYYMMDD.md| Develop
-
-    %% Lint feedback loop
-    Develop -.->|optional compile cleanup| Lint("al-dev-lint")
-    Lint -.->|.dev/*-al-dev-lint-lint-report.md| FixDirect
-
-    %% Complexity gate within plan
-    Note["Trivial requests<br/>route to /fix"] -.-> Plan
-
-    %% Outputs
-    Commit --> Verify("verify-commits")
-    Verify -->|commits match plan| Git(["✓ git commit"])
-    Git -.-> ReleaseNotes("al-dev-release-notes")
-    ReleaseNotes --> Notes(["✓ release notes"])
-    Git -.-> Handoff("al-dev-handoff")
-    Handoff --> HandoffOut(["✓ .dev/*-al-dev-handoff-handoff-prompt.md"])
-    Git -.->|on integrity error| Recover("commit-recover")
-    Recover --> RecoverOut(["✓ recovered files"])
-    Git -.-> Document("al-dev-document")
-    Document --> DocOut(["✓ documentation"])
-    Git -.-> Consolidate("al-dev-consolidate")
-    Consolidate --> ConsolidateOut(["✓ .dev/sessions/\nsession-summary.md\nsessions-index.md"])
-
-    style Ticket fill:#e1f5ff
-    style Investigate fill:#f3e5f5
-    style Explore fill:#f3e5f5
-    style Interview fill:#e8f5e9
-    style Plan fill:#fff3e0
-    style Develop fill:#fff3e0
-    style ReviewDevelop fill:#ff8a65
-    style FixDirect fill:#e8f5e9
-    style Commit fill:#e8f5e9
-    style Git fill:#c8e6c9
-    style Notes fill:#c8e6c9
-    style Reply fill:#c8e6c9
-    style ReleaseNotes fill:#e3f2fd
-    style Perf fill:#fce4ec
-    style Lint fill:#e0f2f1
-    style Handoff fill:#fff3e0
-    style HandoffOut fill:#c8e6c9
-    style Recover fill:#e0f2f1
-    style RecoverOut fill:#c8e6c9
-    style Document fill:#e3f2fd
-    style DocOut fill:#c8e6c9
-    style Consolidate fill:#e8eaf6
-    style ConsolidateOut fill:#c8e6c9
-    style Decision1 fill:#ffe0b2
-    style CriticSwarm fill:#f8bbd0
-    style Verify fill:#e0f2f1
-    style SupportReply fill:#e1f5ff
-    style Preflight fill:#fff3e0
+    class skill_al_dev_commit skillNode
+    class skill_al_dev_consolidate skillNode
+    class skill_al_dev_develop skillNode
+    class skill_al_dev_document skillNode
+    class skill_al_dev_explore skillNode
+    class skill_al_dev_fix skillNode
+    class skill_al_dev_handoff skillNode
+    class skill_al_dev_interview skillNode
+    class skill_al_dev_investigate skillNode
+    class skill_al_dev_lint skillNode
+    class skill_al_dev_perf skillNode
+    class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_preflight skillNode
+    class skill_al_dev_release_notes skillNode
+    class skill_al_dev_review_develop skillNode
+    class skill_al_dev_support_reply skillNode
+    class skill_al_dev_ticket skillNode
+    class skill_commit_recover skillNode
+    class skill_verify_commits skillNode
 ```
+<!-- END GENERATED: skill-lifecycle-mermaid -->
 
 ---
 
@@ -114,517 +92,717 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 **Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-ticket -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase05["Phase 0.5<br/>Resolve mode<br/>(context-only|full)"]
-    Phase05 --> SkillWork05["(skill itself)"]
-    SkillWork05 --> Phase1["Steps 1-4<br/>Resolve ticket +<br/>fetch context"]
-    Phase1 --> Agent1["al-dev-ticket-agent ×1"]
-    Agent1 --> Output1F([".dev/*-al-dev-ticket-ticket-context.md"])
-    Output1F --> Phase5{Mode?}
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    Phase5 -->|context-only| End1([End])
-    Phase5 -->|full| Chain["Phase 5<br/>Chain to<br/>/al-dev-support-reply"]
-    Chain --> End2(["→ /al-dev-support-reply"])
+    skill_al_dev_ticket[al-dev-ticket]
+    skill_al_dev_interview[al-dev-interview]
+    skill_al_dev_plan[al-dev-plan]
+    skill_al_dev_support_reply[al-dev-support-reply]
+    agent_al_dev_ticket_agent[al-dev-ticket-agent]
+    knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
+    artifact_ticket_context_md[.dev/ticket-context.md]
+    artifact_ticket_reply_md[.dev/ticket-reply.md]
 
-    style Phase05 fill:#e3f2fd
-    style Phase1 fill:#e3f2fd
-    style Phase5 fill:#fff9c4
-    style Chain fill:#e3f2fd
-    style SkillWork05 fill:#bbdefb
-    style Agent1 fill:#bbdefb
-    style Output1F fill:#90caf9
-    style End2 fill:#90caf9
+    skill_al_dev_ticket -.-> skill_al_dev_interview
+    skill_al_dev_ticket -.-> skill_al_dev_plan
+    skill_al_dev_ticket -.-> skill_al_dev_support_reply
+    skill_al_dev_ticket --> agent_al_dev_ticket_agent
+    skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
+    skill_al_dev_ticket --> artifact_ticket_context_md
+    skill_al_dev_ticket --> artifact_ticket_reply_md
+
+    class skill_al_dev_ticket skillNode
+    class skill_al_dev_interview skillNode
+    class skill_al_dev_plan skillNode
+    class skill_al_dev_support_reply skillNode
+    class agent_al_dev_ticket_agent agentNode
+    class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
+    class artifact_ticket_context_md artifactNode
+    class artifact_ticket_reply_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-ticket-agent`
+<!-- END GENERATED: skill-drilldown-al-dev-ticket -->
+
+### /al-dev-support-reply
+
+Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-support-reply -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+
+    skill_al_dev_support_reply[al-dev-support-reply]
+    skill_al_dev_ticket[al-dev-ticket]
+    agent_al_dev_support_reply_drafter[al-dev-support-reply-drafter]
+    agent_al_dev_support_researcher[al-dev-support-researcher]
+    artifact_2026_06_01_al_dev_ticket_ticket_context_md[.dev/2026-06-01-al-dev-ticket-ticket-context.md]
+    artifact_ticket_reply_md[.dev/ticket-reply.md]
+
+    skill_al_dev_support_reply -.-> skill_al_dev_ticket
+    skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
+    skill_al_dev_support_reply --> agent_al_dev_support_researcher
+    skill_al_dev_support_reply --> artifact_2026_06_01_al_dev_ticket_ticket_context_md
+    skill_al_dev_support_reply --> artifact_ticket_reply_md
+
+    class skill_al_dev_support_reply skillNode
+    class skill_al_dev_ticket skillNode
+    class agent_al_dev_support_reply_drafter agentNode
+    class agent_al_dev_support_researcher agentNode
+    class artifact_2026_06_01_al_dev_ticket_ticket_context_md artifactNode
+    class artifact_ticket_reply_md artifactNode
+```
+
+Agents spawned: `al-dev-shared:al-dev-support-reply-drafter`, `al-dev-shared:al-dev-support-researcher`
+<!-- END GENERATED: skill-drilldown-al-dev-support-reply -->
 
 ### /al-dev-investigate
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-investigate -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Form hypotheses"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Test hypotheses"]
-    Phase2 --> Agent1["Explore subagent<br/>×1–2 (by hypothesis count)"]
-    Agent1 --> Phase3["Phase 3<br/>Synthesise findings"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-investigate-findings.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#f3e5f5
-    style Phase2 fill:#f3e5f5
-    style Phase3 fill:#f3e5f5
-    style SkillWork1 fill:#e1bee7
-    style SkillWork2 fill:#e1bee7
-    style Agent1 fill:#ce93d8
-    style Output1 fill:#ba68c8
+    skill_al_dev_investigate[al-dev-investigate]
+    skill_al_dev_handoff[al-dev-handoff]
+    skill_al_dev_plan[al-dev-plan]
+    knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
+    artifact_YYYY_MM_DD_al_dev_investigate_findings_md[.dev/YYYY-MM-DD-al-dev-investigate-findings.md]
+    artifact_investigate_errors_log[.dev/investigate-errors.log]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_investigate -.-> skill_al_dev_handoff
+    skill_al_dev_investigate -.-> skill_al_dev_plan
+    skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
+    skill_al_dev_investigate --> artifact_YYYY_MM_DD_al_dev_investigate_findings_md
+    skill_al_dev_investigate --> artifact_investigate_errors_log
+    skill_al_dev_investigate --> artifact_project_context_md
+
+    class skill_al_dev_investigate skillNode
+    class skill_al_dev_handoff skillNode
+    class skill_al_dev_plan skillNode
+    class knowledge_explore_subagent_pattern_md knowledgeNode
+    class artifact_YYYY_MM_DD_al_dev_investigate_findings_md artifactNode
+    class artifact_investigate_errors_log artifactNode
+    class artifact_project_context_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-investigate -->
 
 ### /al-dev-fix
 
 **Complexity routing:** Trivial fixes skip the analysis phase; complex fixes route through al-dev-solution-architect.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-fix -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Decision{Complex?}
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    Decision -->|Trivial| Phase1T["Phase 1<br/>Implement"]
-    Phase1T --> DevAgent["al-dev-developer-traditional<br/>or -tdd ×1"]
-    DevAgent --> Phase2T["Phase 2<br/>Compile + lint"]
-    Phase2T --> SkillT["(skill itself)"]
-    SkillT --> End([End])
+    skill_al_dev_fix[al-dev-fix]
+    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_plan[al-dev-plan]
+    agent_al_dev_developer_tdd[al-dev-developer-tdd]
+    agent_al_dev_developer_traditional[al-dev-developer-traditional]
+    agent_al_dev_solution_architect[al-dev-solution-architect]
+    knowledge_al_dev_fix_examples_md[al-dev-fix-examples]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_compile_lint_procedure_md[compile-lint-procedure]
+    knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
+    knowledge_intent_preflight_md[intent-preflight]
+    artifact_test_plan_md[.dev/test-plan.md]
 
-    Decision -->|Non-trivial| Phase1C["Phase 1<br/>Analyse"]
-    Phase1C --> ArchAgent["al-dev-solution-architect<br/>×1 (5 min)"]
-    ArchAgent --> Phase2C["Phase 2<br/>Implement"]
-    Phase2C --> DevAgent2["al-dev-developer-traditional<br/>or -tdd ×1"]
-    DevAgent2 --> Phase3C["Phase 3<br/>Compile + lint"]
-    Phase3C --> SkillC["(skill itself)"]
-    SkillC --> End
+    skill_al_dev_fix -.-> skill_al_dev_develop
+    skill_al_dev_fix -.-> skill_al_dev_plan
+    skill_al_dev_fix --> agent_al_dev_developer_tdd
+    skill_al_dev_fix --> agent_al_dev_developer_traditional
+    skill_al_dev_fix --> agent_al_dev_solution_architect
+    skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
+    skill_al_dev_fix --> knowledge_artifact_contracts_md
+    skill_al_dev_fix --> knowledge_compile_lint_procedure_md
+    skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_fix --> artifact_test_plan_md
 
-    style Decision fill:#fff9c4
-    style Phase1T fill:#e8f5e9
-    style Phase1C fill:#e8f5e9
-    style Phase2T fill:#e8f5e9
-    style Phase2C fill:#e8f5e9
-    style Phase3C fill:#e8f5e9
-    style DevAgent fill:#81c784
-    style DevAgent2 fill:#81c784
-    style ArchAgent fill:#66bb6a
-    style SkillT fill:#4caf50
-    style SkillC fill:#4caf50
+    class skill_al_dev_fix skillNode
+    class skill_al_dev_develop skillNode
+    class skill_al_dev_plan skillNode
+    class agent_al_dev_developer_tdd agentNode
+    class agent_al_dev_developer_traditional agentNode
+    class agent_al_dev_solution_architect agentNode
+    class knowledge_al_dev_fix_examples_md knowledgeNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_compile_lint_procedure_md knowledgeNode
+    class knowledge_developer_invocation_patterns_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class artifact_test_plan_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-developer-traditional` (trivial path), `al-dev-shared:al-dev-developer-tdd` (non-trivial path when test plan present), `al-dev-shared:al-dev-solution-architect` (non-trivial path only)
+Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-solution-architect`
+<!-- END GENERATED: skill-drilldown-al-dev-fix -->
 
 ### /al-dev-plan
 
 **Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes user approval gate before handing off to `/al-dev-develop`.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase0["Phase 0<br/>Resume check"]
-    Phase0 --> Preflight["Dispatch<br/>/al-dev-plan-preflight"]
-    Preflight --> PreflightSkill(["PREFLIGHT_CONTEXT<br/>(.dev/preflight-context.md)"])
-    PreflightSkill --> Phase2["Phase 2<br/>Spawn architect team"]
-    Phase2 --> ArchAgents["al-dev-solution-architect<br/>×2-3 parallel"]
-    ArchAgents --> Phase3["Phase 3<br/>Facilitate debate"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase4["Phase 4<br/>Evaluate + select<br/>winning approach"]
-    Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase5["Phase 5<br/>Write solution plan"]
-    Phase5 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1([".dev/*-al-dev-plan-solution-plan.md"])
-    Output1 --> Phase6["Phase 6<br/>Validate plan"]
-    Phase6 --> SkillWork5["(skill itself)"]
-    SkillWork5 --> Phase7["Phase 7<br/>Present to user<br/>(USER_GATE)"]
-    Phase7 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase0 fill:#fff3e0
-    style Phase2 fill:#fff3e0
-    style Phase3 fill:#fff3e0
-    style Phase4 fill:#fff3e0
-    style Phase5 fill:#fff3e0
-    style Phase6 fill:#fff3e0
-    style Phase7 fill:#fff3e0
-    style Preflight fill:#ffe0b2
-    style PreflightSkill fill:#ffcc80
-    style SkillWork2 fill:#ffe0b2
-    style SkillWork3 fill:#ffe0b2
-    style SkillWork4 fill:#ffe0b2
-    style SkillWork5 fill:#ffe0b2
-    style ArchAgents fill:#ffcc80
-    style Output1 fill:#ffb74d
+    skill_al_dev_plan[al-dev-plan]
+    skill_al_dev_plan_preflight[al-dev-plan-preflight]
+    agent_al_dev_solution_architect[al-dev-solution-architect]
+    knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_intent_preflight_md[intent-preflight]
+    knowledge_solution_plan_template_md[solution-plan-template]
+    knowledge_workflow_resilience_md[workflow-resilience]
+    artifact_preflight_context_md[.dev/preflight-context.md]
+    artifact_progress_md[.dev/progress.md]
+
+    skill_al_dev_plan -.-> skill_al_dev_plan_preflight
+    skill_al_dev_plan --> agent_al_dev_solution_architect
+    skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
+    skill_al_dev_plan --> knowledge_artifact_contracts_md
+    skill_al_dev_plan --> knowledge_intent_preflight_md
+    skill_al_dev_plan --> knowledge_solution_plan_template_md
+    skill_al_dev_plan --> knowledge_workflow_resilience_md
+    skill_al_dev_plan --> artifact_preflight_context_md
+    skill_al_dev_plan --> artifact_progress_md
+
+    class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_preflight skillNode
+    class agent_al_dev_solution_architect agentNode
+    class knowledge_architect_invocation_patterns_md knowledgeNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_solution_plan_template_md knowledgeNode
+    class knowledge_workflow_resilience_md knowledgeNode
+    class artifact_preflight_context_md artifactNode
+    class artifact_progress_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-solution-architect` (×2-3 parallel in Phase 2); `/al-dev-plan-preflight` dispatched in Phase 0 for context assembly
+Agents spawned: `al-dev-shared:al-dev-solution-architect`
+<!-- END GENERATED: skill-drilldown-al-dev-plan -->
+
+### /al-dev-plan-preflight
+
+Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-preflight -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+
+    skill_al_dev_plan_preflight[al-dev-plan-preflight]
+    knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
+    knowledge_intent_preflight_md[intent-preflight]
+    knowledge_workflow_resilience_md[workflow-resilience]
+    artifact_findings_file_md[.dev/findings-file.md]
+    artifact_preflight_context_md[.dev/preflight-context.md]
+    artifact_progress_md[.dev/progress.md]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
+    skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
+    skill_al_dev_plan_preflight --> artifact_findings_file_md
+    skill_al_dev_plan_preflight --> artifact_preflight_context_md
+    skill_al_dev_plan_preflight --> artifact_progress_md
+    skill_al_dev_plan_preflight --> artifact_project_context_md
+
+    class skill_al_dev_plan_preflight skillNode
+    class knowledge_al_dev_plan_phase_routing_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_workflow_resilience_md knowledgeNode
+    class artifact_findings_file_md artifactNode
+    class artifact_preflight_context_md artifactNode
+    class artifact_progress_md artifactNode
+    class artifact_project_context_md artifactNode
+```
+<!-- END GENERATED: skill-drilldown-al-dev-plan-preflight -->
 
 ### /al-dev-develop
 
 **Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase0["Phase 0<br/>Resume check"]
-    Phase0 --> Phase1["Phase 1<br/>Read plan"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Partition work"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase3["Phase 3<br/>Spawn developers"]
-    Phase3 --> DevAgent["al-dev-developer-tdd or<br/>al-dev-developer-traditional ×1-4<br/>(scaled by object count)"]
-    DevAgent --> Phase4["Phase 4<br/>Verify completion<br/>+ optional static validation"]
-    Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Handoff(["Phase 4 handoff<br/>(.dev/*-al-dev-develop-phase4-handoff.md)"])
-    Handoff --> ReviewDevelop["→ /al-dev-review-develop<br/>(compilation, review, code review)"]
-    ReviewDevelop --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase0 fill:#fff8e1
-    style Phase1 fill:#fff8e1
-    style Phase2 fill:#fff8e1
-    style Phase3 fill:#fff8e1
-    style Phase4 fill:#fff8e1
-    style SkillWork1 fill:#ffe082
-    style SkillWork2 fill:#ffe082
-    style SkillWork3 fill:#ffe082
-    style DevAgent fill:#ffd54f
-    style Handoff fill:#ffb74d
-    style ReviewDevelop fill:#ff8a65
+    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_review_develop[al-dev-review-develop]
+    agent_al_dev_developer_tdd[al-dev-developer-tdd]
+    agent_al_dev_developer_traditional[al-dev-developer-traditional]
+    knowledge_al_dev_develop_spawn_prompt_md[al-dev-develop-spawn-prompt]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
+    knowledge_intent_preflight_md[intent-preflight]
+    knowledge_scope_expansion_gate_md[scope-expansion-gate]
+    knowledge_workflow_resilience_md[workflow-resilience]
+    artifact_progress_md[.dev/progress.md]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_develop -.-> skill_al_dev_review_develop
+    skill_al_dev_develop --> agent_al_dev_developer_tdd
+    skill_al_dev_develop --> agent_al_dev_developer_traditional
+    skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
+    skill_al_dev_develop --> knowledge_artifact_contracts_md
+    skill_al_dev_develop --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_develop --> knowledge_intent_preflight_md
+    skill_al_dev_develop --> knowledge_scope_expansion_gate_md
+    skill_al_dev_develop --> knowledge_workflow_resilience_md
+    skill_al_dev_develop --> artifact_progress_md
+    skill_al_dev_develop --> artifact_project_context_md
+
+    class skill_al_dev_develop skillNode
+    class skill_al_dev_review_develop skillNode
+    class agent_al_dev_developer_tdd agentNode
+    class agent_al_dev_developer_traditional agentNode
+    class knowledge_al_dev_develop_spawn_prompt_md knowledgeNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_developer_invocation_patterns_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_scope_expansion_gate_md knowledgeNode
+    class knowledge_workflow_resilience_md knowledgeNode
+    class artifact_progress_md artifactNode
+    class artifact_project_context_md artifactNode
 ```
+
+Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-developer-traditional`
+<!-- END GENERATED: skill-drilldown-al-dev-develop -->
 
 ### /al-dev-review-develop
 
 **Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 2) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 3) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user. Phases use local numbering 1–6.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
 flowchart LR
-    Start([Handoff<br/>Phase 4]) --> Phase1["Phase 1<br/>Prepare review<br/>context"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Compile verify<br/>(gates panel)"]
-    Phase2 --> SkillWork2["(skill itself + optional<br/>al-dev-developer-traditional<br/>for --autonomous error fix)"]
-    SkillWork2 --> Phase3["Phase 3<br/>Pre-review<br/>staging"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase4["Phase 4<br/>Review panel<br/>in parallel"]
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    Phase4 --> SecReview["al-dev-security-reviewer<br/>×1"]
-    Phase4 --> ExpertReview["al-dev-expert-reviewer<br/>×1"]
-    Phase4 --> PerfReview["al-dev-performance-reviewer<br/>×1"]
+    skill_al_dev_review_develop[al-dev-review-develop]
+    skill_al_dev_commit[al-dev-commit]
+    skill_al_dev_develop[al-dev-develop]
+    agent_al_dev_developer_traditional[al-dev-developer-traditional]
+    agent_al_dev_expert_reviewer[al-dev-expert-reviewer]
+    agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
+    agent_al_dev_security_reviewer[al-dev-security-reviewer]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
+    artifact_compile_errors_log[.dev/compile-errors.log]
+    artifact_progress_md[.dev/progress.md]
 
-    SecReview --> Phase5["Phase 5<br/>Write code review"]
-    ExpertReview --> Phase5
-    PerfReview --> Phase5
+    skill_al_dev_review_develop -.-> skill_al_dev_commit
+    skill_al_dev_review_develop -.-> skill_al_dev_develop
+    skill_al_dev_review_develop --> agent_al_dev_developer_traditional
+    skill_al_dev_review_develop --> agent_al_dev_expert_reviewer
+    skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
+    skill_al_dev_review_develop --> agent_al_dev_security_reviewer
+    skill_al_dev_review_develop --> knowledge_artifact_contracts_md
+    skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_review_develop --> artifact_compile_errors_log
+    skill_al_dev_review_develop --> artifact_progress_md
 
-    Phase5 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1([".dev/*-al-dev-develop-code-review.md"])
-    Output1 --> Phase6["Phase 6<br/>Present findings"]
-    Phase6 --> End([End])
-
-    style Phase1 fill:#ff8a65
-    style Phase2 fill:#ff8a65
-    style Phase3 fill:#ff8a65
-    style Phase4 fill:#ff8a65
-    style Phase5 fill:#ff8a65
-    style Phase6 fill:#ff8a65
-    style SkillWork1 fill:#ff7043
-    style SkillWork2 fill:#ff7043
-    style SkillWork3 fill:#ff7043
-    style SkillWork4 fill:#ff7043
-    style SecReview fill:#ff5722
-    style ExpertReview fill:#ff5722
-    style PerfReview fill:#ff5722
-    style Output1 fill:#d84315
+    class skill_al_dev_review_develop skillNode
+    class skill_al_dev_commit skillNode
+    class skill_al_dev_develop skillNode
+    class agent_al_dev_developer_traditional agentNode
+    class agent_al_dev_expert_reviewer agentNode
+    class agent_al_dev_performance_reviewer agentNode
+    class agent_al_dev_security_reviewer agentNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_developer_invocation_patterns_md knowledgeNode
+    class artifact_compile_errors_log artifactNode
+    class artifact_progress_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-security-reviewer`, `al-dev-shared:al-dev-expert-reviewer`, `al-dev-shared:al-dev-performance-reviewer` (all in Phase 4 parallel), `al-dev-shared:al-dev-developer-traditional` (Phase 2 `--autonomous` mode only)
+Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-expert-reviewer`, `al-dev-shared:al-dev-performance-reviewer`, `al-dev-shared:al-dev-security-reviewer`
+<!-- END GENERATED: skill-drilldown-al-dev-review-develop -->
 
 ### /al-dev-commit
 
 **Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-commit -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase0["Phase 0<br/>Setup & Validation<br/>(context, integrity,<br/>staged files, AC check)"]
-    Phase0 --> SkillWork0["(skill itself)"]
-    SkillWork0 --> Phase1["Phase 1<br/>Analysis &<br/>Message Drafting"]
-    Phase1 --> Agent1["al-dev-commit-agent-analysis ×1<br/>(manifest only)"]
-    Agent1 --> Interim1["(per-file manifests<br/>+ group proposals)"]
-    Interim1 --> Agent2["al-dev-commit-message-drafter ×1"]
-    Agent2 --> Interim2["(commit messages)"]
-    Interim2 --> Phase2["Phase 2<br/>Confirmation"]
-    Phase2 --> SkillWork2["(skill itself)<br/>(USER_GATE)"]
-    SkillWork2 --> Phase3["Phase 3<br/>Preflight"]
-    Phase3 --> Agent4["al-dev-commit-lint-fixer ×1"]
-    Agent4 --> Agent5["al-dev-commit-ooxml-validator ×1"]
-    Agent5 --> Phase4["Phase 4<br/>Execution & Summary"]
-    Phase4 --> Agent3["al-dev-commit-agent-execute ×1<br/>(haiku)"]
-    Agent3 --> Output1(["(git commits)"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase0 fill:#e0f2f1
-    style Phase1 fill:#e0f2f1
-    style Phase2 fill:#e0f2f1
-    style Phase3 fill:#e0f2f1
-    style Phase4 fill:#e0f2f1
-    style SkillWork0 fill:#80cbc4
-    style SkillWork2 fill:#80cbc4
-    style Agent1 fill:#80cbc4
-    style Agent2 fill:#4db8a8
-    style Agent3 fill:#80cbc4
-    style Agent4 fill:#4db8a8
-    style Agent5 fill:#4db8a8
-    style Interim1 fill:#b2dfdb
-    style Interim2 fill:#b2dfdb
-    style Output1 fill:#26a69a
+    skill_al_dev_commit[al-dev-commit]
+    agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
+    agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
+    agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
+    agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
+    agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
+    agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_compile_lint_procedure_md[compile-lint-procedure]
+    knowledge_intent_preflight_md[intent-preflight]
+    artifact_commits_json[.dev/commits.json]
+    artifact_compile_errors_log[.dev/compile-errors.log]
+    artifact_file_sizes_json[.dev/file-sizes.json]
+    artifact_hook_failures_json[.dev/hook-failures.json]
+
+    skill_al_dev_commit --> agent_al_dev_commit_agent_analysis
+    skill_al_dev_commit --> agent_al_dev_commit_agent_execute
+    skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
+    skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
+    skill_al_dev_commit --> agent_al_dev_commit_message_drafter
+    skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
+    skill_al_dev_commit --> knowledge_artifact_contracts_md
+    skill_al_dev_commit --> knowledge_compile_lint_procedure_md
+    skill_al_dev_commit --> knowledge_intent_preflight_md
+    skill_al_dev_commit --> artifact_commits_json
+    skill_al_dev_commit --> artifact_compile_errors_log
+    skill_al_dev_commit --> artifact_file_sizes_json
+    skill_al_dev_commit --> artifact_hook_failures_json
+
+    class skill_al_dev_commit skillNode
+    class agent_al_dev_commit_agent_analysis agentNode
+    class agent_al_dev_commit_agent_execute agentNode
+    class agent_al_dev_commit_hook_fixer agentNode
+    class agent_al_dev_commit_lint_fixer agentNode
+    class agent_al_dev_commit_message_drafter agentNode
+    class agent_al_dev_commit_ooxml_validator agentNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_compile_lint_procedure_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class artifact_commits_json artifactNode
+    class artifact_compile_errors_log artifactNode
+    class artifact_file_sizes_json artifactNode
+    class artifact_hook_failures_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-agent-analysis` (Phase 1), `al-dev-shared:al-dev-commit-message-drafter` (Phase 1), `al-dev-shared:al-dev-commit-lint-fixer` (Phase 3), `al-dev-shared:al-dev-commit-ooxml-validator` (Phase 3), `al-dev-shared:al-dev-commit-agent-execute` (Phase 4)
+Agents spawned: `al-dev-shared:al-dev-commit-agent-analysis`, `al-dev-shared:al-dev-commit-agent-execute`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
+<!-- END GENERATED: skill-drilldown-al-dev-commit -->
 
 ### /al-dev-explore
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-explore -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Load context"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Explore"]
-    Phase2 --> Agent1["Explore subagent ×1"]
-    Agent1 --> Phase3["Step 3<br/>Write findings"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-explore-findings.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#f3e5f5
-    style Phase2 fill:#f3e5f5
-    style Phase3 fill:#f3e5f5
-    style SkillWork1 fill:#e1bee7
-    style SkillWork2 fill:#e1bee7
-    style Agent1 fill:#ce93d8
-    style Output1 fill:#ba68c8
+    skill_al_dev_explore[al-dev-explore]
+    knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
+    artifact_2026_05_19_al_dev_explore_findings_md[.dev/2026-05-19-al-dev-explore-findings.md]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
+    skill_al_dev_explore --> artifact_2026_05_19_al_dev_explore_findings_md
+    skill_al_dev_explore --> artifact_project_context_md
+
+    class skill_al_dev_explore skillNode
+    class knowledge_explore_subagent_pattern_md knowledgeNode
+    class artifact_2026_05_19_al_dev_explore_findings_md artifactNode
+    class artifact_project_context_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-explore -->
 
 ### /al-dev-interview
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-interview -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Pre-research<br/>(AL symbols lookup)"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Interview"]
-    Phase2 --> Agent1["al-dev-interview ×1"]
-    Agent1 --> Phase3["Phase 3<br/>Write requirements"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-interview-requirements.md"])
-    Output1 --> Phase4["Phase 4<br/>Summary"]
-    Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e8f5e9
-    style Phase2 fill:#e8f5e9
-    style Phase3 fill:#e8f5e9
-    style Phase4 fill:#e8f5e9
-    style SkillWork1 fill:#c8e6c9
-    style SkillWork2 fill:#c8e6c9
-    style SkillWork3 fill:#c8e6c9
-    style Agent1 fill:#a5d6a7
-    style Output1 fill:#81c784
+    skill_al_dev_interview[al-dev-interview]
+    agent_al_dev_interview[al-dev-interview]
+
+    skill_al_dev_interview --> agent_al_dev_interview
+
+    class skill_al_dev_interview skillNode
+    class agent_al_dev_interview agentNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-interview`
+<!-- END GENERATED: skill-drilldown-al-dev-interview -->
 
 ### /al-dev-lint
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-lint -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Compile"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Fix diagnostics"]
-    Phase2 --> Agent1["al-dev-diagnostics-fixer ×1"]
-    Agent1 --> Phase3["Step 3<br/>Present summary"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-lint-lint-report.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e0f2f1
-    style Phase2 fill:#e0f2f1
-    style Phase3 fill:#e0f2f1
-    style SkillWork1 fill:#b2dfdb
-    style SkillWork2 fill:#b2dfdb
-    style Agent1 fill:#80cbc4
-    style Output1 fill:#26a69a
+    skill_al_dev_lint[al-dev-lint]
+    agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
+    knowledge_al_linting_rules_md[al-linting-rules]
+    knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_intent_preflight_md[intent-preflight]
+    artifact_compile_errors_log[.dev/compile-errors.log]
+
+    skill_al_dev_lint --> agent_al_dev_diagnostics_fixer
+    skill_al_dev_lint --> knowledge_al_linting_rules_md
+    skill_al_dev_lint --> knowledge_artifact_contracts_md
+    skill_al_dev_lint --> knowledge_intent_preflight_md
+    skill_al_dev_lint --> artifact_compile_errors_log
+
+    class skill_al_dev_lint skillNode
+    class agent_al_dev_diagnostics_fixer agentNode
+    class knowledge_al_linting_rules_md knowledgeNode
+    class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class artifact_compile_errors_log artifactNode
 ```
+
+Agents spawned: `al-dev-shared:al-dev-diagnostics-fixer`
+<!-- END GENERATED: skill-drilldown-al-dev-lint -->
 
 ### /al-dev-document
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-document -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Select scope"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Write docs"]
-    Phase2 --> Agent1["al-dev-docs-writer ×1"]
-    Agent1 --> Phase3["Step 3<br/>Review + refine"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["documentation files"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e3f2fd
-    style Phase2 fill:#e3f2fd
-    style Phase3 fill:#e3f2fd
-    style SkillWork1 fill:#bbdefb
-    style SkillWork2 fill:#bbdefb
-    style Agent1 fill:#90caf9
-    style Output1 fill:#64b5f6
+    skill_al_dev_document[al-dev-document]
+
+
+    class skill_al_dev_document skillNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-document -->
 
 ### /al-dev-release-notes
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-release-notes -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Parse args"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase15["Phase 1.5<br/>Read project context"]
-    Phase15 --> SkillWork15["(skill itself)"]
-    SkillWork15 --> Phase2["Phase 2<br/>Generate notes"]
-    Phase2 --> Agent1["al-dev-release-notes-writer ×1"]
-    Agent1 --> Output1([".dev/YYYY-MM-DD-[app-id]-al-dev-release-notes-[short-hash].md"])
-    Output1 --> Phase3["Phase 3<br/>Present to user<br/>(handle AMBIGUOUS)"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e3f2fd
-    style Phase15 fill:#e3f2fd
-    style Phase2 fill:#e3f2fd
-    style Phase3 fill:#e3f2fd
-    style SkillWork1 fill:#bbdefb
-    style SkillWork15 fill:#bbdefb
-    style SkillWork3 fill:#bbdefb
-    style Agent1 fill:#90caf9
-    style Output1 fill:#64b5f6
+    skill_al_dev_release_notes[al-dev-release-notes]
+    agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
+    skill_al_dev_release_notes --> artifact_project_context_md
+
+    class skill_al_dev_release_notes skillNode
+    class agent_al_dev_release_notes_writer agentNode
+    class artifact_project_context_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-release-notes-writer`
+<!-- END GENERATED: skill-drilldown-al-dev-release-notes -->
 
 ### /al-dev-perf
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-perf -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Determine scope"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Analyse"]
-    Phase2 --> Agent1["Explore subagent ×1"]
-    Agent1 --> Phase3["Step 3<br/>Write report"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/*-al-dev-perf-perf-analysis.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#fce4ec
-    style Phase2 fill:#fce4ec
-    style Phase3 fill:#fce4ec
-    style SkillWork1 fill:#f8bbd0
-    style SkillWork2 fill:#f8bbd0
-    style Agent1 fill:#f48fb1
-    style Output1 fill:#f06292
+    skill_al_dev_perf[al-dev-perf]
+    knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
+    knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
+    skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
+    skill_al_dev_perf --> artifact_project_context_md
+
+    class skill_al_dev_perf skillNode
+    class knowledge_explore_subagent_pattern_md knowledgeNode
+    class knowledge_perf_anti_patterns_prompt_md knowledgeNode
+    class artifact_project_context_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-perf -->
 
 ### /al-dev-handoff
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-handoff -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Identify target"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Copy context files"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase3["Step 3<br/>Write prompt"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1([".dev/*-al-dev-handoff-handoff-prompt.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#fff3e0
-    style Phase2 fill:#fff3e0
-    style Phase3 fill:#fff3e0
-    style SkillWork1 fill:#ffe0b2
-    style SkillWork2 fill:#ffe0b2
-    style SkillWork3 fill:#ffe0b2
-    style Output1 fill:#ffb74d
+    skill_al_dev_handoff[al-dev-handoff]
+    artifact_explore_findings_md[.dev/explore-findings.md]
+    artifact_project_context_md[.dev/project-context.md]
+    artifact_source_explore_findings_md[.dev/source-explore-findings.md]
+    artifact_source_project_context_md[.dev/source-project-context.md]
+    artifact_source_requirements_md[.dev/source-requirements.md]
+    artifact_source_solution_plan_md[.dev/source-solution-plan.md]
+    artifact_source_ticket_context_md[.dev/source-ticket-context.md]
+
+    skill_al_dev_handoff --> artifact_explore_findings_md
+    skill_al_dev_handoff --> artifact_project_context_md
+    skill_al_dev_handoff --> artifact_source_explore_findings_md
+    skill_al_dev_handoff --> artifact_source_project_context_md
+    skill_al_dev_handoff --> artifact_source_requirements_md
+    skill_al_dev_handoff --> artifact_source_solution_plan_md
+    skill_al_dev_handoff --> artifact_source_ticket_context_md
+
+    class skill_al_dev_handoff skillNode
+    class artifact_explore_findings_md artifactNode
+    class artifact_project_context_md artifactNode
+    class artifact_source_explore_findings_md artifactNode
+    class artifact_source_project_context_md artifactNode
+    class artifact_source_requirements_md artifactNode
+    class artifact_source_solution_plan_md artifactNode
+    class artifact_source_ticket_context_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-handoff -->
 
 ### /al-dev-help
 
 No agents spawned; no `.dev/` output. The skill reads available context files and presents contextual guidance inline.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-help -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Detect mode"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Show guidance"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["contextual guidance"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e8eaf6
-    style Phase2 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork2 fill:#c5cae9
-    style Output1 fill:#9fa8da
+    skill_al_dev_help[al-dev-help]
+    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_plan[al-dev-plan]
+    artifact_2026_05_19_al_dev_develop_code_review_md[.dev/2026-05-19-al-dev-develop-code-review.md]
+    artifact_2026_05_19_al_dev_interview_requirements_md[.dev/2026-05-19-al-dev-interview-requirements.md]
+    artifact_2026_05_19_al_dev_plan_solution_plan_md[.dev/2026-05-19-al-dev-plan-solution-plan.md]
+    artifact_project_context_md[.dev/project-context.md]
+
+    skill_al_dev_help -.-> skill_al_dev_develop
+    skill_al_dev_help -.-> skill_al_dev_plan
+    skill_al_dev_help --> artifact_2026_05_19_al_dev_develop_code_review_md
+    skill_al_dev_help --> artifact_2026_05_19_al_dev_interview_requirements_md
+    skill_al_dev_help --> artifact_2026_05_19_al_dev_plan_solution_plan_md
+    skill_al_dev_help --> artifact_project_context_md
+
+    class skill_al_dev_help skillNode
+    class skill_al_dev_develop skillNode
+    class skill_al_dev_plan skillNode
+    class artifact_2026_05_19_al_dev_develop_code_review_md artifactNode
+    class artifact_2026_05_19_al_dev_interview_requirements_md artifactNode
+    class artifact_2026_05_19_al_dev_plan_solution_plan_md artifactNode
+    class artifact_project_context_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-help -->
 
 ### /commit-recover
 
 Spawns one fixer per corrupted-file incident found in `.dev/commit-integrity.log`.
 
+<!-- BEGIN GENERATED: skill-drilldown-commit-recover -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Parse incidents"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Analyse + recover"]
-    Phase2 --> Agent1["al-dev-commit-recover-fixer<br/>×N (per incident)"]
-    Agent1 --> Phase3["Step 3<br/>Update learnings"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1([".dev/learnings.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e0f2f1
-    style Phase2 fill:#e0f2f1
-    style Phase3 fill:#e0f2f1
-    style SkillWork1 fill:#b2dfdb
-    style SkillWork2 fill:#b2dfdb
-    style Agent1 fill:#80cbc4
-    style Output1 fill:#26a69a
+    skill_commit_recover[commit-recover]
+    agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
+    artifact_commit_integrity_log[.dev/commit-integrity.log]
+    artifact_learnings_md[.dev/learnings.md]
+
+    skill_commit_recover --> agent_al_dev_commit_recover_fixer
+    skill_commit_recover --> artifact_commit_integrity_log
+    skill_commit_recover --> artifact_learnings_md
+
+    class skill_commit_recover skillNode
+    class agent_al_dev_commit_recover_fixer agentNode
+    class artifact_commit_integrity_log artifactNode
+    class artifact_learnings_md artifactNode
 ```
+
+Agents spawned: `al-dev-shared:al-dev-commit-recover-fixer`
+<!-- END GENERATED: skill-drilldown-commit-recover -->
 
 ### /al-dev-plan-swarm-validate
 
 Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-swarm-validate -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1<br/>Generate draft plan"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2<br/>Dispatch critics"]
-    Phase2 --> Critics["6 Critic agents<br/>in parallel<br/>(security, testability,<br/>type-safety, rollback,<br/>api-contracts, edge-cases)"]
-    Critics --> Phase3["Phase 3<br/>Synthesize + rank"]
-    Phase3 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase4["Phase 4<br/>Apply auto-fixes"]
-    Phase4 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["plan-critique-YYYYMMDD.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#f8bbd0
-    style Phase2 fill:#f8bbd0
-    style Phase3 fill:#f8bbd0
-    style Phase4 fill:#f8bbd0
-    style SkillWork1 fill:#f06292
-    style SkillWork2 fill:#f06292
-    style SkillWork3 fill:#f06292
-    style Critics fill:#f06292
-    style Output1 fill:#c2185b
+    skill_al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
+    artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
+
+    skill_al_dev_plan_swarm_validate --> artifact_plan_critique_YYYYMMDD_md
+
+    class skill_al_dev_plan_swarm_validate skillNode
+    class artifact_plan_critique_YYYYMMDD_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-plan-swarm-validate -->
 
 ### /verify-commits
 
 No agents spawned; compares git commits against plan and optionally re-splits combined commits.
 
+<!-- BEGIN GENERATED: skill-drilldown-verify-commits -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Step 1<br/>Read plan"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Step 2<br/>Inspect git log"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Decision{Match?}
-    Decision -->|Yes| End1([End: OK])
-    Decision -->|No| Phase3["Step 3<br/>Re-split commits"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase4["Step 4<br/>Verify count"]
-    Phase4 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> End2([End: Fixed])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e0f2f1
-    style Phase2 fill:#e0f2f1
-    style Phase3 fill:#e0f2f1
-    style Phase4 fill:#e0f2f1
-    style SkillWork1 fill:#b2dfdb
-    style SkillWork2 fill:#b2dfdb
-    style SkillWork3 fill:#b2dfdb
-    style SkillWork4 fill:#b2dfdb
-    style Decision fill:#80cbc4
+    skill_verify_commits[verify-commits]
+
+
+    class skill_verify_commits skillNode
 ```
+<!-- END GENERATED: skill-drilldown-verify-commits -->
 
 ### /al-dev-consolidate
 
@@ -632,38 +810,23 @@ Standalone utility skill. No agents spawned. Consolidates `.dev/` artifacts
 into vault-ready session summaries and an Obsidian-compatible sessions index,
 using only bash extraction — file content is never read into LLM context.
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-consolidate -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase0["Phase 0\nResume check"]
-    Phase0 --> SkillWork0["(skill itself)"]
-    SkillWork0 --> Decision{Index\nexists?}
-    Decision -->|No index| Phase1["Phase 1\nDiscover & group"]
-    Decision -->|Re-run all| Phase1
-    Decision -->|Update| Phase1
-    Decision -->|Cancel| End1([End])
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2\nExtract per session"]
-    Phase2 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Phase3["Phase 3\nWrite summaries"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Phase4["Phase 4\nWrite index"]
-    Phase4 --> SkillWork4["(skill itself)"]
-    SkillWork4 --> Output1([".dev/sessions/\nsession-summary.md\nsessions-index.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase0 fill:#e8eaf6
-    style Phase1 fill:#e8eaf6
-    style Phase2 fill:#e8eaf6
-    style Phase3 fill:#e8eaf6
-    style Phase4 fill:#e8eaf6
-    style SkillWork0 fill:#c5cae9
-    style SkillWork1 fill:#c5cae9
-    style SkillWork2 fill:#c5cae9
-    style SkillWork3 fill:#c5cae9
-    style SkillWork4 fill:#c5cae9
-    style Decision fill:#fff9c4
-    style Output1 fill:#9fa8da
+    skill_al_dev_consolidate[al-dev-consolidate]
+    knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
+
+    skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
+
+    class skill_al_dev_consolidate skillNode
+    class knowledge_consolidate_extraction_patterns_md knowledgeNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-consolidate -->
 
 ### /al-dev-diagram-generator
 
@@ -678,30 +841,20 @@ Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, an
 | Inputs | Repo source files (grepped via bash); `markdown/md-mermaid-helper.md` style guide |
 | Outputs | `docs/al-dev-workflow-diagrams.md` |
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-diagram-generator -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Phase1["Phase 1\nStatic analysis\n(4 grep passes)"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Phase2["Phase 2\nComplexity check\n(node/edge count)"]
-    Phase2 --> Decision{Combined\nor split?}
-    Decision -->|"≤25 nodes, ≤35 edges"| Phase3a["Phase 3\nGenerate one\ncombined diagram"]
-    Decision -->|Larger| Phase3b["Phase 3\nGenerate two\nfocused diagrams"]
-    Phase3a --> Phase4["Phase 4\nWrite output file"]
-    Phase3b --> Phase4
-    Phase4 --> SkillWork2["(skill itself)"]
-    SkillWork2 --> Output1(["docs/al-dev-workflow-diagrams.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e8eaf6
-    style Phase2 fill:#e8eaf6
-    style Phase3a fill:#e8eaf6
-    style Phase3b fill:#e8eaf6
-    style Phase4 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork2 fill:#c5cae9
-    style Decision fill:#fff9c4
-    style Output1 fill:#9fa8da
+    skill_al_dev_diagram_generator[al-dev-diagram-generator]
+
+
+    class skill_al_dev_diagram_generator skillNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-diagram-generator -->
 
 ### /al-dev-map-suggestions-verify
 
@@ -709,64 +862,51 @@ flowchart LR
 
 Writes `.dev/YYYY-MM-DD-al-dev-plan-plan.md` (generated by `superpowers:writing-plans`).
 
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-map-suggestions-verify -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Decision{--resume?}
-    Decision -->|No| Phase1["Phase 1<br/>Extract suggestions<br/>from map Observations"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> SizeCheck{1-2 or 3+<br/>suggestions?}
-    SizeCheck -->|1-2| Phase2a["Phase 2A<br/>Inline verify"]
-    SizeCheck -->|3+| Phase2b["Phase 2B<br/>Dispatch remote<br/>duck-worker team"]
-    Phase2a --> Phase3["Phase 3<br/>Collect + plan"]
-    Phase2b --> ReturnUser(["Return to user<br/>(async; run --resume when ready)"])
-    Decision -->|--resume| Phase3
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1([".dev/YYYY-MM-DD-al-dev-plan-plan.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e8eaf6
-    style Phase2a fill:#e8eaf6
-    style Phase2b fill:#e8eaf6
-    style Phase3 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork3 fill:#c5cae9
-    style SizeCheck fill:#fff9c4
-    style Decision fill:#fff9c4
-    style ReturnUser fill:#9fa8da
-    style Output1 fill:#9fa8da
+    skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
+    knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
+    artifact_YYYY_MM_DD_al_dev_plan_plan_md[.dev/YYYY-MM-DD-al-dev-plan-plan.md]
+    artifact_progress_md[.dev/progress.md]
+
+    skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
+    skill_al_dev_map_suggestions_verify --> artifact_YYYY_MM_DD_al_dev_plan_plan_md
+    skill_al_dev_map_suggestions_verify --> artifact_progress_md
+
+    class skill_al_dev_map_suggestions_verify skillNode
+    class knowledge_map_change_rubber_duck_checks_md knowledgeNode
+    class artifact_YYYY_MM_DD_al_dev_plan_plan_md artifactNode
+    class artifact_progress_md artifactNode
 ```
+<!-- END GENERATED: skill-drilldown-al-dev-map-suggestions-verify -->
 
-Agents spawned: `al-dev-shared:al-dev-map-suggestions-verify-duck-worker` (×N parallel, Phase 2B remote path only)
-
-### /plugin-health
+### /plugin-health-audit
 
 **Maintainer tool — not part of the main development lifecycle.** Parallelized health sweep of the al-dev-shared plugin surfaces (skills and agents). Dispatches remote design and quality lenses, ranks findings, and writes dossiers to `docs/health/`. Supports resume workflow to collect results in a separate session.
 
+<!-- BEGIN GENERATED: skill-drilldown-plugin-health-audit -->
 ```mermaid
 flowchart LR
-    Start([Start]) --> Decision{--resume?}
-    Decision -->|No| Phase1["Phase 1<br/>Parse args +<br/>build work queue"]
-    Phase1 --> SkillWork1["(skill itself)"]
-    SkillWork1 --> Dispatch["Spawn remote<br/>lens agent team"]
-    Dispatch --> Checkpoint([".dev/plugin-health-team-checkpoint.json"])
-    Checkpoint --> ReturnUser(["Return to user<br/>(async; run --resume when ready)"])
-    Decision -->|--resume| Phase3["Phase 3<br/>Collect findings +<br/>write dossiers"]
-    Phase3 --> SkillWork3["(skill itself)"]
-    SkillWork3 --> Output1(["docs/health/<surface>-dossier.md"])
-    Output1 --> End([End])
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    style Phase1 fill:#e8eaf6
-    style Phase3 fill:#e8eaf6
-    style SkillWork1 fill:#c5cae9
-    style SkillWork3 fill:#c5cae9
-    style Decision fill:#fff9c4
-    style Dispatch fill:#c5cae9
-    style Checkpoint fill:#9fa8da
-    style ReturnUser fill:#9fa8da
-    style Output1 fill:#9fa8da
+    skill_plugin_health_audit[plugin-health-audit]
+    artifact_plugin_health_team_checkpoint_json[.dev/plugin-health-team-checkpoint.json]
+
+    skill_plugin_health_audit --> artifact_plugin_health_team_checkpoint_json
+
+    class skill_plugin_health_audit skillNode
+    class artifact_plugin_health_team_checkpoint_json artifactNode
 ```
-
-Agents spawned: Remote lens agents (×N parallel, dispatched in Phase 1; agent names defined in `knowledge/plugin-health-lenses.md`)
+<!-- END GENERATED: skill-drilldown-plugin-health-audit -->
 
 ---
 

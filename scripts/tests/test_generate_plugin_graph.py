@@ -16,8 +16,20 @@ _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 
 
+def _load_map_doc_sections():
+    spec = importlib.util.spec_from_file_location(
+        "map_doc_sections",
+        REPO_ROOT / "scripts" / "map_doc_sections.py",
+    )
+    if spec is None or spec.loader is None:
+        raise FileNotFoundError(REPO_ROOT / "scripts" / "map_doc_sections.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def _build_fixture(root: Path) -> Path:
-    """Create a tiny fake plugin dir with a known orphan, dead link, and missing ref."""
+    """Create a tiny fake plugin dir with an orphan, dead knowledge, and missing ref."""
     plugin = root / "profile-al-dev-shared"
     (plugin / "skills" / "s-main").mkdir(parents=True)
     (plugin / "skills" / "s-other").mkdir(parents=True)
@@ -28,7 +40,8 @@ def _build_fixture(root: Path) -> Path:
         "Spawn al-dev-shared:al-dev-worker.\n"
         "See ../../knowledge/good.md and ../../knowledge/missing.md.\n"
         "Writes .dev/output.md.\n"
-        "Then run /s-other to continue.\n",
+        "Then run /s-other to continue.\n"
+        "If needed, run /plan to switch to an external wrapper.\n",
         encoding="utf-8",
     )
     (plugin / "skills" / "s-other" / "SKILL.md").write_text(
@@ -36,51 +49,128 @@ def _build_fixture(root: Path) -> Path:
         encoding="utf-8",
     )
     (plugin / "agents" / "al-dev-worker.md").write_text(
-        "Worker agent. Reads ../../knowledge/good.md.\n", encoding="utf-8"
+        "---\n"
+        "name: al-dev-worker\n"
+        "description: Worker agent\n"
+        "model: haiku\n"
+        'tools: ["Read"]\n'
+        "---\n\n"
+        "Worker agent. Reads ../../knowledge/good.md.\n",
+        encoding="utf-8",
     )
     (plugin / "agents" / "al-dev-orphan.md").write_text(
-        "Orphan agent spawned by no skill.\n", encoding="utf-8"
+        "---\n"
+        "name: al-dev-orphan\n"
+        "description: Orphan agent\n"
+        "model: sonnet\n"
+        'tools: ["Read"]\n'
+        "---\n\n"
+        "Orphan agent spawned by no skill.\n",
+        encoding="utf-8",
     )
     (plugin / "knowledge" / "good.md").write_text("good\n", encoding="utf-8")
     (plugin / "knowledge" / "dead.md").write_text("referenced by nobody\n", encoding="utf-8")
     return plugin
 
 
-def test_discover_finds_skills_agents_knowledge() -> None:
+def _graph_doc_template() -> str:
+    return (
+        "# Plugin Dependency Graph\n\n"
+        "<!-- BEGIN GENERATED: plugin-dependency-mermaid -->\n"
+        "old dependency\n"
+        "<!-- END GENERATED: plugin-dependency-mermaid -->\n\n"
+        "<!-- BEGIN GENERATED: plugin-workflow-overlays -->\n"
+        "old overlays\n"
+        "<!-- END GENERATED: plugin-workflow-overlays -->\n\n"
+        "<!-- BEGIN GENERATED: plugin-health-callouts -->\n"
+        "old health\n"
+        "<!-- END GENERATED: plugin-health-callouts -->\n"
+    )
+
+
+def test_build_document_preserves_fixture_edges_and_health() -> None:
     with tempfile.TemporaryDirectory() as td:
         plugin = _build_fixture(Path(td))
-        skills, agents, knowledge = _mod.discover(plugin)
-        assert skills == ["s-main", "s-other"], skills
-        assert agents == ["al-dev-orphan", "al-dev-worker"], agents
-        assert knowledge == ["dead.md", "good.md"], knowledge
+        shared = _load_map_doc_sections()
+        inventory = shared.collect_inventory(plugin)
+        health = shared.summarize_plugin_health(inventory, workflow_paths=_mod.WORKFLOW_PATHS)
+        rendered = _mod.build_document(inventory, health, today="2026-06-02")
+
+        assert inventory.skills == ["s-main", "s-other"], inventory.skills
+        assert inventory.skill_to_skill == [("s-main", "plan"), ("s-main", "s-other")]
+        assert "flowchart LR" in rendered
+        assert "skill_s_main[s-main]" in rendered
+        assert "skill_s_main --> skill_s_other" in rendered
+        assert "skill_s_main --> agent_al_dev_worker" in rendered
+        assert "agent_al_dev_worker --> knowledge_good_md" in rendered
+        assert "knowledge: missing.md" in rendered
+        assert "Orphan agents" in rendered
+        assert "al-dev-orphan" in rendered
 
 
-def test_extract_edges_finds_all_edge_types() -> None:
+def test_build_document_does_not_render_external_wrapper_nodes() -> None:
     with tempfile.TemporaryDirectory() as td:
         plugin = _build_fixture(Path(td))
-        skills, _, _ = _mod.discover(plugin)
-        edges = _mod.extract_edges(plugin, skills)
-        assert ("s-main", "al-dev-worker") in edges["skill_agent"]
-        assert ("s-main", "s-other") in edges["skill_skill"]
-        assert ("s-main", "good.md") in edges["skill_knowledge"]
-        assert ("s-main", "missing.md") in edges["skill_knowledge"]
-        assert ("al-dev-worker", "good.md") in edges["agent_knowledge"]
-        assert ("s-main", "output.md") in edges["skill_artifact"]
+        shared = _load_map_doc_sections()
+        inventory = shared.collect_inventory(plugin)
+        health = shared.summarize_plugin_health(inventory, workflow_paths=_mod.WORKFLOW_PATHS)
+        rendered = _mod.build_document(inventory, health, today="2026-06-02")
+
+        assert "skill_plan[plan]" not in rendered
+        assert " --> skill_plan" not in rendered
+        assert "skill: plan" not in rendered
 
 
-def test_find_health_detects_orphan_dead_and_missing() -> None:
+def test_main_writes_document_on_success() -> None:
     with tempfile.TemporaryDirectory() as td:
-        plugin = _build_fixture(Path(td))
-        skills, agents, knowledge = _mod.discover(plugin)
-        edges = _mod.extract_edges(plugin, skills)
-        health = _mod.find_health(skills, agents, knowledge, edges)
-        assert health["orphan_agents"] == ["al-dev-orphan"], health["orphan_agents"]
-        assert "dead.md" in health["dead_knowledge"]
-        assert ("knowledge", "missing.md") in health["missing_refs"]
+        root = Path(td)
+        plugin = _build_fixture(root)
+        output = root / "docs" / "al-dev-plugin-graph.md"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(_graph_doc_template(), encoding="utf-8")
+        old_plugin = _mod.PLUGIN
+        old_output = _mod.OUTPUT
+        try:
+            _mod.PLUGIN = plugin
+            _mod.OUTPUT = output
+            assert _mod.main() == 0
+        finally:
+            _mod.PLUGIN = old_plugin
+            _mod.OUTPUT = old_output
+
+        rendered = output.read_text(encoding="utf-8")
+        assert "<!-- BEGIN GENERATED: plugin-dependency-mermaid -->" in rendered
+        assert "skill_s_main --> skill_s_other" in rendered
+        assert "knowledge: missing.md" in rendered
+        assert "old dependency" not in rendered
 
 
-def test_node_id_sanitizes_hyphens() -> None:
+def test_main_fails_closed_without_partial_write_on_inventory_error() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        plugin = _build_fixture(root)
+        (plugin / "agents" / "broken.md").write_text("no frontmatter\n", encoding="utf-8")
+        output = root / "docs" / "al-dev-plugin-graph.md"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(_graph_doc_template(), encoding="utf-8")
+        before = output.read_text(encoding="utf-8")
+        old_plugin = _mod.PLUGIN
+        old_output = _mod.OUTPUT
+        try:
+            _mod.PLUGIN = plugin
+            _mod.OUTPUT = output
+            assert _mod.main() == 1
+        finally:
+            _mod.PLUGIN = old_plugin
+            _mod.OUTPUT = old_output
+
+        assert output.read_text(encoding="utf-8") == before
+
+
+def test_node_id_uses_shared_mermaid_sanitization() -> None:
+    shared = _load_map_doc_sections()
     assert _mod.node_id("al-dev-worker") == "al_dev_worker"
+    assert _mod.node_id("al-dev-worker") == shared.mermaid_node_id("al-dev-worker")
 
 
 def _run(func):

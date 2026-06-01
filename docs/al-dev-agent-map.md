@@ -4,30 +4,33 @@
 
 ## Layer 1: Agent Catalog
 
+<!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-code-review | haiku | Read | (none found) |
-| al-dev-commit-agent-analysis | haiku | Bash, Read | /al-dev-commit (analysis phase) |
-| al-dev-commit-agent-execute | haiku | Bash, Read | /al-dev-commit (execution phase) |
-| al-dev-commit-lint-fixer | haiku | Bash, Read | /al-dev-commit (Step 9.5a — lint pre-flight) |
-| al-dev-commit-message-drafter | sonnet | (none) | /al-dev-commit (message-drafting phase) |
-| al-dev-commit-ooxml-validator | haiku | Bash | /al-dev-commit (Step 9.5b — OOXML validation) |
-| al-dev-commit-recover-fixer | sonnet | Write | /commit-recover |
-| al-dev-developer-tdd | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix |
-| al-dev-developer-traditional | sonnet | Read, Write, Grep, Bash | /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode) |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit | /al-dev-lint |
+| al-dev-commit-agent-analysis | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
+| al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit` |
+| al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
+| al-dev-commit-recover-fixer | sonnet | Write | `/commit-recover` |
+| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
+| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix`, `/al-dev-review-develop` |
+| al-dev-diagnostics-fixer | sonnet | Read, Edit | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
-| al-dev-expert-reviewer | sonnet | Read | /al-dev-review-develop |
-| al-dev-explore | haiku | Read, Glob, Grep, Write | (none found — skill uses built-in Explore type) |
-| al-dev-interview | sonnet | Read, Write, USER_GATE | /al-dev-interview |
-| al-dev-performance-reviewer | sonnet | Read | /al-dev-review-develop |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read | /al-dev-release-notes |
+| al-dev-expert-reviewer | sonnet | Read | `/al-dev-review-develop` |
+| al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
+| al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
+| al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read | `/al-dev-release-notes` |
 | al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
-| al-dev-security-reviewer | sonnet | Read | /al-dev-review-develop |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep | /al-dev-plan, /al-dev-fix |
-| al-dev-support-reply-drafter | sonnet | Write | /al-dev-ticket (support mode: reply phase) |
-| al-dev-support-researcher | sonnet | (none) | /al-dev-ticket (support mode: research phase) |
-| al-dev-ticket-agent | haiku | Bash, Write | /al-dev-ticket (fetch + attachment-download phases in `context-only` and `full` modes) |
+| al-dev-security-reviewer | sonnet | Read | `/al-dev-review-develop` |
+| al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
+| al-dev-support-reply-drafter | sonnet | Write | `/al-dev-support-reply` |
+| al-dev-support-researcher | sonnet | (none) | `/al-dev-support-reply` |
+| al-dev-ticket-agent | haiku | Bash, Write | `/al-dev-ticket` |
+<!-- END GENERATED: agent-catalog-table -->
 
 ---
 
