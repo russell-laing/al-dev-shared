@@ -5,6 +5,12 @@ maintaining the al-dev-shared plugin. These are repo-local Claude Code skills
 and agents — not part of the distributed plugin surface — used to detect drift,
 improve design quality, sync documentation, and enforce harness neutrality.
 
+**Use this guide to:**
+- Find the right skill for a specific task (Skills at a Glance, Quick Reference)
+- Understand the calling relationships and execution flow (Skill Hierarchy, Recommended Run Order)
+- Learn which agents are dispatched and what they check (Agents Reference)
+- See what files each skill writes (Outputs Written)
+
 ---
 
 ## Skills at a Glance
@@ -209,6 +215,20 @@ flowchart TD
 
 ---
 
+## Understanding Design vs. Quality Analysis
+
+**Design analysis** (architecture, skill/agent composition):
+- When to use: Evaluating whether skills should be split, merged, or refactored; whether agents are over-allocated or can be inlined
+- Skills: `/analyze-architectural-design`, `/analyze-skill-design`, `/analyze-agent-design` (plus `/plugin-health-audit` which includes design)
+- Output: Suggestions for structural improvements (Atomise, Connect, Merge, Promote, Extend, Trim, Remodel, Split, Inline, Align)
+
+**Quality analysis** (code clarity, structure, naming, bloat):
+- When to use: Ensuring skill/agent files are well-written, properly documented, and follow conventions
+- Skills: `/audit-quality`, `/audit-knowledge-quality` (plus `/plugin-health-audit` which includes quality)
+- Output: Findings on clarity, structure, description drift, bloat, naming consistency
+
+---
+
 ## Agents Reference
 
 ### Design Lens Agents — skill-focused (dispatched by `/discover-skill-design` and `/plugin-health-discover`)
@@ -265,7 +285,7 @@ flowchart TD
 | `/review-skill-map` | `docs/al-dev-skills-map.md` |
 | `/review-agent-map` | `docs/al-dev-agent-map.md` |
 | `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and refreshes dependency graph (when applicable) |
-| `/analyze-skill-design` | `docs/al-dev-plugin-map.md` (Observations section) |
+| `/analyze-skill-design` | `docs/al-dev-skills-map.md` (Observations section) |
 | `/analyze-agent-design` | `docs/al-dev-agent-map.md` (Observations section) |
 | `/analyze-architectural-design` | `docs/al-dev-plugin-graph.md` (cross-surface synthesis) |
 | `/audit-quality --type skill` | `docs/al-dev-skill-quality.md` |
