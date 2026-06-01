@@ -35,9 +35,9 @@ When writing skills for `al-dev-shared`:
 | Concept | Description | Claude Code | Copilot CLI | Codex |
 |---|---|---|---|---|
 | **project instructions file** | The file that provides the AI agent with project-specific instructions | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
-| **harness settings file** | The file where harness-wide settings (e.g. API keys) are stored | `~/.claude/settings.json` | `~/.copilot/settings.json` | harness/runtime configuration outside the repo-local instructions contract |
+| **harness settings file** | The file where harness-wide settings (e.g. API keys) are stored | `~/.claude/settings.json` | `~/.copilot/settings.json` | profile/runtime configuration defined outside the repo-local instructions contract |
 | **AL_DEV_SHARED_PLUGIN_ROOT** | The installed path of the al-dev-shared plugin | `~/.claude/plugins/al-dev-shared/profile-al-dev-shared` | `~/.copilot/installed-plugins/<plugin-id>/profile-al-dev-shared` | session-defined plugin/workspace path supplied by the active Codex environment |
-| **USER_GATE** | A blocking user-confirmation point; never continue past this without a user response | `AskUserQuestion` tool | `ask_user` tool | no single full-equivalence primitive; in Plan mode use `request_user_input`, otherwise stop in the session transcript and wait for the user's next message |
+| **USER_GATE** | A blocking user-confirmation point; never continue past this without a user response | `AskUserQuestion` tool | `ask_user` tool | no single full-equivalence primitive; in Plan mode use `request_user_input`, otherwise ask in-session and wait for the user's next response |
 | **explore agent** | A fast parallel exploration agent | `subagent_type: Explore` | `agent_type: "explore"` in task tool | delegated subagent or parallel exploration workflow in the active Codex session |
 | **restart the agent** | Instruction to the user to start a new AI coding session | "Restart Claude Code" | "start a new Copilot CLI session" | "start a new Codex session" |
 | **Dispatch agent: X** | Dispatch a named agent; X is the fully-qualified agent name (namespace:agent) | `Agent` tool with `subagent_type: X` | `task` tool with `agent_type: X` | delegated agent workflow using the active Codex session's supported agent/subtask mechanism |
@@ -72,7 +72,7 @@ Preferred order for AL symbol questions:
 1. `AL LSP` — workspace-semantic verification for go-to-definition,
    find-references, document symbols, hover/type information, and rename or
    refactor impact checks.
-2. `AL MCP` — object/member/package symbol verification through
+2. `AL symbol MCP` — object/member/package symbol verification through
    `al-mcp-server`, including object definitions, member searches, and
    reference lookup.
 3. `text search` — tightly scoped `rg` or file-read evidence when no semantic
