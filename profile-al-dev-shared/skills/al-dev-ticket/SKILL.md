@@ -15,6 +15,12 @@ credentials, then dispatches `al-dev-ticket-agent` to do the
 API work and file writing. Can optionally extend to research
 and reply drafting via `--mode=full`.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the work is complete or ready for handoff until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ## Usage
 
 ```text

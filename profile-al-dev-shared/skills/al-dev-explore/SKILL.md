@@ -10,6 +10,12 @@ Fast codebase exploration with structured, persistent output.
 Delegates to an Explore subagent, writes findings to `.dev/`, and
 integrates with `project-context.md`.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the work is complete or ready for handoff until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ---
 
 ## Usage

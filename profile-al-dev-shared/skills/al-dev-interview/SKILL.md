@@ -9,6 +9,12 @@ argument-hint: "[feature description or file path]"
 Conduct a deep requirements interview for a Business Central
 AL development feature.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the work is complete or ready for handoff until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ## Interview First, Write Last
 
 The entire value of this skill is extracting information only

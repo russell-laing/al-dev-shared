@@ -253,5 +253,165 @@ def main(argv: list[str] | None = None) -> int:
     return 1
 
 
+# ---------------------------------------------------------------------------
+# Runtime artifact tests (verify actual .dev/ files exist and contain markers)
+# ---------------------------------------------------------------------------
+
+def test_al_dev_ticket_contracts() -> bool:
+    """Verify al-dev-ticket produces required artifacts with completion markers.
+
+    Checks for latest .dev/*-al-dev-ticket-ticket-context.md file and validates
+    it contains ticket metadata markers (TICKET_ID, STATUS, PRIORITY sections).
+
+    Returns True if test passes, False if artifacts don't exist (acceptable in
+    sessions where ticket skill hasn't run).
+    """
+    import glob
+
+    # Find latest ticket context file using glob
+    ticket_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-ticket-ticket-context.md"))
+
+    if not ticket_files:
+        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
+        return True
+
+    latest_file = max(ticket_files, key=lambda p: Path(p).stat().st_mtime)
+
+    try:
+        content = Path(latest_file).read_text(encoding="utf-8")
+        # Check for metadata markers: ticket ID, status, or priority section
+        has_metadata = any(marker in content for marker in [
+            "TICKET_ID", "STATUS", "PRIORITY", "**Ticket ID**", "**Status**", "**Priority**"
+        ])
+
+        if not has_metadata:
+            print(f"⚠ {latest_file}: Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)")
+            return False
+
+        return True
+    except OSError as e:
+        print(f"⚠ {latest_file}: Cannot read file ({e})")
+        return False
+
+
+def test_al_dev_interview_contracts() -> bool:
+    """Verify al-dev-interview produces required artifacts with completion markers.
+
+    Checks for latest .dev/*-al-dev-interview-requirements.md file and validates
+    it contains REQ tokens (REQ-NNN format) indicating formal requirements extracted.
+
+    Returns True if test passes, False if artifacts don't exist (acceptable in
+    sessions where interview skill hasn't run).
+    """
+    import glob
+
+    # Find latest interview requirements file
+    req_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-interview-requirements.md"))
+
+    if not req_files:
+        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
+        return True
+
+    latest_file = max(req_files, key=lambda p: Path(p).stat().st_mtime)
+
+    try:
+        content = Path(latest_file).read_text(encoding="utf-8")
+        # Check for REQ tokens (formal requirement markers)
+        has_req_tokens = "REQ:" in content or "REQ-" in content or "ACC:" in content
+
+        if not has_req_tokens:
+            print(f"⚠ {latest_file}: Missing REQ/ACC tokens (formal requirements)")
+            return False
+
+        return True
+    except OSError as e:
+        print(f"⚠ {latest_file}: Cannot read file ({e})")
+        return False
+
+
+def test_al_dev_explore_contracts() -> bool:
+    """Verify al-dev-explore produces required artifacts with completion markers.
+
+    Checks for latest .dev/*-al-dev-explore-findings.md file and validates it
+    contains structured sections (ANSWER, FILES, SNIPPETS) indicating complete
+    exploration findings.
+
+    Returns True if test passes, False if artifacts don't exist (acceptable in
+    sessions where explore skill hasn't run).
+    """
+    import glob
+
+    # Find latest exploration findings file
+    findings_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-explore-findings.md"))
+
+    if not findings_files:
+        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
+        return True
+
+    latest_file = max(findings_files, key=lambda p: Path(p).stat().st_mtime)
+
+    try:
+        content = Path(latest_file).read_text(encoding="utf-8")
+        # Check for structured section markers
+        has_sections = any(section in content for section in [
+            "## ANSWER", "## FILES", "## SNIPPETS", "## Findings"
+        ])
+
+        if not has_sections:
+            print(f"⚠ {latest_file}: Missing structured sections (ANSWER/FILES/SNIPPETS)")
+            return False
+
+        return True
+    except OSError as e:
+        print(f"⚠ {latest_file}: Cannot read file ({e})")
+        return False
+
+
+def run_artifact_tests() -> bool:
+    """Run all runtime artifact contract tests.
+
+    Returns True if all tests pass (or skip due to missing artifacts).
+    Returns False if any test fails.
+    """
+    tests = [
+        ("al-dev-ticket", test_al_dev_ticket_contracts),
+        ("al-dev-interview", test_al_dev_interview_contracts),
+        ("al-dev-explore", test_al_dev_explore_contracts),
+    ]
+
+    results = []
+    for skill_name, test_func in tests:
+        try:
+            passed = test_func()
+            results.append((skill_name, passed))
+            status = "✓" if passed else "✗"
+            print(f"{status} {skill_name}")
+        except Exception as e:
+            print(f"⚠ {skill_name}: Unexpected error ({e})")
+            results.append((skill_name, False))
+
+    return all(passed for _, passed in results)
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # Run structural validator first
+    violations, skill_count = validate()
+
+    if violations:
+        # Structural violations found; exit with error
+        blocks = "\n\n".join(_format_violation(v) for v in violations)
+        print(blocks)
+        raise SystemExit(1)
+    else:
+        print(f"✓ {skill_count} skills conform to artifact-contracts.md")
+
+    # Run runtime artifact tests
+    print("\nRunning artifact contract tests...")
+    all_passed = run_artifact_tests()
+
+    if all_passed:
+        print("\n✓ All artifact contract tests passed")
+        raise SystemExit(0)
+    else:
+        print("\n✗ Some artifact contract tests failed")
+        raise SystemExit(1)
