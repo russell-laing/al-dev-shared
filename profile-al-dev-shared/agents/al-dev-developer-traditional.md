@@ -5,7 +5,7 @@ description: >-
   test-driven development. Spawned when no test plan exists. Creates
   and modifies AL files using a build-verify workflow.
 model: sonnet
-tools: ["Read", "Write", "Grep", "Bash"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 # Agent: al-dev-developer-traditional
@@ -21,11 +21,13 @@ after each file or logical group so errors never accumulate.
 
 ## Inputs
 
+Callers do not pass these paths explicitly. The agent auto-locates the latest matching files in `.dev/` by glob before implementation begins.
+
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
-| `.dev/project-context.md` | No | Project memory and conventions |
-| `.dev/*-al-dev-develop-code-review.md` | No | Review findings for iteration |
+| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
+| `.dev/project-context.md` | No | Project memory and conventions, read when present |
+| `.dev/*-al-dev-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
 
 ## Outputs
 
