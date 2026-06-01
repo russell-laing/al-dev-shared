@@ -82,16 +82,28 @@ Extract and hold in working memory:
 - **Object ID range** — e.g. `50901–50950`
 - **AL file naming pattern** — e.g. `Name.ObjectType.al`
 
-Check for a Freshdesk ticket:
+### 0.2.1 — Freshdesk Ticket Context (Optional)
 
-```bash
-TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
-  | sort | tail -1)
-[ -n "$TICKET" ] && head -10 "$TICKET"
+```text
+IF caller supplies --ticket-id=<ID>:
+  └─ Fetch ticket context from Freshdesk API
+  └─ Append ticket context to commit message
+  └─ Continue to Phase 1
+
+IF caller does not supply --ticket-id:
+  └─ Check for a ticket context file from a prior /al-dev-ticket run:
+       TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
+         | sort | tail -1)
+       [ -n "$TICKET" ] && head -10 "$TICKET"
+     Extract ticket number from `TICKET: #<number>` if present.
+     Hold as FD ticket number (may be empty).
+  └─ Proceed without ticket context if no file found (ticket link is optional)
+  └─ Continue to Phase 1
+
+IF Freshdesk API is unavailable:
+  └─ Log warning: "Freshdesk unreachable; proceeding without ticket context"
+  └─ Continue to Phase 1
 ```
-
-Extract ticket number from `TICKET: #<number>` if present.
-Hold as **FD ticket number**.
 
 ### 0.3 — Verify File Integrity
 
