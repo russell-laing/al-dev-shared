@@ -274,36 +274,24 @@ Attachments saved to .dev/attachments/ ([count] files).
 
 ---
 
-## Phase 5: Branch on Mode
+## Phase 5: Mode Branching
 
-**Note:** This phase controls execution flow. Research and reply
-drafting have been extracted into the `/al-dev-support-reply` skill.
-Phase 5 either exits with context (default) or chains to that skill.
-
-Assemble the CONTEXT block from the ticket loaded in Step 3:
+Resolve mode from Phase 0 output:
 
 ```text
-CONTEXT
-TICKET_FILE: <FILE from agent output in Step 3>
-SUMMARY: <SUMMARY from agent output in Step 3>
+mode ∈ {context-only, full}
+
+if mode == "context-only":
+  └─ Write CONTEXT block to .dev/ticket-context.md
+  └─ Exit workflow (Phase 5 complete, no further phases)
+
+if mode == "full":
+  └─ Dispatch /al-dev-support-reply with ticket context
+  └─ Read REPLY block
+  └─ Write REPLY block to .dev/ticket-reply.md
+  └─ Output REPLY to caller
+
+if mode is not set:
+  └─ [ERROR] Cannot determine mode. Caller must specify --mode={context-only,full}
+  └─ Escalate to caller with mode options
 ```
-
-**Mode gate:**
-
-If mode is `context-only` (default):
-
-- Write the CONTEXT block to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
-- Exit (workflow complete) — output ticket context only
-
-If mode is `full`:
-
-- Write the CONTEXT block to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
-- Dispatch `/al-dev-support-reply` with the dated CONTEXT block path:
-
-  ```text
-  /al-dev-support-reply .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
-  ```
-
-- Read the REPLY block from the skill's response
-- Output the REPLY block to the caller (research complete, draft
-  reply written to `.dev/ticket-reply.md`)
