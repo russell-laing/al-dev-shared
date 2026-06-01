@@ -130,13 +130,13 @@ def test_main_prints_absolute_output_outside_root(tmp_path):
 def test_reference_detection_excludes_superpowers_tree(tmp_path):
     module = load_module()
     root = tmp_path
-    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-archive-test-skills-design.md"
+    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-example-design.md"
     spec.parent.mkdir(parents=True)
     spec.write_text("# Archive Test Skills\n", encoding="utf-8")
     outside = root / "profile-al-dev-shared" / "archived" / "README.md"
     outside.parent.mkdir(parents=True)
     outside.write_text(
-        "See `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`.\n",
+        "See `docs/superpowers/specs/2026-05-16-example-design.md`.\n",
         encoding="utf-8",
     )
 
@@ -148,7 +148,7 @@ def test_reference_detection_excludes_superpowers_tree(tmp_path):
 def test_reference_detection_excludes_nested_worktree_docs(tmp_path):
     module = load_module()
     root = tmp_path
-    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-archive-test-skills-design.md"
+    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-example-design.md"
     spec.parent.mkdir(parents=True)
     spec.write_text("# Archive Test Skills\n", encoding="utf-8")
     nested_worktree_doc = (
@@ -161,7 +161,7 @@ def test_reference_detection_excludes_nested_worktree_docs(tmp_path):
     )
     nested_worktree_doc.parent.mkdir(parents=True)
     nested_worktree_doc.write_text(
-        "See `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`.\n",
+        "See `docs/superpowers/specs/2026-05-16-example-design.md`.\n",
         encoding="utf-8",
     )
 
@@ -173,13 +173,13 @@ def test_reference_detection_excludes_nested_worktree_docs(tmp_path):
 def test_reference_detection_scans_repo_root_under_worktrees(tmp_path):
     module = load_module()
     root = tmp_path / ".worktrees" / "repo"
-    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-archive-test-skills-design.md"
+    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-example-design.md"
     spec.parent.mkdir(parents=True)
     spec.write_text("# Archive Test Skills\n", encoding="utf-8")
     outside = root / "profile-al-dev-shared" / "archived" / "README.md"
     outside.parent.mkdir(parents=True)
     outside.write_text(
-        "See `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`.\n",
+        "See `docs/superpowers/specs/2026-05-16-example-design.md`.\n",
         encoding="utf-8",
     )
 

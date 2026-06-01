@@ -23,4 +23,4 @@ Files here are inactive — not loaded by the plugin. Move them back to
 5. `git mv archived/agents/al-dev-edge-case-test-engineer.md agents/`
 6. `git mv archived/agents/al-dev-test-coverage-reviewer.md agents/`
 7. Revert all edits described in the spec:
-   `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`
+   `docs/superpowers/history.md`
