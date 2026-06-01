@@ -211,7 +211,7 @@ flowchart TD
 
 ## Agents Reference
 
-### Design Lens Agents (dispatched by `/discover-skill-design` and `/plugin-health-discover`)
+### Design Lens Agents — skill-focused (dispatched by `/discover-skill-design` and `/plugin-health-discover`)
 
 | Agent | What it checks |
 |-------|---------------|
@@ -221,7 +221,7 @@ flowchart TD
 | `design-skill-lens-preplanning` | Pre-planning skills in Layer 1 diagram as dashed tributaries with named outputs (Pre-planning) |
 | `design-skill-lens-shared-backbone` | Agent types used by 2+ skills whose patterns could be promoted to knowledge (Connect/Promote) |
 
-### Design Lens Agents (dispatched by `/discover-agent-design` and `/plugin-health-discover`)
+### Design Lens Agents — agent-focused (dispatched by `/discover-agent-design` and `/plugin-health-discover`)
 
 | Agent | What it checks |
 |-------|---------------|
@@ -265,7 +265,7 @@ flowchart TD
 | `/review-skill-map` | `docs/al-dev-skills-map.md` |
 | `/review-agent-map` | `docs/al-dev-agent-map.md` |
 | `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` |
-| `/analyze-skill-design` | `docs/al-dev-skills-map.md` (Observations section) |
+| `/analyze-skill-design` | `docs/al-dev-plugin-map.md` (Observations section) |
 | `/analyze-agent-design` | `docs/al-dev-agent-map.md` (Observations section) |
 | `/analyze-architectural-design` | `docs/al-dev-plugin-graph.md` (cross-surface synthesis) |
 | `/audit-quality --type skill` | `docs/al-dev-skill-quality.md` |
