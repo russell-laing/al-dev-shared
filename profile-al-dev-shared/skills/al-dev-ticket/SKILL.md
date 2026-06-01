@@ -61,6 +61,31 @@ fi
 
 ---
 
+## Phase 0 — Load Interview Requirements (Optional)
+
+If a prior interview was conducted, load structured requirements to inform the reply context:
+
+1. **Check for interview requirements:**
+
+   ```bash
+   ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1
+   ```
+
+2. **If found, read the requirements:**
+
+   Load the requirements document and note:
+   - Structured requirements (REQ blocks)
+   - Risk assessments
+   - Scope boundaries
+
+   Present to user: "Structured requirements available from prior interview. Reference these when composing your reply."
+
+3. **If not found, continue:** Proceed with ticket context alone.
+
+This is optional; missing interview requirements do not block reply composition.
+
+---
+
 ## Step 1 — Resolve the Ticket Number or Search Intent
 
 Check the arguments provided (text after `/al-dev-ticket`):
