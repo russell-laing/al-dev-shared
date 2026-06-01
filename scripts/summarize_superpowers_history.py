@@ -198,8 +198,9 @@ def _is_under(path: Path, directory: Path) -> bool:
     return True
 
 
-def should_scan_reference_file(path: Path, excluded_dirs: tuple[Path, ...]) -> bool:
-    if any(part in EXCLUDED_SCAN_PARTS for part in path.parts):
+def should_scan_reference_file(path: Path, root: Path, excluded_dirs: tuple[Path, ...]) -> bool:
+    relative_path = path.relative_to(root)
+    if any(part in EXCLUDED_SCAN_PARTS for part in relative_path.parts):
         return False
     return not any(_is_under(path, directory) for directory in excluded_dirs)
 
@@ -210,7 +211,7 @@ def find_external_references(root: Path, paths: list[Path]) -> dict[str, list[st
     search_files = [
         path
         for path in root.rglob("*.md")
-        if should_scan_reference_file(path, excluded_dirs)
+        if should_scan_reference_file(path, root, excluded_dirs)
     ]
 
     targets: list[tuple[str, str]] = []

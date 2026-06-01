@@ -170,6 +170,24 @@ def test_reference_detection_excludes_nested_worktree_docs(tmp_path):
     assert references[spec.as_posix()] == []
 
 
+def test_reference_detection_scans_repo_root_under_worktrees(tmp_path):
+    module = load_module()
+    root = tmp_path / ".worktrees" / "repo"
+    spec = root / "docs" / "superpowers" / "specs" / "2026-05-16-archive-test-skills-design.md"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("# Archive Test Skills\n", encoding="utf-8")
+    outside = root / "profile-al-dev-shared" / "archived" / "README.md"
+    outside.parent.mkdir(parents=True)
+    outside.write_text(
+        "See `docs/superpowers/specs/2026-05-16-archive-test-skills-design.md`.\n",
+        encoding="utf-8",
+    )
+
+    references = module.find_external_references(root, [spec])
+
+    assert references[spec.as_posix()] == ["profile-al-dev-shared/archived/README.md"]
+
+
 def test_render_history_groups_by_date(tmp_path):
     module = load_module()
     artifact = tmp_path / "docs" / "superpowers" / "plans" / "2026-05-31-plugin-health-top-5.md"
