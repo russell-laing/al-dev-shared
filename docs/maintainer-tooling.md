@@ -290,21 +290,3 @@ flowchart TD
 | Maps are out of sync, no rush | `/sync-documentation-maps` (async, frees session) |
 | Maps are out of sync, fix now | `/review-skill-map` + `/review-agent-map` (in-session) |
 
-## Context
-- Repository: /Users/russelllaing/al-dev-shared
-- Isolated worktree: /Users/russelllaing/al-dev-shared/.worktrees/docs/maintainer-tooling-readme-2026-06-02
-- Branch: docs/maintainer-tooling-readme-2026-06-02
-- This is a docs-only task.
-- IMPORTANT: Do not add Co-authored-by trailers to commit messages in this repository.
-
-## Before You Begin
-If anything is unclear, ask now.
-
-## Your Job
-Once clear, implement exactly the spec, run the specified verification commands, commit, self-review, and report using:
-- Status: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-- Implemented work
-- Tests/checks run and results
-- Files changed
-- Self-review findings
-- Concerns
