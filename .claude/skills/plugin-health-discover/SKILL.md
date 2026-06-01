@@ -79,45 +79,45 @@ If invoked with `--resume` flag:
 If NOT invoked with `--resume`:
 - `remaining_lenses = ALL_LENSES`
 
-## Phase 3a — Dispatch lenses with per-lens disk streaming (batched by token budget)
+## Phase 3a — Dispatch lenses via Workflow (isolated contexts)
 
-Dispatch lenses in waves to stay within session token limits. After each lens
-completes, write its result immediately to disk.
+Lenses run in a Workflow to isolate agent conversations. The Workflow receives
+a list of lens prompts (built in this phase) and fans them out via `pipeline()`,
+running all lenses concurrently. Each lens result is returned as a structured
+JSON object (~1KB), keeping the main session context lean.
 
-**Token budget calculation:**
 ```python
-per_lens_token_budget = 5000  # Typical lens cost (varies by scope)
-remaining_budget = budget.remaining()
-lenses_per_wave = max(1, remaining_budget // (per_lens_token_budget * 1.2))
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path.cwd() / ".claude" / "skills" / "plugin-health-discover"))
+from workflow_utils import invoke_workflow, wait_for_workflow
 ```
 
-**For each wave:**
+### Step 1: Build lens prompt list from assembled lens definitions
 
-1. **Log wave progress:**
-   ```
-   Wave 1: Running 3 lenses (1-3 of 21 total)
-   ```
+For each lens in scope (`remaining_lenses`), construct a prompt object:
 
-2. **Dispatch this wave's lenses in parallel.**
+```
+lens_prompt_list = []
 
-3. **For each completed lens, immediately write result to disk:**
-   ```python
-   timestamp = datetime.now().isoformat()
-   output_file = f".dev/2026-05-31-plugin-health-lens-{lens_name}.json"
-   with open(output_file, 'w') as f:
-       json.dump({
-           "lens": lens_name,
-           "findings": lens_result,
-           "completed_at": timestamp
-       }, f, indent=2)
-   ```
+for lens_name in remaining_lenses:
+    lens_prompt = {
+        "name": lens_name,
+        "agent_type": lens_name,  # e.g. "design-agent-lens-tool-hygiene"
+        "prompt": f"""
+Run the {lens_name} analysis.
 
-4. **Check remaining budget:**
-   - If `budget.remaining() < 10000`: Log "Approaching budget limit; call with
-     `--resume` in a fresh session to complete"
-   - Halt if approaching limit; remaining lenses will be picked up by --resume
+Files to analyze:
+{formatted_file_list}
 
-Use per-lens minimal context per `knowledge/lens-invocation-patterns.md`.
+Context fields:
+{context_field_content}
+"""
+    }
+    lens_prompt_list.append(lens_prompt)
+```
+
+**Context field tables (per lens):**
 
 **For design-agent-lens-* agents** (when `--dimension design` or `all`):
 
@@ -143,8 +143,90 @@ Use per-lens minimal context per `knowledge/lens-invocation-patterns.md`.
 Pass file list only. For naming-convention-lens, also pass:
 `Convention doc: /Users/russelllaing/al-dev-shared/docs/al-dev-naming-convention.md`
 
-A lens that returns a malformed or empty block is recorded as `lens <name>: no result`
-and the sweep continues — a failed lens never aborts discovery.
+### Step 2: Invoke Workflow with lens prompt list
+
+```python
+workflow_path = Path(".claude/skills/plugin-health-discover/workflow-lens-dispatch.js")
+
+task_id = invoke_workflow(
+    script=str(workflow_path),
+    args=json.dumps(lens_prompt_list),
+    label="plugin-health-lens-sweep"
+)
+```
+
+The Workflow script (below) runs all lenses in parallel via `pipeline()`:
+
+```javascript
+export const meta = {
+  name: 'plugin-health-lens-sweep',
+  description: 'Fan out plugin health lens agents in parallel, return structured findings',
+  phases: [{ title: 'Lens sweep' }]
+}
+
+const FINDINGS_SCHEMA = {
+  type: 'object',
+  required: ['lens', 'findings', 'suggestion_count'],
+  properties: {
+    lens:             { type: 'string' },
+    findings:         { type: 'string' },
+    suggestion_count: { type: 'number' }
+  }
+}
+
+// args = [{ name, agent_type, prompt }]
+const results = await pipeline(
+  args,
+  lens => agent(
+    lens.prompt,
+    {
+      label:      lens.name,
+      phase:      'Lens sweep',
+      schema:     FINDINGS_SCHEMA,
+      agentType:  lens.agent_type
+    }
+  )
+)
+
+return results.filter(Boolean)
+```
+
+### Step 3: Wait for Workflow completion and process results
+
+```python
+findings = wait_for_workflow(task_id, timeout=600)
+```
+
+For each completed lens in `findings`:
+
+```python
+timestamp = datetime.now().isoformat()
+output_file = f".dev/{today}-plugin-health-lens-{lens['lens']}.json"
+with open(output_file, 'w') as f:
+    json.dump({
+        "lens": lens['lens'],
+        "findings": lens['findings'],
+        "suggestion_count": lens.get('suggestion_count', 0),
+        "completed_at": timestamp
+    }, f, indent=2)
+```
+
+### Step 4: Write findings to disk
+
+All lens results are now in `.dev/` as individual `.json` files. Phase 4 will
+read and assemble them.
+
+### Step 5: Check for failed lenses
+
+If the Workflow result includes a `failed_lenses` list:
+
+```
+Log: "Failed lenses: {', '.join(failed_lenses)}"
+```
+
+A failed lens never aborts discovery; the sweep continues.
+
+Use per-lens minimal context per `knowledge/lens-invocation-patterns.md`.
 
 ## Phase 4 — Assemble findings file from disk
 
