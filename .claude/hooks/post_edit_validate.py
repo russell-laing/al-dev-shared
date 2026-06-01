@@ -48,6 +48,21 @@ try:
             print("[post-edit] agent-structure: issues found")
             print(result.stdout[:500])
 
+    # Validate shared-surface agents and skills via validate-shared-surface.py
+    validator = os.path.join(project_root, "scripts", "validate-shared-surface.py")
+    agents_prefix = os.path.join(shared_prefix, "agents")
+    skills_prefix = os.path.join(shared_prefix, "skills")
+    if abs_path.startswith((agents_prefix, skills_prefix)) and abs_path.endswith(".md"):
+        result = subprocess.run(
+            ["python3", validator, abs_path],
+            capture_output=True, text=True
+        )
+        if result.returncode != 0:
+            print(f"[post-edit] shared-surface-validate: {result.stdout.strip()}")
+            print("  Fix before committing.")
+        else:
+            print(f"[post-edit] shared-surface-validate: OK ({os.path.basename(abs_path)})")
+
 except Exception:
     pass  # Fail open — never block on hook error
 
