@@ -88,4 +88,4 @@ SUMMARY: [one-sentence root cause or workaround]
 
 ### Recommended Resolution
 [Recommended path to fix]
-```
+```text

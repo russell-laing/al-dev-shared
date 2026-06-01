@@ -65,7 +65,7 @@ Create clear, accurate documentation that helps users understand, use, and maint
 - Cross-reference with solution plan
 
 ### Documentation Folder Structure
-```
+```text
 docs/ (or wiki/)
 ├── Features/          (Feature documentation)
 ├── API/              (Public codeunit APIs)
@@ -73,7 +73,7 @@ docs/ (or wiki/)
 ├── Architecture/     (System design, data model, integration)
 ├── CHANGELOG.md
 └── README.md
-```
+```text
 
 ### When to Create
 - **Feature doc:** For any new feature (MEDIUM/COMPLEX work)
@@ -98,10 +98,10 @@ Session log entry format:
 - RTM appendix: [Included/Omitted]
 - Location: docs/ or wiki/
 - Status: ✓ Complete
-```
+```text
 
 Example response:
-```
+```text
 Documentation complete → docs/ folder (~3.5k tokens)
 
 Generated:
@@ -114,4 +114,4 @@ Coverage: All public procedures documented
 RTM Status: VERIFIED/IMPLEMENTED/IN-PROGRESS
 
 Ready for review.
-```
+```text

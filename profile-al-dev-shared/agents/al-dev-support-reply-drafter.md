@@ -110,7 +110,7 @@ The draft is always the customer's first communication about this issue — noth
 
 ## If Issue Persists
 [Escalation path, support contacts, debug steps]
-```
+```text
 
 ## Return Block
 
@@ -122,4 +122,4 @@ QUERY_TYPE: [ticket|file|freetext]
 BC_VERSION_SCOPE: [from researcher findings]
 SOURCES: [from researcher findings]
 SUMMARY: [one-sentence summary of root cause or workaround]
-```
+```text

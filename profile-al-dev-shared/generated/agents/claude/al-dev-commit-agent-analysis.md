@@ -48,7 +48,7 @@ Analyse staged changes and build per-file manifests with object IDs and change s
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRDT
-```
+```text
 
 ### Step 2 — Read each staged diff
 
@@ -56,7 +56,7 @@ For every staged file:
 
 ```bash
 git diff --cached -- <file>
-```
+```text
 
 ### Step 3 — Build change manifest (AL files only)
 
@@ -71,7 +71,7 @@ MANIFEST: <filename>
   procs_added: <procedure names, comma-separated, or none>
   procs_modified: <procedure names, comma-separated, or none>
   procs_removed: <procedure names, comma-separated, or none>
-```
+```text
 
 Extraction patterns from diff lines:
 
@@ -90,7 +90,7 @@ Non-AL files: emit a simple one-liner, no manifest block.
 
 ```bash
 git diff --cached --name-only --diff-filter=D
-```
+```text
 
 Collect into `DELETIONS` section.
 
@@ -100,7 +100,7 @@ Use one canonical extension set for OOXML policy checks:
 
 ```bash
 OOXML_EXTENSIONS_REGEX='\.(docx|xlsx|pptx|odt)$'
-```
+```bash
 
 Build staged-file sets without word-splitting:
 
@@ -120,7 +120,7 @@ while IFS= read -r -d '' f; do
     *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
   esac
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
-```
+```bash
 
 ### Return Format (Step 6)
 
@@ -143,6 +143,6 @@ WARNINGS: NONE
 (or)
 WARNINGS:
   - <warning text>
-```
+```text
 
 ---

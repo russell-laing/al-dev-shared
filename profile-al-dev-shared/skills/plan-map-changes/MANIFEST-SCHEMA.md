@@ -45,7 +45,7 @@ status: waiting
 started_at: 2026-05-31T14:22:35Z
 suggestion_count: 5
 manifest_path: .dev/plan-map-changes-runs/f47ac10b-58cc-4372-a567-0e02b2c3d479/manifest.json
-```
+```text
 
 ### How Main Skill Reads/Updates
 
@@ -125,7 +125,7 @@ The suggestion queue is the output of Phase 1 extraction. It contains all unimpl
     }
   ]
 }
-```
+```text
 
 ---
 
@@ -199,7 +199,7 @@ The manifest is created by Phase 2 (dispatch) and updated by Phase 3 (collection
     }
   ]
 }
-```
+```text
 
 ---
 
@@ -271,7 +271,7 @@ A successful duck record documents the verification result of one suggestion. Cr
   "worker_id": "worker-42",
   "completed_at": "2026-05-31T14:24:10Z"
 }
-```
+```text
 
 ### Duck Record Example (DEFER)
 
@@ -311,7 +311,7 @@ A successful duck record documents the verification result of one suggestion. Cr
   "worker_id": "worker-43",
   "completed_at": "2026-05-31T14:25:05Z"
 }
-```
+```text
 
 ---
 
@@ -355,7 +355,7 @@ An error record documents a failed verification attempt. Created when duck verif
   "worker_id": "worker-44",
   "failed_at": "2026-05-31T14:26:00Z"
 }
-```
+```text
 
 ### Error Record Example (Parse Error)
 
@@ -376,7 +376,7 @@ An error record documents a failed verification attempt. Created when duck verif
   "worker_id": "worker-45",
   "failed_at": "2026-05-31T14:26:15Z"
 }
-```
+```text
 
 ### Error Record Example (Timeout)
 
@@ -401,7 +401,7 @@ An error record documents a failed verification attempt. Created when duck verif
   "worker_id": "worker-46",
   "failed_at": "2026-05-31T14:27:30Z"
 }
-```
+```text
 
 ---
 

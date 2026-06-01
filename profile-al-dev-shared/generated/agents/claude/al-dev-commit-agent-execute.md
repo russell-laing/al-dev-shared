@@ -34,7 +34,7 @@ For each approved group:
 **Commit success path (Step 1a):**
 ```bash
 git commit -m "[message from approved plan]"
-```
+```text
 If commit succeeds (exit code 0):
 - Capture the commit SHA: `git rev-parse HEAD`
 - Record the SHA and message summary
@@ -60,7 +60,7 @@ If commit still fails after retries:
 
 ### Return Block (Step 3)
 
-```
+```text
 COMMITS:
 GROUP_1: <SHA> [message summary]
 GROUP_2: <SHA> [message summary]
@@ -68,4 +68,4 @@ GROUP_2: <SHA> [message summary]
 SKIPPED: [N groups]
 
 HOOK_FAILURES: [group_id: raw_output] (or NONE)
-```
+```text

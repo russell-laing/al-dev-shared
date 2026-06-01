@@ -32,7 +32,7 @@ grep -rn "knowledge/" profile-al-dev-shared/skills/ --include="*.md"
 
 # 4. Agent → Knowledge: knowledge file refs in agent bodies
 grep -rn "knowledge/" profile-al-dev-shared/agents/ --include="*.md"
-```
+```text
 
 For each result, extract the source name (from the file path) and target name (from the
 matched line content):
@@ -135,7 +135,7 @@ Write `docs/al-dev-workflow-diagrams.md`:
 [diagram block — or two blocks with headings:
 ### Skills → Agents
 ### Skills & Agents → Knowledge]
-```
+```text
 
 Substitute:
 - `<CALLER_NAME>` with the value from `--caller-name` parameter

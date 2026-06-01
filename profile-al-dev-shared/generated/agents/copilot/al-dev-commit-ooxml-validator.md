@@ -31,7 +31,7 @@ If no OOXML files are present in the approved groups, return immediately:
 
 ```text
 OOXML_FAILURES: NONE
-```
+```text
 
 ### Step 2: ZIP Integrity Check
 
@@ -40,7 +40,7 @@ For each OOXML file:
 ```bash
 unzip -t <file> > /dev/null 2>&1
 echo $?
-```
+```text
 
 Exit code `0` = valid ZIP (OOXML file is intact).
 Non-zero exit = corrupted ZIP. Record as: `<filename>: unzip exit code <N>`.
@@ -50,11 +50,11 @@ Non-zero exit = corrupted ZIP. Record as: `<filename>: unzip exit code <N>`.
 If OOXML failures occurred:
 ```text
 OOXML_FAILURES: [filename: unzip exit code N] (one entry per failed file)
-```
+```text
 
 If all files passed (or no OOXML files present):
 ```text
 OOXML_FAILURES: NONE
-```
+```text
 
 If OOXML_FAILURES is not NONE, the calling skill must stop and require human resolution before re-staging.

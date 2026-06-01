@@ -34,7 +34,7 @@ git diff --cached --name-only | while IFS= read -r f; do
   [ -f "$f" ] || continue
   printf '%s\t%d\n' "$f" "$(wc -l < "$f")" >> .git/.commit-baselines
 done
-```
+```text
 
 If `.git/` does not exist in the current directory, use `.dev/commit-baselines` as the fallback path.
 
@@ -44,7 +44,7 @@ For every `.py` file in the approved groups:
 
 ```bash
 ruff check --fix <file> && ruff format <file> && git add <file>
-```
+```text
 
 ### Step 3: Trailing Whitespace Fix (Text Files Only)
 
@@ -57,7 +57,7 @@ git diff --cached --name-only | grep -v -E '\.(docx|xlsx|pptx|odt)$' | while IFS
   sed -i '' 's/[ \t]*$//' "$f"
   git add "$f"
 done
-```
+```text
 
 ### Step 4: Corruption Detection
 
@@ -70,4 +70,4 @@ Compare post-fix line counts against the baseline captured in Step 1. If any fil
 
 ```text
 LINT_FIXES: [file1, file2] (or NONE)
-```
+```text

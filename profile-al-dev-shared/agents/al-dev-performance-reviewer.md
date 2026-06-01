@@ -75,7 +75,7 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 ## Output Format
 
 Structure findings as:
-```
+```text
 ## CRITICAL
 [List critical performance issues with file:line, issue, impact, fix]
 
@@ -87,6 +87,6 @@ Structure findings as:
 
 ## LOW
 [List low-severity improvements]
-```
+```text
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.

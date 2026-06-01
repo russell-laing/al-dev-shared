@@ -48,4 +48,4 @@ RECOVERED: <file count> files
 UNRECOVERABLE: <file count> files
 STRATEGIES_USED: [git restore | regex reconstruction | schema rebuild]
 REPORT_FILE: .dev/YYYY-MM-DD-al-dev-commit-recover-report.md
-```
+```text

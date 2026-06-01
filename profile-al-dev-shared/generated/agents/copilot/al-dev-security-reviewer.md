@@ -84,7 +84,7 @@ For detailed code examples and patterns, see `knowledge/security-review-examples
 ## Output Format
 
 Structure findings as:
-```
+```text
 ## CRITICAL
 [List critical issues with file:line, issue, risk, fix]
 
@@ -96,6 +96,6 @@ Structure findings as:
 
 ## LOW
 [List low-severity issues or recommendations]
-```
+```text
 
 When other reviewers' findings are included, structure your response as independent findings; the lead agent will synthesize across the panel.

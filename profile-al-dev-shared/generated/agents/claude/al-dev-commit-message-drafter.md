@@ -68,7 +68,7 @@ CHANGED COMPONENTS
 - non-al-file.json [marker]
 
 [Freshdesk: #<number> — only if FD_TICKET was provided]
-```
+```text
 
 **Canonical gitmoji — use only these:**
 
@@ -143,4 +143,4 @@ DELETIONS
 WARNINGS
 ========
 (Any validation issues or advisory notices)
-```
+```text

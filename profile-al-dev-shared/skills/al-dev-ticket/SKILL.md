@@ -138,7 +138,7 @@ dispatch the agent.
 ```bash
 echo "API_KEY=${FRESHDESK_API_KEY:+set}" && \
 echo "DOMAIN=${FRESHDESK_DOMAIN:+set}"
-```
+```text
 
 If either shows blank (not `set`), stop and tell the user:
 

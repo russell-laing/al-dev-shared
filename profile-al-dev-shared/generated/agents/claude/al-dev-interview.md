@@ -55,7 +55,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 Before this agent can return to the dispatcher, you MUST explicitly state:
 
-```
+```text
 INTERVIEW COMPLETE
 
 Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
@@ -63,7 +63,7 @@ Questions asked: [count]
 Key decisions: [count]
 Edge cases identified: [count]
 Categories covered: [list of 7-11 categories from below]
-```
+```text
 
 **Required categories (must be covered in interview questions):**
 1. Business Logic & Requirements (process flow, validation rules, sequences)
@@ -106,7 +106,7 @@ REQ:REQ-001|FUNCTIONAL|HIGH|DEFINED|Validate customer credit limit before postin
 ACC:ACC-001|REQ-001|Given: Customer with $10,000 credit limit | When: Posting $12,000 order | Then: Posting is blocked with error message
 
 ACC:ACC-002|REQ-001|Given: Customer with $10,000 credit limit | When: Posting $8,000 order | Then: Posting succeeds
-```
+```text
 
 Session log entry:
 ```markdown
@@ -117,4 +117,4 @@ Session log entry:
 - Open questions: Z (for stakeholder resolution)
 - Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
 - Status: ✓ Complete
-```
+```text

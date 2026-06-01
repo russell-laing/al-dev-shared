@@ -77,7 +77,7 @@ if [ -z "$TOOLKIT_PATH" ]; then
 else
   source "$TOOLKIT_PATH/init.sh"
 fi
-```
+```text
 
 ### Token Generation (If Applicable)
 Emit governance tokens in script documentation:
@@ -92,7 +92,7 @@ Risk categories: DataIntegrity, Performance, Upgrade, Security, Compliance, Main
 ## Output Response Format
 
 Example:
-```
+```text
 Script complete → scripts/[name].py
 
 Purpose: [One-line description]
@@ -100,4 +100,4 @@ Conventions: async-first, protocol-based, strict types ✓
 Tokens: [Count] (REQ-N, OBJ-N, TEST-N)
 Dependencies: [List if any; "None" if standalone]
 Status: Ready for integration
-```
+```text

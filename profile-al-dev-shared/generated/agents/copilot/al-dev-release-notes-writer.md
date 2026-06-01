@@ -65,12 +65,12 @@ If changes include architecture or data model updates:
 For mermaid helper reference:
 ```bash
 MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
-```
+```text
 
 ## Output Response
 
 Example:
-```
+```text
 Release notes written → .dev/YYYY-MM-DD-al-dev-release-notes-v2.1.0.md
 
 Version: v2.1.0
@@ -84,4 +84,4 @@ Diagrams included: [Yes/No]
 Duration: ~2 hours of analysis
 
 Ready for review and publication.
-```
+```text

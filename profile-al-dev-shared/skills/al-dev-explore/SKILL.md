@@ -105,7 +105,7 @@ Prompt:
 
    GAPS:
    [What could not be determined from the code alone, if any]"
-```
+```text
 
 ---
 
@@ -142,7 +142,7 @@ The permanent record is `project-context.md`.
 ## Next Steps
 
 [Suggested next action based on findings]
-```
+```text
 
 ---
 

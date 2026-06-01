@@ -58,11 +58,11 @@ After extracting conversation HTML from the API response, scan for inline embedd
 3. **Compile inline-image list:** Create a distinct list of inline images found — these are separate from the file attachments array in the API response
 
 Example patterns to match:
-```
+```text
 src="https://cdn.freshdesk.com/...jpg"     → extract URL
 src="cid:attachment_123abc"                 → extract cid:attachment_123abc
 <img src="data:image/png;base64,..."      → note as "inline base64 image"
-```
+```text
 
 If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
 
@@ -101,12 +101,12 @@ Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
 
 **Inline Embeds:** (extracted from HTML src= and cid: references)
 [If applicable: image URL or cid:reference, extracted from description and comments]
-```
+```text
 
 ### Step 3: Return Output
 
 Return structured block:
-```
+```text
 TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
 TICKET_ID: [ID]
 STATUS: [Status]
@@ -114,7 +114,7 @@ PRIORITY: [Priority]
 COMMENTS_COUNT: [N]
 ATTACHMENTS: [Count or "None"]
 INLINE_IMAGES_COUNT: [N or "None"]
-```
+```text
 
 ## Download Phase (Conditional)
 

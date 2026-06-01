@@ -100,7 +100,7 @@ flagged change before considering the notes final:
 ```text
 These changes were uncertain to classify — include or exclude?
   [list from agent output]
-```
+```text
 
 If the user changes any classification, re-dispatch the agent
 with explicit classification instructions appended to the prompt.

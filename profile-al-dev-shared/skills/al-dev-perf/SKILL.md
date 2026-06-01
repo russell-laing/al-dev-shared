@@ -58,7 +58,7 @@ codeunit file list from Step 1:
 rg -n \
   "trigger OnRun\\(|\\[EventSubscriber\\]|codeunit [0-9]+ .*(Batch|Process|Import|Post|Transfer|Run)" \
   [codeunit files from Step 1]
-```
+```text
 
 | Indicator | Classification | Severity modifier |
 | --- | --- | --- |

@@ -80,6 +80,6 @@ Structure findings as:
 
 ## LOW
 [List low-severity issues]
-```
+```text
 
 When part of a team, structure as independent findings; the lead agent will synthesize.

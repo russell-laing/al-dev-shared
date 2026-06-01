@@ -10,7 +10,7 @@ Initialize a verification run against both skill and agent map Observations:
 
 ```bash
 /plan-map-changes
-```
+```text
 
 Expected output:
 
@@ -26,7 +26,7 @@ For 3+ suggestions: remote team dispatch (return now, verify later)
 
 Dispatched 5 suggestions to verification team.
 Run `/plan-map-changes --resume` when ready to collect results.
-```
+```text
 
 ## Resume & Collect Results
 
@@ -34,7 +34,7 @@ After team completes verification (5-10 min), collect results and generate plan:
 
 ```bash
 /plan-map-changes --resume
-```
+```text
 
 The skill reads `.dev/progress.md` checkpoint, polls team completion, aggregates
 duck records, and invokes `superpowers:writing-plans` to generate the
@@ -71,7 +71,7 @@ Initialize extraction and dispatch phases.
 
 # Verify agent-related split and merge suggestions
 /plan-map-changes --surface agents --filter split,merge
-```
+```text
 
 ### `/plan-map-changes --resume`
 
@@ -179,4 +179,4 @@ Verification Results:
 
 Generated plan: .dev/2026-05-31-al-dev-plan-map-plan.md
 Next step: Review plan and begin implementation
-```
+```text

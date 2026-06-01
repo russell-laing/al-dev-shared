@@ -34,11 +34,11 @@ Read `.dev/compile-errors.log`. Extract per issue: rule ID, file path, line numb
 
 **Step 2: Group by rule ID**
 Count occurrences per rule ID across all files. Example:
-```
+```text
 AA0073: 5 occurrences → scripted fix
 AA0137: 2 occurrences → direct edit
 AS0016: 3 occurrences → judgment-required (do not auto-fix)
-```
+```text
 
 **Step 3: Classify and fix each rule group**
 
@@ -98,4 +98,4 @@ Document:
 
 ## Compilation Status
 ✓ All fixes applied; compilation passing (0 errors, X warnings)
-```
+```text

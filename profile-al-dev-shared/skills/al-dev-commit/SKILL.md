@@ -88,7 +88,7 @@ Check for a Freshdesk ticket:
 TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
   | sort | tail -1)
 [ -n "$TICKET" ] && head -10 "$TICKET"
-```
+```text
 
 Extract ticket number from `TICKET: #<number>` if present.
 Hold as **FD ticket number**.
@@ -99,7 +99,7 @@ For each staged modified file (ACMRT):
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRT
-```
+```text
 
 For each file listed, run:
 
@@ -123,7 +123,7 @@ Check what is staged:
 
 ```bash
 git diff --cached --name-only --diff-filter=ACMRDT
-```
+```text
 
 If empty:
 
@@ -210,7 +210,7 @@ Check the project's recent commit style:
 
 ```bash
 git log -5 --oneline
-```
+```text
 
 Extract the emoji pattern (e.g., `✨ feat:`, `🐛 fix:`, `📝 docs:`).
 
@@ -546,4 +546,4 @@ Commit workflow complete.
 [If HOOK_FAILURES is not NONE:]
   Hook failures:
     [HOOK_FAILURES block]
-```
+```text

@@ -83,7 +83,7 @@ For detailed examples, see `knowledge/code-review-patterns.md`. Key patterns:
 ## Output Format
 
 Structure findings as:
-```
+```text
 ## CRITICAL
 [List critical AL issues with file:line, issue, rationale, fix]
 
@@ -95,6 +95,6 @@ Structure findings as:
 
 ## LOW
 [List low-severity issues]
-```
+```text
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.

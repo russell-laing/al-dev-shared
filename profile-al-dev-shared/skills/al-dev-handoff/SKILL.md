@@ -71,7 +71,7 @@ List existing `.dev/` files:
 
 ```bash
 ls .dev/*.md 2>/dev/null
-```
+```text
 
 Copy these files if they exist:
 
@@ -132,7 +132,7 @@ REQUIREMENTS=$(ls .dev/*-al-dev-interview-requirements.md \
   echo "⏭ requirements.md (not found)"
 
 ls "$TARGET/.dev/"
-```
+```text
 
 ---
 

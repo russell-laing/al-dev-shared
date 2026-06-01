@@ -266,7 +266,7 @@ vault_promote: true
 
 ## Vault Candidates
 [Feedback/customer/user language from ticket-context; omit section if empty]
-```
+```text
 
 **Omit any section entirely when no files of that group are present for the
 session.** Set `vault_promote: false` when the Vault Candidates section is
