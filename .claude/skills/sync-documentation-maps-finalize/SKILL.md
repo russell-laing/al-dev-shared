@@ -165,9 +165,13 @@ Do not revert — partial content is better than the stale previous version.
 
 ---
 
-## Phase 5 — Refresh Dependency Graph
+## Phase 5 — Regenerate Agent Projections and Refresh Dependency Graph
 
-Run the dependency graph generator:
+When documentation maps are updated, agent definitions and relationships may have changed.
+Regenerate harness-native projections and refresh the plugin dependency graph to keep
+derived artifacts in sync.
+
+First, regenerate agent projections:
 
 ```bash
 python3 /Users/russelllaing/al-dev-shared/scripts/generate-agent-projections.py
@@ -176,11 +180,32 @@ python3 /Users/russelllaing/al-dev-shared/scripts/generate-agent-projections.py
 Capture the exit code. If non-zero, report:
 
 ```text
-Dependency graph refresh failed (exit <code>). Continuing — maps have been
-written; graph will be refreshed on the next run.
+Agent projection regeneration failed (exit <code>).
 ```
 
-Continue regardless of exit code.
+Then refresh the dependency graph:
+
+```bash
+python3 /Users/russelllaing/al-dev-shared/scripts/generate-plugin-graph.py
+```
+
+Capture the exit code. If non-zero, report:
+
+```text
+Dependency graph refresh failed (exit <code>).
+```
+
+If BOTH operations succeed, continue to Phase 6.
+
+If either fails, report:
+
+```text
+One or more artifact updates failed. Maps have been written; derived artifacts
+may be stale. Check the errors above and re-run /sync-documentation-maps
+to regenerate missing artifacts.
+```
+
+Continue to Phase 6 regardless of exit code.
 
 ---
 
