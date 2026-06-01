@@ -28,6 +28,7 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
 | Input | Required | Description |
 |-------|----------|-------------|
 | `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
+| `.dev/*-al-dev-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle, auto-located by glob |
 | `.dev/project-context.md` | No | Project memory and conventions, read when present |
 | `.dev/*-al-dev-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
 
