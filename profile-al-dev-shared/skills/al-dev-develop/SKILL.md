@@ -317,6 +317,38 @@ check above).
 Dispatch context reference: `knowledge/developer-invocation-patterns.md`
 (Context 1: Full Scope Implementation).
 
+### Scope Expansion Decision Tree
+
+After each developer agent completes, evaluate the reported outcome before
+proceeding:
+
+```text
+IF developer agent reports "scope incomplete" in output:
+  ├─ AND plan allows scope expansion: Add new tasks
+  └─ AND plan forbids scope expansion: Escalate to caller
+
+IF developer agent reports "implementation complete":
+  └─ Proceed to Phase 4 (verification)
+
+IF developer agent reports "blocking issue":
+  └─ [ERROR] Return findings to caller for resolution
+```
+
+**Definitions:**
+
+- `scope incomplete` — developer signals that the assigned module cannot be
+  fully implemented without touching files or objects outside the approved plan.
+- `plan allows scope expansion` — the solution plan contains an explicit
+  "scope expansion permitted" marker or the user approved expansion in this
+  session.
+- `plan forbids scope expansion` — no expansion marker present; default
+  posture is to escalate rather than assume permission.
+- `blocking issue` — developer encountered an unresolvable dependency,
+  missing prerequisite, or contradictory requirement that prevents progress.
+
+Do NOT continue to Phase 4 if any developer has reported a blocking issue
+or an unresolved scope-incomplete state. Resolve all open states first.
+
 ---
 
 ## Phase 4: Verify and Handoff
