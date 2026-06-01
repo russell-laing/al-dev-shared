@@ -16,14 +16,6 @@ This repository is not itself an AL project; it contains no `.al` source files.
 
 ### Claude Code Registration
 
-`al-dev-shared` is registered in `~/.claude/settings.json` as:
-
-```json
-"al-dev-shared": {
-  "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
-}
-```
-
 Claude Code consumes:
 - **Shared skills** from `profile-al-dev-shared/skills/`
 - **Generated agent projections** from `profile-al-dev-shared/generated/agents/claude/`
@@ -127,16 +119,6 @@ tools:
 
 **Skill test scenarios** (`skills/<name>/tests/scenarios.yaml`): Regression corpora protecting behavioral invariants for individual skills. Each scenario defines a user request, expected trigger/no-trigger outcome, and a rationale. Add scenarios when a misfire (false trigger) or miss (failure to trigger) is fixed to prevent regression. These coexist with validator scripts but test trigger behavior rather than output correctness. See `knowledge/skill-test-format.md` for the full YAML schema.
 
-## Compile/Lint
-
-Skills that run AL compilation use:
-
-```bash
-al-compile --output .dev/compile-errors.log
-```
-
-This command applies to AL projects *using* this plugin, not to this repo itself. The full procedure is in `knowledge/compile-lint-procedure.md`.
-
 ## Commit Conventions
 
 project-type: tool
@@ -144,103 +126,7 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ## Development Commands
 
-Common commands for maintaining the shared plugin surface:
-
-### Validation (All Harnesses)
-
-```bash
-# Validate that shared source has no harness-specific leakage
-python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-
-# Validate agent structure (frontmatter, tools, model assignment)
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
-
-# Validate knowledge file quality
-python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
-
-# Validate that skills honour the artifact-contract matrix
-python3 scripts/validate_artifact_contracts.py
-```
-
-### Pre-commit Neutrality Gate
-
-A checked-in hook at `.githooks/pre-commit` blocks any commit that fails
-harness neutrality, lens-policy sync, or leaves generated projections stale.
-Enable it once per clone:
-
-```bash
-git config core.hooksPath .githooks
-```
-
-The hook runs, in order:
-
-- `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`
-- `python3 scripts/validate-lens-agents.py`
-- a projections-current check (regenerates to a temp dir and diffs against
-  `profile-al-dev-shared/generated/`)
-
-Bypass with `git commit --no-verify` only when intentionally committing a
-work-in-progress; the hook is fast local feedback, not a security control.
-
-### Projection (Harness-Native Artifacts)
-
-```bash
-# Regenerate all harness projections after shared agent/policy changes
-python3 scripts/generate-agent-projections.py
-
-# Verify generated artifacts match shared source across all three harnesses
-# (run after any projection policy or agent updates)
-```
-
-### Documentation Maps (Mermaid Diagrams)
-
-The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `docs/al-dev-plugin-graph.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
-
-```bash
-# Regenerate all documentation map sections
-# - Layer 1 lifecycle diagrams
-# - Layer 2 per-skill drilldowns (now with Phase<N> nodes)
-# - Agent catalog and dependency graphs
-python3 scripts/generate-map-doc-sections.py
-
-# Regenerate plugin dependency graph separately
-python3 scripts/generate-plugin-graph.py
-```
-
-**Phase<N> node generation:** Layer 2 skill diagrams now extract phase information from each skill's SKILL.md file (e.g., "## Phase 0", "## Phase 1.5") and automatically generate Phase<N> nodes in the Mermaid diagrams. This ensures phase count mismatches are impossible — the diagrams always match the source.
-
-**Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
-
-### Plugin Health and Documentation
-
-```bash
-# Run the suggestions-only health sweep (writes per-surface dossiers; never auto-edits)
-/plugin-health-audit --surface both
-```
-
-### Updating Documentation Maps
-
-When skills or agents change, synchronize the documentation:
-
-```bash
-# Primary workflow within Claude Code:
-/sync-documentation-maps  # Audits and updates both maps (interactive or --all)
-/analyze-skill-design     # Generate architecture improvement suggestions
-/analyze-agent-design     # Generate agent design improvement suggestions
-```
-
-For audit-only (no updates):
-```bash
-/review-skill-map --no-update   # Verify skills map accuracy without modifying
-/review-agent-map --no-update   # Verify agent map accuracy without modifying
-```
-
-These skills write findings to:
-
-- `docs/al-dev-skills-map.md` — Skill inventory and relationships
-- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
-- `docs/al-dev-skill-quality.md` — Skill clarity and structural issues
-- `docs/al-dev-agent-quality.md` — Agent quality audit results
+See `docs/development-commands.md` for the full command reference (validation, pre-commit gate, projections, documentation map regeneration).
 
 ## Plugin Architecture Quick Reference
 
@@ -288,32 +174,6 @@ Before committing changes:
    python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
    ```
 
-### Pre-Commit AL Compilation Check
-
-Before creating any commit that modifies `.al` files:
-
-1. **Compile AL code and capture the result:**
-
-   ```bash
-   al-compile --output .dev/compile-errors.log 2>&1
-   echo "Exit code: $?"
-   ```
-
-   If the exit code is non-zero, you MUST NOT commit. Fix compilation errors first and re-verify.
-
-2. **If markdown was generated, verify markdownlint passes:**
-
-   ```bash
-   markdownlint .claude/skills/**/*.md profile-al-dev-shared/**/*.md 2>&1 | head -20
-   ```
-
-   If any errors are reported, fix them before committing.
-
-3. **Commit ONLY after both gates pass. Statement in commit message:**
-
-   - For AL changes: "AL compilation verified clean before commit"
-   - For markdown: "Markdown linting verified before commit"
-
 ---
 
 ## Plan Task Verification Standard
@@ -321,12 +181,7 @@ Before creating any commit that modifies `.al` files:
 Every plan task must end with a verification step before its commit:
 
 1. **File persistence check:** `git status` shows expected file changes (not empty, no unexpected extras)
-2. **Forbidden pattern scan:** No forbidden patterns in changed files:
-   - `[date]` (e.g., `[2026-05-15]`) — indicates unrendered template
-   - `YYYY-MM-DD` (literal string, not date value) — unrendered date placeholder
-   - `TODO` or `TBD` — incomplete work
-   - `Co-Authored-By` — AI attribution in code comments (not git trailers)
-   - `claude:` or `copilot:` prefixed comments — harness-specific debugging left in
+2. **Forbidden pattern scan:** No forbidden patterns in changed files (same list as Verification Before Commit §2)
 3. **Acceptance criteria verification:** Each acceptance criterion stated in the task spec is met in actual file content
 4. **Failure recovery:** On verification failure:
    - Re-execute the task with the specific failures embedded in context
@@ -344,7 +199,6 @@ When dispatching subagents via `superpowers:subagent-driven-development`:
 pre-authorized:
 
 - File creation/modification → `Write`, `Edit`
-- Code compilation → `Bash` with `al-compile` allowed
 - Testing → `Bash` with test runner allowed
 
 Check `.claude/settings.json` for the `allowedTools` list. If required tools are
@@ -358,16 +212,6 @@ blocks forcing fallback to serial execution.
 3. If a file is missing or empty, re-dispatch the subagent with error context
 
 This prevents silent subagent failures from being discovered downstream.
-
-## AL Build & Verification
-
-- **Pre-commit compilation gate:** After any commit that modifies `.al` files, run
-  `al-compile --output .dev/compile-errors.log` and verify exit code 0 before
-  reporting success. Do not trust earlier intermediate reports — compilation
-  failures discovered post-commit indicate that verification was skipped.
-- **Why:** 70 friction events in the past month involved AL code that failed
-  compilation only after commits were created. Stop hooks reported the failures,
-  but the work had already been committed.
 
 ## Planning Routing
 
@@ -383,7 +227,6 @@ For tasks that need a design decision:
 - **Prefer** `/al-dev-plan` to run the competitive architect debate
 - This adds ~90–120 seconds and 20–40% token overhead vs `writing-plans` alone
 - Then use `superpowers:writing-plans` to convert the winning design into a task plan
-- **Why:** Adversarial review catches wrong-approach risks early; rework later is 3× more expensive
 
 **LARGE/COMPLEX** (multiple subsystems, major refactor, strategic decision):
 
@@ -404,8 +247,6 @@ Shared parity reference: `profile-al-dev-shared/knowledge/verification-and-plann
   specification files, immediately verify the file was written to disk and
   confirm its path before reporting completion. Do not claim the plan is
   complete until `ls -la <path>` confirms the file exists.
-- **Why:** Several sessions generated plan content but failed to instantiate the
-  file, requiring the user to ask Claude to save it.
 
 ---
 
@@ -428,46 +269,21 @@ review cycles.
 - **Markdownlint compliance:** All generated or modified markdown files must pass
   `markdownlint` (unique headings, blank lines around headings/lists, language
   specifiers on code blocks). Run verification before committing markdown changes.
-- **Why:** Subagent outputs repeatedly introduced markdownlint errors requiring
-  re-fixes. Markdown is the most-edited language in your workflow (3504 edits).
 
 ## Plan Self-Review Requirement
 
 Before submitting any plan for execution, the plan author MUST perform a
 self-consistency pass:
 
-1. **Token audit:** If the plan prohibits harness-specific tokens in output
+1. **Token audit:** If the plan prohibits harness-specific tokens in output files, scan all *plan-specified file content* for those same tokens. Any occurrence in a code block example counts as a violation and must be resolved (genericise the example or add an explicit exception) before execution begins.
 
-   files, scan all *plan-specified file content* for those same tokens. Any
-   occurrence in a code block example counts as a violation of the plan's own
-   rule and must be resolved (genericise the example or add an explicit
-   exception with reasoning) before execution begins.
-
-2. **Constraint propagation check:** For every "must not contain X" rule in
-
-   a spec, verify that no task step directs an agent to write content that
-   contains X.
-
-Unresolved contradictions at plan-review time cost 3× more to fix during
-execution than at authoring time.
-
-## AL Development
-
-- **SaaS constraints:** AL features run on SaaS BC: do not assume direct database
-  access, upgrade-codeunit DB writes, or instance-level table creation. Design
-  within SaaS constraints from the start, not as a late refactor.
-- **Why:** One design assumed direct database access and required full rework for
-  SaaS BC constraints.
+2. **Constraint propagation check:** For every "must not contain X" rule in a spec, verify that no task step directs an agent to write content that contains X.
 
 ## File & Reference Verification
 
 Before referencing scripts, files, or validators in skills, specs, or plans,
 verify they still exist in the repo (not archived, renamed, or moved). Use `find`
 or `git ls-files` to confirm before writing them into tasks.
-
-- **Why:** A skill referenced an archived `check-alignment.py` that no longer
-  existed, and a plan targeted the wrong CLAUDE.md path, both requiring
-  rediscovery and rework.
 
 ## Tiered Code Review Protocol
 
@@ -477,17 +293,9 @@ review the whole module assembled so far — not just the latest additions.
 
 Integration review checklist additions (beyond per-task scope) — adapt to project type:
 
-- [ ] All patterns/rules tested against the full input set, not just inputs
-
-      introduced in the current task
-
-- [ ] Deduplication / membership logic verified end-to-end across all
-
-      functions added to date
-
-- [ ] Interface names (flags, field names, API parameters) consistent across
-
-      all definitions added so far
+- [ ] All patterns/rules tested against the full input set, not just inputs introduced in the current task
+- [ ] Deduplication / membership logic verified end-to-end across all functions added to date
+- [ ] Interface names (flags, field names, API parameters) consistent across all definitions added so far
 
 ## Known Environment Issues
 
