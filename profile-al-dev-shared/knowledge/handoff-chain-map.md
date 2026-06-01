@@ -26,7 +26,7 @@ Plugin surface.
 |---|---|---|---|---|
 | `al-dev-plan` | `solution-plan.md` | `al-dev-develop` | **Mandatory** | Sp |
 | `al-dev-develop` (P4) | `phase4-handoff.md` | review | **Mandatory** | St |
-| `al-dev-develop` | `lint-report.md` | `al-dev-fix` | Optional | Fix |
+| `al-dev-lint` | `lint-report.md` | `al-dev-fix` | Optional | Fix |
 | review-develop | `code-review.md` | commit | **Mandatory** | Rev |
 | `al-dev-commit` | Staged diff | verify | **Mandatory** | Msg |
 
@@ -46,7 +46,7 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `al-dev-review-develop` | `code-review.md` | commit | **Mandatory** | Ctx |
+| `al-dev-review-develop` | `code-review.md` | commit | Optional | Ctx |
 | (Staged state) | Staged diff | commit | **Mandatory** | Val |
 | `al-dev-commit` | (Commit) | verify | **Mandatory** | Chk |
 | `verify-commits` | (Verified) | Git | **Final** | Rdy |
@@ -65,13 +65,22 @@ Plugin surface.
 
 ---
 
+### Investigation Chain: Investigation-Driven Handoffs
+
+| Skill | Artifact | Consumes | Type | Notes |
+|---|---|---|---|---|
+| `al-dev-investigate` | `findings.md` | `al-dev-plan` | Optional | Inv |
+| `al-dev-investigate` | `findings.md` | `al-dev-fix` | Optional | Inv |
+
+---
+
 ### Ticket Chain: Support Entry Point (Conditional)
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| ticket | `ticket-context.md` | plan | Optional | Esc |
-| ticket (full) | `ticket-context.md` | reply-drafter | **Mandatory** | Drft |
-| ticket (full) | Research+draft | User | Output | Repl |
+| `al-dev-ticket` | `ticket-context.md` | `al-dev-plan` | Optional | Esc |
+| `al-dev-ticket` | `context.md` | drafter | **Mandatory** | Drft |
+| drafter | Research draft | User | Output | Out |
 
 ---
 
