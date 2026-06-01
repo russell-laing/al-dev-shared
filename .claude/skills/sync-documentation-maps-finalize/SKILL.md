@@ -222,7 +222,9 @@ Sync finalized.
     docs/al-dev-skills-map.md       — <N> lines  (or "skipped")
     docs/al-dev-agent-map.md        — <N> lines  (or "skipped")
 
-  Dependency graph: refreshed  (or "refresh failed — see above")
+  Derived artifacts:
+    Agent projections: regenerated  (or "regeneration failed — see above")
+    Dependency graph: refreshed     (or "refresh failed — see above")
 ```
 
 ---
