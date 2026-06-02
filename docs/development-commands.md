@@ -90,8 +90,7 @@ When skills or agents change, synchronize the documentation:
 For audit-only map checks (no updates):
 
 ```bash
-/review-skill-map --no-update   # Verify skills map accuracy without modifying
-/review-agent-map --no-update   # Verify agent map accuracy without modifying
+/review-maps --no-update   # Verify both maps accuracy without modifying
 ```
 
 These skills write to:
