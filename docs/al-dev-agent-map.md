@@ -9,19 +9,19 @@
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
+| al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-code-review | haiku | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit` |
+| al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix`, `/al-dev-review-develop` |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
-| al-dev-expert-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
@@ -299,7 +299,7 @@
 
 ---
 
-### al-dev-expert-reviewer
+### al-dev-al-pattern-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 **Model:** sonnet
