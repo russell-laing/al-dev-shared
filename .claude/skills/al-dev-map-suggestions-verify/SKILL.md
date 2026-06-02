@@ -1,83 +1,97 @@
 ---
 name: al-dev-map-suggestions-verify
 description: >-
-  Verify and rubber-duck existing map suggestions before creating an implementation plan.
-  Use when the Observations section of docs/al-dev-skills-map.md or
-  docs/al-dev-agent-map.md has suggestions that need implementing.
-  Rubber-ducks each suggestion against the live codebase before any plan
-  is written. Run /review-skill-map and /review-agent-map first if
-  skills or agents have changed since the maps were last updated.
-  Triggers on: "implement skill map suggestions", "plan architectural
-  changes", "plan the suggestions", "create a plan for skill map changes",
-  "implement the observations", "implement the skill map",
-  "implement agent map suggestions", "plan agent map changes",
-  "implement the agent map".
+  Verify and rubber-duck health-audit findings before creating an implementation plan.
+  Use when the latest health dossier in docs/health/ has accepted findings
+  that need implementing. Rubber-ducks each finding against the live codebase
+  before any plan is written. Run /plugin-health-audit first if the plugin or
+  tooling surface has changed since the dossier was last generated.
+  Triggers on: "implement health findings", "plan architectural
+  changes", "plan the suggestions", "create a plan for plugin changes",
+  "implement the dossier", "act on health findings",
+  "implement agent findings", "plan agent changes",
+  "implement the health audit".
 argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
 ---
 
-# Plan Map Changes
+# Plan Plugin Changes
 
-Translates suggestions from `docs/al-dev-skills-map.md` and
-`docs/al-dev-agent-map.md` into a verified implementation plan. The
-rubber-ducking phase is **mandatory** — no plan task is written until the
-live codebase state behind each suggestion is confirmed. This prevents
-plans based on suggestion text that diverges from actual code.
+Translates findings from the latest health dossier in `docs/health/` into a
+verified implementation plan. The rubber-ducking phase is **mandatory** — no
+plan task is written until the live codebase state behind each finding is
+confirmed. This prevents plans based on finding text that diverges from actual
+code.
 
 ---
 
 ## Prerequisites
 
-- `docs/al-dev-skills-map.md` and/or `docs/al-dev-agent-map.md` exist
-  with an `## Observations` section
-- Run `/review-skill-map` and `/review-agent-map` first if skills or
-  agents have changed since the maps were last updated — stale suggestions
-  produce wrong plans
-- At least one Observations section has an open suggestion or candidate
+- At least one health dossier (`docs/health/YYYY-MM-DD-<surface>-health.md`)
+  exists with open findings
+- Run `/plugin-health-audit` first if the plugin or tooling surface has
+  changed since the dossier was generated — stale findings produce wrong plans
+- At least one dossier section (Design suggestions, Quality findings, or
+  Naming violations) has an open finding
 
 ---
 
 ## Argument Routing
 
-**Default (no argument):** process both `docs/al-dev-skills-map.md` and
-`docs/al-dev-agent-map.md`. Collect suggestions from all Observations
-sections and rubber-duck them together before writing a single unified plan.
+The health dossier spans both skills and agents within a surface, so routing
+filters findings by **verb**, not by source file.
 
-**`--skills`:** process only `docs/al-dev-skills-map.md`. Suggestion
-vocabulary: Connect, Merge, Promote, Move, Extend.
+**Default (no argument):** collect every open finding from the latest
+dossier(s) and rubber-duck them together before writing a single unified plan.
 
-**`--agents`:** process only `docs/al-dev-agent-map.md`:
-- **Source document:** `docs/al-dev-agent-map.md`
+**`--skills`:** keep only skill-design findings.
+- **Verb vocabulary:** Atomise, Absorb, Connect, Merge, Promote, Move, Extend
+- **Rubber-duck reads:** `profile-al-dev-shared/skills/<name>/SKILL.md`
+- **Plan task file paths:** reference skill file paths
+
+**`--agents`:** keep only agent-design findings.
+- **Verb vocabulary:** Trim, Remodel, Split, Inline, Align
 - **Rubber-duck reads:** `profile-al-dev-shared/agents/<name>.md` (not skills/)
 - **Plan task file paths:** reference agent file paths
-- **Suggestion vocabulary:** Trim, Remodel, Split, Inline, Align
+
+Quality findings (Bloat, Clarity, Structure, Name-fit, Description) and Naming
+violations apply to whichever object the finding names; include them under the
+matching `--skills`/`--agents` filter, or all of them by default.
 
 Everything else — the rubber-duck protocol, plan output format, verification
 checklist — stays identical across all routing modes.
 
 ---
 
-## Phase 1: Extract Suggestions
+## Phase 1: Extract Findings
 
-Apply the Argument Routing rules above to determine which documents to read.
+Locate the most recent health dossier per surface:
 
-**From `docs/al-dev-skills-map.md`** (default or `--skills`), collect
-every open item from:
-- `### Architectural suggestions` (Connect, Merge, Promote)
-- `### Move candidates`
-- `### Extension opportunities`
+```bash
+ls -t /Users/russelllaing/al-dev-shared/docs/health/*-health.md 2>/dev/null | head -2
+```
 
-**From `docs/al-dev-agent-map.md`** (default or `--agents`), collect every
-open item from `## Observations` (Trim, Remodel, Split, Inline, Align).
+If no dossier exists, report: "No health dossier found. Run
+`/plugin-health-audit` first." and stop.
 
-Skip any suggestion already marked `← implemented`, `← completed`, or
-`← already implemented`.
+Read the latest dossier(s). Collect every open finding from these sections:
+- `## Design suggestions` — line format `finding | rationale | fix`
+  (verbs: Atomise, Absorb, Connect, Merge, Promote, Move, Extend, Trim,
+  Remodel, Split, Inline, Align)
+- `## Quality findings` — line format `finding | rationale | fix` (with file:line)
+- `## Naming violations` — actual name/path vs convention-expected
+
+Skip any section marked `_No issues found._` and any finding already marked
+`← implemented`, `← completed`, or `← already implemented`.
+
+Apply the Argument Routing verb filter (`--skills` / `--agents`) to the
+collected findings.
 
 List each collected item as: **type — subject — proposed change**.
 
-If the user passed a suggestion type as an argument (e.g., `connect`, `merge`,
-`trim`), capture it as `FILTER_TYPE` and filter collected suggestions to that
+If the user passed a finding type as an argument (e.g., `connect`, `merge`,
+`trim`), capture it as `FILTER_TYPE` and filter collected findings to that
 type. If no type argument was passed, set `FILTER_TYPE=all` and process all
-collected suggestions. Note the active filter before proceeding to Phase 2.
+collected findings. Note the active filter before proceeding to Phase 2.
 
 ---
 

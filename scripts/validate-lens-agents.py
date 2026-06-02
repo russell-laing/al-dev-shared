@@ -69,9 +69,7 @@ EXPECTED_AGENTS = [
 ]
 
 SKILLS_TO_CHECK = [
-    os.path.join(REPO, ".claude/skills/audit-quality/SKILL.md"),
-    os.path.join(REPO, ".claude/skills/analyze-agent-design/SKILL.md"),
-    os.path.join(REPO, ".claude/skills/analyze-skill-design/SKILL.md"),
+    os.path.join(REPO, ".claude/skills/plugin-health-discover/SKILL.md"),
 ]
 
 FORBIDDEN_TOOLS = ["Bash", "Write", "Edit"]
@@ -178,4 +176,4 @@ if failures:
     print("\n\n".join(failures))
     sys.exit(1)
 else:
-    print(f"PASS — {len(EXPECTED_AGENTS)} agents valid, 4 skills refactored.")
+    print(f"PASS — {len(EXPECTED_AGENTS)} agents valid, {len(SKILLS_TO_CHECK)} dispatch skill(s) checked.")

@@ -1,6 +1,6 @@
 ---
 name: design-skill-lens-complexity
-description: Apply Complexity Outliers lens to plugin skills — ranks skills by phase count to find high-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb candidates). Returns findings.
+description: Apply Complexity Outliers and Surface Placement lenses to plugin skills — ranks skills by phase count to find high-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb), and flags skills that belong in the repo-local maintainer surface (Move). Returns findings.
 model: haiku
 tools: ["Read"]
 ---
@@ -42,14 +42,39 @@ skill's entire body could fit as one extra phase in an existing adjacent skill.
 
 ---
 
+## Lens: Surface Placement (→ Move)
+
+For each skill in `file_list`, score these three signals:
+
+| Signal | What to check |
+|--------|---------------|
+| Internal path references | Body references `profile-al-dev-shared/`, `.claude/`, or repo-root filenames (e.g. `marketplace.json`) that only resolve inside this repo |
+| Self-audit purpose | Stated purpose is maintaining or auditing the plugin itself (alignment checks, map reviews, design analysis) — not serving AL developers |
+| No spawned agents | Skill name appears in `no_agent_skills` (no `al-dev-shared:` agent in the body) |
+
+A skill scoring **2 or more signals** belongs in the repo-local maintainer
+surface rather than the distributed plugin — flag as a Move candidate.
+
+**Severity rules:**
+- Medium: scores all three signals
+- Low: scores exactly two signals
+
+---
+
 ## Output Format
 
-Return exactly this structure (no additional prose before or after the block):
+Return exactly these two blocks (no additional prose before, between, or after):
 
 ### Complexity Outliers Findings
 - **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
 
-If no issues found:
+### Surface Placement Findings
+- **[skill-name]** | [Medium|Low] | [observation] | [Move to .claude/skills/]
+
+If a block has no findings, emit it with a single `_No issues found._` line:
 
 ### Complexity Outliers Findings
+_No issues found._
+
+### Surface Placement Findings
 _No issues found._

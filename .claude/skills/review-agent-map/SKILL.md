@@ -160,7 +160,7 @@ For each discrepancy found in Phase 5, suggest specific fixes without modifying 
 **Present all suggested fixes without modifying files.** The user may:
 - Run `/review-agent-map` (without `--no-update`) to apply all fixes.
 
-Then stop. Do not proceed to Phase 6 or 7.
+Then stop. Do not proceed to Phase 6.
 
 ---
 
@@ -197,13 +197,6 @@ targeted edits to fix each discrepancy found in Phase 5.
 ---
 
 [repeat for each active agent]
-
-## Observations
-
-> Run /review-agent-map first if the agent list has changed before running
-> /analyze-agent-design.
-
-*(Populated by /analyze-agent-design)*
 ```
 
 After writing or updating, confirm:
@@ -214,45 +207,15 @@ wc -l docs/al-dev-agent-map.md
 
 Set `**Last updated:**` to today's date.
 
----
-
-## Phase 7: Detect Inline Candidates
-
-Score each active agent against three signals:
-
-| Signal | What to check |
-|--------|---------------|
-| **Single caller** | Spawned by exactly one skill (from Phase 3) |
-| **Minimal body** | System prompt body (lines after the closing `---` of frontmatter) is fewer than 10 lines |
-| **No inputs/outputs docs** | Neither an Inputs nor an Outputs section exists in the agent file |
-
-An agent scoring **2 or more signals** is an inline candidate.
-
-Append findings to the `## Observations` section of `docs/al-dev-agent-map.md`:
-
-```markdown
-### Inline candidates
-
-> Detected by /review-agent-map on YYYY-MM-DD.
-
-**Inline: al-dev-<name>**
-Signals: single caller (✓/✗), minimal body (✓/✗), no inputs/outputs docs (✓/✗).
-Spawned by: /skill-name.
-Suggestion: Absorb system prompt into /skill-name's body; delete the agent file.
-Trade-off: Less indirection; agent no longer reusable if a second caller is added.
-```
-
-If no candidates are found, append:
-
-```markdown
-### Inline candidates
-
-None detected.
-```
-
 Commit if any edits were made:
 
 ```bash
 git -C . add docs/al-dev-agent-map.md
 git -C . commit -m "docs: sync agent map with current agent roster"
 ```
+
+> **Map accuracy only.** This skill no longer detects Inline candidates or any
+> other design suggestion. Inline and all other structural findings now come
+> from the design lenses dispatched by `/plugin-health-audit` and land in the
+> health dossier. After syncing the map, run `/plugin-health-audit` to find
+> improvements.

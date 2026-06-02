@@ -238,6 +238,8 @@ Sync finalized.
     Mermaid diagrams: regenerated   (or "regeneration failed — see above")
     Agent projections: regenerated  (or "regeneration failed — see above")
     Dependency graph: refreshed     (or "refresh failed — see above")
+
+  Next: run /plugin-health-audit to find improvements against the updated maps.
 ```
 
 ---

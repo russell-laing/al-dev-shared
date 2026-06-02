@@ -50,7 +50,7 @@ Extract context from documentation maps before dispatching lenses.
 - Build: `tool_inventory`, `model_assignments`, `caller_map`
 - "Spawned by" may contain comma-separated names or "(none found)" — treat the latter as empty list
 
-**Read and parse `docs/al-dev-plugin-map.md`:**
+**Read and parse `docs/al-dev-skills-map.md`:**
 - Extract the Layer 1 diagram block → `layer1_diagram_content`
 - For each skill section: extract phase count, agent references, output files
 - Build: `phase_counts`, `handoff_chains`, `preplanning_skills` (skills with `-.->` arrows)

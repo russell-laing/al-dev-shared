@@ -11,7 +11,7 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | single_use_agents | Comma-separated agent names spawned by exactly one skill (provided in dispatch prompt) |
-| already_inline_candidates | Comma-separated agent names already listed in docs/al-dev-agent-map.md Inline candidates section (provided in dispatch prompt) |
+| already_inline_candidates | Comma-separated agent names already flagged Inline in the latest health dossier (provided in dispatch prompt; empty if none) |
 
 ## Outputs
 
