@@ -17,6 +17,7 @@ This repository is not itself an AL project; it contains no `.al` source files.
 ### Claude Code Registration
 
 Claude Code consumes:
+
 - **Shared skills** from `profile-al-dev-shared/skills/`
 - **Generated agent projections** from `profile-al-dev-shared/generated/agents/claude/`
 - **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
@@ -57,6 +58,7 @@ Each projection applies the mappings from `knowledge/agent-tool-projection-polic
 `.claude/agents/` and `.claude/skills/` contain Claude Code-specific maintainer tooling used to review, audit, and improve the shared plugin surface. This tooling is currently Claude-specific; future harnesses may have parallel tooling (`.agents/`, `.codex/`, etc.).
 
 **Output boundary rule:** While the maintainer tooling is harness-specific, its **outputs must be harness-agnostic**:
+
 - Any documents written to the shared surface or `.dev/` directory must not contain harness-specific tokens
 - Changes made to shared files must use generic vocabulary (from `knowledge/harness-concepts.md`)
 - Generated artifacts remain the output of the projection layer, never hand-edited by maintainer tooling
@@ -269,6 +271,11 @@ review cycles.
 - **Markdownlint compliance:** All generated or modified markdown files must pass
   `markdownlint` (unique headings, blank lines around headings/lists, language
   specifiers on code blocks). Run verification before committing markdown changes.
+- **Count verification:** When reporting a count of skills, agents, or other
+  enumerable plugin surfaces, verify it by running `ls <dir> | wc -l` (or
+  `find . -name "SKILL.md" | wc -l` for skills) and cross-checking against any
+  manually-enumerated list. Never state a count without cross-checking against the
+  filesystem.
 
 ## Plan Self-Review Requirement
 
