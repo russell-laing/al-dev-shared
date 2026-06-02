@@ -61,7 +61,7 @@ flowchart LR
     classDef entry fill:#1976d2,stroke:none,color:#fff,font-weight:bold
     classDef sub fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
     classDef agentGroup fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
-    classDef output fill:#f57f17,stroke:none,color:#fff,font-weight:bold
+    classDef output fill:#FFA000,stroke:none,color:#fff,font-weight:bold
 
     %% Entry points
     PHA[plugin-health-audit]
