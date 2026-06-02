@@ -24,10 +24,10 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 ### User-Facing Entry Points
 
 | Skill | Purpose | When to run |
-|-------|---------|-------------|
+| --- | --- | --- |
 | `/plugin-health-audit` | The single find-improvements sweep — design + quality + naming lenses → one ranked dossier per surface | "What should I improve?" |
 | `/al-dev-map-suggestions-verify` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
-| `/review-maps` | In-session accuracy sync of both maps (skill + agent) in one command | After adding/removing/restructuring skills or agents |
+| `/review-maps` | Map accuracy sync — asks in-session or async at invocation; pass `--no-update` for audit-only | After adding/removing/restructuring skills or agents |
 | `/sync-documentation-maps` | Async 3-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
 | `/analyze-architectural-design` | Optional cross-surface synthesis after a health audit (ties skill and agent findings together) | After a both-surface health audit |
 | `/audit-knowledge-quality` | Audit `knowledge/` files for stubs and thin content | After editing knowledge files |
@@ -37,7 +37,7 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 ### Sub-Skills (called internally, not typically invoked directly)
 
 | Skill | Called by | Role |
-|-------|----------|------|
+| --- | --- | --- |
 | `/plugin-health-discover` | `/plugin-health-audit` | Dispatches all lenses; writes findings file |
 | `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes the health dossier |
 | `/sync-documentation-maps-collect` | User (step 2 of 3) | Reads audit artifacts; dispatches update agents |
@@ -193,9 +193,9 @@ flowchart TD
     class AKQ post
 ```
 
-> Both map-accuracy paths do the same job — pick `/review-maps` for a quick
-> in-session check, or `/sync-documentation-maps` to free the session. Either
-> way, the next step is `/plugin-health-audit`.
+> `/review-maps` asks which mode at start — in-session or async.
+> `/sync-documentation-maps` can also be invoked directly to skip the prompt.
+> Either way, the next step is `/plugin-health-audit`.
 
 ---
 
@@ -224,7 +224,7 @@ findings. Run it after a both-surface health audit.
 ### Design Lens Agents — skill-focused (dispatched by `/plugin-health-discover`)
 
 | Agent | What it checks |
-|-------|---------------|
+| --- | --- |
 | `design-skill-lens-complexity` | High-phase skills with separable concerns (Atomise), zero-agent 2-phase skills (Absorb), and skills that belong in the maintainer surface (Move) |
 | `design-skill-lens-handoff-gaps` | Handoff chains with obvious next steps or orphaned outputs (Extend) |
 | `design-skill-lens-near-duplicates` | Skill pairs with similar structure that could be merged (Merge) |
@@ -234,7 +234,7 @@ findings. Run it after a both-surface health audit.
 ### Design Lens Agents — agent-focused (dispatched by `/plugin-health-discover`)
 
 | Agent | What it checks |
-|-------|---------------|
+| --- | --- |
 | `design-agent-lens-caller-alignment` | Documented Inputs/Outputs vs how spawning skills actually invoke the agent (Align) |
 | `design-agent-lens-model-fit` | Whether haiku/sonnet/opus assignment matches task complexity (Remodel) |
 | `design-agent-lens-scope-isolation` | Agents with two clearly separable concerns in their system prompt (Split) |
@@ -244,7 +244,7 @@ findings. Run it after a both-surface health audit.
 ### Quality Lens Agents (dispatched by `/plugin-health-discover`)
 
 | Agent | Surface | What it checks |
-|-------|---------|---------------|
+| --- | --- | --- |
 | `quality-skill-lens-clarity` | skills | Ambiguous instructions, vague qualifiers, incomplete conditionals |
 | `quality-skill-lens-structure` | skills | Frontmatter completeness, tool canonicality, header numbering |
 | `quality-skill-lens-description` | skills | Description drift vs body content |
@@ -260,7 +260,7 @@ findings. Run it after a both-surface health audit.
 ### Map Sync Agents (dispatched by `/sync-documentation-maps` and `-collect`)
 
 | Agent | Role |
-|-------|------|
+| --- | --- |
 | `sync-documentation-maps-skill-audit` | Audits active skills against `docs/al-dev-skills-map.md`; writes JSON findings |
 | `sync-documentation-maps-agent-audit` | Audits active agents against `docs/al-dev-agent-map.md`; writes JSON findings |
 | `sync-documentation-maps-skill-update` | Reads skill audit findings; writes updated `al-dev-skills-map.md` to run dir |
@@ -271,7 +271,7 @@ findings. Run it after a both-surface health audit.
 ## Outputs Written
 
 | Skill | Output |
-|-------|--------|
+| --- | --- |
 | `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
 | `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` (the dossier); refreshes `docs/al-dev-plugin-graph.md` for the plugin surface |
 | `/al-dev-map-suggestions-verify` | implementation plan under `docs/superpowers/plans/` |
