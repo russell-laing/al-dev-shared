@@ -29,10 +29,10 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 | `/al-dev-map-suggestions-verify` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
 | `/review-maps` | Map accuracy sync — asks in-session or async at invocation; pass `--no-update` for audit-only | After adding/removing/restructuring skills or agents |
 | `/sync-documentation-maps` | Async 3-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
-| `/analyze-architectural-design` | Optional cross-surface synthesis after a health audit (ties skill and agent findings together) | After a both-surface health audit |
+| `/analyze-architectural-design` | Cross-surface synthesis add-on for health audit, writes `docs/al-dev-plugin-synthesis.md` (coupling gaps, model-complexity mismatch, shared-pattern coherence). Ties skill and agent findings together. Run after `/plugin-health-audit`. | After a both-surface health audit |
 | `/audit-knowledge-quality` | Audit `knowledge/` files for stubs and thin content | After editing knowledge files |
 | `/projection-sync` | Regenerate harness-native agent projections from canonical source | After editing any `agents/*.md` file |
-| `/align-harness-repos` | Validate shared surface has no harness-specific tokens | After editing skills, agents, or knowledge |
+| `/align-harness-repos` | Validate harness neutrality in the al-dev-shared shared plugin surface. Scans for forbidden harness-specific tokens (Claude Code, Copilot, etc.) that could break distributable content. Run after changes to skills, agents, or knowledge. | After editing skills, agents, or knowledge |
 
 ### Sub-Skills (called internally, not typically invoked directly)
 
@@ -42,7 +42,7 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 | `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes the health dossier |
 | `/sync-documentation-maps-collect` | User (step 2 of 3) | Reads audit artifacts; dispatches update agents |
 | `/sync-documentation-maps-finalize` | User (step 3 of 3) | Writes maps, regenerates diagrams, commits |
-| `/review-skill-map` | `/review-maps` | In-session accuracy sync of `docs/al-dev-skills-map.md` |
+| `/review-skill-map` | `/review-maps` | In-session audit and update of `docs/al-dev-skills-map.md` against live codebase. Identifies discrepancies, suggests fixes, and updates the map file. Pass `--no-update` for audit-only mode. Replaces `/audit-skills-against-map` and `/update-skill-map`. |
 | `/review-agent-map` | `/review-maps` | In-session accuracy sync of `docs/al-dev-agent-map.md` |
 
 > **Map accuracy vs. finding improvements are separate jobs.** `/review-*-map`
