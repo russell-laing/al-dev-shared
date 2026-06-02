@@ -16,7 +16,8 @@ Transform requirements into a complete solution plan that includes architectural
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dated requirements file | **Yes** | From `/interview` (glob pattern match) or inline analysis |
+| Inline requirement | **Yes** | Feature requirement passed in the dispatch prompt by `/al-dev-plan` (primary source) |
+| Dated requirements file | No | Latest `*-al-dev-interview-requirements.md` from `/interview` — glob-located when available, supplements inline requirement |
 | `.dev/project-context.md` | No | Project memory (read FIRST if exists) |
 | MCP tools | No | BC Intelligence, MS Docs, AL Symbol lookup |
 
@@ -39,20 +40,20 @@ Transform requirements into a complete solution plan that includes architectural
      if it is available: **AL LSP** (semantic correctness, preferred when harness exposes it)
      → **AL MCP** (base app / package symbols) → **text search** (pattern matching, weakest).
      Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
-   
+
    **Definition of "best existing analogue":**
    - Performs the same business function as the proposed feature, OR
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
    - Variable/field names may differ; focus on structural similarity
-   
+
    **Search order (apply in sequence, stop when a match is found):**
    1. Exact pattern match (same table/event being extended, same design pattern)
    2. Similar pattern in same module/feature area (e.g., other pages extending the same base)
    3. Similar pattern in different module (broader codebase search)
    4. If no analogue found after exhaustive search, record as `none — no existing pattern in codebase for [pattern type]`
-   
+
    **Evidence documentation:** Always document the analogue reference with file:line and a one-sentence explanation of why it is the best match (not just "similar code" but "similar because [reason]").
-   
+
    - AL semantic navigation: use `AL LSP` when the active harness exposes it
      for definitions, references, document symbols, hover/type information,
      and rename/refactor impact checks
@@ -92,9 +93,10 @@ tools; comprehensive research phase.
 
 ## Output Format
 
-Write to `.dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md`. 
+Write to `.dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md`.
 
 For complete structure and template content, read `knowledge/solution-plan-template.md`. The solution plan must include:
+
 - Executive summary
 - Requirements analysis
 - Design decisions with rationale
@@ -109,6 +111,7 @@ For complete structure and template content, read `knowledge/solution-plan-templ
   - `Validate:` — an exact shell command the developer runs after completing this task to confirm it is done. Prefer `grep`, `wc -l`, or `al-compile` checks. Write `[manual] — [description]` if no shell command suffices.
 
 Target output detail by complexity:
+
 - **SIMPLE:** 50-100 lines, no diagrams, no alternatives
 - **MEDIUM:** 100-300 lines, brief architecture, minimal diagrams
 - **COMPLEX:** 300-600 lines, full architecture, comprehensive analysis
@@ -126,6 +129,7 @@ Document all external field/table references with existence verification in your
 | Document No. | Purch. Header | YES | text search | Primary document identifier; text-verified only | Medium |
 
 **Format per mapping:**
+
 - **[Field Name]** in [Source Table]: [YES/NO]
   - Evidence Source: [AL LSP / AL MCP / text search / unverified]
   - Evidence: [semantic operation, MCP query, or exact file:line]
@@ -134,10 +138,12 @@ Document all external field/table references with existence verification in your
   - Risk: [Low/Medium/High — data integrity implications]
 
 If a required external symbol is `unverified`:
+
 - **CRITICAL path field** (implementation cannot proceed without it): mark as `BLOCKED` in the Schema Mapping table and stop. Do not write implementation tasks — return the plan with a `BLOCKED` section listing the unverified fields and required resolution steps.
 - **Optional field** (implementation can continue with an alternative): document the risk as a `HIGH` item in the Schema Mapping table and continue with a concrete alternative design.
 
 **Why this section matters:**
+
 - Developers verify field existence against AL symbols BEFORE writing code
 - Prevents compile errors from field misreferences mid-implementation
 - Documents design choices for future reference

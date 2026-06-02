@@ -29,7 +29,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured internal findings returned inline to /al-dev-ticket |
+| Return block | Structured internal findings returned inline to /al-dev-ticket (return block only — no file writes) |
 
 ## Research Process
 
@@ -39,7 +39,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 ### Source 1: AL Symbols
 
-Use AL Code Intelligence to search for relevant symbols:
+Invoke the `bc-code-intelligence` MCP tool to search for relevant symbols:
 
 - Search for error messages or class names mentioned in the issue
 - Find related procedures, tables, fields
@@ -47,7 +47,7 @@ Use AL Code Intelligence to search for relevant symbols:
 
 ### Source 2: MS Docs
 
-Use Microsoft Docs MCP to search official documentation:
+Invoke the `microsoft-docs` MCP tool to search official documentation:
 
 - Search for the feature or error mentioned in the ticket
 - Look for known issues or breaking changes
@@ -56,7 +56,7 @@ Use Microsoft Docs MCP to search official documentation:
 
 ### Source 3: BC Code History (Aspirational)
 
-If BC Code History MCP becomes available, search BC history for:
+If BC Code History MCP becomes available, invoke the `bc-code-history` MCP tool to search BC history for:
 
 - Recent changes to related functionality
 - Known bugs or fixes in specific versions
