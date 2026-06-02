@@ -33,7 +33,7 @@ orchestrating parallel developer agents to implement it.
 - Session log updated
 - Code ready for review panel (al-dev-security-reviewer,
 
-  al-dev-expert-reviewer, al-dev-performance-reviewer)
+  al-dev-al-pattern-reviewer, al-dev-performance-reviewer)
 
 ---
 

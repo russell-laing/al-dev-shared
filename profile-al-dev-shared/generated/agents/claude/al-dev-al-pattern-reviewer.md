@@ -1,7 +1,10 @@
-name = "al-dev-expert-reviewer"
-description = "Review AL code for adherence to naming conventions, AL patterns, and BC design patterns. Spawned in parallel by the al-dev-develop skill."
-developer_instructions = """
-# Agent: al-dev-expert-reviewer
+---
+description: "Review AL code for adherence to naming conventions, AL patterns, and BC design patterns. Spawned in parallel by the al-dev-develop skill."
+tools: ["Read"]
+---
+
+
+# Agent: al-dev-al-pattern-reviewer
 
 Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 
@@ -109,6 +112,3 @@ Structure findings as:
 ```
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.
-
-Codex capability notes:
-- read files available in the active Codex session"""

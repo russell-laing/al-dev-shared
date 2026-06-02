@@ -1,5 +1,5 @@
 ---
-name: al-dev-expert-reviewer
+name: al-dev-al-pattern-reviewer
 description: >-
   Review AL code for adherence to naming conventions, AL patterns,
   and BC design patterns. Spawned in parallel by the
@@ -8,7 +8,7 @@ model: sonnet
 tools: ["Read"]
 ---
 
-# Agent: al-dev-expert-reviewer
+# Agent: al-dev-al-pattern-reviewer
 
 Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 

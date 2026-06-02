@@ -1,6 +1,6 @@
 # Code Review Patterns and Severity
 
-Referenced by: `al-dev-code-review` and `al-dev-expert-reviewer` agents
+Referenced by: `al-dev-code-review` and `al-dev-al-pattern-reviewer` agents
 
 ## Common AL Issues
 
@@ -14,10 +14,12 @@ codeunit 50101 "PurchaseApprovalProcessor" { }
 ```
 
 Bad:
+
 - `VeryLongDescriptiveNameThatExceedsTheCharacterLimit` (too long)
 - `veryLongName` (lowercase; AL prefers PascalCase)
 
 Good:
+
 - `PaymentProcessor` (≤30 chars, descriptive)
 - `ARRAnalyzer` (prefix convention for array processing)
 
@@ -52,6 +54,7 @@ table 50101 "PurchaseApprovalData" { }
 ##### Variable Naming — Avoid Abbreviations
 
 BEFORE (Poor):
+
 ```al
 procedure CalculateQty(DocLine: Record "Sales Line"; var Qty: Decimal)
 var
@@ -71,6 +74,7 @@ end;
 ```
 
 AFTER (Good):
+
 ```al
 procedure CalculateOrderQuantity(DocumentLine: Record "Sales Line"; var TotalQuantity: Decimal)
 var
@@ -94,6 +98,7 @@ What improved: Variable names spell out intent (`tmpRec` → `TemporaryInventory
 ##### Procedure Naming — Reflect Intent, Not Implementation
 
 BEFORE (Poor):
+
 ```al
 procedure Proc1(var Rec: Record Item; Amt: Decimal)
 begin
@@ -108,6 +113,7 @@ end;
 ```
 
 AFTER (Good):
+
 ```al
 procedure UpdateItemUnitCost(var Item: Record Item; NewUnitCost: Decimal)
 begin
@@ -126,6 +132,7 @@ What improved: Procedure names describe the action (`Proc1` → `UpdateItemUnitC
 ##### Table and Field Naming — Use Full Words in Public Interfaces
 
 BEFORE (Poor):
+
 ```al
 table 50000 "Ord Header"
 {
@@ -141,6 +148,7 @@ table 50000 "Ord Header"
 ```
 
 AFTER (Good):
+
 ```al
 table 50000 "Sales Order Header"
 {
@@ -162,6 +170,7 @@ What improved: Field names are unambiguous and full-word (`Ord No` → `Order Nu
 **Pattern:** Procedure signature must match event signature exactly (var parameters, order, types).
 
 Bad:
+
 ```al
 // Event: OnBeforeInsert(var Rec: Record; var IsHandled: Boolean)
 // Subscriber signature mismatch:
@@ -172,6 +181,7 @@ end;
 ```
 
 Good:
+
 ```al
 local procedure OnRecordInsert(var rec: Record; var isHandled: Boolean)
 begin
@@ -185,6 +195,7 @@ end;
 **Pattern:** All external operations should have error handling.
 
 Bad:
+
 ```al
 procedure CallExternalAPI(url: Text): Text
 begin
@@ -194,6 +205,7 @@ end;
 ```
 
 Good:
+
 ```al
 procedure CallExternalAPI(url: Text): Text
 begin
@@ -208,12 +220,14 @@ end;
 **Pattern:** Using deprecated or non-idiomatic AL patterns.
 
 Bad:
+
 ```al
 // Using StrSubstNo instead of label format
 Error(StrSubstNo('Invalid value: %1', fieldValue));
 ```
 
 Good:
+
 ```al
 // Using label with parameters
 Error(InvalidValueErr, fieldValue);
@@ -225,6 +239,7 @@ Error(InvalidValueErr, fieldValue);
 ## Severity Classification
 
 ### Critical
+
 - Security vulnerabilities (data exposure, injection attacks)
 - Data loss risks (unhandled exceptions in deletes, overwrites)
 - Compilation failures
@@ -233,6 +248,7 @@ Error(InvalidValueErr, fieldValue);
 **Action:** Block merge; fix before proceeding.
 
 ### High
+
 - Performance bottlenecks (N+1 queries, missing indexes)
 - Missing error handling in critical paths
 - Incorrect AL patterns that violate best practices
@@ -241,6 +257,7 @@ Error(InvalidValueErr, fieldValue);
 **Action:** Request changes; document why blocking.
 
 ### Medium
+
 - Code style violations (naming, formatting)
 - Naming inconsistencies (e.g., `UserID` vs `UserId`)
 - Documentation gaps in public functions
@@ -249,6 +266,7 @@ Error(InvalidValueErr, fieldValue);
 **Action:** Request changes; allow override if justified.
 
 ### Low
+
 - Formatting and whitespace
 - Comment clarity
 - Optimization opportunities that don't block performance
@@ -259,6 +277,7 @@ Error(InvalidValueErr, fieldValue);
 ## Review Checklist
 
 Before approving code:
+
 - [ ] No critical issues
 - [ ] High issues addressed (or documented)
 - [ ] Naming conventions followed

@@ -267,13 +267,17 @@ After each developer subagent returns, before the commit gate:
 
 1. **Run the verification checklist** — check forbidden patterns, file persistence, acceptance criteria
    - **Pattern scan (Claude Code):**
+
      ```bash
      rg '\[date\]|\bYYYY-MM-DD\b|TODO|TBD|Co-Authored-By|claude:|copilot:' <files> --color=never --no-heading --with-filename
      ```
+
    - **Pattern scan (Copilot CLI fallback):**
+
      ```bash
      git diff HEAD --unified=0 | grep -E '\[date\]|YYYY-MM-DD|TODO|TBD|Co-Authored-By|claude:|copilot:' || true
      ```
+
    - **File check:** `git status --short` to confirm expected files were modified
    - **Acceptance check:** Manually inspect output files for stated criteria
 2. **If checklist passes** → proceed to commit
@@ -303,7 +307,7 @@ Spawn 3 reviewers in parallel as a single batch.
 **al-dev-security-reviewer:** Review all code for permission
 issues, data exposure risks, authentication gaps.
 
-**al-dev-expert-reviewer:** Review for AL naming conventions,
+**al-dev-al-pattern-reviewer:** Review for AL naming conventions,
 BC best practices (SetLoadFields, FieldCaption), code
 organization, event patterns.
 

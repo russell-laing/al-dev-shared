@@ -10,7 +10,7 @@ reviewers in a single batch (one message, three agent dispatches).
 Review all implemented code for permission issues, data exposure
 risks, authentication gaps.
 
-**al-dev-expert-reviewer:**
+**al-dev-al-pattern-reviewer:**
 Review for AL naming conventions, BC best practices
 (SetLoadFields, FieldCaption), code organization, event patterns.
 
@@ -30,7 +30,7 @@ Dispatch agent: al-dev-shared:al-dev-security-reviewer
   description: "Security review of implemented code"
   prompt: "Review these AL files for security issues: [file list]. Check permissions, data exposure, auth gaps."
 
-Dispatch agent: al-dev-shared:al-dev-expert-reviewer
+Dispatch agent: al-dev-shared:al-dev-al-pattern-reviewer
   description: "AL patterns and BC best practices review"
   prompt: "Review these AL files for naming, patterns, BC conventions: [file list]. Check SetLoadFields, naming consistency, event patterns."
 
