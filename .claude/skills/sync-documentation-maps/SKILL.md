@@ -91,8 +91,10 @@ within 60 s):
    - Spawn `subagent_type: sync-documentation-maps-agent-audit` with the same
      context
    - Both agents write directly to `${RUN_DIR}/audit/`
-2. Set `SKILL_TEAM_ID=in-session` and `AGENT_TEAM_ID=in-session` — the collect
-   step reads artifacts directly rather than polling for remote completion.
+2. Set `SKILL_TEAM_ID=in-session` and `AGENT_TEAM_ID=in-session` — pass these
+   to `/sync-documentation-maps-collect --team-ids in-session,in-session`. The
+   collect step reads artifacts directly from `${RUN_DIR}/audit/` (do **not**
+   add `--wait`, which would attempt remote polling on the sentinel value).
 3. Alternatively, use `/review-maps` which includes a built-in in-session mode
    gate and does not depend on RemoteTrigger.
 

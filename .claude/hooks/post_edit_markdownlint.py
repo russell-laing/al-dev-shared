@@ -29,7 +29,8 @@ try:
     if result.returncode == 0:
         print(f"[post-edit] markdownlint: fixed {os.path.basename(abs_path)}")
     else:
-        print(f"[post-edit] markdownlint: {result.stderr.strip()[:200]}")
+        msg = (result.stdout or result.stderr).strip()[:200]
+        print(f"[post-edit] markdownlint: unfixed issues remain — {msg}")
 except Exception:
     pass
 
