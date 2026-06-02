@@ -32,3 +32,21 @@
   • docs/al-dev-agent-map.md: 696 lines (fixed model entries)
   • Dependency graph refreshed.
   • Committed: d303bc6 (docs: sync documentation maps with current codebase)
+
+[2026-06-01] sync-documentation-maps (run 20260601T124647Z): Spawned skill-audit
+  (aff52c2da40bbcfb7) and agent-audit (a194bfd08a4855786) teams.
+  Phase: audit (dispatched)
+  Next: /sync-documentation-maps-collect --team-ids aff52c2da40bbcfb7,a194bfd08a4855786
+
+[2026-06-02] sync-documentation-maps (run 20260601T194258Z): Spawned skill-audit
+  (a5c1091b32848533b) and agent-audit (a2a2b0b22b08ae36d) teams.
+  Next: /sync-documentation-maps-collect --team-ids a5c1091b32848533b,a2a2b0b22b08ae36d
+
+[2026-06-02] sync-documentation-maps-finalize complete — RUN_ID 20260601T194258Z maps written and committed. Commit: 5125d0e
+
+[2026-06-01] sync-documentation-maps (run 20260601T210259Z): Spawned skill-audit
+  (a21bc0e447f395687) and agent-audit (abd27098cb8f4ad7e) teams.
+  Next: /sync-documentation-maps-collect --team-ids a21bc0e447f395687,abd27098cb8f4ad7e
+
+[2026-06-02] sync-documentation-maps-finalize complete — 20260601T210259Z maps written
+and committed. Agent map fixed tool mismatches (3 discrepancies).
