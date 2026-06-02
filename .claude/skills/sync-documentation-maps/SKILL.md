@@ -82,6 +82,20 @@ other). Use RemoteTrigger to launch each audit as an independent remote agent.
 
 Capture the returned task IDs as `SKILL_TEAM_ID` and `AGENT_TEAM_ID`.
 
+**If RemoteTrigger fails** (schema error, task ID not returned, or no response
+within 60 s):
+
+1. Fall back to the Agent tool and dispatch both audits in-session:
+   - Spawn `subagent_type: sync-documentation-maps-skill-audit` with `RUN_ID`
+     and `RUN_DIR` in the prompt
+   - Spawn `subagent_type: sync-documentation-maps-agent-audit` with the same
+     context
+   - Both agents write directly to `${RUN_DIR}/audit/`
+2. Set `SKILL_TEAM_ID=in-session` and `AGENT_TEAM_ID=in-session` — the collect
+   step reads artifacts directly rather than polling for remote completion.
+3. Alternatively, use `/review-maps` which includes a built-in in-session mode
+   gate and does not depend on RemoteTrigger.
+
 ---
 
 ## Phase 4 — Write Checkpoint
