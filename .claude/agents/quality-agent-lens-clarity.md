@@ -27,7 +27,9 @@ agent name from the filename (strip directory path and `.md` extension).
 - Vague qualifiers with no operative definition: "as needed", "appropriate", "reasonable", "if necessary"
 - `if X` branches with no `else` / `otherwise` clause (incomplete conditional)
 - Bash code blocks that are pseudo-code rather than runnable commands: unrecognised
-  binary names, unexplained `<placeholder>` syntax, variables defined nowhere
+  binary names, unexplained `<placeholder>` syntax, variables defined nowhere.
+  (Note: In these instructions, `<placeholder>` is meta-notation indicating a substitution point;
+  actual bash blocks with undefined placeholder syntax should be flagged as such.)
 - Steps that reference undefined placeholders or variables
 
 **Severity rules:**
