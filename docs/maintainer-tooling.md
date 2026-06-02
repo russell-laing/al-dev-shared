@@ -27,8 +27,7 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 |-------|---------|-------------|
 | `/plugin-health-audit` | The single find-improvements sweep — design + quality + naming lenses → one ranked dossier per surface | "What should I improve?" |
 | `/al-dev-map-suggestions-verify` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
-| `/review-skill-map` | In-session accuracy sync of `docs/al-dev-skills-map.md` | After adding/removing/restructuring skills |
-| `/review-agent-map` | In-session accuracy sync of `docs/al-dev-agent-map.md` | After adding/removing/restructuring agents |
+| `/review-maps` | In-session accuracy sync of both maps (skill + agent) in one command | After adding/removing/restructuring skills or agents |
 | `/sync-documentation-maps` | Async 3-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
 | `/analyze-architectural-design` | Optional cross-surface synthesis after a health audit (ties skill and agent findings together) | After a both-surface health audit |
 | `/audit-knowledge-quality` | Audit `knowledge/` files for stubs and thin content | After editing knowledge files |
@@ -43,6 +42,8 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 | `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes the health dossier |
 | `/sync-documentation-maps-collect` | User (step 2 of 3) | Reads audit artifacts; dispatches update agents |
 | `/sync-documentation-maps-finalize` | User (step 3 of 3) | Writes maps, regenerates diagrams, commits |
+| `/review-skill-map` | `/review-maps` | In-session accuracy sync of `docs/al-dev-skills-map.md` |
+| `/review-agent-map` | `/review-maps` | In-session accuracy sync of `docs/al-dev-agent-map.md` |
 
 > **Map accuracy vs. finding improvements are separate jobs.** `/review-*-map`
 > and `/sync-documentation-maps` only keep the maps factually current — they no
@@ -150,8 +151,7 @@ flowchart TD
 
     %% Step 1 - accuracy
     MAPS[Step 1 - Keep maps accurate]
-    RSM[review-skill-map]
-    RAM[review-agent-map]
+    RM[review-maps]
     SDM[sync-documentation-maps]
 
     %% Step 2 - find
@@ -168,11 +168,9 @@ flowchart TD
     AHR[align-harness-repos]
     AKQ[audit-knowledge-quality]
 
-    MAPS --> RSM
-    MAPS --> RAM
+    MAPS --> RM
     MAPS --> SDM
-    RSM --> PHA
-    RAM --> PHA
+    RM --> PHA
     SDM --> PHA
     PHA --> DOSSIER
     DOSSIER -.-> AAD
@@ -183,8 +181,7 @@ flowchart TD
     IMPL --> AKQ
 
     class MAPS action
-    class RSM entry
-    class RAM entry
+    class RM entry
     class SDM entry
     class PHA shortcut
     class DOSSIER action
@@ -196,10 +193,9 @@ flowchart TD
     class AKQ post
 ```
 
-> Both map-accuracy paths are equivalent — pick the in-session pair
-> (`/review-skill-map` + `/review-agent-map`) for a quick check, or the async
-> `/sync-documentation-maps` to free the session. Either way, the next step is
-> `/plugin-health-audit`.
+> Both map-accuracy paths do the same job — pick `/review-maps` for a quick
+> in-session check, or `/sync-documentation-maps` to free the session. Either
+> way, the next step is `/plugin-health-audit`.
 
 ---
 
@@ -294,8 +290,8 @@ findings. Run it after a both-surface health audit.
 
 | Situation | Run |
 |-----------|-----|
-| Added or removed a skill | `/review-skill-map` |
-| Added or removed an agent | `/review-agent-map` |
+| Added or removed a skill or agent | `/review-maps` |
+| Want to check one map only | `/review-skill-map` or `/review-agent-map` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
 | Edited a knowledge file | `/audit-knowledge-quality`, then `/align-harness-repos` |
 | Want to find improvements | `/plugin-health-audit` |
