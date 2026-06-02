@@ -13,8 +13,7 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| File path argument | No | Existing spec to refine (e.g., `.dev/*-al-dev-interview-requirements.md`) |
-| Fresh start | No | If no file specified, creates new interview notes |
+| Inline context | No | Feature description or existing spec content passed in the dispatch prompt by `/al-dev-interview`; if a file path was given as `$ARGUMENTS`, its content is pre-read by the skill before dispatch |
 
 ## Outputs
 
