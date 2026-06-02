@@ -31,7 +31,7 @@ Pattern: `{verb}-{object}-{aspect}`
 - `verb` ∈ `review` | `analyze` | `audit` | `plan` | `sync` | …
 - `object` ∈ `skill` | `agent` | `knowledge` | `map` | `plugin`
 
-Examples: `audit-quality`, `review-agent-map`, `al-dev-map-suggestions-verify`.
+Examples: `plugin-health-audit`, `review-agent-map`, `al-dev-map-suggestions-verify`.
 
 This rule is advisory: pre-existing skills that predate the convention
 (`projection-sync`, `align-harness-repos`) are grandfathered. New skills SHOULD
@@ -44,8 +44,8 @@ suggestions rather than hard failures.
 
 Pattern: `al-dev-{object}-{kind}.md`
 
-Examples: `al-dev-plugin-map.md`, `al-dev-agent-map.md`, `al-dev-skill-quality.md`,
-`al-dev-agent-quality.md`, `al-dev-knowledge-quality.md`, `al-dev-plugin-graph.md`.
+Examples: `al-dev-skills-map.md`, `al-dev-agent-map.md`, `al-dev-knowledge-quality.md`,
+`al-dev-plugin-graph.md`, `al-dev-plugin-synthesis.md`.
 
 ### Point-in-time artifacts — dated
 

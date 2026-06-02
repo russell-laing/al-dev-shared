@@ -5,7 +5,13 @@ maintaining the al-dev-shared plugin. These are repo-local Claude Code skills
 and agents — not part of the distributed plugin surface — used to detect drift,
 improve design quality, sync documentation, and enforce harness neutrality.
 
+The toolset is one pipeline: **keep maps accurate → find improvements → act on
+findings → implement → post-change cleanup.** Findings live in one place — the
+health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md`,
+`docs/al-dev-agent-map.md`) are documentation only.
+
 **Use this guide to:**
+
 - Find the right skill for a specific task (Skills at a Glance, Quick Reference)
 - Understand the calling relationships and execution flow (Skill Hierarchy, Recommended Run Order)
 - Learn which agents are dispatched and what they check (Agents Reference)
@@ -19,16 +25,13 @@ improve design quality, sync documentation, and enforce harness neutrality.
 
 | Skill | Purpose | When to run |
 |-------|---------|-------------|
-| `/plugin-health-audit` | Full health sweep of one or both plugin surfaces (design + quality + naming) | "Is the plugin healthy?" |
-| `/review-skill-map` | In-session sync of `docs/al-dev-skills-map.md` | After adding/removing/restructuring skills |
-| `/review-agent-map` | In-session sync of `docs/al-dev-agent-map.md` | After adding/removing/restructuring agents |
-| `/sync-documentation-maps` | Async 3-step map sync via remote agents (session-freeing) | When you want maps updated without waiting |
-| `/analyze-architectural-design` | Cross-surface design analysis for both skills and agents | "Should we restructure the plugin?" |
-| `/analyze-skill-design` | Skill-only design analysis (Atomise / Connect / Merge / Promote) | Focused skill design review |
-| `/analyze-agent-design` | Agent-only design analysis (Trim / Remodel / Split / Inline / Align) | Focused agent design review |
-| `/audit-quality` | Per-file quality audit (clarity, structure, bloat, naming) | `--type skill` or `--type agent` |
+| `/plugin-health-audit` | The single find-improvements sweep — design + quality + naming lenses → one ranked dossier per surface | "What should I improve?" |
+| `/al-dev-map-suggestions-verify` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
+| `/review-skill-map` | In-session accuracy sync of `docs/al-dev-skills-map.md` | After adding/removing/restructuring skills |
+| `/review-agent-map` | In-session accuracy sync of `docs/al-dev-agent-map.md` | After adding/removing/restructuring agents |
+| `/sync-documentation-maps` | Async 3-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
+| `/analyze-architectural-design` | Optional cross-surface synthesis after a health audit (ties skill and agent findings together) | After a both-surface health audit |
 | `/audit-knowledge-quality` | Audit `knowledge/` files for stubs and thin content | After editing knowledge files |
-| `/al-dev-map-suggestions-verify` | Rubber-duck map suggestions against live codebase before planning | Before implementing any map suggestion |
 | `/projection-sync` | Regenerate harness-native agent projections from canonical source | After editing any `agents/*.md` file |
 | `/align-harness-repos` | Validate shared surface has no harness-specific tokens | After editing skills, agents, or knowledge |
 
@@ -36,13 +39,15 @@ improve design quality, sync documentation, and enforce harness neutrality.
 
 | Skill | Called by | Role |
 |-------|----------|------|
-| `/plugin-health-discover` | `/plugin-health-audit` | Dispatches all lenses; writes findings files |
-| `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes health dossier |
-| `/discover-skill-design` | `/analyze-skill-design` | Dispatches 5 design-skill-lens agents |
-| `/discover-agent-design` | `/analyze-agent-design` | Dispatches 5 design-agent-lens agents |
-| `/draft-map-suggestions` | `/analyze-skill-design`, `/analyze-agent-design` | Writes suggestions to Observations sections |
+| `/plugin-health-discover` | `/plugin-health-audit` | Dispatches all lenses; writes findings file |
+| `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes the health dossier |
 | `/sync-documentation-maps-collect` | User (step 2 of 3) | Reads audit artifacts; dispatches update agents |
 | `/sync-documentation-maps-finalize` | User (step 3 of 3) | Writes maps, regenerates diagrams, commits |
+
+> **Map accuracy vs. finding improvements are separate jobs.** `/review-*-map`
+> and `/sync-documentation-maps` only keep the maps factually current — they no
+> longer emit design suggestions. All structural and quality findings (Atomise,
+> Move, Trim, Inline, bloat, naming, …) come from `/plugin-health-audit`.
 
 ---
 
@@ -55,35 +60,33 @@ flowchart LR
     classDef entry fill:#1976d2,stroke:none,color:#fff,font-weight:bold
     classDef sub fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
     classDef agentGroup fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+    classDef output fill:#f57f17,stroke:none,color:#fff,font-weight:bold
 
     %% Entry points
     PHA[plugin-health-audit]
     AAD[analyze-architectural-design]
-    ASD[analyze-skill-design]
-    AGD[analyze-agent-design]
-    AQS[audit-quality skill]
-    AQA[audit-quality agent]
+    AMSV[al-dev-map-suggestions-verify]
     SDM[sync-documentation-maps]
 
     %% Sub-skills
     PHD[plugin-health-discover]
     PHR[plugin-health-report]
-    DSD[discover-skill-design]
-    DAD[discover-agent-design]
-    DMS[draft-map-suggestions]
     SDMC[sync-doc-maps-collect]
     SDMF[sync-doc-maps-finalize]
 
     %% Agent groups dispatched
-    QSL[5x quality-skill-lens]
-    QAL[5x quality-agent-lens]
     DSL[5x design-skill-lens]
     DAL[5x design-agent-lens]
+    QSL[5x quality-skill-lens]
+    QAL[5x quality-agent-lens]
     NL[naming-convention-lens]
     AUDIT[skill-audit and agent-audit]
     UPDATE[skill-update and agent-update]
 
-    %% Health audit
+    %% Output
+    DOSSIER[health dossier]
+
+    %% Find-improvements - the single entry
     PHA --> PHD
     PHA --> PHR
     PHD --> DSL
@@ -91,22 +94,13 @@ flowchart LR
     PHD --> QSL
     PHD --> QAL
     PHD --> NL
+    PHR --> DOSSIER
 
-    %% Architectural analysis
-    AAD --> ASD
-    AAD --> AGD
-    ASD --> DSD
-    AGD --> DAD
-    DSD --> DSL
-    DAD --> DAL
-    ASD --> DMS
-    AGD --> DMS
+    %% Dossier consumers
+    DOSSIER --> AAD
+    DOSSIER --> AMSV
 
-    %% Quality audit (standalone)
-    AQS --> QSL
-    AQA --> QAL
-
-    %% Async map sync - user runs each step manually
+    %% Async map sync
     SDM --> AUDIT
     SDM -.-> SDMC
     SDMC --> UPDATE
@@ -114,35 +108,32 @@ flowchart LR
 
     class PHA entry
     class AAD entry
-    class ASD entry
-    class AGD entry
-    class AQS entry
-    class AQA entry
+    class AMSV entry
     class SDM entry
-
     class PHD sub
     class PHR sub
-    class DSD sub
-    class DAD sub
-    class DMS sub
     class SDMC sub
     class SDMF sub
-
-    class QSL agentGroup
-    class QAL agentGroup
     class DSL agentGroup
     class DAL agentGroup
+    class QSL agentGroup
+    class QAL agentGroup
     class NL agentGroup
     class AUDIT agentGroup
     class UPDATE agentGroup
+    class DOSSIER output
 ```
 
-> **Intersections to notice:**
-> - `design-skill-lens-*` agents are dispatched by two independent paths: via `/discover-skill-design` (called from `/analyze-skill-design`), and directly by `/plugin-health-discover` via its internal Workflow — the discover sub-skills are not shared, but the agent implementations are reused
-> - The same applies to `design-agent-lens-*` agents: dispatched via `/discover-agent-design` from `/analyze-agent-design`, and independently dispatched directly by `/plugin-health-discover`
-> - `quality-skill-lens-*` agents are dispatched by both `/audit-quality --type skill` and `/plugin-health-discover` (directly)
-> - `quality-agent-lens-*` agents are dispatched by both `/audit-quality --type agent` and `/plugin-health-discover` (directly)
-> - `/plugin-health-audit` is therefore a shortcut for running both `/analyze-architectural-design` and `/audit-quality` for both surfaces in one sweep
+> **Things to notice:**
+>
+> - `/plugin-health-audit` is the only skill that dispatches the design,
+>   quality, and naming lenses. There is one lens-dispatch path — no parallel
+>   implementation to drift from.
+> - The health dossier is the single findings sink. Both
+>   `/al-dev-map-suggestions-verify` (turn findings into a plan) and
+>   `/analyze-architectural-design` (cross-surface synthesis) read it.
+> - `--dimension design|quality|all` and `--surface plugin|tooling|both` scope
+>   the sweep, so a focused design-only or quality-only run is still one command.
 
 ---
 
@@ -157,23 +148,22 @@ flowchart TD
     classDef action fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
     classDef post fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
 
+    %% Step 1 - accuracy
     MAPS[Step 1 - Keep maps accurate]
     RSM[review-skill-map]
     RAM[review-agent-map]
     SDM[sync-documentation-maps]
-    NOTE_SDM[async 3-step path<br/>frees the session]
 
-    ANALYZE[Step 2 - Find improvements]
+    %% Step 2 - find
     PHA[plugin-health-audit]
-    NOTE_PHA[shortcut: runs all design<br/>and quality lenses together]
+    DOSSIER[health dossier]
     AAD[analyze-architectural-design]
-    AQ[audit-quality skill and agent]
 
-    ACT[Step 3 - Act on suggestions]
+    %% Step 3 - act
     AMSV[al-dev-map-suggestions-verify]
     IMPL[implement changes]
 
-    POST[Step 4 - After changes]
+    %% Step 4 - post
     PS[projection-sync]
     AHR[align-harness-repos]
     AKQ[audit-knowledge-quality]
@@ -181,67 +171,71 @@ flowchart TD
     MAPS --> RSM
     MAPS --> RAM
     MAPS --> SDM
-    SDM -.-> NOTE_SDM
-
-    RSM --> ANALYZE
-    RAM --> ANALYZE
-    ANALYZE --> PHA
-    PHA -.-> NOTE_PHA
-    ANALYZE --> AAD
-    ANALYZE --> AQ
-
-    PHA --> ACT
-    AAD --> ACT
-    AQ --> ACT
-    ACT --> AMSV
+    RSM --> PHA
+    RAM --> PHA
+    SDM --> PHA
+    PHA --> DOSSIER
+    DOSSIER -.-> AAD
+    DOSSIER --> AMSV
     AMSV --> IMPL
+    IMPL --> PS
+    IMPL --> AHR
+    IMPL --> AKQ
 
-    IMPL --> POST
-    POST --> PS
-    POST --> AHR
-    POST --> AKQ
-
+    class MAPS action
     class RSM entry
     class RAM entry
-    class SDM shortcut
+    class SDM entry
     class PHA shortcut
+    class DOSSIER action
     class AAD entry
-    class AQ entry
     class AMSV entry
+    class IMPL action
     class PS post
     class AHR post
     class AKQ post
 ```
 
+> Both map-accuracy paths are equivalent — pick the in-session pair
+> (`/review-skill-map` + `/review-agent-map`) for a quick check, or the async
+> `/sync-documentation-maps` to free the session. Either way, the next step is
+> `/plugin-health-audit`.
+
 ---
 
 ## Understanding Design vs. Quality Analysis
 
-**Design analysis** (architecture, skill/agent composition):
-- When to use: Evaluating whether skills should be split, merged, or refactored; whether agents are over-allocated or can be inlined
-- Skills: `/analyze-architectural-design`, `/analyze-skill-design`, `/analyze-agent-design` (plus `/plugin-health-audit` which includes design)
-- Output: Suggestions for structural improvements (Atomise, Connect, Merge, Promote, Extend, Trim, Remodel, Split, Inline, Align)
+Both kinds of analysis run through one entry — `/plugin-health-audit` — and land
+in the same dossier. Scope them with `--dimension`.
 
-**Quality analysis** (code clarity, structure, naming, bloat):
-- When to use: Ensuring skill/agent files are well-written, properly documented, and follow conventions
-- Skills: `/audit-quality`, `/audit-knowledge-quality` (plus `/plugin-health-audit` which includes quality)
-- Output: Findings on clarity, structure, description drift, bloat, naming consistency
+**Design analysis** (`--dimension design`): architecture and composition —
+whether skills should be split, merged, moved, or refactored; whether agents are
+over-allocated or can be inlined. Vocabulary: Atomise, Absorb, Connect, Merge,
+Promote, Move, Extend (skills); Trim, Remodel, Split, Inline, Align (agents).
+
+**Quality analysis** (`--dimension quality`): code clarity, structure, naming,
+bloat, and description drift in skill/agent files. Vocabulary: Bloat, Clarity,
+Structure, Name-fit, Description, plus naming-convention violations.
+
+`/analyze-architectural-design` adds one thing the per-surface dossiers do not:
+a cross-surface synthesis relating the skill-layer findings to the agent-layer
+findings. Run it after a both-surface health audit.
 
 ---
 
 ## Agents Reference
 
-### Design Lens Agents — skill-focused (dispatched by `/discover-skill-design` and `/plugin-health-discover`)
+### Design Lens Agents — skill-focused (dispatched by `/plugin-health-discover`)
 
 | Agent | What it checks |
 |-------|---------------|
-| `design-skill-lens-complexity` | High-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb) |
+| `design-skill-lens-complexity` | High-phase skills with separable concerns (Atomise), zero-agent 2-phase skills (Absorb), and skills that belong in the maintainer surface (Move) |
 | `design-skill-lens-handoff-gaps` | Handoff chains with obvious next steps or orphaned outputs (Extend) |
 | `design-skill-lens-near-duplicates` | Skill pairs with similar structure that could be merged (Merge) |
-| `design-skill-lens-preplanning` | Pre-planning skills in Layer 1 diagram as dashed tributaries with named outputs (Pre-planning) |
+| `design-skill-lens-preplanning` | Pre-planning skills shown in the Layer 1 diagram as dashed tributaries with named outputs (Layer 1 diagram fidelity) |
 | `design-skill-lens-shared-backbone` | Agent types used by 2+ skills whose patterns could be promoted to knowledge (Connect/Promote) |
 
-### Design Lens Agents — agent-focused (dispatched by `/discover-agent-design` and `/plugin-health-discover`)
+### Design Lens Agents — agent-focused (dispatched by `/plugin-health-discover`)
 
 | Agent | What it checks |
 |-------|---------------|
@@ -251,7 +245,7 @@ flowchart TD
 | `design-agent-lens-tool-hygiene` | Tools declared in frontmatter but unused in system prompt body (Trim) |
 | `design-agent-lens-usage-patterns` | Single-use agents with small bodies and no documented contract (Inline) |
 
-### Quality Lens Agents (dispatched by `/audit-quality` and `/plugin-health-discover`)
+### Quality Lens Agents (dispatched by `/plugin-health-discover`)
 
 | Agent | Surface | What it checks |
 |-------|---------|---------------|
@@ -282,17 +276,17 @@ flowchart TD
 
 | Skill | Output |
 |-------|--------|
+| `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
+| `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` (the dossier); refreshes `docs/al-dev-plugin-graph.md` for the plugin surface |
+| `/al-dev-map-suggestions-verify` | implementation plan under `docs/superpowers/plans/` |
+| `/analyze-architectural-design` | `docs/al-dev-plugin-synthesis.md` (living doc, overwritten each run) |
 | `/review-skill-map` | `docs/al-dev-skills-map.md` |
 | `/review-agent-map` | `docs/al-dev-agent-map.md` |
-| `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and refreshes dependency graph (when applicable) |
-| `/analyze-skill-design` | `docs/al-dev-skills-map.md` (Observations section) |
-| `/analyze-agent-design` | `docs/al-dev-agent-map.md` (Observations section) |
-| `/analyze-architectural-design` | `docs/al-dev-plugin-graph.md` (cross-surface synthesis) |
-| `/audit-quality --type skill` | `docs/al-dev-skill-quality.md` |
-| `/audit-quality --type agent` | `docs/al-dev-agent-quality.md` |
-| `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
-| `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md`; for `plugin` surface may also refresh `docs/al-dev-plugin-graph.md` |
+| `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and dependency graph |
 | `/projection-sync` | `profile-al-dev-shared/generated/agents/claude/`, `copilot/`, `codex/` |
+
+> Maps no longer carry an Observations/suggestions section — findings live only
+> in the dossier.
 
 ---
 
@@ -304,9 +298,9 @@ flowchart TD
 | Added or removed an agent | `/review-agent-map` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
 | Edited a knowledge file | `/audit-knowledge-quality`, then `/align-harness-repos` |
-| Want a design health check | `/review-skill-map` → `/review-agent-map` → `/plugin-health-audit` |
-| Want to plan improvements | `/analyze-architectural-design` → `/audit-quality` → `/al-dev-map-suggestions-verify` |
-| Suggestion list is stale | `/al-dev-map-suggestions-verify` before planning |
-| Maps are out of sync, no rush | `/sync-documentation-maps` (async — step 1 only; follow with `/sync-documentation-maps-collect` then `/sync-documentation-maps-finalize`) |
+| Want to find improvements | `/plugin-health-audit` |
+| Want design-only or quality-only findings | `/plugin-health-audit --dimension design` or `--dimension quality` |
+| Want skill and agent findings tied together | `/analyze-architectural-design` (after a both-surface audit) |
+| Ready to act on accepted findings | `/al-dev-map-suggestions-verify` |
+| Maps are out of sync, no rush | `/sync-documentation-maps` (async — then `-collect`, then `-finalize`) |
 | Maps are out of sync, fix now | `/review-skill-map` + `/review-agent-map` (in-session) |
-

@@ -69,32 +69,33 @@ python3 scripts/generate-plugin-graph.py
 /plugin-health-audit --surface both
 ```
 
-Dossiers are written to `docs/health/YYYY-MM-DD-<surface>-findings.md`.
+Dossiers are written to `docs/health/YYYY-MM-DD-<surface>-health.md` (the
+`-findings.md` file is the intermediate raw lens output the report ranks into the
+dossier).
 
 ## Updating Documentation Maps
 
 When skills or agents change, synchronize the documentation:
 
 ```bash
-# Primary workflow:
-/sync-documentation-maps  # Audits and updates both maps (interactive or --all)
-/analyze-skill-design     # Generate architecture improvement suggestions
-/analyze-agent-design     # Generate agent design improvement suggestions
-/audit-quality --type skill   # Audit skill quality (clarity, structure, bloat, drift)
-/audit-quality --type agent   # Audit agent quality (clarity, structure, bloat, drift)
+# Keep the maps accurate (documentation only):
+/sync-documentation-maps  # Async: audits and updates both maps (then -collect, -finalize)
+
+# Find improvements (one entry, all dimensions → one dossier):
+/plugin-health-audit                       # design + quality + naming
+/plugin-health-audit --dimension design    # design-only
+/plugin-health-audit --dimension quality   # quality-only
 ```
 
-For audit-only (no updates):
+For audit-only map checks (no updates):
 
 ```bash
 /review-skill-map --no-update   # Verify skills map accuracy without modifying
 /review-agent-map --no-update   # Verify agent map accuracy without modifying
 ```
 
-These skills write findings to:
+These skills write to:
 
-- `docs/al-dev-skills-map.md` — Skill inventory and relationships
-- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
-- `docs/al-dev-plugin-map.md` — Skill architecture improvement suggestions
-- `docs/al-dev-skill-quality.md` — Skill clarity and structural issues
-- `docs/al-dev-agent-quality.md` — Agent quality audit results
+- `docs/al-dev-skills-map.md` — Skill inventory and relationships (documentation only)
+- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments (documentation only)
+- `docs/health/YYYY-MM-DD-<surface>-health.md` — the ranked findings dossier (all design, quality, and naming findings)
