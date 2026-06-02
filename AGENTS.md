@@ -1,110 +1,124 @@
 # AGENTS.md
 
-This file provides guidance to Copilot CLI when working with this repository.
+This file provides **harness-agnostic** guidance for AGENTS-compatible runtimes working in this repository.
 
 ## What This Repo Is
 
-`al-dev-shared` is a **shared AI development plugin** — a unified library of AL/BC development skills, agents, and knowledge documents consumed by three AI coding harnesses:
+`al-dev-shared` is a shared AI development plugin for AL/BC workflows. It contains reusable:
 
-- **Claude Code** (claude.ai/code) — Desktop app, CLI, and IDE extensions (see `CLAUDE.md`)
-- **Copilot CLI** — Autonomous command-line agent (you are here)
-- **Codex** — Autonomous development system (see `CODEX.md`)
+- skills
+- agents
+- knowledge
+- projection tooling
 
-It maintains one canonical authored surface (`profile-al-dev-shared/`) and generates harness-native projection artifacts for each consumer. This document covers Copilot CLI registration and usage; refer to `CLAUDE.md` (Claude Code) and `CODEX.md` (Codex) for harness-specific guidance.
+This repository is **not** an AL app project and does not contain `.al` source as its primary product.
 
-This repository is not itself an AL project; it contains no `.al` source files.
+## Canonical Source and Projection Boundary
 
-### Copilot CLI Registration
+The canonical authored surface is:
 
-`al-dev-shared` is registered in `~/.copilot/settings.json` as:
-
-```json
-"al-dev-shared": {
-  "source": { "source": "directory", "path": "/Users/russelllaing/al-dev-shared" }
-}
+```tex
+profile-al-dev-shared/
+  skills/<name>/SKILL.md
+  agents/<name>.md
+  knowledge/
+  bc-code-intel-knowledge/
+  markdown/
 ```
 
-Copilot CLI consumes:
+Generated harness-native artifacts are under:
 
-- **Shared skills** from `profile-al-dev-shared/skills/` (invoked as `/name`)
-- **Generated agent projections** from `profile-al-dev-shared/generated/agents/copilot/`
-- **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
-
-## Shared Plugin Surface (All Harnesses)
-
-All three harnesses consume the same authored source:
-
-```text
-profile-al-dev-shared/          # Canonical authored plugin surface
-  skills/<name>/SKILL.md        # Skill definitions
-  agents/<name>.md              # Agent definitions (harness-neutral)
-  knowledge/                    # Generic workflow knowledge
-  bc-code-intel-knowledge/      # BC Code Intelligence specialist knowledge
-  markdown/                     # Markdown and Mermaid style guides
-.claude-plugin/marketplace.json # Marketplace registration
-```
-
-## Generated Projection Artifacts (Per-Harness Native Formats)
-
-For harness-native tool execution, the projection layer generates harness-specific artifacts:
-
-```text
+```tex
 profile-al-dev-shared/generated/agents/
-  claude/                       # Claude Code-native agent projections (Markdown)
-  copilot/                      # Copilot CLI-native agent projections (Markdown)
-  codex/                        # Codex-native agent projections (TOML)
+  claude/
+  copilot/
+  codex/
 ```
 
-Each projection applies the mappings from `knowledge/agent-tool-projection-policy.md` to translate generic capability names (e.g., `USER_GATE`, `Read`, `Bash`) into Copilot CLI tool names (e.g., `ask_user`, `read`, `execute`).
+Do not hand-edit generated projection artifacts. Update shared authored files and regenerate projections.
 
-**Key rule:** Shared source is canonical; generated artifacts are derived output and must never be hand-edited.
+## Shared Surface Rules
+
+When editing shared authored content:
+
+- keep wording harness-neutral
+- use generic vocabulary from `profile-al-dev-shared/knowledge/harness-concepts.md`
+- keep tool/capability mapping contracts aligned with `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`
+- avoid introducing harness-branded operational instructions into shared files
+
+Intentional mapping documents are allowed to name harnesses where comparison is the purpose.
 
 ## Repo-Local Maintainer Tooling
 
-`.claude/agents/` and `.claude/skills/` are repo-local Claude maintainer
-tooling. They help audit, document, and iteratively improve this repository,
-but they are not part of the distributed `al-dev-shared` plugin and must not
-be treated as projection inputs or downstream harness-consumer artifacts.
+Repository-local harness tooling (for example `.claude/` or `.codex/`) is maintainer infrastructure, not distributed shared plugin content.
 
-**Output boundary rule:** While the maintainer tooling is harness-specific, its **outputs must be harness-agnostic**:
-- Any documents written to the shared surface or `.dev/` directory must not contain harness-specific tokens
-- Changes made to shared files must use generic vocabulary (from `knowledge/harness-concepts.md`)
-- Generated artifacts remain the output of the projection layer, never hand-edited by maintainer tooling
+It may inspect shared source and generated artifacts, but any outputs written back to shared content should remain harness-agnostic.
 
-Repo-local tooling may *inspect* shared source and generated projection outputs for analysis, but its modifications or documents must maintain neutrality across all three harnesses.
+## Core Workflow Contracts
 
-## Skill File Format
+### 1. Complexity routing
 
-Each skill is a markdown file in `profile-al-dev-shared/skills/<name>/SKILL.md` with YAML frontmatter. Skills use generic capability names; Copilot CLI applies projections automatically.
+Use `profile-al-dev-shared/knowledge/workflow-routing.md` to classify work as TRIVIAL, SIMPLE, MEDIUM, or COMPLEX and route accordingly.
 
-## Agent File Format
+### 2. Resumable multi-phase workflows
 
-Each agent is a markdown file in `profile-al-dev-shared/agents/<name>.md` with YAML frontmatter. Agents declare generic capabilities in the `tools:` section; Copilot CLI consumes the generated Copilot-native projection.
+Use `profile-al-dev-shared/knowledge/workflow-resilience.md` and `.dev/progress.md` checkpoints for multi-phase execution.
 
-## Key Architectural Patterns
+### 3. Artifact contracts
 
-**Complexity routing** (`knowledge/workflow-routing.md`): All skills classify tasks as TRIVIAL / SIMPLE / MEDIUM / COMPLEX and route accordingly.
+Use `profile-al-dev-shared/knowledge/artifact-contracts.md` as the source of truth for required handoff artifacts and completion evidence.
 
-**Workflow resilience** (`knowledge/workflow-resilience.md`): Multi-phase skills checkpoint to `.dev/progress.md` after each phase.
+### 4. Skill trigger regression scenarios
 
-**`.dev/` directory convention**: All skill artifacts are written here — progress checkpoints, solution plans, code reviews, lint reports.
+Use `profile-al-dev-shared/skills/<name>/tests/scenarios.yaml` and `profile-al-dev-shared/knowledge/skill-test-format.md` when adding or fixing skill trigger behavior.
 
-## Validation and Projection
+## Preferred Editing Practice
 
-To validate the plugin and regenerate Copilot CLI projections after changes to shared source:
+1. Edit shared source only (skills/agents/knowledge).
+2. Keep changes scoped and pattern-consistent with neighboring files.
+3. Regenerate projections when shared agents or projection logic changes.
+4. Run validations before finalizing.
+
+## Validation Commands
+
+Run the applicable checks after shared-surface changes:
 
 ```bash
-# Validate that shared source has no harness-specific leakage
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-
-# Validate agent structure
 python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+python3 scripts/tests/test_generate_agent_projections.py
+```
 
-# Regenerate projections for all harnesses (including Copilot CLI)
+Projection regeneration:
+
+```bash
 python3 scripts/generate-agent-projections.py
 ```
 
+Use `docs/development-commands.md` for the full maintainer command set.
+
+## Documentation Quality Standards
+
+- Keep markdown structurally valid (headings, fenced code blocks with language tags, spacing).
+- Avoid placeholder text (`TODO`, `TBD`, literal `YYYY-MM-DD`, unresolved templates).
+- When reporting counts of skills/agents, verify with filesystem queries rather than manual estimates.
+
+Example count checks:
+
+```bash
+find profile-al-dev-shared/skills -name "SKILL.md" | wc -l
+find profile-al-dev-shared/agents -name "*.md" | wc -l
+```
+
+## Planning and Execution Guidance
+
+- For small, unambiguous changes: execute directly with focused verification.
+- For medium or ambiguous changes: use `al-dev-plan` style competitive planning before implementation.
+- For large cross-surface changes: use a staged plan with explicit checkpoints and integration reviews.
+
 ## Commit Conventions
 
-project-type: tool
-Full spec: `profile-al-dev-shared/knowledge/commit-conventions.md`
+Project type: `tool`.
+
+Source of truth: `profile-al-dev-shared/knowledge/commit-conventions.md`.
