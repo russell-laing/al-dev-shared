@@ -272,10 +272,12 @@ review cycles.
   `markdownlint` (unique headings, blank lines around headings/lists, language
   specifiers on code blocks). Run verification before committing markdown changes.
 - **Count verification:** When reporting a count of skills, agents, or other
-  enumerable plugin surfaces, verify it by running `ls <dir> | wc -l` (or
-  `find . -name "SKILL.md" | wc -l` for skills) and cross-checking against any
-  manually-enumerated list. Never state a count without cross-checking against the
-  filesystem.
+  enumerable plugin surfaces, verify it by running
+  `find <dir> -name "SKILL.md" | wc -l` (skills) or
+  `find <dir> -name "*.md" | wc -l` (agents) and cross-checking against any
+  manually-enumerated list. Avoid `ls | wc -l` — it overcounts if non-target
+  files or subdirectories exist. Never state a count without cross-checking
+  against the filesystem.
 
 ## Plan Self-Review Requirement
 

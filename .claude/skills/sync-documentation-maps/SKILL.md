@@ -95,8 +95,11 @@ within 60 s):
    to `/sync-documentation-maps-collect --team-ids in-session,in-session`. The
    collect step reads artifacts directly from `${RUN_DIR}/audit/` (do **not**
    add `--wait`, which would attempt remote polling on the sentinel value).
+   **Warning:** collect Phase 4 (update team dispatch) also uses RemoteTrigger —
+   Option 1 defers but does not eliminate the dependency. If RemoteTrigger is
+   persistently unavailable, use Option 3 instead.
 3. Alternatively, use `/review-maps` which includes a built-in in-session mode
-   gate and does not depend on RemoteTrigger.
+   gate and does not depend on RemoteTrigger at any phase.
 
 ---
 

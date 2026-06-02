@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 import os
+import hashlib
 
 try:
     event = json.load(sys.stdin)
@@ -21,15 +22,23 @@ try:
     )
     config = os.path.join(project_root, ".markdownlint.json")
 
+    # Snapshot before so we can detect whether --fix actually changed the file
+    with open(abs_path, "rb") as f:
+        before_hash = hashlib.md5(f.read()).hexdigest()
+
     result = subprocess.run(
         ["markdownlint", "--fix", "--config", config, abs_path],
         capture_output=True,
         text=True
     )
     if result.returncode == 0:
-        print(f"[post-edit] markdownlint: fixed {os.path.basename(abs_path)}")
+        with open(abs_path, "rb") as f:
+            after_hash = hashlib.md5(f.read()).hexdigest()
+        if before_hash != after_hash:
+            # File was mutated — warn so the caller re-reads before further edits
+            print(f"[post-edit] markdownlint: auto-fixed {os.path.basename(abs_path)} — re-read before further edits")
     else:
-        msg = (result.stdout or result.stderr).strip()[:200]
+        msg = (result.stdout.strip() or result.stderr.strip())[:200]
         print(f"[post-edit] markdownlint: unfixed issues remain — {msg}")
 except Exception:
     pass
