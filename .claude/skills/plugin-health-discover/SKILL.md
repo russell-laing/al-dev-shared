@@ -86,71 +86,21 @@ If NOT invoked with `--resume`:
 
 If `remaining_lenses` is empty, skip this phase entirely and proceed to Phase 4.
 
-Lenses run in a Workflow to isolate agent conversations. The Workflow receives
-a list of lens prompts (built in this phase) and fans them out via `pipeline()`,
-running all lenses concurrently. Each lens result is returned as a structured
-JSON object (~1KB), keeping the main session context lean.
+Lenses run in parallel in a Workflow to isolate agent conversations. Construct lens prompts per the examples in `.claude/skills/plugin-health-discover/workflow-lens-dispatch-reference.md`, then invoke the Workflow script with the lens prompt list.
+
+For each lens, pass only the context fields it requires (per `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
+
+**Invoke Workflow:**
 
 ```python
 import sys
 from pathlib import Path
+import json
+from datetime import datetime
+
 sys.path.insert(0, str(Path.cwd() / ".claude" / "skills" / "plugin-health-discover"))
 from workflow_utils import invoke_workflow, wait_for_workflow
-```
 
-### Step 1: Build lens prompt list from assembled lens definitions
-
-For each lens in scope (`remaining_lenses`), construct a prompt object:
-
-```text
-lens_prompt_list = []
-
-for lens_name in remaining_lenses:
-    lens_prompt = {
-        "name": lens_name,
-        "agent_type": lens_name,  # e.g. "design-agent-lens-tool-hygiene"
-        "prompt": f"""
-Run the {lens_name} analysis.
-
-Files to analyze:
-{formatted_file_list}
-
-Context fields:
-{context_field_content}
-"""
-    }
-    lens_prompt_list.append(lens_prompt)
-```
-
-**Context field tables (per lens):**
-
-**For design-agent-lens-* agents** (when `--dimension design` or `all`):
-
-| Lens | Context field(s) |
-|------|-----------------------------|
-| `design-agent-lens-tool-hygiene` | `tool_inventory` |
-| `design-agent-lens-model-fit` | `model_assignments` |
-| `design-agent-lens-scope-isolation` | *(file list only)* |
-| `design-agent-lens-caller-alignment` | `caller_map` |
-| `design-agent-lens-usage-patterns` | `single_use_agents`, `already_inline_candidates` |
-
-**For design-skill-lens-* agents** (when `--dimension design` or `all`):
-
-| Lens | Context field(s) |
-|------|-----------------------------|
-| `design-skill-lens-shared-backbone` | `agent_usage_counts` |
-| `design-skill-lens-complexity` | `phase_counts`, `no_agent_skills` |
-| `design-skill-lens-near-duplicates` | `agent_usage_counts`, `phase_counts` |
-| `design-skill-lens-handoff-gaps` | `handoff_chains` |
-| `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
-
-**For quality-agent-lens-*, quality-skill-lens-*, naming-convention-lens** (when `--dimension quality` or `all`):
-Pass file list only. For naming-convention-lens, also pass:
-`Convention doc: /Users/russelllaing/al-dev-shared/docs/al-dev-naming-convention.md`
-
-### Step 2: Invoke Workflow with lens prompt list
-
-```python
 workflow_path = Path(".claude/skills/plugin-health-discover/workflow-lens-dispatch.js")
 
 task_id = invoke_workflow(
@@ -160,78 +110,31 @@ task_id = invoke_workflow(
 )
 ```
 
-The Workflow script (below) runs all lenses in parallel via `pipeline()`:
-
-```javascript
-export const meta = {
-  name: 'plugin-health-lens-sweep',
-  description: 'Fan out plugin health lens agents in parallel, return structured findings',
-  phases: [{ title: 'Lens sweep' }]
-}
-
-const FINDINGS_SCHEMA = {
-  type: 'object',
-  required: ['lens', 'findings', 'suggestion_count'],
-  properties: {
-    lens:             { type: 'string' },
-    findings:         { type: 'string' },
-    suggestion_count: { type: 'number' }
-  }
-}
-
-// args = [{ name, agent_type, prompt }]
-const results = await pipeline(
-  args,
-  lens => agent(
-    lens.prompt,
-    {
-      label:      lens.name,
-      phase:      'Lens sweep',
-      schema:     FINDINGS_SCHEMA,
-      agentType:  lens.agent_type
-    }
-  )
-)
-
-return results.filter(Boolean)
-```
-
-### Step 3: Wait for Workflow completion and process results
+**Wait for completion and process results:**
 
 ```python
-findings = wait_for_workflow(task_id, timeout=600)
+findings = wait_for_workflow(task_id, timeout_seconds=600)
+
+if findings is None:
+    findings = []
+
+for lens in findings:
+    timestamp = datetime.now().isoformat()
+    output_file = f".dev/{today}-plugin-health-lens-{lens['lens']}.json"
+    with open(output_file, 'w') as f:
+        json.dump({
+            "lens": lens['lens'],
+            "findings": lens['findings'],
+            "suggestion_count": lens.get('suggestion_count', 0),
+            "completed_at": timestamp
+        }, f, indent=2)
 ```
 
-For each completed lens in `findings`:
+**Check for missing lenses:**
 
-```python
-timestamp = datetime.now().isoformat()
-output_file = f".dev/{today}-plugin-health-lens-{lens['lens']}.json"
-with open(output_file, 'w') as f:
-    json.dump({
-        "lens": lens['lens'],
-        "findings": lens['findings'],
-        "suggestion_count": lens.get('suggestion_count', 0),
-        "completed_at": timestamp
-    }, f, indent=2)
-```
+The current Workflow script returns only truthy lens result objects and does not emit a `failed_lenses` list. If a lens result is missing, note the lens name in the findings output by comparing returned lens identifiers with `remaining_lenses`.
 
-### Step 4: Write findings to disk
-
-All lens results are now in `.dev/` as individual `.json` files. Phase 4 will
-read and assemble them.
-
-### Step 5: Check for failed lenses
-
-If the Workflow result includes a `failed_lenses` list:
-
-```text
-Log: "Failed lenses: {', '.join(failed_lenses)}"
-```
-
-A failed lens never aborts discovery; the sweep continues.
-
-Use per-lens minimal context per `knowledge/lens-invocation-patterns.md`.
+See `.claude/skills/plugin-health-discover/workflow-lens-dispatch-reference.md` for implementation details and code examples. Verify that `agentType` is used consistently in the built prompt list, the reference document, and `.claude/skills/plugin-health-discover/workflow-lens-dispatch.js`.
 
 ## Phase 4 — Assemble findings file from disk
 
