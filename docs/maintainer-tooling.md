@@ -290,7 +290,7 @@ findings. Run it after a both-surface health audit.
 ## Quick Reference: Which Skill to Run When
 
 | Situation | Run |
-|-----------|-----|
+| --- | --- |
 | Added or removed a skill or agent | `/review-maps` |
 | Want to check one map only | `/review-skill-map` or `/review-agent-map` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
