@@ -276,6 +276,7 @@ findings. Run it after a both-surface health audit.
 | `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` (the dossier); refreshes `docs/al-dev-plugin-graph.md` for the plugin surface |
 | `/al-dev-map-suggestions-verify` | implementation plan under `docs/superpowers/plans/` |
 | `/analyze-architectural-design` | `docs/al-dev-plugin-synthesis.md` (living doc, overwritten each run) |
+| `/review-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` (via sub-skills) |
 | `/review-skill-map` | `docs/al-dev-skills-map.md` |
 | `/review-agent-map` | `docs/al-dev-agent-map.md` |
 | `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and dependency graph |
@@ -299,4 +300,4 @@ findings. Run it after a both-surface health audit.
 | Want skill and agent findings tied together | `/analyze-architectural-design` (after a both-surface audit) |
 | Ready to act on accepted findings | `/al-dev-map-suggestions-verify` |
 | Maps are out of sync, no rush | `/sync-documentation-maps` (async — then `-collect`, then `-finalize`) |
-| Maps are out of sync, fix now | `/review-skill-map` + `/review-agent-map` (in-session) |
+| Maps are out of sync, fix now | `/review-maps` (in-session) |
