@@ -1,5 +1,5 @@
 ---
-description: "Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-agent-execute by handling error recovery in isolation."
+description: "Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, and returns fix recommendations to the caller. Never re-runs commits — returns next_step guidance so the caller re-dispatches the execute agent. Complements al-dev-commit-agent-execute by handling error recovery in isolation."
 tools: ["Read", "Write", "Bash"]
 ---
 
