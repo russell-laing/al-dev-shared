@@ -17,7 +17,7 @@ Validate OOXML file integrity on staged files before commit execution.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` (inline text block) — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
 
 ## Outputs
 

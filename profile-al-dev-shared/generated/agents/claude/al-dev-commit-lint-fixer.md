@@ -12,7 +12,7 @@ Run pre-flight lint and trailing whitespace fixes on staged source files before 
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` (inline text block) — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
 
 ## Outputs
 

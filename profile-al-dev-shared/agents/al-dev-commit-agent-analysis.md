@@ -27,7 +27,7 @@ All inputs arrive in the dispatch prompt:
 | REPO | string | Project root directory (e.g., /path/to/project) |
 | PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | Freshdesk ticket number |
-| Staged git index | **Yes** | Read via `git diff --cached` commands |
+| Staged git index | **Yes** | Read via `git diff --cached` bash commands within the agent — not pre-structured in the dispatch prompt |
 
 ## Outputs
 
@@ -104,7 +104,7 @@ Use one canonical extension set for OOXML policy checks:
 
 ```bash
 OOXML_EXTENSIONS_REGEX='\.(docx|xlsx|pptx|odt)$'
-```bash
+```
 
 Build staged-file sets without word-splitting:
 
@@ -124,7 +124,7 @@ while IFS= read -r -d '' f; do
     *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
   esac
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
-```bash
+```
 
 ### Return Format (Step 6)
 
