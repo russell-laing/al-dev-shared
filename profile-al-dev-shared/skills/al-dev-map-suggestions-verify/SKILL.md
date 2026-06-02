@@ -87,6 +87,8 @@ For each suggestion, synchronously:
 
 ## Path B: Remote team dispatch (3+ suggestions)
 
+> **Independence assumption:** The 3+ threshold assumes suggestions are mostly independent (targeting different files or output artifacts). For dependent suggestions that modify the same files (e.g., both updating the same skill), consider running inline verification even if count ≥3 to avoid parallel verification conflicts.
+
 1. Build team context JSON with all suggestions
 2. Spawn remote duck worker agents via RemoteTrigger (one agent per suggestion, parallel)
 3. Update `.dev/progress.md` checkpoint with run state (run_id, phase=2, status=dispatched)
