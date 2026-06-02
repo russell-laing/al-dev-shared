@@ -3,19 +3,17 @@ name: sync-documentation-maps
 description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
   or to verify accuracy after adding/removing skills or agents. Dispatches
-  parallel remote audit teams via RemoteTrigger and exits — session freed after
-  ~5 minutes. Collect results with /sync-documentation-maps-collect.
+  parallel remote audit agents via RemoteTrigger and exits — session freed.
+  Collect results with /sync-documentation-maps-collect.
   Triggers: "sync documentation maps", "update maps", "are the maps accurate".
 argument-hint: "[--all] [--skip-commit]"
 ---
 
 # Sync Documentation Maps
 
-Lightweight dispatch coordinator. Spawns parallel remote audit teams for skills
+Lightweight dispatch coordinator. Spawns parallel remote audit agents for skills
 and agents via RemoteTrigger, writes a checkpoint with team IDs and artifact
-paths, then exits — freeing the session after roughly 5 minutes. The audits
-themselves already ran in parallel in the previous implementation; the
-improvement here is session-freeing, not parallelism.
+paths, then exits — freeing the session after roughly 5 minutes.
 
 **Three-skill workflow:**
 
@@ -71,35 +69,37 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 ## Phase 3 — Spawn Audit Teams via RemoteTrigger
 
 Dispatch **both** tasks simultaneously (do not wait for one before starting the
-other). Use RemoteTrigger to launch each audit as an independent remote agent.
+other). Use RemoteTrigger `create` with an `agentPath` + `prompt` body:
 
-- **Skills audit:** dispatch agent `.claude/agents/sync-documentation-maps-skill-audit.md`
-  - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
-    `${RUN_DIR}/audit/skill-audit.json`
-- **Agent audit:** dispatch agent `.claude/agents/sync-documentation-maps-agent-audit.md`
-  - Pass `RUN_ID` and `RUN_DIR` in the prompt so the agent writes its findings to
-    `${RUN_DIR}/audit/agent-audit.json`
+- **Skills audit:**
+
+  ```json
+  {
+    "agentPath": "/Users/russelllaing/al-dev-shared/.claude/agents/sync-documentation-maps-skill-audit.md",
+    "prompt": "Audit skills in profile-al-dev-shared/skills/ against docs/al-dev-skills-map.md.\n\nInputs:\n- run_id: <RUN_ID>\n- result_dir: <RUN_DIR>\n\nWrite audit findings to <result_dir>/audit/skill-audit.json per the schema in your agent definition."
+  }
+  ```
+
+- **Agent audit:**
+
+  ```json
+  {
+    "agentPath": "/Users/russelllaing/al-dev-shared/.claude/agents/sync-documentation-maps-agent-audit.md",
+    "prompt": "Audit agents in profile-al-dev-shared/agents/ against docs/al-dev-agent-map.md.\n\nInputs:\n- run_id: <RUN_ID>\n- result_dir: <RUN_DIR>\n\nWrite audit findings to <result_dir>/audit/agent-audit.json per the schema in your agent definition."
+  }
+  ```
 
 Capture the returned task IDs as `SKILL_TEAM_ID` and `AGENT_TEAM_ID`.
 
-**If RemoteTrigger fails** (schema error, task ID not returned, or no response
-within 60 s):
+**If RemoteTrigger fails** (non-200 response, no task ID returned):
 
-1. Fall back to the Agent tool and dispatch both audits in-session:
-   - Spawn `subagent_type: sync-documentation-maps-skill-audit` with `RUN_ID`
-     and `RUN_DIR` in the prompt
-   - Spawn `subagent_type: sync-documentation-maps-agent-audit` with the same
-     context
+1. Fall back to the Agent tool with `run_in_background: true`:
+   - Spawn `subagent_type: sync-documentation-maps-skill-audit`
+   - Spawn `subagent_type: sync-documentation-maps-agent-audit`
    - Both agents write directly to `${RUN_DIR}/audit/`
 2. Set `SKILL_TEAM_ID=in-session` and `AGENT_TEAM_ID=in-session` — pass these
-   to `/sync-documentation-maps-collect --team-ids in-session,in-session`. The
-   collect step reads artifacts directly from `${RUN_DIR}/audit/` (do **not**
-   add `--wait`, which would attempt remote polling on the sentinel value).
-   **Warning:** collect Phase 4 (update team dispatch) also uses RemoteTrigger —
-   Option 1 defers but does not eliminate the dependency. If RemoteTrigger is
-   persistently unavailable, use Option 3 instead.
-3. Alternatively, use `/review-maps` which includes a built-in in-session mode
-   gate and does not depend on RemoteTrigger at any phase.
+   to `/sync-documentation-maps-collect --team-ids in-session,in-session`.
+   The session is not freed in fallback mode; wait for completion notifications.
 
 ---
 
@@ -108,7 +108,16 @@ within 60 s):
 Write a checkpoint file so `/sync-documentation-maps-collect` can locate the
 running teams and their artifact paths.
 
-Write `.dev/sync-documentation-maps-checkpoint.json` with the following fields:
+Write the checkpoint with the following fields. Before writing, check whether
+`.dev/sync-documentation-maps-checkpoint.json` already exists:
+
+```bash
+ls -la .dev/sync-documentation-maps-checkpoint.json 2>/dev/null
+```
+
+If it **exists**, read it with the Read tool first, then use the Edit tool to
+replace the entire JSON block. If it **does not exist**, use the Write tool
+directly. Apply the same read-first rule to `${RUN_DIR}/manifest.json`.
 
 | Field | Value |
 |---|---|
@@ -118,13 +127,14 @@ Write `.dev/sync-documentation-maps-checkpoint.json` with the following fields:
 | `skill_audit_team_id` | `SKILL_TEAM_ID` |
 | `agent_audit_team_id` | `AGENT_TEAM_ID` |
 | `phase` | `"audit"` |
-| `status` | `"dispatched"` |
+| `status` | `"audit"` |
 | `auto_update` | `AUTO_UPDATE` (true/false) |
 | `skip_commit` | `SKIP_COMMIT` (true/false) |
 | `result_dir` | `RUN_DIR` |
 | `manifest_path` | `${RUN_DIR}/manifest.json` |
 
-Also write the identical JSON to `${RUN_DIR}/manifest.json`.
+Write the identical JSON to `${RUN_DIR}/manifest.json` (this is always new,
+so Write is safe without a prior read).
 
 Verify both files exist:
 

@@ -3,8 +3,9 @@ name: review-maps
 description: >-
   Map accuracy sync — asks whether to run in-session or async at start.
   In-session runs /review-skill-map + /review-agent-map now; async dispatches
-  /sync-documentation-maps and frees this session. Pass --no-update to skip
-  the mode prompt and audit both maps in-session without modifying them.
+  /sync-documentation-maps and frees this session (collect results later with
+  /sync-documentation-maps-collect). Pass --no-update to skip the mode prompt
+  and audit both maps in-session without modifying them.
   Triggers on: "review maps", "update maps", "sync maps", "are the maps
   accurate", "check the maps".
 argument-hint: "[--no-update]"
