@@ -78,7 +78,7 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | al-developer              | Implements AL code (tables, pages, codeunits)   |
 | solution-architect        | Competitive solution design                     |
 | security-reviewer         | Security, permissions, data access review       |
-| al-expert-reviewer        | AL patterns, naming, BC best practices          |
+| al-pattern-reviewer       | AL patterns, naming, BC best practices          |
 | performance-reviewer      | Query efficiency, N+1, resource usage           |
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |

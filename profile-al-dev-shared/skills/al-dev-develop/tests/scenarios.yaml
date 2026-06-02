@@ -8,7 +8,7 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Standard development path. Asserts the developer and all 3 reviewer specialists are dispatched. Plan file is a fixture — harness pre-seeds it before run."
 
@@ -30,7 +30,7 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Locks in the dated resume pack so compaction recovery reads artifacts instead of re-parsing the full plan."
 
@@ -45,7 +45,7 @@ scenarios:
       - al-dev-shared:al-dev-developer
     must_not_invoke_agent:
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Asserts the orchestrator stages expected in-scope files, blocks on unexpected residue, writes the blocking review artifact, and does not continue into normal reviewer flow or a success review while unexpected files remain."
 
@@ -57,7 +57,7 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Locks in summary-only compile reporting and references `.dev/compile-errors.log` as the full source of diagnostics."
 
@@ -68,7 +68,7 @@ scenarios:
     must_not_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Intent preflight regression. Review-only prompts must not enter edit or review-panel execution flow."
 
@@ -82,7 +82,7 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Locks autonomous compile prompts to al-dev-develop autonomous behavior instead of ad-hoc fixes."
 
@@ -95,6 +95,6 @@ scenarios:
     must_invoke_agent:
       - al-dev-shared:al-dev-developer
       - al-dev-shared:al-dev-security-reviewer
-      - al-dev-shared:al-dev-expert-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
     notes: "Final-gate regression. The develop flow must produce and read the Phase 4 handoff before making a ready-for-review claim."
