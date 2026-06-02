@@ -21,7 +21,7 @@ that need design-skill lens results without full synthesis.
 
 ## Phase 1 — Read the Plugin Map and Build Working Lists
 
-Read `docs/al-dev-plugin-map.md` in full. Build these working lists:
+Read `docs/al-dev-skills-map.md` in full. Build these working lists:
 
 1. **Agent usage counts** — for every `al-dev-shared:` agent type mentioned in
    drill-downs, record which skills use it and how many times.
@@ -34,7 +34,7 @@ Read `docs/al-dev-plugin-map.md` in full. Build these working lists:
    by `/al-dev-plan` or `/al-dev-investigate`. Note whether each appears in the
    Layer 1 diagram as a dashed tributary arrow (`-.->`).
 
-Also read the Layer 1 diagram content from `docs/al-dev-plugin-map.md` for use
+Also read the Layer 1 diagram content from `docs/al-dev-skills-map.md` for use
 in the pre-planning lens.
 
 Get SKILL.md file paths:

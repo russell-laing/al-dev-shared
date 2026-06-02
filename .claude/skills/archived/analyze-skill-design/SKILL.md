@@ -3,7 +3,7 @@ name: analyze-skill-design
 description: >-
   Analyze profile-al-dev-shared plugin architecture for improvement opportunities,
   then write concrete Atomise / Connect / Merge / Promote suggestions to the
-  Observations section of docs/al-dev-plugin-map.md. Use whenever you want
+  Observations section of docs/al-dev-skills-map.md. Use whenever you want
   strategic recommendations for making the plugin easier to maintain or more
   composable — including when someone asks "should these skills be merged?",
   "what patterns could be shared?", "is this skill doing too much?", "how can
@@ -19,7 +19,7 @@ argument-hint: "[focus: atomise|connect|merge|all]"
 
 Strategic analysis of the al-dev plugin architecture. Reads the current plugin
 map, applies four analytical lenses, and writes concrete improvement suggestions
-to the `## Observations` section of `docs/al-dev-plugin-map.md`.
+to the `## Observations` section of `docs/al-dev-skills-map.md`.
 
 Run `/review-skill-map` first if the map may be out of date.
 
@@ -62,7 +62,7 @@ Invoke `/draft-map-suggestions --type skill`. Pass as context:
 
 `/draft-map-suggestions` handles: drafting suggestions, completing inventory tables,
 dispatching the diagram generator, selecting the highest-leverage suggestion, and
-writing to `docs/al-dev-plugin-map.md`.
+writing to `docs/al-dev-skills-map.md`.
 
 ---
 
