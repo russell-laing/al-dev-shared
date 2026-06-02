@@ -51,6 +51,10 @@ Read the checkpoint written by `/sync-documentation-maps-collect`:
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
 ```
 
+Use the read pattern in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md` while applying
+the finalize-specific field requirements and phase gate below.
+
 Extract the following fields:
 
 | Field | Variable |
@@ -282,7 +286,9 @@ Set `phase` to `"complete"` and `status` to `"done"` in both checkpoint files:
 # Update ${RUN_DIR}/manifest.json
 ```
 
-Use `jq` to update only the two fields; preserve all pre-existing fields:
+Use the merge pattern in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Update only the
+two fields; preserve all pre-existing fields:
 
 ```bash
 CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json"

@@ -49,7 +49,9 @@ Usage: /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id> [--wait
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
 ```
 
-Extract these fields:
+Extract fields `run_id`, `result_dir`, `auto_update`, `skip_commit` per the
+field table below and the full contract in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
 
 | Field | Variable |
 |---|---|
@@ -189,7 +191,10 @@ remote team spawning and task tracking.
 For surfaces not selected, set the corresponding variable to `null`.
 
 **Write updated checkpoint.** Merge the new update team IDs into the existing
-checkpoint and `${RUN_DIR}/manifest.json`. Add or update only these fields:
+checkpoint and `${RUN_DIR}/manifest.json` using the preserve-existing-fields
+pattern in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
+Update fields: `phase`, `status`, `update_choice`, `skill_update_team_id`,
+`agent_update_team_id`.
 
 | Field | Value |
 |---|---|
@@ -199,11 +204,7 @@ checkpoint and `${RUN_DIR}/manifest.json`. Add or update only these fields:
 | `skill_update_team_id` | `SKILL_UPDATE_TEAM_ID` or `null` |
 | `agent_update_team_id` | `AGENT_UPDATE_TEAM_ID` or `null` |
 
-**Merge strategy:** Read the existing checkpoint JSON, update only the five
-fields above, and write the result back. Preserve all pre-existing fields
-(e.g., `run_id`, `auto_update`, `skip_commit`, `result_dir`). Use `jq` to
-update individual keys, or read-mutate-write via script. Verify both files
-were written:
+Verify both files were written:
 
 ```bash
 ls -la /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
