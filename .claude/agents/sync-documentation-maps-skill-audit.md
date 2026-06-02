@@ -4,7 +4,7 @@ description: >-
   Audits active skills in profile-al-dev-shared/skills/ against
   docs/al-dev-skills-map.md and writes a structured JSON discrepancy report
   to the run artifact directory. Called by /sync-documentation-maps dispatch phase.
-model: claude-sonnet-4-6
+model: claude-haiku-4-5-20251001
 tools: ["Read", "Bash", "Write"]
 ---
 

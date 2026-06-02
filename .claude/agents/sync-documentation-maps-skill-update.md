@@ -4,7 +4,7 @@ description: >-
   Reads skill audit findings from the run artifact directory and writes an
   updated docs/al-dev-skills-map.md to the run updates directory.
   Called by /sync-documentation-maps-collect update dispatch phase.
-model: claude-sonnet-4-6
+model: claude-haiku-4-5-20251001
 tools: ["Read", "Bash", "Write"]
 ---
 
