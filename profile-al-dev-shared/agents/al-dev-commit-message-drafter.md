@@ -4,7 +4,7 @@ description: >-
   Git commit message drafter agent. Consumes manifests from al-dev-commit-agent-analysis,
   proposes atomic commit groups, and drafts commit messages. Dispatched by
   /al-dev-commit (message-drafting phase).
-model: sonnet
+model: haiku
 tools: []
 ---
 
@@ -12,6 +12,8 @@ tools: []
 
 Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
 manifest analysis and project context.
+
+**Tools:** None — all inputs arrive in the dispatch prompt; no external tool calls are required.
 
 All inputs arrive in the dispatch prompt:
 

@@ -328,7 +328,7 @@ Dispatch the message-drafting agent with the analysis results:
 ```text
 Agent tool:
   agent: al-dev-shared:al-dev-commit-message-drafter
-  model: claude-sonnet-4-6
+  model: haiku
   description: "Draft commit messages and propose groups"
 
 Prompt:

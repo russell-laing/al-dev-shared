@@ -10,6 +10,8 @@ tools: []
 Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
 manifest analysis and project context.
 
+**Tools:** None — all inputs arrive in the dispatch prompt; no external tool calls are required.
+
 All inputs arrive in the dispatch prompt:
 
 - `MANIFESTS` — per-file change summaries from al-dev-commit-agent-analysis
