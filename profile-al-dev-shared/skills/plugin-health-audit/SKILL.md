@@ -34,6 +34,12 @@ results in a separate session after dispatch. Never auto-edits source files.
 collection (Phase 3) completes in ~10-15 min. Total session token cost: ~40-50 min
 over two sessions vs. 5+ hours in single-session monolithic approach.
 
+**Token-limit resilience:** If a remote sweep is truncated (lenses show `"pending"`
+in the checkpoint), run `/plugin-health-audit --resume` to collect whatever completed.
+For very large surfaces that repeatedly hit token limits, run separate sweeps:
+`/plugin-health-audit --surface plugin` then `/plugin-health-audit --surface tooling`
+— this halves the lens count per dispatch.
+
 ## Reference Documents
 
 - `../../knowledge/plugin-health-lenses.md` — Lens definitions and scoring
