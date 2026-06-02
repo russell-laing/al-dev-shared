@@ -14,6 +14,9 @@ Validate that the shared plugin surface (`profile-al-dev-shared/`) contains no
 harness-specific tokens or leakage. This ensures the authored content remains
 neutral and distributable across Claude Code, Copilot CLI, and Codex harnesses.
 
+The command name is grandfathered from an earlier alignment-oriented workflow;
+the actual behavior is a harness-neutrality validation pass.
+
 The validator scans skills, agents, knowledge documents, and markdown guides
 for forbidden patterns like "AskUserQuestion", "subagent_type", "Claude Code",
 "Copilot", and harness-specific settings paths.

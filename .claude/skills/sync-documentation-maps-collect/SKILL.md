@@ -23,6 +23,11 @@ conditionally spawns remote update teams.
 **Working directory assumption:** All relative paths are resolved from
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
 
+**Runtime assumption:** This workflow requires a harness/session that can
+spawn and track remote update teams. If remote dispatch is unavailable, stop
+and tell the user to rerun in a supported session; do not attempt a partial
+inline update in this skill.
+
 ---
 
 ## Phase 1 — Load & Resume
@@ -164,6 +169,13 @@ stop.
 
 **Dispatch update teams via RemoteTrigger.** Both dispatches run in parallel —
 do not wait for one before starting the other.
+
+If the harness cannot spawn remote update teams, stop with:
+
+```text
+Remote dispatch unavailable. Run this workflow in a session that supports
+remote team spawning and task tracking.
+```
 
 - **Skills update** (if `UPDATE_CHOICE` is `skills` or `both`): dispatch agent
   `.claude/agents/sync-documentation-maps-skill-update.md` with a prompt that
