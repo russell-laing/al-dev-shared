@@ -159,13 +159,14 @@ rubber-duck checks. Build a directed edge A→B when B's checks must read a file
 produces or modifies; dispatch in topological order, parallelising any set with
 no incoming edges.
 
-When there are 3+ independent suggestions, invoke `superpowers:dispatching-parallel-agents`
+When any topological layer (a set of suggestions with no incoming edges) contains
+3+ suggestions, invoke `superpowers:dispatching-parallel-agents` for that layer
 before starting rubber-ducking. Dispatch one Explore subagent per suggestion.
 Each agent should: read the affected file(s) in full, run U2 artifact checks,
 run the type-specific grep(s), and return a structured rubber duck record.
 Collect all records before writing any plan content.
 
-For ≤2 suggestions (or suggestions with ordering dependencies), the sequential
+When every layer contains ≤2 suggestions, the sequential
 inline path is fine — keep it as the fallback.
 
 ---
