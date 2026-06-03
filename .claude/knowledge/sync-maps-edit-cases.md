@@ -39,17 +39,18 @@ Used by `sync-documentation-maps-agent-update` Step 3.
 
 1. Read `profile-al-dev-shared/agents/<agent-name>.md` to extract `model:`,
    `tools:` list, and `description:` frontmatter fields.
-2. Add a new row to the Layer 1 Catalog table (`Agent | Model | Tools | Spawned by`);
-   use the caller list from the discrepancy `detail` field, or `(none found)`.
-3. Insert a new `### <agent-name>` Layer 2 profile section (before Observations
-   if present) with `**Description:**`, `**Model:**`, `**Tools:**`, `**Spawned by:**`
-   lines.
+2. If the agent has no row in the Layer 1 Catalog table, add one
+   (`Agent | Model | Tools | Spawned by`); use the caller list from the
+   discrepancy `detail` field, or `(none found)`.
+3. If the agent has no `### <agent-name>` Layer 2 section, insert one (before
+   Observations if present) with `**Description:**`, `**Model:**`, `**Tools:**`,
+   `**Spawned by:**` lines.
 
 **`stale_in_map`** — archived agent still has Layer 1 row or Layer 2 section.
 
-1. Remove the agent's row from the Layer 1 Catalog table.
-2. Remove the entire `### <agent-name>` Layer 2 section (heading through the
-   next `###` or `##` heading, exclusive).
+1. If the agent has a row in the Layer 1 Catalog table, remove it.
+2. If the agent has a `### <agent-name>` Layer 2 section, remove it (heading
+   through the next `###` or `##` heading, exclusive).
 
 **`model_mismatch`** — frontmatter model does not match Layer 2 section.
 
