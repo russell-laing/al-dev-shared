@@ -66,6 +66,8 @@ Phase 4.2  Branch on HOOK_FAILURES
        ├─ ready-to-retry  ──────────────────────► re-dispatch Phase 4.1
        ├─ needs-manual-intervention  ──────────► surface to user, stop
        └─ non-recoverable  ─────────────────────► abort, report to user
+
+Phase 4.4  Summary (orchestrator only — no agent dispatch)
 ```
 
 ## Shared Dispatch-Prompt Contract
