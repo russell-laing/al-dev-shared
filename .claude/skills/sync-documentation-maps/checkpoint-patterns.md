@@ -33,6 +33,31 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
 adds update fields. `sync-documentation-maps-finalize` marks completion. Preserve
 unknown fields when updating either checkpoint file.
 
+The `*_team_id` fields hold the **background-agent IDs** returned when each audit or
+update agent is dispatched. They are informational handles only — they are **not**
+polled with `TaskGet`. The authoritative handoff between phases is the artifact file
+each agent writes under `${RUN_DIR}` (see the dispatch pattern below); the next phase
+gates on artifact presence, not on agent status.
+
+## Background-Agent Dispatch Pattern
+
+The three sync skills dispatch their audit and update agents as **in-session
+background agents**, not remote cloud routines. The canonical steps:
+
+1. **Dispatch** each agent with the `Agent` tool and `run_in_background: true`,
+   passing `RUN_ID` and `RUN_DIR` in the prompt. Run the two agents for a phase in
+   parallel (one message, both calls) — they target different artifact files.
+2. **Capture** the returned agent ID into the matching `*_team_id` checkpoint field
+   for traceability.
+3. **Hand off via artifacts.** Each agent writes its result to a fixed path under
+   `${RUN_DIR}` (audit JSON or update map). The harness notifies when a background
+   agent completes; the consuming phase confirms completion by checking that the
+   artifact file exists and is valid — never by polling the agent ID.
+
+This keeps results on the local filesystem, which the collect and finalize phases
+read directly. Cloud routines (the claude.ai triggers API) are **not** used here:
+they execute server-side and cannot write to the local `${RUN_DIR}`.
+
 ### Read Pattern (Phase 1 of each skill)
 
 ```bash

@@ -1,9 +1,9 @@
 ---
 name: sync-documentation-maps-collect
 description: >-
-  Collect results from /sync-documentation-maps audit teams. Reads audit
+  Collect results from /sync-documentation-maps audit agents. Reads audit
   artifacts, presents discrepancy findings, asks which maps to update, and
-  dispatches remote update teams. Second step of the async sync workflow.
+  dispatches background update agents. Second step of the async sync workflow.
 argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
 ---
 
@@ -24,9 +24,9 @@ conditionally spawns remote update teams.
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
 
 **Runtime assumption:** This workflow requires a harness/session that can
-spawn and track remote update teams. If remote dispatch is unavailable, stop
-and tell the user to rerun in a supported session; do not attempt a partial
-inline update in this skill.
+spawn background agents and read their artifact files. If background dispatch is
+unavailable, stop and tell the user to rerun in a supported session; do not
+attempt a partial inline update in this skill.
 
 ---
 
@@ -83,13 +83,16 @@ Cancel, stop. If `status` is unset or `"audit"`, proceed normally.
 
 ## Phase 2 — Poll & Read
 
-**Poll (only if `WAIT_MODE=true`).** Poll both `SKILL_TEAM_ID` and
-`AGENT_TEAM_ID` using `TaskGet` until each reports `completed` or `failed`.
-Log status after each check. Do not wait more than 30 minutes total; if the
-timeout is reached, advise the user to retry later and stop.
+**Poll (only if `WAIT_MODE=true`).** The audit agents run in the background and
+write their results to `${RUN_DIR}/audit/`. Poll on **artifact presence** —
+`ls "${RUN_DIR}/audit/skill-audit.json"` and `…/agent-audit.json` — until both
+files exist or the timeout is reached. Log which files are present after each
+check. Do not wait more than 30 minutes total; if the timeout is reached, advise
+the user to retry later and stop. (Background-agent IDs are not pollable with
+`TaskGet`; the artifact files are the authoritative completion signal.)
 
-If `WAIT_MODE=false`, skip polling — the read step below handles any absent
-artifacts.
+If `WAIT_MODE=false`, skip polling — the harness notifies when the background
+agents finish, and the read step below handles any artifact still absent.
 
 **Read audit artifacts.** Verify presence of both audit results:
 
@@ -169,23 +172,18 @@ Map the response to `UPDATE_CHOICE`: `skills`, `agents`, `both`, or `neither`.
 If `UPDATE_CHOICE=neither`, update the checkpoint `status` to `"skipped"` and
 stop.
 
-**Dispatch update teams via RemoteTrigger.** Both dispatches run in parallel —
-do not wait for one before starting the other.
+**Dispatch update agents in the background.** Both dispatches run in parallel —
+do not wait for one before starting the other. Use the `Agent` tool with
+`run_in_background: true`, per the canonical pattern in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
 
-If the harness cannot spawn remote update teams, stop with:
-
-```text
-Remote dispatch unavailable. Run this workflow in a session that supports
-remote team spawning and task tracking.
-```
-
-- **Skills update** (if `UPDATE_CHOICE` is `skills` or `both`): dispatch agent
-  `.claude/agents/sync-documentation-maps-skill-update.md` with a prompt that
-  includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
+- **Skills update** (if `UPDATE_CHOICE` is `skills` or `both`): dispatch
+  `subagent_type: sync-documentation-maps-skill-update` with a prompt that
+  includes `RUN_ID` and `RUN_DIR`. Capture the returned background agent ID as
   `SKILL_UPDATE_TEAM_ID`.
-- **Agents update** (if `UPDATE_CHOICE` is `agents` or `both`): dispatch agent
-  `.claude/agents/sync-documentation-maps-agent-update.md` with a prompt that
-  includes `RUN_ID` and `RUN_DIR`. Capture the returned ID as
+- **Agents update** (if `UPDATE_CHOICE` is `agents` or `both`): dispatch
+  `subagent_type: sync-documentation-maps-agent-update` with a prompt that
+  includes `RUN_ID` and `RUN_DIR`. Capture the returned background agent ID as
   `AGENT_UPDATE_TEAM_ID`.
 
 For surfaces not selected, set the corresponding variable to `null`.
@@ -236,5 +234,5 @@ Exit. Do not wait for update team completion.
 The audit team IDs returned by `/sync-documentation-maps`, comma-separated.
 
 **`--wait`** (optional)
-Poll both audit teams until they complete before reading artifacts.
+Poll for both audit artifacts until they are present before reading them.
 Default: read whatever artifacts are present and report pending for any absent.

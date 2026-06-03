@@ -3,17 +3,18 @@ name: sync-documentation-maps
 description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
   or to verify accuracy after adding/removing skills or agents. Dispatches
-  parallel remote audit agents via RemoteTrigger and exits — session freed.
-  Collect results with /sync-documentation-maps-collect.
+  parallel background audit agents and writes a checkpoint; the harness notifies
+  on completion. Collect results with /sync-documentation-maps-collect.
   Triggers: "sync documentation maps", "update maps", "are the maps accurate".
 argument-hint: "[--all] [--skip-commit]"
 ---
 
 # Sync Documentation Maps
 
-Lightweight dispatch coordinator. Spawns parallel remote audit agents for skills
-and agents via RemoteTrigger, writes a checkpoint with team IDs and artifact
-paths, then exits — freeing the session after roughly 5 minutes.
+Lightweight dispatch coordinator. Spawns parallel background audit agents for
+skills and agents, writes a checkpoint with their agent IDs and artifact paths,
+then returns. The agents run in the background; the harness notifies on
+completion (roughly 5 minutes), so the user is free to work meanwhile.
 
 **Three-skill workflow:**
 
@@ -66,40 +67,47 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 ---
 
-## Phase 3 — Spawn Audit Teams via RemoteTrigger
+## Phase 3 — Spawn Background Audit Agents
 
-Dispatch **both** tasks simultaneously (do not wait for one before starting the
-other). Use RemoteTrigger `create` with an `agentPath` + `prompt` body:
+Dispatch **both** audit agents simultaneously (do not wait for one before
+starting the other), using the canonical in-session background-dispatch pattern
+in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Use the
+`Agent` tool with `run_in_background: true` so the agents run in the background
+and the harness notifies on completion:
 
-- **Skills audit:**
+- **Skills audit:** `Agent` with `subagent_type:
+  sync-documentation-maps-skill-audit`, prompt:
 
-  ```json
-  {
-    "agentPath": "/Users/russelllaing/al-dev-shared/.claude/agents/sync-documentation-maps-skill-audit.md",
-    "prompt": "Audit skills in profile-al-dev-shared/skills/ against docs/al-dev-skills-map.md.\n\nInputs:\n- run_id: <RUN_ID>\n- result_dir: <RUN_DIR>\n\nWrite audit findings to <result_dir>/audit/skill-audit.json per the schema in your agent definition."
-  }
+  ```text
+  Audit skills in profile-al-dev-shared/skills/ against docs/al-dev-skills-map.md.
+
+  Inputs:
+  - run_id: <RUN_ID>
+  - result_dir: <RUN_DIR>
+
+  Write audit findings to <result_dir>/audit/skill-audit.json per the schema in
+  your agent definition.
   ```
 
-- **Agent audit:**
+- **Agent audit:** `Agent` with `subagent_type:
+  sync-documentation-maps-agent-audit`, prompt:
 
-  ```json
-  {
-    "agentPath": "/Users/russelllaing/al-dev-shared/.claude/agents/sync-documentation-maps-agent-audit.md",
-    "prompt": "Audit agents in profile-al-dev-shared/agents/ against docs/al-dev-agent-map.md.\n\nInputs:\n- run_id: <RUN_ID>\n- result_dir: <RUN_DIR>\n\nWrite audit findings to <result_dir>/audit/agent-audit.json per the schema in your agent definition."
-  }
+  ```text
+  Audit agents in profile-al-dev-shared/agents/ against docs/al-dev-agent-map.md.
+
+  Inputs:
+  - run_id: <RUN_ID>
+  - result_dir: <RUN_DIR>
+
+  Write audit findings to <result_dir>/audit/agent-audit.json per the schema in
+  your agent definition.
   ```
 
-Capture the returned task IDs as `SKILL_TEAM_ID` and `AGENT_TEAM_ID`.
-
-**If RemoteTrigger fails** (non-200 response, no task ID returned):
-
-1. Fall back to the Agent tool with `run_in_background: true`:
-   - Spawn `subagent_type: sync-documentation-maps-skill-audit`
-   - Spawn `subagent_type: sync-documentation-maps-agent-audit`
-   - Both agents write directly to `${RUN_DIR}/audit/`
-2. Set `SKILL_TEAM_ID=in-session` and `AGENT_TEAM_ID=in-session` — pass these
-   to `/sync-documentation-maps-collect --team-ids in-session,in-session`.
-   The session is not freed in fallback mode; wait for completion notifications.
+Capture the returned background agent IDs as `SKILL_TEAM_ID` and
+`AGENT_TEAM_ID`. These are informational handles for the checkpoint — the
+authoritative handoff is the audit JSON each agent writes to `${RUN_DIR}/audit/`,
+which `/sync-documentation-maps-collect` reads directly. They are **not** polled
+with `TaskGet`.
 
 ---
 
@@ -168,11 +176,12 @@ Audit teams dispatched.
   Run directory:     RUN_DIR
   Checkpoint:        .dev/sync-documentation-maps-checkpoint.json
 
-Next step (collect results when teams complete):
+Next step (collect results when the agents finish):
   /sync-documentation-maps-collect --team-ids SKILL_TEAM_ID,AGENT_TEAM_ID
 ```
 
-Exit. Do not wait for team completion.
+Return without blocking. The audit agents run in the background; the harness
+notifies on completion, at which point run the collect step above.
 
 ---
 

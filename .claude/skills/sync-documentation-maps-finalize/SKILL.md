@@ -2,15 +2,15 @@
 name: sync-documentation-maps-finalize
 description: >-
   Finalize sync-documentation-maps updates. Reads updated map artifacts from
-  remote update teams, writes them to docs/, refreshes the dependency graph,
-  and commits. Final step of the async sync-documentation-maps workflow.
+  the background update agents, writes them to docs/, refreshes the dependency
+  graph, and commits. Final step of the async sync-documentation-maps workflow.
 argument-hint: "--team-ids <ids> [--skip-commit]"
 ---
 
 # Sync Documentation Maps — Finalize
 
 Third and final step of the three-skill async sync workflow. Reads updated map
-artifacts written by the remote update teams, validates them, writes the
+artifacts written by the background update agents, validates them, writes the
 canonical docs/ maps, refreshes the dependency graph, and commits.
 
 **Three-skill workflow:**
@@ -84,25 +84,17 @@ If `SKIP_COMMIT` was not set via `--skip-commit` on the command line, use
 
 ---
 
-## Phase 2 — Check Update Team Status
+## Phase 2 — Confirm Update Agents Finished
 
-Call `TaskGet` for each ID in `UPDATE_TEAM_IDS`. For each team, report:
+The update agents run in the background and the harness notifies when they
+finish; their IDs (`UPDATE_TEAM_IDS`) are informational handles, not pollable
+with `TaskGet`. The authoritative completion signal is the update artifact each
+agent writes to `${RUN_DIR}/updates/`, validated in Phase 3.
 
-- `completed` — ready to read artifacts
-- `running` — still in progress; artifact may be partial
-- `failed` — team reported failure; artifact may be absent
-
-Print a status table:
-
-```text
-Update team status:
-  <team-id-1>: completed
-  <team-id-2>: running
-```
-
-Note: Phase 3 artifact validation is the authoritative gate. Continue
-regardless of reported status — the artifact check determines whether
-the map can be written.
+Proceed directly to Phase 3 — the artifact check below determines whether each
+map can be written. If you arrive here before the harness has signalled both
+agents complete, Phase 3 will report any still-absent artifact as invalid and
+skip that surface.
 
 ---
 
