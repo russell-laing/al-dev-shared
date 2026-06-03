@@ -18,6 +18,7 @@ Before spawning, derive 2-3 distinct approaches from the requirement itself
 direct integration; reporting: query object vs. API page, etc.).
 
 After agents complete:
+
 1. Collect all outputs (proposal, critique, falsification from each).
 2. Facilitate cross-architect debate — challenge weak points, ask architects
    to respond to each other's critiques.
@@ -26,18 +27,42 @@ After agents complete:
 Spawn count guidance: 2 for SIMPLE/MEDIUM; 3 for COMPLEX. Omit if
 TRIVIAL — route directly to a developer.
 
+### Pattern 1 dispatch block
+
+```text
+Agent: al-dev-shared:al-dev-solution-architect
+Prompt:
+  You are Architect {N} of {TOTAL}. Your assigned approach: {APPROACH_NAME}.
+
+  Feature request:
+  {REQUIREMENT_DESCRIPTION}
+
+  Starting approach:
+  {APPROACH_DESCRIPTION}
+
+  Produce three sections in exactly this order:
+  1. Design proposal — existing objects to modify, new objects required, data flow
+  2. Self-critique — the weakest point of your own design
+  3. Falsification — one scenario that would prove your approach wrong
+```
+
+Include in prompt: requirements file path (`.dev/*-al-dev-interview-requirements.md`), AL symbol
+preflight evidence, and the approach assignment derived from the requirement.
+
 ## Pattern 2: Quick Analysis (×1 serial)
 
 Used by /al-dev-fix (non-trivial path).
 
 Spawn **one** `al-dev-solution-architect` with a time-bounded prompt (5 min
 max). Ask for:
+
 1. Root cause hypothesis (2-3 sentences)
 2. Recommended fix approach (bullet points)
 3. Files that need changes
 4. Risks/side effects to watch for
 
 After the agent returns, review the analysis yourself:
+
 - Does the root cause make sense?
 - Is the fix approach sound?
 - Are there risks?
@@ -45,6 +70,28 @@ After the agent returns, review the analysis yourself:
 If the approach needs refinement, engage the architect directly (one
 revision pass). After confirming, spawn a developer with the approved
 approach.
+
+### Pattern 2 dispatch block
+
+```text
+Agent: al-dev-shared:al-dev-solution-architect
+Prompt:
+  Analyse this issue and return a concise fix plan. Time budget: 5 minutes.
+
+  Issue:
+  {ISSUE_DESCRIPTION}
+
+  Files likely involved:
+  {FILE_LIST}
+
+  Return four sections in exactly this order:
+  1. Root cause hypothesis (2–3 sentences)
+  2. Recommended fix approach (bullet points)
+  3. Files that need changes (paths only)
+  4. Risks and side effects to watch for
+```
+
+Include in prompt: relevant file contents and compile errors if available.
 
 ## Adding a New Caller
 
