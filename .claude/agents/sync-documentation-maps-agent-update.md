@@ -49,6 +49,13 @@ Keep the full content in memory; you will produce a complete updated version.
 
 ### Step 3 — Apply each discrepancy fix
 
+**Common to all cases:**
+
+- (a) Locate the target section in the map file before editing.
+- (b) After each edit, verify: `wc -l <map-file>` did not decrease unexpectedly.
+
+Case-specific edit logic follows.
+
 Process every entry in the `discrepancies` array. For each entry, apply the
 fix that matches its `type`:
 
@@ -57,14 +64,10 @@ table OR no `### <agent-name>` Layer 2 section.
 
 1. Read `profile-al-dev-shared/agents/<agent-name>.md` to extract the agent's
    `model:`, `tools:` list, and `description:` frontmatter fields.
-2. Add a new row to the Layer 1 Catalog table. Follow the existing column order:
-   `Agent | Model | Tools | Spawned by`. For the `Spawned by` value, use the
-   caller list from the discrepancy `detail` field if present; otherwise use
-   `(none found)`.
-3. Insert a new `### <agent-name>` Layer 2 profile section at the end of the
-   agent profile list (before the Observations section if one exists). Use the
-   pattern of adjacent Layer 2 sections: include a `**Description:**` line,
-   a `**Model:**` line, a `**Tools:**` line, and a `**Spawned by:**` line.
+2. Add a new row to the Layer 1 Catalog table (`Agent | Model | Tools | Spawned by`);
+   use the caller list from the discrepancy `detail` field, or `(none found)`.
+3. Insert a new `### <agent-name>` Layer 2 profile section (before Observations
+   if present) with `**Description:**`, `**Model:**`, `**Tools:**`, `**Spawned by:**` lines.
 
 **`stale_in_map`** — an archived agent still has a Layer 1 row or Layer 2 section.
 
@@ -77,25 +80,24 @@ match the model recorded in the Layer 2 section.
 
 1. Read `profile-al-dev-shared/agents/<agent-name>.md` to confirm the
    authoritative model value from frontmatter.
-2. Update the `Model` column in the Layer 1 Catalog table row for this agent.
-3. Update the `**Model:**` line in the Layer 2 profile section for this agent.
+2. Update the `Model` column in the Layer 1 Catalog table row and the
+   `**Model:**` line in the Layer 2 profile section for this agent.
 
 **`tools_mismatch`** — the `tools:` list in the agent frontmatter does not
 match the tools recorded in the Layer 2 section.
 
 1. Read `profile-al-dev-shared/agents/<agent-name>.md` to confirm the
-   authoritative tools list from frontmatter. If the tools list is empty `[]`,
-   use `(none)` as the display value.
-2. Update the `Tools` column in the Layer 1 Catalog table row for this agent.
-3. Update the `**Tools:**` line in the Layer 2 profile section for this agent.
+   authoritative tools list from frontmatter (use `(none)` if the list is `[]`).
+2. Update the `Tools` column in the Layer 1 Catalog table row and the
+   `**Tools:**` line in the Layer 2 profile section for this agent.
 
 **`caller_mismatch`** — the `Spawned by:` field in the Layer 2 section does
 not match the caller list derived from grep.
 
-1. Use the grep-derived caller list from the discrepancy `detail` field as the
-   authoritative value. If no callers were found, use `(none found)`.
-2. Update the `Spawned by` column in the Layer 1 Catalog table row for this agent.
-3. Update the `**Spawned by:**` line in the Layer 2 profile section for this agent.
+1. Use the grep-derived caller list from the discrepancy `detail` field
+   (or `(none found)` if empty).
+2. Update the `Spawned by` column in the Layer 1 Catalog table row and the
+   `**Spawned by:**` line in the Layer 2 profile section for this agent.
 
 ### Step 4 — Update the last-updated date
 
