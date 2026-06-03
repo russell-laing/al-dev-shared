@@ -49,51 +49,10 @@ Keep the full content in memory; you will produce a complete updated version.
 
 ### Step 3 — Apply each discrepancy fix
 
-**Common to all cases:**
-
-- (a) Locate the target section in the map file before editing.
-- (b) After each edit, verify: `wc -l <map-file>` did not decrease unexpectedly.
-- (c) After every Layer 1 Mermaid edit, confirm every `style X` line refers to
-  a node ID that exists in the diagram; delete any orphaned `style` lines.
-
-Case-specific edit logic follows.
-
 Process every entry in the `discrepancies` array. For each entry, apply the
-fix that matches its `type`:
-
-**`missing_from_map`** — an active skill has no Layer 2 `### /skill-name` section.
-
-1. Read `profile-al-dev-shared/skills/<skill>/SKILL.md` to extract the skill
-   description, phase count (count `## Phase N` headings), and all
-   `al-dev-shared:<name>` agent references.
-2. Insert a new Layer 2 `### /skill-name` section following the template
-   pattern used by adjacent sections: description sentence, `flowchart LR`
-   Mermaid diagram with phase nodes matching the SKILL.md phase count, and an
-   `Agents spawned:` list.
-3. If this skill belongs in the Layer 1 lifecycle diagram, add a node ID,
-   edges, and `style` line in the Layer 1 Mermaid block.
-
-**`stale_in_map`** — a `### /skill-name` Layer 2 section exists for an archived skill.
-
-1. Remove the entire `### /skill-name` Layer 2 section (heading through the
-   next `###` or `##` heading, exclusive).
-2. Remove any node, edge, and `style` line for this skill from the Layer 1
-   Mermaid diagram.
-
-**`phase_count_mismatch`** — the Layer 2 Mermaid diagram phase count does not
-match SKILL.md.
-
-1. Read `profile-al-dev-shared/skills/<skill>/SKILL.md` and count `## Phase N`
-   headings to determine the authoritative phase count.
-2. Rewrite the `flowchart LR` Mermaid block in the Layer 2 section to use the
-   correct phase nodes (Phase0 through PhaseN); preserve existing labels.
-
-**`agent_name_mismatch`** — an agent reference in the Layer 2 section does not
-match what SKILL.md declares.
-
-1. Read `profile-al-dev-shared/skills/<skill>/SKILL.md` to extract the
-   current `al-dev-shared:<name>` agent references.
-2. Update the `Agents spawned:` list in the Layer 2 section to match exactly.
+fix that matches its `type` using the procedures in
+`.claude/knowledge/sync-maps-edit-cases.md`,
+**"Skill surface — edit cases (update)"** section.
 
 ### Step 4 — Update the last-updated date
 
