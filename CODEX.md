@@ -45,11 +45,14 @@ Current repo-local skills:
   plugin-map and tooling-surface findings plans.
 - `.codex/skills/maintain-shared-knowledge/` — keeps shared knowledge and
   harness instruction docs aligned with current capabilities.
-- `.codex/skills/plugin-improvement-review/` — reviews supplied usage or
-  improvement reports and writes evidence-backed plugin improvement
-  assessments without editing the shared plugin profile directly.
-- `.codex/skills/plugin-mini-heal/` — performs a small, surface-specific
-  self-heal pass near the end of a session.
+- `.codex/skills/maintain-skill-naming-conventions/` — keeps local skill
+  names, descriptions, and inventory docs aligned with the intent they
+  express.
+- `.codex/skills/review-improvement-reports/` — reviews supplied usage or
+  improvement reports and writes evidence-backed assessments without editing
+  the shared plugin profile directly.
+- `.codex/skills/heal-surface/` — performs a small, surface-specific self-heal
+  pass near the end of a session.
 - `.codex/skills/repeat-plan-execution/` — runs an established implementation
   plan task-by-task with isolated execution and review gates.
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy

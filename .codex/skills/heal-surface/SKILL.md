@@ -1,9 +1,9 @@
 ---
-name: plugin-mini-heal
-description: Quick end-of-session self-heal for one profile-al-dev-shared surface. Use when the request is a narrow `mini-heal`, `quick pass`, `final sweep`, or `tiny tidy-up` on a single skill, agent, knowledge doc, or generated artifact, and the goal is 1-5 minimal improvements rather than a broad review, plan, or repo-wide audit.
+name: heal-surface
+description: Use when one profile-al-dev-shared surface needs a narrow end-of-session self-heal, especially for a single skill, agent, knowledge doc, or generated artifact with only a few small improvements to make.
 ---
 
-# Plugin Mini Heal
+# Heal Surface
 
 Use this for a narrow pass at the end of a session.
 

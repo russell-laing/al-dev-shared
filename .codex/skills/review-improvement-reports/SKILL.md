@@ -1,9 +1,9 @@
 ---
-name: plugin-improvement-review
-description: Review a supplied usage report or improvement report and produce an evidence-backed assessment of possible improvements to the al-dev-shared plugin. Use only for repository-local plugin maintainer analysis; it must not edit profile-al-dev-shared directly.
+name: review-improvement-reports
+description: Use when a supplied usage report or improvement report needs an evidence-backed assessment of possible improvements to the shared plugin surface, especially when the source may be stale or incomplete.
 ---
 
-# Plugin Improvement Review
+# Review Improvement Reports
 
 Review a supplied usage report, improvement report, or report-derived recommendation list and write a repository-local assessment artifact.
 
