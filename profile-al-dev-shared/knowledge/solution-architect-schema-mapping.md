@@ -19,6 +19,10 @@ Document all external field/table references with existence verification in your
   - Rationale: [Why this choice is correct]
   - Risk: [Low/Medium/High — data integrity implications]
 
+> **Definition:** A symbol is *required* if the implementation plan's code
+> templates or task steps explicitly reference it by name (procedure call,
+> field access, or object instantiation).
+
 If a required external symbol is `unverified`:
 
 - **CRITICAL path field** (implementation cannot proceed without it): mark as `BLOCKED` in the Schema Mapping table and stop. Do not write implementation tasks — return the plan with a `BLOCKED` section listing the unverified fields and required resolution steps.

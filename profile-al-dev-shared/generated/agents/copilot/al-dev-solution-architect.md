@@ -43,8 +43,9 @@ Transform requirements into a complete solution plan that includes architectural
      Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
 
    **Definition of "best existing analogue":**
-   - Performs the same business function as the proposed feature, OR
+   - Performs the same business function as the proposed feature, **AND**
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
+   - If only one criterion is met, document the rationale before accepting the match
    - Variable/field names may differ; focus on structural similarity
 
    **Search order (apply in sequence, stop when a match is found):**
