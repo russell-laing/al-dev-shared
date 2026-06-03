@@ -62,3 +62,14 @@ Examples: `docs/health/2026-05-29-plugin-health.md`,
 Every output named above must use generic vocabulary (no harness-specific
 tokens such as tool names or settings paths). The maintainer tooling itself may
 remain harness-specific, but its produced documents must not.
+
+## Grandfathered exceptions
+
+These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
+are accepted; lenses should not re-flag them:
+
+- `align-harness-repos` — validate-with-optional-fix workflow; name retained for recognisability.
+- `al-dev-diagram-generator` — noun form retained; generates workflow diagrams.
+- `al-dev-consolidate` — user-facing artifact-consolidation workflow.
+- `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming
+  (the `-apply` member is renamed from `-wait` in a separate task for clarity).
