@@ -39,6 +39,9 @@ Do not claim the staged set is ready, validated, or safe to commit until the
 success evidence named in `knowledge/artifact-contracts.md` for
 `al-dev-commit` has been produced and read for the current staged state.
 
+The six-phase commit dispatch contract is documented in
+`../../knowledge/commit-workflow-orchestration.md` — keep phase prompt templates in sync with it.
+
 ---
 
 ## Phase 0 — Setup & Validation
