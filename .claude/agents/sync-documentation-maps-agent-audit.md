@@ -111,27 +111,14 @@ Read `docs/al-dev-agent-map.md`. Extract:
 
 ### Step 5 — Identify discrepancies
 
-Compare the active agent list and extracted metadata against the map data:
+Compare the active agent list and extracted metadata against the map data.
+Discrepancy type definitions are in `.claude/knowledge/sync-maps-edit-cases.md`,
+**"Agent surface — discrepancy types (audit)"** section.
 
-- **`missing_from_map`** — an active agent has no entry in the Layer 1 Catalog
-  table OR no `### <agent-name>` section in Layer 2. Flag as `missing_from_map`
-  if either layer is absent.
-- **`stale_in_map`** — an archived agent (not in the active list) still has a
-  row in the Layer 1 Catalog table OR a `### <agent-name>` section in Layer 2
-  (or both). Flag as `stale_in_map` if either stale artifact remains.
-- **`model_mismatch`** — the `model:` value in the agent frontmatter does not
-  match the model recorded in the Layer 2 section for that agent.
-- **`tools_mismatch`** — before comparing, normalize: if the map records
-  `(none)` for tools and the frontmatter `tools:` list is empty `[]`, treat
-  these as matching (not a mismatch). Only flag `tools_mismatch` when the
-  normalized values differ.
-- **`caller_mismatch`** — the `Spawned by:` field in the Layer 2 section does
-  not match the caller list derived from grep in Step 3. When comparing,
-  consider only files where the agent is invoked as `al-dev-shared:<agent-name>`
-  (a functional call). If grep found the agent name mentioned only in
-  documentation prose and not as a functional invocation, note this distinction
-  in the `detail` field rather than flagging as a mismatch. Record both the map
-  value and the grep-derived value in `detail`.
+For each type found, construct a discrepancy entry with `type`, `agent`, and
+`detail` fields. Populate `detail` with context (e.g., map value vs
+grep-derived value for `caller_mismatch`; which map layer is absent for
+`missing_from_map`).
 
 ### Step 6 — Write JSON report and return path
 
