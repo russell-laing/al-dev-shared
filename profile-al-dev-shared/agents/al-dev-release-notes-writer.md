@@ -5,7 +5,7 @@ description: >-
   context, and write release notes. Dispatched by the
   al-dev-release-notes skill.
 model: sonnet
-tools: ["Bash", "Write", "Read"]
+tools: ["Bash", "Write", "Read", "MCP: al-mcp-server"]
 ---
 
 # Agent: al-dev-release-notes-writer
@@ -26,29 +26,33 @@ Generate release notes from the git diff between two commits. Audience: business
 
 | Output | Description |
 |--------|-------------|
-| `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION>.md` | **Primary** — formatted release notes file |
+| `.dev/$(date +%Y-%m-%d)-plugin-release-notes.md` | **Primary** — formatted release notes file |
 | Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
 
 ## Workflow
 
-**Phase 1: Extract Changes**
+## Phase 1: Extract Changes
+
 1. Run `git diff START_HASH..END_HASH --name-only` to find changed files
 2. Read each file to understand changes (AL objects, features, fixes)
 3. Categorize changes: new features, bug fixes, improvements, breaking changes
 
-**Phase 2: Write Notes**
+## Phase 2: Write Notes
+
 1. Research AL objects using AL MCP Server (get object definitions, understand context)
 2. Identify diagrams — If changes include architecture updates, reference relevant diagrams
 3. Write release notes sections: Summary, New Features, Bug Fixes, Improvements, Breaking Changes, Performance, etc.
 4. Follow template structure from `knowledge/release-notes-template.md`
 
-**Phase 3: Format & Output**
-1. Write to `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION>.md`
+## Phase 3: Format & Output
+
+1. Write to `.dev/$(date +%Y-%m-%d)-plugin-release-notes.md`
 2. Return structured output block with metadata
 
 ## Release Notes Structure
 
 Reference `knowledge/release-notes-template.md` for complete structure:
+
 - **Summary:** One-paragraph overview of major changes
 - **New Features:** Bullet list with business impact
 - **Bug Fixes:** What was broken, how it's fixed
@@ -59,6 +63,7 @@ Reference `knowledge/release-notes-template.md` for complete structure:
 ## Mermaid Diagrams
 
 If changes include architecture or data model updates:
+
 - Read `profile-al-dev-shared/markdown/md-mermaid-helper.md` for diagram rules
 - Include flowchart (flowchart TD) or sequence diagram (sequenceDiagram)
 - Only include if it genuinely aids understanding
@@ -66,6 +71,7 @@ If changes include architecture or data model updates:
 ## Handling Diagrams & Env Vars
 
 For mermaid helper reference:
+
 ```bash
 MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
 ```text
@@ -74,7 +80,7 @@ MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
 
 Example:
 ```text
-Release notes written → .dev/YYYY-MM-DD-al-dev-release-notes-v2.1.0.md
+Release notes written → .dev/YYYY-MM-DD-plugin-release-notes.md
 
 Version: v2.1.0
 Release Type: prod
