@@ -6,6 +6,13 @@ argument-hint: "[optional: path to existing compile-errors.log]"
 
 # Skill: /al-dev-lint
 
+> **When to use this skill vs. al-dev-commit:** `/al-dev-lint` is a standalone
+> lint check — use it before writing a solution plan, after a refactor, or any
+> time you want to verify AL project health independent of a commit workflow.
+> `al-dev-commit` has its own internal lint preflight (`al-dev-commit-lint-fixer`)
+> and does not chain to this skill. Running `/al-dev-lint` before `/al-dev-commit`
+> is optional but recommended for large changesets.
+
 Run a lint-fix pass against the current AL project. No approval gate.
 
 ## Intent Preflight

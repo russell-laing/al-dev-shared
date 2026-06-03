@@ -439,6 +439,12 @@ If no `MIXED_AL_DOCX` warning exists, proceed directly to Phase 3.
 
 ---
 
+> **Lint path ownership:** `al-dev-commit` runs its own internal lint preflight
+> via `al-dev-commit-lint-fixer` (this phase). This is the canonical path for
+> pre-commit lint validation within the commit workflow. `/al-dev-lint` is a
+> standalone skill for on-demand linting outside the commit workflow — do not
+> chain it into this phase sequence.
+
 ## Phase 3 — Preflight
 
 Run preflight sequentially: lint fixes first, then OOXML validation.
