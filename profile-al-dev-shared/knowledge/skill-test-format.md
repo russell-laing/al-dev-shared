@@ -1,10 +1,10 @@
 # Skill-Test Data Formats
 
-Defines the two declarative YAML schemas the skill-test harness consumes from `al-dev-shared`. Both files are harness-agnostic. Harness-specific orchestrators in `profile-claude-al-dev`, `profile-copilot-al-dev`, etc. translate field values into harness-native tool calls at run time.
+Defines the two declarative YAML schemas the skill-test harness consumes from `al-dev-shared`. Both files are harness-agnostic. Harness-specific orchestrators translate field values into harness-native tool calls at run time.
 
 ## `tests/scenarios.yaml` (per skill)
 
-Located at `AL_DEV_SHARED_PLUGIN_ROOT/skills/<skill-name>/tests/scenarios.yaml`. The harness reads this to drive Path 1 (execution) tests.
+Located at `AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/skills/<skill-name>/tests/scenarios.yaml`. The harness reads this to drive Path 1 (execution) tests.
 
 ### Example
 
@@ -32,7 +32,7 @@ scenarios:
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `skill` | string | yes | Must match the parent directory name under `skills/`. |
-| `scenarios` | list | yes | 2–3 entries per skill for v1; grow over time. |
+| `scenarios` | list | yes | Usually 2-3 entries per skill for v1; grow over time as coverage expands. |
 | `scenarios[].id` | string | yes | Kebab-case, unique within the file. |
 | `scenarios[].status` | enum | yes | `golden` (curated) or `draft` (LLM-generated, unreviewed). |
 | `scenarios[].user_prompt` | string | yes | Natural-language input the harness will send to the skill. |
@@ -47,7 +47,7 @@ scenarios:
 
 ## `knowledge/skill-test-trigger-corpus.yaml`
 
-Located at `AL_DEV_SHARED_PLUGIN_ROOT/knowledge/skill-test-trigger-corpus.yaml`. The harness reads this to drive Path 2 (description-trigger) tests — verifying that each skill's `description:` field is informative enough for natural-language requests to route correctly.
+Located at `AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge/skill-test-trigger-corpus.yaml`. The harness reads this to drive Path 2 (description-trigger) tests — verifying that each skill's `description:` field is informative enough for natural-language requests to route correctly.
 
 ### Example
 

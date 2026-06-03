@@ -1,8 +1,11 @@
 # Intent Preflight
 
-Intent preflight prevents a skill from silently doing a different class of work than the user asked for.
+Intent preflight prevents a skill from silently acting on a different intent
+than the user asked for.
 
-Run this preflight before a non-trivial workflow dispatches agents, edits files, stages files, or commits.
+Run this preflight before a non-trivial workflow dispatches agents, edits
+files, writes workflow artifacts or reports, stages files, compiles with
+auto-fix behavior, or commits.
 
 ## Intent Classes
 
@@ -34,6 +37,7 @@ Continue only after the user confirms the intended action.
 | `al-dev-develop` | `EDIT` |
 | `al-dev-fix` | `EDIT` |
 | `al-dev-lint` | `EDIT` |
+| `al-dev-plan-preflight` | `REVIEW` for reusable planning-context assembly; writing the requested `.dev/preflight-context.md` artifact is allowed within that review workflow |
 | `al-dev-plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
 
 ## Examples
@@ -53,5 +57,7 @@ Before continuing, compare the user's wording with the artifact they pointed to:
 - design/spec document + "implement/execute" → confirm whether the user wants planning output or implementation
 - plan document + "review/audit only" → treat as `REVIEW` unless the user confirms implementation
 - code or diagnostics + "summarize what failed" → treat as `REVIEW`, not `EDIT`
+- staged changes or commit diff + "explain/review only" → treat as `REVIEW`, not `COMMIT`
+- compile log or lint report + "assess/explain only" → treat as `REVIEW`, not `EDIT`
 
 Use existing shared-profile skills when clarifying. Do not route through external skill names that are outside this profile's published surface.

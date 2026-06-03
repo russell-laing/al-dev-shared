@@ -102,7 +102,7 @@ TRIM: Remove <artifact> (tool/agent/skill) from <surface> — tool/feature is un
    - Search skills for invocations: `profile-al-dev-shared/skills/*/SKILL.md`
    - Search knowledge references: `profile-al-dev-shared/knowledge/**/*.md`
    - Search generated projections for remaining references
-   - Use: `grep -r "NAME" profile-al-dev-shared/ --include="*.md"`
+   - Use: `rg -n "NAME" profile-al-dev-shared/`
 
 2. **Actual usage verification:**
    - If `grep` finds zero references, the artifact is truly unused → ACCEPT
@@ -163,9 +163,9 @@ MERGE: Combine <artifact-A> and <artifact-B> — overlapping concerns, shared pa
    - DEFER if overlap is borderline or would create oversized artifact
    - REJECT if overlap < 40% or artifacts serve different purposes
 
-**Example pass:** Suggestion to merge agents `al-dev-lint-al` and
-`al-dev-lint-markdown`. Both invoke Bash tool and read linting knowledge.
-Overlap ≈ 75%. → ACCEPT
+**Example pass:** Suggestion to merge two lint-focused artifacts that both invoke
+the same validation tools and read the same linting knowledge. Overlap ≈ 75%.
+→ ACCEPT
 
 **Example fail:** Suggestion to merge skill `al-dev-interview` and skill
 `al-dev-explore`. Different tools and knowledge used. Overlap ≈ 30%. → REJECT
@@ -234,8 +234,8 @@ INLINE: Merge <artifact> into <caller> — wrapper adds no value, single invocat
 **Example pass:** Suggestion to inline agent `wrapper-validate-config` into its only
 caller, skill `al-dev-setup`. Agent is 45 lines of passthrough logic. → ACCEPT
 
-**Example fail:** Suggestion to inline agent `al-dev-lint` into `al-dev-develop`.
-Agent is called from 5 different places (skills). → REJECT
+**Example fail:** Suggestion to inline a shared lint helper that is invoked by
+multiple skills. The artifact is reused broadly rather than single-use. → REJECT
 
 ### Align Check
 
@@ -302,9 +302,9 @@ CONNECT: Extract shared pattern into reusable agent — <agents> share <pattern>
    - DEFER if pattern appears 2 times or saves less than 200 lines
    - REJECT if pattern is unique or appears only in mentioned artifacts
 
-**Example pass:** Extract "validate AL syntax" pattern. Grep finds this pattern
-in agents `al-dev-lint-al`, `al-dev-compile`, and `al-dev-validate-test`.
-Saves 250+ lines. → ACCEPT
+**Example pass:** Extract a shared "compile, classify diagnostics, and write
+report" pattern. The same workflow appears in three live validation-oriented
+artifacts and would remove 250+ lines of duplicated procedure text. → ACCEPT
 
 **Example fail:** Suggestion to extract "log progress to .dev/progress.md". Grep
 finds this pattern only in skill `al-dev-develop`. Overhead > savings. → REJECT

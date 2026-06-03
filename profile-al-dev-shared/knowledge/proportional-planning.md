@@ -6,7 +6,7 @@
 
 ### 🟢 TRIVIAL (Skip Planning)
 - No planning documents
-- Direct fix + compile
+- Route through the `/al-dev-fix` fast path for bounded fixes
 
 ---
 
@@ -228,7 +228,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 
 ## Agent-Specific Guidelines
 
-### requirements-engineer
+### al-dev-plan-preflight / requirements capture
 
 **Output target by complexity:**
 - SIMPLE: 50-75 lines
@@ -258,7 +258,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 5. Deep integration analysis
 6. Questions for clarification
 
-### solution-planner
+### al-dev-solution-architect / solution planning
 
 **Output target by complexity:**
 - SIMPLE: 50-100 lines
@@ -270,7 +270,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 2. NO "Alternatives Considered" section
 3. NO detailed architecture sections
 4. Brief approach (1 paragraph)
-5. File-by-file implementation with essential code only
+5. File-by-file implementation described in concise prose only
 6. Implementation order (dependency list)
 7. Skip: rationale, rollback plans, migration paths, extensive troubleshooting
 
@@ -286,7 +286,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 1. Full ASCII diagrams showing architecture
 2. Detailed alternatives analysis
 3. Design rationale section
-4. Comprehensive code templates
+4. Comprehensive design guidance without full code templates
 5. Performance considerations
 6. Error handling strategy
 7. Rollback and migration plans when relevant
@@ -387,33 +387,17 @@ Add Customer."Zero Price Shopify" boolean to conditionally apply zero pricing in
 Extend Customer table with boolean, extend Customer Card to show it, modify UpdateLinePrice to check field before applying pricing.
 
 ## File 1: TabExt50001.CustomerExt.al
-field(50001; "Zero Price Shopify"; Boolean) {
-    DataClassification = CustomerContent;
-}
+- Add boolean field `"Zero Price Shopify"`
+- Set `DataClassification = CustomerContent`
 
 ## File 2: PagExt50001.CustomerCardExt.al
-addafter(Blocked) {
-    field("Zero Price Shopify"; Rec."Zero Price Shopify") { }
-}
+- Show `"Zero Price Shopify"` on Customer Card near existing account-status controls
 
 ## File 3: Codeunit 50011 - UpdateLinePrice
-Add before existing price logic:
-
-if IsZeroPriceCustomer(SalesHeader."Sell-to Customer No.") then begin
-    SalesLine."Unit Price" := 0;
-    SalesLine."Line Amount" := 0;
-    SalesLine.Modify(true);
-    exit;
-end;
-
-procedure IsZeroPriceCustomer(CustomerNo: Code[20]): Boolean
-var
-    Customer: Record Customer;
-begin
-    if not Customer.Get(CustomerNo) then
-        exit(false);
-    exit(Customer."Zero Price Shopify");
-end;
+- Add a short-circuit check before existing price logic
+- If customer is marked zero-price, set unit and line amount to `0` and exit
+- Add helper `IsZeroPriceCustomer(CustomerNo: Code[20]): Boolean`
+- Read only the customer fields required for the toggle check
 
 ## Order
 1. Table extension (foundation)
@@ -458,11 +442,11 @@ Classification: SIMPLE
 
 Target planning: 100-150 lines total
 
-Spawning requirements-engineer with instruction:
+Spawning `/al-dev-plan-preflight` with instruction:
 "Keep output to 50-75 lines. No user stories, brief requirements list only."
 
-Spawning solution-planner with instruction:
-"Keep output to 50-100 lines. No ASCII diagrams, no alternatives section, essential code only."
+Spawning `al-dev-solution-architect` with instruction:
+"Keep output to 50-100 lines. No ASCII diagrams, no alternatives section, describe file changes without full code."
 ```
 
 ### In Agents
@@ -470,7 +454,7 @@ Spawning solution-planner with instruction:
 Each agent checks their output length before returning:
 
 ```markdown
-requirements-engineer:
+al-dev-plan-preflight:
 - Feature classified as: SIMPLE
 - Target output: 50-75 lines
 - Current output: 68 lines ✓

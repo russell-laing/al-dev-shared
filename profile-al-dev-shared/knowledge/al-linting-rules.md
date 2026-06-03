@@ -13,22 +13,22 @@ tags:
 Quick reference for AL code analyser rules.
 Use rule IDs to look up fixes for compile or lint output.
 
-The quick reference below lists the most common fixes only. Use the detailed tables when the top list is incomplete or when you need the authoritative rule details.
+The quick reference below lists the most common fixes only. Entries marked `judgment-required` need a project-specific choice rather than a shared default. Use the detailed tables when the top list is incomplete or when you need the authoritative rule details.
 
 ## Quick Reference — Most Common Fixes
 
 | Symptom | Rule | Fix |
 | --- | --- | --- |
-| Missing prefix on object name | AS0011, AS0098 | Add ACUKPR prefix |
-| Missing DataClassification on field | AS0016 | Add `DataClassification = CustomerContent;` |
+| Missing prefix on object name | AS0011, AS0098 | Add the app's assigned affix or prefix |
+| Missing DataClassification on field | AS0016 | `judgment-required`: choose the correct `DataClassification` value |
 | Missing Caption | LC0016 | Add `Caption = '...';` |
 | Missing ToolTip | AA0218 | Add `ToolTip = 'Specifies ...';` |
 | ToolTip does not start with "Specifies" | LC0036 | Rewrite to start with "Specifies" |
 | Temp variable missing Temp prefix | AA0073 | Rename variable with `Temp` prefix |
 | Label missing Lbl suffix | AA0074 | Rename with `Lbl` suffix |
 | TextConst missing Txt suffix | AA0074 | Rename with `Txt` suffix |
-| Field ID out of range | AS0013, PTE0002 | Use ID in range 50901–50950 |
-| Object ID out of range | PTE0001 | Use ID in range 50901–50950 |
+| Field ID out of range | AS0013, PTE0002 | `judgment-required`: use an ID from the project's assigned range |
+| Object ID out of range | PTE0001 | `judgment-required`: use an ID from the project's assigned range |
 | Commit() without comment | LC0002 | Add `// Required: <reason>` before Commit() |
 | Unused variable declared | AA0137 | Remove the variable declaration |
 | String concat in Error() | AA0216 | Replace with label + placeholders |
@@ -125,9 +125,9 @@ The quick reference below lists the most common fixes only. Use the detailed tab
 
 | Rule ID | Severity | Title | Fix | Applies To |
 | --- | --- | --- | --- | --- |
-| AS0011 | Error | Affix required | Add ACUKPR prefix to object name | All |
-| AS0013 | Error | Field identifier must be in allowed range | Use IDs in range 50901–50950 | Tables |
-| AS0016 | Error | Fields must use DataClassification | Add `DataClassification = CustomerContent;` | Tables |
+| AS0011 | Error | Affix required | Add the app's assigned affix or prefix to the object name | All |
+| AS0013 | Error | Field identifier must be in allowed range | Use an ID from the project's assigned range | Tables |
+| AS0016 | Error | Fields must use DataClassification | Choose the correct `DataClassification` value for the field | Tables |
 | AS0068 | Error | Cannot change table extension target | Keep original target table | TableExt |
 | AS0069 | Error | Same number of option members required | Maintain same option count | Tables |
 | AS0070 | Error | Same option member names required | Maintain same option names | Tables |
@@ -183,8 +183,8 @@ The quick reference below lists the most common fixes only. Use the detailed tab
 
 | Rule ID | Severity | Title | Fix | Applies To |
 | --- | --- | --- | --- | --- |
-| PTE0001 | Error | Object ID must be in free range | Use IDs in range 50901–50950 | All |
-| PTE0002 | Error | Field ID must be in free range | Use field IDs in range 50901–50950 | Tables |
+| PTE0001 | Error | Object ID must be in free range | Use an ID from the project's assigned range | All |
+| PTE0002 | Error | Field ID must be in free range | Use a field ID from the project's assigned range | Tables |
 | PTE0003 | Error | Must not subscribe to CompanyOpen events | Use CompanyInitialize instead | All |
 | PTE0004 | Error | Tables must have matching permission set | Create permission set with table perms | Tables |
 | PTE0005 | Error | Compilation target must be SaaS-compatible | Use Extension or Cloud target | app.json |
@@ -203,7 +203,7 @@ The quick reference below lists the most common fixes only. Use the detailed tab
 | PTE0019 | Warning | No wildcard permissions | Use specific object permissions | PermSetExt |
 | PTE0020 | Warning | Use application property instead of Base App dep | Use `"application": "20.0.0.0"` | app.json |
 | PTE0021 | Error | Cannot define reserved namespaces | Use non-reserved namespace | All |
-| PTE0022 | Warning | Member ID should be in allowed range | Use IDs in range 50901–50950 | All |
+| PTE0022 | Warning | Member ID should be in allowed range | Use an ID from the project's assigned range | All |
 | PTE0023 | Info | Enum ordinal should be in allowed range | Use ordinals in assigned range | Enums |
 
 ---

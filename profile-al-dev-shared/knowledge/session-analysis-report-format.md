@@ -1,5 +1,7 @@
 # Session Analysis Report Format
 
+Used by: `al-dev-session-analyst` agents
+
 Canonical output format for `al-dev-session-analyst` agents across all harnesses.
 Claude Code (JSONL-based), Copilot CLI (SQL-based), and Codex
 (session-transcript/tool-trace-based) analysts produce reports conforming to
@@ -32,7 +34,7 @@ Standard reports must include sections in this order:
 ```markdown
 # Session Review — {YYYY-MM-DD}
 
-**Analysed:** {session identifier or repository name}
+**Analyzed:** {session identifier or repository name}
 **Data source:** {e.g. "Claude Code JSONL transcript" | "Copilot CLI session_store (SQL)" | "Codex session transcript / tool trace"}
 **Scope:** {one sentence describing what was analysed and how many sessions}
 ```
@@ -45,7 +47,7 @@ Standard reports must include sections in this order:
 ## Executive Summary
 
 **Skills invoked / Sessions analysed:** {harness-specific summary line}
-**Issues detected:** {N} HIGH, {N} MEDIUM, {N} LOW
+**Issues detected:** {N} HIGH, {N} MEDIUM, {N} LOW (show zero counts explicitly)
 **Session outcome:** {one sentence}
 ```
 
@@ -120,8 +122,9 @@ section order above:
 ```markdown
 # Session Review — {YYYY-MM-DD}
 
-**Analysed:** {session identifier or repository name}
+**Analyzed:** {session identifier or repository name}
 **Data source:** {e.g. "Claude Code JSONL transcript" | "Copilot CLI session_store (SQL)" | "Codex session transcript / tool trace"}
+**Scope:** {one sentence describing what was analysed and how many sessions}
 
 ## Summary
 

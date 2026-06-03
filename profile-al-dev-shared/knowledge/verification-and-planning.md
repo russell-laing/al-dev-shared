@@ -11,7 +11,11 @@ Read this when: running `/al-dev-plan`, building multi-phase skills, or implemen
 
 ## Plan Task Verification
 
-Every plan task must end with a verification step before it is considered complete. This is the completion criteria for task execution.
+Every plan task must end with a verification step before it is considered
+complete. This is the completion criteria for task execution. When the workflow
+also has a current-run success-evidence contract in
+`knowledge/artifact-contracts.md`, satisfy both this checklist and the named
+artifact contract before claiming the task or phase is complete.
 
 ### The 4-Step Verification Checklist
 
@@ -25,7 +29,8 @@ Every plan task must end with a verification step before it is considered comple
 Scan all changed files for patterns that indicate incomplete work. Use grep to find:
 
 ```bash
-# Build a combined file list from tracked and untracked changes
+# Build a combined file list from unstaged tracked, staged tracked, and
+# untracked changes
 CHANGED_FILES="$(printf '%s\n%s\n' \
   "$(git diff --name-only --diff-filter=ACM)" \
   "$(git diff --cached --name-only --diff-filter=ACM)" \
@@ -72,7 +77,9 @@ On verification failure:
 
 ## External Claims Verification
 
-Whenever an agent reports that something was done — a file written, code compiled, tests passed — the claim must be verified externally, not just inferred from a non-error return.
+Whenever an agent reports that something was done — a file written, code
+compiled, tests passed, or a plan artifact validated for approval — the claim
+must be verified externally, not just inferred from a non-error return.
 
 ### What Counts as a Claim
 
@@ -127,7 +134,8 @@ Every multi-phase skill should use this checkpoint structure after each phase:
 - [x] Identified 3 affected modules (Table, Codeunit, Page)
 - [x] Risk assessment complete (medium complexity, 1 data model change)
 
-**Output:** Requirements context file saved to `.dev/requirements.md`
+**Output:** Requirements context file saved to
+`.dev/2026-05-22-al-dev-interview-requirements.md`
 
 **Resume capability:** Can restart from Phase 1 with requirements cached
 
@@ -136,7 +144,7 @@ Every multi-phase skill should use this checkpoint structure after each phase:
 ## Phase 1: Design & Planning
 - [ ] Architect debate completed
 - [ ] Design decision: Use event-based architecture (vs. procedure override)
-- [ ] Plan written to `.dev/2026-05-22-solution-plan.md`
+- [ ] Plan written to `.dev/2026-05-22-al-dev-plan-solution-plan.md`
 
 **Next:** Phase 2 (Implementation) can proceed with design from Phase 1
 

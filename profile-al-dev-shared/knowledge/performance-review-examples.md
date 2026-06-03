@@ -1,6 +1,9 @@
-# Performance Review Code Examples
+# Performance Review Examples
 
-Referenced by: `al-dev-performance-reviewer` agent
+Used by: `al-dev-performance-reviewer` agent
+
+These are review examples for spotting common performance issues in AL/BC.
+Treat them as illustrative patterns, not production-ready snippets to copy verbatim.
 
 > **Foundation:** These examples illustrate patterns defined in `knowledge/perf-anti-patterns-prompt.md`. Read the taxonomy file first for severity levels, exclusion rules, and the complete pattern catalog. These examples are visual companions to the taxonomy.
 
@@ -59,6 +62,8 @@ end;
 
 ### Inefficient FINDSET Usage
 
+**Why it matters:** Missing the basic `if FindSet()` guard or relying on inefficient access patterns can turn routine scans into avoidable work on larger tables.
+
 **Bad:**
 ```al
 rec.SetCurrentKey(Name);
@@ -80,6 +85,8 @@ if rec.FindSet() then
 ```
 
 ### Missing Table Indexes
+
+**Why it matters:** Queries that filter on non-key fields often degrade into full-table scans, which become disproportionately expensive as data volume grows.
 
 **Bad:**
 ```al
@@ -109,6 +116,8 @@ table MyTable
 
 ### Blocking Operations in Triggers
 
+**Why it matters:** Heavy work inside interactive triggers delays user actions and can amplify contention during busy periods.
+
 **Bad:**
 ```al
 trigger OnInsert()
@@ -128,6 +137,8 @@ end;
 ```
 
 ### Unnecessary Loops
+
+**Why it matters:** Repeating expensive operations inside loop bounds adds avoidable database or compute cost on every iteration.
 
 **Bad:**
 ```al

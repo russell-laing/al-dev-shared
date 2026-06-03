@@ -1,5 +1,8 @@
 # Solution Plan Template
 
+Canonical authoring template for the solution plan written by
+`al-dev-solution-architect` and passed to downstream review/approval flows.
+
 ```markdown
 ## Solution Plan: [Feature Name]
 
@@ -51,7 +54,7 @@ considerations]
 **Task 1: [name]**
 Files: [files to create or modify]
 Gotcha: [one project-specific pitfall — e.g., "object names must be ≤30 chars; verify before creating" or "var parameters from AL MCP must be verified before use in subscribers"]
-Validate: [exact shell command confirming this task is done — e.g., `rg -rn "procedure ValidatePostingDate" src/` or `jq -r '.version' .dev/output.json`]
+Validate: [exact shell command confirming this task is done — e.g., `rg -n "procedure ValidatePostingDate" src/` or `jq -r '.version' .dev/output.json`]
 
 **Task 2: [name]**
 Files: ...
@@ -69,7 +72,10 @@ Validate: ...
 
 - `Gotcha:` is required. Write `Gotcha: none — [rationale]` rather than omitting it.
 - `Validate:` is required. Use an exact shell command when the task can be machine-checked; use `Validate: [manual] — [description]` only when the validation cannot be automated.
-- Tasks here are the architect's logical implementation units. They inform (but do not replace) the detailed sub-task checklist produced by `writing-plans`.
+- Tasks here are the architect's logical implementation units. They inform
+  (but do not replace) the detailed execution and review flow performed by
+  `al-dev-plan`, `al-dev-plan-final-review`, and downstream implementation
+  workflows.
 
 ### Acceptance Criteria
 
@@ -79,7 +85,8 @@ Use numbered criteria in one of four allowed forms:
 1. `src/Codeunit/SalesPostingGuard.Codeunit.al` exists and contains `procedure ValidatePostingDate`
 2. `src/PageExtension/SalesOrderExt.PageExt.al` contains reference to `SalesPostingGuard.ValidatePostingDate`
 
-**Gate check** — tool exit code or existing skill gate:
+**Gate check** — tool exit code or existing skill gate used during downstream
+implementation or review:
 3. `al-compile` exits 0 with no new errors in `.dev/compile-errors.log`
 
 **Pattern check** — a required or forbidden pattern in changed code:

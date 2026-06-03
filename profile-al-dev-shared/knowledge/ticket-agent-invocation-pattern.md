@@ -4,7 +4,7 @@ Canonical pattern for dispatching `al-dev-ticket-agent` from skills that interac
 
 ## Pattern Summary
 
-The `/al-dev-ticket` skill (with `--mode=full` option) dispatches `al-dev-ticket-agent` with environment variables and phase parameters. This document captures the canonical pattern to prevent drift.
+The `/al-dev-ticket` skill dispatches `al-dev-ticket-agent` for the fetch phase in both modes. When `--mode=full` is selected, `/al-dev-ticket` then chains to `/al-dev-support-reply` for research and reply drafting. This document captures the canonical fetch-phase pattern to prevent drift.
 
 ## Dispatch Block Template
 
@@ -53,12 +53,13 @@ Fetch Freshdesk ticket metadata, conversations, and attachments. Output structur
 **Return block format:**
 
 ```text
-TICKET_LOADED
-FILE: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
-TITLE: [ticket title]
-STATUS: [ticket status]
-SUMMARY: [one-line summary]
-ATTACHMENTS: [count]
+TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
+TICKET_ID: [ID]
+STATUS: [Status]
+PRIORITY: [Priority]
+COMMENTS_COUNT: [N]
+ATTACHMENTS: [Count or "None"]
+INLINE_IMAGES_COUNT: [N or "None"]
 ```
 
 ## Using This Pattern
@@ -79,8 +80,9 @@ profile-al-dev-shared/skills/al-dev-ticket/SKILL.md
 ```
 
 - Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-agent.md`
-- Skill using this pattern:
-  - `/al-dev-ticket` — Fetch and research ticket (with `--mode=context-only` or `--mode=full`)
+- Skills using this pattern:
+  - `/al-dev-ticket` — Fetch and contextualize the ticket (with `--mode=context-only` or `--mode=full`)
+  - `/al-dev-support-reply` — Follow-on research and reply drafting after ticket context is loaded
 
 ### Ticket Type → Affected Files Mapping
 
@@ -126,33 +128,10 @@ TESTS:
 
 ### Invocation Pattern: Agent Spawn Parameters
 
-When the ticket skill spawns the ticket agent, it passes context in this structure:
+For the canonical fetch phase, the live dispatch contract is intentionally small:
 
-```json
-{
-  "ticket_id": "JIRA-1234",
-  "ticket_type": "bug|feature|perf|data-migration|integration|docs|compliance",
-  "title": "user-provided ticket title",
-  "description": "user-provided full description",
-  "priority": "p1|p2|p3",
-  "severity": "critical|high|medium|low",
-  "affected_systems": ["Customer", "Sales Order", "Reports"],
-  "context_files": ["path/to/al/file.al", "profile-al-dev-shared/knowledge/ticket-agent-invocation-pattern.md"]
-}
-```
+- `TICKET_ID` in the dispatch prompt
+- `FRESHDESK_API_KEY` in the environment
+- `FRESHDESK_DOMAIN` in the environment
 
-**Example invocation for bug ticket:**
-
-```json
-{
-  "ticket_id": "BUG-567",
-  "ticket_type": "bug",
-  "title": "Sales Order total calculation incorrect when multiple discounts applied",
-  "description": "When a sales order has both header discount and line discounts...",
-  "severity": "high",
-  "affected_systems": ["Sales Order", "Calculation Engine"],
-  "context_files": ["SalesOrder.Codeunit.al", "DiscountCalculation.Codeunit.al"]
-}
-```
-
-The ticket agent uses this to route analysis to the correct files and assessment framework (bug analysis vs. feature feasibility).
+Do not assume richer typed routing metadata is available unless the calling workflow explicitly adds it as a separate downstream context block.

@@ -1,6 +1,6 @@
 # Feedback Resolution Protocol
 
-Reference document for structured disposition of review findings across all review agents (plan-reviewer, code-reviewer).
+Reference document for structured disposition of review findings across review agents.
 
 ## Severity Levels
 
@@ -23,21 +23,21 @@ Each finding must receive one of these dispositions:
 
 ## Rules
 
-1. **CRITICAL findings MUST be ACCEPT-FIX** — no exceptions
+1. **Critical findings must be ACCEPT-FIX** — no exceptions
 2. **DISMISS requires written reasoning** — explain why the finding doesn't apply
 3. **ACCEPT-DEFER requires a tracking note** — where/when will it be addressed
 4. **All findings must be dispositioned** — none can be left unaddressed
 
 ## Exit Condition
 
-A review loop exits when ALL of the following are true:
+A review loop exits when all of the following are true:
 - Every finding has a disposition
 - No ACCEPT-FIX items remain (all have been implemented)
 - Reviewer confirms: **"APPROVED: Proceed to [next step]"**
 
 ## Disposition Reporting Format
 
-After receiving review findings, the fixing agent (solution-planner or al-developer) reports dispositions:
+After receiving review findings, the fixing agent reports dispositions:
 
 ```markdown
 ## Feedback Dispositions
@@ -66,4 +66,4 @@ Reviewer re-reviews
 
 ## Stall Prevention
 
-If the same finding appears 3+ times across iterations with no progress, escalate to user. See Loop Governance in the project instructions file.
+If the same finding appears 3+ times across iterations with no progress, escalate to the user and record the blocker in the active checkpoint artifact, such as `.dev/progress.md`.

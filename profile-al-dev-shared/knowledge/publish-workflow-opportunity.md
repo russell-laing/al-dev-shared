@@ -5,16 +5,20 @@
 ## Context
 
 - `/al-dev-commit` → `/al-dev-release-notes` → [END]
-- Release-notes output (`.dev/*-al-dev-release-notes-*.md`) is not consumed by any downstream skill
+- Release-notes output (`.dev/*-al-dev-release-notes-*.md`) is not consumed by
+  any downstream skill today. This is an observed workflow gap, not a current
+  artifact contract.
 - This is a natural continuation point for automation: plan → develop → commit → release-notes → **publish**
 
 ## Proposed /al-dev-publish Skill
 
 Would consume `/al-dev-release-notes` output and orchestrate:
 
-1. **Copy to changelog** — merge release notes into CHANGELOG.md
+1. **Copy to changelog** — merge release notes into the project's changelog
+   target (for example, `CHANGELOG.md`)
 2. **Tag repository** — create git tag with version and notes
-3. **Notify stakeholders** — post to Slack/email/Teams
+3. **Notify stakeholders** — post to the project's notification channel (for
+   example, Slack, email, or Teams)
 4. **Trigger CI/CD** — call deployment pipeline webhook
 
 ## Scope Questions (Pending Clarification)
@@ -39,7 +43,8 @@ to `profile-al-dev-shared`.
 
 ## Future Task
 
-Once scope is approved, create `/al-dev-publish` skill with:
+Once scope is approved, create either a repo-local publish workflow or, if the
+answers generalize cleanly, a shared `/al-dev-publish` skill with:
 - Phase 1: Load latest release-notes artifact
 - Phase 2: Offer publication targets (changelog, GitHub, notify, CI/CD)
 - Phase 3: Execute chosen target(s)

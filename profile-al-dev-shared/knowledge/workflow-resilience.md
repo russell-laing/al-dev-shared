@@ -28,7 +28,7 @@ After each named phase boundary, overwrite
 **Pending decisions:** [list, or "none"]
 ```
 
-Latest state always wins — overwrite, never append.
+The newest checkpoint state is authoritative — overwrite, never append.
 Write the checkpoint before spawning subagents for the next
 phase and again after collecting their output.
 
@@ -71,6 +71,9 @@ authoritative:
 - Present the gathered resume state and ask:
   *"Resume from checkpoint? (yes / restart)"*
 
+This prompt is user-facing and must be surfaced before any later
+phase work begins.
+
 For other skills covered by this document, read `.dev/progress.md`
 if it exists. If the file exists, display its contents and ask:
 *"Resume from checkpoint? (yes / restart)"*
@@ -82,7 +85,8 @@ if it exists. If the file exists, display its contents and ask:
   - delete `.dev/progress.md`
   - for `/al-dev-develop`, either delete the latest dated develop
     progress/checklist/scope files from that abandoned run or
-    ignore them explicitly for the restarted session
+    ignore them explicitly for the restarted session and record
+    that choice in the new `.dev/progress.md`
   - create a new dated develop progress file for the restarted run
     before later phases regenerate checklist and scope
 
@@ -96,7 +100,7 @@ If an agent returns empty output or hits a usage limit:
 2. If no output at all, synthesize from the relevant plan
    document:
    - For develop phases: `.dev/02-solution-plan.md`
-   - For plan phases: `.dev/01-requirements.md`
+   - For plan phases: latest `.dev/*-al-dev-interview-requirements.md`
 3. Log the fallback in `.dev/progress.md` under
    **Pending decisions**: `"Phase X synthesized directly
    (agent hit limit)"`

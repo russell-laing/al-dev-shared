@@ -1,10 +1,11 @@
-# al-dev-plan Phase 0.5 Complexity Routing
+# al-dev-plan Preflight Complexity Routing
 
 This document defines the complexity-routing decisions made in
-`al-dev-plan` Phase 0.5 (Complexity Triage). The skill classifies the
-request up front, selects an architect model, and configures the debate
-accordingly. The routing logic is canonical here; the skill references
-this file and keeps only a quick-reference table inline.
+`al-dev-plan-preflight` during context assembly before `al-dev-plan`
+Phase 2 architect dispatch. Preflight classifies the request up front,
+selects an architect model, and records the debate configuration in
+`PREFLIGHT_CONTEXT`. The routing logic is canonical here; the planning
+skills reference this file and keep only lightweight summaries inline.
 
 ## Complexity Classification
 
@@ -24,7 +25,8 @@ Tier mapping to `knowledge/workflow-routing.md`:
 
 ## Model Assignment
 
-The classification sets `architect_model` for Phase 2:
+The classification sets `architect_model` in `PREFLIGHT_CONTEXT` for
+`al-dev-plan` Phase 2:
 
 - **SIMPLE** → `sonnet` — simpler problem, shorter debate, lower cost.
 - **MEDIUM / COMPLEX** → `opus` — larger scope, novelty, and ambiguity
@@ -48,7 +50,8 @@ decision to the user.
 
 ## Architect Debate Configuration
 
-Configure the Phase 2/3 debate by tier:
+Configure the architect debate that begins at `al-dev-plan` Phase 2 by
+tier:
 
 - **SIMPLE:** 2 architects, shorter debate, a single evaluator pass.
   Abbreviate the cross-architect challenge rounds.

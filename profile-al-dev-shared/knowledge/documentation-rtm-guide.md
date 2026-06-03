@@ -10,37 +10,37 @@ This guide documents how to parse source requirements, track status, and render 
 
 ## RTM Token System
 
-Requirements and acceptance criteria are encoded in `*-al-dev-interview-requirements.md` files as line-anchored tokens:
+Requirements and acceptance criteria are encoded in `*-al-dev-interview-requirements.md` files as line-anchored `REQ:` and `ACC:` tokens:
 
 ### Token Format
 
 **Requirement token:**
 ```
-REQ-NNN: [Requirement description]
+REQ:REQ-NNN [Requirement description]
 ```
 
 Example:
 ```
-REQ-001: Users can set a credit limit per customer
-REQ-002: System prevents saving sales orders that exceed the limit
+REQ:REQ-001 Users can set a credit limit per customer
+REQ:REQ-002 System prevents saving sales orders that exceed the limit
 ```
 
 **Acceptance criteria token:**
 ```
-ACC-NNN: [Criterion description]
+ACC:ACC-NNN [Criterion description]
 ```
 
 Example:
 ```
-ACC-001: Credit limit field accepts zero or positive numbers only
-ACC-002: Error message displayed if limit is exceeded
+ACC:ACC-001 Credit limit field accepts zero or positive numbers only
+ACC:ACC-002 Error message displayed if limit is exceeded
 ```
 
 The token examples above are internal parsing patterns, not output examples. Use the later RTM table templates and audience rules when rendering documentation.
 
 ### Parsing Rules
 
-1. Scan the latest `*-al-dev-interview-requirements.md` file for all `REQ-NNN` and `ACC-NNN` tokens.
+1. Scan the latest `*-al-dev-interview-requirements.md` file for all `REQ:REQ-NNN` and `ACC:ACC-NNN` tokens.
 2. Each requirement (`REQ-NNN`) may have multiple acceptance criteria (`ACC-NNN`).
 3. **Every REQ-NNN found in the requirements file must appear in the RTM table** — this is the completeness check.
 4. `ACC-NNN` criteria linked to a REQ-NNN should be listed on the same RTM table row (if audience rules permit) or in a separate row.
@@ -57,10 +57,10 @@ The RTM status for each requirement is inferred from the **presence of `.dev/` f
 |---|---|---|
 | Only `*-al-dev-interview-requirements.md` | `DEFINED` | Requirements documented, no design or code yet |
 | + `*-al-dev-plan-solution-plan.md` | `IN-PROGRESS` | Architecture designed, implementation starting |
-| + `*-al-dev-develop-code-review.md` | `IMPLEMENTED` | Code written, peer-reviewed, merged |
+| + `*-al-dev-develop-code-review.md` | `IMPLEMENTED` | Code written and reviewed |
 | + Test results or explicit sign-off | `VERIFIED` | Tested, validated, or signed off by stakeholder |
 
-**Application rule:** Query for the latest `*-al-dev-plan-solution-plan.md`, `*-al-dev-develop-code-review.md`, and any test/sign-off artifact. Determine the highest status level present and apply that to all requirements in the RTM table.
+**Application rule:** Query for the latest `*-al-dev-plan-solution-plan.md`, `*-al-dev-develop-code-review.md`, and any test/sign-off artifact. Determine the highest status level supported by those current-run artifacts and apply that to all requirements in the RTM table.
 
 ---
 
@@ -250,7 +250,7 @@ User guides omit the requirement IDs and SLA details; technical docs include the
 
 ## Examples
 
-### Example 1: Functional User RTM — "How to Process a Sales Order"
+### Example 1: Functional RTM — "How to Process a Sales Order"
 
 **Use case:** Documenting a feature from the business user's perspective. RTM maps user stories to instructions.
 
@@ -265,7 +265,7 @@ User guides omit the requirement IDs and SLA details; technical docs include the
 
 **RTM structure:** Each row is a user action (requirement) → UI location → steps → how to verify. Rows flow in business-logic order (create → validate → post → verify).
 
-**Who uses this RTM?** Functional testers, business analysts, end users validating new features.
+**Who uses this RTM?** Functional testers, business analysts, and consultants validating new features.
 
 ### Example 2: Technical Admin RTM — "Deploying the Sales Module Update"
 
@@ -306,7 +306,7 @@ User guides omit the requirement IDs and SLA details; technical docs include the
 - Documentation is <500 words (RTM adds overhead for small docs)
 - Feature is a bug fix or internal refactor with no new requirements (RTM is for requirements tracing, not code refactoring)
 - Feature is a simple config change with 1-2 steps (too granular for RTM; use numbered list instead)
-- Audience is developers only, code-level traceability is in comments/tests (don't duplicate)
+- Audience is `user` or `executive`, where the earlier audience rules already replace the RTM table with a summary line
 
 **Include RTM if:**
 - Feature is new and spans 3+ modules (track req → code → test mappings)

@@ -5,11 +5,11 @@
 ```markdown
 ## Code Review: [Feature Name]
 
-### Implementation Summary
+### Change Summary
 [What was built: objects, key functionality]
 
 ### Review Process
-3 specialized reviewers (security, AL expert, performance)
+Three specialized reviewers (security, AL expert, performance)
 completed parallel review.
 
 ### Critical Issues (All Resolved)
@@ -33,8 +33,8 @@ completed parallel review.
 [Overall quality assessment]
 
 ### Recommendation
-Code is ready for [testing/deployment] with [N]
-high-priority issues to address.
+[State whether the code is ready for testing/deployment. If issues remain open,
+say that explicitly and name the blocking concerns.]
 ```
 
 ## Autonomous Mode Addition
@@ -50,7 +50,7 @@ Append this section when `--autonomous` is active:
 | ObjectName.ProcedureName | ✅ Verified | al_search_object_members |
 | ObjectName.OtherProc | ⚠️ Not verified | Not found in MCP |
 
-Unverified risks: [describe any NOT VERIFIED entries]
+Unverified risks: [describe any Not verified entries]
 
 #### Static Validation
 | Check | Result |

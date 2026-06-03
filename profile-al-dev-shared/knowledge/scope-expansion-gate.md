@@ -1,14 +1,15 @@
 # Scope Expansion Gate
 
 A governance checkpoint enforced during development that prevents out-of-scope
-changes. Before editing any file or line not explicitly named in the approved
-solution plan, the developer must stop and present proposed changes to the user
-for per-item approval. Prevents scope creep and ensures the solution stays true
-to the plan.
+changes. Before editing outside the approved scope baseline, the developer must
+stop and present proposed changes to the user for per-item approval. The scope
+baseline may come from an approved solution plan or, for request-driven fix
+workflows, from the original reported symptom and agreed fix target. Prevents
+scope creep and ensures the solution stays true to the approved work.
 
 ## Gate Procedure
 
-BEFORE editing a file or line not explicitly named in the approved plan:
+BEFORE editing outside the approved scope baseline:
 
 1. **Stop** — do not invoke the edit tool yet.
 2. List the proposed out-of-scope change(s) as numbered items:
@@ -20,10 +21,12 @@ BEFORE editing a file or line not explicitly named in the approved plan:
    ```
 
 3. Present to the user with this exact prompt:
-   "These changes are outside the approved plan. Approve, reject,
+   "These changes are outside the approved scope. Approve, reject,
    or defer each. Reply with item numbers (e.g., '1 approve, 2 defer')."
 4. Wait for per-item decision before resuming. Do NOT continue writing code
    until the user confirms each item.
+
+`defer` means do not make that proposed change in the current run.
 
 If no out-of-scope changes are proposed, proceed with the edits.
 
@@ -43,5 +46,8 @@ If no out-of-scope changes are proposed, proceed with the edits.
 ## Propagation
 
 This gate applies to the orchestrating skill and to every spawned developer
-agent. Include this gate (or a reference to this file) in every developer
-spawn prompt so the rule propagates to subagents.
+agent. For plan-driven implementation workflows, include this gate (or a
+reference to this file) in every developer spawn prompt so the rule propagates
+to subagents. For request-driven fix workflows, an equivalent lightweight scope
+check may be used as long as it stops on out-of-scope changes and gets explicit
+per-item user decisions before those changes are kept.

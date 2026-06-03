@@ -1,6 +1,6 @@
 # Interview Question Bank for BC/AL Projects
 
-Referenced by: `al-dev-interview` agent
+Used by: `al-dev-interview` agent
 
 ## Question Categories
 
@@ -10,7 +10,7 @@ Use these categories to structure BC/AL project interviews. Adapt questions to t
 
 - What is the primary business problem this module solves?
 - Who are the end users and what is their workflow?
-- What are the success criteria — how will we measure success?
+- What are the success criteria — how will we measure success (e.g., time saved, error reduction, throughput, adoption)?
 - What are the constraints (timeline, budget, regulatory)?
 - Are there any manual processes today that this module will automate?
 
@@ -27,14 +27,13 @@ Use these categories to structure BC/AL project interviews. Adapt questions to t
 - Does this module integrate with external systems?
 - What APIs or webhooks are required?
 - What are the integration failure modes and recovery steps?
-- What's the expected latency for integrations?
+- What's the expected latency for integrations (synchronous response time, batch completion time, or both)?
 - Are there batch processing requirements?
 
 ### Performance & Scaling
 
 - What is the expected data volume (now and in 2 years)?
 - What are the performance SLAs (response time, throughput)?
-- Are there batch processing requirements?
 - What's the expected user concurrency?
 - Are there peak usage patterns (month-end, year-end)?
 

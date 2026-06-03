@@ -1,7 +1,8 @@
 # Consolidate Extraction Patterns
 
-Reusable bash patterns for `al-dev-consolidate` Phase 2 artifact extraction.
-All extraction is command-output-only — never read full file content into context.
+Reusable extraction patterns for `al-dev-consolidate` Phase 2 session
+extraction. The extracted output feeds later consolidation and vault-formatting
+steps without reading full file bodies into context.
 
 ## Pattern: Heading Extraction (all groups)
 
@@ -14,7 +15,8 @@ grep '^#' "$file"
 ## Pattern: First-N-Lines-Per-Section (Groups A and C)
 
 Extract the first N non-heading lines under each `##` heading.
-Set `remaining=N` for the desired line count (Group A uses 3; Group C uses 5).
+Set `remaining=N` for the desired line count (Group A, the core workflow
+group, uses 3; Group C, the ticket-context group, uses 5).
 
 ```bash
 awk '
@@ -24,7 +26,8 @@ awk '
 ' "$file"
 ```
 
-Replace `N` with `3` for Group A (core workflow) or `5` for Group C (ticket context).
+Replace `N` with `3` for Group A (core workflow) or `5` for Group C (ticket
+context).
 
 ## Pattern: Governance Token Count (Group A only)
 
@@ -32,7 +35,8 @@ Count governance tokens used for traceability reporting.
 
 ```bash
 for token in REQ ACC TEST DEC IMP DEP RISK; do
-  n=$(grep -c "${token}-\|${token}:" "$file" 2>/dev/null || echo 0)
+  n=$(grep -c "${token}-\|${token}:" "$file" 2>/dev/null || true)
+  n=${n:-0}
   [ "$n" -gt 0 ] && echo "${token}: $n"
 done
 ```
@@ -47,7 +51,7 @@ grep -E \
   "$file" | head -20
 ```
 
-## Pattern: Mermaid Diagram Extraction (all groups — high-value upgrade signal)
+## Pattern: Mermaid Diagram Extraction (all groups — high-value for later promote/connect review)
 
 Run after the group's base extraction if the file contains ` ```mermaid `.
 
@@ -59,7 +63,7 @@ awk '
 ' "$file"
 ```
 
-## Pattern: Image Reference Extraction (all groups — high-value upgrade signal)
+## Pattern: Image Reference Extraction (all groups — high-value for later promote/connect review)
 
 Run after the group's base extraction if the file contains `![`.
 

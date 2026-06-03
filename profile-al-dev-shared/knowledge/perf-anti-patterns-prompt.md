@@ -1,6 +1,6 @@
 # Performance Anti-Patterns Prompt Content
 
-Paste this block into the spawn prompt for the performance analysis agent (Step 2 of /al-dev-perf):
+Paste this block into the spawn prompt for `al-dev-performance-reviewer` (Step 2 of /al-dev-perf):
 
 ```text
 Anti-patterns to find:
@@ -26,7 +26,8 @@ P8 (MEDIUM baseline) — Full Table Scan: FindSet() with no prior
   SetRange() or SetFilter() on a table likely to be large
   (Sales Header/Line, Item, Customer, Vendor, any Ledger Entry
   table, or any table whose name is a common plural noun).
-  Escalate to HIGH if the codeunit is Entry Point or Batch Processor.
+  Escalate to HIGH if the codeunit is a heuristic hot-path entry point
+  or batch processor.
   Do NOT flag FindSet on small config/setup tables.
 
 For EACH finding report:
@@ -65,6 +66,7 @@ The pattern causes O(N) or O(N²) database round-trips that scale with business 
 **Examples:**
 - P1: Inner `FindSet` inside outer `FindSet` loop — 1 000 customers × 1 000 ledger entries = 1 M DB calls per batch run.
 - P3 inside a Batch Processor codeunit that processes all open Sales Orders — CalcFields on each line multiplies DB calls by line count.
+- `Entry Point` and `Batch Processor` are heuristic hot-path labels from `/al-dev-perf` classification, not formal AL object types.
 
 ### High
 
@@ -73,7 +75,7 @@ The pattern adds measurable overhead per record but does not cause exponential s
 **Examples:**
 - P2: `Customer.Get(No)` with no `SetLoadFields` when only `Name` and `Credit Limit` are read — fetches all 80+ Customer fields per call.
 - P3 outside a loop but called from a function invoked per-line in a report — same CalcFields overhead, lower urgency than CRITICAL because it is not nested.
-- P8 escalated: unfiltered `FindSet` on Item Ledger Entry inside an Entry Point codeunit.
+- P8 escalated: unfiltered `FindSet` on Item Ledger Entry inside a heuristically classified hot-path entry point.
 
 ### Medium
 
@@ -109,7 +111,7 @@ Do NOT flag a DB call inside a loop when:
 
 Do NOT flag missing `SetLoadFields` when:
 - The procedure subsequently accesses 3 or more distinct fields from the record. The cost of the additional round-trip to read missing fields outweighs the savings.
-- The record is fetched via `Get()` on a table with 10 or fewer fields total — field projection overhead exceeds the benefit.
+- The record is fetched via `Get()` on a very small table where field projection overhead likely exceeds the benefit.
 - The record is immediately passed by reference (var) to another procedure that may access any field. You cannot statically determine the field set.
 
 ### FindSet(true) exclusions (P4)
@@ -237,7 +239,7 @@ end;
 
 ### Batch Processing vs. UI code paths — Different Trade-off Rules
 
-**Batch Processing (Codeunit::RunBatch) Trade-offs:**
+**Batch Processing code path trade-offs:**
 - Can sacrifice user-facing latency for throughput (10 seconds for 1M records is OK)
 - Can use memory-intensive caching/indexing strategies
 - Must prioritize **correctness** over speed (batch runs unattended; no way to retry fast)

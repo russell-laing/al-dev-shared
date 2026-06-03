@@ -1,6 +1,6 @@
 # Release Notes Template
 
-Referenced by: `al-dev-release-notes-writer` agent
+Used by: `al-dev-release-notes-writer` agent
 
 ## Release Notes Structure
 
@@ -9,7 +9,7 @@ Use this template when generating release notes:
 ```markdown
 # Release Notes — v[VERSION]
 
-**Release Date:** [YYYY-MM-DD]
+**Release Date:** [Release date in YYYY-MM-DD]
 
 ## Summary
 [One-paragraph overview of major changes, new features, and impact]
@@ -56,7 +56,8 @@ Use this template when generating release notes:
 
 ## Installation & Upgrade
 
-[Link to installation guide or upgrade instructions]
+[Include this section when installation or upgrade action is required.
+Link to the relevant guide or summarize the required steps.]
 ```
 
 ## Writing Guidelines
@@ -64,7 +65,7 @@ Use this template when generating release notes:
 1. **Summary:** One paragraph capturing the essence — who should care and why
 2. **Features:** User-facing benefits, not technical implementation
 3. **Bug Fixes:** Describe the problem and the resolution, not just "fixed X"
-4. **Breaking Changes:** ALWAYS include migration guidance
+4. **Breaking Changes:** Always include migration guidance
 5. **Performance:** Include metrics if available (% improvement, before/after numbers)
 6. **Metrics:** Be specific: "40% faster" not just "faster"
 

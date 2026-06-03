@@ -10,7 +10,7 @@ description: >-
 
 **Audience:** Business Analyst / Consultant
 **Status:** [Implemented / In Progress]
-**Version:** [Version added]
+**Version:** [Plugin version or release tag]
 
 ## Business Purpose
 

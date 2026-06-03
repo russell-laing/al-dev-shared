@@ -8,7 +8,7 @@ description: >-
 # Feature: [Feature Name]
 
 **Status:** ✅ Implemented
-**Version:** [Version added]
+**Version:** [Plugin version or release tag]
 **Related Objects:** [Object IDs/Names]
 
 ## Overview

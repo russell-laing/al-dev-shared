@@ -8,7 +8,7 @@ description: >-
 # [Feature Name] — User Guide
 
 **Audience:** End User
-**Version:** [Version added]
+**Version:** [Plugin version or release tag]
 
 ## What This Feature Does
 

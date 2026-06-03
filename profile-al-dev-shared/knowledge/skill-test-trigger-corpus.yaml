@@ -1,6 +1,6 @@
 # Description-trigger corpus for the skill-test harness.
 # Each entry is a natural-language prompt and the bare skill name that
-# should be routed when Claude sees only the active skills' `name` +
+# should be routed when the harness sees only the active skills' `name` +
 # `description:` fields. Lowercase phrasing mimics how users actually
 # write. Expand this file when new mis-routes are discovered.
 
@@ -77,39 +77,29 @@ corpus:
   - prompt: "explain how the sales posting routine handles partial shipments"
     expected: al-dev-explore
   - prompt: "research a customer ticket about g/l setup"
-    expected: al-dev-support
+    expected: al-dev-ticket
 
   # --- spec/plan/review clarification near-misses ---------------------------
+  # design spec document; clarify intent because review-only is not an
+  # implementation trigger
   - prompt: "review this spec and tell me if it is ready to implement"
-    artifact: design spec document
-    expected_routing: NONE (clarify intent; review-only is not an implementation trigger)
-    expected_response: "This spec is well-formed and covers requirements X, Y, Z. Are you ready for me to create a plan?"
     expected: NONE
-    note: "clarify intent; review-only is not an implementation trigger"
+  # implementation plan; clarify intent because audit-only is not an
+  # implementation trigger
   - prompt: "audit this plan for risk only"
-    artifact: implementation plan
-    expected_routing: NONE (clarify intent; audit-only is not an implementation trigger)
-    expected_response: "I'll review this plan for risks without executing it. Here are my concerns: ..."
     expected: NONE
-    note: "clarify intent; audit-only is not an implementation trigger"
+  # code with compile errors; diagnostic summary only, not EDIT intent. A good
+  # response would summarize current compile failures and ask whether to fix them.
   - prompt: "summarize the compile failures without fixing anything"
-    artifact: code with compile errors
-    expected_routing: NONE or al-dev-lint with REVIEW intent (diagnostic summary, not EDIT)
-    expected_response: "The staged changes have X errors and Y warnings. Details: ... Should I fix these, or is this review-only?"
     expected: NONE
-    note: "diagnostic summary, not EDIT intent; may route to al-dev-lint with REVIEW intent"
+  # design spec document + implement/execute keyword; clarify whether the user
+  # wants planning output or direct implementation
   - prompt: "here's my spec, implement it now"
-    artifact: design spec document + "implement/execute" keyword
-    expected_routing: Clarify whether user wants planning output (al-dev-plan) or direct implementation (al-dev-develop)
-    expected_response: "I see you have a spec. Do you want me to create a detailed plan first, or jump straight to implementation?"
     expected: CLARIFY
-    note: "clarify whether user wants planning output (al-dev-plan) or direct implementation (al-dev-develop)"
+  # implementation plan + review/audit-only keywords; treat as REVIEW and do
+  # not route to al-dev-develop
   - prompt: "review this plan and audit only"
-    artifact: implementation plan + "review/audit only" keywords
-    expected_routing: Treat as REVIEW (no implementation)
-    expected_response: "I'll review this plan for completeness and risk. I won't execute it unless you confirm."
     expected: NONE
-    note: "treat as REVIEW (no implementation); do not route to al-dev-develop"
 
   - prompt: "fix the bug, but do not say it is done unless you verified it this run"
     expected: al-dev-fix

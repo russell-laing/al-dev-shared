@@ -1,12 +1,12 @@
 # Map Suggestion Templates
 
-Suggestion format templates used by `/draft-map-suggestions` when writing to
-map Observations sections. Reference this file instead of embedding templates
-inline in the skill body.
+Suggestion format templates used by `/al-dev-map-suggestions-verify` when
+writing map observations and verification outputs. Reference this file instead
+of embedding templates inline in the skill body.
 
 ---
 
-## Agent templates (--type agent)
+## Agent suggestion templates
 
 ### Trim
 
@@ -17,10 +17,10 @@ Suggestion: Remove [tool] from the tools list in the agent frontmatter.
 Trade-off: Minimal — tool wasn't used; tighter least-privilege posture.
 ```
 
-### Remodel
+### Promote
 
 ```
-**Remodel: al-dev-<name>**
+**Promote: al-dev-<name>**
 Observation: Agent performs [task description]; currently assigned [current-model].
 Suggestion: Change model to [new-model] — task [does/does not] require multi-file synthesis.
 Trade-off: [Faster + cheaper / More capable]; justified because [reason].
@@ -55,7 +55,7 @@ Trade-off: Documentation-only change; prevents future caller confusion.
 
 ---
 
-## Skill templates (--type skill)
+## Skill suggestion templates
 
 ### Atomise
 
@@ -95,14 +95,4 @@ Observation: [agent-type] is invoked by N skills. The invocation is copy-pasted
 Suggestion: Write a canonical invocation template in knowledge/ and link from each
   skill that uses it.
 Trade-off: One canonical source; callers adapt slightly to reference it.
-```
-
-### Extend
-
-```
-**Extend: [gap description]**
-Observation: The [X → Y → Z] chain is well-established but stops at Z.
-Suggestion: A /new-skill-name that consumes Z's output would complete the natural
-  workflow and enable [use case].
-Trade-off: Adds scope; only worth building if the use case is frequent.
 ```

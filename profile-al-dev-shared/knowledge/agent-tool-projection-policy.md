@@ -78,8 +78,9 @@ failure_policy:
 # Agent Tool Projection Policy
 
 This policy defines how shared agent capability declarations are projected into
-harness-native tool metadata. Shared files keep the canonical vocabulary.
-Harness-specific instructions files and profile repos perform the projection.
+harness-native agent metadata or capability notes. Shared files keep the
+canonical vocabulary. Harness-specific instructions files and profile repos
+perform the projection.
 For a repo-local maintainer walkthrough of the broader architecture and
 historical context, see `docs/projection-layer-readme.md`.
 
@@ -121,10 +122,11 @@ Regenerate projections after either of these changes:
 - You change implemented projection behavior in
   `scripts/generate-agent-projections.py`
 
-Policy-only or knowledge-only documentation edits do not require regeneration
-by themselves. If you change the intended mapping contract, keep the generator
-implementation aligned with that contract. The generator remains the runtime
-source of truth for emitted projection artifacts.
+Prose-only documentation edits do not require regeneration by themselves. If
+you change this file's frontmatter mapping rules or any intended projection
+contract, keep the generator implementation aligned with that contract and
+regenerate projections. The generator remains the runtime source of truth for
+emitted projection artifacts.
 
 ### Minimum Projection Integrity Checks
 
@@ -132,6 +134,7 @@ Run these checks when changing shared projection behavior or the shared
 authored surface around it:
 
 ```bash
+python3 scripts/generate-agent-projections.py
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
 python3 scripts/tests/test_generate_agent_projections.py
@@ -159,7 +162,10 @@ vocabulary contract when replacing harness-specific names in shared source.
 
 ### Codex
 
-- `USER_GATE` projects to the `request_user_input` developer instruction.
+- `USER_GATE` has no single full-equivalence primitive in Codex. In Plan mode,
+  projections may reference the `request_user_input` developer instruction as
+  the closest structured mechanism; outside Plan mode, the session must enforce
+  the gate behaviorally by asking in-session and waiting for the user's reply.
 - `Read` uses native read-only file access through the active Codex session.
 - `Write` and `Edit` use `apply_patch` or an equivalent active-session edit
   capability.

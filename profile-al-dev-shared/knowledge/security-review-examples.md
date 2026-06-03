@@ -1,10 +1,15 @@
-# Security Review Code Examples
+# Security Review Examples
 
-Referenced by: `al-dev-security-reviewer` agent
+Used by: `al-dev-security-reviewer` agent
+
+These are review examples for spotting common security issues in AL/BC.
+Treat them as illustrative patterns, not production-ready snippets to copy verbatim.
 
 ## Common Security Issues in AL/BC
 
 ### SQL Injection via String Concatenation
+
+Why it matters: Concatenated query text turns untrusted input into executable logic and can expose or corrupt data.
 
 **Bad:**
 ```al
@@ -21,6 +26,8 @@ rec.FindSet();
 
 ### Credential Storage
 
+Why it matters: Plain-text credential handling increases the risk of accidental disclosure through tables, logs, exports, or debugging.
+
 **Bad:**
 ```al
 procedure StoreApiKey(key: Text)
@@ -36,6 +43,8 @@ IsolatedStorage.Set(ApiKeyLabel, apiKey, DataScope::Module);
 ```
 
 ### Permission Elevation Risks
+
+Why it matters: User-name checks are brittle and can bypass the platform's intended permission model.
 
 **Bad:**
 ```al
@@ -57,6 +66,8 @@ if not UserPermissions.CanExecute(ObjectType::Codeunit, Codeunit::"SensitiveOp")
 
 ### Data Exposure in Logs
 
+Why it matters: Secrets and sensitive identifiers written to logs often persist beyond the original operation and widen the blast radius of an incident.
+
 **Bad:**
 ```al
 Message('Processing record: ' + RecordKey + ' with password: ' + Password);
@@ -69,6 +80,8 @@ Message('Processing record: ' + RecordKey);
 ```
 
 ### Insufficient Input Validation
+
+Why it matters: Unvalidated input can cause data corruption, unexpected runtime failures, or downstream security problems.
 
 **Bad:**
 ```al

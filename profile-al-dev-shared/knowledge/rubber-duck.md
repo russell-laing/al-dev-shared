@@ -6,8 +6,9 @@ sceptical observer — not to justify decisions, but to find gaps.
 
 ## The Rule
 
-> If you find a gap during rubber ducking, **fix it before proceeding**. Do not log it,
-> defer it, or note it for later. The rubber duck step is a blocker, not a suggestion.
+> If you find a gap during rubber ducking, **fix it before proceeding**. Do not log it
+> or note it for later as if the current phase still passed. The rubber duck step is
+> a blocker, not a suggestion.
 
 ## Format
 
@@ -15,15 +16,15 @@ Each phase that uses rubber ducking has a small set of specific questions. Work
 through each question honestly. If the answer is "no" or "I'm not sure", treat
 it as a gap.
 
-## Where It's Applied
+## Confirmed or Intended Gates
 
 | Phase | File | Gate |
 |-------|------|------|
 | Requirements gathered | `profile-al-dev-shared/skills/al-dev-interview/SKILL.md` | Before final interview summary |
 | Solution designed | `profile-al-dev-shared/agents/al-dev-solution-architect.md` | Before returning the recommended option |
 | Plan validated | `profile-al-dev-shared/skills/al-dev-plan/SKILL.md` | Before presenting the plan for approval |
-| Code implemented | `profile-al-dev-shared/agents/al-dev-developer.md` | Before reporting implementation complete |
-| Code reviewed | `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` | Before Phase 10 presentation |
+| Code implemented | `profile-al-dev-shared/agents/al-dev-developer-tdd.md` and `profile-al-dev-shared/agents/al-dev-developer-traditional.md` | Before reporting implementation complete |
+| Code reviewed | `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` | Before reporting review complete or ready for the next workflow step |
 | Bug fixed | `profile-al-dev-shared/skills/al-dev-fix/SKILL.md` | Before presenting the fix |
 | Commit prepared | `profile-al-dev-shared/skills/al-dev-commit/SKILL.md` | Before commit execution |
 | Report-driven plugin suggestion accepted | `profile-al-dev-shared/knowledge/rubber-duck.md` | Before a report suggestion becomes shared-profile scope |

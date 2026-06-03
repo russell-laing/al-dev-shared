@@ -1,4 +1,4 @@
-# /al-dev-fix Detailed Examples
+# al-dev-fix Detailed Examples
 
 This document provides detailed walkthroughs of two common fix scenarios.
 
@@ -7,7 +7,7 @@ This document provides detailed walkthroughs of two common fix scenarios.
 ```text
 User: "/fix Customer validation allows negative credit limits"
 
-You (analysis):
+Triage:
 "Trivial - missing validation check in Customer table extension"
 
 You (to developer):
@@ -21,6 +21,7 @@ You (to user):
 
  Added validation: Credit Limit cannot be negative
  Compilation: ✅ Success
+ Validate: [exact compile or targeted verification command]
 
  Ready to test?"
 ```
@@ -32,13 +33,13 @@ You (to user):
 ```text
 User: "/fix Sales posting fails when credit limit is exactly 0"
 
-You (analysis):
+Triage:
 "Non-trivial - need to understand posting flow and where check happens"
 
-You (spawn architect):
+You (spawn investigation agent):
 "Analyze why posting fails when credit limit is exactly 0"
 
-Architect:
+Investigation agent:
 "Root cause: CreditValidator uses > instead of >= for comparison.
  Fix: Change comparison logic in ValidateCredit method.
  Risk: Ensure 0 is treated as 'no limit' if that's business rule."
@@ -63,6 +64,7 @@ You (to user):
  Documented: 0 is treated as [no limit/zero limit]
 
  Compilation: ✅ Success
+ Validate: [exact compile or targeted verification command]
  Risk: Watch for edge cases where 0 limit is set intentionally
 
  Ready to test?"

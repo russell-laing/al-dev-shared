@@ -5,11 +5,11 @@ description: >-
   key outcomes. Used by al-dev-docs-writer when AUDIENCE=executive.
 ---
 
-# [Feature Name] — Summary
+# Feature: [Feature Name] — Summary
 
 **Audience:** Executive / Management
-**Version:** [Version added]
-**Date:** [Date]
+**Version:** [Plugin version or release tag]
+**Date:** [YYYY-MM-DD]
 
 ## What Was Built
 
@@ -31,3 +31,7 @@ How does this feature address it?]
 - [Risk — e.g. "Manual pre-posting credit checks are no longer needed"]
 - [Visibility — e.g. "Credit utilisation is visible in real time"]
 - [Optional fifth outcome if applicable]
+
+## Requirements Summary
+
+Requirements summary: [X delivered, Y verified, Z in progress.]

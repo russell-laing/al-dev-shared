@@ -32,7 +32,7 @@ to narrow scope and avoid redundant discovery.
 
 ## Step B — Spawn Invocation Format
 
-The canonical Agent tool invocation for an Explore subagent:
+The canonical delegated invocation for an Explore subagent:
 
 ```text
 Spawn an explore agent:
@@ -59,7 +59,7 @@ Naming: `$(date +%Y-%m-%d)-<skill-name>-<artifact-name>.md`
 Examples:
 - `2026-05-18-al-dev-explore-findings.md`
 - `2026-05-18-al-dev-perf-perf-analysis.md`
-- `2026-05-18-al-dev-explore-findings.md` (investigate also uses this name)
+- `2026-05-18-al-dev-explore-findings.md` (some investigate flows also reuse this findings filename convention)
 
 Files are date-prefixed to preserve history. Do not overwrite previous runs.
 
@@ -72,5 +72,5 @@ After writing the file, show a short inline summary and reference the file:
 
 [2–5 sentence summary of findings]
 
-[Suggest next command if findings warrant one]
+[Suggest next step if findings warrant one]
 ```
