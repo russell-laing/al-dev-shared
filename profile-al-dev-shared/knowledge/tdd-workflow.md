@@ -90,10 +90,10 @@ Create a test that fails because the production code doesn't exist yet.
    ```bash
    # Execute the test codeunit
    # Auto-detects codeunit range from app.json if available
-   bc-test -o .dev/test-results-red.txt
+   bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-red.txt"
 
    # Or specify codeunit ID explicitly
-   bc-test 50200 -o .dev/test-results-red.txt
+   bc-test 50200 -o ".dev/$(date +%Y-%m-%d)-tdd-al-red.txt"
 
    # Note: Results are written to file for clean conversation
    # Console shows summary only (e.g., "Passed: 0, Failed: 1")
@@ -103,7 +103,7 @@ Create a test that fails because the production code doesn't exist yet.
    ```markdown
    RED Phase Complete: [TestName]
 
-   Test Results: Written to .dev/test-results-red.txt
+   Test Results: Written to `.dev/$(date +%Y-%m-%d)-tdd-al-red.txt`
    [Show summary from bc-test stdout - passed/failed counts]
 
    Did the test FAIL as expected?
@@ -184,10 +184,10 @@ Write minimal production code to make the test pass.
    ```bash
    # Execute the test codeunit
    # Auto-detects codeunit range from app.json if available
-   bc-test -o .dev/test-results-green.txt
+   bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-green.txt"
 
    # Or specify codeunit ID explicitly
-   bc-test 50200 -o .dev/test-results-green.txt
+   bc-test 50200 -o ".dev/$(date +%Y-%m-%d)-tdd-al-green.txt"
 
    # Note: Results are written to file for clean conversation
    # Console shows summary only (e.g., "Passed: 1, Failed: 0")
@@ -197,7 +197,7 @@ Write minimal production code to make the test pass.
    ```markdown
    GREEN Phase Complete: [TestName]
 
-   Test Results: Written to .dev/test-results-green.txt
+   Test Results: Written to `.dev/$(date +%Y-%m-%d)-tdd-al-green.txt`
    [Show summary from bc-test stdout - passed/failed counts]
 
    Did the test PASS?
@@ -280,13 +280,13 @@ Improve code quality without changing behavior.
    ```bash
    # Execute all test codeunits to verify refactoring didn't break anything
    # Auto-detects full codeunit range from app.json
-   bc-test -o .dev/test-results-refactor.txt
+   bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt"
 
    # Or specify multiple codeunits explicitly
-   bc-test 50200 50201 -o .dev/test-results-refactor.txt
+   bc-test 50200 50201 -o ".dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt"
 
    # Or use ranges for consecutive codeunit IDs
-   bc-test 50200-50210 -o .dev/test-results-refactor.txt
+   bc-test 50200-50210 -o ".dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt"
 
    # Note: Results written to file for detailed review
    # Console shows summary (e.g., "Passed: 10, Failed: 0")
@@ -296,7 +296,7 @@ Improve code quality without changing behavior.
    ```markdown
    REFACTOR Phase Complete
 
-   Test Results: Written to .dev/test-results-refactor.txt
+   Test Results: Written to `.dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt`
    [Show summary from bc-test stdout - passed/failed counts]
 
    All tests still PASS after refactoring. Please review results.
@@ -321,7 +321,7 @@ Improve code quality without changing behavior.
 
 ## TDD Log Documentation
 
-**Every cycle MUST be documented in `.dev/03-tdd-log.md`:**
+**Every cycle MUST be documented in `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md`:**
 
 ```markdown
 ## Feature: Credit Limit Validation
@@ -436,8 +436,10 @@ bc-test
 
 #### External Test Framework Detection
 
-This fallback matters for mixed-language repos where TDD guidance still applies
-even though the execution path is not the AL test runner.
+This fallback is only relevant when a shared TDD workflow is being reused in a
+mixed-language repository. For the AL development profile, keep the primary
+path anchored on `app.json`, `bc-publish`, and AL test codeunits even though
+the shared guidance can extend to non-AL runners.
 
 For non-AL projects, bc-test detects external frameworks:
 
