@@ -400,3 +400,10 @@ Reference specific files and line numbers for key logic.
 
 **Remember:** Spawn docs-writer, review for accuracy and completeness,
 present polished documentation.
+
+## Optional Downstream Handoff
+
+Feature documents produced by this skill can be consumed by `/al-dev-consolidate`
+as part of a session summary. If you want to consolidate this feature doc with
+other session outputs (exploration findings, interview notes, release notes) into
+a single session index, run `/al-dev-consolidate` after this skill completes.

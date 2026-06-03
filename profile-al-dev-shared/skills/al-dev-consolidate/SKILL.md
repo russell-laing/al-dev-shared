@@ -326,3 +326,17 @@ Sessions processed: N
 Persistent: .dev/sessions/persistent-summary.md
 Index:      .dev/sessions/sessions-index.md
 ```
+
+## Vault Promotion
+
+When the session index includes `vault_promote: true`, the output is formatted
+for import into a second-brain vault (Obsidian, Logseq, or equivalent). To
+complete the vault handoff:
+
+1. The session index file (`.dev/*-al-dev-consolidate-session-index.md`) is
+   vault-ready when `vault_promote: true` is set.
+2. Use `/obsidian` or your vault's import mechanism to ingest the session index.
+3. If no vault integration skill is available, copy the file to your vault
+   manually.
+
+Vault promotion is optional — the session index is useful without it.
