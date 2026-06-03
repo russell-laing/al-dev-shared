@@ -2,10 +2,11 @@
 name: review-maps
 description: >-
   Map accuracy sync — asks whether to run in-session or async at start.
-  In-session runs /review-skill-map + /review-agent-map now; async dispatches
-  /sync-documentation-maps and frees this session (collect results later with
-  /sync-documentation-maps-collect). Pass --no-update to skip the mode prompt
-  and audit both maps in-session without modifying them.
+  In-session runs /review-documentation-map --surface skills + --surface agents
+  now; async dispatches /sync-documentation-maps and frees this session
+  (collect results later with /sync-documentation-maps-collect). Pass
+  --no-update to skip the mode prompt and audit both maps in-session without
+  modifying them.
   Triggers on: "review maps", "update maps", "sync maps", "are the maps
   accurate", "check the maps".
 argument-hint: "[--no-update]"
@@ -34,11 +35,11 @@ If [2] → invoke `/sync-documentation-maps` and exit.
 
 ## Phase 1 — Review skill map
 
-Run `/review-skill-map`, passing through any `--no-update` flag received.
+Run `/review-documentation-map --surface skills`, passing through any `--no-update` flag received.
 
 ## Phase 2 — Review agent map
 
-Run `/review-agent-map`, passing through any `--no-update` flag received.
+Run `/review-documentation-map --surface agents`, passing through any `--no-update` flag received.
 
 ## Phase 3 — Handoff
 
