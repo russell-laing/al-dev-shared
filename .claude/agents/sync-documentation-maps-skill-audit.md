@@ -65,12 +65,14 @@ Extract:
 
 - **Phase count:** count headings matching `## Phase N` (where N is a digit).
 - **Agents spawned:** extract all `al-dev-shared:<agent-name>` patterns.
-- **Output files:** extract all `.dev/` write-target paths. Match occurrences of
-  `` `.dev/...` `` in backticks and `.dev/` path tokens ending in `.md`, `.json`,
-  or `.log` that follow a write verb (`write`, `writes`, `save`, `output to`). Use:
-  `grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)' <SKILL.md>` and keep paths on
-  lines that also mention a write verb. Normalize a templated date (`YYYY-MM-DD` or
-  `$(date ...)`) to the literal `YYYY-MM-DD` before comparison.
+- **Output files:** extract all `.dev/` write-target paths. First normalize any
+  templated date to the literal `YYYY-MM-DD`, then extract candidate paths, then
+  keep only those on lines that mention a write verb. The write-verb list
+  (`write`, `writes`, `Write`, `save`, `output to`, `→`) is indicative, not
+  exhaustive — keep a path when the line clearly directs writing it. Use:
+  `sed -E 's/\$\(date \+[^)]*\)/YYYY-MM-DD/g' <SKILL.md> | grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)'`
+  This captures both literal-dated and `$(date ...)`-templated artifacts in the
+  normalized `YYYY-MM-DD` form used by the map.
 
 ### Step 3 — Parse docs/al-dev-skills-map.md
 
