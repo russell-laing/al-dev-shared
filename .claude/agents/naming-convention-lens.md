@@ -55,11 +55,8 @@ read every file path in the dispatch prompt and derive each tool's name:
 - **Low:** the name breaks a recommended (SHOULD) pattern only — an advisory
   skill-name deviation not listed in `## Grandfathered exceptions`.
 
-**Severity summary:**
-
-- High: a lens-agent filename that breaks the enforced lens pattern
-- Medium: an output path that breaks a documented output pattern
-- Low: an advisory skill-name deviation
+The "How a deviation maps to severity" block above is the single authoritative
+severity mapping for this lens.
 
 ---
 

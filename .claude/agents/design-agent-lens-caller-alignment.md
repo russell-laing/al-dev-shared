@@ -27,8 +27,11 @@ Extract the `## Inputs` and `## Outputs` sections. Then use the Grep tool to
 check how each spawning skill actually invokes the agent. "Actually invoke"
 means: the skill body contains an `al-dev-shared:<agent>` dispatch line **and**
 the context block passed alongside it (the prompt fields the skill hands the
-agent). Check both — a dispatch with no passed context, or passed context with
-no dispatch, is not a real invocation. Search the skills directory:
+agent). Check both: a dispatch line with no passed context block is not evidence
+of a working contract — treat it as a potential High alignment finding (the
+agent's documented Inputs are not being supplied), not as out-of-scope.
+Likewise, passed context with no dispatch line is a finding. Search the skills
+directory:
 
 - Pattern: `al-dev-<agent-name>` in `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/`
 
