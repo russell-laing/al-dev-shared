@@ -8,7 +8,7 @@ description: >-
 argument-hint: "[RUN_ID from checkpoint]"
 ---
 
-# Sync Documentation Maps — Apply (Write Maps)
+# Sync Documentation Maps — Apply (Validate & Write to docs/)
 
 First step of two-step sync finalization. Reads updated map artifacts written
 by the background update agents, validates them, and writes the canonical docs/
