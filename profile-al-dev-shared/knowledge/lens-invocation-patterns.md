@@ -48,7 +48,7 @@ already_inline_candidates: [single-use agents that could be inlined]
 
 Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 `design-skill-lens-near-duplicates`, `design-skill-lens-handoff-gaps`,
-`design-skill-lens-preplanning`
+`design-skill-lens-preplanning`, `design-skill-lens-surface-placement`
 
 ### Required context fields per lens (skill lenses)
 
@@ -59,6 +59,7 @@ Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 | `design-skill-lens-near-duplicates` | `agent_usage_counts`, `phase_counts` |
 | `design-skill-lens-handoff-gaps` | `handoff_chains` |
 | `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
+| `design-skill-lens-surface-placement` | `no_agent_skills` |
 
 ### Dispatch template (skill lenses)
 
