@@ -1,6 +1,6 @@
 ---
 name: "al-dev-commit-recover-fixer"
-description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/YYYY-MM-DD-al-dev-commit-recover-report.md. Dispatched by /commit-recover Step 2 with one fixer spawned per corruption incident found in .dev/commit-integrity.log."
+description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/YYYY-MM-DD-plugin-recover-report.md. Dispatched by /commit-recover Step 2 with one fixer spawned per corruption incident found in .dev/commit-integrity.log."
 tools: ["edit", "execute"]
 ---
 
@@ -26,7 +26,7 @@ When an AL file becomes corrupted during commit (broken OOXML, syntax errors, tr
 | Output | Description |
 |--------|-------------|
 | Fixed AL files | Recovered via fallback strategies (git restore, regex reconstruction, schema rebuild) |
-| `.dev/$(date +%Y-%m-%d)-al-dev-commit-recover-report.md` | Recovery report with per-file strategy and status |
+| `.dev/$(date +%Y-%m-%d)-plugin-recover-report.md` | Recovery report with per-file strategy and status |
 
 ## Recovery Workflow
 
@@ -40,7 +40,7 @@ When an AL file becomes corrupted during commit (broken OOXML, syntax errors, tr
 
 **Step 3:** Write recovery report (per-file strategy, status, any unrecoverable files)
 
-Use the Write tool to create `.dev/$(date +%Y-%m-%d)-al-dev-commit-recover-report.md`. Do not use Bash redirection for this file.
+Use the Write tool to create `.dev/$(date +%Y-%m-%d)-plugin-recover-report.md`. Do not use Bash redirection for this file.
 
 ## Return Block
 
@@ -50,5 +50,5 @@ Return to `/commit-recover` with:
 RECOVERED: <file count> files
 UNRECOVERABLE: <file count> files
 STRATEGIES_USED: [git restore | regex reconstruction | schema rebuild]
-REPORT_FILE: .dev/YYYY-MM-DD-al-dev-commit-recover-report.md
+REPORT_FILE: .dev/YYYY-MM-DD-plugin-recover-report.md
 ```
