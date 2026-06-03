@@ -28,14 +28,34 @@ This repository may also contain repo-local Codex skills under `.codex/skills/`.
 These are not part of the shared plugin surface and should be used only for
 repository-specific workflows that should not be projected into other harnesses.
 
+Repo-local skill names should follow the same verb-first convention used by the
+maintainer tool naming policy in `.claude`: prefer `{verb}-{object}-{aspect}`
+and keep the skill name aligned with the actual task it performs. Existing
+repo-local names are kept where they are already established, but new skills
+should follow the same pattern.
+
 Current repo-local skills:
 
-- `.codex/skills/ai-usage-report/` — converts harness-specific usage artifacts
-  into neutral markdown reports and can optionally add Codex-derived local
-  usage observations.
+- `.codex/skills/generate-usage-report/` — converts harness-specific usage
+  artifacts into neutral markdown reports and can optionally add Codex-derived
+  local usage observations.
+- `.codex/skills/cleanup-docs-health/` — removes dated health clutter without
+  rewriting live evidence or current aliases.
+- `.codex/skills/implement-plugin-map-findings/` — implements corrected
+  plugin-map and tooling-surface findings plans.
+- `.codex/skills/maintain-shared-knowledge/` — keeps shared knowledge and
+  harness instruction docs aligned with current capabilities.
 - `.codex/skills/plugin-improvement-review/` — reviews supplied usage or
   improvement reports and writes evidence-backed plugin improvement
   assessments without editing the shared plugin profile directly.
+- `.codex/skills/plugin-mini-heal/` — performs a small, surface-specific
+  self-heal pass near the end of a session.
+- `.codex/skills/repeat-plan-execution/` — runs an established implementation
+  plan task-by-task with isolated execution and review gates.
+- `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy
+  reports against live repo state before trusting rankings or counts.
+- `.codex/skills/cleanup-superpowers-history/` — preserves provenance for
+  `docs/superpowers/` history while removing obsolete raw artifacts.
 
 ## Shared Plugin Surface (All Harnesses)
 

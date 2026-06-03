@@ -1,9 +1,9 @@
 ---
-name: docs-health-cleanup
+name: cleanup-docs-health
 description: Use when docs/health has accumulated dated health reports, findings files, or current-session aliases and the goal is to reduce clutter without deleting live evidence, rewriting point-in-time records, or trusting stale recommendations.
 ---
 
-# Docs Health Cleanup
+# Cleanup Docs Health
 
 ## Overview
 
@@ -24,7 +24,7 @@ Use this when `docs/health/` has become noisy with dated audit artifacts. The ru
    - search the repo broadly, not only `docs/` subtrees
    - prefer repo-wide `rg` with explicit excludes over a hand-picked directory list
 4. Re-check same-day claims against live repo state before treating any report as cleanup-ready:
-   - use `self-healing-report-review` style verification for counts, rankings, and "already fixed" claims
+   - use `review-self-healing-report` style verification for counts, rankings, and "already fixed" claims
    - if a report is still the basis for an active plan or follow-up patch, keep it
 5. Handle `*-current.md` aliases conservatively:
    - keep them while downstream plans, notes, or docs still reference them

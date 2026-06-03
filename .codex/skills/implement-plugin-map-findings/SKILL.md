@@ -1,9 +1,9 @@
 ---
-name: implementing-plugin-map-findings
+name: implement-plugin-map-findings
 description: Use when implementing a corrected plugin-map or tooling-surface findings plan in al-dev-shared, especially when tasks mix repo-local `.claude/` maintainer tooling with `profile-al-dev-shared/` shared surfaces and may contain conditional or overlapping edits.
 ---
 
-# Implementing Plugin Map Findings
+# Implement Plugin Map Findings
 
 Execute corrected plugin-map and tooling-surface findings plans with the session traps already handled.
 

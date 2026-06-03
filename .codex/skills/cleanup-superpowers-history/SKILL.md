@@ -1,9 +1,9 @@
 ---
-name: superpowers-history-cleanup
+name: cleanup-superpowers-history
 description: Use when docs/superpowers/plans, docs/superpowers/specs, or tracked .dev execution artifacts have accumulated historical clutter and the goal is to preserve provenance in a durable summary while safely removing obsolete raw files.
 ---
 
-# Superpowers History Cleanup
+# Cleanup Superpowers History
 
 ## Overview
 

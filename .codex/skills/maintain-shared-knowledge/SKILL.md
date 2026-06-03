@@ -1,9 +1,9 @@
 ---
-name: maintaining-shared-knowledge
+name: maintain-shared-knowledge
 description: Use when updating shared knowledge files, agent manifests, or harness instruction docs that must stay aligned with current Claude Code, Copilot CLI, and Codex capabilities.
 ---
 
-# Maintaining Shared Knowledge
+# Maintain Shared Knowledge
 
 ## Overview
 

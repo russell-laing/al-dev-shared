@@ -1,9 +1,9 @@
 ---
-name: ai-usage-report
+name: generate-usage-report
 description: Convert harness-specific usage/session artifacts into an AI-harness-neutral markdown report, optionally augmenting the output with Codex-derived session observations from local Codex history/state data. Use when asked to review Claude Code Insights HTML, create a neutral cross-harness usage report, or include Codex-side usage observations in the same report.
 ---
 
-# AI Usage Report
+# Generate Usage Report
 
 Create a neutral markdown report from one or more AI harness usage artifacts.
 
@@ -53,7 +53,7 @@ When the user asks to include Codex-side observations, inspect local Codex artif
 Use the helper script:
 
 ```bash
-python3 .codex/skills/ai-usage-report/scripts/summarize_codex_usage.py \
+python3 .codex/skills/generate-usage-report/scripts/summarize_codex_usage.py \
   --history ~/.codex/history.jsonl \
   --state ~/.codex/state_5.sqlite
 ```

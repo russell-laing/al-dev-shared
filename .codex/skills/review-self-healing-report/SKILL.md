@@ -1,9 +1,9 @@
 ---
-name: self-healing-report-review
+name: review-self-healing-report
 description: Use when a recommendation-heavy report, tooling-health doc, architectural analysis, plan, or spec in al-dev-shared may have stale rankings, unsupported counts, or overstated fixes and must be checked against live repo state.
 ---
 
-# Self-Healing Report Review
+# Review Self-Healing Report
 
 Review the artifact against live repo truth before trusting any recommendation.
 
