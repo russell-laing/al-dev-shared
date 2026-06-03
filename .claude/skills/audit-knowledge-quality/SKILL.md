@@ -39,19 +39,26 @@ python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
 
 Extract flagged files and issue codes from output. Group by issue type: [THIN], [NO-CODE], [DEAD-REF].
 
-### Phase 2: Analyze Flagged Files
+### Phase 2a: Choose dispatch mode
 
 #### Progress Tracking
 
 Before analyzing any file, create one task per flagged file using `TaskCreate` named `[issue-type] [filename]`. Update each task to `in_progress` when analysis begins, `completed` when the file analysis is written to findings.
 
-#### Parallel Exploration
+#### Decision
+
+Count the flagged files and choose the execution path:
+
+- **4+ flagged files** → parallel path (Phase 2b, Parallel Exploration).
+- **≤3 flagged files** (or files with ordering dependencies) → sequential path (Phase 2b, Sequential Analysis).
+
+### Phase 2b: Analyze (parallel or sequential)
+
+#### Parallel Exploration (4+ files)
 
 When 4+ files are flagged, invoke `superpowers:dispatching-parallel-agents` before starting sequential analysis. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
 
-For ≤3 flagged files (or files with ordering dependencies), the sequential inline path is fine — keep it as the fallback.
-
-#### Sequential Analysis (for ≤3 files or fallback)
+#### Sequential Analysis (≤3 files or fallback)
 
 For each flagged file:
 
