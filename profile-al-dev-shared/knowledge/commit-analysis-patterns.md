@@ -15,13 +15,11 @@ Extract one manifest block per AL file from `git diff` output.
 
 From diff lines (`-` = removed, `+` = added):
 
-| Manifest Field   | Rule |
-|------------------|------|
-| `fields_removed` | `-` lines matching `field(\d+;` inside a `fields` block — extract the quoted name |
-| `fields_added`   | `+` lines matching the same pattern |
-| `procs_modified` | Procedure name appears on both a `-` line and a `+` line |
-| `procs_added`    | Procedure name on `+` lines with no matching `-` pair |
-| `procs_removed`  | Procedure name on `-` lines with no matching `+` pair |
+- **`fields_removed`** — `-` lines matching `field(\d+;` inside a `fields` block — extract the quoted name
+- **`fields_added`** — `+` lines matching the same pattern
+- **`procs_modified`** — Procedure name appears on both a `-` line and a `+` line
+- **`procs_added`** — Procedure name on `+` lines with no matching `-` pair
+- **`procs_removed`** — Procedure name on `-` lines with no matching `+` pair
 
 ### Manifest Block Format
 
