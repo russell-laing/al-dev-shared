@@ -111,6 +111,10 @@ For each present file, read and parse the JSON. Extract:
 For each absent file, note it as "pending" — that audit team has not yet
 written its result.
 
+If `WAIT_MODE=false` and an expected audit artifact is not yet present, do **not**
+block: record that surface as `pending` and report that the harness will notify on
+completion; the user re-runs collect (or runs `--wait`) once notified.
+
 If **both** files are absent, advise the user and stop:
 
 ```text
@@ -173,57 +177,13 @@ Map the response to `UPDATE_CHOICE`: `skills`, `agents`, `both`, or `neither`.
 If `UPDATE_CHOICE=neither`, update the checkpoint `status` to `"skipped"` and
 stop.
 
-**Dispatch update agents in the background.** Both dispatches run in parallel —
-do not wait for one before starting the other. Use the `Agent` tool with
-`run_in_background: true`, per the canonical pattern in
-`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
-
-- **Skills update** (if `UPDATE_CHOICE` is `skills` or `both`): dispatch
-  `subagent_type: sync-documentation-maps-skill-update` with a prompt that
-  includes `RUN_ID` and `RUN_DIR`. Capture the returned background agent ID as
-  `SKILL_UPDATE_TEAM_ID`.
-- **Agents update** (if `UPDATE_CHOICE` is `agents` or `both`): dispatch
-  `subagent_type: sync-documentation-maps-agent-update` with a prompt that
-  includes `RUN_ID` and `RUN_DIR`. Capture the returned background agent ID as
-  `AGENT_UPDATE_TEAM_ID`.
-
-For surfaces not selected, set the corresponding variable to `null`.
-
-**Write updated checkpoint.** Merge the new update team IDs into the existing
-checkpoint and `${RUN_DIR}/manifest.json` using the preserve-existing-fields
-pattern in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
-Update fields: `phase`, `status`, `update_choice`, `skill_update_team_id`,
-`agent_update_team_id`.
-
-| Field | Value |
-|---|---|
-| `phase` | `"update"` |
-| `status` | `"dispatched"` |
-| `update_choice` | `UPDATE_CHOICE` |
-| `skill_update_team_id` | `SKILL_UPDATE_TEAM_ID` or `null` |
-| `agent_update_team_id` | `AGENT_UPDATE_TEAM_ID` or `null` |
-
-Verify both files were written:
-
-```bash
-ls -la /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
-ls -la "${RUN_DIR}/manifest.json"
-```
-
-**Return to user.** Print a summary and exit. Build the next-step command
-using only the non-null update team IDs:
-
-```text
-Update teams dispatched.
-
-  Run ID:              RUN_ID
-  Skills update ID:    SKILL_UPDATE_TEAM_ID   (or "not selected")
-  Agents update ID:    AGENT_UPDATE_TEAM_ID   (or "not selected")
-  Run directory:       RUN_DIR
-
-Next step (when teams complete):
-  /sync-documentation-maps-wait --team-ids <non-null-ids>
-```
+**Dispatch updates, merge the checkpoint, and report.** For the update-agent
+dispatch skeleton and checkpoint-merge procedure, follow
+`.claude/skills/sync-documentation-maps/collect-dispatch-patterns.md`. It covers
+dispatching the selected `sync-documentation-maps-skill-update` and
+`sync-documentation-maps-agent-update` agents in parallel, capturing their
+background IDs, merging the update fields into both the root checkpoint and
+`${RUN_DIR}/manifest.json`, and printing the next-step summary.
 
 Exit. Do not wait for update team completion.
 
