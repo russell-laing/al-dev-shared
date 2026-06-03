@@ -23,7 +23,14 @@ Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
 **Check each file for:**
-- Agent filename (without `.md`) matches the `al-dev-<name>` prefix convention
+
+- Filename convention — **surface-aware** (derive surface from the file's path):
+  - For files under `profile-al-dev-shared/agents/`: filename (without `.md`)
+    matches the distributed `al-dev-<name>` prefix convention.
+  - For files under `.claude/agents/` (maintainer tooling): filename matches a
+    maintainer pattern (`{design|quality}-{agent|skill}-lens-{aspect}`,
+    `sync-documentation-maps-*`, or `naming-convention-lens`). Do **not** apply
+    the `al-dev-` rule here — see `docs/al-dev-naming-convention.md`.
 - `description` field is present in YAML frontmatter and is a single sentence
 - `model` field is present in YAML frontmatter
 - `tools` field is present in YAML frontmatter and contains only canonical
@@ -41,9 +48,11 @@ agent name from the filename (strip directory path and `.md` extension).
 - Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
 
 **Severity rules:**
+
 - High: missing `model` or `tools` frontmatter fields
 - Medium: missing Inputs/Outputs sections, non-canonical tool names, filename not
-  matching `al-dev-<name>` convention, or skill-only fields in frontmatter
+  matching the convention **for its surface** (see surface-aware check above), or
+  skill-only fields in frontmatter
 - Low: numbering inconsistency or missing code block language tags
 
 ---
@@ -53,9 +62,11 @@ agent name from the filename (strip directory path and `.md` extension).
 Return exactly this structure (no additional prose before or after the block):
 
 ### Structural Conventions Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Structural Conventions Findings
+
 _No issues found._
