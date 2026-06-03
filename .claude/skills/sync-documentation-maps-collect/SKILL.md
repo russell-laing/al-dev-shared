@@ -18,7 +18,8 @@ conditionally spawns remote update teams.
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results,
    spawn updates (this skill)
-3. `/sync-documentation-maps-finalize --team-ids <ids>` — write maps, commit
+3. `/sync-documentation-maps-wait --team-ids <ids>` — validate artifacts, write maps
+4. `/sync-documentation-maps-write` — regenerate diagrams, projections, and commit
 
 **Working directory assumption:** All relative paths are resolved from
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
@@ -209,7 +210,7 @@ ls -la /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint
 ls -la "${RUN_DIR}/manifest.json"
 ```
 
-**Return to user.** Print a summary and exit. Build the finalize command
+**Return to user.** Print a summary and exit. Build the next-step command
 using only the non-null update team IDs:
 
 ```text
@@ -220,8 +221,8 @@ Update teams dispatched.
   Agents update ID:    AGENT_UPDATE_TEAM_ID   (or "not selected")
   Run directory:       RUN_DIR
 
-Next step (finalize when teams complete):
-  /sync-documentation-maps-finalize --team-ids <non-null-ids>
+Next step (when teams complete):
+  /sync-documentation-maps-wait --team-ids <non-null-ids>
 ```
 
 Exit. Do not wait for update team completion.

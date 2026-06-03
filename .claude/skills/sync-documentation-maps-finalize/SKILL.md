@@ -7,6 +7,10 @@ description: >-
 argument-hint: "--team-ids <ids> [--skip-commit]"
 ---
 
+> **Deprecated:** Superseded by `/sync-documentation-maps-wait` (write maps)
+> followed by `/sync-documentation-maps-write` (regenerate + commit).
+> This skill will be removed in the next cleanup cycle. Use the two-step flow.
+
 # Sync Documentation Maps — Finalize
 
 Third and final step of the three-skill async sync workflow. Reads updated map
