@@ -84,6 +84,10 @@ rename/refactor impact checks. If unavailable, use AL MCP. Use scoped text
 search only as a weaker fallback with exact file:line evidence. Stop before
 implementation if a required symbol remains `unverified`.
 
+> **Definition of `unverified`:** A symbol is unverified when it cannot be
+> located via AL LSP query, AL MCP lookup, or scoped text search with
+> documented `file:line` evidence.
+
 Reference `knowledge/al-developer-patterns.md` for standard AL patterns,
 common mistakes to avoid, error handling rules, and naming conventions.
 Key principles:

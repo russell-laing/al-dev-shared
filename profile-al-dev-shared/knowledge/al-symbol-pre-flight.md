@@ -1,7 +1,8 @@
 # AL Symbol Pre-Flight Checklist
 
-Referenced by: `al-dev-developer` agent (SYMBOL_PREFLIGHT_GATE),
-`al-dev-develop` skill Phase 3 spawn prompt.
+Referenced by: `al-dev-developer-tdd` and `al-dev-developer-traditional`
+agents (`SYMBOL_PREFLIGHT_GATE`), `al-dev-develop` skill Phase 3 spawn
+prompt.
 
 ## Purpose
 
@@ -26,6 +27,10 @@ Preferred verification order:
 4. `unverified` — do not guess required fields, events, procedures, or object
    names. Stop and report the blocker.
 
+   > **Definition of `unverified`:** A symbol is unverified when it cannot be
+   > located via AL LSP query, AL MCP lookup, or scoped text search with
+   > documented `file:line` evidence.
+
 ## Pre-Flight Checklist
 
 ### 1. Field References
@@ -39,7 +44,8 @@ al_get_object_definition(objectType: 'Table', objectName: 'Sales Header')
 ```
 
 If neither semantic provider is available, use a tightly scoped text search and
-label the result as `text search`, for example:
+label the result as `text search`. Adjust the search roots to the project
+layout, for example:
 
 ```bash
 rg -n 'field\([0-9]+; "Document Type"' src .alpackages
@@ -99,8 +105,7 @@ For every new object you plan to create:
 - [ ] No existing object uses the same ID:
 
 ```bash
-grep -rn --include="*.al" \
-  -E "^(table|page|codeunit|enum|report|xmlport|query)\s+<YOUR_ID>\s" .
+rg -n '^(table|tableextension|page|pageextension|codeunit|enum|enumextension|report|xmlport|query)\s+<YOUR_ID>\s' .
 ```
 
 ### 4. Object Types You Extend
