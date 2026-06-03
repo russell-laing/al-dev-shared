@@ -65,7 +65,9 @@ Extract context from documentation maps before dispatching lenses.
 - `already_inline_candidates`: filter of `single_use_agents`
 - `no_agent_skills`: skills with zero spawned agents
 
-## Phase 3 — Resume detection (if --resume flag)
+## Phase 3 — Resume & dispatch
+
+### 3.1 Resume detection (if --resume flag)
 
 If invoked with `--resume` flag:
 
@@ -88,13 +90,18 @@ If NOT invoked with `--resume`:
 
 - `remaining_lenses = ALL_LENSES`
 
-## Phase 3b — Dispatch lenses via Workflow (isolated contexts)
+### 3.2 Dispatch lenses via Workflow (isolated contexts)
 
-If `remaining_lenses` is empty, skip this phase entirely and proceed to Phase 4.
+If `remaining_lenses` is empty, skip dispatch entirely and proceed to Phase 4.
 
 Lenses run in parallel in a Workflow to isolate agent conversations. Construct lens prompts per the examples in `.claude/skills/plugin-health-discover/workflow-lens-dispatch-reference.md`, then invoke the Workflow script with the lens prompt list.
 
 For each lens, pass only the context fields it requires (per `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
+
+Define `today` once for every `.dev/` output filename below. The dispatch
+block runs as a Python snippet, so set it as a Python value in `YYYY-MM-DD`
+format: `today = datetime.now().strftime("%Y-%m-%d")` (defined inline in the
+Invoke block below).
 
 **Invoke Workflow:**
 
@@ -107,6 +114,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path.cwd() / ".claude" / "skills" / "plugin-health-discover"))
 from workflow_utils import invoke_workflow, wait_for_workflow
 
+today = datetime.now().strftime("%Y-%m-%d")  # used for every .dev/ output filename
 workflow_path = Path(".claude/skills/plugin-health-discover/workflow-lens-dispatch.js")
 
 task_id = invoke_workflow(
@@ -136,9 +144,15 @@ for lens in findings:
         }, f, indent=2)
 ```
 
-**Check for missing lenses:**
+### 3.3 Confirm returns (check for missing lenses)
 
-The current Workflow script returns only truthy lens result objects and does not emit a `failed_lenses` list. If a lens result is missing, note the lens name in the findings output by comparing returned lens identifiers with `remaining_lenses`.
+The current Workflow script returns only truthy lens result objects and does not emit a `failed_lenses` list. Compare the returned lens identifiers against `remaining_lenses` to detect any that did not come back:
+
+```python
+returned = {lens['lens'] for lens in findings}
+missing_lenses = [l for l in remaining_lenses if l not in returned]
+# missing_lenses now holds every expected lens that did NOT return a result
+```
 
 Record missing lenses in a `## Failed lenses` section at the top of the findings
 file, one per line:
