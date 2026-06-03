@@ -4,8 +4,8 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-03 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 20 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
+**Last updated:** 2026-06-03 (25 active skill directories in `profile-al-dev-shared/skills`: 21 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
 
 ---
 
@@ -32,6 +32,7 @@ flowchart TD
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
     skill_al_dev_release_notes[al-dev-release-notes]
     skill_al_dev_review_develop[al-dev-review-develop]
+    skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
     skill_al_dev_support_reply[al-dev-support-reply]
     skill_al_dev_ticket[al-dev-ticket]
     skill_commit_recover[commit-recover]
@@ -42,8 +43,9 @@ flowchart TD
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
-    skill_al_dev_develop --> skill_al_dev_review_develop
+    skill_al_dev_develop --> skill_al_dev_review_develop_preflight
     skill_al_dev_develop -.-> skill_al_dev_lint
+    skill_al_dev_review_develop_preflight --> skill_al_dev_review_develop
     skill_al_dev_explore -.->|explore-findings.md| skill_al_dev_plan
     skill_al_dev_fix --> skill_al_dev_commit
     skill_al_dev_interview -.->|interview-requirements.md| skill_al_dev_plan
@@ -70,6 +72,7 @@ flowchart TD
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
+    class skill_al_dev_review_develop_preflight skillNode
     class skill_al_dev_support_reply skillNode
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
@@ -507,9 +510,50 @@ flowchart LR
 Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-developer-traditional`
 <!-- END GENERATED: skill-drilldown-al-dev-develop -->
 
+### /al-dev-review-develop-preflight
+
+Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0–3.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    skill_al_dev_review_develop[al-dev-review-develop]
+    artifact_plugin_review_preflight_md[.dev/YYYY-MM-DD-plugin-review-preflight.md]
+    artifact_progress_md[.dev/progress.md]
+
+    skill_al_dev_review_develop_preflight --> Phase0
+    skill_al_dev_review_develop_preflight --> Phase1
+    skill_al_dev_review_develop_preflight --> Phase2
+    skill_al_dev_review_develop_preflight --> Phase3
+    skill_al_dev_review_develop_preflight -.-> skill_al_dev_review_develop
+    skill_al_dev_review_develop_preflight --> artifact_plugin_review_preflight_md
+    skill_al_dev_review_develop_preflight --> artifact_progress_md
+
+    class skill_al_dev_review_develop_preflight skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class skill_al_dev_review_develop skillNode
+    class artifact_plugin_review_preflight_md artifactNode
+    class artifact_progress_md artifactNode
+```
+<!-- END GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
+
 ### /al-dev-review-develop
 
-**Post-implementation review orchestration:** Consumes Phase 4 handoff from `/al-dev-develop`. Runs compilation verification first (Phase 2) — the review panel is only dispatched if compile passes. Pre-review staging (Phase 3) confirms all prerequisites before the three-specialist panel runs in parallel. Writes code-review artifact and presents findings to user. Phases: 1–6.
+**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4–6.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
@@ -521,56 +565,50 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_review_develop[al-dev-review-develop]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
+    Phase0["Phase 0"]
     Phase4["Phase 4"]
     Phase5["Phase 5"]
     Phase6["Phase 6"]
     skill_al_dev_commit[al-dev-commit]
     skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
     agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
     agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
     agent_al_dev_security_reviewer[al-dev-security-reviewer]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
-    artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_progress_md[.dev/progress.md]
 
-    skill_al_dev_review_develop --> Phase1
-    skill_al_dev_review_develop --> Phase2
-    skill_al_dev_review_develop --> Phase3
+    skill_al_dev_review_develop --> Phase0
     skill_al_dev_review_develop --> Phase4
     skill_al_dev_review_develop --> Phase5
     skill_al_dev_review_develop --> Phase6
     skill_al_dev_review_develop -.-> skill_al_dev_commit
     skill_al_dev_review_develop -.-> skill_al_dev_develop
+    skill_al_dev_review_develop -.-> skill_al_dev_review_develop_preflight
     skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
     skill_al_dev_review_develop --> agent_al_dev_developer_traditional
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
     skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
-    skill_al_dev_review_develop --> artifact_compile_errors_log
     skill_al_dev_review_develop --> artifact_progress_md
 
     class skill_al_dev_review_develop skillNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
+    class Phase0 phaseNode
     class Phase4 phaseNode
     class Phase5 phaseNode
     class Phase6 phaseNode
     class skill_al_dev_commit skillNode
     class skill_al_dev_develop skillNode
+    class skill_al_dev_review_develop_preflight skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_security_reviewer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
-    class artifact_compile_errors_log artifactNode
     class artifact_progress_md artifactNode
 ```
 

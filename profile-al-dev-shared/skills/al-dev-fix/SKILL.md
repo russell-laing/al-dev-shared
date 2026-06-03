@@ -336,3 +336,20 @@ confirmed root-cause scope.
 
 **Remember:** /al-dev-fix is for speed. Analyze quickly, delegate clearly,
 verify compilation, present directly.
+
+---
+
+## Optional: Formal Code Review After Fix
+
+`/al-dev-fix` intentionally skips the formal review panel for speed. If you
+decide to run the full three-reviewer panel after a non-trivial fix (for
+example, because the change touches critical business logic), use the two-step
+pattern:
+
+1. Run `/al-dev-review-develop-preflight` and wait for the preflight output.
+   Confirm it reports "Prerequisites: all met" before proceeding.
+
+2. Then run `/al-dev-review-develop` to dispatch the reviewer panel.
+
+Do not run `/al-dev-review-develop` directly — the preflight step locates the
+correct handoff, identifies changed files, and verifies compile status first.

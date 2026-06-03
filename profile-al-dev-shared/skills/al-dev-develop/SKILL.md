@@ -458,6 +458,11 @@ This document is created at Phase 4 completion and includes:
 - Status: Ready for review team dispatch
 - References to scope document and checklist artifacts
 
-**Next step:** Dispatch to `/al-dev-review-develop` only after reading the current
-Phase 4 handoff artifact and confirming it satisfies the `al-dev-develop`
-success evidence in `knowledge/artifact-contracts.md`.
+**Next step:**
+
+1. Run `/al-dev-review-develop-preflight` and wait for the preflight output.
+   Confirm it reports "Prerequisites: all met" before proceeding.
+
+2. Then dispatch `/al-dev-review-develop` — only after reading the current
+   Phase 4 handoff artifact and confirming it satisfies the `al-dev-develop`
+   success evidence in `knowledge/artifact-contracts.md`.

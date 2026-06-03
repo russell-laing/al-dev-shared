@@ -1,23 +1,19 @@
 ---
 name: al-dev-review-develop
 description: >-
-  Orchestrate multi-reviewer code review, compilation verification, and code-review
-  output for implemented AL solutions. Consumes Phase 4 output from /al-dev-develop
-  (completed developer work) and focuses exclusively on post-implementation quality gates
-  and review synthesis.
+  Dispatches the three-reviewer panel and synthesizes findings. Run
+  /al-dev-review-develop-preflight first to locate the develop handoff,
+  identify changed files, and verify compile status.
 argument-hint: ""
 ---
 
 # Review-Develop Skill
 
-Post-implementation review orchestration for /al-dev-develop phases (mapped to local Phase 1–6).
+Reviewer dispatch and synthesis for post-implementation code review.
 
-Dispatched by /al-dev-develop after Phase 4 (developer dispatch and implementation completion).
-
-## Prerequisites
-
-Phase 4 handoff artifact must exist:
-`.dev/*-al-dev-develop-phase4-handoff.md` (or latest from /al-dev-develop Phase 4 output).
+Reads the preflight context written by `/al-dev-review-develop-preflight`,
+then dispatches the three-specialist review panel in parallel and synthesises
+findings into a single code-review artifact.
 
 ## Artifact Contract
 
@@ -41,114 +37,40 @@ Three specialist agents (sonnet):
 
 `.dev/$(date +%Y-%m-%d)-al-dev-develop-code-review.md` — synthesized review findings from all three reviewers; this file is also the downstream handoff artifact named in `knowledge/artifact-contracts.md` and must be read before any final clean/ready claim.
 
-## Phase Sequence
-
-Phases run in this order: **1 → 2 → 3 → 4 → 5 → 6** (semantically mapped from parent al-dev-develop workflow).
-
 ---
 
-## Phase 1: Prepare Review Context
+## Phase 0: Verify Preflight
 
-**Input:** Phase 4 handoff artifact from `/al-dev-develop`.
+Read the most recent preflight context file:
 
-1. **Locate the Phase 4 handoff artifact:**
+```bash
+ls .dev/*-plugin-review-preflight.md 2>/dev/null | sort | tail -1
+```
 
-   ```bash
-   ls .dev/*-al-dev-develop-phase4-handoff.md 2>/dev/null | sort | tail -1
-   ```
+Extract `CHANGED_FILES` and `COMPILE_STATUS` from the file.
 
-   If no handoff artifact is found, stop and tell the user:
-   "No Phase 4 handoff found. Run `/al-dev-develop` first and wait for it to complete Phase 4."
+**If no preflight file found:** stop and tell the user:
 
-2. **Read the Phase 4 handoff in full** — note the developer module assignments and status.
+```text
+No preflight context found.
 
-3. **Identify changed AL files** — combine two sources:
-   - Files listed in the handoff's module assignments section
-   - `git diff --cached --name-only --diff-filter=ACMR` filtered to `*.al`, `app.json`, and `*.al.json`
-   - `git ls-files --others --exclude-standard` filtered to `*.al`, `app.json`, and `*.al.json`
+Run /al-dev-review-develop-preflight first to locate the develop handoff,
+identify changed files, and verify compile status.
+```
 
-   Build a deduplicated list: `CHANGED_FILES`
+**If COMPILE_STATUS is `fail`:** stop and report the compile errors to the
+user before proceeding. Do not dispatch reviewers until compile passes.
 
-4. **Write progress checkpoint:**
-
-   ```bash
-   echo "Phase 1 complete — $(date +%Y-%m-%d %H:%M): context loaded, CHANGED_FILES identified" >> .dev/progress.md
-   ```
-
-5. Proceed to Phase 2.
-
----
-
-## Phase 2: Compile Verification
-
-Run `al-compile` and handle errors. This phase must pass before the review panel is spawned.
-
-1. **Run compile:**
-
-   ```bash
-   al-compile --output .dev/compile-errors.log
-   ```
-
-2. **Check for errors:**
-
-   ```bash
-   grep -c "error AL" .dev/compile-errors.log 2>/dev/null || echo "0"
-   ```
-
-3. **If errors found:**
-
-   - **Standard mode:** Show the errors and stop. Ask the user to fix compilation errors before proceeding to code review.
-
-   - **`--autonomous` mode:** Spawn a developer to fix errors.
-
-     See `knowledge/developer-invocation-patterns.md` (Context 3: Error
-     Correction) for dispatcher consistency. This is autonomous
-     error-fixing mode — no test plan, minimal scope (fix only compile
-     errors, do not refactor).
-
-     Spawn `al-dev-shared:al-dev-developer-traditional` for error fixes
-     (compile errors don't require TDD):
-
-     ```text
-     Agent: al-dev-shared:al-dev-developer-traditional
-     Prompt:
-       "Fix compilation errors in .dev/compile-errors.log for the current Phase 4 handoff.
-        Read the errors, identify root causes, and apply minimal fixes.
-        Use the current solution plan and handoff context; if either is missing, stop and escalate to the user.
-        Compile after each fix. Return: files changed, errors resolved."
-     ```
-
-     Re-run compile after fixes. Repeat up to 5 cycles total. If errors remain after 5 cycles, stop and escalate to user.
-
-4. **Read compile verification result** (required by artifact contract):
-
-   ```bash
-   cat .dev/compile-errors.log
-   ```
-
-   Read the file contents — the artifact contract requires the compile result to be read, not merely confirmed to exist.
-
-5. **Write progress checkpoint:**
-
-   ```bash
-   echo "Phase 2 complete — $(date +%Y-%m-%d %H:%M): compile verification passed" >> .dev/progress.md
-   ```
-
----
-
-## Phase 3: Pre-Review Staging
-
-Verify all prerequisites are met before spawning the review panel.
-
-1. **Confirm compile passed** (zero `error AL` lines in `.dev/compile-errors.log`).
-2. **Confirm `CHANGED_FILES` list is non-empty** — if empty, stop and tell the user no changed AL files were detected.
-3. If both checks pass, proceed to Phase 4.
+If preflight file exists and `COMPILE_STATUS` is `pass`: proceed to Phase 4.
 
 ---
 
 ## Phase 4: Dispatch Review Panel
 
-Spawn all three specialist reviewer agents simultaneously — do not wait for one agent to return before spawning the next. Pass each agent the same `CHANGED_FILES` list and implementation context from the Phase 4 handoff.
+Spawn all three specialist reviewer agents simultaneously — do not wait for one
+agent to return before spawning the next. Pass each agent the same `CHANGED_FILES`
+list and implementation context from the Phase 4 handoff (referenced in the
+preflight file).
 
 **Dispatch prompt for each reviewer:**
 
