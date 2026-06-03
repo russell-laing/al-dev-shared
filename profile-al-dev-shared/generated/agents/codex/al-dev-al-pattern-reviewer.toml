@@ -54,26 +54,12 @@ For detailed examples, see `knowledge/code-review-patterns.md`. Key patterns:
 - Incorrect scope or visibility
 - AL best practices adherence
 
-### Severity Classification
-
-| Level | Criteria | Examples |
-|-------|----------|----------|
-| **CRITICAL** | Security/data loss/breaks functionality | Compilation failure, security vulnerability |
-| **HIGH** | Performance/major issues | N+1 queries, incorrect AL pattern, missing error handling |
-| **MEDIUM** | Code quality/maintainability | Naming inconsistencies, documentation gaps |
-| **LOW** | Style/minor improvements | Formatting, comment clarity, optimization opportunity |
-
 ## Review Process
 
 **Step 1:** Read all AL files created (provided in spawn prompt).
 
-**Step 2:** Identify AL issues. For each, document:
-
-- **File + Line:** Where the issue is
-- **Severity:** Critical / High / Medium / Low
-- **Issue:** What violates AL patterns or conventions
-- **Rationale:** Why this matters
-- **Fix:** How to resolve
+**Step 2:** Identify AL issues. For each, document all five fields per the
+canonical format in `knowledge/reviewer-findings-template.md`.
 
 **Step 3:** When other reviewers' findings are included:
 
@@ -87,26 +73,9 @@ For detailed examples, see `knowledge/code-review-patterns.md`. Key patterns:
 
 ## Output Format
 
-Structure findings as:
-
-```text
-
-## CRITICAL
-
-[List critical AL issues with file:line, issue, rationale, fix]
-
-## HIGH
-
-[List high-severity issues]
-
-## MEDIUM
-
-[List medium-severity issues]
-
-## LOW
-
-[List low-severity issues]
-```
+Use the canonical findings format and severity scale from
+`knowledge/reviewer-findings-template.md`. Each finding must include:
+File + Line, Severity, Issue, Impact, Fix — in the table format shown there.
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.
 

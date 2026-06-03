@@ -43,13 +43,8 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 
 **Step 1:** Read all AL files created (provided in spawn prompt).
 
-**Step 2:** Identify performance issues. For each, document:
-
-- **File + Line:** Where the issue is
-- **Severity:** Critical (blocks scaling) / High (measurable regression) / Medium (optimization opportunity) / Low (minor improvement)
-- **Issue:** What's slow or inefficient
-- **Impact:** Performance degradation or resource consumption
-- **Fix:** How to optimize
+**Step 2:** Identify performance issues. For each, document all five fields per the
+canonical format in `knowledge/reviewer-findings-template.md`.
 
 **Step 3:** When other reviewers' findings are included:
 
@@ -67,31 +62,10 @@ Specialist teammate for performance review. You are spawned as part of a 3-revie
 
 **Code examples:** `knowledge/performance-review-examples.md` — Visual AL code examples for each pattern (before/after comparisons).
 
-**Key patterns to look for:**
-
-- N+1 query loops — queries inside loops
-- SetLoadFields optimization — loading only necessary columns
-- Inefficient FINDSET/CALCS — missing indexes, wrong sort keys
-- Missing table indexes — slow range filters on large tables
-- Blocking operations in triggers — synchronous work blocking user input
-- Unnecessary loops — Count() called each iteration instead of once
-
 ## Output Format
 
-Structure findings as:
-
-```text
-## CRITICAL
-[List critical performance issues with file:line, issue, impact, fix]
-
-## HIGH
-[List high-severity issues]
-
-## MEDIUM
-[List medium-severity optimization opportunities]
-
-## LOW
-[List low-severity improvements]
-```
+Use the canonical findings format and severity scale from
+`knowledge/reviewer-findings-template.md`. Each finding must include:
+File + Line, Severity, Issue, Impact, Fix — in the table format shown there.
 
 When other reviewers' findings are included, structure as independent findings; the lead agent will synthesize.

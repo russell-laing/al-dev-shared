@@ -77,16 +77,12 @@ MANIFEST: <filename>
   procs_removed: <procedure names, comma-separated, or none>
 ```
 
-Extraction patterns from diff lines:
+Extract change manifests using the patterns in `knowledge/commit-analysis-patterns.md`.
+One manifest block per AL file (paths ending in `.al`, case-insensitive).
 
-- `fields_removed`: `-` lines matching `field(\d+;` inside a
-  `fields` block — extract quoted name
-- `fields_added`: same on `+` lines
-- `procs_modified`: procedure names on both `-` and `+` lines
-- `procs_added`: procedure names on `+` lines with no `-` pair
-- `procs_removed`: procedure names on `-` lines with no `+` pair
-
-Non-AL files: emit a simple one-liner, no manifest block.
+**Non-AL files** (`.json`, `.md`, `.yaml`, etc.): emit a simple one-liner —
+do not produce a full manifest block.
+Example: `{ "file": "app.json", "change": "modified" }`
 
 ### Validation Checks (Steps 4–5)
 

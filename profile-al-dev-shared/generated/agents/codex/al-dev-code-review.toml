@@ -47,48 +47,22 @@ Do not review:
 
 **Step 1:** Read all files provided (no Bash — use Read tool).
 
-**Step 2:** Identify issues. For each, document:
-
-- **File + Line:** Where the issue is
-- **Severity:** Critical / High / Medium / Low
-- **Issue:** What's wrong
-- **Impact:** Why it matters
-- **Fix:** How to resolve
+**Step 2:** Identify issues. For each, document all five fields per the
+canonical format in `knowledge/reviewer-findings-template.md`.
 
 **Step 3:** When part of a team with other findings included:
 
 - Review for general code quality implications
 - Don't duplicate specialized findings (security, patterns, performance)
 
-**Step 4:** Severity classification:
-
-- **CRITICAL:** Security vulnerabilities, data loss risks, breaks functionality
-- **HIGH:** Performance issues, missing error handling, incorrect patterns
-- **MEDIUM:** Code quality, maintainability, potential edge cases
-- **LOW:** Optimization opportunities, clarifications, minor issues
+**Step 4:** Apply the severity scale from `knowledge/reviewer-findings-template.md`
+when classifying findings.
 
 ## Output Format
 
-Structure findings as:
-
-```markdown
-
-## CRITICAL
-
-[List critical issues with file:line, issue, impact, fix]
-
-## HIGH
-
-[List high-severity issues]
-
-## MEDIUM
-
-[List medium-severity issues]
-
-## LOW
-
-[List low-severity issues]
-```
+Use the canonical findings format and severity scale from
+`knowledge/reviewer-findings-template.md`. Each finding must include:
+File + Line, Severity, Issue, Impact, Fix — in the table format shown there.
 
 When part of a team, structure as independent findings; the lead agent will synthesize.
 

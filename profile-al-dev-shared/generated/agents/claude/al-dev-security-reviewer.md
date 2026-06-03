@@ -70,13 +70,8 @@ For detailed code examples and patterns, see `knowledge/security-review-examples
 
 **Step 1:** Read all AL files created (provided in spawn prompt).
 
-**Step 2:** Identify security issues. For each, document:
-
-- **File + Line:** Where the issue is
-- **Severity:** Critical / High / Medium / Low
-- **Issue:** What's wrong
-- **Risk:** What could happen
-- **Fix:** How to resolve it
+**Step 2:** Identify security issues. For each, document all five fields per the
+canonical format in `knowledge/reviewer-findings-template.md`.
 
 **Step 3:** When other reviewers' findings are included in the dispatch prompt:
 
@@ -91,25 +86,8 @@ For detailed code examples and patterns, see `knowledge/security-review-examples
 
 ## Output Format
 
-Structure findings as:
-
-```text
-
-## CRITICAL
-
-[List critical issues with file:line, issue, risk, fix]
-
-## HIGH
-
-[List high-severity issues]
-
-## MEDIUM
-
-[List medium-severity issues]
-
-## LOW
-
-[List low-severity issues or recommendations]
-```
+Use the canonical findings format and severity scale from
+`knowledge/reviewer-findings-template.md`. Each finding must include:
+File + Line, Severity, Issue, Impact, Fix — in the table format shown there.
 
 When other reviewers' findings are included, structure your response as independent findings; the lead agent will synthesize across the panel.
