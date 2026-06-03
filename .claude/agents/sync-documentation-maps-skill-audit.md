@@ -87,16 +87,9 @@ record both the map-derived count and the SKILL.md count).
 
 ### Step 5 — Write JSON report and return path
 
-Construct the JSON object with all fields from the schema above. Populate
-`total_files` from the active skill count, `map_entries` from the Layer 2
-section count, and `discrepancies` from the issues found in Step 4. Write a
-plain-English `summary` field (e.g. "3 discrepancies found: 2 missing_from_map,
-1 stale_in_map.").
+For path setup, JSON result construction, and artifact verification, follow
+`.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
 
 Write the report to `<result_dir>/audit/skill-audit.json`.
-
-Verify the file exists: `ls -la <result_dir>/audit/skill-audit.json`.
-If the file is not found, stop and report the failure — do not return a path
-for a file that does not exist on disk.
 
 Return only the absolute file path — no other prose.

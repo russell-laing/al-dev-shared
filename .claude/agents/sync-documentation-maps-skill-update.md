@@ -32,11 +32,9 @@ All relative paths in these instructions are from the repository root:
 
 ### Step 1 — Read audit findings
 
-Read `<result_dir>/audit/skill-audit.json`.
+For artifact verification, follow `.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
 
-If the file does not exist, stop immediately and report:
-`ERROR: skill-audit.json not found at <result_dir>/audit/skill-audit.json`
-`— cannot proceed.`
+Read `<result_dir>/audit/skill-audit.json`. Stop if absent (see patterns doc).
 
 Parse the `discrepancies` array. Note the `type` and associated `skill` field
 for each entry. If `discrepancies` is empty, skip Step 3 (no edits
@@ -61,25 +59,10 @@ Do not change any other part of the preamble line.
 
 ### Step 5 — Write updated map and return path
 
-Create the directory if it does not exist:
-
-```bash
-mkdir -p <result_dir>/updates
-```
+For path setup and write verification, follow
+`.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
+This surface requires ≥100 lines; apply the skills minimum from the patterns doc.
 
 Write the complete updated map content to `<result_dir>/updates/skills-map.md`.
-
-Verify the file was written:
-
-```bash
-ls -la <result_dir>/updates/skills-map.md
-wc -l <result_dir>/updates/skills-map.md
-```
-
-If `wc -l` reports fewer than 100 lines, stop and report:
-`ERROR: written file has <N> lines (expected ≥100) — content may be truncated.`
-
-If the file does not begin with `# AL Dev`, stop and report:
-`ERROR: written file does not begin with "# AL Dev" — content format incorrect.`
 
 Return only the absolute file path — no other prose.
