@@ -30,7 +30,7 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
 ```
 
 `sync-documentation-maps` writes the initial fields. `sync-documentation-maps-collect`
-adds update fields. `sync-documentation-maps-finalize` marks completion. Preserve
+adds update fields. `sync-documentation-maps-write` marks completion. Preserve
 unknown fields when updating either checkpoint file.
 
 The `*_team_id` fields hold the **background-agent IDs** returned when each audit or
@@ -109,7 +109,7 @@ workflow:
 
 - `sync-documentation-maps`
 - `sync-documentation-maps-collect`
-- `sync-documentation-maps-finalize`
+- `sync-documentation-maps-wait` then `sync-documentation-maps-write`
 
 The workflow writes and updates these repo-local state files:
 
@@ -117,7 +117,7 @@ The workflow writes and updates these repo-local state files:
   phase.
 - `${RUN_DIR}/manifest.json` - run-local copy of the same checkpoint state.
 - `.dev/progress.md` - dispatch and completion records appended by
-  `sync-documentation-maps` and `sync-documentation-maps-finalize`.
+  `sync-documentation-maps` and the `wait`+`write` finalization pair.
 
 The run directory is
 `.dev/sync-documentation-maps-runs/${RUN_ID}`. The dispatcher creates
