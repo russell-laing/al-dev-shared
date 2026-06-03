@@ -9,14 +9,6 @@ description: Use when docs/superpowers/plans, docs/superpowers/specs, or tracked
 
 Use this when `docs/superpowers/` or tracked `.dev/` execution artifacts have become cluttered with historical files. The rule is: create a durable history surface first, then remove raw artifacts only after external references and tracking policy are verified.
 
-## When to Use
-
-- `docs/superpowers/plans/*.md` or `docs/superpowers/specs/*.md` are still tracked after their active use ended
-- Current docs need a low-noise historical index instead of many raw plan/spec files
-- A maintainer wants to stop tracking generated scratch artifacts without losing evolution context
-- Old specs may still be referenced, so deletion needs a conservative workflow
-- Tracked `.dev/` logs, reports, or checkpoints have become historical artifacts and need the same provenance-preserving cleanup treatment
-
 ## Workflow
 
 1. Inspect current state before editing:
@@ -28,17 +20,20 @@ Use this when `docs/superpowers/` or tracked `.dev/` execution artifacts have be
    - `docs/superpowers/history.md` for the historical timeline
    - `docs/superpowers/README.md` for tracking policy and current sources of truth
 3. Prefer deterministic inventory over hand-written summary:
-   - if a summarizer exists, generate the first draft from tracked plans/specs
-   - if no summarizer exists, add one before large cleanup so the history stays repeatable
-4. Review the history draft for present-tense guidance and rewrite it as historical context only.
-5. Update `.gitignore` so raw `docs/superpowers/plans/` and `docs/superpowers/specs/` stay untracked while `README.md` and `history.md` remain trackable.
-6. For tracked `.dev/` artifacts, preserve the active workflow files that are still serving as live state, but move or summarize historical reports before deleting them.
+   - if a summarizer exists, generate a draft to a temporary path first and diff it before touching `docs/superpowers/history.md`
+   - if no summarizer exists, do not automatically turn cleanup into tool-building work; either perform a smaller manual cleanup or split summarizer creation into a separate task
+4. Review any draft history for present-tense guidance and rewrite it as historical context only before replacing the durable tracked file.
+5. Verify the current tracking policy before editing `.gitignore`:
+   - confirm whether the repo currently intends raw plans/specs to remain tracked, become untracked, or move elsewhere
+   - change `.gitignore` only if that policy is explicit in current repo docs or the current task
+6. For tracked `.dev` artifacts, preserve the active workflow files that are still serving as live state, but move or summarize historical reports before deleting them.
 7. Remove raw plans after verifying no tracked docs outside `docs/superpowers/` still reference them.
 8. Remove raw specs more conservatively:
    - keep any spec with live external references
    - migrate known references to `docs/superpowers/history.md` or another durable doc before deletion
    - delete only unreferenced or explicitly superseded specs
-9. Run repo validators and re-check tracked `docs/superpowers/` and `.dev/` paths before finishing.
+9. Apply the durable summary update only after the deletion set is proven safe.
+10. Run repo validators and re-check tracked `docs/superpowers/`, `.dev/`, and policy files before finishing.
 
 ## Cleanup Order
 
@@ -55,7 +50,9 @@ Use this when `docs/superpowers/` or tracked `.dev/` execution artifacts have be
 Use commands in this order:
 
 ```bash
-python3 scripts/summarize_superpowers_history.py --root . --output docs/superpowers/history.md
+tmp_history="$(mktemp)"
+python3 scripts/summarize_superpowers_history.py --root . --output "$tmp_history"
+diff -u docs/superpowers/history.md "$tmp_history" || true
 rg -n "will|must|should|source of truth" docs/superpowers/history.md
 git check-ignore -v docs/superpowers/plans/example.md docs/superpowers/specs/example.md
 git ls-files docs/superpowers
@@ -79,8 +76,11 @@ done
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
 python3 -m unittest scripts.tests.test_summarize_superpowers_history scripts.tests.test_validate_harness_neutrality scripts.tests.test_validate_knowledge_quality -v
+git diff --name-status -- docs/superpowers .dev .gitignore
 git status --short
 ```
+
+If the cleanup removed or renamed any tracked historical artifact, re-run a targeted repo-wide `rg` for the old path and confirm no tracked references remain.
 
 If the summarizer test module does not exist yet, treat that as implementation work, not a reason to skip the rest of the safety checks.
 
@@ -91,3 +91,5 @@ If the summarizer test module does not exist yet, treat that as implementation w
 - Leaving direct links to deleted raw specs in tracked docs
 - Hand-writing the historical summary in a way that will drift on the next cleanup
 - Using historical summaries as current implementation guidance
+- Writing `history.md` in place before the deletion set has been proven safe
+- Changing `.gitignore` because "that is how cleanup usually works" instead of verifying the repo's current policy first
