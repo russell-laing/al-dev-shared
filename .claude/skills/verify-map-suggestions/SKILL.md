@@ -136,9 +136,9 @@ affected surface before continuing.
 
 ---
 
-## Phase 2: Rubber Duck Each Suggestion
+## Phase 2: Rubber Duck — setup
 
-For **every** suggestion, run the checklist below. Do not write any plan
+For **every** suggestion, run the checklist in Phase 2b. Do not write any plan
 content until all suggestions are rubber-ducked.
 
 > **The rubber duck is a blocker, not a suggestion.** If a check finds a
@@ -153,10 +153,11 @@ complete when the rubber duck record is written.
 
 ### Parallel exploration
 
-Two suggestions are **independent** if they modify no overlapping files and neither
-suggestion's output is an input to the other's rubber-duck phase. If suggestion A
-writes a file that suggestion B must read before it can be rubber-ducked, B is
-ordered after A.
+Two suggestions are **independent** iff (a) the file sets they would modify are
+disjoint, AND (b) neither suggestion's subject file is read during the other's
+rubber-duck checks. Build a directed edge A→B when B's checks must read a file A
+produces or modifies; dispatch in topological order, parallelising any set with
+no incoming edges.
 
 When there are 3+ independent suggestions, invoke `superpowers:dispatching-parallel-agents`
 before starting rubber-ducking. Dispatch one Explore subagent per suggestion.
@@ -166,6 +167,10 @@ Collect all records before writing any plan content.
 
 For ≤2 suggestions (or suggestions with ordering dependencies), the sequential
 inline path is fine — keep it as the fallback.
+
+---
+
+## Phase 2b: Rubber Duck — checks & records
 
 ### Checks
 
