@@ -98,11 +98,6 @@ Lenses run in parallel in a Workflow to isolate agent conversations. Construct l
 
 For each lens, pass only the context fields it requires (per `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
 
-Define `today` once for every `.dev/` output filename below. The dispatch
-block runs as a Python snippet, so set it as a Python value in `YYYY-MM-DD`
-format: `today = datetime.now().strftime("%Y-%m-%d")` (defined inline in the
-Invoke block below).
-
 **Invoke Workflow:**
 
 ```python
