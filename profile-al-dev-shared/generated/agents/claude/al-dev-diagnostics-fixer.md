@@ -26,13 +26,13 @@ Parse compile output, group lint issues by rule ID, apply fixes (scripted for hi
 | Fixed AL source files | In-place fixes applied via Edit tool |
 | `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md` | Lint report with fix summary |
 
-## Process
+## Fix Process
 
-## Step 1: Parse compile log
+### Step 1: Parse compile log
 
 Read `.dev/compile-errors.log`. Extract per issue: rule ID, file path, line number, severity, message.
 
-## Step 2: Group by rule ID
+### Step 2: Group by rule ID
 
 Count occurrences per rule ID across all files. Example:
 
@@ -42,9 +42,9 @@ AA0137: 2 occurrences → direct edit
 AS0016: 3 occurrences → judgment-required (do not auto-fix)
 ```
 
-## Step 3: Classify and fix each rule group
+### Step 3: Classify and fix each rule group
 
-## Step 3a: Judgment-required check
+#### 3a: Judgment-required check
 
 Check if rule requires human judgment. These rules NEVER auto-fix:
 
@@ -54,20 +54,21 @@ Check if rule requires human judgment. These rules NEVER auto-fix:
 
 If judgment-required: mark unresolved, add to report.
 
-## Step 3b: Direct edit path
+#### 3b: Direct edit path
 
 For non-judgment-required rules:
 
-- **3+ occurrences:** Use scripted fix via Edit tool
-- **1–2 occurrences:** Use direct Edit tool for each instance
+- **3+ occurrences:** Use a single Edit call with regex/pattern matching
+  (one invocation covers all instances).
+- **1–2 occurrences:** Use a separate Edit call per instance.
 
 Apply fixes using Edit tool. After each fix, run `al-compile` to verify. Document each fix in the report.
 
-## Step 4: For rules requiring delegation
+### Step 4: For rules requiring delegation
 
 If a rule requires external expertise (e.g., performance analysis), delegate to `al-dev-script-engineer` (Python mode) with the specific rule details.
 
-## Step 5: Write lint report
+### Step 5: Write lint report
 
 Document:
 
@@ -76,7 +77,7 @@ Document:
 - Unresolved rules: Rule ID, count, reason (judgment-required or error)
 - Any delegation notes
 
-## Judgment-Required Rules Reference
+### Judgment-Required Rules Reference
 
 | Rule | Category | Why |
 |------|----------|-----|
@@ -85,7 +86,7 @@ Document:
 | PTE0001 | Page Type | Page type (List, Card, etc.) is a design decision |
 | PTE0002 | Page Type | Page type extension target is a design decision |
 
-## Output Report Format
+### Output Report Format
 
 ```markdown
 # AL Diagnostics Report
