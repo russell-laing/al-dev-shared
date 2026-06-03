@@ -35,6 +35,49 @@ orchestrating parallel developer agents to implement it.
 
   al-dev-al-pattern-reviewer, al-dev-performance-reviewer)
 
+**Routing decision:**
+
+```text
+If a test plan file exists (.dev/*-test-plan.md is present and non-empty):
+  spawn al-dev-shared:al-dev-developer-tdd
+  Include in prompt: TDD cycle expectations (RED-GREEN-REFACTOR),
+    TDD_CYCLE_GATE approval gates after each phase
+Else:
+  spawn al-dev-shared:al-dev-developer-traditional
+  Include in prompt: traditional build-verify workflow,
+    compilation after each file or logical group
+```
+
+**Example spawn block (Context 1 — TDD path):**
+
+```text
+Agent: al-dev-shared:al-dev-developer-tdd
+Prompt:
+  Implement the following module from the approved solution plan.
+
+  Solution plan: [paste .dev/*-al-dev-plan-solution-plan.md]
+  Module assignment: [paste the assigned module/component section]
+  Test plan: [paste .dev/*-test-plan.md]
+
+  Follow the TDD cycle: RED → GREEN → REFACTOR for each requirement.
+  Stop at the TDD_CYCLE_GATE after each phase for approval before proceeding.
+  Compile after each file or logical group. Record progress in .dev/session-log.md.
+```
+
+**Example spawn block (Context 1 — Traditional path):**
+
+```text
+Agent: al-dev-shared:al-dev-developer-traditional
+Prompt:
+  Implement the following module from the approved solution plan.
+
+  Solution plan: [paste .dev/*-al-dev-plan-solution-plan.md]
+  Module assignment: [paste the assigned module/component section]
+
+  Follow the traditional build-verify workflow.
+  Compile after each file or logical group. Record progress in .dev/session-log.md.
+```
+
 ---
 
 ## Context 2: Trivial Direct Fix (al-dev-fix Task 3–5)
@@ -71,6 +114,23 @@ implementation.
 
   multi-reviewer panel)
 
+**Routing decision:**
+
+Trivial fixes typically have no test plan — route to `al-dev-developer-traditional`.
+If a test plan is present, route to `al-dev-developer-tdd` (rare for trivial fixes).
+
+**Example spawn block (Context 2 — Traditional path):**
+
+```text
+Agent: al-dev-shared:al-dev-developer-traditional
+Prompt:
+  Fix [specific issue] in [file path].
+  Issue: [description from al-dev-fix context]
+  Expected fix: [what needs to change]
+  Verify the fix compiles. Keep it minimal — only change what is necessary.
+  Return: files changed and confirmation that fix resolves the stated issue.
+```
+
 ---
 
 ## Context 3: Error Correction (al-dev-review-develop Phase 2, Autonomous Mode)
@@ -103,6 +163,26 @@ before the review panel runs.
 - Zero `error AL` lines in `.dev/compile-errors.log`
 - Fixes are minimal (no scope expansion)
 - Code ready for review panel
+
+**Routing decision:**
+
+Error correction targets known failing cases from a code review. Route to
+`al-dev-developer-traditional` unless a regression test plan was written
+during the review phase.
+
+**Example spawn block (Context 3 — Traditional path):**
+
+```text
+Agent: al-dev-shared:al-dev-developer-traditional
+Prompt:
+  Apply the following corrections from the code review.
+
+  Code review: [paste .dev/*-al-dev-develop-code-review.md]
+  Corrections required: [paste the specific correction list]
+
+  Fix each listed item. Compile after each correction. Do not change code
+  outside the review-flagged areas. Return: corrections applied and compile result.
+```
 
 ---
 
