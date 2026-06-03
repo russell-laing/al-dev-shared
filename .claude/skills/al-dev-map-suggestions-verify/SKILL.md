@@ -44,11 +44,13 @@ filters findings by **verb**, not by source file.
 dossier(s) and rubber-duck them together before writing a single unified plan.
 
 **`--skills`:** keep only skill-design findings.
+
 - **Verb vocabulary:** Atomise, Absorb, Connect, Merge, Promote, Move, Extend
 - **Rubber-duck reads:** `profile-al-dev-shared/skills/<name>/SKILL.md`
 - **Plan task file paths:** reference skill file paths
 
 **`--agents`:** keep only agent-design findings.
+
 - **Verb vocabulary:** Trim, Remodel, Split, Inline, Align
 - **Rubber-duck reads:** `profile-al-dev-shared/agents/<name>.md` (not skills/)
 - **Plan task file paths:** reference agent file paths
@@ -74,6 +76,7 @@ If no dossier exists, report: "No health dossier found. Run
 `/plugin-health-audit` first." and stop.
 
 Read the latest dossier(s). Collect every open finding from these sections:
+
 - `## Design suggestions` — line format `finding | rationale | fix`
   (verbs: Atomise, Absorb, Connect, Merge, Promote, Move, Extend, Trim,
   Remodel, Split, Inline, Align)
@@ -128,6 +131,12 @@ inline path is fine — keep it as the fallback.
 
 ### Checks
 
+> **Design note:** All per-check procedures are delegated to
+> `knowledge/map-change-rubber-duck-checks.md` (the canonical check registry).
+> This skill orchestrates the rubber-duck flow; the knowledge file owns the
+> per-check logic. This is intentional separation of concerns — do not inline
+> check procedures here.
+
 For all checks — Universal (U1–U3) and type-specific (Connect, Extend, Merge,
 Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
 
@@ -157,6 +166,7 @@ After all suggestions are rubber-ducked, invoke:
 **REQUIRED SUB-SKILL: Use superpowers:writing-plans**
 
 Pass as context to writing-plans:
+
 - All rubber duck records
 - Corrected flag names, file paths, and scope (use these, not the
   original suggestion wording where rubber ducking found a mismatch)

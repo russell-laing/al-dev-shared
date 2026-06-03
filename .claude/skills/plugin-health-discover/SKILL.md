@@ -22,6 +22,7 @@ that `/plugin-health-report` consumes.
 - `--resume` ∈ present | absent (default absent)
 
 Surface → directory mapping:
+
 - `plugin` → `profile-al-dev-shared/`
 - `tooling` → `.claude/`
 
@@ -45,17 +46,20 @@ Keep the agent list and skill list separate — different lenses target each.
 Extract context from documentation maps before dispatching lenses.
 
 **Read and parse `docs/al-dev-agent-map.md`:**
+
 - Extract the Agent Catalog table
 - For each agent row: extract agent name, model, tools list, and "Spawned by" field
 - Build: `tool_inventory`, `model_assignments`, `caller_map`
 - "Spawned by" may contain comma-separated names or "(none found)" — treat the latter as empty list
 
 **Read and parse `docs/al-dev-skills-map.md`:**
+
 - Extract the Layer 1 diagram block → `layer1_diagram_content`
 - For each skill section: extract phase count, agent references, output files
 - Build: `phase_counts`, `handoff_chains`, `preplanning_skills` (skills with `-.->` arrows)
 
 **Compute derived mappings:**
+
 - `agent_usage_counts`: agent → count of spawning skills
 - `single_use_agents`: agents where `agent_usage_counts == 1`
 - `already_inline_candidates`: filter of `single_use_agents`
@@ -66,6 +70,7 @@ Extract context from documentation maps before dispatching lenses.
 If invoked with `--resume` flag:
 
 1. **Scan `.dev/` directory for existing lens output files:**
+
    ```bash
    ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
    ```
@@ -80,6 +85,7 @@ If invoked with `--resume` flag:
    - If `remaining_lenses` is empty, log: `"Resuming: all lenses already complete; skipping dispatch and assembling findings from disk."`
 
 If NOT invoked with `--resume`:
+
 - `remaining_lenses = ALL_LENSES`
 
 ## Phase 3b — Dispatch lenses via Workflow (isolated contexts)
@@ -134,6 +140,10 @@ for lens in findings:
 
 The current Workflow script returns only truthy lens result objects and does not emit a `failed_lenses` list. If a lens result is missing, note the lens name in the findings output by comparing returned lens identifiers with `remaining_lenses`.
 
+Record missing lenses in a `## Failed lenses` section at the top of the findings
+file, one per line:
+`- <lens-name>: not returned (missing from Workflow results)`
+
 See `.claude/skills/plugin-health-discover/workflow-lens-dispatch-reference.md` for implementation details and code examples. Verify that `agentType` is used consistently in the built prompt list, the reference document, and `.claude/skills/plugin-health-discover/workflow-lens-dispatch.js`.
 
 ## Phase 4 — Assemble findings file from disk
@@ -141,6 +151,7 @@ See `.claude/skills/plugin-health-discover/workflow-lens-dispatch-reference.md` 
 For each surface that had lenses run:
 
 1. **Collect all lens output files from `.dev/`:**
+
    ```bash
    ls -1 .dev/*-plugin-health-lens-*.json | sort
    ```
@@ -155,6 +166,7 @@ For each surface that had lenses run:
    `plugin`/`tooling`)
 
    Structure:
+
    ```markdown
    # <Surface> Findings — YYYY-MM-DD
 
@@ -181,6 +193,7 @@ For each surface that had lenses run:
    ```
 
 4. **Clean up disk files after assembly:**
+
    ```bash
    rm -f .dev/*-plugin-health-lens-*.json
    ```
