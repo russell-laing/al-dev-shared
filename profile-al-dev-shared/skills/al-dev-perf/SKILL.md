@@ -197,6 +197,9 @@ No critical issues. Low findings documented for reference.
 
 ### Step 4 — Present to User
 
+**Handoff artifact:** `.dev/$(date +%Y-%m-%d)-al-dev-perf-perf-analysis.md`
+is the handoff artifact for downstream plan/fix routing.
+
 ```text
 Performance analysis complete → perf-analysis.md
 
@@ -214,6 +217,9 @@ Ready to plan fixes? /al-dev-plan fix performance issues in [scope]
 [If LOW only:]
 No critical issues found. Findings in perf-analysis.md.
 ```
+
+To route findings to the development pipeline, pass the perf-analysis.md path
+to `/al-dev-plan`: `/al-dev-plan fix performance issues identified in [scope]`
 
 ---
 
