@@ -33,8 +33,8 @@ Pattern: `{verb}-{object}-{aspect}`
 
 Examples: `plugin-health-audit`, `review-agent-map`, `verify-map-suggestions`.
 
-This rule is advisory: pre-existing skills that predate the convention
-(`projection-sync`, `align-harness-repos`) are grandfathered. New skills SHOULD
+This rule is advisory: existing names that deviate are grandfathered — see
+[Grandfathered exceptions](#grandfathered-exceptions). New skills SHOULD
 conform; the `naming-convention-lens` flags non-conforming names as Low-severity
 suggestions rather than hard failures.
 
@@ -68,6 +68,7 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
+- `projection-sync` — established verb-object name; regenerates harness projections from canonical source.
 - `align-harness-repos` — validate-with-optional-fix workflow; name retained for recognisability.
 - `al-dev-diagram-generator` — noun form retained; generates workflow diagrams.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
