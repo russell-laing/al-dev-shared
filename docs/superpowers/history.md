@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-03
+
+### Historical `.dev` Artifact Cleanup
+
+- Path: `.dev/2026-06-02-architectural-analysis-report.md`, `.dev/plugin-health-runs/20260531T23431-5bf11cdd/manifest.json`, `.dev/plugin-health-runs/20260531T23431-5bf11cdd/work-queue.json`
+- Kind: tracked `.dev` report/log cleanup
+- Status: historical
+- Summary: Remove an unreferenced June 2 architectural analysis report plus stale plugin-health run artifacts from a partial May 31 dispatch after preserving their provenance here. Keep the live resumable-state surfaces such as `.dev/progress.md`, `.dev/sync-documentation-maps-checkpoint.json`, and the plugin-health checkpoint path itself available for current workflows.
+
 ## 2026-06-02
 
 ### Architectural Corrections Implementation Plan
