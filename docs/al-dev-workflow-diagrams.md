@@ -29,6 +29,7 @@ flowchart LR
         skill_commit_recover[commit-recover]
     end
     subgraph Agents[Agents]
+        agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
         agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
         agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
@@ -39,7 +40,6 @@ flowchart LR
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
-        agent_al_dev_expert_reviewer[al-dev-expert-reviewer]
         agent_al_dev_interview[al-dev-interview]
         agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
         agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
@@ -79,8 +79,8 @@ flowchart LR
     skill_al_dev_lint --> agent_al_dev_diagnostics_fixer
     skill_al_dev_plan --> agent_al_dev_solution_architect
     skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
+    skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
     skill_al_dev_review_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_review_develop --> agent_al_dev_expert_reviewer
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
@@ -103,6 +103,7 @@ flowchart LR
     class skill_al_dev_support_reply skillNode
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
+    class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_commit_agent_analysis agentNode
     class agent_al_dev_commit_agent_execute agentNode
     class agent_al_dev_commit_hook_fixer agentNode
@@ -113,7 +114,6 @@ flowchart LR
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_diagnostics_fixer agentNode
-    class agent_al_dev_expert_reviewer agentNode
     class agent_al_dev_interview agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_release_notes_writer agentNode
@@ -151,10 +151,10 @@ flowchart LR
         skill_al_dev_ticket[al-dev-ticket]
     end
     subgraph Agents[Agents]
+        agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_docs_writer[al-dev-docs-writer]
-        agent_al_dev_expert_reviewer[al-dev-expert-reviewer]
         agent_al_dev_interview[al-dev-interview]
         agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
         agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
@@ -231,6 +231,7 @@ flowchart LR
     skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
+    agent_al_dev_al_pattern_reviewer --> knowledge_code_review_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_developer_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_symbol_pre_flight_md
     agent_al_dev_developer_tdd --> knowledge_compile_output_safeguard_md
@@ -241,7 +242,6 @@ flowchart LR
     agent_al_dev_developer_traditional --> knowledge_compile_output_safeguard_md
     agent_al_dev_developer_traditional --> knowledge_developer_invocation_patterns_md
     agent_al_dev_docs_writer --> knowledge_documentation_rtm_guide_md
-    agent_al_dev_expert_reviewer --> knowledge_code_review_patterns_md
     agent_al_dev_interview --> knowledge_interview_question_bank_md
     agent_al_dev_performance_reviewer --> knowledge_perf_anti_patterns_prompt_md
     agent_al_dev_performance_reviewer --> knowledge_performance_review_examples_md
@@ -266,10 +266,10 @@ flowchart LR
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_review_develop skillNode
     class skill_al_dev_ticket skillNode
+    class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_docs_writer agentNode
-    class agent_al_dev_expert_reviewer agentNode
     class agent_al_dev_interview agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_release_notes_writer agentNode

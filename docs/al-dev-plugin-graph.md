@@ -29,6 +29,7 @@ flowchart LR
         skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
         skill_al_dev_perf[al-dev-perf]
         skill_al_dev_plan[al-dev-plan]
+        skill_al_dev_plan_final_review[al-dev-plan-final-review]
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
         skill_al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
         skill_al_dev_release_notes[al-dev-release-notes]
@@ -40,6 +41,7 @@ flowchart LR
         skill_verify_commits[verify-commits]
     end
     subgraph Agents[Agents]
+        agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
         agent_al_dev_code_review[al-dev-code-review]
         agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
         agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
@@ -52,7 +54,6 @@ flowchart LR
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
         agent_al_dev_docs_writer[al-dev-docs-writer]
-        agent_al_dev_expert_reviewer[al-dev-expert-reviewer]
         agent_al_dev_explore[al-dev-explore]
         agent_al_dev_interview[al-dev-interview]
         agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
@@ -73,6 +74,7 @@ flowchart LR
         knowledge_al_symbol_pre_flight_md[al-symbol-pre-flight]
         knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
         knowledge_artifact_contracts_md[artifact-contracts]
+        knowledge_background_agent_dispatch_md[background-agent-dispatch]
         knowledge_code_review_patterns_md[code-review-patterns]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
@@ -134,6 +136,7 @@ flowchart LR
     skill_al_dev_investigate --> skill_al_dev_handoff
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_plan_preflight
+    skill_al_dev_plan_final_review --> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_review_develop --> skill_al_dev_develop
     skill_al_dev_support_reply --> skill_al_dev_ticket
@@ -155,8 +158,8 @@ flowchart LR
     skill_al_dev_lint --> agent_al_dev_diagnostics_fixer
     skill_al_dev_plan --> agent_al_dev_solution_architect
     skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
+    skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
     skill_al_dev_review_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_review_develop --> agent_al_dev_expert_reviewer
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
@@ -185,6 +188,7 @@ flowchart LR
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
+    skill_al_dev_map_suggestions_verify --> knowledge_background_agent_dispatch_md
     skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
@@ -200,6 +204,7 @@ flowchart LR
     skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
+    agent_al_dev_al_pattern_reviewer --> knowledge_code_review_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_developer_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_symbol_pre_flight_md
     agent_al_dev_developer_tdd --> knowledge_compile_output_safeguard_md
@@ -210,7 +215,6 @@ flowchart LR
     agent_al_dev_developer_traditional --> knowledge_compile_output_safeguard_md
     agent_al_dev_developer_traditional --> knowledge_developer_invocation_patterns_md
     agent_al_dev_docs_writer --> knowledge_documentation_rtm_guide_md
-    agent_al_dev_expert_reviewer --> knowledge_code_review_patterns_md
     agent_al_dev_interview --> knowledge_interview_question_bank_md
     agent_al_dev_performance_reviewer --> knowledge_perf_anti_patterns_prompt_md
     agent_al_dev_performance_reviewer --> knowledge_performance_review_examples_md
@@ -280,6 +284,7 @@ flowchart LR
     class skill_al_dev_map_suggestions_verify skillNode
     class skill_al_dev_perf skillNode
     class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_final_review skillNode
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_plan_swarm_validate skillNode
     class skill_al_dev_release_notes skillNode
@@ -289,6 +294,7 @@ flowchart LR
     class skill_commit_recover skillNode
     class skill_plugin_health_audit skillNode
     class skill_verify_commits skillNode
+    class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_code_review agentNode
     class agent_al_dev_commit_agent_analysis agentNode
     class agent_al_dev_commit_agent_execute agentNode
@@ -301,7 +307,6 @@ flowchart LR
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_diagnostics_fixer agentNode
     class agent_al_dev_docs_writer agentNode
-    class agent_al_dev_expert_reviewer agentNode
     class agent_al_dev_explore agentNode
     class agent_al_dev_interview agentNode
     class agent_al_dev_performance_reviewer agentNode
@@ -320,6 +325,7 @@ flowchart LR
     class knowledge_al_symbol_pre_flight_md knowledgeNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_background_agent_dispatch_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
@@ -470,6 +476,7 @@ flowchart LR
 - `al-dev-lint`
 - `al-dev-map-suggestions-verify`
 - `al-dev-perf`
+- `al-dev-plan-final-review`
 - `al-dev-plan-preflight`
 - `al-dev-plan-swarm-validate`
 - `al-dev-release-notes`
@@ -480,5 +487,4 @@ flowchart LR
 **Missing refs (referenced but not on disk):**
 
 - `knowledge: plugin-health-lenses.md`
-- `knowledge: remote-trigger-duck-team-dispatch.md`
 <!-- END GENERATED: plugin-health-callouts -->

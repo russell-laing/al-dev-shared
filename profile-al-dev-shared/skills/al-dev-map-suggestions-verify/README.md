@@ -111,10 +111,11 @@ Synchronously verifies each suggestion:
 4. Run type-specific checks (trim-specific, merge-specific, etc.)
 5. Write duck record (success or error)
 
-**Path B (3+ suggestions):** Remote team dispatch
+**Path B (3+ suggestions):** Background team dispatch
 
-Spawns parallel agent team (one agent per suggestion) via RemoteTrigger API. Each
-agent independently:
+Dispatches a parallel background agent team (one agent per suggestion), per the
+pattern in `../../knowledge/background-agent-dispatch.md`. Each agent
+independently:
 
 1. Reads target files from repo
 2. Runs all universal and type-specific checks

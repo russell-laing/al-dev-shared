@@ -503,8 +503,8 @@ flowchart LR
     Phase6["Phase 6"]
     skill_al_dev_commit[al-dev-commit]
     skill_al_dev_develop[al-dev-develop]
+    agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
-    agent_al_dev_expert_reviewer[al-dev-expert-reviewer]
     agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
     agent_al_dev_security_reviewer[al-dev-security-reviewer]
     knowledge_artifact_contracts_md[artifact-contracts]
@@ -520,8 +520,8 @@ flowchart LR
     skill_al_dev_review_develop --> Phase6
     skill_al_dev_review_develop -.-> skill_al_dev_commit
     skill_al_dev_review_develop -.-> skill_al_dev_develop
+    skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
     skill_al_dev_review_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_review_develop --> agent_al_dev_expert_reviewer
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
@@ -538,8 +538,8 @@ flowchart LR
     class Phase6 phaseNode
     class skill_al_dev_commit skillNode
     class skill_al_dev_develop skillNode
+    class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_developer_traditional agentNode
-    class agent_al_dev_expert_reviewer agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_security_reviewer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
@@ -548,7 +548,7 @@ flowchart LR
     class artifact_progress_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-expert-reviewer`, `al-dev-shared:al-dev-performance-reviewer`, `al-dev-shared:al-dev-security-reviewer`
+Agents spawned: `al-dev-shared:al-dev-al-pattern-reviewer`, `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-performance-reviewer`, `al-dev-shared:al-dev-security-reviewer`
 <!-- END GENERATED: skill-drilldown-al-dev-review-develop -->
 
 ### /al-dev-commit

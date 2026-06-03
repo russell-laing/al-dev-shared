@@ -15,7 +15,7 @@ Agents: `design-agent-lens-caller-alignment`, `design-agent-lens-model-fit`,
 `design-agent-lens-scope-isolation`, `design-agent-lens-tool-hygiene`,
 `design-agent-lens-usage-patterns`
 
-### Required context fields per lens
+### Required context fields per lens (agent lenses)
 
 | Lens | Required context fields |
 |------|------------------------|
@@ -25,9 +25,9 @@ Agents: `design-agent-lens-caller-alignment`, `design-agent-lens-model-fit`,
 | `design-agent-lens-caller-alignment` | `caller_map` |
 | `design-agent-lens-usage-patterns` | `single_use_agents`, `already_inline_candidates` |
 
-### Dispatch template
+### Dispatch template (agent lenses)
 
-```
+```text
 Analyze the following agent files. Apply your lens to every file and return a findings block.
 
 File list:
@@ -50,7 +50,7 @@ Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 `design-skill-lens-near-duplicates`, `design-skill-lens-handoff-gaps`,
 `design-skill-lens-preplanning`
 
-### Required context fields per lens
+### Required context fields per lens (skill lenses)
 
 | Lens | Required context fields |
 |------|------------------------|
@@ -60,9 +60,9 @@ Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 | `design-skill-lens-handoff-gaps` | `handoff_chains` |
 | `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
 
-### Dispatch template
+### Dispatch template (skill lenses)
 
-```
+```text
 Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
 
 File list:
@@ -89,7 +89,7 @@ are required.
 
 ### Dispatch template (quality agent lenses)
 
-```
+```text
 Analyze the following agent files. Apply your lens to every file and return a findings block.
 
 File list:
@@ -98,7 +98,7 @@ File list:
 
 ### Dispatch template (quality skill lenses)
 
-```
+```text
 Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
 
 File list:
@@ -107,7 +107,7 @@ File list:
 
 ### Dispatch template (naming-convention-lens)
 
-```
+```text
 Analyze the following files. Apply your lens to every file and return a findings block.
 
 File list:
@@ -138,10 +138,12 @@ required context per lens class so dispatchers pass lean, correct prompts.
 
 ## Workflow Dispatch Pattern
 
-When dispatching multiple lens agents in parallel, use the harness-native
-parallel dispatch mechanism (e.g., `Workflow` via `RemoteTrigger` in the
-harness-neutral surface). This is the canonical orchestration mechanism for
-multi-lens sweeps. Individual lens dispatches use the single-lens template above.
+When dispatching multiple lens agents in parallel, use the canonical in-session
+background-dispatch pattern in
+[`background-agent-dispatch.md`](background-agent-dispatch.md): dispatch one
+background agent per lens, hand off through artifact files, and gate on artifact
+presence. This is the canonical orchestration mechanism for multi-lens sweeps.
+Individual lens dispatches use the single-lens template above.
 
 ### Sequential single-lens dispatch
 

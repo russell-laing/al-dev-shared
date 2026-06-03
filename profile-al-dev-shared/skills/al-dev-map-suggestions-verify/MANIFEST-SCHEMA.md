@@ -436,10 +436,10 @@ All JSON artifacts must satisfy these validation constraints:
 2. Workers write duck records directly to `.dev/al-dev-map-suggestions-verify-runs/<run_id>/duck-records/<id>.json`
 3. Skill skips manifest creation and proceeds to Phase 3
 
-**If 3+ suggestions (remote path):**
+**If 3+ suggestions (background path):**
 
 1. Skill creates manifest with all suggestions in `pending` status
-2. Skill spawns remote team via RemoteTrigger
+2. Skill dispatches a background team (one agent per suggestion)
 3. Skill updates checkpoint: `phase=dispatched`, `status=waiting`
 4. Skill returns control to user
 

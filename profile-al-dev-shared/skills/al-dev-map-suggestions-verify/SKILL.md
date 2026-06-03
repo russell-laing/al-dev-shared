@@ -2,15 +2,15 @@
 name: al-dev-map-suggestions-verify
 description: >-
   Verify and rubber-duck existing map suggestions before creating an implementation plan.
-  Rubber-duck architectural suggestions from map Observations using remote agent
-  teams, reducing token burn from 1-1.5 hours to 40-50 min
+  Rubber-duck architectural suggestions from map Observations using parallel
+  background agent teams, reducing token burn from 1-1.5 hours to 40-50 min
 argument-hint: "[--resume] [--surface skills|agents|both] [--filter trim|merge|...]"
 ---
 
 # Skill: /al-dev-map-suggestions-verify
 
 Verify architectural change suggestions from `docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md`
-Observations sections using parallel remote agent teams. Reduces session token burn from 1-1.5 hours
+Observations sections using parallel background agent teams. Reduces session token burn from 1-1.5 hours
 to 40-50 minutes through async verification and multi-session checkpoint/resume workflow.
 
 ## Overview: Three Entry Points
@@ -18,7 +18,7 @@ to 40-50 minutes through async verification and multi-session checkpoint/resume 
 **Entry 1: Initial dispatch** (`/al-dev-map-suggestions-verify` or `/al-dev-map-suggestions-verify --surface agents --filter trim`)
 
 - Phase 1: Extract suggestions from map Observations
-- Phase 2: Dispatch remote team for 3+ suggestions, or inline verify 1-2
+- Phase 2: Dispatch background team for 3+ suggestions, or inline verify 1-2
 - Returns early; user freed to work while team verifies in background
 
 **Entry 2: Resume after team completion** (`/al-dev-map-suggestions-verify --resume`)
@@ -29,7 +29,7 @@ to 40-50 minutes through async verification and multi-session checkpoint/resume 
 
 **Success metric:** 40-50 min total session token burn (Phase 1: ~5 min, Phase 2: ~5 min, Phase 3: ~30-40 min)
 vs 1-1.5 hours for single-session sequential verification. Parallelization of 5-10 suggestions across
-remote team avoids sequential tool use overhead.
+a background team avoids sequential tool use overhead.
 
 ## Reference Documents
 
@@ -44,7 +44,7 @@ remote team avoids sequential tool use overhead.
 Parse map Observations sections and build suggestion queue. Determine parallelization path based on count:
 
 - ≤2 suggestions → proceed to inline verification
-- 3+ suggestions → proceed to remote team dispatch
+- 3+ suggestions → proceed to background team dispatch
 
 **Inputs:**
 
@@ -83,19 +83,20 @@ For each suggestion, synchronously:
 4. Write duck record (success) or error record (failure) to `.dev/al-dev-map-suggestions-verify-runs/<run-id>/duck-records/`
 5. Jump to Phase 3 collection
 
-**Why inline for small batches:** Avoids 5-minute remote team setup overhead for trivial batches.
+**Why inline for small batches:** Avoids 5-minute background team setup overhead for trivial batches.
 
-## Path B: Remote team dispatch (3+ suggestions)
+## Path B: Background team dispatch (3+ suggestions)
 
 > **Independence assumption:** The 3+ threshold assumes suggestions are mostly independent (targeting different files or output artifacts). For dependent suggestions that modify the same files (e.g., both updating the same skill), consider running inline verification even if count ≥3 to avoid parallel verification conflicts.
 
 1. Build team context JSON with all suggestions
-2. Spawn remote duck worker agents via RemoteTrigger (one agent per suggestion, parallel)
+2. Dispatch one background duck worker agent per suggestion in parallel, following
+   the canonical pattern in `../../knowledge/background-agent-dispatch.md`
 3. Update `.dev/progress.md` checkpoint with run state (run_id, phase=2, status=dispatched)
 4. Return to user with message: "Dispatched X suggestions to verification team. Run `/al-dev-map-suggestions-verify --resume` when ready."
 
-**Why remote for large batches:** Each suggestion takes 5-10 minutes to verify (reading files, running checks, writing records).
-Remote parallelization avoids sequential tool use overhead (each tool context switch costs ~30 seconds).
+**Why background dispatch for large batches:** Each suggestion takes 5-10 minutes to verify (reading files, running checks, writing records).
+Parallel background agents avoid sequential tool use overhead (each tool context switch costs ~30 seconds).
 
 ### Phase 3: Collect & Plan Generation
 
@@ -143,7 +144,7 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/extract-sugge
 **Logic:**
 
 - If ≤2 suggestions: Run inline verification (call `validate-suggestions.py`), jump to Phase 3
-- If 3+ suggestions: Spawn remote team via RemoteTrigger, return to user, wait for `--resume`
+- If 3+ suggestions: Dispatch a background duck worker team, return to user, wait for `--resume`
 
 **Inline verification call:**
 
@@ -162,14 +163,15 @@ python3 profile-al-dev-shared/skills/al-dev-map-suggestions-verify/validate-sugg
 - Writes duck records (success verdicts: ACCEPT/REJECT/DEFER, or error records) to output directory
 - Returns exit code 0 if all checks passed, 1 if failures
 
-**Remote team dispatch call** (for 3+ suggestions):
+**Background team dispatch call** (for 3+ suggestions):
 
-See `../../knowledge/remote-trigger-duck-team-dispatch.md` for remote agent spawning details.
+See `../../knowledge/background-agent-dispatch.md` for the canonical parallel
+background-dispatch pattern (run directory, file handoff, artifact-presence gate).
 
 High-level steps:
 
 1. Write team context JSON to `.dev/al-dev-map-suggestions-verify-runs/<run-id>/team-context.json`
-2. Dispatch 1 remote duck worker agent per suggestion via RemoteTrigger API
+2. Dispatch one background duck worker agent per suggestion, in parallel
 3. Each agent reads suggestion, runs checks, writes duck record
 4. Update `.dev/progress.md` checkpoint with manifest path
 5. Return to user: "Dispatched N suggestions. Run `/al-dev-map-suggestions-verify --resume` when ready."
@@ -222,7 +224,7 @@ See `validate-suggestions.py` for the complete implementation of U1-U3 checks an
 **Phase 2 errors:**
 
 - Inline verification U1/U2/U3 failure → write error record, proceed to Phase 3
-- Remote dispatch failure → ask user (inline instead / abort)
+- Background dispatch failure → ask user (inline instead / abort)
 
 **Phase 3 errors:**
 
@@ -279,11 +281,11 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 ### Team dispatch fails
 
-**Symptom:** RemoteTrigger API error during Phase 2 dispatch, or "Failed to spawn duck team".
+**Symptom:** Background dispatch error during Phase 2, or "Failed to spawn duck team".
 
 **Root causes:**
 
-- RemoteTrigger service unavailable
+- Background-agent dispatch unavailable in this session
 - `.dev/` directory not writable
 - Team context JSON too large (>5MB)
 
@@ -291,7 +293,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 1. Verify `.dev/` writable: `touch .dev/test-write && rm .dev/test-write`
 2. Check `.dev/progress.md` is created: `cat .dev/progress.md`
-3. If RemoteTrigger unavailable, fallback to inline: manually run duck checks on 1-2 suggestions
+3. If background dispatch is unavailable, fall back to inline: manually run duck checks on 1-2 suggestions
 4. For large batches, split into smaller runs: `/al-dev-map-suggestions-verify --surface skills --filter trim` then separate agent run
 
 ### Inline verification hangs
@@ -334,7 +336,7 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 **Root causes:**
 
-- Remote agents failed silently (no duck-records/*.json files created)
+- Background agents failed silently (no duck-records/*.json files created)
 - Run directory permissions restrict read access
 - Team context JSON corrupted during dispatch
 
@@ -351,9 +353,9 @@ See `./tests/scenarios.yaml` for trigger regression tests.
 
 **Root causes:**
 
-- Remote team processing slower than expected (5-10 min verification per suggestion)
-- Network latency or intermittent connectivity
-- Remote agent crash (no visible error message)
+- Background team processing slower than expected (5-10 min verification per suggestion)
+- Heavy local file I/O or many concurrent agents
+- Background agent crash (no visible error message)
 
 **Solution:**
 
