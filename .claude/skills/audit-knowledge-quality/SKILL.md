@@ -56,7 +56,7 @@ Count the flagged files and choose the execution path:
 
 #### Parallel Exploration (4+ files)
 
-When 4+ files are flagged, invoke `superpowers:dispatching-parallel-agents` before starting sequential analysis. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
+Invoke `superpowers:dispatching-parallel-agents`. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
 
 #### Sequential Analysis (≤3 files or fallback)
 
