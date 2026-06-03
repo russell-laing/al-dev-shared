@@ -10,7 +10,7 @@
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-code-review | haiku | Read | (none found) |
+| al-dev-code-review | sonnet | Read | (none found) |
 | al-dev-commit-agent-analysis | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
@@ -19,13 +19,13 @@
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
-| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix`, `/al-dev-review-develop` |
+| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read | `/al-dev-release-notes` |
+| al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server | `/al-dev-release-notes` |
 | al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
@@ -41,7 +41,7 @@
 ### al-dev-code-review
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
@@ -397,7 +397,7 @@
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read
+**Tools:** Bash, Write, Read, MCP: al-mcp-server
 **Spawned by:** /al-dev-release-notes
 
 **Inputs:**

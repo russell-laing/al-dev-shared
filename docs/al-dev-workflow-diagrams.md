@@ -25,6 +25,7 @@ flowchart LR
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
         skill_al_dev_release_notes[al-dev-release-notes]
         skill_al_dev_review_develop[al-dev-review-develop]
+        skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
         skill_al_dev_support_reply[al-dev-support-reply]
         skill_al_dev_ticket[al-dev-ticket]
         skill_commit_recover[commit-recover]
@@ -61,7 +62,9 @@ flowchart LR
     skill_al_dev_plan --> skill_al_dev_plan_preflight
     skill_al_dev_plan_final_review --> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
-    skill_al_dev_review_develop --> skill_al_dev_develop
+    skill_al_dev_review_develop --> skill_al_dev_review_develop_preflight
+    skill_al_dev_review_develop_preflight --> skill_al_dev_develop
+    skill_al_dev_review_develop_preflight --> skill_al_dev_review_develop
     skill_al_dev_support_reply --> skill_al_dev_ticket
     skill_al_dev_ticket --> skill_al_dev_interview
     skill_al_dev_ticket --> skill_al_dev_plan
@@ -82,7 +85,6 @@ flowchart LR
     skill_al_dev_plan --> agent_al_dev_solution_architect
     skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
     skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
-    skill_al_dev_review_develop --> agent_al_dev_developer_traditional
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
@@ -103,6 +105,7 @@ flowchart LR
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
+    class skill_al_dev_review_develop_preflight skillNode
     class skill_al_dev_support_reply skillNode
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
@@ -155,6 +158,8 @@ flowchart LR
     end
     subgraph Agents[Agents]
         agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
+        agent_al_dev_code_review[al-dev-code-review]
+        agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_docs_writer[al-dev-docs-writer]
@@ -177,6 +182,7 @@ flowchart LR
         knowledge_artifact_contracts_md[artifact-contracts]
         knowledge_background_agent_dispatch_md[background-agent-dispatch]
         knowledge_code_review_patterns_md[code-review-patterns]
+        knowledge_commit_analysis_patterns_md[commit-analysis-patterns]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
         knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
@@ -189,12 +195,15 @@ flowchart LR
         knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
         knowledge_performance_review_examples_md[performance-review-examples]
         knowledge_release_notes_template_md[release-notes-template]
+        knowledge_reviewer_findings_template_md[reviewer-findings-template]
         knowledge_scope_expansion_gate_md[scope-expansion-gate]
         knowledge_script_engineer_conventions_md[script-engineer-conventions]
         knowledge_security_review_examples_md[security-review-examples]
+        knowledge_solution_architect_schema_mapping_md[solution-architect-schema-mapping]
         knowledge_solution_plan_template_md[solution-plan-template]
         knowledge_tdd_workflow_md[tdd-workflow]
         knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
+        knowledge_ticket_image_patterns_md[ticket-image-patterns]
         knowledge_workflow_resilience_md[workflow-resilience]
     end
 
@@ -233,10 +242,12 @@ flowchart LR
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
-    skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     agent_al_dev_al_pattern_reviewer --> knowledge_code_review_patterns_md
+    agent_al_dev_al_pattern_reviewer --> knowledge_reviewer_findings_template_md
+    agent_al_dev_code_review --> knowledge_reviewer_findings_template_md
+    agent_al_dev_commit_agent_analysis --> knowledge_commit_analysis_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_developer_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_symbol_pre_flight_md
     agent_al_dev_developer_tdd --> knowledge_compile_output_safeguard_md
@@ -250,12 +261,16 @@ flowchart LR
     agent_al_dev_interview --> knowledge_interview_question_bank_md
     agent_al_dev_performance_reviewer --> knowledge_perf_anti_patterns_prompt_md
     agent_al_dev_performance_reviewer --> knowledge_performance_review_examples_md
+    agent_al_dev_performance_reviewer --> knowledge_reviewer_findings_template_md
     agent_al_dev_release_notes_writer --> knowledge_release_notes_template_md
     agent_al_dev_script_engineer --> knowledge_script_engineer_conventions_md
+    agent_al_dev_security_reviewer --> knowledge_reviewer_findings_template_md
     agent_al_dev_security_reviewer --> knowledge_security_review_examples_md
     agent_al_dev_solution_architect --> knowledge_al_developer_patterns_md
+    agent_al_dev_solution_architect --> knowledge_solution_architect_schema_mapping_md
     agent_al_dev_solution_architect --> knowledge_solution_plan_template_md
     agent_al_dev_ticket_agent --> knowledge_ticket_agent_invocation_pattern_md
+    agent_al_dev_ticket_agent --> knowledge_ticket_image_patterns_md
 
     class skill_al_dev_commit skillNode
     class skill_al_dev_consolidate skillNode
@@ -272,6 +287,8 @@ flowchart LR
     class skill_al_dev_review_develop skillNode
     class skill_al_dev_ticket skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
+    class agent_al_dev_code_review agentNode
+    class agent_al_dev_commit_agent_analysis agentNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_docs_writer agentNode
@@ -292,6 +309,7 @@ flowchart LR
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_background_agent_dispatch_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
+    class knowledge_commit_analysis_patterns_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_consolidate_extraction_patterns_md knowledgeNode
@@ -304,12 +322,15 @@ flowchart LR
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
     class knowledge_performance_review_examples_md knowledgeNode
     class knowledge_release_notes_template_md knowledgeNode
+    class knowledge_reviewer_findings_template_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode
     class knowledge_script_engineer_conventions_md knowledgeNode
     class knowledge_security_review_examples_md knowledgeNode
+    class knowledge_solution_architect_schema_mapping_md knowledgeNode
     class knowledge_solution_plan_template_md knowledgeNode
     class knowledge_tdd_workflow_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
+    class knowledge_ticket_image_patterns_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
 ```
 <!-- END GENERATED: workflow-knowledge-mermaid -->

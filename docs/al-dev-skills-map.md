@@ -32,7 +32,6 @@ flowchart TD
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
     skill_al_dev_release_notes[al-dev-release-notes]
     skill_al_dev_review_develop[al-dev-review-develop]
-    skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
     skill_al_dev_support_reply[al-dev-support-reply]
     skill_al_dev_ticket[al-dev-ticket]
     skill_commit_recover[commit-recover]
@@ -43,16 +42,15 @@ flowchart TD
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
-    skill_al_dev_develop --> skill_al_dev_review_develop_preflight
+    skill_al_dev_develop --> skill_al_dev_review_develop
     skill_al_dev_develop -.-> skill_al_dev_lint
-    skill_al_dev_review_develop_preflight --> skill_al_dev_review_develop
-    skill_al_dev_explore -.->|explore-findings.md| skill_al_dev_plan
+    skill_al_dev_explore -.-> skill_al_dev_plan
     skill_al_dev_fix --> skill_al_dev_commit
-    skill_al_dev_interview -.->|interview-requirements.md| skill_al_dev_plan
+    skill_al_dev_interview -.-> skill_al_dev_plan
     skill_al_dev_investigate --> skill_al_dev_plan
-    skill_al_dev_perf -.->|perf-analysis.md| skill_al_dev_plan
+    skill_al_dev_perf -.-> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_develop
-    skill_al_dev_plan_preflight -.->|preflight-context.md| skill_al_dev_plan
+    skill_al_dev_plan_preflight -.-> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_ticket --> skill_al_dev_support_reply
     skill_commit_recover --> skill_al_dev_commit
@@ -72,7 +70,6 @@ flowchart TD
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
-    class skill_al_dev_review_develop_preflight skillNode
     class skill_al_dev_support_reply skillNode
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
@@ -290,7 +287,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–5.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
@@ -442,7 +439,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–4.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
@@ -528,16 +525,18 @@ flowchart LR
     Phase1["Phase 1"]
     Phase2["Phase 2"]
     Phase3["Phase 3"]
+    skill_al_dev_develop[al-dev-develop]
     skill_al_dev_review_develop[al-dev-review-develop]
-    artifact_plugin_review_preflight_md[.dev/YYYY-MM-DD-plugin-review-preflight.md]
+    artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_progress_md[.dev/progress.md]
 
     skill_al_dev_review_develop_preflight --> Phase0
     skill_al_dev_review_develop_preflight --> Phase1
     skill_al_dev_review_develop_preflight --> Phase2
     skill_al_dev_review_develop_preflight --> Phase3
+    skill_al_dev_review_develop_preflight -.-> skill_al_dev_develop
     skill_al_dev_review_develop_preflight -.-> skill_al_dev_review_develop
-    skill_al_dev_review_develop_preflight --> artifact_plugin_review_preflight_md
+    skill_al_dev_review_develop_preflight --> artifact_compile_errors_log
     skill_al_dev_review_develop_preflight --> artifact_progress_md
 
     class skill_al_dev_review_develop_preflight skillNode
@@ -545,8 +544,9 @@ flowchart LR
     class Phase1 phaseNode
     class Phase2 phaseNode
     class Phase3 phaseNode
+    class skill_al_dev_develop skillNode
     class skill_al_dev_review_develop skillNode
-    class artifact_plugin_review_preflight_md artifactNode
+    class artifact_compile_errors_log artifactNode
     class artifact_progress_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
@@ -570,14 +570,11 @@ flowchart LR
     Phase5["Phase 5"]
     Phase6["Phase 6"]
     skill_al_dev_commit[al-dev-commit]
-    skill_al_dev_develop[al-dev-develop]
     skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
     agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
-    agent_al_dev_developer_traditional[al-dev-developer-traditional]
     agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
     agent_al_dev_security_reviewer[al-dev-security-reviewer]
     knowledge_artifact_contracts_md[artifact-contracts]
-    knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
     artifact_progress_md[.dev/progress.md]
 
     skill_al_dev_review_develop --> Phase0
@@ -585,14 +582,11 @@ flowchart LR
     skill_al_dev_review_develop --> Phase5
     skill_al_dev_review_develop --> Phase6
     skill_al_dev_review_develop -.-> skill_al_dev_commit
-    skill_al_dev_review_develop -.-> skill_al_dev_develop
     skill_al_dev_review_develop -.-> skill_al_dev_review_develop_preflight
     skill_al_dev_review_develop --> agent_al_dev_al_pattern_reviewer
-    skill_al_dev_review_develop --> agent_al_dev_developer_traditional
     skill_al_dev_review_develop --> agent_al_dev_performance_reviewer
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
-    skill_al_dev_review_develop --> knowledge_developer_invocation_patterns_md
     skill_al_dev_review_develop --> artifact_progress_md
 
     class skill_al_dev_review_develop skillNode
@@ -601,18 +595,15 @@ flowchart LR
     class Phase5 phaseNode
     class Phase6 phaseNode
     class skill_al_dev_commit skillNode
-    class skill_al_dev_develop skillNode
     class skill_al_dev_review_develop_preflight skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
-    class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_security_reviewer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
-    class knowledge_developer_invocation_patterns_md knowledgeNode
     class artifact_progress_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-al-pattern-reviewer`, `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-performance-reviewer`, `al-dev-shared:al-dev-security-reviewer`
+Agents spawned: `al-dev-shared:al-dev-al-pattern-reviewer`, `al-dev-shared:al-dev-performance-reviewer`, `al-dev-shared:al-dev-security-reviewer`
 <!-- END GENERATED: skill-drilldown-al-dev-review-develop -->
 
 ### /al-dev-commit
@@ -833,6 +824,7 @@ flowchart LR
     Phase2["Phase 2"]
     Phase3["Phase 3"]
     agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
+    artifact_YYYY_MM_DD_plugin_release_notes_md[.dev/YYYY-MM-DD-plugin-release-notes.md]
     artifact_project_context_md[.dev/project-context.md]
 
     skill_al_dev_release_notes --> Phase1
@@ -840,6 +832,7 @@ flowchart LR
     skill_al_dev_release_notes --> Phase2
     skill_al_dev_release_notes --> Phase3
     skill_al_dev_release_notes --> agent_al_dev_release_notes_writer
+    skill_al_dev_release_notes --> artifact_YYYY_MM_DD_plugin_release_notes_md
     skill_al_dev_release_notes --> artifact_project_context_md
 
     class skill_al_dev_release_notes skillNode
@@ -848,6 +841,7 @@ flowchart LR
     class Phase2 phaseNode
     class Phase3 phaseNode
     class agent_al_dev_release_notes_writer agentNode
+    class artifact_YYYY_MM_DD_plugin_release_notes_md artifactNode
     class artifact_project_context_md artifactNode
 ```
 
