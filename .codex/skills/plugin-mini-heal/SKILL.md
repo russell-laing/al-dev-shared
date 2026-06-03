@@ -1,7 +1,6 @@
 ---
 name: plugin-mini-heal
-description: Quick end-of-session self-heal for one profile-al-dev-shared surface. Use when you want 1-5 minimal improvements on a single skill, agent, knowledge doc, or generated artifact without a full review.
-argument-hint: "[1=skill|2=agent|3=knowledge doc|4=generated artifact] [path or short focus]"
+description: Quick end-of-session self-heal for one profile-al-dev-shared surface. Use when the request is a narrow `mini-heal`, `quick pass`, `final sweep`, or `tiny tidy-up` on a single skill, agent, knowledge doc, or generated artifact, and the goal is 1-5 minimal improvements rather than a broad review, plan, or repo-wide audit.
 ---
 
 # Plugin Mini Heal
@@ -15,8 +14,20 @@ Use this for a narrow pass at the end of a session.
 3. `knowledge doc` - a file under `profile-al-dev-shared/knowledge/`
 4. `generated artifact` - a file under `profile-al-dev-shared/generated/`
 
+Invocation pattern:
+
+- `[1=skill|2=agent|3=knowledge doc|4=generated artifact] [optional path or short focus]`
+
 ## Workflow
 
+- Resolve the target file before reviewing content.
+- If the user provides an explicit path, use it only if it stays within the selected surface. Otherwise stop and report the mismatch.
+- If the user provides a short focus, narrow to matching files on the selected surface.
+- If the focus matches no files, stop and report that no file matched.
+- If the focus matches multiple files, choose the oldest modified match and say that multiple matches existed.
+- If the user provides only the surface selector, choose the oldest modified file on that surface.
+- Treat "oldest modified" as the file with the earliest filesystem modification time among regular files on the selected surface.
+- If the selected surface is `generated artifact`, review the generated file only to identify the likely authored source and the smallest safe upstream fix. Do not recommend hand-editing the generated file.
 - Read the selected surface plus only the minimum nearby context needed to understand it.
 - Look for at most 1-5 concrete improvements.
 - Prefer tiny fixes: wording, scope narrowing, missing guardrails, stale references, or obvious consistency cleanup.
@@ -28,6 +39,9 @@ Use this for a narrow pass at the end of a session.
 Return a short note with:
 
 - selected surface
+- resolved file path
+- whether multiple matches were collapsed to the oldest modified file
+- for generated artifacts, the likely authored source to change instead
 - 1-5 improvements
 - which one is the best tiny self-heal
 - whether it is safe to apply immediately
@@ -37,4 +51,5 @@ Return a short note with:
 - Do not review the whole plugin.
 - Do not draft a full plan unless the user asks.
 - Do not touch `profile-al-dev-shared` unless the user explicitly asks for edits.
-- Do not regenerate projections unless the selected surface is generated output and regeneration is actually required.
+- Do not hand-edit generated projection artifacts; point to the authored source and regenerate only if an approved edit requires it.
+- If no file exists on the selected surface, stop and report that the surface is empty.
