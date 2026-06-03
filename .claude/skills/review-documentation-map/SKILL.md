@@ -205,22 +205,22 @@ Operationalize the Mermaid check on each diagram block:
   This matches `A --> B`, `A -.-> B`, `A ---> B`, and labeled edges
   `A -->|label| B`. (HTML comments and prose containing `-->` do not start
   with a node ID, so they are not matched.)
-- **Check node declarations.** Flag any node referenced in an edge (either side
-  of the arrow) but never declared in a node statement or on the left of another
-  edge — an undeclared node referenced by an edge is a ghost node.
+- **Check node declarations.** Derive the declared-node set with
+  `grep -oE '^\s*[A-Za-z0-9_]+\[' "{MAP_FILE}"` (node statements), plus the
+  left-hand node ID of every edge line from the edge grep above. Any node ID
+  appearing on the right of an edge but in neither set is a ghost node. Flag
+  each ghost node as a discrepancy.
 - **Check `style` directives.** Confirm every `style X fill:...` directive's `X`
   matches a node ID that appears in a node declaration or an edge. Orphaned
   `style` lines are discrepancies (see the Phase 5 style guard for the fix).
 
 Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 5.
 
----
-
-## Phase 4c: Report and Audit-Only Exit
+### Phase 4c: Report and Audit-Only Exit
 
 Before editing, summarise findings:
 
-### If SURFACE=skills
+#### If SURFACE=skills
 
 ```text
 Plugin map review findings:
@@ -233,7 +233,7 @@ Missing from map: [skills not in map]
 Stale in map:    [skills in map but now archived]
 ```
 
-### If SURFACE=agents
+#### If SURFACE=agents
 
 ```text
 Agent map review findings:
