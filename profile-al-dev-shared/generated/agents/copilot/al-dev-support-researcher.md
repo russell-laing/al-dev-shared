@@ -19,7 +19,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 |-------|----------|-------------|
 | QUERY_TYPE | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | QUERY_CONTEXT | **Yes** | The customer's question or symptom |
-| TICKET_FILE | No | Path to ticket context file from `/al-dev-ticket`, or `NONE` |
+| TICKET_FILE | Yes (when available) | Path to ticket context file from `/al-dev-ticket`, or `NONE`. Always provided by `/al-dev-support-reply`; use to focus research on the reported issue context. |
 | BC version | No | Inferred from query context if mentioned; not required from caller |
 
 ## Outputs
@@ -51,7 +51,7 @@ Invoke the `microsoft-docs` MCP tool to search official documentation:
 - Find configuration/setup requirements
 - Search for API documentation if relevant
 
-### Source 3: BC Code History (Aspirational)
+### Source 3: BC Code History *(aspirational — not yet available)*
 
 If BC Code History MCP becomes available, invoke the `bc-code-history` MCP tool to search BC history for:
 

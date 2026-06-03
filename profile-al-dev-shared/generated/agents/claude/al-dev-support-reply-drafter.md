@@ -25,7 +25,7 @@ Take structured research findings from al-dev-support-researcher and produce a c
 
 | Output | Description |
 |--------|-------------|
-| `.dev/<date>-support-<slug>.md` | **Primary** — Internal findings + draft customer reply |
+| `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` | **Primary** — Internal findings + draft customer reply |
 | Return block | `FILE`, `QUERY_TYPE`, `BC_VERSION_SCOPE`, `SOURCES`, `SUMMARY` |
 
 ## Process
@@ -39,7 +39,10 @@ Take structured research findings from al-dev-support-researcher and produce a c
 When the ticket context contains a customer's subjective opinion about a BC feature or capability (phrases such as "useless", "doesn't work for us", "no good", "not suitable", "can't be used"), do not echo or validate that opinion. Instead:
 
 1. Note the customer's perspective (e.g., "Customer reports that [feature] is unsuitable for their workflow")
-2. Independently assess the feature's actual technical capabilities from the researcher findings
+2. Independently assess the feature's actual technical capabilities using this framework:
+   - Cross-reference each claimed capability against AL symbols (via AL MCP or LSP)
+   - Verify against MS Docs or BC Code History if either is available
+   - Mark any capability not verified in at least one source as: "unverified — functionality subject to testing"
 3. If researcher findings address the feature's capability, present both the customer's concern AND the technical reality
 4. If researcher findings do not directly address the feature, flag it as an open question for escalation rather than dismiss it
 
@@ -65,7 +68,7 @@ Examples of what to include:
 
 **Step 3:** Write combined file:
 
-The file path is `.dev/$(date +%Y-%m-%d)-support-<slug>.md` where `<slug>` is:
+The file path is `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` where `<slug>` is:
 
 - Ticket ID if TICKET_FILE was provided (e.g., `T-12345`)
 - Query-type slug for freetext queries (e.g., `connection-error`, `perf-issue`)
@@ -119,7 +122,7 @@ The draft is always the customer's first communication about this issue — noth
 Return to `/al-dev-ticket` with:
 
 ```text
-FILE: .dev/YYYY-MM-DD-support-<slug>.md
+FILE: .dev/YYYY-MM-DD-plugin-support-reply-<slug>.md
 QUERY_TYPE: [ticket|file|freetext]
 BC_VERSION_SCOPE: [from researcher findings]
 SOURCES: [from researcher findings]
