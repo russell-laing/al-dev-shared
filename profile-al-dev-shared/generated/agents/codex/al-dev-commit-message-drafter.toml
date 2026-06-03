@@ -16,11 +16,11 @@ All inputs arrive in the dispatch prompt:
 
 ## Inputs
 
-| Input | Required | Description |
-|-------|----------|-------------|
-| MANIFESTS | **Yes** | Per-file change summary from al-dev-commit-agent-analysis (object IDs, added/removed fields and procedures) |
-| PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
-| FD_TICKET | string (optional) | Freshdesk ticket number |
+| Input | Required | Format | Description |
+|-------|----------|--------|-------------|
+| MANIFESTS | **Yes** | inline text block (dispatch prompt) | Per-file change summary from al-dev-commit-agent-analysis (object IDs, added/removed fields and procedures) |
+| PROJECT_CONTEXT | string | inline text block (dispatch prompt) | Scopes, object ID prefix, naming patterns |
+| FD_TICKET | string (optional) | inline text block (dispatch prompt) | Freshdesk ticket number |
 
 ## Outputs
 
