@@ -1,6 +1,6 @@
 # Map Suggestion Templates
 
-Suggestion format templates used by `/al-dev-map-suggestions-verify` when
+Suggestion format templates used by `/verify-map-suggestions` when
 writing map observations and verification outputs. Reference this file instead
 of embedding templates inline in the skill body.
 

@@ -1,5 +1,5 @@
 ---
-name: al-dev-map-suggestions-verify
+name: verify-map-suggestions
 description: >-
   Verify and rubber-duck health-audit findings before creating an implementation plan.
   Use when the latest health dossier in docs/health/ has accepted findings
@@ -16,8 +16,8 @@ argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | spli
 
 # Plan Plugin Changes
 
-Translates findings from the latest health dossier in `docs/health/` into a
-verified implementation plan. The rubber-ducking phase is **mandatory** — no
+Invoked as `/verify-map-suggestions`. Translates findings from the latest health
+dossier in `docs/health/` into a verified implementation plan. The rubber-ducking phase is **mandatory** — no
 plan task is written until the live codebase state behind each finding is
 confirmed. This prevents plans based on finding text that diverges from actual
 code.
@@ -95,6 +95,44 @@ If the user passed a finding type as an argument (e.g., `connect`, `merge`,
 `trim`), capture it as `FILTER_TYPE` and filter collected findings to that
 type. If no type argument was passed, set `FILTER_TYPE=all` and process all
 collected findings. Note the active filter before proceeding to Phase 2.
+
+---
+
+## Phase 1b: Staleness Gate (mandatory)
+
+A dossier is a point-in-time snapshot. Findings are routinely implemented
+piecemeal between the audit and this planning step, so any finding whose
+subject file changed *after* the dossier was generated is likely already
+addressed (or has drifted out from under the finding text). Flag these before
+spending rubber-duck effort on them.
+
+For each dossier, take its date from the filename (`YYYY-MM-DD-<surface>-health.md`).
+For each collected finding, resolve its subject to a file path:
+
+- skill → `profile-al-dev-shared/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`
+- agent → `profile-al-dev-shared/agents/<name>.md` or `.claude/agents/<name>.md`
+
+Then check whether that file changed since the dossier date:
+
+```bash
+# DOSSIER_DATE from the dossier filename; SUBJECT_PATH per finding
+git log --since="$DOSSIER_DATE 00:00" --oneline -- "$SUBJECT_PATH"
+```
+
+- **Non-empty output** → label the finding **`⚠ possibly stale`** and record the
+  commit(s). In Phase 2, rubber-duck it by reading the live subject file in full
+  first; expect the claim may no longer match (verdict `skip [already implemented]`
+  is common here).
+- **Empty output** → the subject is unchanged since the audit; rubber-duck
+  normally.
+
+If a finding's subject cannot be resolved to a single file (e.g. a cross-surface
+or handoff finding), skip the gate for it and rubber-duck normally.
+
+Report the stale-labelled count before Phase 2 (e.g. "3 of 10 findings flagged
+possibly-stale — their subjects changed after the dossier date"). If **all**
+findings are flagged stale, advise re-running `/plugin-health-audit` for the
+affected surface before continuing.
 
 ---
 

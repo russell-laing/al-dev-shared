@@ -93,5 +93,5 @@ The generator writes `docs/al-dev-plugin-graph.md` and exits 0 even on parse err
 
 Print, per surface: dossier path + severity counts + the top action.
 List any failed lenses.
-Ask: "Review the dossier and run `/al-dev-map-suggestions-verify` on the items you accept?"
+Ask: "Review the dossier and run `/verify-map-suggestions` on the items you accept?"
 Do not edit any source file.

@@ -61,6 +61,6 @@ Archived at `profile-al-dev-shared/archived/skills/al-dev-support/`.
 ### plugin-health-team and plan-map-changes-duck-worker archived
 
 **Decided:** 2026-06-01
-**Reason:** Orphaned after plugin-health and al-dev-map-suggestions-verify (formerly plan-map-changes) were restructured.
+**Reason:** Orphaned after plugin-health and verify-map-suggestions (formerly plan-map-changes) were restructured.
 No active callers. Archived at `profile-al-dev-shared/archived/agents/`.
 **Do not:** Reference these agents in new skills without checking archived/ for current contracts.

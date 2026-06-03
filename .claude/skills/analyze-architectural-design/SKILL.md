@@ -63,4 +63,4 @@ harness-specific tokens).
 
 1. Print the cross-surface synthesis table.
 2. Hand off: "Synthesis written to `docs/al-dev-plugin-synthesis.md`. Run
-   `/al-dev-map-suggestions-verify` to turn accepted findings into a plan."
+   `/verify-map-suggestions` to turn accepted findings into a plan."
