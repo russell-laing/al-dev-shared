@@ -3,7 +3,7 @@ name: sync-documentation-maps-write
 description: >-
   Second step of two-step sync finalization. Regenerates diagrams, projections,
   and the plugin graph from updated maps, then commits. Run after
-  /sync-documentation-maps-wait has written the maps to docs/.
+  /sync-documentation-maps-apply has written the maps to docs/.
 argument-hint: "[RUN_ID from checkpoint]"
 ---
 
@@ -17,7 +17,7 @@ updated maps, then commits all changes.
 
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-wait --team-ids <ids>` — validate artifacts, write maps
+3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps
 4. `/sync-documentation-maps-write` — regenerate diagrams, projections, and commit (this skill)
 
 **Working directory assumption:** All relative paths are resolved from
@@ -29,7 +29,7 @@ updated maps, then commits all changes.
 
 Read `.dev/sync-documentation-maps-checkpoint.json`. Confirm `status` is not
 `"awaiting-write"`. If maps are not yet written, stop and instruct the user to
-run `/sync-documentation-maps-wait` first.
+run `/sync-documentation-maps-apply` first.
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
@@ -41,7 +41,7 @@ Extract `run_id` → `RUN_ID`, `result_dir` → `RUN_DIR`, and `skip_commit` →
 If `status` is not `"awaiting-write"`, stop with:
 
 ```text
-Maps not yet written. Run /sync-documentation-maps-wait first to validate
+Maps not yet written. Run /sync-documentation-maps-apply first to validate
 artifacts and write the maps to docs/, then re-run this step.
 ```
 

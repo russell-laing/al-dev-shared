@@ -1,13 +1,14 @@
 ---
-name: sync-documentation-maps-wait
+name: sync-documentation-maps-apply
 description: >-
-  First step of two-step sync finalization. Validates update-agent artifacts,
-  reads updated map content from the run directory, and writes both documentation
-  maps to docs/. Run /sync-documentation-maps-write next to regenerate diagrams and commit.
+  Applies validated update artifacts to docs/. First step of two-step sync
+  finalization. Validates update-agent artifacts, reads updated map content from
+  the run directory, and writes both documentation maps to docs/. Run
+  /sync-documentation-maps-write next to regenerate diagrams and commit.
 argument-hint: "[RUN_ID from checkpoint]"
 ---
 
-# Sync Documentation Maps — Wait (Write Maps)
+# Sync Documentation Maps — Apply (Write Maps)
 
 First step of two-step sync finalization. Reads updated map artifacts written
 by the background update agents, validates them, and writes the canonical docs/
@@ -17,7 +18,7 @@ maps to disk.
 
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-wait --team-ids <ids>` — validate artifacts, write maps (this skill)
+3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps (this skill)
 4. `/sync-documentation-maps-write` — regenerate diagrams, projections, and commit
 
 **Working directory assumption:** All relative paths are resolved from
@@ -38,7 +39,7 @@ Error and stop if `--team-ids` is absent or produces zero values.
 Print a clear usage hint:
 
 ```text
-Usage: /sync-documentation-maps-wait --team-ids <id>[,<id>] [--skip-commit]
+Usage: /sync-documentation-maps-apply --team-ids <id>[,<id>] [--skip-commit]
 ```
 
 ---

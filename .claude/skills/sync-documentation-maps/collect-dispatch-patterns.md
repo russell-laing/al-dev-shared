@@ -71,5 +71,5 @@ Update teams dispatched.
   Run directory:       RUN_DIR
 
 Next step (when teams complete):
-  /sync-documentation-maps-wait --team-ids <non-null-ids>
+  /sync-documentation-maps-apply --team-ids <non-null-ids>
 ```

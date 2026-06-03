@@ -20,7 +20,7 @@ completion (roughly 5 minutes), so the user is free to work meanwhile.
 
 1. `/sync-documentation-maps` — dispatch audit teams (this skill, ~5 min)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-wait [RUN_ID]` — write maps to docs/
+3. `/sync-documentation-maps-apply [RUN_ID]` — write maps to docs/
 4. `/sync-documentation-maps-write` — regenerate diagrams/projections/graph, commit
 
 ---

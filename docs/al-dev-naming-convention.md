@@ -73,6 +73,6 @@ are accepted; lenses should not re-flag them:
 - `al-dev-diagram-generator` — noun form retained; generates workflow diagrams.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
 - `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming
-  (the `-apply` member is renamed from `-wait` in a separate task for clarity).
+  (the `-apply` member was renamed from `-wait` for clarity).
 - `sync-documentation-maps-{agent|skill}-{audit|update}` — sync workflow agent
   family; named for the workflow they serve.

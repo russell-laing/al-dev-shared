@@ -109,7 +109,7 @@ workflow:
 
 - `sync-documentation-maps`
 - `sync-documentation-maps-collect`
-- `sync-documentation-maps-wait` then `sync-documentation-maps-write`
+- `sync-documentation-maps-apply` then `sync-documentation-maps-write`
 
 The workflow writes and updates these repo-local state files:
 
