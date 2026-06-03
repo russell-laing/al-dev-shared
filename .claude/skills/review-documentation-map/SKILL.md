@@ -8,7 +8,7 @@ description: >-
   Triggers on: "review documentation map", "update skill map", "update agent
   map", "review skill map", "review agent map", "sync maps", "is the map
   accurate", "check the maps".
-argument-hint: "--surface [skills|agents] [--no-update]"
+argument-hint: "--surface skills|agents [--no-update]"
 ---
 
 # Review Documentation Map

@@ -4,6 +4,7 @@ description: >-
   Second step of two-step sync finalization. Regenerates diagrams, projections,
   and the plugin graph from updated maps, then commits. Run after
   /sync-documentation-maps-wait has written the maps to docs/.
+argument-hint: "[RUN_ID from checkpoint]"
 ---
 
 # Sync Documentation Maps — Write (Regenerate and Commit)
