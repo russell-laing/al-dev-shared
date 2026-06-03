@@ -35,13 +35,13 @@ If [2] → invoke `/sync-documentation-maps` and exit.
 
 ## Phase 1 — Review skill map
 
-If `--no-update` was passed: run `/review-documentation-map-audit --surface skills`.
-Otherwise: run `/review-documentation-map-update --surface skills`.
+If `--no-update` was passed: run `/review-documentation-map --surface skills --no-update`.
+Otherwise: run `/review-documentation-map --surface skills`.
 
 ## Phase 2 — Review agent map
 
-If `--no-update` was passed: run `/review-documentation-map-audit --surface agents`.
-Otherwise: run `/review-documentation-map-update --surface agents`.
+If `--no-update` was passed: run `/review-documentation-map --surface agents --no-update`.
+Otherwise: run `/review-documentation-map --surface agents`.
 
 ## Phase 3 — Handoff
 
