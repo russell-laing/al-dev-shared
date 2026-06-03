@@ -127,8 +127,42 @@ needed 2 fields received 8 inert ones. This file canonicalizes the minimum
 required context per lens class so dispatchers pass lean, correct prompts.
 
 **Inert fields by lens class (confirmed by rubber-duck 2026-05-29):**
+
 - Design agent lenses receive: `phase_counts`, `handoff_chains`, `preplanning_skills`,
   `agent_usage_counts`, `no_agent_skills` — not used
 - Design skill lenses receive: `tool_inventory`, `model_assignments`, `caller_map`,
   `single_use_agents`, `already_inline_candidates` — not used
 - Quality lenses: all 10 context structures — not used
+
+---
+
+## Workflow Dispatch Pattern
+
+When dispatching multiple lens agents in parallel, use the harness-native
+parallel dispatch mechanism (e.g., `Workflow` via `RemoteTrigger` in the
+harness-neutral surface). This is the canonical orchestration mechanism for
+multi-lens sweeps. Individual lens dispatches use the single-lens template above.
+
+### Sequential single-lens dispatch
+
+For one lens or sequentially ordered lenses:
+
+```text
+Dispatch: <lens-agent-name>
+Context: [fields from the per-lens table above — include only required fields]
+```
+
+### Parallel multi-lens dispatch (health sweep)
+
+For 3+ independent lenses (e.g., a full plugin health audit), dispatch all in
+one parallel call. Lenses are independent — no lens output is another's input.
+
+Steps:
+
+1. Build the file list for each surface (agents or skills).
+2. Build the per-lens context fields (tool_inventory, model_assignments, etc.)
+   from the plugin graph and map files.
+3. Dispatch all lenses in a single parallel block.
+4. Collect all outputs before synthesising findings.
+
+See `/plugin-health-discover` for the canonical multi-lens dispatch implementation.
