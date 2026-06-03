@@ -60,7 +60,13 @@ Determine the root cause from the error log and assign a recovery action:
 
 ### Step 3: Apply scripted recovery (Fixable + Transient only)
 
-For **Fixable** failures, apply a safe scripted fix via Bash only:
+For **Fixable** failures, apply a scripted fix via Bash **only if all three conditions are met**:
+
+1. The fix can be validated immediately — re-running the failing hook command passes
+2. The fix is reversible — `git checkout HEAD -- <file>` restores the original
+3. The fix target is a configuration or formatting issue, not business logic
+
+Approved fixes:
 
 - Trailing whitespace: `sed -i '' 's/[ \t]*$//' <file>`
 - Python lint: `ruff check --fix <file>`

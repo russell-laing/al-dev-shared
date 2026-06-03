@@ -58,19 +58,9 @@ Fetch operations are sequential API calls (not parallel):
 
 ### Step 1.5: Detect Inline Image Attachments
 
-After extracting conversation HTML from the API response, scan for inline embedded images:
+After extracting conversation HTML from the API response, scan for inline embedded images using patterns from `knowledge/ticket-image-patterns.md`.
 
-1. **Regex scan for `src=` attributes:** Extract all image URLs from `<img src="..."` tags in description and conversation HTML
-2. **Regex scan for `cid:` references:** Extract content-ID references (Freshdesk inline attachment pattern) from `src="cid:..."` tags
-3. **Compile inline-image list:** Create a distinct list of inline images found — these are separate from the file attachments array in the API response
-
-Example patterns to match:
-
-```text
-src="https://cdn.freshdesk.com/...jpg"     → extract URL
-src="cid:attachment_123abc"                 → extract cid:attachment_123abc
-<img src="data:image/png;base64,..."      → note as "inline base64 image"
-```
+For `data:image/` URIs specifically: note as "inline base64 image (not downloaded)" without attempting to decode or download the content.
 
 If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
 
