@@ -77,24 +77,13 @@ Read `docs/al-dev-skills-map.md`. Extract:
 
 ### Step 4 — Identify discrepancies
 
-Compare the active skill list and extracted metadata against the map data:
+Compare the active skill list and extracted metadata against the map data.
+Discrepancy type definitions are in `.claude/knowledge/sync-maps-edit-cases.md`,
+**"Skill surface — discrepancy types (audit)"** section.
 
-- **`missing_from_map`** — an active skill has no corresponding `### /skill-name`
-  section in the Layer 2 portion of `docs/al-dev-skills-map.md`.
-- **`stale_in_map`** — a `### /skill-name` Layer 2 section exists for a skill
-  that is archived (not in the active list).
-- **`phase_count_mismatch`** — the phase count extracted from `SKILL.md` does not
-  match the phase count implied by the map. Because the skills map has no
-  explicit "phase count" field, derive the map's phase count from the `flowchart
-  LR` Mermaid diagram in the skill's Layer 2 section: scan node IDs for the
-  pattern `Phase<N>` (e.g. `Phase0`, `Phase4`) and take the highest N as the
-  map's phase count; compare against the highest `## Phase N` heading number in
-  `SKILL.md`. If the diagram is absent or the node IDs are ambiguous, record the
-  discrepancy with `type: phase_count_mismatch` and a `detail` that describes
-  the ambiguity (e.g. `"map shows phases 0–3, skill file has phases 0–5"`).
-- **`agent_name_mismatch`** — an agent name extracted from `SKILL.md`
-  (`al-dev-shared:<name>`) does not appear in the map's Layer 2 section for
-  that skill.
+For each type found, construct a discrepancy entry with `type`, `skill`, and
+`detail` fields. Populate `detail` with context (e.g., for `phase_count_mismatch`,
+record both the map-derived count and the SKILL.md count).
 
 ### Step 5 — Write JSON report and return path
 
