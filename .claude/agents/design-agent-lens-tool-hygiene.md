@@ -26,7 +26,13 @@ agent name from the filename (strip directory path and `.md` extension).
 Extract the `tools` field from YAML frontmatter. Read the system prompt body
 (everything after the closing `---` of the frontmatter).
 
+"Described as read-only" is judged from the agent's `## Outputs` section and
+system-prompt body (does the body only read and return findings, never write or
+edit files?) — not from the frontmatter `description` field alone, which may
+under-state the agent's behaviour.
+
 **Red flags — a tool present in frontmatter but unused in the body:**
+
 - Agent described as "read-only" or analysis-only but has `Write` or `Edit` in tools
 - Agent has `Bash` but no commands or shell operations are mentioned in the body
 - Agent has `MCP: <capability>` tools (the shared source form) but no MCP usage is described in the body
@@ -35,6 +41,7 @@ Extract the `tools` field from YAML frontmatter. Read the system prompt body
 A tool present in frontmatter but unused in the system prompt body is a Trim candidate.
 
 **Severity rules:**
+
 - High: `Write` or `Edit` on an agent described as read-only or analysis-only
 - Medium: `Bash` with no commands, or MCP tools with no MCP usage described
 - Low: other declared tools with no evidence of use in the body
@@ -46,9 +53,11 @@ A tool present in frontmatter but unused in the system prompt body is a Trim can
 Return exactly this structure (no additional prose before or after the block):
 
 ### Tool Hygiene Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Tool Hygiene Findings
+
 _No issues found._

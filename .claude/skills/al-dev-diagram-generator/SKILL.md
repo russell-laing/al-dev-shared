@@ -43,7 +43,9 @@ matched line content):
 - Target skill = the `/al-dev-*` command name (strip the leading `/`)
 - Target knowledge = the filename after `knowledge/` (strip any trailing path)
 
-Deduplicate. Build four relationship sets:
+Deduplicate by `(source, target)` tuple. Skip any grep line that does not yield
+both a source and a target; do not emit a partial edge. Build four relationship
+sets:
 
 - `skill_spawns_agent` — skill → agent (grep 1)
 - `skill_invokes_skill` — skill → skill, excluding self-references (grep 2)

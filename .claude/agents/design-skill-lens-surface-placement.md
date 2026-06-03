@@ -25,7 +25,7 @@ For each skill in `file_list`, score these three signals:
 
 | Signal | What to check |
 |--------|---------------|
-| Internal path references | Body references `profile-al-dev-shared/`, `.claude/`, or repo-root filenames (e.g. `marketplace.json`) that only resolve inside this repo |
+| Internal path references | Body references `profile-al-dev-shared/`, `.claude/`, or repo-root filenames (e.g. `marketplace.json`) that only resolve inside this repo. "In the body" means the prose instructions only — exclude YAML frontmatter and fenced code/example blocks, where such paths may be illustrative rather than operative. |
 | Self-audit purpose | Stated purpose is maintaining or auditing the plugin itself (alignment checks, map reviews, design analysis) — not serving AL developers |
 | No spawned agents | Skill name appears in `no_agent_skills` (no `al-dev-shared:` agent in the body) |
 

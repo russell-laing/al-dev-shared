@@ -22,7 +22,13 @@ Returns a findings block. See Output Format.
 Read every file path provided in the dispatch prompt. For each file, derive the
 skill name from the parent directory name.
 
+> Note: this lens counts top-level **steps/phases** (>8); the agent bloat lens
+> (`quality-agent-lens-bloat`) counts **sections** (>6). The thresholds differ
+> by design because they measure different surfaces — do not flag the mismatch
+> as an inconsistency.
+
 **Check for:**
+
 - Step/phase count (top-level `## Step` or `## Phase` headers) > 6
 - Any single step > 30 lines
 - `skip if...` or `only if...` conditions that always evaluate the same way in all
@@ -32,6 +38,7 @@ skill name from the parent directory name.
   that belongs in git history, not the skill body
 
 **Severity rules:**
+
 - High: any single step > 30 lines or > 8 total top-level steps
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
@@ -43,9 +50,11 @@ skill name from the parent directory name.
 Return exactly this structure (no additional prose before or after the block):
 
 ### Bloat Findings
+
 - **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Bloat Findings
+
 _No issues found._

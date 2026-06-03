@@ -22,7 +22,13 @@ Returns a findings block. See Output Format.
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
+> Note: this lens counts top-level **sections** (>6); the skill bloat lens
+> (`quality-skill-lens-bloat`) counts **steps/phases** (>8). The thresholds
+> differ by design because they measure different surfaces — do not flag the
+> mismatch as an inconsistency.
+
 **Check for:**
+
 - Section count in the system prompt body (after frontmatter) > 6 top-level sections
 - Any single section > 30 lines
 - `skip if...` or `only if...` conditions that always evaluate the same way in all
@@ -32,6 +38,7 @@ agent name from the filename (strip directory path and `.md` extension).
   that belongs in git history, not the agent body
 
 **Severity rules:**
+
 - High: any single section > 30 lines or > 6 total top-level sections
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
@@ -43,9 +50,11 @@ agent name from the filename (strip directory path and `.md` extension).
 Return exactly this structure (no additional prose before or after the block):
 
 ### Bloat Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Bloat Findings
+
 _No issues found._

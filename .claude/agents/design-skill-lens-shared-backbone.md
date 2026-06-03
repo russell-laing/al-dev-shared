@@ -24,6 +24,7 @@ Read every file path provided in the dispatch prompt. Use `agent_usage_counts` t
 identify agent types used by 2 or more skills.
 
 For each such agent type:
+
 1. Read the relevant SKILL.md files to compare how each skill spawns the agent.
 2. Ask: are the spawn patterns identical or significantly different?
    - **Identical patterns** → Connect candidate: document a canonical invocation
@@ -31,12 +32,16 @@ For each such agent type:
    - **Different patterns** → Promote candidate: make the variation explicit and
      decide if a shared base pattern is worth extracting.
 
-**What constitutes an "identical" pattern:**
-- Same dispatch prompt template
-- Same context fields passed
+**What constitutes an "identical" pattern:** a structural workflow match, not an
+exact string match. Treat patterns as identical when all three hold (ignoring
+whitespace, ordering, and incidental wording):
+
+- Same dispatch prompt template (same steps/structure, even if phrased differently)
+- Same context fields passed (same field set, regardless of order)
 - Same output expectation
 
 **Severity rules:**
+
 - Medium: identical pattern copy-pasted across 2+ skills (drift risk when pattern needs updating)
 - Low: similar but not identical patterns (worth noting but lower urgency)
 
@@ -47,9 +52,11 @@ For each such agent type:
 Return exactly this structure (no additional prose before or after the block):
 
 ### Shared Execution Backbone Findings
+
 - **[agent-type]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Shared Execution Backbone Findings
+
 _No issues found._

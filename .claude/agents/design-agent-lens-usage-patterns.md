@@ -25,7 +25,11 @@ Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
 **Inline criteria — all three must apply:**
-1. Agent name appears in the `single_use_agents` list (spawned by exactly one skill)
+
+1. Agent name appears in the `single_use_agents` list — its caller set is
+   **exactly one** skill. Compare caller sets by exact equality, not subset: an
+   agent whose caller set is a subset of (or merely overlaps) another agent's
+   callers is not single-use unless that set is exactly one skill.
 2. System prompt body (everything after the closing `---` of frontmatter) is
    fewer than 15 lines
 3. No `## Inputs` or `## Outputs` tables are documented in the body
@@ -36,6 +40,7 @@ been flagged in a previous run.
 An agent meeting all three criteria is an Inline candidate.
 
 **Severity rules:**
+
 - Medium: agent meets all three criteria
 - Low: agent meets exactly two of three criteria
 
@@ -46,9 +51,11 @@ An agent meeting all three criteria is an Inline candidate.
 Return exactly this structure (no additional prose before or after the block):
 
 ### Usage Patterns Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Usage Patterns Findings
+
 _No issues found._
