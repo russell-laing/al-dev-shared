@@ -74,3 +74,5 @@ are accepted; lenses should not re-flag them:
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
 - `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming
   (the `-apply` member is renamed from `-wait` in a separate task for clarity).
+- `sync-documentation-maps-{agent|skill}-{audit|update}` — sync workflow agent
+  family; named for the workflow they serve.
