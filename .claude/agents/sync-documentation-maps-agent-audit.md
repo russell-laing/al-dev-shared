@@ -97,8 +97,9 @@ The caller list is the deduplicated union of all files returned.
 Read `docs/al-dev-agent-map.md`. Extract:
 
 - **Layer 1 Catalog table rows:** agent names listed in the Layer 1 table.
-- **Layer 2 sections:** collect only `###` headings whose text matches the agent
-  name pattern (starts with `al-dev-` or another defined agent prefix). Use:
+- **Layer 2 sections:** collect only `###` headings whose text starts with the
+  distributed agent prefix `al-dev-`. (The agent map documents distributed agents
+  only; maintainer-tooling agents are not mapped here.) Use:
 
   ```bash
   grep "^### al-dev-" docs/al-dev-agent-map.md
