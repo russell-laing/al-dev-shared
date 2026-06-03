@@ -30,6 +30,10 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 **CRITICAL:** Use **USER_GATE** for every question group. Group 2-4 related questions per call; expect 40+ questions for complex features.
 
+**If USER_GATE fails or user declines:** Document the stopping point, record
+findings from completed question groups, and return partial requirements with
+a note on which groups were not completed.
+
 **Step 1: Opening** — Warmup question on business context. Set expectations: "This will take 20-30 minutes and go deep on requirements."
 
 **Step 2: Question Selection** — Read `knowledge/interview-question-bank.md` for comprehensive question categories and examples. Adapt questions to the specific project context.
@@ -80,13 +84,8 @@ Categories covered: [list of 7-11 categories from below]
 10. Deployment & Migration
 11. Unknowns & Open Questions
 
-**Fallback if INTERVIEW COMPLETE is not stated:**
-If you (the dispatcher) detect that the agent output does NOT contain "INTERVIEW COMPLETE" and a category list:
-
-1. Ask the agent to resume and explicitly state INTERVIEW COMPLETE
-2. If the agent output is missing categories, ask it to cover missing ones
-3. Re-confirm INTERVIEW COMPLETE and category list before accepting the output
-4. Do NOT proceed to Phase 3 until explicit completion signal is received
+Always end your response with the exact phrase `INTERVIEW COMPLETE` followed by
+a bullet list of the question groups covered.
 
 ## Writing Refined Spec
 
