@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-02 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
+**Last updated:** 2026-06-03 (24 active skill directories in `profile-al-dev-shared/skills`: 20 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 20 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
 
 ---
@@ -287,7 +287,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Includes user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–7.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
@@ -304,8 +304,6 @@ flowchart LR
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     Phase5["Phase 5"]
-    Phase6["Phase 6"]
-    Phase7["Phase 7"]
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
     agent_al_dev_solution_architect[al-dev-solution-architect]
     knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
@@ -321,8 +319,6 @@ flowchart LR
     skill_al_dev_plan --> Phase3
     skill_al_dev_plan --> Phase4
     skill_al_dev_plan --> Phase5
-    skill_al_dev_plan --> Phase6
-    skill_al_dev_plan --> Phase7
     skill_al_dev_plan -.-> skill_al_dev_plan_preflight
     skill_al_dev_plan --> agent_al_dev_solution_architect
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
@@ -339,8 +335,6 @@ flowchart LR
     class Phase3 phaseNode
     class Phase4 phaseNode
     class Phase5 phaseNode
-    class Phase6 phaseNode
-    class Phase7 phaseNode
     class skill_al_dev_plan_preflight skillNode
     class agent_al_dev_solution_architect agentNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
@@ -354,6 +348,38 @@ flowchart LR
 
 Agents spawned: `al-dev-shared:al-dev-solution-architect`
 <!-- END GENERATED: skill-drilldown-al-dev-plan -->
+
+### /al-dev-plan-final-review
+
+User approval gate for the solution plan written by `/al-dev-plan`. Runs validation and gates approval before implementation begins. Called by `/al-dev-plan` after Phase 5; can also be run standalone. Phases: 1–3.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-final-review -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_al_dev_plan_final_review[al-dev-plan-final-review]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    skill_al_dev_plan[al-dev-plan]
+
+    skill_al_dev_plan_final_review --> Phase1
+    skill_al_dev_plan_final_review --> Phase2
+    skill_al_dev_plan_final_review --> Phase3
+    skill_al_dev_plan_final_review -.-> skill_al_dev_plan
+
+    class skill_al_dev_plan_final_review skillNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class skill_al_dev_plan skillNode
+```
+<!-- END GENERATED: skill-drilldown-al-dev-plan-final-review -->
 
 ### /al-dev-plan-preflight
 
@@ -1065,15 +1091,18 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
+    knowledge_background_agent_dispatch_md[background-agent-dispatch]
     knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
     artifact_YYYY_MM_DD_al_dev_plan_plan_md[.dev/YYYY-MM-DD-al-dev-plan-plan.md]
     artifact_progress_md[.dev/progress.md]
 
+    skill_al_dev_map_suggestions_verify --> knowledge_background_agent_dispatch_md
     skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_map_suggestions_verify --> artifact_YYYY_MM_DD_al_dev_plan_plan_md
     skill_al_dev_map_suggestions_verify --> artifact_progress_md
 
     class skill_al_dev_map_suggestions_verify skillNode
+    class knowledge_background_agent_dispatch_md knowledgeNode
     class knowledge_map_change_rubber_duck_checks_md knowledgeNode
     class artifact_YYYY_MM_DD_al_dev_plan_plan_md artifactNode
     class artifact_progress_md artifactNode

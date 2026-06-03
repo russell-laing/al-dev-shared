@@ -21,6 +21,7 @@ flowchart LR
         skill_al_dev_investigate[al-dev-investigate]
         skill_al_dev_lint[al-dev-lint]
         skill_al_dev_plan[al-dev-plan]
+        skill_al_dev_plan_final_review[al-dev-plan-final-review]
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
         skill_al_dev_release_notes[al-dev-release-notes]
         skill_al_dev_review_develop[al-dev-review-develop]
@@ -58,6 +59,7 @@ flowchart LR
     skill_al_dev_investigate --> skill_al_dev_handoff
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_plan_preflight
+    skill_al_dev_plan_final_review --> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_review_develop --> skill_al_dev_develop
     skill_al_dev_support_reply --> skill_al_dev_ticket
@@ -97,6 +99,7 @@ flowchart LR
     class skill_al_dev_investigate skillNode
     class skill_al_dev_lint skillNode
     class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_final_review skillNode
     class skill_al_dev_plan_preflight skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
@@ -172,6 +175,7 @@ flowchart LR
         knowledge_al_symbol_pre_flight_md[al-symbol-pre-flight]
         knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
         knowledge_artifact_contracts_md[artifact-contracts]
+        knowledge_background_agent_dispatch_md[background-agent-dispatch]
         knowledge_code_review_patterns_md[code-review-patterns]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
@@ -216,6 +220,7 @@ flowchart LR
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
+    skill_al_dev_map_suggestions_verify --> knowledge_background_agent_dispatch_md
     skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
@@ -285,6 +290,7 @@ flowchart LR
     class knowledge_al_symbol_pre_flight_md knowledgeNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_background_agent_dispatch_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode

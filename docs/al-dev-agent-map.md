@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-02 (22 agents; analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-03 (22 agents; analysis refreshed with 5 new suggestions)
 
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
@@ -86,7 +86,7 @@
 ### al-dev-commit-message-drafter
 
 **Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
 
