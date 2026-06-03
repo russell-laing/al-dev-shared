@@ -44,13 +44,13 @@ ruff check --fix <file> && ruff format <file> && git add <file>
 
 ### Step 3: Trailing Whitespace Fix (Text Files Only)
 
-⚠️ **Regex MUST be `[ \t]+$` (horizontal whitespace only).** Never use `[[:space:]]+$` or `\s+$` — those include `\n`, collapsing entire file into one line.
+⚠️ **Regex MUST be `[[:blank:]]+$` (horizontal whitespace only).** On BSD `sed`, do not use `[ \t]+$` or `[ \t]*$` — `\t` is treated as a literal `t`, which can strip terminal `t` characters. Never use `[[:space:]]+$` or `\s+$` — those include `\n`, collapsing entire file into one line.
 
 Skip binary and OOXML files (`.docx`, `.xlsx`, `.pptx`, `.odt`). For all remaining staged text files:
 
 ```bash
 git diff --cached --name-only | grep -v -E '\.(docx|xlsx|pptx|odt)$' | while IFS= read -r f; do
-  sed -i '' 's/[ \t]*$//' "$f"
+  sed -E -i '' 's/[[:blank:]]+$//' "$f"
   git add "$f"
 done
 ```

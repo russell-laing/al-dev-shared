@@ -68,7 +68,7 @@ For **Fixable** failures, apply a scripted fix via Bash **only if all three cond
 
 Approved fixes:
 
-- Trailing whitespace: `sed -i '' 's/[ \t]*$//' <file>`
+- Trailing whitespace: `sed -E -i '' 's/[[:blank:]]+$//' <file>`
 - Python lint: `ruff check --fix <file>`
 - Markdown: `markdownlint --fix <file>` (or the project's configured fixer)
 

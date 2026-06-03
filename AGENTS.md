@@ -17,7 +17,7 @@ This repository is **not** an AL app project and does not contain `.al` source a
 
 The canonical authored surface is:
 
-```tex
+```text
 profile-al-dev-shared/
   skills/<name>/SKILL.md
   agents/<name>.md
@@ -28,7 +28,7 @@ profile-al-dev-shared/
 
 Generated harness-native artifacts are under:
 
-```tex
+```text
 profile-al-dev-shared/generated/agents/
   claude/
   copilot/
