@@ -57,9 +57,11 @@ Build two lists:
 
 ---
 
-## Phase 2: Extract Profiles
+## Phase 2: Extract Profiles and Build Caller Sets
 
-### If SURFACE=skills
+### Phase 2a: Extract profiles
+
+#### If SURFACE=skills
 
 For each active skill (read `profile-al-dev-shared/skills/<name>/SKILL.md`):
 
@@ -82,7 +84,7 @@ Record in a working table:
 | Skill | Phases | Agents spawned | Pattern | Outputs |
 |-------|--------|----------------|---------|---------|
 
-### If SURFACE=agents
+#### If SURFACE=agents
 
 For each active agent (read `profile-al-dev-shared/agents/<name>.md`):
 
@@ -102,11 +104,9 @@ Record in a working table:
 | Agent | Model | Tools | Has Inputs? | Has Outputs? |
 |-------|-------|-------|-------------|--------------|
 
----
+### Phase 2b: Build caller sets
 
-## Phase 3: Cross-Reference Callers
-
-### If SURFACE=agents
+#### If SURFACE=agents
 
 For each active agent, use a two-pass grep to find all skills that spawn it:
 
@@ -120,14 +120,27 @@ grep -rl "<filename-without-.md>" \
   profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
 ```
 
-Union the file lists from both passes to get the full caller set. Record:
+**Union/dedup ordering:** Union all grep results first (concatenate the file
+lists from both passes), **then** `sort -u` the combined set once. Do not
+`sort -u` each pass independently before unioning — dedup the merged set in a
+single pass so a file matched by both passes is counted once.
+
+Record:
 
 - **Spawned by:** list of skill names (extract directory name from matching paths)
 - **Spawn count:** single-use (1 skill) or shared (2+ skills)
 
-### If SURFACE=skills
+#### If SURFACE=skills
 
-No cross-reference phase needed for skills — agents spawned are extracted in Phase 2.
+No caller-set phase needed for skills — agents spawned are extracted in Phase 2a.
+
+---
+
+## Phase 3: Profiles and Caller Sets Ready
+
+Caller-set cross-referencing now lives in Phase 2b. Confirm the working table(s)
+from Phase 2 are complete before comparing against the map: every active item has
+a profile row, and (for agents) a deduped caller set from Phase 2b.
 
 ---
 
@@ -135,9 +148,13 @@ No cross-reference phase needed for skills — agents spawned are extracted in P
 
 If `{MAP_FILE}` does not exist, skip to Phase 5 (write from scratch).
 
-Read the file. Check both layers:
+Read the file.
 
-### If SURFACE=skills
+### Phase 4a: Compare against map
+
+Check both layers and record each mismatch as a discrepancy.
+
+#### If SURFACE=skills
 
 **Layer 1 (Lifecycle Overview diagram):**
 
@@ -156,26 +173,50 @@ For each active skill, check the matching drill-down diagram:
 - Outputs match what the skill actually writes
 - No skill is missing from Layer 2
 
-### If SURFACE=agents
+#### If SURFACE=agents
 
 **Layer 1 (Agent Catalog table):**
 
 - All active agents appear as table rows
 - No archived agent appears as a row
 - Model and tools match the actual frontmatter values
-- "Spawned by" matches the grep results from Phase 3
+- "Spawned by" matches the deduped caller set from Phase 2b
 
 **Layer 2 (Per-agent profiles):**
 
 For each active agent, verify the `### <filename-without-.md>` section:
 
 - Model and tools list match the frontmatter
-- Spawned-by list matches Phase 3 results
-- Inputs/Outputs match Phase 2 findings (or "Not documented" if absent)
+- Spawned-by list matches the Phase 2b caller set
+- Inputs/Outputs match Phase 2a findings (or "Not documented" if absent)
+
+### Phase 4b: Style-guard
+
+Only applies when `{MAP_FILE}` contains Mermaid diagrams (the skills surface).
+
+Operationalize the Mermaid check on each diagram block:
+
+- **Identify edge lines.** Each Mermaid edge line must match:
+
+  ```bash
+  grep -nE '^\s*[A-Za-z0-9_]+ ?-(.|-)?->' "{MAP_FILE}"
+  ```
+
+  This matches `A --> B`, `A -.-> B`, `A ---> B`, and labeled edges
+  `A -->|label| B`. (HTML comments and prose containing `-->` do not start
+  with a node ID, so they are not matched.)
+- **Check node declarations.** Flag any node referenced in an edge (either side
+  of the arrow) but never declared in a node statement or on the left of another
+  edge — an undeclared node referenced by an edge is a ghost node.
+- **Check `style` directives.** Confirm every `style X fill:...` directive's `X`
+  matches a node ID that appears in a node declaration or an edge. Orphaned
+  `style` lines are discrepancies (see the Phase 5 style guard for the fix).
+
+Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 5.
 
 ---
 
-## Phase 4b: Report and Audit-Only Exit
+## Phase 4c: Report and Audit-Only Exit
 
 Before editing, summarise findings:
 
@@ -227,8 +268,8 @@ Do not proceed to Phase 5.
 ## Phase 5: Update the Map
 
 If `{MAP_FILE}` does not exist, create it. Otherwise make targeted edits to fix
-each discrepancy found in Phase 4b. Use the Edit tool for targeted changes (not
-full rewrites) whenever the file already exists.
+each discrepancy found in Phases 4a and 4b. Use the Edit tool for targeted
+changes (not full rewrites) whenever the file already exists.
 
 ### If SURFACE=skills
 
