@@ -1,0 +1,98 @@
+---
+name: fix-knowledge-quality
+description: >-
+  Reads HIGH-severity findings from the latest knowledge quality audit
+  (docs/al-dev-knowledge-quality.md) and converts them into a structured task
+  list. Presents tasks to the user and optionally dispatches fix agents for
+  each HIGH issue. Run /audit-knowledge-quality first if no audit file exists.
+  Triggers on: "fix knowledge quality", "fix knowledge issues", "implement
+  knowledge fixes", "address high knowledge findings".
+argument-hint: "[--auto-fix]"
+---
+
+# Fix Knowledge Quality
+
+Converts HIGH-severity knowledge quality findings into actionable tasks and
+optionally dispatches fix agents.
+
+## Phase 0 — Locate audit file
+
+```bash
+ls -t /Users/russelllaing/al-dev-shared/docs/al-dev-knowledge-quality.md 2>/dev/null | head -1
+```
+
+If no file found: stop and report:
+
+> No knowledge quality audit found. Run `/audit-knowledge-quality` first.
+
+## Phase 1 — Parse HIGH findings
+
+Read `docs/al-dev-knowledge-quality.md`. Locate the `## High-Priority Fix Tasks`
+YAML block.
+
+If the block is absent: stop and report:
+
+> Audit file exists but has no structured task block. Re-run `/audit-knowledge-quality`
+> to regenerate with the current format.
+
+Parse each task entry:
+
+- `file`: path to the knowledge file with the issue
+- `issue_type`: THIN, NO-CODE, or DEAD-REF
+- `description`: one-line description
+- `suggested_action`: what to do
+
+Present parsed tasks to the user:
+
+> Found {N} HIGH-severity knowledge issues:
+>
+> 1. [{issue_type}] `{file}` — {description}
+>    Action: {suggested_action}
+> ...
+
+## Phase 2 — Choose execution mode
+
+Ask:
+
+> How do you want to fix these issues?
+>
+> 1. Show task list only — I will fix them manually
+> 2. Auto-fix — dispatch one fix agent per issue (applies --auto-fix)
+
+If `--auto-fix` was passed at invocation, skip this prompt and proceed directly
+to Phase 3.
+
+If [1] (or --auto-fix not passed and user selects 1): print task list and exit.
+
+If [2] (or --auto-fix passed): proceed to Phase 3.
+
+## Phase 3 — Dispatch fix agents (auto-fix mode)
+
+For each HIGH task, dispatch one `al-dev-shared:al-dev-docs-writer` agent:
+
+```text
+Agent: al-dev-shared:al-dev-docs-writer
+Prompt:
+  Fix a knowledge file quality issue.
+
+  File: {file}
+  Issue type: {issue_type}
+  Description: {description}
+  Required action: {suggested_action}
+
+  Read the file in full, apply the fix, and verify the result is coherent.
+  Do not add content you are not confident about — mark genuine gaps with
+  [NEEDS CONTENT: reason] instead of guessing.
+  Return: a summary of what was changed and what (if any) was left for
+  human review.
+```
+
+Wait for all agents to complete. Present each agent's summary.
+
+## Phase 4 — Re-audit (optional)
+
+Ask:
+
+> Would you like to re-run `/audit-knowledge-quality` to verify the fixes?
+
+If yes: invoke `/audit-knowledge-quality`.
