@@ -18,6 +18,7 @@ Report phase of the health sweep. Reads a findings file and writes the dossier.
 If `--findings <path>` is passed, read that file.
 
 Otherwise, find the most recent findings file for each surface requested:
+
 ```bash
 ls -t /Users/russelllaing/al-dev-shared/docs/health/*-findings.md 2>/dev/null | head -2
 ```
@@ -28,6 +29,15 @@ If no findings file exists, report: "No findings file found. Run /plugin-health-
 
 Read the findings file. Extract each `### <Lens Name> Findings` block.
 Parse each finding line: `- **[name]** | [Severity] | [observation] | [fix]`
+
+**Complexity Outliers exception:** lines from this lens carry an extra
+`verdict=[Atomise|Absorb|None]` field between severity and observation.
+Parse it. Findings with `verdict=None` are monitor-only: exclude them from
+the severity counts, the dimension grouping, and top-5 eligibility in
+Phase 2. List them in a one-line "Monitor-only (excluded from counts)" note
+under Design suggestions instead. A Complexity line missing the verdict
+field entirely is a lens regression — count it normally but flag it in the
+dossier as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 

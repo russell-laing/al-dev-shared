@@ -44,6 +44,13 @@ skill's entire body could fit as one extra phase in an existing adjacent skill.
   skill that overlaps heavily with an adjacent skill
 - Low: minor complexity that warrants monitoring but not immediate action
 
+**Verdict gates severity.** Every finding carries an explicit verdict:
+`Atomise`, `Absorb`, or `None`. High and Medium both require separable
+concerns, so they are only valid with verdict `Atomise` or `Absorb`. A skill
+that is "not a candidate" — however many phases it has — takes verdict
+`None` and severity Low. Never emit a High or Medium finding with verdict
+`None`.
+
 ---
 
 ## Output Format
@@ -52,7 +59,7 @@ Return exactly this block (no additional prose before or after):
 
 ### Complexity Outliers Findings
 
-- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
+- **[skill-name]** | [High|Medium|Low] | verdict=[Atomise|Absorb|None] | [observation] | [fix]
 
 If the block has no findings, emit it with a single `_No issues found._` line:
 
