@@ -7,6 +7,7 @@ description: >-
   can also be run standalone to re-validate an existing plan.
   Triggers on: "validate the plan", "approve the plan", "review the solution
   plan", "plan final review".
+argument-hint: ""
 ---
 
 # AL Dev Plan — Final Review
