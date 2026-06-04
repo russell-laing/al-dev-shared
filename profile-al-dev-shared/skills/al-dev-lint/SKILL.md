@@ -53,9 +53,13 @@ Otherwise run:
 ```bash
 if command -v al-compile &>/dev/null; then
   al-compile --output .dev/compile-errors.log
-else
+elif command -v al &>/dev/null; then
   al compile /project:. /packagecachepath:.alpackages \
     /errorlog:.dev/compile-errors.log
+else
+  echo "AL compiler not found; install al-compile or AL CLI tools before retrying." \
+    | tee .dev/compile-errors.log
+  exit 1
 fi
 ```
 
