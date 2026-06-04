@@ -71,6 +71,7 @@ Harness-specific tokens found in shared files:
 ```
 
 Also list the forbidden rules being checked:
+
 - "Claude tool token" (AskUserQuestion, USER_GATE, etc.)
 - "Claude dispatch token" (subagent_type)
 - "Copilot tool token" (ask_user, etc.)
@@ -112,8 +113,8 @@ For each finding:
    - `subagent_type` → `agent_spawn` (concept name)
    - `ask_user` → `USER_GATE`
    - `agent_type:` → `agent_spawn:`
-   - `~/.claude` → `~/.harness-config` or similar neutral path
-   - `~/.copilot` → `~/.harness-config` or similar neutral path
+   - `~/.claude` → `~/.harness-config`
+   - `~/.copilot` → `~/.harness-config`
    - "Open Claude Code" → "Invoke the harness" or "Start a session"
    - "start a new Copilot CLI session" → "Start a new harness session"
 4. Preserve all surrounding text and formatting exactly.
