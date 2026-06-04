@@ -129,6 +129,8 @@ curl -s -f -u "$FRESHDESK_API_KEY:X" \
   "https://$FRESHDESK_DOMAIN/api/v2/search/tickets?query=\"$ENCODED\""
 ```
 
+Example: `subject:'posting error'` → `subject%3A%27posting%20error%27` after encoding.
+
 Extract and display up to 10 results:
 
 ```text

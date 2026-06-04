@@ -32,7 +32,7 @@ Analyze specific file only.
 
 ### Step 1: Parse the integrity log
 
-Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" or "SYNTAX_ERROR". Skip entries whose status is already RESTORED and verified.
+Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" or "SYNTAX_ERROR". Skip entries whose status is already RESTORED and verified (the restored file passes an AL syntax check — no errors in `.dev/compile-errors.log`).
 
 ### Step 2: Analyze each incident with a fixer subagent
 
