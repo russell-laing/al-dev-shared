@@ -1,22 +1,25 @@
 ---
-name: verify-map-suggestions
+name: plan-health-findings
 description: >-
-  Verify and rubber-duck health-audit findings before creating an implementation plan.
-  Use when the latest health dossier in docs/health/ has accepted findings
-  that need implementing. Rubber-ducks each finding against the live codebase
-  before any plan is written. Run /plugin-health-audit first if the plugin or
-  tooling surface has changed since the dossier was last generated.
-  Triggers on: "implement health findings", "plan architectural
+  Verify and plan accepted health-audit findings (formerly
+  verify-map-suggestions). Reads accepted rows from
+  docs/health/dispositions.md, rubber-ducks each finding against the live
+  codebase before any plan content is written, then produces a verified
+  implementation plan via the writing-plans sub-skill. Use when the latest
+  health dossier in docs/health/ has accepted findings that need
+  implementing. Run /plugin-health-audit first if the plugin or tooling
+  surface has changed since the dossier was last generated. Triggers on:
+  "plan health findings", "implement health findings", "plan architectural
   changes", "plan the suggestions", "create a plan for plugin changes",
-  "implement the dossier", "act on health findings",
-  "implement agent findings", "plan agent changes",
-  "implement the health audit".
+  "implement the dossier", "act on health findings", "implement agent
+  findings", "plan agent changes", "implement the health audit".
 argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
 ---
 
-# Plan Plugin Changes
+# Plan Health Findings
 
-Invoked as `/verify-map-suggestions`. Translates findings from the latest health
+Invoked as `/plan-health-findings` (formerly `/verify-map-suggestions`).
+Translates findings from the latest health
 dossier in `docs/health/` into a verified implementation plan. The rubber-ducking phase is **mandatory** — no
 plan task is written until the live codebase state behind each finding is
 confirmed. This prevents plans based on finding text that diverges from actual
@@ -87,6 +90,7 @@ Skip any section marked `_No issues found._` and any finding already marked
 `← implemented`, `← completed`, or `← already implemented`.
 
 Then consult `docs/health/dispositions.md` (if present), matching by object
+
 - issue essence:
 
 - Findings marked `accepted` are the primary planning input — keep them.

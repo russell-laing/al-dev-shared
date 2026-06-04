@@ -38,6 +38,7 @@ If no dossier exists, report: "No health dossier found. Run
 ## Phase 1 — Extract findings
 
 Read the latest dossier(s). From each, collect:
+
 - **skill-layer findings** — Design suggestions with verbs Atomise, Absorb,
   Connect, Merge, Promote, Move, Extend
 - **agent-layer findings** — Design suggestions with verbs Trim, Remodel,
@@ -63,4 +64,4 @@ harness-specific tokens).
 
 1. Print the cross-surface synthesis table.
 2. Hand off: "Synthesis written to `docs/al-dev-plugin-synthesis.md`. Run
-   `/verify-map-suggestions` to turn accepted findings into a plan."
+   `/plan-health-findings` to turn accepted findings into a plan."

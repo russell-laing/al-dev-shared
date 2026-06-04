@@ -14,9 +14,10 @@ argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]
 Standing suggestions-only entry point. Detects drift across both plugin surfaces and
 consolidates suggestions into one ranked dossier per surface. Nothing is
 auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review) →
-`/verify-map-suggestions` (rubber-duck accepted items) → plan → execute.
+`/plan-health-findings` (rubber-duck accepted items) → plan → execute.
 
 Implemented as two sub-skills:
+
 - `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
 - `/plugin-health-report` — reads findings file, ranks, writes dossier, refreshes graph, presents
 
@@ -25,14 +26,17 @@ Implemented as two sub-skills:
 If a sweep is interrupted by session limits:
 
 1. **Check existing lens output:**
+
    ```bash
    ls -1 .dev/plugin-health-lens-*.json | wc -l
    ```
 
 2. **Re-invoke with resume flag:**
+
    ```bash
    /plugin-health-audit --surface <same-surface> --dimension <same-dimension> --resume
    ```
+
    The skill detects completed lenses from prior session, skips them, and runs only missing ones.
 
 3. **Final dossier will aggregate all lens results** (prior session + current session)
