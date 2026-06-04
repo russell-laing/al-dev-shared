@@ -21,7 +21,7 @@ This skill validates the canonical agent source under `profile-al-dev-shared/age
 
 Check `.dev/projection-sync-progress.md`:
 
-- **If exists:** Offer `Resume` (continue from next incomplete phase) or `Restart` (begin from Phase 1)
+- **If exists:** Offer `Resume` (continue from next incomplete phase) or `Restart` (begin from Phase 1). If the user does not respond, default to `Restart` (regenerate from a clean state).
 - **If not exists:** Proceed to Phase 1
 
 Progress checkpoint file location: `.dev/projection-sync-progress.md`
