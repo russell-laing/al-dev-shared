@@ -115,7 +115,7 @@ File list:
 [one absolute path per line]
 
 Convention doc:
-/Users/russelllaing/al-dev-shared/docs/al-dev-naming-convention.md
+[absolute path to docs/al-dev-naming-convention.md in the repo under audit]
 ```
 
 ---
