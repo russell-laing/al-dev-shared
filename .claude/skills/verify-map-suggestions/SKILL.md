@@ -216,7 +216,16 @@ Pass as context to writing-plans:
   original suggestion wording where rubber ducking found a mismatch)
 - Task ordering: additive changes first (new knowledge docs, diagram
   extensions), structural changes last (merges, archives, moves)
-- The verification pattern for each task: `ls`, `diff`, `wc -l`, `grep`
+- The verification pattern for each task, mapped by finding verb:
+
+  | Verb | Evidences | Command |
+  |------|-----------|---------|
+  | Atomise / Split | New phase/file boundaries exist | `grep -n '## Phase'` + `wc -l` |
+  | Absorb / Merge / Inline | Source folded in, original removed | `wc -l` (delta) + `ls` (absence) |
+  | Connect / Promote | Knowledge doc created and referenced | `ls` (new doc) + `grep` (reference) |
+  | Move | File relocated to target surface | `ls` (new path) + `ls` (old path gone) |
+  | Extend | New downstream consumer reads the artifact | `grep` (read site) |
+  | Trim / Remodel / Align | Field/tool removed or value changed | `grep` (presence/absence) |
 
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-plugin-map-<short-label>.md`
