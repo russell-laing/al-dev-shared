@@ -26,6 +26,30 @@ Surface → directory mapping:
 - `plugin` → `profile-al-dev-shared/`
 - `tooling` → `.claude/`
 
+### Cadence guard (per requested surface)
+
+Re-sweeping before the prior dossier is dispositioned mostly re-measures
+known findings at full lens cost. Before dispatching:
+
+```bash
+# Most recent dossier for the surface
+ls -t /Users/russelllaing/al-dev-shared/docs/health/*-<surface>-health.md 2>/dev/null | head -1
+```
+
+If a dossier exists, check whether `docs/health/dispositions.md` contains
+any rows dated on or after that dossier's date. If it does not (or the
+ledger is absent), warn:
+
+```text
+The latest <surface> dossier (<date>) has no recorded dispositions.
+A new sweep will largely re-discover its open findings. Record
+accept/decline/fixed rows in docs/health/dispositions.md first, or
+confirm to sweep anyway.
+```
+
+Proceed only on explicit confirmation. Skip the guard when `--resume` is
+present (resuming an interrupted sweep is not a new sweep).
+
 ## Phase 1 — Build file lists (per requested surface)
 
 For each requested surface, glob both object types:

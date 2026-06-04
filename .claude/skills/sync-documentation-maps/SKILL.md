@@ -6,7 +6,7 @@ description: >-
   parallel background audit agents and writes a checkpoint; the harness notifies
   on completion. Collect results with /sync-documentation-maps-collect.
   Triggers: "sync documentation maps", "update maps", "are the maps accurate".
-argument-hint: "[--all] [--skip-commit]"
+argument-hint: "[--all] [--skip-commit] [--force]"
 ---
 
 # Sync Documentation Maps
@@ -31,9 +31,34 @@ Read the arguments supplied by the user:
 
 AUTO_UPDATE=false
 SKIP_COMMIT=false
+FORCE=false
 
 - If `--all` is present, set `AUTO_UPDATE=true`.
 - If `--skip-commit` is present, set `SKIP_COMMIT=true`.
+- If `--force` is present, set `FORCE=true`.
+
+### Cadence guard — no dispatch over an uncollected run
+
+Abandoned runs spawn audit agents whose results are never read (4 of 13
+dispatches May 31 – Jun 4 were abandoned). Check the checkpoint before
+dispatching:
+
+```bash
+cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json 2>/dev/null
+```
+
+If the checkpoint exists and its `status` is anything other than `"done"`,
+a prior run is still in flight or uncollected. Unless `FORCE=true`, stop
+with:
+
+```text
+Prior sync run <run_id> is incomplete (status: <status>).
+Collect it first (/sync-documentation-maps-collect, then -apply, -write),
+or re-run with --force to abandon it and start fresh.
+```
+
+With `FORCE=true`, note the abandoned `run_id` in the new run's progress
+entry so the orphaned artifacts are traceable.
 
 ---
 
