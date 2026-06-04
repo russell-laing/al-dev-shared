@@ -19,7 +19,7 @@ approval gate.
 
 ## Inputs
 
-Callers do not pass these paths explicitly. The agent auto-locates the latest matching files in `.dev/` by glob before implementation begins.
+Callers do not pass these paths explicitly. The agent auto-locates the latest matching files in `.dev/` by glob before implementation begins. When multiple files match, select the most recent by modification time (`ls -t <glob> | head -1`).
 
 | Input | Required | Description |
 |-------|----------|-------------|
@@ -27,7 +27,7 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
 | `.dev/*-al-dev-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle, auto-located by glob |
 | `.dev/project-context.md` | No | Project memory and conventions, read when present |
 | `.dev/*-al-dev-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
-| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/al-dev-develop` |
+| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/al-dev-develop`. See `knowledge/al-dev-develop-spawn-prompt.md` for the canonical context-field list. |
 
 ## Outputs
 
