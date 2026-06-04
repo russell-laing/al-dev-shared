@@ -219,7 +219,7 @@ If verification of any directly checkable criterion fails, stop the commit workf
 
 If no solution plan exists, skip this step and continue to 0.7.
 
-### 0.7 — Establish Gitmoji Style and Advisory Alignment Check
+### 0.7 — Establish Gitmoji Style
 
 Check the project's recent commit style:
 
@@ -231,38 +231,7 @@ Extract the emoji pattern (e.g., `✨ feat:`, `🐛 fix:`, `📝 docs:`).
 
 Hold as **PROJECT_GITMOJI_STYLE**.
 
-Run the alignment check in advisory mode (non-blocking).
-`AL_DEV_SHARED_PLUGIN_ROOT` is set by the harness to the plugin root directory.
-
-```bash
-SCRIPT="$AL_DEV_SHARED_PLUGIN_ROOT/skills/al-dev-align/check-alignment.py"
-if [ -f "$SCRIPT" ]; then
-  ALIGN_ADVISORY=$(python3 "$SCRIPT" --mode advisory)
-fi
-```
-
-If `$ALIGN_ADVISORY` JSON contains non-empty `forbidden_tokens` or `missing_mappings`, surface a warning (N = `len(forbidden_tokens) + len(missing_mappings)`):
-
-```yaml
-⚠️  Alignment advisory: N issue(s) found. Run /align-harness-repos to inspect and fix.
-```
-
-Run knowledge quality check in advisory mode (non-blocking).
-
-```bash
-VALIDATOR="$AL_DEV_SHARED_PLUGIN_ROOT/scripts/validate-knowledge-quality.py"
-if [ -f "$VALIDATOR" ]; then
-  KNOWLEDGE_ADVISORY=$(python3 "$VALIDATOR" --path "$AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge" 2>&1)
-fi
-```
-
-If `$KNOWLEDGE_ADVISORY` contains "WARNINGS", surface a note:
-
-```yaml
-⚠️  Knowledge quality: stub sections detected. Run /audit-knowledge-quality for full report.
-```
-
-Continue to Phase 1 regardless — both alignment and knowledge checks above are advisory only.
+Continue to Phase 1.
 
 ---
 
