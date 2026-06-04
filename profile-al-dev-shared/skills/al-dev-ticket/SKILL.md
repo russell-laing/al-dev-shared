@@ -96,6 +96,12 @@ This is optional; missing interview requirements do not block reply composition.
 
 Check the arguments provided (text after `/al-dev-ticket`):
 
+**Precedence rule (mixed input):** when the input contains both a ticket
+ID and other text (e.g. `1234 posting error`), the first token decides —
+if the first token matches `^(FD-?)?[0-9]+$`, treat the input as a ticket
+ID and ignore the remaining text; otherwise treat the entire input as
+search terms.
+
 - **Numeric argument** (e.g. `1234` or `FD-1234`): extract the
   number and proceed to Step 2.
 - **`search <terms>` or non-numeric text**: this is a keyword
@@ -296,8 +302,4 @@ if mode == "full":
   └─ Read REPLY block
   └─ Write REPLY block to .dev/ticket-reply.md
   └─ Output REPLY to caller
-
-if mode is not set:
-  └─ [ERROR] Cannot determine mode. Caller must specify --mode={context-only,full}
-  └─ Escalate to caller with mode options
 ```
