@@ -149,7 +149,6 @@ flowchart LR
         skill_al_dev_interview[al-dev-interview]
         skill_al_dev_investigate[al-dev-investigate]
         skill_al_dev_lint[al-dev-lint]
-        skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
         skill_al_dev_perf[al-dev-perf]
         skill_al_dev_plan[al-dev-plan]
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
@@ -180,9 +179,9 @@ flowchart LR
         knowledge_al_symbol_pre_flight_md[al-symbol-pre-flight]
         knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
         knowledge_artifact_contracts_md[artifact-contracts]
-        knowledge_background_agent_dispatch_md[background-agent-dispatch]
         knowledge_code_review_patterns_md[code-review-patterns]
         knowledge_commit_analysis_patterns_md[commit-analysis-patterns]
+        knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
         knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
@@ -191,9 +190,9 @@ flowchart LR
         knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
         knowledge_intent_preflight_md[intent-preflight]
         knowledge_interview_question_bank_md[interview-question-bank]
-        knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
         knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
         knowledge_performance_review_examples_md[performance-review-examples]
+        knowledge_preflight_context_schema_md[preflight-context-schema]
         knowledge_release_notes_template_md[release-notes-template]
         knowledge_reviewer_findings_template_md[reviewer-findings-template]
         knowledge_scope_expansion_gate_md[scope-expansion-gate]
@@ -208,6 +207,7 @@ flowchart LR
     end
 
     skill_al_dev_commit --> knowledge_artifact_contracts_md
+    skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
@@ -220,6 +220,7 @@ flowchart LR
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
+    skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
     skill_al_dev_fix --> knowledge_artifact_contracts_md
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
@@ -229,17 +230,17 @@ flowchart LR
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
-    skill_al_dev_map_suggestions_verify --> knowledge_background_agent_dispatch_md
-    skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
     skill_al_dev_plan --> knowledge_artifact_contracts_md
     skill_al_dev_plan --> knowledge_intent_preflight_md
+    skill_al_dev_plan --> knowledge_preflight_context_schema_md
     skill_al_dev_plan --> knowledge_solution_plan_template_md
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
@@ -280,7 +281,6 @@ flowchart LR
     class skill_al_dev_interview skillNode
     class skill_al_dev_investigate skillNode
     class skill_al_dev_lint skillNode
-    class skill_al_dev_map_suggestions_verify skillNode
     class skill_al_dev_perf skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_plan_preflight skillNode
@@ -307,9 +307,9 @@ flowchart LR
     class knowledge_al_symbol_pre_flight_md knowledgeNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
-    class knowledge_background_agent_dispatch_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
     class knowledge_commit_analysis_patterns_md knowledgeNode
+    class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_consolidate_extraction_patterns_md knowledgeNode
@@ -318,9 +318,9 @@ flowchart LR
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_interview_question_bank_md knowledgeNode
-    class knowledge_map_change_rubber_duck_checks_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
     class knowledge_performance_review_examples_md knowledgeNode
+    class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_release_notes_template_md knowledgeNode
     class knowledge_reviewer_findings_template_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode

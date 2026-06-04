@@ -85,6 +85,7 @@ flowchart LR
         knowledge_interview_question_bank_md[interview-question-bank]
         knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
         knowledge_performance_review_examples_md[performance-review-examples]
+        knowledge_preflight_context_schema_md[preflight-context-schema]
         knowledge_release_notes_template_md[release-notes-template]
         knowledge_reviewer_findings_template_md[reviewer-findings-template]
         knowledge_scope_expansion_gate_md[scope-expansion-gate]
@@ -181,6 +182,7 @@ flowchart LR
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
+    skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
     skill_al_dev_fix --> knowledge_artifact_contracts_md
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
@@ -195,10 +197,12 @@ flowchart LR
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
     skill_al_dev_plan --> knowledge_artifact_contracts_md
     skill_al_dev_plan --> knowledge_intent_preflight_md
+    skill_al_dev_plan --> knowledge_preflight_context_schema_md
     skill_al_dev_plan --> knowledge_solution_plan_template_md
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_review_develop --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
@@ -341,6 +345,7 @@ flowchart LR
     class knowledge_interview_question_bank_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
     class knowledge_performance_review_examples_md knowledgeNode
+    class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_release_notes_template_md knowledgeNode
     class knowledge_reviewer_findings_template_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode

@@ -4,8 +4,8 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-03 (25 active skill directories in `profile-al-dev-shared/skills`: 21 primary lifecycle skills + 1 distributed utility + 3 maintainer-only tools)
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-only tools (`/al-dev-diagram-generator`, `/al-dev-map-suggestions-verify`, `/plugin-health-audit`) are documented for reference but not part of the distributed plugin surface.
+**Last updated:** 2026-06-04 (22 active skill directories in `profile-al-dev-shared/skills`: 21 primary lifecycle skills + 1 distributed utility)
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer tools are documented in separate tracking systems.
 
 ---
 
@@ -250,6 +250,7 @@ flowchart LR
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
     agent_al_dev_solution_architect[al-dev-solution-architect]
     knowledge_al_dev_fix_examples_md[al-dev-fix-examples]
+    knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
@@ -262,6 +263,7 @@ flowchart LR
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
+    skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
     skill_al_dev_fix --> knowledge_artifact_contracts_md
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
@@ -275,6 +277,7 @@ flowchart LR
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_solution_architect agentNode
     class knowledge_al_dev_fix_examples_md knowledgeNode
+    class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
@@ -309,6 +312,7 @@ flowchart LR
     knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_intent_preflight_md[intent-preflight]
+    knowledge_preflight_context_schema_md[preflight-context-schema]
     knowledge_solution_plan_template_md[solution-plan-template]
     knowledge_workflow_resilience_md[workflow-resilience]
     artifact_preflight_context_md[.dev/preflight-context.md]
@@ -324,6 +328,7 @@ flowchart LR
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
     skill_al_dev_plan --> knowledge_artifact_contracts_md
     skill_al_dev_plan --> knowledge_intent_preflight_md
+    skill_al_dev_plan --> knowledge_preflight_context_schema_md
     skill_al_dev_plan --> knowledge_solution_plan_template_md
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan --> artifact_preflight_context_md
@@ -340,6 +345,7 @@ flowchart LR
     class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_solution_plan_template_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
     class artifact_preflight_context_md artifactNode
@@ -402,6 +408,7 @@ flowchart LR
     Phase1_6["Phase 1.6"]
     knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
     knowledge_intent_preflight_md[intent-preflight]
+    knowledge_preflight_context_schema_md[preflight-context-schema]
     knowledge_workflow_resilience_md[workflow-resilience]
     artifact_findings_file_md[.dev/findings-file.md]
     artifact_preflight_context_md[.dev/preflight-context.md]
@@ -415,6 +422,7 @@ flowchart LR
     skill_al_dev_plan_preflight --> Phase1_6
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> artifact_findings_file_md
     skill_al_dev_plan_preflight --> artifact_preflight_context_md
@@ -429,6 +437,7 @@ flowchart LR
     class Phase1_6 phaseNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
     class artifact_findings_file_md artifactNode
     class artifact_preflight_context_md artifactNode
@@ -632,6 +641,7 @@ flowchart LR
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
     agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_intent_preflight_md[intent-preflight]
     artifact_commits_json[.dev/commits.json]
@@ -651,6 +661,7 @@ flowchart LR
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
     skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_commit --> knowledge_artifact_contracts_md
+    skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_commit --> artifact_commits_json
@@ -671,6 +682,7 @@ flowchart LR
     class agent_al_dev_commit_message_drafter agentNode
     class agent_al_dev_commit_ooxml_validator agentNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class artifact_commits_json artifactNode
@@ -1066,110 +1078,6 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-consolidate -->
 
-### /al-dev-diagram-generator
-
-**Maintainer tool — not part of the main development lifecycle.** Generates the workflow diagram document on demand. Does not appear in the Layer 1 lifecycle diagram because it is a maintainer utility, not a distributed plugin skill. _Has no active caller since the analyze-\* skills were archived (2026-06-02); a candidate for the health audit to flag for Move or removal._
-
-Generates Mermaid flowchart diagrams showing how the plugin's skills, agents, and knowledge files connect. Writes `docs/al-dev-workflow-diagrams.md`. Phases: 1–4.
-
-| Field | Value |
-|---|---|
-| Triggered by | Manual invocation (no active caller since the analyze-* skills were archived) |
-| Agents spawned | None — skill does all work itself |
-| Inputs | Repo source files (grepped via bash); `markdown/md-mermaid-helper.md` style guide |
-| Outputs | `docs/al-dev-workflow-diagrams.md` |
-
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-diagram-generator -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_al_dev_diagram_generator[al-dev-diagram-generator]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
-    Phase4["Phase 4"]
-
-    skill_al_dev_diagram_generator --> Phase1
-    skill_al_dev_diagram_generator --> Phase2
-    skill_al_dev_diagram_generator --> Phase3
-    skill_al_dev_diagram_generator --> Phase4
-
-    class skill_al_dev_diagram_generator skillNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
-    class Phase4 phaseNode
-```
-<!-- END GENERATED: skill-drilldown-al-dev-diagram-generator -->
-
-### /al-dev-map-suggestions-verify
-
-**Maintainer tool — not part of the main development lifecycle.** Rubber-ducks architectural suggestions from the map Observations sections using parallel remote agent teams. Reduces session token burn from 1-1.5 hours to 40-50 minutes via async verification and multi-session checkpoint/resume workflow.
-
-Writes `.dev/YYYY-MM-DD-al-dev-plan-plan.md` (generated by `superpowers:writing-plans`).
-
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-map-suggestions-verify -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_al_dev_map_suggestions_verify[al-dev-map-suggestions-verify]
-    knowledge_background_agent_dispatch_md[background-agent-dispatch]
-    knowledge_map_change_rubber_duck_checks_md[map-change-rubber-duck-checks]
-    artifact_YYYY_MM_DD_al_dev_plan_plan_md[.dev/YYYY-MM-DD-al-dev-plan-plan.md]
-    artifact_progress_md[.dev/progress.md]
-
-    skill_al_dev_map_suggestions_verify --> knowledge_background_agent_dispatch_md
-    skill_al_dev_map_suggestions_verify --> knowledge_map_change_rubber_duck_checks_md
-    skill_al_dev_map_suggestions_verify --> artifact_YYYY_MM_DD_al_dev_plan_plan_md
-    skill_al_dev_map_suggestions_verify --> artifact_progress_md
-
-    class skill_al_dev_map_suggestions_verify skillNode
-    class knowledge_background_agent_dispatch_md knowledgeNode
-    class knowledge_map_change_rubber_duck_checks_md knowledgeNode
-    class artifact_YYYY_MM_DD_al_dev_plan_plan_md artifactNode
-    class artifact_progress_md artifactNode
-```
-<!-- END GENERATED: skill-drilldown-al-dev-map-suggestions-verify -->
-
-### /plugin-health-audit
-
-**Maintainer tool — not part of the main development lifecycle.** Parallelized health sweep of the al-dev-shared plugin surfaces (skills and agents). Dispatches remote design and quality lenses, ranks findings, and writes dossiers to `docs/health/`. Supports resume workflow to collect results in a separate session. Phases: 1, 3.
-
-<!-- BEGIN GENERATED: skill-drilldown-plugin-health-audit -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_plugin_health_audit[plugin-health-audit]
-    Phase1["Phase 1"]
-    Phase3["Phase 3"]
-    artifact_plugin_health_team_checkpoint_json[.dev/plugin-health-team-checkpoint.json]
-
-    skill_plugin_health_audit --> Phase1
-    skill_plugin_health_audit --> Phase3
-    skill_plugin_health_audit --> artifact_plugin_health_team_checkpoint_json
-
-    class skill_plugin_health_audit skillNode
-    class Phase1 phaseNode
-    class Phase3 phaseNode
-    class artifact_plugin_health_team_checkpoint_json artifactNode
-```
-<!-- END GENERATED: skill-drilldown-plugin-health-audit -->
-
 ---
 
 ## Observations
@@ -1183,3 +1091,4 @@ flowchart LR
 >
 > History: in-map suggestions through 2026-05-27 were retired when findings
 > converged on the health dossier (2026-06-02).
+>

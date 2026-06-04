@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-03 (22 agents; analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-04 (22 agents; analysis refreshed with 5 new suggestions)
 
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
@@ -274,7 +274,7 @@
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
 **Tools:** Read, Write
-**Spawned by:** (none found)
+**Spawned by:** `/al-dev-document`, `.claude/skills/fix-knowledge-quality`
 
 **Inputs:**
 
@@ -326,7 +326,7 @@
 **Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization.
 **Model:** haiku
 **Tools:** Read, Glob, Grep, Write
-**Spawned by:** (none found — the `/al-dev-explore` skill dispatches a built-in `Explore` subagent type, not this agent file directly)
+**Spawned by:** `/al-dev-explore`, `/al-dev-handoff`
 
 **Inputs:**
 
@@ -424,7 +424,7 @@
 **Description:** Write, validate, and run scripts for AL development and documentation workflows.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** (none found in skill files)
+**Spawned by:** `/al-dev-help`
 
 **Inputs:**
 
