@@ -21,8 +21,10 @@ Used by `sync-documentation-maps-agent-audit` Step 5.
   frontmatter `tools:` is `[]`, treat as matching. Only flag when normalized
   values differ.
 - **`caller_mismatch`** — the `Spawned by:` field in the Layer 2 section does
-  not match the caller list from grep. Count only `al-dev-shared:<agent-name>`
-  functional invocations; document prose-only mentions in `detail` instead.
+  not match the canonical caller list from
+  `python3 scripts/derive-agent-callers.py` (the same edge parser that
+  generates the Layer 1 catalog). Never grep for callers — looser matching
+  produces mismatches the write phase immediately reverts.
 
 ---
 
@@ -66,9 +68,10 @@ Used by `sync-documentation-maps-agent-update` Step 3.
 2. Update the `Tools` column in the Layer 1 table row and the `**Tools:**` line
    in the Layer 2 section.
 
-**`caller_mismatch`** — `Spawned by:` does not match grep-derived callers.
+**`caller_mismatch`** — `Spawned by:` does not match the canonical callers
+from `scripts/derive-agent-callers.py`.
 
-1. Use the grep-derived caller list from the discrepancy `detail` field
+1. Use the script-derived caller list from the discrepancy `detail` field
    (or `(none found)` if empty).
 2. Update the `Spawned by` column in the Layer 1 table row and the
    `**Spawned by:**` line in the Layer 2 section.

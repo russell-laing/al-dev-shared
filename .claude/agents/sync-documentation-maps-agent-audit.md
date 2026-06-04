@@ -69,28 +69,24 @@ Extract from frontmatter:
   normalize it to the string `(none)` for comparison against the map.
 - **description:** the first sentence of the `description:` field.
 
-### Step 3 — Cross-reference callers
+### Step 3 — Cross-reference callers (canonical derivation)
 
-For each active agent, derive `<agent-name>` by stripping the `.md` extension.
-Run both grep commands against active (non-archived) skill directories and union
-the results to build the caller list. Exclude archived skill directories to avoid
-false positives from stale references:
+Derive the caller list for every active agent in a single step:
 
 ```bash
-grep -rl "al-dev-shared:<agent-name>" \
-  profile-al-dev-shared/skills/ 2>/dev/null
-find .claude/skills/ -not -path "*/archived/*" -type f | \
-  xargs grep -l "al-dev-shared:<agent-name>" 2>/dev/null
-
-grep -rl "<agent-name>" \
-  profile-al-dev-shared/skills/ 2>/dev/null
-find .claude/skills/ -not -path "*/archived/*" -type f | \
-  xargs grep -l "<agent-name>" 2>/dev/null
+python3 scripts/derive-agent-callers.py
 ```
 
-After running all four commands, deduplicate the combined results: `sort -u`
-the final caller list to remove duplicates from overlapping grep patterns.
-The caller list is the deduplicated union of all files returned.
+The script prints one JSON object mapping each agent name to its sorted
+list of caller skills, using the exact edge parser that generates the
+Layer 1 agent-catalog table. An empty list corresponds to `(none found)`
+in the map.
+
+Do **not** grep skill files for agent names as a fallback or supplement —
+grep-based caller lists use looser matching semantics (bare-name hits in
+frontmatter, reference tables, and the maintainer surface) than the
+generator, and any mismatch they "find" is reverted when the write phase
+regenerates the catalog from this same parser.
 
 ### Step 4 — Parse docs/al-dev-agent-map.md
 
@@ -118,7 +114,7 @@ Discrepancy type definitions are in `.claude/knowledge/sync-maps-edit-cases.md`,
 
 For each type found, construct a discrepancy entry with `type`, `agent`, and
 `detail` fields. Populate `detail` with context (e.g., map value vs
-grep-derived value for `caller_mismatch`; which map layer is absent for
+script-derived value for `caller_mismatch`; which map layer is absent for
 `missing_from_map`).
 
 ### Step 6 — Write JSON report and return path

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Print the canonical agent → caller-skill mapping as JSON.
+
+Single source of truth for "Spawned by" derivation: uses the same edge
+parser as scripts/generate-map-doc-sections.py, so audit results can never
+disagree with the generated agent-catalog table. Replaces the grep-based
+caller discovery formerly embedded in sync-documentation-maps-agent-audit,
+whose looser matching produced caller_mismatch findings that the write
+phase (regenerating the catalog from this parser) immediately reverted.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from map_doc_sections import collect_inventory, _internal_skill_agent_edges
+
+
+def main() -> int:
+    repo = SCRIPT_DIR.parent
+    inv = collect_inventory(repo / "profile-al-dev-shared")
+    edges = _internal_skill_agent_edges(inv)
+    callers = {
+        name: sorted({skill for skill, agent in edges if agent == name})
+        for name in inv.agents
+    }
+    json.dump(callers, sys.stdout, indent=2, sort_keys=True)
+    sys.stdout.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except Exception as exc:  # noqa: BLE001
+        sys.stderr.write(f"derive-agent-callers: {exc}\n")
+        raise SystemExit(1) from exc
