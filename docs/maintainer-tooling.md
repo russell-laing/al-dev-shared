@@ -8,14 +8,21 @@ improve design quality, sync documentation, and enforce harness neutrality.
 The toolset is one pipeline: **keep maps accurate → find improvements → act on
 findings → implement → post-change cleanup.** Findings live in one place — the
 health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md`,
-`docs/al-dev-agent-map.md`) are documentation only.
+`docs/al-dev-agent-map.md`) are documentation only. That dossier is a report
+artifact, not a knowledge file. The shared knowledge files live under
+`profile-al-dev-shared/knowledge/`.
+
+Glossary:
+
+- **Dossier**: a ranked findings report under `docs/health/`
+- **Knowledge file**: a shared reference file under `profile-al-dev-shared/knowledge/`
 
 **Use this guide to:**
 
 - Find the right skill for a specific task (Skills at a Glance, Quick Reference)
 - Understand the calling relationships and execution flow (Skill Hierarchy, Recommended Run Order)
 - Learn which agents are dispatched and what they check (Agents Reference)
-- See what files each skill writes (Outputs Written)
+- See what files each skill reads and writes (Inputs Read, Outputs Written)
 
 ---
 
@@ -26,9 +33,9 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 | Skill | Purpose | When to run |
 | --- | --- | --- |
 | `/plugin-health-audit` | The single find-improvements sweep — design + quality + naming lenses → one ranked dossier per surface | "What should I improve?" |
-| `/al-dev-map-suggestions-verify` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
+| `/verify-map-suggestions` | Rubber-duck accepted dossier findings against live code, then write an implementation plan | After a health audit, before implementing |
 | `/review-maps` | Map accuracy sync — asks in-session or async at invocation; pass `--no-update` for audit-only | After adding/removing/restructuring skills or agents |
-| `/sync-documentation-maps` | Async 3-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
+| `/sync-documentation-maps` | Async 4-step accuracy sync via remote agents (session-freeing) | When you want maps synced without waiting |
 | `/analyze-architectural-design` | Cross-surface synthesis add-on for health audit, writes `docs/al-dev-plugin-synthesis.md` (coupling gaps, model-complexity mismatch, shared-pattern coherence). Ties skill and agent findings together. Run after `/plugin-health-audit`. | After a both-surface health audit |
 | `/audit-knowledge-quality` | Audit `knowledge/` files for stubs and thin content | After editing knowledge files |
 | `/projection-sync` | Regenerate harness-native agent projections from canonical source | After editing any `agents/*.md` file |
@@ -40,10 +47,10 @@ health dossier under `docs/health/` — and the maps (`docs/al-dev-skills-map.md
 | --- | --- | --- |
 | `/plugin-health-discover` | `/plugin-health-audit` | Dispatches all lenses; writes findings file |
 | `/plugin-health-report` | `/plugin-health-audit` | Ranks findings; writes the health dossier |
-| `/sync-documentation-maps-collect` | User (step 2 of 3) | Reads audit artifacts; dispatches update agents |
-| `/sync-documentation-maps-finalize` | User (step 3 of 3) | Writes maps, regenerates diagrams, commits |
-| `/review-skill-map` | `/review-maps` | In-session audit and update of `docs/al-dev-skills-map.md` against live codebase. Identifies discrepancies, suggests fixes, and updates the map file. Pass `--no-update` for audit-only mode. Replaces `/audit-skills-against-map` and `/update-skill-map`. |
-| `/review-agent-map` | `/review-maps` | In-session accuracy sync of `docs/al-dev-agent-map.md` |
+| `/sync-documentation-maps-collect` | User (step 2 of 4) | Reads audit artifacts; dispatches update agents |
+| `/sync-documentation-maps-apply` | User (step 3 of 4) | Validates update artifacts and writes the map files to `docs/` |
+| `/sync-documentation-maps-write` | User (step 4 of 4) | Regenerates diagrams, projections, and the dependency graph; commits |
+| `/review-documentation-map` | `/review-maps` | In-session audit and update of the skills or agents map against the live codebase. Use `--surface skills|agents` and `--no-update` for audit-only mode. |
 
 > **Map accuracy vs. finding improvements are separate jobs.** `/review-*-map`
 > and `/sync-documentation-maps` only keep the maps factually current — they no
@@ -58,36 +65,62 @@ Who calls what and what gets dispatched.
 
 ```mermaid
 flowchart LR
-    classDef entry fill:#1976d2,stroke:none,color:#fff,font-weight:bold
-    classDef sub fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
-    classDef agentGroup fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
-    classDef output fill:#FFA000,stroke:none,color:#fff,font-weight:bold
+    %% Class Definitions
+    classDef skill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agent fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    %% Entry points
-    PHA[plugin-health-audit]
-    AAD[analyze-architectural-design]
-    AMSV[al-dev-map-suggestions-verify]
-    SDM[sync-documentation-maps]
+    subgraph MAPS["1. Keep maps accurate"]
+        direction TB
+        RM[review-maps]
+        SDM[sync-documentation-maps]
+        CHECKPOINT[".dev/sync-documentation-maps-checkpoint.json"]
+    end
 
-    %% Sub-skills
-    PHD[plugin-health-discover]
-    PHR[plugin-health-report]
-    SDMC[sync-doc-maps-collect]
-    SDMF[sync-doc-maps-finalize]
+    subgraph FIND["2. Find improvements"]
+        direction TB
+        PHA[plugin-health-audit]
+        PHD[plugin-health-discover]
+        DSL[5x design-skill-lens]
+        DAL[5x design-agent-lens]
+        QSL[5x quality-skill-lens]
+        QAL[5x quality-agent-lens]
+        NL[naming-convention-lens]
+        FD["docs/health/findings.md"]
+        PHR[plugin-health-report]
+        HD["docs/health/health.md"]
+    end
 
-    %% Agent groups dispatched
-    DSL[5x design-skill-lens]
-    DAL[5x design-agent-lens]
-    QSL[5x quality-skill-lens]
-    QAL[5x quality-agent-lens]
-    NL[naming-convention-lens]
-    AUDIT[skill-audit and agent-audit]
-    UPDATE[skill-update and agent-update]
+    subgraph ACT["3. Act on findings"]
+        direction TB
+        DOSSIER[health dossier]
+        AAD[analyze-architectural-design]
+        AMSV[verify-map-suggestions]
+        SYN["docs/al-dev-plugin-synthesis.md"]
+        PLAN["docs/superpowers/plans/plugin-map.md"]
+    end
 
-    %% Output
-    DOSSIER[health dossier]
+    subgraph CLEAN["4. Post-change cleanup"]
+        direction TB
+        AUDIT[skill-audit and agent-audit]
+        SDMC[sync-documentation-maps-collect]
+        UPDATE[skill-update and agent-update]
+        SDMW[sync-documentation-maps-apply]
+        SDMWR[sync-documentation-maps-write]
+        SKILLMAP["docs/al-dev-skills-map.md"]
+        AGENTMAP["docs/al-dev-agent-map.md"]
+        GRAPH["docs/al-dev-plugin-graph.md"]
+        PROJ["profile-al-dev-shared/generated/agents/"]
+        PS[projection-sync]
+        AHR[align-harness-repos]
+        AKQ[audit-knowledge-quality]
+    end
 
-    %% Find-improvements - the single entry
+    %% Connections
+    RM --> PHA
+    SDM --> CHECKPOINT
+    SDM --> AUDIT
+    SDM -.-> SDMC
     PHA --> PHD
     PHA --> PHR
     PHD --> DSL
@@ -95,34 +128,28 @@ flowchart LR
     PHD --> QSL
     PHD --> QAL
     PHD --> NL
+    PHD --> FD
+    PHR --> HD
     PHR --> DOSSIER
-
-    %% Dossier consumers
-    DOSSIER --> AAD
+    DOSSIER -. synthesis .-> AAD
     DOSSIER --> AMSV
-
-    %% Async map sync
-    SDM --> AUDIT
-    SDM -.-> SDMC
+    AAD --> SYN
+    AMSV --> PLAN
     SDMC --> UPDATE
-    SDMC -.-> SDMF
+    SDMC -.-> SDMW
+    SDMW --> SDMWR
+    SDMWR --> SKILLMAP
+    SDMWR --> AGENTMAP
+    SDMWR --> GRAPH
+    SDMWR --> PROJ
+    SDMWR --> PS
+    SDMWR --> AHR
+    SDMWR --> AKQ
 
-    class PHA entry
-    class AAD entry
-    class AMSV entry
-    class SDM entry
-    class PHD sub
-    class PHR sub
-    class SDMC sub
-    class SDMF sub
-    class DSL agentGroup
-    class DAL agentGroup
-    class QSL agentGroup
-    class QAL agentGroup
-    class NL agentGroup
-    class AUDIT agentGroup
-    class UPDATE agentGroup
-    class DOSSIER output
+    %% Apply Styles
+    class RM,SDM,PHA,AAD,AMSV,PHD,PHR,SDMC,SDMW,SDMWR,PS,AHR,AKQ skill
+    class DSL,DAL,QSL,QAL,AUDIT,UPDATE agent
+    class FD,HD,SYN,PLAN,CHECKPOINT,SKILLMAP,AGENTMAP,GRAPH,PROJ,DOSSIER artifact
 ```
 
 > **Things to notice:**
@@ -131,10 +158,16 @@ flowchart LR
 >   quality, and naming lenses. There is one lens-dispatch path — no parallel
 >   implementation to drift from.
 > - The health dossier is the single findings sink. Both
->   `/al-dev-map-suggestions-verify` (turn findings into a plan) and
+>   `/verify-map-suggestions` (turn findings into a plan) and
 >   `/analyze-architectural-design` (cross-surface synthesis) read it.
 > - `--dimension design|quality|all` and `--surface plugin|tooling|both` scope
 >   the sweep, so a focused design-only or quality-only run is still one command.
+>
+> **Color key:**
+>
+> - Blue: skill nodes and entry points
+> - Green: dispatched agents and agent groups
+> - Violet: generated artifacts, map files, and output paths
 
 ---
 
@@ -144,58 +177,82 @@ When to run each skill and in what sequence.
 
 ```mermaid
 flowchart TD
-    classDef entry fill:#1976d2,stroke:none,color:#fff,font-weight:bold
-    classDef shortcut fill:#f57f17,stroke:none,color:#fff,font-weight:bold
-    classDef action fill:#f3e5f5,stroke:#8e24aa,color:#323130,font-weight:bold
-    classDef post fill:#e8f5e8,stroke:#388e3c,color:#323130,font-weight:bold
+    %% Class Definitions
+    classDef skill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agent fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    %% Step 1 - accuracy
-    MAPS[Step 1 - Keep maps accurate]
-    RM[review-maps]
-    SDM[sync-documentation-maps]
+    subgraph STEP1["Step 1 - Keep maps accurate"]
+        direction TB
+        RM[review-maps]
+        RDM[review-documentation-map]
+        SDM[sync-documentation-maps]
+        CHECKPOINT[".dev/sync-documentation-maps-checkpoint.json"]
+    end
 
-    %% Step 2 - find
-    PHA[plugin-health-audit]
-    DOSSIER[health dossier]
-    AAD[analyze-architectural-design]
+    subgraph STEP2["Step 2 - Find improvements"]
+        direction TB
+        PHA[plugin-health-audit]
+        FINDINGS["docs/health/findings.md"]
+        DOSSIER[health dossier]
+        AAD[analyze-architectural-design]
+        SYN["docs/al-dev-plugin-synthesis.md"]
+    end
 
-    %% Step 3 - act
-    AMSV[al-dev-map-suggestions-verify]
-    IMPL[implement changes]
+    subgraph STEP3["Step 3 - Act on findings"]
+        direction TB
+        AMSV[verify-map-suggestions]
+        PLAN["docs/superpowers/plans/plugin-map.md"]
+        IMPL[implement changes]
+    end
 
-    %% Step 4 - post
-    PS[projection-sync]
-    AHR[align-harness-repos]
-    AKQ[audit-knowledge-quality]
+    subgraph STEP4["Step 4 - Post-change cleanup"]
+        direction TB
+        PS[projection-sync]
+        AHR[align-harness-repos]
+        AKQ[audit-knowledge-quality]
+        PROJ["profile-al-dev-shared/generated/agents/"]
+        GRAPH["docs/al-dev-plugin-graph.md"]
+        SKILLMAP["docs/al-dev-skills-map.md"]
+        AGENTMAP["docs/al-dev-agent-map.md"]
+    end
 
-    MAPS --> RM
-    MAPS --> SDM
-    RM --> PHA
+    %% Connections
+    RM -->|in-session| RDM
+    RM -->|async| SDM
+    RDM --> PHA
+    SDM --> CHECKPOINT
     SDM --> PHA
+    PHA --> FINDINGS
     PHA --> DOSSIER
-    DOSSIER -.-> AAD
+    DOSSIER -. synthesis .-> AAD
     DOSSIER --> AMSV
+    AAD --> SYN
+    AMSV --> PLAN
     AMSV --> IMPL
     IMPL --> PS
     IMPL --> AHR
     IMPL --> AKQ
+    PS --> PROJ
+    AHR --> GRAPH
+    SDM --> SKILLMAP
+    SDM --> AGENTMAP
 
-    class MAPS action
-    class RM entry
-    class SDM entry
-    class PHA shortcut
-    class DOSSIER action
-    class AAD entry
-    class AMSV entry
-    class IMPL action
-    class PS post
-    class AHR post
-    class AKQ post
+    %% Apply Styles
+    class RM,RDM,SDM,PHA,AAD,AMSV,IMPL,PS,AHR,AKQ skill
+    class FINDINGS,SYN,PLAN,CHECKPOINT,PROJ,GRAPH,SKILLMAP,AGENTMAP,DOSSIER artifact
 ```
 
 > `/review-maps` asks which mode at start — in-session or async.
 > `/sync-documentation-maps` can also be invoked directly to skip the prompt.
 > Either way, the next step is `/plugin-health-audit`.
+>
+> **Output chain:** maps sync writes `docs/al-dev-skills-map.md` and
+> `docs/al-dev-agent-map.md`, the health sweep writes
+> `docs/health/*-findings.md` and `docs/health/*-health.md`, synthesis writes
+> `docs/al-dev-plugin-synthesis.md`, verification writes
+> `docs/superpowers/plans/*.md`, and the post-change steps refresh generated
+> projections and the plugin graph.
 
 ---
 
@@ -274,16 +331,52 @@ findings. Run it after a both-surface health audit.
 | --- | --- |
 | `/plugin-health-discover` | `docs/health/<run-date>-<surface>-findings.md` |
 | `/plugin-health-report` | `docs/health/<run-date>-<surface>-health.md` (the dossier); refreshes `docs/al-dev-plugin-graph.md` for the plugin surface |
-| `/al-dev-map-suggestions-verify` | implementation plan under `docs/superpowers/plans/` |
+| `/verify-map-suggestions` | implementation plan under `docs/superpowers/plans/` |
 | `/analyze-architectural-design` | `docs/al-dev-plugin-synthesis.md` (living doc, overwritten each run) |
 | `/review-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` (via sub-skills) |
-| `/review-skill-map` | `docs/al-dev-skills-map.md` |
-| `/review-agent-map` | `docs/al-dev-agent-map.md` |
-| `/sync-documentation-maps-finalize` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`; regenerates diagrams, agent projections, and dependency graph |
+| `/review-documentation-map` | `docs/al-dev-skills-map.md` or `docs/al-dev-agent-map.md` |
+| `/sync-documentation-maps-apply` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` |
+| `/sync-documentation-maps-write` | regenerates diagrams, agent projections, and dependency graph |
 | `/projection-sync` | `profile-al-dev-shared/generated/agents/claude/`, `copilot/`, `codex/` |
 
 > Maps no longer carry an Observations/suggestions section — findings live only
 > in the dossier.
+
+---
+
+## Inputs Read
+
+These skills are mostly artifact-driven. The same maintainer command can look
+idle or underspecified if you do not know which document it expects to read
+first.
+
+| Skill | Primary input documents | Notes |
+| --- | --- | --- |
+| `/plugin-health-audit` | none required from the user; orchestrates live repo scans | Entry point only. It chains `/plugin-health-discover` and `/plugin-health-report`. |
+| `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | Reads the current maps plus the shared knowledge file that defines lens invocation guidance before dispatching the design, quality, and naming lenses. |
+| `/plugin-health-report` | latest `docs/health/*-findings.md` | Consumes the structured findings written by `/plugin-health-discover` and turns them into a ranked dossier. |
+| `/analyze-architectural-design` | latest `docs/health/*-health.md` dossier, optionally the paired skill and agent dossiers from the same run | This is a synthesis pass over the health dossier, not a fresh audit. Run it after a both-surface health audit. |
+| `/verify-map-suggestions` | one or more `docs/health/YYYY-MM-DD-<surface>-health.md` dossiers, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`, `profile-al-dev-shared/knowledge/rubber-duck.md` | This skill turns accepted dossier findings into an implementation plan. The dossier is the key input artifact; the two knowledge files define the rubber-duck review rules it applies. |
+| `/review-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | Wrapper entry point. It prompts for in-session vs async flow, then routes to `/review-documentation-map` or `/sync-documentation-maps`. |
+| `/review-documentation-map` | `docs/al-dev-skills-map.md` or `docs/al-dev-agent-map.md`, plus the corresponding live source under `profile-al-dev-shared/skills/` or `profile-al-dev-shared/agents/` | Use `--surface skills` or `--surface agents` when you want one map only. |
+| `/sync-documentation-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `.claude/skills/sync-documentation-maps/checkpoint-patterns.md` | Starts the async path. It compares current maps against live source and writes the initial checkpoint. |
+| `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.claude/skills/sync-documentation-maps/checkpoint-patterns.md` | Reads the dispatch checkpoint, inspects audit results, and decides which update agents to launch. |
+| `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.claude/skills/sync-documentation-maps/checkpoint-patterns.md` | Reads update outputs, writes the refreshed map files into `docs/`, then marks the checkpoint ready for the write/finalize step. |
+| `/sync-documentation-maps-write` | `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | Final repo write phase. It expects the checkpoint to be in the post-apply state and then regenerates downstream derived artifacts. |
+| `/projection-sync` | canonical authored agent source under `profile-al-dev-shared/agents/*.md` | There is no separate plan/report input. The authored agent files are the source of truth for projection generation. |
+| `/align-harness-repos` | shared authored content under `profile-al-dev-shared/skills/`, `agents/`, `knowledge/` | Validator-style skill. It scans shared source for harness-specific drift rather than reading a prior report artifact. |
+| `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/*.md` | Directly audits the knowledge files themselves for stubs, thin sections, and structural issues. |
+
+**Practical rule:** most of the maintainer pipeline reads one of four document
+types first:
+
+1. map docs in `docs/al-dev-*-map.md`
+2. health artifacts in `docs/health/*.md`
+3. async checkpoint state in `.dev/sync-documentation-maps-checkpoint.json`
+4. canonical shared source under `profile-al-dev-shared/`
+
+If a step appears blocked, check that its expected input artifact exists and was
+produced by the preceding step.
 
 ---
 
@@ -292,12 +385,12 @@ findings. Run it after a both-surface health audit.
 | Situation | Run |
 | --- | --- |
 | Added or removed a skill or agent | `/review-maps` |
-| Want to check one map only | `/review-skill-map` or `/review-agent-map` |
+| Want to check one map only | `/review-documentation-map --surface skills` or `--surface agents` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
 | Edited a knowledge file | `/audit-knowledge-quality`, then `/align-harness-repos` |
 | Want to find improvements | `/plugin-health-audit` |
 | Want design-only or quality-only findings | `/plugin-health-audit --dimension design` or `--dimension quality` |
 | Want skill and agent findings tied together | `/analyze-architectural-design` (after a both-surface audit) |
-| Ready to act on accepted findings | `/al-dev-map-suggestions-verify` |
-| Maps are out of sync, no rush | `/sync-documentation-maps` (async — then `-collect`, then `-finalize`) |
+| Ready to act on accepted findings | `/verify-map-suggestions` |
+| Maps are out of sync, no rush | `/sync-documentation-maps` (async — then `-collect`, `-apply`, `-write`) |
 | Maps are out of sync, fix now | `/review-maps` (in-session) |

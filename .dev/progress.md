@@ -50,3 +50,16 @@
 
 [2026-06-02] sync-documentation-maps-finalize complete — 20260601T210259Z maps written
 and committed. Agent map fixed tool mismatches (3 discrepancies).
+[2026-06-03] sync-documentation-maps (run 20260603T050018Z): Spawned skill-audit (af52fc7f5641afa93) and agent-audit (a79cfcc5dc15013fa) teams.
+  Next: /sync-documentation-maps-collect --team-ids af52fc7f5641afa93,a79cfcc5dc15013fa
+[2026-06-03] sync-documentation-maps-finalize complete — 20260603T050018Z maps written and committed.
+[2026-06-03] sync-documentation-maps (run 20260603T093848Z): Spawned skill-audit
+  (a0b13628943a831cd) and agent-audit (a0f881e3b85c2dce1) teams.
+  Next: /sync-documentation-maps-collect --team-ids a0b13628943a831cd,a0f881e3b85c2dce1
+[2026-06-03] sync-documentation-maps-write complete — 20260603T093848Z maps written and committed.
+[2026-06-03] sync-documentation-maps (run 20260603T125817Z): Spawned skill-audit
+  (ac65dfe2334aa9059) and agent-audit (a0fa5aed8b4ac4439) teams.
+  Next: /sync-documentation-maps-collect --team-ids ac65dfe2334aa9059,a0fa5aed8b4ac4439
+[2026-06-03] sync-documentation-maps (run 20260603T194725Z): Spawned skill-audit
+  (afa7ac88e857e7d34) and agent-audit (aadfa288cb3446ea8) teams.
+  Next: /sync-documentation-maps-collect --team-ids afa7ac88e857e7d34,aadfa288cb3446ea8

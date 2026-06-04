@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-04
+
+### Raw Superpowers Plan Cleanup
+
+- Path: `docs/superpowers/plans/2026-06-02-plugin-map-health-findings.md`, `docs/superpowers/plans/2026-06-02-single-map-review-entry.md`, `docs/superpowers/plans/2026-06-03-plugin-map-agent-improvements.md`, `docs/superpowers/plans/2026-06-03-plugin-map-health-findings.html`, `docs/superpowers/plans/2026-06-03-plugin-map-health-findings.md`, `docs/superpowers/plans/2026-06-03-plugin-map-quality-structural.md`, `docs/superpowers/plans/2026-06-03-plugin-map-skills.md`, `docs/superpowers/plans/2026-06-03-sync-agent-bloat-dedup.md`, `docs/superpowers/plans/2026-06-04-plugin-map-clarity-fixes.md`, `docs/superpowers/plans/2026-06-04-plugin-map-health-followups.md`, `docs/superpowers/plans/2026-06-04-plugin-map-top5-fixes.md`
+- Kind: ignored raw plan cleanup
+- Status: historical
+- Summary: Remove the ignored `docs/superpowers/plans/` scratch cache after preserving the durable provenance in `history.md`. Keep `docs/superpowers/README.md` and `docs/superpowers/history.md` as the tracked policy and timeline surfaces.
+
 ## 2026-06-03
 
 ### Historical `.dev` Artifact Cleanup
@@ -83,7 +92,7 @@ Current source of truth: active implementation guidance lives in the current sha
 - Path: `docs/superpowers/plans/2026-06-01-low-priority-plugin-health-fixes.md`
 - Kind: plan
 - Status: implemented
-- Summary: Resolve every low-priority problem listed in `docs/health/2026-06-01-plugin-health-current.md` without taking on medium/high-priority refactors.
+- Summary: Resolve every low-priority problem listed in the June 1 plugin health dossier (`docs/health/2026-06-01-plugin-health.md`) without taking on medium/high-priority refactors.
 
 ### Health Sweep Top 10 Fixes — Implementation Plan
 

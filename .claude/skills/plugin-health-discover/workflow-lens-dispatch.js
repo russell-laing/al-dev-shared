@@ -18,9 +18,11 @@ const FINDINGS_SCHEMA = {
 //   { name: 'design-agent-lens-tool-hygiene', agentType: 'design-agent-lens-tool-hygiene', prompt: '...' },
 //   ...
 // ]
+// Some harnesses deliver args as a JSON-encoded string — parse defensively.
+const lensList = typeof args === 'string' ? JSON.parse(args) : args
 
 const results = await pipeline(
-  args,
+  lensList,
   async (lens) => {
     return await agent(
       lens.prompt,
