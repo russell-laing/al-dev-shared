@@ -257,6 +257,13 @@ Then decide (this is YOUR tactical decision, not the user's):
 - **Create hybrid** combining best elements from multiple
 - **Send back** for refinement if all approaches are weak
 
+**Testability gate:** If the architect's return block contains
+`TESTABILITY_COMPLETE: no`, the architect could not design a testable
+solution and did not write a plan. Do not treat planning as complete and do
+not proceed to development. Surface the unresolved testability concern to the
+user verbatim and stop until it is resolved (re-run the architect with the
+clarified constraints, or escalate).
+
 ## Phase 5: Write .dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md
 
 YOU write the final synthesis yourself. Do not copy architect
