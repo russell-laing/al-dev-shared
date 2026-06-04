@@ -73,16 +73,8 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ### Toolkit Integration (When Available)
 
-Dynamic discovery:
-
-```bash
-TOOLKIT_PATH=$(find ~ -name "al-analysis-toolkit" -maxdepth 5 -type d 2>/dev/null | head -1)
-if [ -z "$TOOLKIT_PATH" ]; then
-  echo "al-analysis-toolkit not found; continuing without it"
-else
-  source "$TOOLKIT_PATH/init.sh"
-fi
-```
+Dynamically discover and source `al-analysis-toolkit` per
+`knowledge/script-engineer-conventions.md`; skip cleanly if it is not found.
 
 ### Token Generation (If Applicable)
 
