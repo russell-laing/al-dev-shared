@@ -90,6 +90,17 @@ If NOT invoked with `--resume`:
 
 - `remaining_lenses = ALL_LENSES`
 
+### 3.1b Surface-scoped lenses (mandatory filter)
+
+`ALL_LENSES` is surface-dependent. `design-skill-lens-surface-placement`
+exists solely to find **distributed** skills that belong in the repo-local
+maintainer surface; aimed at files already in the maintainer surface it can
+only emit false "Move" findings (9 per sweep on 2026-06-03 and 2026-06-04).
+
+- Surface `plugin` → all lenses.
+- Surface `tooling` → exclude `design-skill-lens-surface-placement` from
+  `ALL_LENSES` before computing `remaining_lenses`.
+
 ### 3.2 Dispatch lenses via Workflow (isolated contexts)
 
 If `remaining_lenses` is empty, skip dispatch entirely and proceed to Phase 4.

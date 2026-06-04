@@ -21,6 +21,13 @@ Returns a Surface Placement findings block. See Output Format.
 
 ## Lens: Surface Placement (→ Move)
 
+**Scope: distributed plugin surface only.** This lens identifies skills that
+should move *into* the repo-local maintainer surface. Callers must not
+dispatch it for files already in the maintainer surface — every signal below
+is trivially true there, and the Move recommendation would point at the
+file's current location. If the file list is from the maintainer surface,
+return the empty findings block (`_No issues found._`) instead of scoring.
+
 For each skill in `file_list`, score these three signals:
 
 | Signal | What to check |
@@ -51,4 +58,4 @@ If the block has no findings, emit it with a single `_No issues found._` line:
 
 ### Surface Placement Findings
 
-_No issues found._
+*No issues found.*
