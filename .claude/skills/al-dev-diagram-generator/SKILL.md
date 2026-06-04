@@ -72,6 +72,12 @@ Decision:
 
 ## Phase 3 — Sub-step C: Generate Mermaid
 
+**Routing (from the Phase 2 decision):** if Phase 2 selected **one combined
+diagram**, emit a single block using the combined-view structure below. If it
+selected **two focused diagrams**, emit two separate blocks — Diagram 1
+(Skills → Agents) and Diagram 2 (Skills/Agents → Knowledge) — each using the
+same class definitions and strict rules below.
+
 Read `../../markdown/md-mermaid-helper.md` before generating any diagram block.
 
 Strict rules (from the mermaid helper — do not deviate):
