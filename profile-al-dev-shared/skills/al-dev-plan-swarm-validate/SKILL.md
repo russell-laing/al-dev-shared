@@ -1,8 +1,10 @@
 ---
 name: al-dev-plan-swarm-validate
 description: >-
-  Validate an existing implementation plan by dispatching an adversarial critic swarm for review.
-  Generate plan with parallel critic swarm for defense-in-depth review.
+  Generate a draft implementation plan from a spec, then red-team it with
+  six parallel adversarial critics (security, testability, type-safety,
+  rollback-safety, API-contracts, edge-cases). Synthesizes findings,
+  applies auto-fixes, and gates user approval before execution.
 argument-hint: "<spec-file-or-description>"
 ---
 
