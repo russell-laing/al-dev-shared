@@ -133,7 +133,7 @@ Do not surface this decision to the user.
 **Input Validation Gate (run before any other step):**
 Check whether $ARGUMENTS contains a meaningful feature description.
 
-- If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Sufficient context requires: (1) a feature name or description, AND (2) at least one functional requirement. Example: "Add a credit limit check during posting." Ask the user exactly one question:
+- If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Sufficient context requires: (1) a feature name or description, AND (2) at least one functional requirement, AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting." Ask the user exactly one question:
   > "What AL feature or fix should I plan? Please describe the requirement or paste a spec."
 - Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a substantive answer is provided.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
