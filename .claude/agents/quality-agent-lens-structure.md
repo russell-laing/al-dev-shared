@@ -32,7 +32,10 @@ agent name from the filename (strip directory path and `.md` extension).
     `sync-documentation-maps-*`, or `naming-convention-lens`). Do **not** apply
     the `al-dev-` rule here — see `docs/al-dev-naming-convention.md`.
 - `description` field is present in YAML frontmatter and is a single sentence
-- `model` field is present in YAML frontmatter
+- `model` field is present in YAML frontmatter. The short model aliases
+  (`sonnet`, `haiku`, `opus`) are the canonical project convention — do
+  **not** flag them or demand full model identifiers (e.g.
+  `claude-sonnet-4-6`); flag only a missing `model` field
 - `tools` field is present in YAML frontmatter and contains only canonical
   **source-vocabulary** capability names — the harness-neutral terms, not any
   harness's projected tool names. The canonical set is:
