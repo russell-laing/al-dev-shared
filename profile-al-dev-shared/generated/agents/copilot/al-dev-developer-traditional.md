@@ -75,21 +75,9 @@ implementation if a required symbol remains `unverified`.
 > located via AL LSP query, AL MCP lookup, or scoped text search with
 > documented `file:line` evidence.
 
-Reference `knowledge/al-developer-patterns.md` for standard AL patterns,
-common mistakes to avoid, error handling rules, and naming conventions.
-Key principles:
-
-- Use labels instead of StrSubstNo for error messages
-- Use proper event subscriber signatures
-- Avoid N+1 query patterns
-- Keep procedures ≤30 lines, single responsibility
-
-### Code Quality (DRY/SOLID)
-
-- Does this already exist? → Reuse it
-- Will this be needed elsewhere? → Put in shared codeunit
-- Is this doing multiple things? → Split it
-- Compile after each file or logical group (logical group = tables + their extensions, or a codeunit + its subscribers)
+Follow `knowledge/al-developer-patterns.md` for AL patterns, common mistakes,
+error handling (labels not StrSubstNo), naming conventions, DRY/SOLID reuse, and
+performance (SetLoadFields, avoid N+1, ≤30-line procedures).
 
 ### Compilation
 
@@ -99,18 +87,6 @@ errors immediately; don't accumulate errors.
 ### Compile Output — Critical Safeguard
 
 See `knowledge/compile-output-safeguard.md`.
-
-### Error Handling
-
-- Always validate input at boundaries
-- Use clear error messages with context
-- Include proper DataClassification and ApplicationArea in fields
-
-### Performance Best Practices
-
-- Use SetLoadFields to load only needed columns
-- Filter before loading; avoid N+1 loops
-- Batch operations instead of record-by-record processing
 
 ## Governance Tokens
 
