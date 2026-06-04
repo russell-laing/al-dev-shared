@@ -55,7 +55,10 @@ fix that matches its `type` using the procedures in
 ### Step 4 — Update the last-updated date
 
 Replace the `**Last updated:**` value with today's date in `YYYY-MM-DD` format.
-Do not change any other part of the preamble line.
+Do not change any other part of the preamble line. Never add a skill count to
+this line — the count lives in the `Coverage` block inside the
+`BEGIN/END GENERATED: skill-coverage` markers, is generator-owned, and must be
+carried through verbatim (the write step regenerates it).
 
 ### Step 5 — Write updated map and return path
 

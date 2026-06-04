@@ -181,6 +181,7 @@ flowchart LR
         knowledge_artifact_contracts_md[artifact-contracts]
         knowledge_code_review_patterns_md[code-review-patterns]
         knowledge_commit_analysis_patterns_md[commit-analysis-patterns]
+        knowledge_commit_dispatch_template_md[commit-dispatch-template]
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
@@ -190,7 +191,9 @@ flowchart LR
         knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
         knowledge_intent_preflight_md[intent-preflight]
         knowledge_interview_question_bank_md[interview-question-bank]
+        knowledge_investigate_findings_template_md[investigate-findings-template]
         knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
+        knowledge_perf_report_template_md[perf-report-template]
         knowledge_performance_review_examples_md[performance-review-examples]
         knowledge_preflight_context_schema_md[preflight-context-schema]
         knowledge_release_notes_template_md[release-notes-template]
@@ -207,6 +210,7 @@ flowchart LR
     end
 
     skill_al_dev_commit --> knowledge_artifact_contracts_md
+    skill_al_dev_commit --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
@@ -227,11 +231,13 @@ flowchart LR
     skill_al_dev_fix --> knowledge_intent_preflight_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
+    skill_al_dev_investigate --> knowledge_investigate_findings_template_md
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
+    skill_al_dev_perf --> knowledge_perf_report_template_md
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
     skill_al_dev_plan --> knowledge_artifact_contracts_md
     skill_al_dev_plan --> knowledge_intent_preflight_md
@@ -309,6 +315,7 @@ flowchart LR
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
     class knowledge_commit_analysis_patterns_md knowledgeNode
+    class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
@@ -318,7 +325,9 @@ flowchart LR
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_interview_question_bank_md knowledgeNode
+    class knowledge_investigate_findings_template_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
+    class knowledge_perf_report_template_md knowledgeNode
     class knowledge_performance_review_examples_md knowledgeNode
     class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_release_notes_template_md knowledgeNode

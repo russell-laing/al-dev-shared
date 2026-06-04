@@ -1,8 +1,12 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-04 (22 agents; analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-04 (analysis refreshed with 5 new suggestions)
 
-> **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
+<!-- BEGIN GENERATED: agent-coverage -->
+**Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
+<!-- END GENERATED: agent-coverage -->
+
+> **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
 
 ## Layer 1: Agent Catalog
 

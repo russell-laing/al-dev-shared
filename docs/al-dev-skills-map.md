@@ -4,7 +4,12 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-04 (22 active skill directories in `profile-al-dev-shared/skills`: 21 primary lifecycle skills + 1 distributed utility)
+**Last updated:** 2026-06-04
+
+<!-- BEGIN GENERATED: skill-coverage -->
+**Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
+<!-- END GENERATED: skill-coverage -->
+
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer tools are documented in separate tracking systems.
 
 ---
@@ -209,6 +214,7 @@ flowchart LR
     skill_al_dev_handoff[al-dev-handoff]
     skill_al_dev_plan[al-dev-plan]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
+    knowledge_investigate_findings_template_md[investigate-findings-template]
     artifact_YYYY_MM_DD_al_dev_investigate_findings_md[.dev/YYYY-MM-DD-al-dev-investigate-findings.md]
     artifact_investigate_errors_log[.dev/investigate-errors.log]
     artifact_project_context_md[.dev/project-context.md]
@@ -216,6 +222,7 @@ flowchart LR
     skill_al_dev_investigate -.-> skill_al_dev_handoff
     skill_al_dev_investigate -.-> skill_al_dev_plan
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
+    skill_al_dev_investigate --> knowledge_investigate_findings_template_md
     skill_al_dev_investigate --> artifact_YYYY_MM_DD_al_dev_investigate_findings_md
     skill_al_dev_investigate --> artifact_investigate_errors_log
     skill_al_dev_investigate --> artifact_project_context_md
@@ -224,6 +231,7 @@ flowchart LR
     class skill_al_dev_handoff skillNode
     class skill_al_dev_plan skillNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
+    class knowledge_investigate_findings_template_md knowledgeNode
     class artifact_YYYY_MM_DD_al_dev_investigate_findings_md artifactNode
     class artifact_investigate_errors_log artifactNode
     class artifact_project_context_md artifactNode
@@ -641,6 +649,7 @@ flowchart LR
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
     agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_commit_dispatch_template_md[commit-dispatch-template]
     knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_intent_preflight_md[intent-preflight]
@@ -661,6 +670,7 @@ flowchart LR
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
     skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_commit --> knowledge_artifact_contracts_md
+    skill_al_dev_commit --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
@@ -682,6 +692,7 @@ flowchart LR
     class agent_al_dev_commit_message_drafter agentNode
     class agent_al_dev_commit_ooxml_validator agentNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
@@ -874,15 +885,18 @@ flowchart LR
     skill_al_dev_perf[al-dev-perf]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
+    knowledge_perf_report_template_md[perf-report-template]
     artifact_project_context_md[.dev/project-context.md]
 
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
+    skill_al_dev_perf --> knowledge_perf_report_template_md
     skill_al_dev_perf --> artifact_project_context_md
 
     class skill_al_dev_perf skillNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
+    class knowledge_perf_report_template_md knowledgeNode
     class artifact_project_context_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-perf -->

@@ -37,6 +37,14 @@ SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
         "doc": Path("docs/al-dev-agent-map.md"),
         "renderer": "render_agent_catalog",
     },
+    "agent-coverage": {
+        "doc": Path("docs/al-dev-agent-map.md"),
+        "renderer": "render_agent_coverage",
+    },
+    "skill-coverage": {
+        "doc": Path("docs/al-dev-skills-map.md"),
+        "renderer": "render_skill_coverage",
+    },
     "plugin-dependency-mermaid": {
         "doc": Path("docs/al-dev-plugin-graph.md"),
         "renderer": "render_plugin_dependency",
@@ -695,6 +703,20 @@ def render_agent_catalog(inv: Inventory) -> str:
     return "\n".join(rows)
 
 
+def render_agent_coverage(inv: Inventory) -> str:
+    return (
+        f"**Coverage:** {len(inv.agents)} active agents in "
+        "`profile-al-dev-shared/agents/` (count derived from disk at generation time)."
+    )
+
+
+def render_skill_coverage(inv: Inventory) -> str:
+    return (
+        f"**Coverage:** {len(inv.skills)} active skills in "
+        "`profile-al-dev-shared/skills/` (count derived from disk at generation time)."
+    )
+
+
 def render_plugin_dependency(inv: Inventory) -> str:
     skill_skill_edges = _internal_skill_edges(inv)
     skill_agent_edges = _internal_skill_agent_edges(inv)
@@ -976,6 +998,8 @@ RENDERERS: dict[str, Callable[..., str]] = {
     "render_workflow_skills_agents": render_workflow_skills_agents,
     "render_workflow_knowledge": render_workflow_knowledge,
     "render_skill_drilldown": render_skill_drilldown,
+    "render_agent_coverage": render_agent_coverage,
+    "render_skill_coverage": render_skill_coverage,
 }
 
 
