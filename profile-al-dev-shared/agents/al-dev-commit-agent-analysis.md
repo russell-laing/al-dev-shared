@@ -22,9 +22,12 @@ All inputs arrive in the dispatch prompt:
 
 ## Inputs
 
+`REPO` is inferred from the current working directory (`pwd`); the dispatcher
+passes only `PROJECT_CONTEXT` and `FD_TICKET`.
+
 | Input | Required | Description |
 |-------|----------|-------------|
-| REPO | string | Project root directory (e.g., /path/to/project) |
+| REPO | No | Inferred from the working directory; not passed as a structured input by /al-dev-commit |
 | PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | Freshdesk ticket number |
 | Staged git index | **Yes** | Read via `git diff --cached` bash commands within the agent — not pre-structured in the dispatch prompt |
@@ -44,9 +47,7 @@ Analyse staged changes and build per-file manifests with object IDs and change s
 
 **Do not modify any files in this phase.**
 
-### Manifest Extraction (Steps 1–3)
-
-#### Step 1 — List staged files
+### Step 1 — List staged files
 
 > Never use `cd <path> && git <cmd>`. Use `git -C <path> <cmd>`.
 
@@ -84,9 +85,7 @@ One manifest block per AL file (paths ending in `.al`, case-insensitive).
 do not produce a full manifest block.
 Example: `{ "file": "app.json", "change": "modified" }`
 
-### Validation Checks (Steps 4–5)
-
-#### Step 4 — Detect staged deletions
+### Step 4 — Detect staged deletions
 
 ```bash
 git diff --cached --name-only --diff-filter=D
@@ -94,7 +93,7 @@ git diff --cached --name-only --diff-filter=D
 
 Collect into `DELETIONS` section.
 
-#### Step 5 — Build staged-file sets (NUL-safe)
+### Step 5 — Build staged-file sets (NUL-safe)
 
 Use one canonical extension set for OOXML policy checks:
 
@@ -124,7 +123,7 @@ done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
 
 ### Return Format (Step 6)
 
-#### Step 6 — Return analysis output
+### Step 6 — Return analysis output
 
 ```text
 MANIFESTS:
