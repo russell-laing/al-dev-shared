@@ -41,11 +41,66 @@ dossier as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 
+## Phase 1b — Recurrence annotation
+
+Sweeps have no memory by default, so open findings are re-discovered and
+re-ranked as new every run. Annotate repeats instead.
+
+Locate the previous findings file for the same surface:
+
+```bash
+ls -t /Users/russelllaing/al-dev-shared/docs/health/*-<surface>-findings.md 2>/dev/null | sed -n '2p'
+```
+
+If none exists, skip this phase (every finding is new). Otherwise, for each
+parsed finding, check whether the same object with substantially the same
+issue appears in the previous findings file (match on substance, not
+wording). For each repeat:
+
+- Annotate the finding line in the dossier with `(open since YYYY-MM-DD)`.
+  Carry the **earliest** known date forward — if the prior dossier already
+  dated the finding, reuse that date rather than resetting it.
+- If the severity differs from the prior sweep with no change to the
+  subject file, append `(was <severity> on <date>)` — severity churn is
+  signal about the lens, not about progress.
+
+Recurring findings stay in the dossier and in the severity counts (they are
+still open work), but the Summary must split the totals: new vs recurring.
+
+## Phase 1c — Staleness gate (before ranking)
+
+A lens may re-issue an old complaint against text that has already been
+fixed, and a findings file goes stale the moment fix commits land. Label
+suspect findings before they can be ranked:
+
+For every High finding and every top-5 candidate, resolve the subject to a
+file path (skill → `profile-al-dev-shared/skills/<name>/SKILL.md` or
+`.claude/skills/<name>/SKILL.md`; agent → the matching `agents/<name>.md`),
+then check:
+
+```bash
+# FINDINGS_DATE from the findings filename; PRIOR_DATE from Phase 1b
+git log --since="$FINDINGS_DATE 00:00" --oneline -- "$SUBJECT_PATH"
+```
+
+- Non-empty output → the subject changed **after** the findings were
+  generated: label `⚠ possibly stale`.
+- For recurring findings, also run with `--since="$PRIOR_DATE 00:00"` — a
+  repeat whose subject changed between sweeps may be a lens re-issuing a
+  complaint against already-fixed text: label `⚠ possibly stale`.
+
+A labelled finding may enter the top 5 only after reading the live subject
+file and confirming the claim still holds; record the spot-check ("verified
+against live file <date>") next to the action. If the claim no longer
+holds, drop the finding from counts and list it under a "Stale (dropped)"
+note instead.
+
 ## Phase 2 - Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality
 before naming), then by object (agent before skill). Pick the top 5 ranked actions
-for the summary.
+for the summary — excluding `verdict=None` findings (Phase 1) and applying
+the staleness spot-check rule (Phase 1c).
 
 Write `docs/health/YYYY-MM-DD-<surface>-health.md` (substitute today's date and
 `plugin`/`tooling` from the findings filename). The dossier must use generic
@@ -61,6 +116,9 @@ vocabulary (no harness-specific tokens). Structure:
 | High     | <n>    | <n>     | <n>    | <n>   |
 | Medium   | <n>    | <n>     | <n>    | <n>   |
 | Low      | <n>    | <n>     | <n>    | <n>   |
+
+New this sweep: <n> · Recurring from prior sweeps: <n> (annotated inline) ·
+Stale (dropped): <n>
 
 Top 5 ranked actions:
 1. ...
