@@ -64,8 +64,10 @@ When the reply references a known **Microsoft bug**, **platform regression**, or
 Examples of what to include:
 
 - "Known-issue #6355973 (available to Microsoft support)"
-- "Microsoft Q&A discussion: https://..."
+- "[Microsoft Q&A: \<topic description\>](\<url\>)"
 - "Power Platform tracker reference: [number]"
+
+**Link formatting rule:** All URLs in the draft reply must use labelled markdown references — `[descriptive label](url)` — never bare URLs. If the researcher findings contain a bare URL, wrap it: `[<source name>: <brief topic>](<url>)`. If a URL was marked `[unverified]` by the researcher, append `(link unverified)` after the reference, e.g. `[Microsoft Learn: <topic>](<url>) (link unverified)`.
 
 **Step 3:** Write combined file:
 
