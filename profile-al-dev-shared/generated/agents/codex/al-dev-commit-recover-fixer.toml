@@ -31,8 +31,10 @@ When an AL file becomes corrupted during commit (broken OOXML, syntax errors, tr
 **Step 2:** For each corrupted file:
 
 1. **Fallback 1 (git restore):** Attempt `git checkout HEAD~1 -- <file>` to restore from previous commit
-2. **Fallback 2 (regex reconstruction):** If file is AL source, attempt to reconstruct from backup patterns (e.g., stored in `.dev/` analysis files)
-3. **Fallback 3 (schema rebuild):** If file is AL codeunit/table, attempt to rebuild from AL metadata schema
+2. **Fallback 2 (regex reconstruction):** If file is AL source, restore the AL object skeleton (object declaration, field/key blocks) from the last-good git blob using line-anchored `sed` capture — never collapse newlines.
+3. **Fallback 3 (schema rebuild):** If file is AL codeunit/table, re-derive field/key definitions from the compiled symbol metadata when the source is unrecoverable from git.
+
+A file is **verified** recovered when it parses without AL syntax errors.
 
 **Step 3:** Write recovery report (per-file strategy, status, any unrecoverable files)
 
