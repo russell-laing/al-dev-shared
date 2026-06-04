@@ -54,13 +54,9 @@ extract:
 
 ### Step 2: Classify each failure
 
-Determine the root cause from the error log and assign a recovery action:
-
-| Failure class | Examples | `action` | Recovery |
-|---------------|----------|----------|----------|
-| **Fixable** | AL lint (`AA0xxx`), markdownlint, trailing whitespace, Python `ruff` | `retry` | Apply a scripted Bash fix, re-stage, signal retry |
-| **Non-fixable** | Harness-neutrality / policy violations, forbidden tokens, projection-stale, secrets detected | `manual-review` | Report root cause; user must resolve |
-| **Transient** | Network timeout, lock contention, temporary tool unavailability | `retry` | No code change needed; signal retry |
+Determine the root cause from the error log and assign a recovery action per the
+Failure Classification table in `knowledge/commit-hook-recovery-patterns.md`
+(Fixable → retry, Non-fixable → manual-review, Transient → retry).
 
 ### Step 3: Apply scripted recovery (Fixable + Transient only)
 
@@ -70,11 +66,8 @@ For **Fixable** failures, apply a scripted fix via Bash **only if all three cond
 2. The fix is reversible — `git checkout HEAD -- <file>` restores the original
 3. The fix target is a configuration or formatting issue, not business logic
 
-Approved fixes:
-
-- Trailing whitespace: `sed -E -i '' 's/[[:blank:]]+$//' <file>`
-- Python lint: `ruff check --fix <file>`
-- Markdown: `markdownlint --fix <file>` (or the project's configured fixer)
+Apply only the scripted fixes listed under "Approved Fixes" in
+`knowledge/commit-hook-recovery-patterns.md`.
 
 After fixing, re-stage the affected files with `git add <file>`. Do not re-run
 the commit yourself — the caller re-dispatches the execute agent.
