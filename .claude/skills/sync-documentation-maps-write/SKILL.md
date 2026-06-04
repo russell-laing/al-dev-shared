@@ -27,9 +27,10 @@ updated maps, then commits all changes.
 
 ## Phase 0 — Verify Maps Are Written
 
-Read `.dev/sync-documentation-maps-checkpoint.json`. Confirm `status` is not
-`"awaiting-write"`. If maps are not yet written, stop and instruct the user to
-run `/sync-documentation-maps-apply` first.
+Read `.dev/sync-documentation-maps-checkpoint.json`. Confirm `status` **is**
+`"awaiting-write"` (the state `/sync-documentation-maps-apply` leaves on success).
+If it is anything else, the maps are not yet written — stop and instruct the user
+to run `/sync-documentation-maps-apply` first.
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
