@@ -95,12 +95,30 @@ against live file <date>") next to the action. If the claim no longer
 holds, drop the finding from counts and list it under a "Stale (dropped)"
 note instead.
 
+## Phase 1d — Disposition suppression
+
+Read `docs/health/dispositions.md` (skip this phase if absent). Match each
+parsed finding against ledger rows by object + issue essence:
+
+- **`declined` / `grandfathered`** → suppress: exclude from severity
+  counts, dimension grouping, and top-5. List one line each under a
+  "Dispositioned (suppressed)" note at the foot of the dossier. These are
+  settled decisions; the dossier must not re-litigate them.
+- **`fixed`** → if the lens has re-flagged the same issue, treat the
+  finding as suspect: verify against the live subject file (Phase 1c
+  protocol). If the claim no longer holds, drop it under "Stale (dropped)";
+  if the issue has genuinely regressed, keep it and note "regressed —
+  previously fixed in <commit>".
+- **`accepted`** → keep, and annotate "(accepted YYYY-MM-DD — awaiting
+  implementation)".
+
 ## Phase 2 - Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality
 before naming), then by object (agent before skill). Pick the top 5 ranked actions
-for the summary — excluding `verdict=None` findings (Phase 1) and applying
-the staleness spot-check rule (Phase 1c).
+for the summary — excluding `verdict=None` findings (Phase 1), applying
+the staleness spot-check rule (Phase 1c), and excluding suppressed
+dispositions (Phase 1d).
 
 Write `docs/health/YYYY-MM-DD-<surface>-health.md` (substitute today's date and
 `plugin`/`tooling` from the findings filename). The dossier must use generic
@@ -159,7 +177,11 @@ The generator writes `docs/al-dev-plugin-graph.md` and exits 0 even on parse err
 
 ## Phase 4 — Present to user
 
-Print, per surface: dossier path + severity counts + the top action.
+Print, per surface: dossier path + severity counts (new vs recurring) + the
+top action.
 List any failed lenses.
-Ask: "Review the dossier and run `/verify-map-suggestions` on the items you accept?"
+Ask: "Review the dossier, record accept/decline decisions in
+`docs/health/dispositions.md`, then run `/verify-map-suggestions` on the
+accepted items?" — recording dispositions is what stops the next sweep from
+re-ranking the same findings as new.
 Do not edit any source file.

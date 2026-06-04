@@ -86,6 +86,15 @@ Read the latest dossier(s). Collect every open finding from these sections:
 Skip any section marked `_No issues found._` and any finding already marked
 `← implemented`, `← completed`, or `← already implemented`.
 
+Then consult `docs/health/dispositions.md` (if present), matching by object
+- issue essence:
+
+- Findings marked `accepted` are the primary planning input — keep them.
+- Skip findings marked `declined`, `grandfathered`, or `fixed` (note the
+  skip count).
+- Findings with no ledger row are undispositioned: list them and ask the
+  user whether to include them in this plan or record dispositions first.
+
 Apply the Argument Routing verb filter (`--skills` / `--agents`) to the
 collected findings.
 
