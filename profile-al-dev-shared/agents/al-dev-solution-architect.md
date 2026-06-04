@@ -48,7 +48,7 @@ Transform requirements into a complete solution plan that includes architectural
    - Performs the same business function as the proposed feature, **AND**
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
    - If only one criterion is met, document the rationale before accepting the match
-   - Variable/field names may differ; focus on structural similarity
+   - Variable/field names may differ; match on the two criteria above, not identifier names
 
    **Search order (apply in sequence, stop when a match is found):**
    1. Exact pattern match (same table/event being extended, same design pattern)

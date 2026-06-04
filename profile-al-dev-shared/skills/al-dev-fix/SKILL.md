@@ -220,6 +220,10 @@ You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
         └─→ Present to user ✅
 ```
 
+Architect dispatch follows **Pattern 2: Quick Analysis** in
+`../../knowledge/architect-invocation-patterns.md` — one architect,
+time-bounded, four-section return.
+
 ---
 
 ## When to Use /al-dev-fix vs Other Commands
