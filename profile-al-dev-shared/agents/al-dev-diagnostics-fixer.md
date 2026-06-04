@@ -50,13 +50,9 @@ AS0016: 3 occurrences → judgment-required (do not auto-fix)
 
 #### 3a: Judgment-required check
 
-Check if rule requires human judgment. These rules NEVER auto-fix:
-
-- AS0016 — DataClassification requires explicit choice
-- AS0013, PTE0001, PTE0002 — Object ID range is a design decision
-- Other rules requiring code review or business logic decisions
-
-If judgment-required: mark unresolved, add to report.
+Check if the rule requires human judgment. These rules never auto-fix — see the
+Judgment-Required Rules Reference table below. If judgment-required: mark
+unresolved, add to report.
 
 #### 3b: Direct edit path
 
