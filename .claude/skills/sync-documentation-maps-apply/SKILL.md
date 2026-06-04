@@ -117,6 +117,16 @@ wc -l "${RUN_DIR}/updates/skills-map.md"
 
 (substitute `agent-map.md` for the agent surface).
 
+For the **agent** artifact, also run the count-consistency check — catalog
+rows must match the active agent files on disk:
+
+```bash
+DISK_AGENTS=$(ls /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
+CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
+  "${RUN_DIR}/updates/agent-map.md" | grep -c '^| al-dev')
+echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
+```
+
 Apply these validation rules for each artifact:
 
 | Condition | Action |
@@ -124,6 +134,7 @@ Apply these validation rules for each artifact:
 | File absent | Report and skip that surface |
 | File empty (0 lines) | Report invalid and skip that surface |
 | Missing `# AL Dev` header | Report invalid and skip that surface |
+| Agent artifact: `CATALOG_ROWS` ≠ `DISK_AGENTS` | Report invalid and skip that surface — the audit/update pass missed or duplicated catalog entries |
 | Passes all checks | Read content and proceed |
 
 If **all expected artifacts** are missing or invalid, stop with:

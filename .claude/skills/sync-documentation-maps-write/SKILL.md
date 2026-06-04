@@ -73,6 +73,25 @@ Capture the exit code. If non-zero, report:
 Mermaid diagram regeneration failed (exit <code>).
 ```
 
+After a successful regeneration, run the count-consistency gate. The
+generator owns the `Coverage` line and the catalog table; all three numbers
+below must agree before anything is committed:
+
+```bash
+DISK_AGENTS=$(ls /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
+COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -o '[0-9]*')
+CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
+  /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -c '^| al-dev')
+echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
+```
+
+If the three values differ, **stop before Phase 3 (commit)** and report:
+
+```text
+Agent count mismatch after regeneration (disk=X coverage=Y catalog=Z).
+The maps would commit stale counts. Investigate before committing.
+```
+
 Then regenerate agent projections:
 
 ```bash
