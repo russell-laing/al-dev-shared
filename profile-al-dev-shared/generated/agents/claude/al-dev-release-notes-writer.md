@@ -45,17 +45,6 @@ Generate release notes from the git diff between two commits. Audience: business
 1. Write to `.dev/$(date +%Y-%m-%d)-plugin-release-notes.md`
 2. Return structured output block with metadata
 
-## Release Notes Structure
-
-Reference `knowledge/release-notes-template.md` for complete structure:
-
-- **Summary:** One-paragraph overview of major changes
-- **New Features:** Bullet list with business impact
-- **Bug Fixes:** What was broken, how it's fixed
-- **Breaking Changes:** With migration guidance
-- **Performance Improvements:** With metrics if available
-- **Installation & Upgrade:** Links or instructions
-
 ## Mermaid Diagrams
 
 If changes include architecture or data model updates:
@@ -70,11 +59,12 @@ For mermaid helper reference:
 
 ```bash
 MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
-```text
+```
 
 ## Output Response
 
 Example:
+
 ```text
 Release notes written → .dev/YYYY-MM-DD-plugin-release-notes.md
 
@@ -89,4 +79,4 @@ Diagrams included: [Yes/No]
 Duration: ~2 hours of analysis
 
 Ready for review and publication.
-```text
+```
