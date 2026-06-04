@@ -224,7 +224,11 @@ If not in autonomous mode, skip this step and proceed to Phase 2.
 ## Phase 2: Partition and Prepare
 
 Analyze the plan and partition into independent modules.
-Each module must own different files — no overlap.
+Each module must own different files — no overlap. Every in-scope file
+belongs to exactly one partition: if a file spans two partition
+categories (e.g. a codeunit containing both business logic and
+integration subscribers), assign the whole file to a single module
+owner rather than splitting it across modules.
 
 Partition boundaries:
 
