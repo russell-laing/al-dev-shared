@@ -81,21 +81,9 @@ mid-run resume), then proceed to Phase 0.5.
 
 These phases write `.dev/preflight-context.md` once context gathering
 and any optional verification phases complete (see the **end of Phase
-1.6** write step). It captures every input the architect debate needs
-so the debate phases never depend on skipped-phase state:
-
-```json
-{
-  "phase": 2,
-  "requirements": "user feature requirement and preliminary scope",
-  "scope": "estimated file count, affected BC objects, patterns",
-  "architect_model": "opus",
-  "user_context": "object ID range, naming prefix, key patterns, perf/explore findings",
-  "external_findings_status": "summary of verified/unverified claims, or null",
-  "timestamp": "2026-06-01T00:00:00Z",
-  "no_crit_swarm": false
-}
-```
+1.6** write step). The canonical schema and field semantics are defined
+in `../../knowledge/preflight-context-schema.md` — read that file before
+writing or loading the context file.
 
 When resuming (Mode A or Mode B → Resume), treat these fields as the
 authoritative substitute for the corresponding preflight outputs:

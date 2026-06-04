@@ -105,22 +105,10 @@ proceed to Phase 2 until preflight completes and emits context.
 
 ### PREFLIGHT_CONTEXT schema
 
-`/al-dev-plan-preflight` writes `.dev/preflight-context.md` using this
-schema. It captures every input Phase 2 needs so the debate phases
-never depend on skipped-phase state:
-
-```json
-{
-  "phase": 2,
-  "requirements": "user feature requirement and preliminary scope",
-  "scope": "estimated file count, affected BC objects, patterns",
-  "architect_model": "opus",
-  "user_context": "object ID range, naming prefix, key patterns, perf/explore findings",
-  "external_findings_status": "summary of verified/unverified claims, or null",
-  "timestamp": "2026-06-01T00:00:00Z",
-  "no_crit_swarm": false
-}
-```
+`/al-dev-plan-preflight` writes `.dev/preflight-context.md`. The
+canonical schema and field semantics are defined in
+`../../knowledge/preflight-context-schema.md` — read that file before
+loading the context block.
 
 Treat these fields as the authoritative inputs to Phase 2:
 
