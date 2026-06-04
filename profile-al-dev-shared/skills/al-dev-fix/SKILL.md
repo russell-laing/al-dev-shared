@@ -189,8 +189,8 @@ IF complexity == "simple":
   │   └─ If not exists: Create simple test case inline, execute, verify
   └─ Move to Step 4
 
-IF complexity == "medium" or "complex":
-  └─ [ERROR] Non-trivial fixes require /al-dev-develop workflow
+IF complexity == "medium" OR complexity == "complex":
+  └─ [ERROR] Non-trivial fixes require the /al-dev-develop workflow
   └─ Escalate to /al-dev-plan → /al-dev-develop
 ```
 
