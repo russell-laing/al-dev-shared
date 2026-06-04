@@ -32,9 +32,12 @@ Parse each finding line: `- **[name]** | [Severity] | [observation] | [fix]`
 
 **Complexity Outliers exception:** lines from this lens carry an extra
 `verdict=[Atomise|Absorb|None]` field between severity and observation.
-Parse it. Findings with `verdict=None` are monitor-only: exclude them from
-the severity counts, the dimension grouping, and top-5 eligibility in
-Phase 2. List them in a one-line "Monitor-only (excluded from counts)" note
+Parse it. Findings with `verdict=None` are monitor-only. **Monitor-only
+(operative definition):** an observation worth tracking but carrying no
+implementation action — the lens looked and concluded the current state is
+acceptable or expected. Excluded so the severity counts measure actionable
+findings only: exclude them from the severity counts, the dimension
+grouping, and top-5 eligibility in Phase 2. List them in a one-line "Monitor-only (excluded from counts)" note
 under Design suggestions instead. A Complexity line missing the verdict
 field entirely is a lens regression — count it normally but flag it in the
 dossier as "verdict missing".

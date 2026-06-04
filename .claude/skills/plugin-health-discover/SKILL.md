@@ -47,8 +47,15 @@ accept/decline/fixed rows in docs/health/dispositions.md first, or
 confirm to sweep anyway.
 ```
 
-Proceed only on explicit confirmation. Skip the guard when `--resume` is
-present (resuming an interrupted sweep is not a new sweep).
+Then branch explicitly:
+
+- User confirms → proceed to Phase 1.
+- User declines, or gives no clear confirmation → stop. Report "Sweep not
+  dispatched — record dispositions in `docs/health/dispositions.md` and
+  re-run." Do not dispatch any lens.
+
+Skip the guard when `--resume` is present (resuming an interrupted sweep is
+not a new sweep).
 
 ## Phase 1 — Build file lists (per requested surface)
 
