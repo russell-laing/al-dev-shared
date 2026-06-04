@@ -45,6 +45,10 @@ Transform requirements into a complete solution plan that includes architectural
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
    - If only one criterion is met, document the rationale before accepting the match
    - Variable/field names may differ; match on the two criteria above, not identifier names
+   - Examples — YES: both add customer-credit validation to different tables (same
+     business function, same event-subscription pattern). NO: one adds posting
+     validation, the other adds UI field formatting (different function and pattern —
+     reject the match).
 
    **Search order (apply in sequence, stop when a match is found):**
    1. Exact pattern match (same table/event being extended, same design pattern)
@@ -58,7 +62,7 @@ Transform requirements into a complete solution plan that includes architectural
      Microsoft Docs, text fallback) are listed in
      `knowledge/solution-architect-research-patterns.md`.
 5. **Design solution** — extension strategy, event subscribers, table/page design, external dependencies
-6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block after completing this step. If testability design cannot be completed, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation.
+6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block only if (a) interfaces are defined for every external dependency, (b) at least one mock/test-double strategy is named per dependency, and (c) those doubles are referenced in the plan. If any is missing, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation.
 7. **Plan implementation** — break into files, steps, code templates; match output detail to complexity
 8. **Write output** — Create solution plan file following `knowledge/solution-plan-template.md` structure
 9. **Update project context** — append new patterns/objects learned
