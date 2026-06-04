@@ -241,29 +241,17 @@ Continue to Phase 1.
 
 Dispatch the analysis agent to extract manifests from staged changes:
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-commit-agent-analysis
-  description: "Commit analysis: extract manifests from staged changes"
+Dispatch per `knowledge/commit-dispatch-template.md`:
 
-Prompt:
-  "Perform ANALYSIS phase for git commit workflow.
-
-   Phase: analysis
-
-   PROJECT_CONTEXT:
-   - Valid scopes: [list from Phase 0.2]
-   - Object ID prefix: [from Phase 0.2]
-   - AL naming pattern: [from Phase 0.2]
-   - Gitmoji style: [from Phase 0.6]
-
-   FD_TICKET: [ticket number from Phase 0.2, or empty]
-
-   Follow the analysis phase instructions in your agent definition.
-
-   Return output in exactly the format specified (MANIFESTS block,
-   DELETIONS, WARNINGS). Message drafting is handled in the next step."
-```
+- agent: `al-dev-shared:al-dev-commit-agent-analysis`
+- description: "Commit analysis: extract manifests from staged changes"
+- phase label: `Perform ANALYSIS phase for git commit workflow.` followed by a
+  `Phase: analysis` line
+- prompt body: include the shared project-context preamble (PROJECT_CONTEXT +
+  FD_TICKET) from the template; then `Follow the analysis phase instructions in
+  your agent definition.`
+- return format: `MANIFESTS block, DELETIONS, WARNINGS` — append verbatim
+  `Message drafting is handled in the next step.` after the return-format line
 
 ### 1.2 — Deletion Audit Gate
 
@@ -297,33 +285,23 @@ If no deleted files: continue to 1.3.
 
 Dispatch the message-drafting agent with the analysis results:
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-commit-message-drafter
-  model: haiku
-  description: "Draft commit messages and propose groups"
+Dispatch per `knowledge/commit-dispatch-template.md`:
 
-Prompt:
-  "Perform MESSAGE-DRAFTING phase for git commit workflow.
+- agent: `al-dev-shared:al-dev-commit-message-drafter` (model: haiku)
+- description: "Draft commit messages and propose groups"
+- phase label: `Perform MESSAGE-DRAFTING phase for git commit workflow.`
+  followed by a `Phase: message-drafting` line
+- prompt body: include the shared project-context preamble (PROJECT_CONTEXT +
+  FD_TICKET) from the template; then verbatim:
 
-   Phase: message-drafting
+  ```text
+  MANIFESTS FROM ANALYSIS PHASE:
+  [paste the MANIFESTS block from the analysis agent output]
+  ```
 
-   PROJECT_CONTEXT:
-   - Valid scopes: [list from Phase 0.2]
-   - Object ID prefix: [from Phase 0.2]
-   - AL naming pattern: [from Phase 0.2]
-   - Gitmoji style: [from Phase 0.6]
-
-   FD_TICKET: [ticket number from Phase 0.2, or empty]
-
-   MANIFESTS FROM ANALYSIS PHASE:
-   [paste the MANIFESTS block from the analysis agent output]
-
-   Follow the message-drafting phase instructions in your agent definition.
-
-   Return output in exactly the format specified (PROPOSED_GROUPS block
-   with commit messages for each group)."
-```
+  then `Follow the message-drafting phase instructions in your agent
+  definition.`
+- return format: `PROPOSED_GROUPS block with commit messages for each group`
 
 Continue to Phase 2.
 
@@ -425,24 +403,24 @@ Run preflight sequentially: lint fixes first, then OOXML validation.
 
 Dispatch the lint fixer agent with the approved plan from Phase 2:
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-commit-lint-fixer
-  description: "Pre-flight lint and trailing whitespace fixes"
+Dispatch per `knowledge/commit-dispatch-template.md`:
 
-Prompt:
-  "Perform LINT-PREFLIGHT phase for git commit workflow.
+- agent: `al-dev-shared:al-dev-commit-lint-fixer`
+- description: "Pre-flight lint and trailing whitespace fixes"
+- phase label: `Perform LINT-PREFLIGHT phase for git commit workflow.`
+- prompt body: verbatim:
 
-   APPROVED_PLAN:
-   [paste the approved plan from Phase 2]
+  ```text
+  APPROVED_PLAN:
+  [paste the approved plan from Phase 2]
 
-   CRITICAL RULES:
-   - NEVER use Write or Edit on staged source files — all fixes via Bash only
-   - Skip binary and OOXML files in trailing-whitespace step
-   - Stop immediately if corruption detected (line count collapses)
+  CRITICAL RULES:
+  - NEVER use Write or Edit on staged source files — all fixes via Bash only
+  - Skip binary and OOXML files in trailing-whitespace step
+  - Stop immediately if corruption detected (line count collapses)
+  ```
 
-   Return output in exactly the format specified (LINT_FIXES)."
-```
+- return format: `LINT_FIXES`
 
 Store the `LINT_FIXES` value for display in Phase 4.
 
@@ -450,19 +428,19 @@ Store the `LINT_FIXES` value for display in Phase 4.
 
 Dispatch the OOXML validator agent with the approved plan:
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-commit-ooxml-validator
-  description: "OOXML ZIP integrity validation"
+Dispatch per `knowledge/commit-dispatch-template.md`:
 
-Prompt:
-  "Perform OOXML-VALIDATE phase for git commit workflow.
+- agent: `al-dev-shared:al-dev-commit-ooxml-validator`
+- description: "OOXML ZIP integrity validation"
+- phase label: `Perform OOXML-VALIDATE phase for git commit workflow.`
+- prompt body: verbatim:
 
-   APPROVED_PLAN:
-   [paste the approved plan from Phase 2]
+  ```text
+  APPROVED_PLAN:
+  [paste the approved plan from Phase 2]
+  ```
 
-   Return output in exactly the format specified (OOXML_FAILURES)."
-```
+- return format: `OOXML_FAILURES`
 
 If `OOXML_FAILURES` is not `NONE`, show:
 
@@ -496,29 +474,26 @@ GROUP_2:
 
 Dispatch the execution agent:
 
-```text
-Agent tool:
-  agent: al-dev-shared:al-dev-commit-agent-execute
-  description: "Commit execution: [N] commits"
+Dispatch per `knowledge/commit-dispatch-template.md`:
 
-Prompt:
-  "Perform EXECUTE phase for git commit workflow.
+- agent: `al-dev-shared:al-dev-commit-agent-execute`
+- description: "Commit execution: [N] commits"
+- phase label: `Perform EXECUTE phase for git commit workflow.` followed by a
+  `Phase: execute` line
+- prompt body: verbatim:
 
-   Phase: execute
+  ```text
+  APPROVED_PLAN:
+  [paste the approved plan constructed above]
 
-   APPROVED_PLAN:
-   [paste the approved plan constructed above]
+  CRITICAL RULES:
+  - NEVER add Co-Authored-By trailers to commit messages
+  - Use git -C <path> instead of cd <path> && git
+  - Verify file integrity (wc -l) for all modified files after commits
+  ```
 
-   CRITICAL RULES:
-   - NEVER add Co-Authored-By trailers to commit messages
-   - Use git -C <path> instead of cd <path> && git
-   - Verify file integrity (wc -l) for all modified files after commits
-
-   Follow the execute phase instructions in your agent definition.
-
-   Return output in exactly the format specified (COMMITS, SKIPPED,
-   HOOK_FAILURES)."
-```
+  then `Follow the execute phase instructions in your agent definition.`
+- return format: `COMMITS, SKIPPED, HOOK_FAILURES`
 
 ### 4.2 — Branch on Execution Result
 
@@ -538,7 +513,9 @@ Persist the failure context for the recovery agent:
 # Write the approved plan (groups, files, messages) to .dev/commits.json
 ```
 
-Dispatch the hook-fixer agent:
+Dispatch the hook-fixer agent (the dispatch frame is documented in
+`knowledge/commit-dispatch-template.md`; this phase's prompt differs from the
+shared frame and is given in full below):
 
 ```text
 Agent tool:
