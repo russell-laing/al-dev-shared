@@ -21,7 +21,8 @@ is reported as a missing-contract gap below.
 Color key: blue nodes are user-invoked skills, grey dashed nodes are internal
 skills dispatched by other skills, violet nodes are artifacts, violet nodes
 with a red dashed border are orphaned artifacts, amber nodes are manual steps,
-and indigo nodes are checkpoints (async detail diagram only). Dotted
+indigo nodes are checkpoints, and green nodes are background agents spawned by
+a skill (checkpoints and agents appear in the async detail diagram only). Dotted
 self-loops marked repeat are steps commonly re-run within one loop pass.
 Edge labels in the overview name the artifacts that flow between stages.
 
