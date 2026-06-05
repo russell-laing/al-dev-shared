@@ -8,6 +8,15 @@ description: >-
   Triggers on: "fix knowledge quality", "fix knowledge issues", "implement
   knowledge fixes", "address high knowledge findings".
 argument-hint: "[--auto-fix]"
+workflow:
+  stage: derive
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - docs/al-dev-knowledge-quality.md
+  outputs:
+    - profile-al-dev-shared/knowledge/
+  next: [align-harness-repos]
 ---
 
 # Fix Knowledge Quality

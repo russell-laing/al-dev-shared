@@ -49,19 +49,16 @@ flowchart LR
         skill_audit_knowledge_quality["/audit-knowledge-quality"]
         skill_projection_sync["/projection-sync"]
     end
+    stage_map_sync ~~~ stage_discover
+    stage_discover ~~~ stage_decide
+    stage_decide ~~~ stage_derive
 
-    skill_audit_knowledge_quality -. "repeat" .-> skill_audit_knowledge_quality
     skill_plan_health_findings --> manual_plan_health_findings
     manual_plan_health_findings --> skill_audit_knowledge_quality
     manual_plan_health_findings --> skill_projection_sync
-    skill_plan_health_findings -. "repeat" .-> skill_plan_health_findings
     skill_plugin_health_audit -- "docs/health/*-*-health.md" --> skill_record_health_dispositions
-    skill_plugin_health_audit -. "repeat" .-> skill_plugin_health_audit
-    skill_projection_sync -. "repeat" .-> skill_projection_sync
     skill_record_health_dispositions -- "docs/health/dispositions.md" --> skill_plan_health_findings
-    skill_record_health_dispositions -. "repeat" .-> skill_record_health_dispositions
     skill_review_maps -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_plugin_health_audit
-    skill_review_maps -. "repeat" .-> skill_review_maps
 
     class skill_audit_knowledge_quality userSkill
     class skill_plan_health_findings userSkill
@@ -93,7 +90,7 @@ flowchart LR
 5. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md`
    - writes: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-6. `/sync-documentation-maps-write` — Second step of two-step sync finalization.
+6. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
    - writes: `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `profile-al-dev-shared/generated/agents/`
 
@@ -126,10 +123,13 @@ flowchart LR
 1. `/audit-knowledge-quality` — Audit knowledge files for stub sections and structural issues. Repeat as needed.
    - reads: `profile-al-dev-shared/knowledge/`
    - writes: `docs/al-dev-knowledge-quality.md`
-2. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
+2. `/fix-knowledge-quality` — Reads HIGH-severity findings from the latest knowledge quality audit (docs/al-dev-knowledge-quality.md) and converts them into a structured task list. Repeat as needed.
+   - reads: `docs/al-dev-knowledge-quality.md`
+   - writes: `profile-al-dev-shared/knowledge/`
+3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
    - reads: `profile-al-dev-shared/agents/`
    - writes: `profile-al-dev-shared/generated/agents/`
-3. `/align-harness-repos` — Validate harness neutrality in the al-dev-shared single shared plugin surface. Repeat as needed.
+4. `/align-harness-repos` — Validate harness neutrality in the al-dev-shared single shared plugin surface. Repeat as needed.
    - reads: `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/`
 <!-- END GENERATED: maintainer-user-journey -->
 
@@ -146,78 +146,54 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    skill_review_documentation_map["/review-documentation-map"]
-    skill_review_maps["/review-maps"]
-    skill_sync_documentation_maps["/sync-documentation-maps"]
-    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
-    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
-    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
-    art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]
-    art__dev_sync_documentation_maps_runs___audit___audit_json[".../*-audit.json"]
-    art__dev_sync_documentation_maps_runs___updates___map_md[".../*-map.md"]
-    art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
-    art_docs_al_dev_plugin_graph_md["docs/al-dev-plugin-graph.md"]
-    art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
-    art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]
-    art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]
-    art_profile_al_dev_shared_agents_["profile-al-dev-shared/agents/"]
-    art_profile_al_dev_shared_generated_agents_[".../"]
-    art_profile_al_dev_shared_skills_["profile-al-dev-shared/skills/"]
+    subgraph map_entry["Normal entry point"]
+        skill_review_maps["/review-maps"]
+    end
+    subgraph map_in_session["In-session lane"]
+        skill_review_documentation_map["/review-documentation-map"]
+    end
+    subgraph map_async["Async lane"]
+        skill_sync_documentation_maps["/sync-documentation-maps"]
+        skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
+        skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
+        skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
+    end
+    art_source_dirs["skills/ + agents/"]
+    art_map_docs["map docs"]
+    art_async_checkpoint["checkpoint + audit artifacts"]
+    art_update_artifacts["update artifacts"]
+    art_downstream_generated["downstream generated"]
 
-    art_docs_al_dev_agent_map_md --> skill_review_documentation_map
-    art_docs_al_dev_skills_map_md --> skill_review_documentation_map
-    art_profile_al_dev_shared_agents_ --> skill_review_documentation_map
-    art_profile_al_dev_shared_skills_ --> skill_review_documentation_map
-    skill_review_documentation_map --> art_docs_al_dev_agent_map_md
-    skill_review_documentation_map --> art_docs_al_dev_skills_map_md
-    skill_review_documentation_map -. "repeat" .-> skill_review_documentation_map
-    art_docs_al_dev_agent_map_md --> skill_review_maps
-    art_docs_al_dev_skills_map_md --> skill_review_maps
-    skill_review_maps --> art_docs_al_dev_agent_map_md
-    skill_review_maps --> art_docs_al_dev_skills_map_md
     skill_review_maps --> skill_review_documentation_map
     skill_review_maps --> skill_sync_documentation_maps
-    skill_review_maps -. "repeat" .-> skill_review_maps
-    art_docs_al_dev_agent_map_md --> skill_sync_documentation_maps
-    art_docs_al_dev_skills_map_md --> skill_sync_documentation_maps
-    skill_sync_documentation_maps --> art__dev_sync_documentation_maps_checkpoint_json
-    skill_sync_documentation_maps --> art__dev_sync_documentation_maps_runs___audit___audit_json
+    art_source_dirs --> skill_review_documentation_map
+    skill_review_documentation_map --> art_map_docs
+    skill_review_maps --> art_map_docs
+    art_map_docs --> skill_sync_documentation_maps
+    skill_sync_documentation_maps --> art_async_checkpoint
     skill_sync_documentation_maps --> skill_sync_documentation_maps_collect
-    skill_sync_documentation_maps -. "repeat" .-> skill_sync_documentation_maps
-    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_apply
-    art__dev_sync_documentation_maps_runs___updates___map_md --> skill_sync_documentation_maps_apply
-    skill_sync_documentation_maps_apply --> art_docs_al_dev_agent_map_md
-    skill_sync_documentation_maps_apply --> art_docs_al_dev_skills_map_md
-    skill_sync_documentation_maps_apply --> skill_sync_documentation_maps_write
-    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_collect
-    art__dev_sync_documentation_maps_runs___audit___audit_json --> skill_sync_documentation_maps_collect
-    skill_sync_documentation_maps_collect --> art__dev_sync_documentation_maps_runs___updates___map_md
+    art_async_checkpoint --> skill_sync_documentation_maps_collect
+    skill_sync_documentation_maps_collect --> art_update_artifacts
     skill_sync_documentation_maps_collect --> skill_sync_documentation_maps_apply
-    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_write
-    art_docs_al_dev_agent_map_md --> skill_sync_documentation_maps_write
-    art_docs_al_dev_skills_map_md --> skill_sync_documentation_maps_write
-    skill_sync_documentation_maps_write --> art_docs_al_dev_plugin_graph_md
-    skill_sync_documentation_maps_write --> art_docs_al_dev_workflow_diagrams_md
-    skill_sync_documentation_maps_write --> art_docs_maintainer_tooling_md
-    skill_sync_documentation_maps_write --> art_profile_al_dev_shared_generated_agents_
+    art_update_artifacts --> skill_sync_documentation_maps_apply
+    art_async_checkpoint --> skill_sync_documentation_maps_apply
+    skill_sync_documentation_maps_apply --> art_map_docs
+    skill_sync_documentation_maps_apply --> skill_sync_documentation_maps_write
+    art_map_docs --> skill_sync_documentation_maps_write
+    art_async_checkpoint --> skill_sync_documentation_maps_write
+    skill_sync_documentation_maps_write --> art_downstream_generated
 
-    class skill_review_documentation_map userSkill
     class skill_review_maps userSkill
+    class skill_review_documentation_map userSkill
     class skill_sync_documentation_maps userSkill
-    class skill_sync_documentation_maps_apply userSkill
     class skill_sync_documentation_maps_collect userSkill
+    class skill_sync_documentation_maps_apply userSkill
     class skill_sync_documentation_maps_write userSkill
-    class art__dev_sync_documentation_maps_checkpoint_json artifact
-    class art__dev_sync_documentation_maps_runs___audit___audit_json artifact
-    class art__dev_sync_documentation_maps_runs___updates___map_md artifact
-    class art_docs_al_dev_agent_map_md artifact
-    class art_docs_al_dev_plugin_graph_md orphanArtifact
-    class art_docs_al_dev_skills_map_md artifact
-    class art_docs_al_dev_workflow_diagrams_md orphanArtifact
-    class art_docs_maintainer_tooling_md orphanArtifact
-    class art_profile_al_dev_shared_agents_ artifact
-    class art_profile_al_dev_shared_generated_agents_ orphanArtifact
-    class art_profile_al_dev_shared_skills_ artifact
+    class art_source_dirs artifact
+    class art_map_docs artifact
+    class art_async_checkpoint artifact
+    class art_update_artifacts artifact
+    class art_downstream_generated orphanArtifact
 ```
 <!-- END GENERATED: maintainer-stage-map-sync -->
 
@@ -331,35 +307,40 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
+    subgraph agent_lane["Agent source changed"]
+        art_agent_source["agents/"]
+        skill_projection_sync["/projection-sync"]
+        art_generated_agents["generated/agents/"]
+    end
+    subgraph knowledge_lane["Knowledge source changed"]
+        art_knowledge_source["knowledge/"]
+        skill_audit_knowledge_quality["/audit-knowledge-quality"]
+        art_knowledge_quality_report[".../knowledge-quality.md"]
+        skill_fix_knowledge_quality["/fix-knowledge-quality"]
+    end
+    art_shared_surface["shared authored surface"]
     skill_align_harness_repos["/align-harness-repos"]
-    skill_audit_knowledge_quality["/audit-knowledge-quality"]
-    skill_projection_sync["/projection-sync"]
-    art_docs_al_dev_knowledge_quality_md[".../al-dev-knowledge-quality.md"]
-    art_profile_al_dev_shared_agents_["profile-al-dev-shared/agents/"]
-    art_profile_al_dev_shared_generated_agents_[".../"]
-    art_profile_al_dev_shared_knowledge_[".../"]
-    art_profile_al_dev_shared_skills_["profile-al-dev-shared/skills/"]
 
-    art_profile_al_dev_shared_agents_ --> skill_align_harness_repos
-    art_profile_al_dev_shared_knowledge_ --> skill_align_harness_repos
-    art_profile_al_dev_shared_skills_ --> skill_align_harness_repos
-    skill_align_harness_repos -. "repeat" .-> skill_align_harness_repos
-    art_profile_al_dev_shared_knowledge_ --> skill_audit_knowledge_quality
-    skill_audit_knowledge_quality --> art_docs_al_dev_knowledge_quality_md
-    skill_audit_knowledge_quality -. "repeat" .-> skill_audit_knowledge_quality
-    art_profile_al_dev_shared_agents_ --> skill_projection_sync
-    skill_projection_sync --> art_profile_al_dev_shared_generated_agents_
+    art_agent_source --> skill_projection_sync
+    skill_projection_sync --> art_generated_agents
     skill_projection_sync --> skill_align_harness_repos
-    skill_projection_sync -. "repeat" .-> skill_projection_sync
+    art_knowledge_source --> skill_audit_knowledge_quality
+    skill_audit_knowledge_quality --> art_knowledge_quality_report
+    art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality
+    skill_audit_knowledge_quality -. "if clean" .-> skill_align_harness_repos
+    skill_fix_knowledge_quality --> art_knowledge_source
+    skill_fix_knowledge_quality --> skill_align_harness_repos
+    art_shared_surface --> skill_align_harness_repos
 
-    class skill_align_harness_repos userSkill
-    class skill_audit_knowledge_quality userSkill
     class skill_projection_sync userSkill
-    class art_docs_al_dev_knowledge_quality_md orphanArtifact
-    class art_profile_al_dev_shared_agents_ artifact
-    class art_profile_al_dev_shared_generated_agents_ orphanArtifact
-    class art_profile_al_dev_shared_knowledge_ artifact
-    class art_profile_al_dev_shared_skills_ artifact
+    class skill_audit_knowledge_quality userSkill
+    class skill_fix_knowledge_quality userSkill
+    class skill_align_harness_repos userSkill
+    class art_agent_source artifact
+    class art_generated_agents orphanArtifact
+    class art_knowledge_source artifact
+    class art_knowledge_quality_report artifact
+    class art_shared_surface artifact
 ```
 <!-- END GENERATED: maintainer-stage-derive -->
 
@@ -368,6 +349,12 @@ flowchart LR
 <!-- BEGIN GENERATED: maintainer-stage-support -->
 No skills in this stage declare a `workflow:` contract yet. Uncontracted skills appear under Missing contract in the gaps table.
 <!-- END GENERATED: maintainer-stage-support -->
+
+The adjacent tooling stage is intentionally light until those skills receive
+workflow contracts. Current nearby tools are `/review-docs` for first-level
+human-authored docs review, `/al-dev-diagram-generator` as the diagram-generation
+helper dispatched by design-analysis skills, and `/al-dev-consolidate` for `.dev/` session
+artifact consolidation.
 
 ## Async Map Sync Detail
 
@@ -483,10 +470,12 @@ flowchart TD
 
 - `/projection-sync` regenerates harness-native agent projections from the
   canonical agent source.
+- `/audit-knowledge-quality` audits the knowledge files and writes
+  `docs/al-dev-knowledge-quality.md`.
+- `/fix-knowledge-quality` reads HIGH-severity rows from the knowledge-quality
+  report and can dispatch targeted fixes before the final neutrality pass.
 - `/align-harness-repos` validates harness neutrality in the shared plugin
-  surface.
-- `/audit-knowledge-quality` audits the knowledge files and writes the
-  knowledge-quality report.
+  surface after agent, skill, or knowledge changes.
 
 ## Skills Reference
 
@@ -500,7 +489,7 @@ flowchart TD
 | `/sync-documentation-maps` | map-sync | both | Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. |
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
-| `/sync-documentation-maps-write` | map-sync | user | Second step of two-step sync finalization. |
+| `/sync-documentation-maps-write` | map-sync | user | Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow. |
 | `/analyze-architectural-design` | discover | user | Cross-surface synthesis add-on for the health audit. |
 | `/plugin-health-audit` | discover | user | Suggestions-only health sweep of the al-dev-shared plugin surfaces. |
 | `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
@@ -509,6 +498,7 @@ flowchart TD
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
+| `/fix-knowledge-quality` | derive | user | Reads HIGH-severity findings from the latest knowledge quality audit (docs/al-dev-knowledge-quality.md) and converts them into a structured task list. |
 | `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
@@ -529,6 +519,7 @@ flowchart TD
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
+| `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/align-harness-repos` |
 | `/projection-sync` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/align-harness-repos` |
 <!-- END GENERATED: maintainer-skills-tables -->
 
@@ -541,7 +532,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 <!-- BEGIN GENERATED: maintainer-gaps -->
 | Signal | Item | Detail |
 | --- | --- | --- |
-| Orphaned artifact | `docs/al-dev-knowledge-quality.md` | produced by /audit-knowledge-quality; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /plugin-health-report, /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-synthesis.md` | produced by /analyze-architectural-design; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
@@ -552,7 +542,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `al-dev-diagram-generator` | active skill with no workflow contract |
-| Missing contract | `fix-knowledge-quality` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-04 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-04 |
@@ -566,8 +555,9 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-05 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-06 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
+| Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
 <!-- END GENERATED: maintainer-gaps -->
 
@@ -580,7 +570,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Maps are out of sync and you want the async path | `/sync-documentation-maps` |
 | Maps are out of sync and you want the in-session path | `/review-maps` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
-| Edited a knowledge file | `/audit-knowledge-quality`, then `/align-harness-repos` |
+| Edited a knowledge file | `/audit-knowledge-quality`; if HIGH findings exist, `/fix-knowledge-quality`; then `/align-harness-repos` |
 | Want to find improvement candidates | `/plugin-health-audit` |
 | Want design-only or quality-only findings | `/plugin-health-audit --dimension design` or `--dimension quality` |
 | Want the skill and agent findings tied together | `/analyze-architectural-design` after a both-surface audit |

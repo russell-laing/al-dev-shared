@@ -100,6 +100,115 @@ def _build_skills_fixture(root: Path) -> Path:
     return skills
 
 
+def _build_map_sync_fixture(root: Path) -> Path:
+    skills = root / ".claude" / "skills"
+    _write_skill(
+        skills,
+        "review-maps",
+        "name: review-maps\n"
+        "description: Map accuracy sync.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: user\n"
+        "  repeatable: true\n"
+        "  inputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "  outputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "  next: [review-documentation-map, sync-documentation-maps]\n",
+    )
+    _write_skill(
+        skills,
+        "review-documentation-map",
+        "name: review-documentation-map\n"
+        "description: Review one map.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: both\n"
+        "  repeatable: true\n"
+        "  inputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "    - profile-al-dev-shared/skills/\n"
+        "    - profile-al-dev-shared/agents/\n"
+        "  outputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n",
+    )
+    _write_skill(
+        skills,
+        "sync-documentation-maps",
+        "name: sync-documentation-maps\n"
+        "description: Start async sync.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: both\n"
+        "  repeatable: true\n"
+        "  inputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "  outputs:\n"
+        "    - .dev/sync-documentation-maps-checkpoint.json\n"
+        "    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json\n"
+        "  next: [sync-documentation-maps-collect]\n",
+    )
+    _write_skill(
+        skills,
+        "sync-documentation-maps-collect",
+        "name: sync-documentation-maps-collect\n"
+        "description: Collect async audits.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: user\n"
+        "  repeatable: false\n"
+        "  inputs:\n"
+        "    - .dev/sync-documentation-maps-checkpoint.json\n"
+        "    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json\n"
+        "  outputs:\n"
+        "    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md\n"
+        "  next: [sync-documentation-maps-apply]\n",
+    )
+    _write_skill(
+        skills,
+        "sync-documentation-maps-apply",
+        "name: sync-documentation-maps-apply\n"
+        "description: Apply async updates.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: user\n"
+        "  repeatable: false\n"
+        "  inputs:\n"
+        "    - .dev/sync-documentation-maps-checkpoint.json\n"
+        "    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md\n"
+        "  outputs:\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "  next: [sync-documentation-maps-write]\n",
+    )
+    _write_skill(
+        skills,
+        "sync-documentation-maps-write",
+        "name: sync-documentation-maps-write\n"
+        "description: Final regeneration step.\n"
+        "workflow:\n"
+        "  stage: map-sync\n"
+        "  invoked-by: user\n"
+        "  repeatable: false\n"
+        "  inputs:\n"
+        "    - .dev/sync-documentation-maps-checkpoint.json\n"
+        "    - docs/al-dev-skills-map.md\n"
+        "    - docs/al-dev-agent-map.md\n"
+        "  outputs:\n"
+        "    - docs/al-dev-workflow-diagrams.md\n"
+        "    - docs/al-dev-plugin-graph.md\n"
+        "    - docs/maintainer-tooling.md\n"
+        "    - profile-al-dev-shared/generated/agents/\n",
+    )
+    return skills
+
+
 def test_load_contracts_parses_and_reports_missing() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_skills_fixture(Path(td))
@@ -196,6 +305,16 @@ def test_normalize_template() -> None:
     assert lib.normalize_template("docs/plain.md") == "docs/plain.md"
 
 
+def test_short_label_preserves_trailing_slash_directory_names() -> None:
+    assert lib._short_label("profile-al-dev-shared/generated/agents/") == "generated/agents/"
+    assert lib._short_label("profile-al-dev-shared/knowledge/") == "knowledge/"
+    assert lib._short_label("profile-al-dev-shared/skills/") == "skills/"
+    assert (
+        lib._short_label("docs/al-dev-workflow-diagrams.md")
+        == ".../al-dev-workflow-diagrams.md"
+    )
+
+
 def test_producers_consumers_match_on_normalized_templates() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_skills_fixture(Path(td))
@@ -251,7 +370,7 @@ def test_compute_gaps_reports_all_six_signals() -> None:
         assert all(detail == "never produced" for _, detail in gaps["stale-artifact"])
 
 
-def test_overview_renders_entries_repeat_loops_and_manual_steps() -> None:
+def test_overview_renders_entries_and_manual_steps_without_repeat_loops() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_skills_fixture(Path(td))
         contracts, _ = lib.load_contracts(skills)
@@ -260,13 +379,17 @@ def test_overview_renders_entries_repeat_loops_and_manual_steps() -> None:
         assert 'skill_alpha_audit["/alpha-audit"]' in text
         assert 'skill_gamma_plan["/gamma-plan"]' in text
         assert "skill_beta_report" not in text  # internal skill never in overview
-        # Cross-stage closure edge labeled with the artifact that flows along it:
         assert 'skill_alpha_audit -- "docs/health/*-dossier.md" --> skill_gamma_plan' in text
-        assert 'skill_alpha_audit -. "repeat" .-> skill_alpha_audit' in text
+        assert "repeat" not in text
         assert 'manual_gamma_plan["implement the plan"]' in text
         assert "skill_gamma_plan --> manual_gamma_plan" in text
         assert "class manual_gamma_plan manualStep" in text
         assert 'subgraph stage_discover["Discover"]' in text
+        assert text.index('subgraph stage_discover["Discover"]') < text.index(
+            'subgraph stage_decide["Decide"]'
+        )
+        # Layout-enforced order: invisible ordering chain between consecutive stages
+        assert "stage_discover ~~~ stage_decide" in text
         assert node_count == 3  # alpha, gamma, manual node
 
 
@@ -318,6 +441,138 @@ def test_stage_detail_draws_dispatcher_edge_when_no_next_edge() -> None:
         contracts, _ = lib.load_contracts(skills)
         text, _ = lib.render_stage_detail(contracts, "discover", set())
         assert "skill_parent_skill -.-> skill_child_skill" in text
+
+
+def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_map_sync_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(
+            contracts,
+            "map-sync",
+            {
+                "docs/al-dev-workflow-diagrams.md",
+                "docs/al-dev-plugin-graph.md",
+                "docs/maintainer-tooling.md",
+                "profile-al-dev-shared/generated/agents/",
+            },
+        )
+        assert 'subgraph map_entry["Normal entry point"]' in text
+        assert 'subgraph map_in_session["In-session lane"]' in text
+        assert 'subgraph map_async["Async lane"]' in text
+        assert text.index('skill_review_maps["/review-maps"]') < text.index(
+            'skill_review_documentation_map["/review-documentation-map"]'
+        )
+        assert text.index('skill_review_maps["/review-maps"]') < text.index(
+            'skill_sync_documentation_maps["/sync-documentation-maps"]'
+        )
+        assert 'art_downstream_generated["downstream generated"]' in text
+        assert "art_profile_al_dev_shared_generated_agents_" not in text
+        assert ".../sync-documentation-maps-checkpoint.json" not in text
+        assert "repeat" not in text
+        assert node_count <= lib.NODE_BUDGET
+
+
+def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = Path(td) / ".claude" / "skills"
+        _write_skill(
+            skills,
+            "projection-sync",
+            "name: projection-sync\n"
+            "description: Regenerate projections.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: true\n"
+            "  inputs:\n"
+            "    - profile-al-dev-shared/agents/\n"
+            "  outputs:\n"
+            "    - profile-al-dev-shared/generated/agents/\n"
+            "  next: [align-harness-repos]\n",
+        )
+        _write_skill(
+            skills,
+            "audit-knowledge-quality",
+            "name: audit-knowledge-quality\n"
+            "description: Audit knowledge.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: true\n"
+            "  inputs:\n"
+            "    - profile-al-dev-shared/knowledge/\n"
+            "  outputs:\n"
+            "    - docs/al-dev-knowledge-quality.md\n"
+            "  next: [fix-knowledge-quality]\n",
+        )
+        _write_skill(
+            skills,
+            "fix-knowledge-quality",
+            "name: fix-knowledge-quality\n"
+            "description: Fix high knowledge findings.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: true\n"
+            "  inputs:\n"
+            "    - docs/al-dev-knowledge-quality.md\n"
+            "  outputs:\n"
+            "    - profile-al-dev-shared/knowledge/\n"
+            "  next: [align-harness-repos]\n",
+        )
+        _write_skill(
+            skills,
+            "align-harness-repos",
+            "name: align-harness-repos\n"
+            "description: Validate neutrality.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: true\n"
+            "  inputs:\n"
+            "    - profile-al-dev-shared/skills/\n"
+            "    - profile-al-dev-shared/agents/\n"
+            "    - profile-al-dev-shared/knowledge/\n",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(
+            contracts,
+            "derive",
+            {"profile-al-dev-shared/generated/agents/"},
+        )
+        assert 'subgraph agent_lane["Agent source changed"]' in text
+        assert 'subgraph knowledge_lane["Knowledge source changed"]' in text
+        assert 'skill_projection_sync["/projection-sync"]' in text
+        assert 'skill_audit_knowledge_quality["/audit-knowledge-quality"]' in text
+        assert 'skill_fix_knowledge_quality["/fix-knowledge-quality"]' in text
+        assert 'skill_align_harness_repos["/align-harness-repos"]' in text
+        assert 'art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality' in text
+        assert "skill_fix_knowledge_quality --> skill_align_harness_repos" in text
+        assert 'art_generated_agents["generated/agents/"]' in text
+        assert '[".../"]' not in text
+        assert "repeat" not in text
+        assert node_count <= lib.NODE_BUDGET
+
+
+def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_map_sync_fixture(Path(td))
+        write_skill = skills / "sync-documentation-maps-write" / "SKILL.md"
+        write_skill.write_text(
+            write_skill.read_text(encoding="utf-8").replace(
+                "    - docs/al-dev-plugin-graph.md\n",
+                "",
+            ),
+            encoding="utf-8",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
+        assert 'subgraph map_entry["Normal entry point"]' not in text
+        assert 'art_downstream_generated["downstream generated"]' not in text
+        assert 'skill_sync_documentation_maps_write["/sync-documentation-maps-write"]' in text
+        assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
+        assert node_count > lib.NODE_BUDGET
 
 
 def test_stage_detail_empty_stage_returns_sentence() -> None:
@@ -581,6 +836,21 @@ def test_compute_gaps_excludes_self_generated_guide_from_freshness() -> None:
         # And the guide is still surfaced as an orphaned artifact (time-invariant signal):
         orphan_items = [item for item, _ in gaps["orphaned-artifact"]]
         assert "docs/maintainer-tooling.md" in orphan_items
+
+
+def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
+    skills = REPO_ROOT / ".claude" / "skills"
+    contracts, _ = lib.load_contracts(skills)
+    map_sync_text, _ = lib.render_stage_detail(contracts, "map-sync", set())
+    assert 'subgraph map_entry["Normal entry point"]' in map_sync_text, (
+        "live map-sync contracts no longer match the focused-renderer shape; "
+        "the guide will degrade to the dense generic diagram"
+    )
+    derive_text, _ = lib.render_stage_detail(contracts, "derive", set())
+    assert 'subgraph agent_lane["Agent source changed"]' in derive_text, (
+        "live derive contracts no longer match the focused-renderer shape; "
+        "the guide will degrade to the dense generic diagram"
+    )
 
 
 def _run(func):
