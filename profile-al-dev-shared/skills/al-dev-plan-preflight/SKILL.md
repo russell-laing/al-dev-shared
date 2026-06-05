@@ -53,38 +53,34 @@ intermediate state from these preflight phases directly.
 
 ### Resume modes
 
-**Mode A — `--resume` passed in $ARGUMENTS:**
-The caller is asserting context is already finalized and wants to
-skip re-gathering and re-emit the existing context block.
+Decide the mode from `$ARGUMENTS` and the presence of
+`.dev/preflight-context.md`:
 
-1. Read `.dev/preflight-context.md`.
-2. If the file is **missing or unreadable**, STOP and report:
-   *"No preflight context to resume from. Run /al-dev-plan-preflight
-   without --resume to perform preflight (phases 0–1.6) first."*
-   Do not fabricate context state.
-3. If present, load the context fields (see schema below) into the
-   working state and emit the `PREFLIGHT_CONTEXT` block. Honour
-   `no_crit_swarm` if set.
+- **Mode A — `--resume` passed:** the caller asserts context is already
+  finalized. If `.dev/preflight-context.md` is missing or unreadable,
+  STOP and report: *"No preflight context to resume from. Run
+  /al-dev-plan-preflight without --resume to perform preflight (phases
+  0–1.6) first."* Do not fabricate context state. Otherwise run the
+  **shared load step** below.
+- **Mode B — no `--resume`, but `.dev/preflight-context.md` exists:**
+  offer resume via USER_GATE:
 
-**Mode B — no `--resume`, but `.dev/preflight-context.md`
-exists:**
-Offer resume via USER_GATE:
+  > A prior preflight context exists (saved [timestamp]) for:
+  > [one-line requirements summary].
+  >
+  > - **Resume** — re-emit the existing context block (skip re-gathering)
+  > - **Restart** — discard the context and gather fresh
 
-> A prior preflight context exists (saved [timestamp]) for:
-> [one-line requirements summary].
->
-> - **Resume** — re-emit the existing context block (skip re-gathering)
-> - **Restart** — discard the context and gather fresh
+  **Resume** → run the **shared load step** below. **Restart** → delete
+  `.dev/preflight-context.md`, then proceed as Mode C.
+- **Mode C — no `--resume` and no context file:** apply the standard
+  Phase 0 Read Protocol in `knowledge/workflow-resilience.md` (handles
+  `.dev/progress.md` mid-run resume), then proceed to Phase 0.5.
 
-- **Resume** → load context, emit `PREFLIGHT_CONTEXT` (same as Mode A).
-- **Restart** → delete `.dev/preflight-context.md`, then also
-  apply the standard `.dev/progress.md` Read Protocol below before
-  Phase 0.5.
-
-**Mode C — no `--resume` and no context file:**
-Apply the standard Phase 0 Read Protocol in
-`knowledge/workflow-resilience.md` (handles `.dev/progress.md`
-mid-run resume), then proceed to Phase 0.5.
+**Shared load step (Mode A, and Mode B → Resume):** read
+`.dev/preflight-context.md`, load the context fields (see schema below)
+into the working state, emit the `PREFLIGHT_CONTEXT` block, and honour
+`no_crit_swarm` if set.
 
 ### PREFLIGHT_CONTEXT schema
 
@@ -144,7 +140,7 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 
 - If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Sufficient context requires: (1) a feature name or description, AND (2) at least one functional requirement, AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting." Ask the user exactly one question:
   > "What AL feature or fix should I plan? Please describe the requirement or paste a spec."
-- Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** is provided — one that supplies all three elements above: a feature description, at least one functional requirement, and a concrete anchor (named BC object or named user workflow).
+- Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** is provided — one that supplies all three elements above.
 - Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
 **Clarification retry logic:**
@@ -168,10 +164,7 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 
 ## Phase 1.5: Verify External Claims
 
-**Phase 1.5 (Optional — External Claims Verification):** If the user request references a findings file, codeburn output, lint report, or third-party analysis, execute this phase to verify claims before recording them. Otherwise, skip to Phase 1.6.
-
-If the request references a findings file, codeburn output, lint report,
-or any third-party analysis, verify the claims before recording them:
+**Phase 1.5 (Optional — External Claims Verification):** If the user request references a findings file, codeburn output, lint report, or third-party analysis, verify the claims before recording them. Otherwise, skip to Phase 1.6.
 
 1. **File path verification:** For each file path mentioned in findings:
    - Confirm the file exists at that exact path with `test -f <path>`
@@ -210,9 +203,7 @@ or any third-party analysis, verify the claims before recording them:
 
 ## Phase 1.6: Target Confirmation
 
-**Phase 1.6 (Optional — Target Confirmation):** If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before emitting context. Otherwise, skip to the context write.
-
-Before acting on any findings file or context document:
+**Phase 1.6 (Optional — Target Confirmation):** If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before emitting context — run the steps below before acting on any findings file or context document. Otherwise, skip to the context write.
 
 1. **Identify targets:**
    - Findings reference: Extract the target name/path from the document
