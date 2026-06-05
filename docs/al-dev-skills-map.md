@@ -115,7 +115,7 @@ flowchart LR
     skill_al_dev_interview[al-dev-interview]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_support_reply[al-dev-support-reply]
-    agent_al_dev_ticket_agent[al-dev-ticket-agent]
+    agent_al_dev_ticket_context_writer[al-dev-ticket-context-writer]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
     artifact_ticket_context_md[.dev/ticket-context.md]
@@ -127,7 +127,7 @@ flowchart LR
     skill_al_dev_ticket -.-> skill_al_dev_interview
     skill_al_dev_ticket -.-> skill_al_dev_plan
     skill_al_dev_ticket -.-> skill_al_dev_support_reply
-    skill_al_dev_ticket --> agent_al_dev_ticket_agent
+    skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     skill_al_dev_ticket --> artifact_ticket_context_md
@@ -140,14 +140,14 @@ flowchart LR
     class skill_al_dev_interview skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_support_reply skillNode
-    class agent_al_dev_ticket_agent agentNode
+    class agent_al_dev_ticket_context_writer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class artifact_ticket_context_md artifactNode
     class artifact_ticket_reply_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-ticket-agent`
+Agents spawned: `al-dev-shared:al-dev-ticket-context-writer`
 <!-- END GENERATED: skill-drilldown-al-dev-ticket -->
 
 ### /al-dev-support-reply

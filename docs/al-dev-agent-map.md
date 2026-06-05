@@ -35,7 +35,7 @@
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
 | al-dev-support-reply-drafter | sonnet | Write | `/al-dev-support-reply` |
 | al-dev-support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/al-dev-support-reply` |
-| al-dev-ticket-agent | haiku | Bash, Write | `/al-dev-ticket` |
+| al-dev-ticket-context-writer | haiku | Bash, Write | `/al-dev-ticket` |
 <!-- END GENERATED: agent-catalog-table -->
 
 ---
@@ -541,7 +541,7 @@
 
 ---
 
-### al-dev-ticket-agent
+### al-dev-ticket-context-writer
 
 **Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
 **Model:** haiku

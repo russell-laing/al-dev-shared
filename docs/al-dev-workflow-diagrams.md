@@ -49,7 +49,7 @@ flowchart LR
         agent_al_dev_solution_architect[al-dev-solution-architect]
         agent_al_dev_support_reply_drafter[al-dev-support-reply-drafter]
         agent_al_dev_support_researcher[al-dev-support-researcher]
-        agent_al_dev_ticket_agent[al-dev-ticket-agent]
+        agent_al_dev_ticket_context_writer[al-dev-ticket-context-writer]
     end
 
     skill_al_dev_develop --> skill_al_dev_review_develop
@@ -89,7 +89,7 @@ flowchart LR
     skill_al_dev_review_develop --> agent_al_dev_security_reviewer
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
-    skill_al_dev_ticket --> agent_al_dev_ticket_agent
+    skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_commit_recover --> agent_al_dev_commit_recover_fixer
 
     class skill_al_dev_commit skillNode
@@ -127,7 +127,7 @@ flowchart LR
     class agent_al_dev_solution_architect agentNode
     class agent_al_dev_support_reply_drafter agentNode
     class agent_al_dev_support_researcher agentNode
-    class agent_al_dev_ticket_agent agentNode
+    class agent_al_dev_ticket_context_writer agentNode
 ```
 <!-- END GENERATED: workflow-skills-agents-mermaid -->
 
@@ -170,7 +170,7 @@ flowchart LR
         agent_al_dev_script_engineer[al-dev-script-engineer]
         agent_al_dev_security_reviewer[al-dev-security-reviewer]
         agent_al_dev_solution_architect[al-dev-solution-architect]
-        agent_al_dev_ticket_agent[al-dev-ticket-agent]
+        agent_al_dev_ticket_context_writer[al-dev-ticket-context-writer]
     end
     subgraph Knowledge[Knowledge Files]
         knowledge_al_dev_develop_spawn_prompt_md[al-dev-develop-spawn-prompt]
@@ -286,8 +286,8 @@ flowchart LR
     agent_al_dev_solution_architect --> knowledge_solution_architect_research_patterns_md
     agent_al_dev_solution_architect --> knowledge_solution_architect_schema_mapping_md
     agent_al_dev_solution_architect --> knowledge_solution_plan_template_md
-    agent_al_dev_ticket_agent --> knowledge_ticket_agent_invocation_pattern_md
-    agent_al_dev_ticket_agent --> knowledge_ticket_image_patterns_md
+    agent_al_dev_ticket_context_writer --> knowledge_ticket_agent_invocation_pattern_md
+    agent_al_dev_ticket_context_writer --> knowledge_ticket_image_patterns_md
 
     class skill_al_dev_commit skillNode
     class skill_al_dev_consolidate skillNode
@@ -316,7 +316,7 @@ flowchart LR
     class agent_al_dev_script_engineer agentNode
     class agent_al_dev_security_reviewer agentNode
     class agent_al_dev_solution_architect agentNode
-    class agent_al_dev_ticket_agent agentNode
+    class agent_al_dev_ticket_context_writer agentNode
     class knowledge_al_dev_develop_spawn_prompt_md knowledgeNode
     class knowledge_al_dev_fix_examples_md knowledgeNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode

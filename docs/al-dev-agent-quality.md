@@ -285,7 +285,7 @@ Fix: Minor inconsistency; consider renaming to `al-dev-support-researcher` to al
 
 ---
 
-### al-dev-ticket-agent
+### al-dev-ticket-context-writer
 
 **[High] Lens 4 — Bloat**
 Observation: `## Phase: fetch` is a single section spanning ~120 lines (Steps 1–3 with two parallel curl calls, jq parsing, status/priority mapping table, and the full output file template).
