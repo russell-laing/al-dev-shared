@@ -60,7 +60,7 @@ _None found._
 ### ticket-agent-invocation-pattern.md
 
 - **Issue:** [NO-CODE] — "Invocation Pattern: Agent Spawn Parameters" implies code but has no fenced block
-- **Referenced by:** `al-dev-ticket-agent.md`, `al-dev-ticket/SKILL.md`
+- **Referenced by:** `al-dev-ticket-context-writer.md`, `al-dev-ticket/SKILL.md`
 - **Assessment:** False positive. The section is intentionally prose-only contract documentation: it describes which parameters (TICKET_ID in prompt, credentials in environment) flow to the ticket agent. The knowledge file has actual fenced code blocks in other sections (Dispatch Block Template at lines 9–25, Return format at lines 55–63), and the referencing skill has its own dispatch examples. This section's heading is slightly misleading but the content is appropriate and complete.
 - **Recommendation:** No action needed. If desired, rename heading from "Invocation Pattern: Agent Spawn Parameters" to "Agent Spawn Contract" to suppress future validator false positives.
 
