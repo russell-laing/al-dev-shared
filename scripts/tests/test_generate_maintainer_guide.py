@@ -443,6 +443,93 @@ def test_build_sections_wraps_all_marker_keys_and_warns_over_budget() -> None:
         assert any("maintainer-stage-derive" in w and "17" in w for w in warnings2), warnings2
 
 
+def _guide_template(*, drop_key: str | None = None) -> str:
+    keys = [
+        "maintainer-workflow-overview",
+        "maintainer-stage-map-sync",
+        "maintainer-stage-discover",
+        "maintainer-stage-decide",
+        "maintainer-stage-derive",
+        "maintainer-stage-support",
+        "maintainer-user-journey",
+        "maintainer-skills-tables",
+        "maintainer-gaps",
+    ]
+    parts = ["# Maintainer Tooling Reference", "", "Hand-authored intro.", ""]
+    for key in keys:
+        if key == drop_key:
+            continue
+        parts.append(f"<!-- BEGIN GENERATED: {key} -->")
+        parts.append("stale placeholder")
+        parts.append(f"<!-- END GENERATED: {key} -->")
+        parts.append("")
+    parts.append("Hand-authored outro.")
+    return "\n".join(parts) + "\n"
+
+
+def _patched_cli(root: Path):
+    cli = _load_module("generate-maintainer-guide.py", "generate_maintainer_guide")
+    cli.REPO = root
+    cli.SKILLS_DIR = root / ".claude" / "skills"
+    cli.GUIDE_PATH = root / "docs" / "maintainer-tooling.md"
+    return cli
+
+
+def test_cli_main_rewrites_only_marked_regions() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _build_skills_fixture(root)
+        guide = root / "docs" / "maintainer-tooling.md"
+        guide.parent.mkdir(parents=True)
+        guide.write_text(_guide_template(), encoding="utf-8")
+        cli = _patched_cli(root)
+        assert cli.main() == 0
+        text = guide.read_text(encoding="utf-8")
+        assert "Hand-authored intro." in text
+        assert "Hand-authored outro." in text
+        assert "stale placeholder" not in text
+        assert 'skill_alpha_audit["/alpha-audit"]' in text
+        assert "| Manual step | `implement the plan` | follows /gamma-plan |" in text
+
+
+def test_cli_main_fails_closed_on_malformed_contract() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        skills = _build_skills_fixture(root)
+        _write_skill(
+            skills,
+            "broken-skill",
+            "name: broken-skill\n"
+            "description: Broken.\n"
+            "workflow:\n"
+            "  stage: nonsense\n"
+            "  invoked-by: user\n",
+        )
+        guide = root / "docs" / "maintainer-tooling.md"
+        guide.parent.mkdir(parents=True)
+        guide.write_text(_guide_template(), encoding="utf-8")
+        before = guide.read_bytes()
+        cli = _patched_cli(root)
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            assert cli.main() == 1
+        assert "broken-skill" in stderr.getvalue()  # error names the offending skill
+        assert guide.read_bytes() == before  # byte-identical: no partial rewrite
+
+
+def test_cli_main_fails_closed_when_marker_pair_missing() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _build_skills_fixture(root)
+        guide = root / "docs" / "maintainer-tooling.md"
+        guide.parent.mkdir(parents=True)
+        guide.write_text(_guide_template(drop_key="maintainer-gaps"), encoding="utf-8")
+        before = guide.read_bytes()
+        cli = _patched_cli(root)
+        assert cli.main() == 1
+        assert guide.read_bytes() == before
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
