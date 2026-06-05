@@ -15,11 +15,11 @@ The six agents are dispatched in strict sequential order:
 | 1.3 | `al-dev-shared:al-dev-commit-message-drafter` | Draft commit messages and propose file groupings |
 | 3.1 | `al-dev-shared:al-dev-commit-lint-fixer` | Run lint preflight and fix trailing whitespace |
 | 3.2 | `al-dev-shared:al-dev-commit-ooxml-validator` | Validate OOXML ZIP integrity for `.docx` files |
-| 4.1 | `al-dev-shared:al-dev-commit-agent-execute` | Execute approved commits via `git` |
+| 4.1 | `al-dev-shared:al-dev-commit-executor` | Execute approved commits via `git` |
 | 4.3 | `al-dev-shared:al-dev-commit-hook-fixer` | Diagnose and recover from pre-commit hook failures (error path only) |
 
 Phase 4.3 (`al-dev-commit-hook-fixer`) is conditional — it is dispatched only
-when `al-dev-commit-agent-execute` returns a non-`NONE` `HOOK_FAILURES` block.
+when `al-dev-commit-executor` returns a non-`NONE` `HOOK_FAILURES` block.
 
 ## Phase Flow
 
@@ -48,7 +48,7 @@ Phase 3.2  al-dev-commit-ooxml-validator
   │  Input: approved plan from Phase 2
   │  Output: OOXML_FAILURES
   ▼
-Phase 4.1  al-dev-commit-agent-execute
+Phase 4.1  al-dev-commit-executor
   │  Input: approved plan from Phase 2
   │  Output: COMMITS, SKIPPED, HOOK_FAILURES
   ▼
@@ -118,7 +118,7 @@ orchestrator pastes these verbatim — never summarizes or transforms them:
 | `al-dev-commit-message-drafter` (1.3) | `MANIFESTS` block from Phase 1.1 |
 | `al-dev-commit-lint-fixer` (3.1) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-ooxml-validator` (3.2) | `APPROVED_PLAN` from Phase 2 |
-| `al-dev-commit-agent-execute` (4.1) | `APPROVED_PLAN` from Phase 2 |
+| `al-dev-commit-executor` (4.1) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-hook-fixer` (4.3) | `.dev/hook-failures.json`, `.dev/commits.json`; `HOOK_FAILURES` inline fallback |
 
 ## Per-Agent Verification Checklist
@@ -141,7 +141,7 @@ remain present:
 - Skip binary and OOXML files in the trailing-whitespace step
 - Stop immediately if line-count collapse detected (corruption signal)
 
-**`al-dev-commit-agent-execute` (Phase 4.1) — additional rules:**
+**`al-dev-commit-executor` (Phase 4.1) — additional rules:**
 
 - Never add `Co-Authored-By` trailers to commit messages
 - Use `git -C <path>` instead of `cd <path> && git`

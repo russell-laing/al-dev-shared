@@ -8,7 +8,7 @@ scenarios:
       - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
-      - al-dev-shared:al-dev-commit-agent-execute
+      - al-dev-shared:al-dev-commit-executor
     notes: "Standard commit flow. Harness pre-seeds a small staged change (one-line edit to a fixture file) before the run."
 
   - id: commit-scope-creep-guard
@@ -19,7 +19,7 @@ scenarios:
       - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
-      - al-dev-shared:al-dev-commit-agent-execute
+      - al-dev-shared:al-dev-commit-executor
     notes: "Harness pre-seeds a deletion of an unrelated file. Skill must surface the unexpected deletion in its summary and gate on user confirmation — verified by transcript grep for 'unrelated' / 'scope' in the agent's final message."
 
   - id: commit-explicit-scoped-docs
@@ -30,7 +30,7 @@ scenarios:
       - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
-      - al-dev-shared:al-dev-commit-agent-execute
+      - al-dev-shared:al-dev-commit-executor
     notes: "Commit intent regression. Explicit scoped commit prompts must route to commit gates and commit agents, not edit or planning flows."
 
   - id: compile-gate-blocks-errors
@@ -40,7 +40,7 @@ scenarios:
       - .dev/compile-errors.log
     must_invoke_agent:
       - al-dev-shared:al-dev-commit-analyzer
-    notes: "Compile gate regression. Harness pre-seeds staged .al files that contain compile errors. Skill must read current staged-state success evidence from `.dev/compile-errors.log`, refuse any ready-to-commit claim, and halt before `al-dev-commit-agent-execute`."
+    notes: "Compile gate regression. Harness pre-seeds staged .al files that contain compile errors. Skill must read current staged-state success evidence from `.dev/compile-errors.log`, refuse any ready-to-commit claim, and halt before `al-dev-commit-executor`."
 
   - id: docs-only-skip-compile-gate
     status: golden
@@ -50,5 +50,5 @@ scenarios:
       - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
-      - al-dev-shared:al-dev-commit-agent-execute
+      - al-dev-shared:al-dev-commit-executor
     notes: "Docs-only optimization regression. Harness pre-seeds only non-AL staged changes. Skill may skip Step 4a, but it still must base any ready-to-commit claim on the current staged diff and required staged-state evidence."

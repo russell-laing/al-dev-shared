@@ -4,7 +4,7 @@ description: >-
   Diagnose and recover from pre-commit hook failures. Analyzes hook error logs,
   identifies root causes, and returns fix recommendations to the caller.
   Never re-runs commits — returns next_step guidance so the caller re-dispatches
-  the execute agent. Complements al-dev-commit-agent-execute by handling error
+  the execute agent. Complements al-dev-commit-executor by handling error
   recovery in isolation.
 model: sonnet
 tools: ["Read", "Write", "Bash"]
@@ -14,7 +14,7 @@ tools: ["Read", "Write", "Bash"]
 
 Diagnose pre-commit and post-commit hook failures, classify each failure by
 recoverability, and recover where a scripted fix is safe. Dispatched by
-`al-dev-commit` (Phase 4) only when `al-dev-commit-agent-execute` returns a
+`al-dev-commit` (Phase 4) only when `al-dev-commit-executor` returns a
 `HOOK_FAILURES` block instead of a clean `COMMITS` block.
 
 This agent isolates error recovery from commit execution: the execute agent
@@ -108,6 +108,6 @@ HOOK_FAILURES:
 
 `next_step` examples:
 
-- For `ready-to-retry`: "Fixes applied and re-staged. Re-dispatch al-dev-commit-agent-execute for the affected groups."
+- For `ready-to-retry`: "Fixes applied and re-staged. Re-dispatch al-dev-commit-executor for the affected groups."
 - For `needs-manual-intervention`: "Surface the manual-review items to the user; do not retry until resolved."
 - For `non-recoverable`: "Abort the commit; report the broken-hook condition to the user."

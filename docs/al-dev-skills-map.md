@@ -642,8 +642,8 @@ flowchart LR
     Phase2["Phase 2"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
-    agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
     agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
+    agent_al_dev_commit_executor[al-dev-commit-executor]
     agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
     agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
@@ -663,8 +663,8 @@ flowchart LR
     skill_al_dev_commit --> Phase2
     skill_al_dev_commit --> Phase3
     skill_al_dev_commit --> Phase4
-    skill_al_dev_commit --> agent_al_dev_commit_agent_execute
     skill_al_dev_commit --> agent_al_dev_commit_analyzer
+    skill_al_dev_commit --> agent_al_dev_commit_executor
     skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
     skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
@@ -685,8 +685,8 @@ flowchart LR
     class Phase2 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
-    class agent_al_dev_commit_agent_execute agentNode
     class agent_al_dev_commit_analyzer agentNode
+    class agent_al_dev_commit_executor agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_message_drafter agentNode
@@ -702,7 +702,7 @@ flowchart LR
     class artifact_hook_failures_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-agent-execute`, `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
+Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
 <!-- END GENERATED: skill-drilldown-al-dev-commit -->
 
 ### /al-dev-explore

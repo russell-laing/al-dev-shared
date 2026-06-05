@@ -32,8 +32,8 @@ flowchart LR
     end
     subgraph Agents[Agents]
         agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
-        agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
         agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
+        agent_al_dev_commit_executor[al-dev-commit-executor]
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
         agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
         agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
@@ -69,8 +69,8 @@ flowchart LR
     skill_al_dev_ticket --> skill_al_dev_interview
     skill_al_dev_ticket --> skill_al_dev_plan
     skill_al_dev_ticket --> skill_al_dev_support_reply
-    skill_al_dev_commit --> agent_al_dev_commit_agent_execute
     skill_al_dev_commit --> agent_al_dev_commit_analyzer
+    skill_al_dev_commit --> agent_al_dev_commit_executor
     skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
     skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
@@ -110,8 +110,8 @@ flowchart LR
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
-    class agent_al_dev_commit_agent_execute agentNode
     class agent_al_dev_commit_analyzer agentNode
+    class agent_al_dev_commit_executor agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_message_drafter agentNode

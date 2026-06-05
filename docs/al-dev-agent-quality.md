@@ -253,7 +253,7 @@ Fix: Change `al-dev-python-script-engineer` to `al-dev-script-engineer` and qual
 
 ---
 
-### al-dev-commit-agent-execute
+### al-dev-commit-executor
 
 **[High] Lens 4 — Bloat**
 Observation: `## Phase: execute` is a single section spanning ~185 lines (Steps 1–3 with sub-steps 1.5, lint baseline, corruption check, OOXML gate, scrubbing, retry logic, and return block).

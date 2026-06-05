@@ -15,8 +15,8 @@
 |-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-code-review | sonnet | Read | (none found) |
-| al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
@@ -111,7 +111,7 @@
 
 ---
 
-### al-dev-commit-agent-execute
+### al-dev-commit-executor
 
 **Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
 **Model:** haiku
@@ -179,7 +179,7 @@
 
 ### al-dev-commit-hook-fixer
 
-**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-agent-execute by handling error recovery in isolation.
+**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-executor by handling error recovery in isolation.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
 **Spawned by:** /al-dev-commit (Phase 4 — error recovery)
