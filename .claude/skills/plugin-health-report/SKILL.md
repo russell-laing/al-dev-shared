@@ -183,8 +183,9 @@ The generator writes `docs/al-dev-plugin-graph.md` and exits 0 even on parse err
 Print, per surface: dossier path + severity counts (new vs recurring) + the
 top action.
 List any failed lenses.
-Ask: "Review the dossier, record accept/decline decisions in
-`docs/health/dispositions.md`, then run `/plan-health-findings` on the
+Ask: "Review the dossier, record accept/decline decisions via
+`/record-health-dispositions` (or directly in
+`docs/health/dispositions.md`), then run `/plan-health-findings` on the
 accepted items?" — recording dispositions is what stops the next sweep from
 re-ranking the same findings as new.
 Do not edit any source file.

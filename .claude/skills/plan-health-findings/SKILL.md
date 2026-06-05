@@ -97,7 +97,8 @@ Then consult `docs/health/dispositions.md` (if present), matching by object
 - Skip findings marked `declined`, `grandfathered`, or `fixed` (note the
   skip count).
 - Findings with no ledger row are undispositioned: list them and ask the
-  user whether to include them in this plan or record dispositions first.
+  user whether to include them in this plan or record dispositions first
+  via `/record-health-dispositions`.
 
 Apply the Argument Routing verb filter (`--skills` / `--agents`) to the
 collected findings.

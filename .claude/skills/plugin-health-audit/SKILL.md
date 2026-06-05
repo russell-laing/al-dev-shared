@@ -14,6 +14,7 @@ argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all]
 Standing suggestions-only entry point. Detects drift across both plugin surfaces and
 consolidates suggestions into one ranked dossier per surface. Nothing is
 auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review) →
+`/record-health-dispositions` (record decisions) →
 `/plan-health-findings` (rubber-duck accepted items) → plan → execute.
 
 Implemented as two sub-skills:

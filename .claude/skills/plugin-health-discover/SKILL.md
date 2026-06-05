@@ -43,7 +43,7 @@ ledger is absent), warn:
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
 A new sweep will largely re-discover its open findings. Record
-accept/decline/fixed rows in docs/health/dispositions.md first, or
+accept/decline/fixed rows via /record-health-dispositions first, or
 confirm to sweep anyway.
 ```
 
@@ -51,7 +51,7 @@ Then branch explicitly:
 
 - User confirms → proceed to Phase 1.
 - User declines, or gives no clear confirmation → stop. Report "Sweep not
-  dispatched — record dispositions in `docs/health/dispositions.md` and
+  dispatched — record dispositions via `/record-health-dispositions` and
   re-run." Do not dispatch any lens.
 
 Skip the guard when `--resume` is present (resuming an interrupted sweep is
