@@ -566,7 +566,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/maintainer-tooling.md` | latest 2026-06-06 |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-05 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Internal-only skill | none | — |

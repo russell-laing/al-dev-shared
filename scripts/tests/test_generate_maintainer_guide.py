@@ -554,6 +554,35 @@ def test_skills_tables_escapes_pipe_in_description() -> None:
         assert glance_row.count("|") - glance_row.count("\\|") == 5
 
 
+def test_compute_gaps_excludes_self_generated_guide_from_freshness() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        skills = repo / ".claude" / "skills"
+        _write_skill(
+            skills,
+            "writer-skill",
+            "name: writer-skill\n"
+            "description: Writes the guide.\n"
+            "workflow:\n"
+            "  stage: map-sync\n"
+            "  invoked-by: user\n"
+            "  repeatable: false\n"
+            "  outputs:\n"
+            "    - docs/maintainer-tooling.md\n"
+            "    - docs/other-output.md\n",
+        )
+        contracts, missing = lib.load_contracts(skills)
+        gaps = lib.compute_gaps(contracts, missing, repo)
+        stale_items = [item for item, _ in gaps["stale-artifact"]]
+        # The guide must NOT report its own freshness (self-referential, breaks idempotence):
+        assert "docs/maintainer-tooling.md" not in stale_items
+        # But other produced artifacts still get a freshness row:
+        assert "docs/other-output.md" in stale_items
+        # And the guide is still surfaced as an orphaned artifact (time-invariant signal):
+        orphan_items = [item for item, _ in gaps["orphaned-artifact"]]
+        assert "docs/maintainer-tooling.md" in orphan_items
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:

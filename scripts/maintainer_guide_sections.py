@@ -28,6 +28,7 @@ STAGE_TITLES = {
 NODE_BUDGET = 15
 PLACEHOLDER_RE = re.compile(r"<[^<>]+>|RUN_ID")
 EXTERNAL_INPUT_PREFIXES = ("profile-al-dev-shared/", ".claude/")
+SELF_GENERATED_DOC = "docs/maintainer-tooling.md"
 SKILL_INVOKER_RE = re.compile(r"^skill:([a-z0-9-]+)$")
 ALLOWED_WORKFLOW_KEYS = {
     "stage",
@@ -239,6 +240,8 @@ def compute_gaps(
     for name in sorted(missing_contracts):
         gaps["missing-contract"].append((name, "active skill with no workflow contract"))
     for norm in sorted(prod):
+        if norm == SELF_GENERATED_DOC:
+            continue
         gaps["stale-artifact"].append((norm, artifact_status(repo, norm)))
     return gaps
 
