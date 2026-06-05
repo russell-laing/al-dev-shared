@@ -1,9 +1,9 @@
 ---
 name: sync-documentation-maps-write
 description: >-
-  Second step of two-step sync finalization. Regenerates diagrams, projections,
-  and the plugin graph from updated maps, then commits. Run after
-  /sync-documentation-maps-apply has written the maps to docs/.
+  Final regeneration step after /sync-documentation-maps-apply; fourth step of
+  the async sync flow. Regenerates diagrams, projections, and the plugin graph
+  from updated maps, then commits.
 argument-hint: "[RUN_ID from checkpoint]"
 workflow:
   stage: map-sync
@@ -23,9 +23,10 @@ workflow:
 
 # Sync Documentation Maps — Write (Regenerate and Commit)
 
-Second step of two-step sync finalization. Regenerates Mermaid diagrams,
-harness-native agent projections, and the plugin dependency graph from the
-updated maps, then commits all changes.
+Final regeneration step after `/sync-documentation-maps-apply`; fourth step of
+the async sync flow. Regenerates Mermaid diagrams, harness-native agent
+projections, and the plugin dependency graph from the updated maps, then commits
+all changes.
 
 **Four-skill workflow:**
 

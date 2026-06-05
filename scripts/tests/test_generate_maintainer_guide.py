@@ -838,6 +838,21 @@ def test_compute_gaps_excludes_self_generated_guide_from_freshness() -> None:
         assert "docs/maintainer-tooling.md" in orphan_items
 
 
+def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
+    skills = REPO_ROOT / ".claude" / "skills"
+    contracts, _ = lib.load_contracts(skills)
+    map_sync_text, _ = lib.render_stage_detail(contracts, "map-sync", set())
+    assert 'subgraph map_entry["Normal entry point"]' in map_sync_text, (
+        "live map-sync contracts no longer match the focused-renderer shape; "
+        "the guide will degrade to the dense generic diagram"
+    )
+    derive_text, _ = lib.render_stage_detail(contracts, "derive", set())
+    assert 'subgraph agent_lane["Agent source changed"]' in derive_text, (
+        "live derive contracts no longer match the focused-renderer shape; "
+        "the guide will degrade to the dense generic diagram"
+    )
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
