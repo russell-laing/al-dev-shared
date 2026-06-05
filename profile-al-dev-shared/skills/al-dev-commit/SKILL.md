@@ -108,7 +108,7 @@ IF Freshdesk API is unavailable:
   └─ Continue to Phase 1
 ```
 
-### 0.3 — Verify File Integrity
+### 0.3 — Verify File Integrity & Staged Files
 
 For each staged modified file (ACMRT):
 
@@ -131,8 +131,6 @@ during edit. This may indicate a bash heredoc or perl regex issue.
 Check your edits before committing."
 
 **Stop.** Do not proceed.
-
-### 0.4 — Verify Staged Files
 
 Check what is staged:
 
@@ -172,9 +170,9 @@ Critical rule: never claim the staged set is ready, "clean compile", or "zero er
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.
 
-### 0.5 — Load Prior Lint Findings (Optional)
+### 0.4 — Optional Context: Prior Lint Findings & Acceptance Criteria
 
-If a prior lint report exists, load it to inform the commit workflow:
+**If a prior lint report exists,** load it to inform the commit workflow:
 
 1. **Check for lint report:**
 
@@ -199,7 +197,7 @@ If a prior lint report exists, load it to inform the commit workflow:
 
 This is optional; missing lint report does not block commit workflow.
 
-### 0.6 — Verify Acceptance Criteria (If Solution Plan Exists)
+**If a solution plan exists,** verify acceptance criteria:
 
 Check whether a solution plan exists:
 
@@ -217,9 +215,9 @@ Do not treat `[manual]` criteria as automatic blockers. Surface any pending manu
 
 If verification of any directly checkable criterion fails, stop the commit workflow and report the failure to the user.
 
-If no solution plan exists, skip this step and continue to 0.7.
+If no solution plan exists, skip this step and continue to 0.5.
 
-### 0.7 — Establish Gitmoji Style
+### 0.5 — Establish Gitmoji Style
 
 Check the project's recent commit style:
 
@@ -495,9 +493,7 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
   then `Follow the execute phase instructions in your agent definition.`
 - return format: `COMMITS, SKIPPED, HOOK_FAILURES`
 
-### 4.2 — Branch on Execution Result
-
-Inspect the execution agent output:
+**Branch on execution result:**
 
 - **`HOOK_FAILURES` is not `NONE`** (one or more groups rejected by a
   pre-commit hook) — proceed to 4.3 for error recovery before any summary.

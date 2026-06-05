@@ -51,9 +51,7 @@ Phase 3.2  al-dev-commit-ooxml-validator
 Phase 4.1  al-dev-commit-executor
   │  Input: approved plan from Phase 2
   │  Output: COMMITS, SKIPPED, HOOK_FAILURES
-  ▼
-Phase 4.2  Branch on HOOK_FAILURES
-  │
+  │  Branch on HOOK_FAILURES:
   ├─ HOOK_FAILURES == NONE ──────────────────────► Phase 4.4 Summary
   │
   └─ HOOK_FAILURES != NONE
@@ -100,7 +98,7 @@ PROJECT_CONTEXT:
 - Valid scopes: [list from Phase 0.2]
 - Object ID prefix: [from Phase 0.2]
 - AL naming pattern: [from Phase 0.2]
-- Gitmoji style: [from Phase 0.7]
+- Gitmoji style: [from Phase 0.5]
 
 FD_TICKET: [ticket number from Phase 0.2.1, or empty]
 ```

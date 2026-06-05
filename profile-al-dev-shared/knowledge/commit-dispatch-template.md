@@ -36,7 +36,7 @@ PROJECT_CONTEXT:
 - Valid scopes: [list from Phase 0.2]
 - Object ID prefix: [from Phase 0.2]
 - AL naming pattern: [from Phase 0.2]
-- Gitmoji style: [from Phase 0.6]
+- Gitmoji style: [from Phase 0.4]
 
 FD_TICKET: [ticket number from Phase 0.2, or empty]
 ```
