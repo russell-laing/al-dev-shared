@@ -159,8 +159,6 @@ deployment workflows.
 
 **Mitigation (Phase B/C):**
 
-- Integrate release-notes into `al-dev-consolidate` (summary) so notes
-  are always present.
 - Future: tie release-notes to deployment gating
   (`al-dev-publish-to-marketplace`).
 
