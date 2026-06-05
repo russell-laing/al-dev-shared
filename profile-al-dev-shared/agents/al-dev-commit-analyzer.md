@@ -1,10 +1,14 @@
 ---
-description: "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files."
+name: al-dev-commit-analyzer
+description: >-
+  Git commit analyzer agent. Reads staged diffs and builds per-file manifests
+  with object IDs and change signatures. Dispatched by al-dev-commit
+  (analysis phase). Read-only — never modifies files.
+model: haiku
 tools: ["Bash", "Read"]
 ---
 
-
-# Agent: al-dev-commit-agent-analysis (Analysis Phase)
+# Agent: al-dev-commit-analyzer (Analysis Phase)
 
 Read-only analysis phase of the commit workflow. Dispatched by
 `/al-dev-commit` with phase-specific instructions.

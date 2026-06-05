@@ -642,8 +642,8 @@ flowchart LR
     Phase2["Phase 2"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
-    agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
     agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
+    agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
     agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
     agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
@@ -663,8 +663,8 @@ flowchart LR
     skill_al_dev_commit --> Phase2
     skill_al_dev_commit --> Phase3
     skill_al_dev_commit --> Phase4
-    skill_al_dev_commit --> agent_al_dev_commit_agent_analysis
     skill_al_dev_commit --> agent_al_dev_commit_agent_execute
+    skill_al_dev_commit --> agent_al_dev_commit_analyzer
     skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
     skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
@@ -685,8 +685,8 @@ flowchart LR
     class Phase2 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
-    class agent_al_dev_commit_agent_analysis agentNode
     class agent_al_dev_commit_agent_execute agentNode
+    class agent_al_dev_commit_analyzer agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_message_drafter agentNode
@@ -702,7 +702,7 @@ flowchart LR
     class artifact_hook_failures_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-agent-analysis`, `al-dev-shared:al-dev-commit-agent-execute`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
+Agents spawned: `al-dev-shared:al-dev-commit-agent-execute`, `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
 <!-- END GENERATED: skill-drilldown-al-dev-commit -->
 
 ### /al-dev-explore
@@ -994,15 +994,18 @@ flowchart LR
     skill_commit_recover[commit-recover]
     agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
     artifact_commit_integrity_log[.dev/commit-integrity.log]
+    artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_learnings_md[.dev/learnings.md]
 
     skill_commit_recover --> agent_al_dev_commit_recover_fixer
     skill_commit_recover --> artifact_commit_integrity_log
+    skill_commit_recover --> artifact_compile_errors_log
     skill_commit_recover --> artifact_learnings_md
 
     class skill_commit_recover skillNode
     class agent_al_dev_commit_recover_fixer agentNode
     class artifact_commit_integrity_log artifactNode
+    class artifact_compile_errors_log artifactNode
     class artifact_learnings_md artifactNode
 ```
 

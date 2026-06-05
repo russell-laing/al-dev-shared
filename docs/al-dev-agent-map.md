@@ -15,8 +15,8 @@
 |-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-code-review | sonnet | Read | (none found) |
-| al-dev-commit-agent-analysis | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
@@ -64,7 +64,7 @@
 
 ---
 
-### al-dev-commit-agent-analysis
+### al-dev-commit-analyzer
 
 **Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files.
 **Model:** haiku
@@ -89,7 +89,7 @@
 
 ### al-dev-commit-message-drafter
 
-**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
+**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
 **Model:** haiku
 **Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)

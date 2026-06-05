@@ -11,7 +11,7 @@ The six agents are dispatched in strict sequential order:
 
 | Phase | Agent | Role |
 |---|---|---|
-| 1.1 | `al-dev-shared:al-dev-commit-agent-analysis` | Extract file manifests and deletion list from staged changes |
+| 1.1 | `al-dev-shared:al-dev-commit-analyzer` | Extract file manifests and deletion list from staged changes |
 | 1.3 | `al-dev-shared:al-dev-commit-message-drafter` | Draft commit messages and propose file groupings |
 | 3.1 | `al-dev-shared:al-dev-commit-lint-fixer` | Run lint preflight and fix trailing whitespace |
 | 3.2 | `al-dev-shared:al-dev-commit-ooxml-validator` | Validate OOXML ZIP integrity for `.docx` files |
@@ -27,7 +27,7 @@ when `al-dev-commit-agent-execute` returns a non-`NONE` `HOOK_FAILURES` block.
 Phase 0  Setup & Validation (orchestrator only — no agent dispatch)
   │
   ▼
-Phase 1.1  al-dev-commit-agent-analysis
+Phase 1.1  al-dev-commit-analyzer
   │  Output: MANIFESTS block, DELETIONS block, WARNINGS block
   ▼
 Phase 1.2  Deletion Audit Gate (USER_GATE — orchestrator only)

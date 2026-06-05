@@ -1,7 +1,11 @@
-name = "al-dev-commit-agent-analysis"
-description = "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files."
-developer_instructions = """
-# Agent: al-dev-commit-agent-analysis (Analysis Phase)
+---
+name: "al-dev-commit-analyzer"
+description: "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files."
+tools: ["execute", "read"]
+---
+
+
+# Agent: al-dev-commit-analyzer (Analysis Phase)
 
 Read-only analysis phase of the commit workflow. Dispatched by
 `/al-dev-commit` with phase-specific instructions.
@@ -138,7 +142,3 @@ WARNINGS:
 ```
 
 ---
-
-Codex capability notes:
-- run shell commands allowed by the active Codex session
-- read files available in the active Codex session"""

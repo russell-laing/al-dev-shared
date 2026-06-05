@@ -5,7 +5,7 @@ scenarios:
     user_prompt: "Commit the staged changes."
     expected_artifacts: []
     must_invoke_agent:
-      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
       - al-dev-shared:al-dev-commit-agent-execute
@@ -16,7 +16,7 @@ scenarios:
     user_prompt: "Commit the staged changes."
     expected_artifacts: []
     must_invoke_agent:
-      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
       - al-dev-shared:al-dev-commit-agent-execute
@@ -27,7 +27,7 @@ scenarios:
     user_prompt: "Commit only the staged docs changes after checking scope."
     expected_artifacts: []
     must_invoke_agent:
-      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
       - al-dev-shared:al-dev-commit-agent-execute
@@ -39,7 +39,7 @@ scenarios:
     expected_artifacts:
       - .dev/compile-errors.log
     must_invoke_agent:
-      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-analyzer
     notes: "Compile gate regression. Harness pre-seeds staged .al files that contain compile errors. Skill must read current staged-state success evidence from `.dev/compile-errors.log`, refuse any ready-to-commit claim, and halt before `al-dev-commit-agent-execute`."
 
   - id: docs-only-skip-compile-gate
@@ -47,7 +47,7 @@ scenarios:
     user_prompt: "Commit the staged changes."
     expected_artifacts: []
     must_invoke_agent:
-      - al-dev-shared:al-dev-commit-agent-analysis
+      - al-dev-shared:al-dev-commit-analyzer
       - al-dev-shared:al-dev-commit-lint-fixer
       - al-dev-shared:al-dev-commit-ooxml-validator
       - al-dev-shared:al-dev-commit-agent-execute

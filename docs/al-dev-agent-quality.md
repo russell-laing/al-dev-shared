@@ -109,7 +109,7 @@ Fix: Either show actual tool-call format or add a note: "The following shows whi
 
 ---
 
-### al-dev-commit-agent-analysis
+### al-dev-commit-analyzer
 
 **[High] Lens 1 — Prompt Clarity**
 Observation: Steps 4.5 and 6.7 reference `$REPO` (e.g., `git -C "$REPO" diff ...`, `GITATTR="$REPO/.gitattributes"`) but `$REPO` is never defined in the agent instructions or the ## Inputs table. The Inputs list only `PROJECT_CONTEXT` and `FD_TICKET`.
