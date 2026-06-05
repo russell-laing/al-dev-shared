@@ -251,6 +251,106 @@ def test_compute_gaps_reports_all_six_signals() -> None:
         assert all(detail == "never produced" for _, detail in gaps["stale-artifact"])
 
 
+def test_overview_renders_entries_repeat_loops_and_manual_steps() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_overview(contracts)
+        assert text.startswith("```mermaid\nflowchart LR")
+        assert 'skill_alpha_audit["/alpha-audit"]' in text
+        assert 'skill_gamma_plan["/gamma-plan"]' in text
+        assert "skill_beta_report" not in text  # internal skill never in overview
+        # Cross-stage closure edge labeled with the artifact that flows along it:
+        assert 'skill_alpha_audit -- "docs/health/*-dossier.md" --> skill_gamma_plan' in text
+        assert 'skill_alpha_audit -. "repeat" .-> skill_alpha_audit' in text
+        assert 'manual_gamma_plan["implement the plan"]' in text
+        assert "skill_gamma_plan --> manual_gamma_plan" in text
+        assert "class manual_gamma_plan manualStep" in text
+        assert 'subgraph stage_discover["Discover"]' in text
+        assert node_count == 3  # alpha, gamma, manual node
+
+
+def test_stage_detail_marks_internal_skills_artifacts_and_orphans() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(contracts, "discover", set())
+        assert 'skill_beta_report["/beta-report"]' in text
+        assert "class skill_beta_report internalSkill" in text
+        assert "class skill_alpha_audit userSkill" in text
+        assert '["docs/health/*-findings.md"]' in text
+        assert "skill_alpha_audit -. \"repeat\" .-> skill_alpha_audit" in text
+        assert "skill_alpha_audit --> skill_beta_report" in text  # same-stage next edge
+        # invoked-by edge suppressed because the next edge already covers the pair:
+        assert "skill_alpha_audit -.-> skill_beta_report" not in text
+        assert node_count == 5  # 2 skills + 3 artifacts (skills/ input, findings, dossier)
+
+        decide_text, _ = lib.render_stage_detail(
+            contracts, "decide", {"docs/plans/*-plan.md"}
+        )
+        assert "orphanArtifact" in decide_text
+        assert 'manual_gamma_plan["implement the plan"]' in decide_text
+
+
+def test_stage_detail_draws_dispatcher_edge_when_no_next_edge() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = Path(td) / ".claude" / "skills"
+        _write_skill(
+            skills,
+            "parent-skill",
+            "name: parent-skill\n"
+            "description: Parent.\n"
+            "workflow:\n"
+            "  stage: discover\n"
+            "  invoked-by: user\n"
+            "  repeatable: false\n",
+        )
+        _write_skill(
+            skills,
+            "child-skill",
+            "name: child-skill\n"
+            "description: Child.\n"
+            "workflow:\n"
+            "  stage: discover\n"
+            "  invoked-by: skill:parent-skill\n"
+            "  repeatable: false\n",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        text, _ = lib.render_stage_detail(contracts, "discover", set())
+        assert "skill_parent_skill -.-> skill_child_skill" in text
+
+
+def test_stage_detail_empty_stage_returns_sentence() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(contracts, "support", set())
+        assert "```mermaid" not in text
+        assert "workflow" in text
+        assert node_count == 0
+
+
+def test_stage_detail_node_budget_counts_all_nodes() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = Path(td) / ".claude" / "skills"
+        inputs = "\n".join(f"    - docs/big/file-{i}.md" for i in range(16))
+        _write_skill(
+            skills,
+            "big-skill",
+            "name: big-skill\n"
+            "description: Has many artifacts.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: false\n"
+            "  inputs:\n" + inputs + "\n",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        _, node_count = lib.render_stage_detail(contracts, "derive", set())
+        assert node_count == 17  # 1 skill + 16 artifacts: exceeds NODE_BUDGET of 15
+        assert node_count > lib.NODE_BUDGET
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:

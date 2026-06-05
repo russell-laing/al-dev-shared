@@ -241,3 +241,212 @@ def compute_gaps(
     for norm in sorted(prod):
         gaps["stale-artifact"].append((norm, artifact_status(repo, norm)))
     return gaps
+
+
+def _node_id(prefix: str, name: str) -> str:
+    return f"{prefix}_" + re.sub(r"[^A-Za-z0-9_]", "_", name)
+
+
+def _short_label(template: str) -> str:
+    """Keep Mermaid node labels under the 30-char style-guide limit."""
+    if len(template) <= 30:
+        return template
+    return ".../" + template.rsplit("/", 1)[-1]
+
+
+def _mermaid_block(lines: list[str]) -> str:
+    return "```mermaid\n" + "\n".join(lines).rstrip() + "\n```"
+
+
+def _assert_unique_artifact_ids(templates: list[str]) -> None:
+    seen: dict[str, str] = {}
+    for template in templates:
+        key = _node_id("art", template)
+        if key in seen and seen[key] != template:
+            raise ValueError(f"duplicate Mermaid node id for artifacts: {seen[key]} vs {template}")
+        seen[key] = template
+
+
+def _entry_skills(contracts: list[WorkflowContract]) -> list[WorkflowContract]:
+    """User-invocable core-stage skills not named in any same-stage skill's next list."""
+    by_name = {c.skill: c for c in contracts}
+    same_stage_targets: set[str] = set()
+    for contract in contracts:
+        for target in contract.next_skills:
+            target_contract = by_name.get(target)
+            if target_contract is not None and target_contract.stage == contract.stage:
+                same_stage_targets.add(target)
+    return [
+        c
+        for c in contracts
+        if c.stage in CORE_STAGES and is_user_invocable(c) and c.skill not in same_stage_targets
+    ]
+
+
+def _closure_successors(
+    contracts: list[WorkflowContract], rendered: set[str]
+) -> dict[str, tuple[set[str], set[str]]]:
+    """Per rendered skill: (rendered successors reachable via next chains, normalized
+    outputs pooled from the source and every traversed non-rendered skill)."""
+    by_name = {c.skill: c for c in contracts}
+    result: dict[str, tuple[set[str], set[str]]] = {}
+    for src in sorted(rendered):
+        successors: set[str] = set()
+        pooled = {normalize_template(t) for t in by_name[src].outputs}
+        seen: set[str] = set()
+        stack = list(by_name[src].next_skills)
+        while stack:
+            current = stack.pop()
+            if current in seen or current == src:
+                continue
+            seen.add(current)
+            if current in rendered:
+                successors.add(current)
+                continue
+            contract = by_name.get(current)
+            if contract is None:
+                continue
+            pooled.update(normalize_template(t) for t in contract.outputs)
+            stack.extend(contract.next_skills)
+        result[src] = (successors, pooled)
+    return result
+
+
+OVERVIEW_CLASSDEFS = (
+    "    classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold",
+    "    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold",
+)
+
+DETAIL_CLASSDEFS = (
+    "    classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold",
+    "    classDef internalSkill fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 5,font-weight:bold",
+    "    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold",
+    "    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold",
+    "    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold",
+)
+
+
+def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
+    """Small journey overview: per-stage user-invoked entry skills plus manual-followup
+    declarers; cross-stage artifacts as edge labels; repeat self-loops; amber manual nodes."""
+    by_name = {c.skill: c for c in contracts}
+    rendered_names = sorted(
+        {c.skill for c in _entry_skills(contracts)}
+        | {
+            c.skill
+            for c in contracts
+            if c.stage in CORE_STAGES and c.manual_followup and is_user_invocable(c)
+        }
+    )
+    rendered = set(rendered_names)
+    closure = _closure_successors(contracts, rendered)
+
+    lines = ["flowchart LR", *OVERVIEW_CLASSDEFS, ""]
+    node_count = 0
+    manual_ids: dict[str, str] = {}
+    for stage in CORE_STAGES:
+        stage_skills = [name for name in rendered_names if by_name[name].stage == stage]
+        if not stage_skills:
+            continue
+        stage_id = "stage_" + stage.replace("-", "_")
+        lines.append(f'    subgraph {stage_id}["{STAGE_TITLES[stage]}"]')
+        for name in stage_skills:
+            lines.append(f'        {_node_id("skill", name)}["/{name}"]')
+            node_count += 1
+            contract = by_name[name]
+            if contract.manual_followup:
+                manual_id = _node_id("manual", name)
+                manual_ids[name] = manual_id
+                lines.append(f'        {manual_id}["{contract.manual_followup}"]')
+                node_count += 1
+        lines.append("    end")
+    lines.append("")
+    for src in rendered_names:
+        successors, pooled = closure[src]
+        if src in manual_ids:
+            lines.append(f'    {_node_id("skill", src)} --> {manual_ids[src]}')
+        src_id = manual_ids.get(src, _node_id("skill", src))
+        for dst in sorted(successors):
+            labels = sorted(pooled & {normalize_template(t) for t in by_name[dst].inputs})
+            if labels:
+                lines.append(f'    {src_id} -- "{" + ".join(labels)}" --> {_node_id("skill", dst)}')
+            else:
+                lines.append(f'    {src_id} --> {_node_id("skill", dst)}')
+        if by_name[src].repeatable:
+            lines.append(f'    {_node_id("skill", src)} -. "repeat" .-> {_node_id("skill", src)}')
+    lines.append("")
+    for name in rendered_names:
+        lines.append(f'    class {_node_id("skill", name)} userSkill')
+    for manual_id in sorted(manual_ids.values()):
+        lines.append(f"    class {manual_id} manualStep")
+    return _mermaid_block(lines), node_count
+
+
+def render_stage_detail(
+    contracts: list[WorkflowContract], stage: str, orphans: set[str]
+) -> tuple[str, int]:
+    """Full machinery of one stage: every contracted skill, artifact nodes, next edges,
+    repeat self-loops, manual nodes; internal skills muted, orphaned artifacts dashed red."""
+    stage_contracts = sorted((c for c in contracts if c.stage == stage), key=lambda c: c.skill)
+    if not stage_contracts:
+        return (
+            "No skills in this stage declare a `workflow:` contract yet. Uncontracted "
+            "skills appear under Missing contract in the gaps table.",
+            0,
+        )
+    stage_names = {c.skill for c in stage_contracts}
+    by_name = {c.skill: c for c in stage_contracts}
+    artifacts = sorted(
+        {
+            normalize_template(template)
+            for contract in stage_contracts
+            for template in (*contract.inputs, *contract.outputs)
+        }
+    )
+    _assert_unique_artifact_ids(artifacts)
+
+    lines = ["flowchart LR", *DETAIL_CLASSDEFS, ""]
+    node_count = 0
+    for contract in stage_contracts:
+        lines.append(f'    {_node_id("skill", contract.skill)}["/{contract.skill}"]')
+        node_count += 1
+    manual_ids: dict[str, str] = {}
+    for contract in stage_contracts:
+        if contract.manual_followup:
+            manual_id = _node_id("manual", contract.skill)
+            manual_ids[contract.skill] = manual_id
+            lines.append(f'    {manual_id}["{contract.manual_followup}"]')
+            node_count += 1
+    for template in artifacts:
+        lines.append(f'    {_node_id("art", template)}["{_short_label(template)}"]')
+        node_count += 1
+    lines.append("")
+    for contract in stage_contracts:
+        skill_id = _node_id("skill", contract.skill)
+        for template in sorted({normalize_template(t) for t in contract.inputs}):
+            lines.append(f'    {_node_id("art", template)} --> {skill_id}')
+        for template in sorted({normalize_template(t) for t in contract.outputs}):
+            lines.append(f'    {skill_id} --> {_node_id("art", template)}')
+        for target in sorted(set(contract.next_skills)):
+            if target in stage_names:
+                lines.append(f'    {skill_id} --> {_node_id("skill", target)}')
+        invoker = SKILL_INVOKER_RE.match(contract.invoked_by)
+        if invoker and invoker.group(1) in stage_names:
+            dispatcher = by_name[invoker.group(1)]
+            if contract.skill not in dispatcher.next_skills:
+                # invoked-by edge, drawn only when no next edge already covers it
+                lines.append(f'    {_node_id("skill", dispatcher.skill)} -.-> {skill_id}')
+        if contract.skill in manual_ids:
+            lines.append(f'    {skill_id} --> {manual_ids[contract.skill]}')
+        if contract.repeatable:
+            lines.append(f'    {skill_id} -. "repeat" .-> {skill_id}')
+    lines.append("")
+    for contract in stage_contracts:
+        cls = "internalSkill" if is_internal_only(contract) else "userSkill"
+        lines.append(f'    class {_node_id("skill", contract.skill)} {cls}')
+    for manual_id in sorted(manual_ids.values()):
+        lines.append(f"    class {manual_id} manualStep")
+    for template in artifacts:
+        cls = "orphanArtifact" if template in orphans else "artifact"
+        lines.append(f'    class {_node_id("art", template)} {cls}')
+    return _mermaid_block(lines), node_count
