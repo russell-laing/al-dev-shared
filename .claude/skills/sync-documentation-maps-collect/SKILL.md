@@ -177,13 +177,19 @@ Map the response to `UPDATE_CHOICE`: `skills`, `agents`, `both`, or `neither`.
 If `UPDATE_CHOICE=neither`, update the checkpoint `status` to `"skipped"` and
 stop.
 
-**Dispatch updates, merge the checkpoint, and report.** For the update-agent
-dispatch skeleton and checkpoint-merge procedure, follow
-`.claude/skills/sync-documentation-maps/collect-dispatch-patterns.md`. It covers
-dispatching the selected `sync-documentation-maps-skill-update` and
-`sync-documentation-maps-agent-update` agents in parallel, capturing their
-background IDs, merging the update fields into both the root checkpoint and
-`${RUN_DIR}/manifest.json`, and printing the next-step summary.
+**Dispatch updates, merge the checkpoint, and report.** Per `UPDATE_CHOICE`,
+dispatch the selected update agents in parallel with `run_in_background: true`:
+`sync-documentation-maps-skill-update` (if `skills`/`both`) and
+`sync-documentation-maps-agent-update` (if `agents`/`both`), passing each
+`run_id` and `result_dir`. Capture the returned background IDs, merge the
+update fields (`skill_update_team_id`, `agent_update_team_id`,
+`update_choice`, `status: "dispatched"`) into BOTH the root checkpoint and
+`${RUN_DIR}/manifest.json` (read-first, then Edit), then print the
+next-step summary pointing at `/sync-documentation-maps-apply`.
+
+For the exact dispatch skeleton, prompt templates, and checkpoint-merge
+field list, follow
+`.claude/skills/sync-documentation-maps/collect-dispatch-patterns.md`.
 
 Exit. Do not wait for update team completion.
 
