@@ -1,0 +1,29 @@
+skill: write-superpowers-plan-commentary
+scenarios:
+  - id: create-first-commentary
+    status: golden
+    user_prompt: "Rubber duck docs/superpowers/plans/2026-06-05-example.md and create a commentary file for improvements and fixes."
+    expected_artifacts:
+      - "docs/superpowers/plans/2026-06-05-example-commentary.md"
+    notes: "Must create the paired commentary path, cite source plan line refs, and leave the source plan unchanged."
+
+  - id: append-second-pass
+    status: golden
+    user_prompt: "Perform another rubber duck of docs/superpowers/plans/2026-06-05-example.md then update docs/superpowers/plans/2026-06-05-example-commentary.md with further commentary."
+    expected_artifacts:
+      - "docs/superpowers/plans/2026-06-05-example-commentary.md"
+    notes: "Must reopen existing commentary and append a clearly labeled further-findings section instead of replacing prior findings."
+
+  - id: verify-live-claims
+    status: golden
+    user_prompt: "Review a Superpowers implementation plan for misleading commits before an agent executes it."
+    expected_artifacts:
+      - "docs/superpowers/plans/YYYY-MM-DD-topic-commentary.md"
+    notes: "Must pressure-test staging commands, generated-artifact paths, validators, snippets, and dirty tree state against live repo evidence."
+
+  - id: ignored-commentary-status
+    status: golden
+    user_prompt: "Confirm the commentary file was created and only the commentary changed."
+    expected_artifacts:
+      - "docs/superpowers/plans/YYYY-MM-DD-topic-commentary.md"
+    notes: "Must account for docs/superpowers/plans being ignored; use existence checks and --ignored status instead of treating silent git status as missing."

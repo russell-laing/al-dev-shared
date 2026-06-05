@@ -68,6 +68,7 @@ Current repo-local Codex skills:
 - `.codex/skills/repeat-plan-execution/` — runs an established implementation plan task-by-task with isolated execution and review gates.
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy reports against live repo state before trusting rankings or counts.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for `docs/superpowers/` history while removing obsolete raw artifacts.
+- `.codex/skills/write-superpowers-plan-commentary/` — creates or appends review-only commentary files for Superpowers plans after live repo checks.
 
 ## Core Workflow Contracts
 

@@ -59,6 +59,8 @@ Current repo-local skills:
   reports against live repo state before trusting rankings or counts.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for
   `docs/superpowers/` history while removing obsolete raw artifacts.
+- `.codex/skills/write-superpowers-plan-commentary/` — creates or appends
+  review-only commentary files for Superpowers plans after live repo checks.
 
 ## Shared Plugin Surface (All Harnesses)
 
