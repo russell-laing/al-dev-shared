@@ -57,6 +57,10 @@ user. Common issues:
 - Duplicate object IDs (reconcile from architect merge)
 - Untraced requirements (add REQ-NNN references to plan)
 
+If an issue cannot be auto-fixed, present it to the user (escalate to the
+architects for refinement, or approve with documented risk) before claiming the
+plan is ready.
+
 ## Phase 3: Present to User for Approval
 
 Present your synthesized plan:
