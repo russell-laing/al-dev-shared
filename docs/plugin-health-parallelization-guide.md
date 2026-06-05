@@ -1,5 +1,11 @@
 # Plugin-Health Parallelization Guide
 
+> **Status: Aspirational design document.** The `/plugin-health` command described here
+> does not exist as an active skill. The current implementation uses three separate skills:
+> `/plugin-health-audit` (full synchronous sweep), `/plugin-health-discover` (lenses only),
+> and `/plugin-health-report` (ranking only). This document records the intended
+> async/resumable architecture for reference if those skills are later unified.
+
 ## What Changed
 
 **Before:** `/plugin-health` consumed 5+ hours of session tokens, blocking other work.
@@ -101,7 +107,7 @@ Runs outside main session in parallel batches:
 
 All artifacts under `.dev/plugin-health-runs/` persist across session boundaries:
 
-```
+```text
 .dev/plugin-health-runs/
   <run-id>/
     work-queue.json              # Input to remote team
@@ -195,6 +201,7 @@ Check that all lens agent definitions exist in `profile-al-dev-shared/agents/`. 
 **Cause:** File discovery found no agents or skills
 
 **Fix:** Verify agents and skills exist in expected directories:
+
 - `profile-al-dev-shared/agents/*.md`
 - `profile-al-dev-shared/skills/*/SKILL.md`
 - `.claude/agents/*.md`

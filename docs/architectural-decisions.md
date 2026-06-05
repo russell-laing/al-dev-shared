@@ -51,7 +51,7 @@ Requires sustained reasoning under uncertainty — haiku is insufficient.
 
 **Decided:** 2026-06-01
 **Reason:** Duplicate surface — al-dev-support duplicated al-dev-ticket with --mode=full.
-Archived at `profile-al-dev-shared/archived/skills/al-dev-support/`.
+Removed (not archived — no archive directory exists for this skill).
 **Do not:** Recreate al-dev-support as a standalone skill.
 
 ---

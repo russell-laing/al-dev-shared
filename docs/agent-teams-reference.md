@@ -31,7 +31,7 @@ Agent Teams are designed for **complex, parallel tasks** — not sequential sub-
 
 Example team definition structure:
 
-```
+```text
 Goal: Refactor the reporting pipeline.
 
 Team:
