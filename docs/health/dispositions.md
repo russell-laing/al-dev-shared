@@ -92,3 +92,4 @@ Rules:
 | al-dev-ticket | Bloat: Steps 1/1.5 both resolve ticket input; Phase 5 repeats Phase 0.5 mode branching | fixed | 2026-06-05 | `476a068` — Phase 0.5 made the single parse point, Phase 5 the single branch point; stale Phase 5 refs fixed |
 | sync-documentation-maps | Bloat: Phase 3 ~42 lines, nested 3.1/3.1b/3.2/3.3 | fixed | 2026-06-05 | `47cdf12` — Phase 3 dispatch bullets collapsed into one template |
 | sync-documentation-maps-collect | Bloat: Phase 4 defers all dispatch logic to `collect-dispatch-patterns.md` (forward reference) | fixed | 2026-06-05 | `81a7f4c` — minimal dispatch summary inlined in Phase 4 |
+| maintainer surface | No tooling lifecycle diagram (closes the accepted row dated 2026-06-05 above) | fixed | 2026-06-05 | `46d3a5a` — CLAUDE.md points to `docs/maintainer-tooling.md`; `7fcd53c` — Visual Workflow lifecycle diagram landed in that doc |
