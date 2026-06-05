@@ -4,7 +4,7 @@ tools: ["Bash", "Read"]
 ---
 
 
-# Agent: al-dev-commit-agent (Execute Phase)
+# Agent: al-dev-commit-executor (Execute Phase)
 
 Execute approved commits from the analysis phase. This agent owns the
 **success path only**: it runs each approved commit and records the resulting
