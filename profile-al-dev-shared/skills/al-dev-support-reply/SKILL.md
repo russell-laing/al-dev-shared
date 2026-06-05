@@ -6,7 +6,7 @@ description: >-
   synthesis of findings, and customer-facing reply drafting. Input: ticket context
   from al-dev-ticket Phase 5 (CONTEXT block, or auto-detected latest). Output: a REPLY
   metadata block plus the full customer reply written to `.dev/ticket-reply.md`.
-argument-hint: "[context-file-path]"
+argument-hint: "[context-file-path | blank to auto-detect latest]"
 ---
 
 # Support Reply Researcher and Drafter
