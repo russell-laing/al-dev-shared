@@ -1,166 +1,100 @@
 # Plugin Health — 2026-06-05
 
-Surface: `profile-al-dev-shared/` (23 agents, 23 skills). 22 lenses dispatched.
+Surface: `profile-al-dev-shared/` (23 agents, 22 skills). 22 lenses dispatched.
 Source findings: `docs/health/2026-06-05-plugin-findings.md`.
+
+Re-sweep note: this dossier replaces the earlier 2026-06-05 dossier. It was
+generated **after** today's fix wave (dispositions rows dated 2026-06-05), so
+every High finding and top-5 candidate was spot-checked against the live file;
+stale lens re-flags of already-fixed text were dropped, not ranked.
 
 ## Summary
 
 | Severity | Design | Quality | Naming | Total |
 |----------|--------|---------|--------|-------|
-| High     | 0      | 10      | 0      | 10    |
-| Medium   | 6      | 31      | 0      | 37    |
-| Low      | 3      | 17      | 0      | 20    |
+| High     | 0      | 8       | 0      | 8     |
+| Medium   | 7      | 39      | 0      | 46    |
+| Low      | 5      | 31      | 1      | 37    |
 
-New this sweep: ~22 (notably the 5 agent-bloat High findings — the agent-bloat
-lens reported "no issues" on 2026-06-04 against unchanged files, so this is lens
-variance, not regression) · Recurring from prior sweeps: ~45 (annotated inline) ·
-Stale (dropped): 3 · Suppressed (dispositioned): 1
+New this sweep: 87 · Recurring from prior sweeps: 4 (annotated inline) ·
+Stale (dropped): 22 · Dispositioned (suppressed): 8
 
-Failed lenses: none — all 22 returned.
+Failed lenses: none (22/22 returned).
 
 Top 5 ranked actions:
 
-1. **Trim shared developer-agent bloat (Connect + Trim).** `al-dev-developer-tdd`
-   and `al-dev-developer-traditional` (both High bloat) duplicate their AL coding
-   standards / code-pattern sections nearly verbatim. Extract the shared standards to
-   `knowledge/al-developer-patterns.md` and reference from both. Pairs with the
-   shared-backbone finding to canonicalize the dispatch template in `knowledge/`.
-2. **Trim `al-dev-solution-architect` (High bloat).** 130-line workflow section, 7
-   top-level sections, repeated MCP-tool guidance. Move MCP guidance + pattern-evidence
-   hierarchy to a knowledge reference; reduce to ~5 sections.
-3. **Trim `al-dev-interview` and `al-dev-commit-hook-fixer` (High bloat).** Extract the
-   interview question categories to `knowledge/interview-question-bank.md`; move the
-   hook-fixer Failure Classification table + Approved Fixes to
-   `knowledge/commit-hook-recovery-patterns.md`.
-4. **Close High skill-clarity incomplete conditionals.** `al-dev-lint` (no fallback if
-   neither `al-compile` nor `al compile` is present), `al-dev-fix` (ambiguous
-   `MEDIUM or COMPLEX` branch), `al-dev-interview` (no else clause on the INTERVIEW
-   COMPLETE gate). All three change observable behavior. *(open since 2026-06-04 for
-   interview)*
-5. **Close High skill-clarity undefined placeholders.** `al-dev-develop` (undefined
-   `<src-file>` and unexplained `-nt`), `al-dev-plan-preflight` ("substantive answer"
-   undefined). *(both open since 2026-06-04)*
+1. **al-dev-commit-lint-fixer — implement the `.git/` baseline fallback before the write loop** (Quality/Clarity, High; verified against live file 2026-06-05). The Step 1 bash writes to `.git/.commit-baselines` unconditionally; the `.dev/commit-baselines` fallback is stated after the block but never implemented. Compute `BASELINE_FILE` first, then write.
+2. **al-dev-plan-swarm-validate — resolve name vs behavior** (Quality/Name-fit, High; verified against live file 2026-06-05). The description (post-76b0c5b) says "Generate a draft implementation plan … then red-team it"; the name says only "validate". Rename (e.g. `al-dev-plan-critic-review`) or re-scope.
+3. **al-dev-commit — structural consolidation** (Quality/Bloat, High; recurring, open since 2026-06-04). 18 top-level Step/Phase headers. The dispatch-frame aspect was fixed (e0ea5eb); the header/verbosity aspect remains.
+4. **al-dev-plan-preflight — consolidate the three resume modes** (Quality/Bloat, High). Modes A/B/C repeat near-identical file-loading; one decision tree + shared loading step.
+5. **al-dev-commit-executor — fix internal heading** (Quality/Description+Name-fit, Medium; verified against live file 2026-06-05, line 14). Heading still reads `# Agent: al-dev-commit-agent (Execute Phase)` after today's rename (319e4c7). One-line fix; corroborated by two lenses.
 
 ## Design suggestions
 
-**Medium**
+Medium:
 
-- **Split — `al-dev-support-reply-drafter`** (scope-isolation) | Agent owns two
-  concerns: drafting the customer-facing reply *and* writing the internal technical
-  findings to the same `.dev/` file. | Optionally separate internal findings
-  documentation from customer reply drafting (new `al-dev-support-findings-documenter`).
-  *Note: a model-fit downgrade on this same agent is `declined` — see Dispositioned.*
-- **Connect — `al-dev-developer-tdd`** (shared-backbone) | `/al-dev-develop` and
-  `/al-dev-fix` both spawn it with the same test-plan-routing structure. | Extract the
-  routing decision + TDD spawn template to `knowledge/developer-test-plan-dispatch-pattern.md`.
-  *(open since 2026-06-04)*
-- **Connect — `al-dev-developer-traditional`** (shared-backbone) | Same duplicated
-  dispatch structure across the two skills. | Expand
-  `knowledge/developer-invocation-patterns.md` to document both context variations under
-  one canonical dispatch. *(open since 2026-06-04)*
-- **Align — `al-dev-commit-agent-analysis`** (caller-alignment) | Inputs table marks
-  `REPO` required, but `knowledge/commit-dispatch-template.md` never passes it; agent
-  uses `git -C "$REPO"`. | Document REPO as "inferred from working directory", or add it
-  to the dispatch preamble.
-- **Extend — post-commit orchestration** (handoff-gaps) | The dev chain ends at
-  `al-dev-commit`; `commits.json` / `hook-failures.json` have no downstream consumer. |
-  Consider an `al-dev-deploy`/release-readiness skill consuming commit outputs.
-  *(open since 2026-06-04)*
-- **Move — `al-dev-consolidate`** (surface-placement) | No spawned agents; references
-  internal `.dev/sessions/` and `profile-al-dev-shared/` paths that only resolve inside
-  this repo's plugin ecosystem. | Candidate to move to `.claude/skills/`.
+- **al-dev-support-researcher** (Tool Hygiene) | MCP tools declared but invocation patterns not documented in body | Document MCP call usage or cross-reference a knowledge file.
+- **al-dev-release-notes-writer** (Tool Hygiene) | `MCP: al-mcp-server` declared; usage described only as "using AL MCP Server" | Document invocation or cross-reference knowledge. *(Pairs naturally with the researcher fix — one knowledge doc could serve both.)*
+- **al-dev-commit-hook-fixer** (Scope Isolation → Split) | Diagnosis/classification vs recovery execution are separable | Optional split into diagnostics + recovery agents.
+- **al-dev-release-notes-writer** (Scope Isolation → Split) | Diff extraction/analysis vs notes composition | Optional analyzer/composer split.
+- **al-dev-support-reply-drafter** (Caller Alignment) | RESEARCHER_FINDINGS could be clearer as a required inline structured block | Clarify Inputs wording.
+- **al-dev-docs-writer** (Caller Alignment) | Required inputs are glob-located by the agent, not passed explicitly — not stated | Clarify auto-location in Inputs.
+- **Post-develop documentation chain** (Handoff Gaps → Extend) | Code-review artifact from /al-dev-review-develop is consumed by no skill; /al-dev-document never suggested downstream | Suggest /al-dev-document at Phase 6, or have /al-dev-document read the latest code-review artifact.
 
-**Low**
+Low:
 
-- **Align — `al-dev-developer-tdd` / `-traditional`** | Inputs tables under-specify the
-  inline context fields. | Add a "Context Fields" row referencing
-  `knowledge/al-dev-develop-spawn-prompt.md`. *(open since 2026-06-04)*
-- **Extend — `al-dev-fix` test-plan** | `.dev/test-plan.md` is produced but never read. |
-  Have `/al-dev-develop` consume it to route to the TDD developer.
-- **Extend — `al-dev-consolidate` session index** | `.dev/sessions/sessions-index.md`
-  has no downstream consumer. | Optional vault-integration / publishing chain.
+- **al-dev-commit-message-drafter** (Caller Alignment) | MANIFESTS not marked required | Add marker.
+- **al-dev-support-researcher** (Caller Alignment) | TICKET_FILE availability inconsistent between Inputs and role text | Reconcile.
+- **al-dev-general-code-reviewer** (Caller Alignment) | No skill dispatches it (open since 2026-06-04, was Medium) | Standalone-use is documented in the agent map; either mirror that note in the agent file or wire it in.
+- **al-dev-explore** (Shared Backbone) | Agent map lists /al-dev-handoff as spawner but handoff only consumes findings (open since 2026-06-04, was Medium) | Verify and correct the map's Spawned-by field.
+- **Perf → fix handoff** (Handoff Gaps) | Standalone /al-dev-perf ends with a soft next-step prompt | Make the /al-dev-fix vs /al-dev-plan suggestion explicit in the presentation step.
 
-*Tool-hygiene, usage-patterns, complexity, near-duplicates, and preplanning lenses:
-no issues found.*
+Monitor-only / low-confidence (excluded from counts): surface-placement Move flags on al-dev-plan-final-review, al-dev-plan-preflight, al-dev-review-develop-preflight, verify-commits — deliberate distributed lifecycle phase-family members; this lens's known false-positive class (also flagged 2026-06-03/04). Model-fit and usage-patterns lenses: no candidates. Complexity, near-duplicates, preplanning: clean.
 
 ## Quality findings
 
-**High — Bloat (agents)**
+High:
 
-- `al-dev-solution-architect` — 130-line workflow, 7 sections, repeated MCP guidance.
-- `al-dev-interview` — 90-line interview-process section with nested categories.
-- `al-dev-developer-tdd` — 144 lines; AL code patterns duplicate `-traditional` verbatim.
-- `al-dev-developer-traditional` — 126 lines; Standards section 56 lines; duplicates `-tdd`.
-- `al-dev-commit-hook-fixer` — 74-line procedure section, nested Steps 1–5.
+- **al-dev-commit-lint-fixer** (Clarity) | `agents/al-dev-commit-lint-fixer.md:38-44` — baseline write precedes the `.git/` existence fallback; fallback never implemented in code | Compute `BASELINE_FILE` conditionally before the loop. *(verified against live file 2026-06-05)*
+- **al-dev-plan-swarm-validate** (Name-fit) | Name implies validation; description+body generate a draft plan then red-team it | Rename or re-scope. *(verified against live file 2026-06-05)*
+- **al-dev-commit** (Bloat) | 18 top-level Step/Phase headers (open since 2026-06-04; dispatch-frame aspect fixed in e0ea5eb) | Consolidate into 5 phase groups. *(count-based; re-verify counts before executing)*
+- **al-dev-develop** (Bloat) | 9 top-level phases; Phase 4 Output section redundant with Phase 4 completion | Consolidate Phase 4. *(count-based)*
+- **al-dev-fix** (Bloat) | Decision Tree section duplicates Implementation Steps routing | Fold Decision Tree + How-This-Works into Implementation Steps. *(count-based)*
+- **al-dev-plan-preflight** (Bloat) | Resume Modes A/B/C near-identical file-loading | One decision tree + shared loader. *(count-based)*
+- **al-dev-plan** (Bloat) | Phases 2–4 restate the architect contract and evidence rules | Extract shared architect-contract block; merge Phases 2+3. *(count-based)*
+- **al-dev-ticket** (Bloat) | Steps 1/1.5 both resolve ticket input; Phase 5 repeats Phase 0.5 mode branching | Consolidate resolution + centralize mode logic. *(count-based)*
 
-  *Fixes converge on `knowledge/al-developer-patterns.md` (shared AL standards),
-  `knowledge/interview-question-bank.md`, and `knowledge/commit-hook-recovery-patterns.md`.*
+Medium (agents):
 
-**High — Prompt clarity (skills)** *(incomplete conditionals / undefined placeholders
-that change observable behavior)*
+- Bloat: **al-dev-developer-tdd**, **al-dev-developer-traditional** (residual SYMBOL_PREFLIGHT_GATE phrasing duplicated at ~:54/:82/:117 after 804b0e1 dedup), **al-dev-commit-message-drafter** (externalize gitmoji table), **al-dev-commit-recover-fixer** (report format undefined inline), **al-dev-docs-writer** (guidelines externalize), **al-dev-support-reply-drafter** (Step 1.5 tangent), **al-dev-ticket-context-writer** (Step 1.5 placement).
+- Clarity: **al-dev-commit-executor** (success/else sequencing), **al-dev-commit-hook-fixer** (approved-fixes file fallback), **al-dev-commit-recover-fixer** (report format), **al-dev-diagnostics-fixer** (default rule for rules outside the judgment table), **al-dev-docs-writer** (RTM-guide-missing fallback), **al-dev-support-researcher** (verified/unverified markers vs opaque MCP output), **al-dev-ticket-context-writer** (env-var expansion not explicit in curl examples).
+- Description: **al-dev-commit-executor** (internal heading `al-dev-commit-agent` + no upstream-completion precheck — heading verified live :14), **al-dev-commit-recover-fixer** (date-format inconsistency %Y-%m-%d vs YYYY-MM-DD), **al-dev-ticket-context-writer** (Inputs table omits FRESHDESK_API_KEY/FRESHDESK_DOMAIN env-vars).
 
-- `al-dev-develop` — undefined `<src-file>` placeholder; `-nt` operator unexplained.
-- `al-dev-fix` — `IF complexity == 'medium' or 'complex'` ambiguous; split into branches.
-- `al-dev-interview` — INTERVIEW COMPLETE gate has no else clause. *(open since 2026-06-04)*
-- `al-dev-lint` — no fallback if neither `al-compile` nor `al compile` is available.
-- `al-dev-plan-preflight` — "substantive answer" undefined. *(open since 2026-06-04)*
+Medium (skills):
 
-**Medium (by class — see findings file for full lines)**
+- Bloat: **al-dev-document** (spawn/wait/refine repetition), **al-dev-help** (mode logic triplication), **al-dev-investigate** (regression-timeline restated).
+- Clarity (12 surviving verification/suppression): **al-dev-commit** (define "explicitly approved"), **al-dev-develop** (partition-ownership rule; autonomous-mode marker at Phase 4), **al-dev-explore** + **al-dev-lint** (spawned agent not named — verify, some skills name agents via knowledge refs), **al-dev-fix** (three complexity vocabularies un-reconciled), **al-dev-handoff** (incomplete glob pattern), **al-dev-interview** (token-validation step), **al-dev-investigate** (unknown regression-window guidance), **al-dev-plan** ("meaningfully different" lacks operational test — downgraded from High, partial definition exists at :140-143; TESTABILITY_COMPLETE cross-ref), **al-dev-review-develop-preflight** (dedup rule; eval order), **al-dev-review-develop** (empty severity tiers), **al-dev-support-reply** (latest-file tiebreak).
+- Description: **al-dev-review-develop** (preflight prerequisite absent from description), **al-dev-commit** (atomic-grouping confirmation), **al-dev-document** (optional ancillary outputs unlisted).
+- Structure (argument-hints): **al-dev-commit** `[--ticket-id=<id>]`, **al-dev-develop** add scope-override, **al-dev-plan-preflight** normalize, **al-dev-plan** confirm `--resume-from=phase2` is the only value.
 
-- *Agent bloat (6):* `al-dev-commit-lint-fixer`, `al-dev-release-notes-writer`
-  (also has an unclosed code fence), `al-dev-commit-agent-analysis`, `al-dev-script-engineer`,
-  `al-dev-support-researcher`, `al-dev-diagnostics-fixer`.
-- *Agent clarity (8):* `al-dev-solution-architect` ⚠ *"best existing analogue" partially
-  addressed by `6de8bfd` — residual: add yes/no verdict examples*; `al-dev-solution-architect`
-  (TESTABILITY_COMPLETE criteria); `al-dev-commit-lint-fixer` (move sed warning before block);
-  `al-dev-developer-tdd` / `-traditional` ("latest" glob tie-break undefined);
-  `al-dev-explore` ("largest file count" undefined); `al-dev-support-reply-drafter`
-  (link-marker placement); `al-dev-commit-recover-fixer` (fallback strategies undefined).
-- *Agent name-fit (2):* `al-dev-code-review` (too generic vs specialist reviewers →
-  `al-dev-general-code-reviewer`); `al-dev-ticket-agent` (→ `al-dev-ticket-context-writer`).
-- *Skill clarity (9):* `al-dev-consolidate`, `al-dev-document`, `al-dev-help`, `al-dev-perf`,
-  `al-dev-plan`, `al-dev-release-notes`, `al-dev-review-develop`, `al-dev-ticket`
-  (URL-encoding example), `commit-recover` ("verified" undefined). *(several open since 2026-06-04)*
-- *Skill description (5):* `al-dev-consolidate`, `al-dev-develop` (Phase 4 handoff content),
-  `al-dev-explore` ("delegates" misleading), `al-dev-plan-final-review` (validator-fail path),
-  `al-dev-support-reply` (REPLY block vs `.dev/ticket-reply.md`). *(open since 2026-06-04)*
-- *Skill structure (1):* `al-dev-support-reply` `argument-hint` contradicts the two usage modes.
-
-**Low (counts — see findings file)**
-
-- Agent name-fit: 2 (`al-dev-commit-agent-analysis` → `-analyzer`,
-  `al-dev-commit-agent-execute` → `-executor`).
-- Agent structure: 3 (`al-dev-explore`, `al-dev-commit-agent-analysis`,
-  `al-dev-release-notes-writer` — code-fence / step-numbering).
-- Skill bloat: 1 (`al-dev-develop` partition-table preamble).
-- Skill clarity: 4 (`al-dev-commit`, `al-dev-handoff`, `al-dev-plan-swarm-validate`,
-  `verify-commits`).
-- Skill structure: 7 (missing `bash` language tags — `al-dev-lint`, `al-dev-perf`,
-  `al-dev-plan-swarm-validate`, `al-dev-review-develop-preflight`, `al-dev-ticket`,
-  `commit-recover`, `verify-commits`). *(language-tag class open since 2026-06-04)*
-
-*Agent description-drift and skill name-fit lenses: no issues found.*
+Low (31): 10 agent-clarity qualifier/fallback items (incl. `$AL_DEV_SHARED_PLUGIN_ROOT` in al-dev-release-notes-writer — open since 2026-06-04, was Medium); al-dev-developer-tdd gate-timing description; al-dev-al-pattern-reviewer + al-dev-commit-hook-fixer name-fit notes; agent structure convention question (semantic headers vs numbered phases — ONE decision, not 22 fixes; lens flagged ~22 agents); 13 skill-bloat minor items; al-dev-plan-swarm-validate emoji; al-dev-investigate name note; skill structure (residual language-tag batch — verify a sample first, this lens previously re-flagged MD040-clean files — plus al-dev-help numbering).
 
 ## Naming violations
 
-*No issues found.* (The 2026-06-04 `al-dev-commit-recover-fixer` literal-date finding
-did not recur — lens reported clean against the live file.)
+- **commit-recover** | Low | Skill name is `{object}-{verb}`; convention's verb-first rule and grandfather list don't mention it | Add to grandfathered exceptions (likely) or rename to `recover-commits`. *(Note: the convention doc primarily governs maintainer tooling — confirm scope applies to distributed skills before acting.)*
+
+Dropped as false positives: six dated-artifact output paths (`…-al-dev-plan-solution-plan.md` etc.) flagged against the maintainer naming convention — they match the established distributed-artifact convention documented in project instructions.
 
 ## Graph deltas
 
-See refreshed `docs/al-dev-plugin-graph.md` (regenerated this sweep).
+See `docs/al-dev-plugin-graph.md` (regenerated this run). Known map deltas surfaced by lenses: al-dev-explore "Spawned by /al-dev-handoff" likely overcounts (consumer, not spawner).
 
-## Stale (dropped — fixed items re-flagged; verified against live files 2026-06-05)
+---
 
-- `al-dev-ticket` clarity "first token decides" (was High) — live file has explicit
-  `^(FD-?)?[0-9]+$` regex + IF/THEN (fixed `966d81b`); claim no longer holds.
-- `al-dev-commit` skill-bloat "repetitive dispatch blocks" (was Medium) — live file cites
-  `knowledge/commit-dispatch-template.md` per phase rather than inlining (fixed `e0ea5eb`).
-- `al-dev-plan-swarm-validate` description "6 critics not shown" (was Medium) — live body
-  enumerates all 6 parallel Agent dispatches + Dispatch Pattern section (fixed `76b0c5b`).
+### Stale (dropped) — verified against live files 2026-06-05
 
-## Dispositioned (suppressed)
+al-dev-plan-preflight substantive-answer (05e4dc3); al-dev-solution-architect TESTABILITY clarity (2d83dab/630d91f) and research-phase bloat (5fff2c7); al-dev-fix simple-branch else (:189 present); al-dev-commit 0.2.1 else-branch (:96 present); al-dev-develop "required external procedure" (single use at :184); al-dev-investigate "testable" (defined :142); al-dev-perf modifier stacking (single classification :111); al-dev-interview five-categories clarity (4a81c4b, recovery logic live :87-91) and bloat (row 54 adjudicated); al-dev-commit-hook-fixer bloat (0200d9e; CRITICAL ×1); al-dev-commit-lint-fixer bloat (99c4d95; CRITICAL ×1); al-dev-commit-analyzer $REPO (row 67); al-dev-explore narrowing thresholds (row 58); 6 naming output-path flags (convention misapplied); 7 language-tag flags on row-66 skills (previously verified MD040-clean).
 
-- `al-dev-support-reply-drafter` — model-fit downgrade sonnet → haiku — **declined**
-  2026-06-05 (`3bed965`: reply quality outranks the token saving). Counted out of the
-  table above.
+### Dispositioned (suppressed)
+
+al-dev-support-reply-drafter Split (declined, row 72); developer routing shared-backbone (row 52 — already canonical in developer-invocation-patterns.md); post-commit release handoff (declined, row 70); al-dev-ticket FD precedence (rows 26/43 — third lens re-flag); al-dev-support-reply-drafter model downgrade (declined, row 36); commit-recover/help/document/release-notes clarity items (row 63); al-dev-plan-final-review description drift (row 64, e9622f2).

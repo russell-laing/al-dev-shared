@@ -1,223 +1,138 @@
 # Plugin Health — 2026-06-04
 
-Surface: distributed plugin (`profile-al-dev-shared/`) — 23 agents, 23 skills.
-Dimensions: design + quality + naming. 22 lenses dispatched, 22 returned, 0 failed.
-Suggestions only — no source files were edited.
-
-> **Read this first.** Two large High blocks are lens-calibration noise, not work:
-> the 23 "non-canonical model identifier" agent-structure hits flag the project's
-> own `model: sonnet|haiku|opus` alias convention (the 2026-06-03 tooling sweep
-> already confirmed the alias is the standard), and most of the 16 agent-bloat
-> "section count > 6" hits are borderline. The genuine new signal this run is the
-> **skill** quality coverage: the five skill quality lenses that hit the session
-> limit on 2026-06-03 completed this time, surfacing skill clarity/bloat/structure
-> findings for the first time.
+Source findings: `docs/health/2026-06-04-plugin-findings.md` (22/22 lenses returned; no failed lenses)
+Surface: `profile-al-dev-shared/` — 23 agents, 23 skills
+Suggestions only — no source files were edited. This dossier supersedes the earlier 2026-06-04 sweep run.
 
 ## Summary
 
 | Severity | Design | Quality | Naming | Total |
 |----------|--------|---------|--------|-------|
-| High     | 0      | 44      | 0      | 44    |
-| Medium   | 5      | 37      | 0      | 42    |
-| Low      | 17     | 30      | 2      | 49    |
+| High     | 0      | 13      | 0      | 13    |
+| Medium   | 7      | 28      | 1      | 36    |
+| Low      | 17     | 40      | 0      | 57    |
+| **Total**| **24** | **81**  | **1**  | **106** |
 
-Counts above are raw lens output. The 44 Quality/High split as: 23 agent-structure
-(model-alias false positives — see note), 16 agent-bloat (section-count, mostly
-borderline), 1 agent-clarity (genuine), 4 skill-clarity (genuine, new coverage).
+Counts exclude informational "no action required" entries returned by lenses.
+
+Failed lenses: none — all 22 dispatched lenses returned results.
 
 Top 5 ranked actions:
 
-1. **Skill control-flow clarity — 4 genuine High (new coverage).** `al-dev-commit`
-   (0.2.1 has no explicit proceed-without-ticket fallback), `al-dev-develop`
-   (Phase 2 doesn't state whether file→partition mapping is 1:1), `al-dev-plan-preflight`
-   (Phase 1 "sufficient context" has no minimum-specificity threshold), `al-dev-ticket`
-   (Step 1 doesn't define precedence when both a numeric ID and search terms are
-   supplied). These are the highest-value items — they were never surfaced before
-   because the skill quality lenses failed last run. Fix the four conditionals.
-2. **al-dev-solution-architect** — Highest-impact single agent (repeat from
-   2026-06-03, still unfixed). High clarity (ambiguous "best existing analogue"
-   disjunction) + High bloat (11 top-level sections, ~55-line Output Format).
-   Add a matching rubric; move the Output Format schema guide to a knowledge file.
-3. **al-dev-developer-tdd / -traditional + al-dev-diagnostics-fixer** — High agent
-   bloat (9, 9 sections; an 84-line Fix Process block). Repeat from 2026-06-03.
-   Consolidate sections and split the oversized block into named phases.
-4. **Fix the agent-structure lens, not 23 agents** (Quality/structure, High ×23).
-   The lens flags every agent's `model: sonnet|haiku|opus` and demands the full
-   `claude-sonnet-4-6` form, but the alias IS the established convention. Teach the
-   lens the alias is canonical so it stops emitting 23 false positives per sweep.
-5. **Surface placement + shared-backbone drift** (Design/Medium). `al-dev-consolidate`
-   scores all three misplacement signals (repeat from 2026-06-03 — Move to `.claude/skills/`);
-   `al-dev-developer-traditional` and `al-dev-solution-architect` have divergent
-   dispatch patterns across their callers (document canonical invocation in
-   `knowledge/` to lock them).
+1. **al-dev-solution-architect — incomplete `TESTABILITY_COMPLETE: no` conditional (Quality/Clarity, High).** The agent returns the flag without any caller procedure; callers can proceed to implementation on an unresolved plan. Add explicit caller guidance: halt and do not dispatch the developer agent until testability is resolved.
+2. **Seven-skill bloat cluster (Quality/Bloat, High).** `al-dev-commit`, `al-dev-develop`, `al-dev-investigate`, `al-dev-perf`, `al-dev-plan-preflight`, `al-dev-plan`, `al-dev-ticket` all exceed step-size thresholds with inlined templates and repeated procedural blocks. Extract inline templates (architect prompt, findings template, perf report, doc structure) to `knowledge/` and consolidate repeated rules into per-skill Critical Rules sections.
+3. **Five-skill clarity cluster (Quality/Clarity, High).** Undefined operational terms gate behavior: "block progress" (`al-dev-develop`), circular "success evidence" (`al-dev-interview`, `al-dev-plan`), vague fallback (`al-dev-plan-preflight`), trailing-otherwise precedence rule (`al-dev-ticket`). Define each term inline at first use.
+4. **Caller-alignment trio (Design/Align, Medium).** `/al-dev-explore`, `/al-dev-help`, and `/al-dev-document` reference their agents generically but never dispatch them by explicit agent type name; `al-dev-code-review` has no caller at all and should be documented as standalone-only.
+5. **al-dev-plan-swarm-validate body is pseudo-code only (Quality/Description, Medium).** The description promises six parallel critics, synthesis, auto-fixes, and an approval gate, but the body contains no actionable implementation steps. Expand to concrete phases or descope the description.
 
 ## Design suggestions
 
-### Medium
+### Remodel (model fit)
 
-- **al-dev-consolidate** — Move (surface placement) | Scores all three misplacement
-  signals: internal `.dev/` path references, self-audit/maintenance purpose, no
-  spawned agents. Repeat from 2026-06-03. | Move to `.claude/skills/`.
-- **al-dev-developer-traditional** — Connect (shared backbone) | Inconsistent dispatch
-  across `/al-dev-develop` (detailed build-verify + compilation expectations),
-  `/al-dev-fix` (minimal issue+fix, defers compile), and `/al-dev-review-develop`.
-  Drift risk. | Document a canonical developer-traditional invocation in
-  `knowledge/developer-invocation-patterns.md` with Full-Scope / Trivial-Fix /
-  Code-Review variants; reference from all three sites.
-- **al-dev-solution-architect** — Connect (shared backbone) | `/al-dev-plan` spawns
-  2–3 architects in parallel for competitive debate; `/al-dev-fix` spawns one for a
-  bounded 5-min analysis. Same agent, fundamentally different contracts. | Formalize
-  both patterns in `knowledge/architect-invocation-patterns.md` (Competitive Debate
-  vs Quick Analysis); make the pattern choice explicit at each dispatch site.
-- **al-dev-interview** — Align | Agent Inputs table marks inline context "optional"
-  but `/al-dev-interview` requires the dispatcher to pre-read a description or file
-  path from `$ARGUMENTS` before spawning. | Document the dispatcher's pre-read
-  responsibility in the agent Inputs table.
-- **al-dev-support-researcher** — Align | Inputs table lists `TICKET_FILE` as
-  conditional ("when available") but `/al-dev-support-reply` always provides it. |
-  Mark `TICKET_FILE` required and document the always-provided contract + fallback.
+- **al-dev-support-reply-drafter** | Medium | Single-input/single-output translation task (findings block → customer reply) needing only Write; mechanical formatting work. | Assign `haiku` instead of `sonnet`.
 
-### Low
+### Align (caller alignment)
 
-- **Caller alignment — documentation clarity (6 Low):** `al-dev-release-notes-writer`
-  (Outputs table omits the 7th `AMBIGUOUS` return field), `al-dev-developer-tdd` /
-  `-traditional` (Inputs don't enumerate the inline module-scope/object-ID-range/prefix/
-  symbol-evidence fields callers pass), `al-dev-al-pattern-reviewer` /
-  `-security-reviewer` / `-performance-reviewer` (file list embedded in dispatch
-  prompt not documented in Inputs). | Enumerate the inline dispatch fields in each
-  Inputs/Outputs table. No blocking issues.
-- **Surface placement (6 Low):** `al-dev-help`, `al-dev-plan-final-review`,
-  `al-dev-plan-preflight`, `al-dev-plan-swarm-validate`, `al-dev-review-develop-preflight`,
-  `verify-commits` each score two of three misplacement signals (internal paths +
-  no agents). | Lower-confidence than `al-dev-consolidate`; several are deliberate
-  preflight utilities consumed by distributed skills, so weigh against their role
-  before moving.
-- **al-dev-developer-tdd** — Connect | Minimal spec in `/al-dev-fix` vs full TDD-cycle
-  structure in `/al-dev-develop`. | Add a TDD developer pattern to
-  `knowledge/developer-invocation-patterns.md`.
-- **al-dev-release-notes-writer** — Trim (tool hygiene) | `MCP: al-mcp-server`
-  declared but used only aspirationally in the body. | Add a concrete MCP invocation
-  example in the research phase, or remove the tool from frontmatter.
-- **Handoff gaps (3 Low):** `al-dev-release-notes` output, `al-dev-consolidate`
-  output, and the `al-dev-commit → al-dev-release-notes` step are terminal/implicit
-  with no documented downstream consumer. | Optionally document each as a terminal
-  step or add an explicit handoff note (low priority).
+- **al-dev-code-review** | Medium | No spawning caller anywhere; documented for standalone use but never invoked. | Document explicitly as standalone manual dispatch only; not auto-spawned by any skill.
+- **al-dev-explore** | Medium | `/al-dev-explore` says "Spawn an explore agent" without naming the agent type; `/al-dev-handoff` never dispatches it. | Add explicit agent-type dispatch line to `/al-dev-explore` Step 2.
+- **al-dev-script-engineer** | Medium | `/al-dev-help` lists the agent in a reference table but has no dispatch step. | Either add a dispatch step for script requests or mark the agent "available for external dispatch only".
+- **al-dev-docs-writer** | Low | `/al-dev-document` mentions "docs-writer specialist" but never names the agent type in a dispatch line. | Add explicit dispatch line passing AUDIENCE and artifact paths.
+- **al-dev-developer-tdd / al-dev-developer-traditional** | Low | Inputs tables ambiguous about whether callers pass file paths or the agent auto-locates them. | Add note: agent auto-locates from `.dev/` via glob; dispatch prompt carries inline context only.
 
-_Scope-isolation, model-fit, usage-patterns, complexity, near-duplicates, and
-pre-planning lenses found no issues._
+### Inline (usage patterns)
+
+- **al-dev-support-researcher** | Low | Single-use agent with 108-line body and minimal contract documentation. | Consider consolidating the body to a structured format, or inlining research logic into the calling skill.
+
+### Connect / Promote (shared backbone)
+
+- **al-dev-developer-tdd & al-dev-developer-traditional** | Medium | Identical test-plan routing pattern copy-pasted in `al-dev-develop` (Phase 3) and `al-dev-fix` (Step 2). | Canonicalize the developer dispatch template in `knowledge/` and cross-reference from both skills.
+
+### Atomise / Absorb (complexity)
+
+- **al-dev-plan** | Medium | 7 phases, already partially atomized via preflight delegation; context-gathering and debate blocks are independently runnable. | No immediate split; document the preflight phase as a required dependency.
+- **al-dev-plan-final-review** | Low | 3 phases, zero agents, pure approval gate for the plan output. | Absorb candidate: integrate validation + approval gate into `al-dev-plan`'s final phase; retire the standalone skill if validation always follows plan writing.
+- **al-dev-consolidate** | Low | 5 phases, zero agents, two weakly coupled concerns (discovery/grouping vs extraction/output). | Absorb candidate: offer consolidation as an optional final phase of `/al-dev-document`.
+
+### Extend (handoff gaps)
+
+- **Post-commit chain gap** | Medium | The spine (plan → develop → review → commit) terminates at commit; release-notes/document are standalone entry points, not chained continuations. | Design a release-readiness skill that consumes commit metadata, updates changelog, optionally generates release notes, and gates deployment readiness.
+- **Orphaned commit metadata** | Low | `.dev/commits.json`, `.dev/hook-failures.json`, `.dev/file-sizes.json` have no downstream reader. | Either give them a post-commit consumer or document as manual-inspection references.
+- **Orphaned learnings artifact** | Low | `commit-recover` writes `.dev/learnings.md`; nothing reads it. | Extend `al-dev-commit` preflight to read learnings and warn on known corruption patterns.
+- **Lint-before-commit gap** | Low | `al-dev-commit` optionally reads a prior lint report but never requires a fresh pass. | Add a staleness check in commit Phase 0 suggesting `/al-dev-lint` when staged AL files postdate the last report.
+
+### Move (surface placement)
+
+Nine skills flagged Low as maintainer-surface candidates (no spawned agents, developer-utility scope): `al-dev-help`, `al-dev-handoff`, `al-dev-investigate`, `al-dev-perf`, `al-dev-plan-final-review`, `al-dev-plan-preflight`, `al-dev-plan-swarm-validate`, `al-dev-review-develop-preflight`, `verify-commits`. **Caution:** several of these are integral to the distributed lifecycle (preflight skills are dispatched by `al-dev-plan`/`al-dev-develop`; `verify-commits` is chained from `al-dev-commit`) — treat the Move suggestions as low-confidence and verify each against the lifecycle diagram before accepting.
 
 ## Quality findings
 
-### High — genuine
+### High
 
-- **al-dev-solution-architect** (clarity) | "Best existing analogue" uses subjective
-  language ("structural similarity", "similar pattern") with no objective match
-  criteria. Repeat from 2026-06-03. | Add a rubric: (1) same business function,
-  (2) same pattern type, (3) file:line evidence.
-- **al-dev-commit** (skill clarity) | 0.2.1 "IF caller does not supply --ticket-id"
-  has no explicit fallback after a Freshdesk-unreachable check. | State: proceed to
-  Phase 1 without ticket context when unreachable.
-- **al-dev-develop** (skill clarity) | Phase 2 lists four partition categories but
-  never says whether files map 1:1 to partitions or may overlap. | Add: each
-  developer owns exactly one partition; no shared files.
-- **al-dev-plan-preflight** (skill clarity) | Phase 1 "sufficient context" gate has
-  no minimum length/specificity threshold. | Define a concrete minimum (e.g. feature
-  name ≥5 words AND one concrete workflow or BC object reference).
-- **al-dev-ticket** (skill clarity) | Step 1 branches on numeric-ID vs search-terms
-  but doesn't define precedence when both are supplied. | Add a precedence rule
-  (first arg numeric / `FD\d+` ⇒ ticket ID, else search terms).
-
-### High — agent bloat (mostly borderline; standouts first)
-
-- **al-dev-solution-architect** | 11 top-level sections + ~10-step workflow. | Group
-  into Research / Design / Implementation phases; move the schema guide to knowledge.
-- **al-dev-diagnostics-fixer** | 84-line Fix Process block (lines 34–117). | Split
-  into Parse / Classify / Fix / Delegate / Report phases.
-- **al-dev-commit-agent-analysis** | 108-line Phase block (lines 41–149). | Split
-  into discrete `##` phases.
-- **al-dev-developer-tdd / -traditional** | 9 top-level sections each. | Merge
-  Governance Tokens into Workflow or Standards.
-- **al-dev-commit-hook-fixer** (74-line Procedure), **-lint-fixer** (49-line),
-  **-execute** (44-line), **-ooxml-validator** (37-line), **-message-drafter**
-  (32-line), **al-dev-docs-writer** (8 sections), **al-dev-release-notes-writer**
-  (8 sections), **al-dev-script-engineer** (7), **al-dev-interview** (7),
-  **al-dev-al-pattern-reviewer** (7), **al-dev-explore** (heading hierarchy). |
-  Consolidate sections / split oversized blocks. Many are at-threshold; batch-fix
-  during the next agent edit rather than as standalone work.
-
-### High — agent structure (lens false positives, do not action as-is)
-
-- **All 23 agents** (structure) | Lens flags `model: sonnet|haiku|opus` and wants
-  `model: claude-sonnet-4-6` etc. The short alias is the established project
-  convention (confirmed by the 2026-06-03 tooling sweep, which recommended
-  standardizing _to_ the alias). | Fix the `quality-agent-lens-structure` lens to
-  treat the alias as canonical. Do not rewrite 23 agent frontmatters.
+- **al-dev-solution-architect** (agent, clarity) | `TESTABILITY_COMPLETE: no` return path has no caller procedure | Add caller guidance: halt, do not dispatch developer until resolved.
+- **al-dev-commit** (skill, bloat) | 589 lines; repeated dispatch patterns and procedural footnotes across phases | Consolidate into a reusable dispatch template + single Critical Rules section.
+- **al-dev-develop** (skill, bloat) | Signature Verification (~60 lines) and Static Validation (~70 lines) inlined; dead `--autonomous` branches | Extract both blocks to standalone sub-skills or knowledge refs.
+- **al-dev-investigate** (skill, bloat) | Step 5 spans ~98 lines incl. inline findings template | Extract template to `knowledge/investigate-findings-template.md`.
+- **al-dev-perf** (skill, bloat) | Inline classification logic, agent prompt, and 60-line report template | Extract classification + report template to `knowledge/`.
+- **al-dev-plan-preflight** (skill, bloat) | Optional phases 1.5/1.6 carry 30+ line decision trees; validation gate logic repeated | Consolidate optional phases into one verification block; externalize the input-validation gate.
+- **al-dev-plan** (skill, bloat) | 40+ line inline architect prompt; Phase 0 resume modes sprawl | Extract architect prompt template to `knowledge/`; consolidate resume modes into one decision tree.
+- **al-dev-ticket** (skill, bloat) | 8 named sections; mode detection logic repeated in Phases 0, 0.5 and 5 | Consolidate mode resolution into one block at the top.
+- **al-dev-develop** (skill, clarity) | "block progress" escalation trigger undefined | Define specific blocking conditions.
+- **al-dev-interview** (skill, clarity) | "success evidence" referenced circularly, never defined inline | Define success evidence upfront (INTERVIEW COMPLETE signal + category list).
+- **al-dev-plan** (skill, clarity) | Artifact-contract success evidence not inlined | Inline summary: plan file written AND read AND validator passes.
+- **al-dev-plan-preflight** (skill, clarity) | "fall back to re-running the specific preflight step" — which step is unidentified | Map each required field to the phase that produces it.
+- **al-dev-ticket** (skill, clarity) | Mixed-input precedence rule states the fallback after the rule, inviting misreads | Restate as explicit IF/THEN/ELSE.
 
 ### Medium
 
-- **Skill clarity (25 Medium)** spanning `al-dev-commit` (advisory-mode definition),
-  `al-dev-consolidate` (glob dialect), `al-dev-develop` (conflicting symbol providers;
-  object-name char count), `al-dev-document` (audience boundaries; section spot-check
-  criteria), `al-dev-fix` (TRIVIAL/NON-TRIVIAL vs four-tier mismatch; tdd/traditional
-  routing undocumented), `al-dev-handoff` (overwrite behavior), `al-dev-interview`
-  (missing-signal fallback), `al-dev-investigate` (target-mismatch decision; hypothesis
-  agent count), `al-dev-lint` (al compile arg specifics), `al-dev-perf` (provider
-  tie-break; full-content vs summary), `al-dev-plan-final-review` (validator success
-  criteria), `al-dev-plan-preflight` (verified threshold definition), `al-dev-plan`
-  ("meaningfully different" undefined), `al-dev-release-notes` (arg ordering),
-  `al-dev-review-develop-preflight` (grep count semantics), `al-dev-review-develop`
-  ("reading" the artifact defined), `al-dev-support-reply` (same-date tiebreak),
-  `al-dev-ticket` (result limit), `commit-recover` (git log form), `verify-commits`
-  (reset N calculation). | Each is a one-line specificity fix; address opportunistically.
-- **Agent clarity (5 Medium):** `al-dev-developer-tdd` / `-traditional` ("logical
-  group" boundary), `al-dev-commit-lint-fixer` (10% threshold rationale),
-  `al-dev-interview` (USER_GATE syntax), `al-dev-release-notes-writer` ("architecture
-  updates" criteria). | Tighten each qualifier.
-- **Skill bloat (3 Medium):** `al-dev-fix` (duplicated Compilation Verification),
-  `al-dev-plan-preflight` & `al-dev-plan` (duplicated PREFLIGHT_CONTEXT schema —
-  extract to `knowledge/preflight-context-schema.md`), `al-dev-ticket` (dead
-  "mode not set" branch in Phase 5). | Consolidate / remove dead branch.
-- **Skill name-fit (2 Medium):** `al-dev-consolidate` (name implies merge; does
-  session summarization), `al-dev-plan-swarm-validate` (name says "plan"; primarily
-  validates). | Clarify descriptions or rename.
-- **Skill description (1 Medium):** `al-dev-plan-swarm-validate` description verb
-  "Generate plan" but the skill validates an existing plan. | Reconcile description.
-- **Skill structure (1 Medium):** `al-dev-plan-final-review` missing `argument-hint`
-  frontmatter field. | Add the field.
+- **al-dev-commit-lint-fixer** (agent, clarity) | Regex mandate lacks failure-mode explanation | Document why only `[[:blank:]]+$` is safe on BSD sed.
+- **al-dev-developer-tdd** (agent, clarity) | Gate tokens used ~70 lines before they're defined | Define at first use or move the governance table up.
+- **al-dev-interview** (agent, clarity) | USER_GATE failure path documented; success path missing | Add explicit success-path clause.
+- **al-dev-release-notes-writer** (agent, clarity) | Pseudo-code references undefined env var `AL_DEV_SHARED_PLUGIN_ROOT` | Define it or replace the snippet with the real invocation pattern.
+- **al-dev-commit-recover-fixer** (agent, name-fit) | "commit" in name over-emphasizes trigger; actual scope is corrupted-file restoration | Rename (e.g. file-corruption-fixer) or sharpen the leading description sentence.
+- **al-dev-commit** (skill, description) | Promised scope-creep detection has no corresponding body step | Add a Phase 0 scope-creep detection step comparing staged diff to approved plan.
+- **al-dev-develop** (skill, description) | Phase 4 handoff artifact promised but its write step is implicit | Make the handoff-file write explicit in Phase 4 Step 1.
+- **al-dev-document** (skill, description) | RTM outputs promised in spawn prompt but absent from success criteria | Add RTM acceptance criterion or descope.
+- **al-dev-fix** (skill, description) | "without approval gates" contradicted by scope-confirmation gate in body | Qualify the description or restructure scope filtering.
+- **al-dev-interview** (skill, description) | Mandatory INTERVIEW COMPLETE gate absent from description | Mention the completion gate in the description.
+- **al-dev-plan-swarm-validate** (skill, description) | Body is pseudo-code; promised critics/synthesis/auto-fix/gate not implemented | Expand into concrete phases or descope the description.
+- **al-dev-support-reply** (skill, description) | Auto-detect input mode and file-based output not reflected in description | Update description: input path or auto-detect; output written to reply file.
+- **al-dev-consolidate** (skill, bloat) | Extraction patterns re-stated inline despite knowledge reference | Reference patterns by name only.
+- **al-dev-document** (skill, bloat) | 80-line doc-structure template inlined | Externalize to a knowledge template per audience.
+- **al-dev-fix** (skill, bloat) | Classification logic and trivial-fix rule repeated ×3 | Consolidate into one Complexity Classification section + Critical Rules footnote.
+- **al-dev-interview** (skill, bloat) | Long inline dispatch prompt; governance patterns restated | Consolidate via artifact-contracts reference.
+- **al-dev-review-develop-preflight** (skill, bloat) | Same git/checkpoint bash patterns stated 3× | Define each pattern once in a Critical Rules block.
+- **al-dev-review-develop** (skill, bloat) | Three reviewer dispatch blocks verbatim-identical except name | Replace with a single parameterized dispatch template.
+- **al-dev-commit** (skill, clarity) | Two bare "Stop." branches without else clauses | Add explicit else paths.
+- **al-dev-explore** (skill, clarity) | Malformed sentence "Holdclassify the user's question type" | Fix the sentence.
+- **al-dev-fix** (skill, clarity) | Trivial-fix recompile loop lacks exit condition | Cap at one rerun, then escalate.
+- **al-dev-help** (skill, clarity) | Two routing branches missing else clauses | Complete the branch logic.
+- **al-dev-investigate** (skill, clarity) | "best-supported hypothesis" threshold undefined | Define evidence thresholds.
+- **al-dev-perf** (skill, clarity) | "evidence source" used before being defined | Define evidence sources upfront.
+- **al-dev-plan-swarm-validate** (skill, clarity) | "gates user approval" passive and ambiguous | State who gates and what triggers approval.
+- **al-dev-review-develop-preflight** (skill, clarity) | PREREQUISITES_MET conditional incomplete | State both branches explicitly.
+- **commit-recover** (skill, clarity) | "verified" recovery status undefined | Define: compiles post-recovery AND line count matches baseline.
+- **al-dev-develop** (skill, structure) | Body references developer agents without existence check note | Confirm agent references against the agents directory.
 
 ### Low
 
-- **Skill structure (21 Low):** missing code-block language tags across most skills
-  (`al-dev-consolidate`, `-develop`, `-document`, `-explore`, `-handoff`, `-interview`,
-  `-investigate`, `-lint`, `-perf`, `-plan*`, `-release-notes`, `-review-develop*`,
-  `-support-reply`, `-ticket`, `commit-recover`) plus two empty `argument-hint`
-  values. | Batch-add language tags; a markdownlint pass covers most.
-- **Agent clarity (3 Low):** `al-dev-support-reply-drafter` (findings parsing),
-  `al-dev-commit-hook-fixer` (manual-review boundary), `al-dev-explore` (out-of-scope
-  else-clause). | Polish.
-- **Skill bloat (2 Low):** `al-dev-commit` (historical lint-ownership commentary),
-  `al-dev-interview` (misleading "Phase 1" label for optional pre-work). | Trim.
-- **Skill clarity (3 Low):** `al-dev-explore` (external Steps A–D not inlined),
-  `al-dev-help` (glob root unspecified), `al-dev-plan-swarm-validate` (description
-  vs validation-only). | Polish.
-
-_Agent description-drift and agent name-fit lenses found no issues._
+- **Agent clarity (2):** `al-dev-commit-ooxml-validator` missing success-path clause; `al-dev-support-reply-drafter` unlabelled/unverified-URL handling undefined.
+- **Agent structure (5):** missing code-fence language tag (`al-dev-commit-agent-analysis`); malformed fence (`al-dev-release-notes-writer`); step-numbering gaps or `.5` steps (`al-dev-support-researcher`, `al-dev-support-reply-drafter`, `al-dev-ticket-agent`).
+- **Agent name-fit (1):** `al-dev-diagnostics-fixer` name broader than its compile/lint scope.
+- **Skill bloat (1):** `al-dev-explore` restates the subagent pattern it already references.
+- **Skill clarity (9):** vague qualifiers or implicit success conditions in `al-dev-consolidate`, `al-dev-document`, `al-dev-handoff`, `al-dev-lint`, `al-dev-plan-final-review`, `al-dev-release-notes`, `al-dev-review-develop`, `al-dev-support-reply`, `verify-commits` — each with a one-line definition fix in the findings file.
+- **Skill structure (22):** missing code-fence language tags across nearly all skills; placeholder `argument-hint` values in `al-dev-commit` and `al-dev-consolidate`; same-day output-collision note for `al-dev-support-reply`. Mechanical batch fix.
 
 ## Naming violations
 
-- **commit-recover** | Low | Skill name doesn't follow `{verb}-{object}-{aspect}`
-  and isn't in the grandfathered list. | Rename (e.g. `recover-commits-integrity`)
-  or add to the grandfathered exceptions.
-- **verify-commits** | Low | Same — doesn't follow the pattern and isn't grandfathered. |
-  Rename (e.g. `verify-commits-atomicity`) or grandfather.
-
-No High or Medium naming findings. All agent filenames follow `al-dev-{role}`. No
-output-path violations.
+- **al-dev-commit-recover-fixer** | Medium | Output path documented with literal `YYYY-MM-DD` placeholder (lines 6, 34, 58) instead of date expansion or a rendered example | Use `$(date +%Y-%m-%d)` expansion or show a rendered example date.
 
 ## Graph deltas
 
-_Refreshed via `scripts/generate-plugin-graph.py` (see below). Four agents remain
-orphaned in the catalog (`al-dev-code-review`, `al-dev-docs-writer`, `al-dev-explore`,
-`al-dev-script-engineer` — no spawning skill); these are documented standalone/utility
-agents, not broken links. `al-dev-consolidate` flagged for surface-placement Move
-(see Design) — misplaced content, not a dead link._
+- **Orphan agent:** `al-dev-code-review` has no spawning skill (standalone-only; catalog confirms "(none found)").
+- **Catalog vs profile drift:** the agent catalog table lists "(none found)" for `al-dev-docs-writer`, `al-dev-explore`, and `al-dev-script-engineer`, while their Layer 2 profiles name callers (`/al-dev-document`, `/al-dev-explore` + `/al-dev-handoff`, `/al-dev-help`). One of the two layers is wrong in each case.
+- **Count drift:** the agent map header states 22 agents; 23 agent files exist on disk and 23 rows are in the catalog.
+- **Missing diagram edge:** the skills-map drilldown for `/al-dev-document` shows no agent, but the agent map records `al-dev-docs-writer` as spawned by it.
+
+---
+
+Next step: review this dossier, then run `/verify-map-suggestions` on accepted items to rubber-duck them against the live codebase before planning changes.
