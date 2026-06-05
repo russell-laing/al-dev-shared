@@ -54,8 +54,28 @@ Then branch explicitly:
   dispatched — record dispositions via `/record-health-dispositions` and
   re-run." Do not dispatch any lens.
 
-Skip the guard when `--resume` is present (resuming an interrupted sweep is
-not a new sweep).
+### Stale-open check (per requested surface)
+
+An `accepted` ledger row whose object has since changed in git is often
+already implemented but never flipped to `fixed` (the closure write-back
+rule in `/record-health-dispositions` was skipped). Before dispatching,
+for each ledger row still `accepted` with no later `fixed` row for the
+same object + issue essence:
+
+```bash
+# Any commits touching the object since the row's date?
+git log --since="<row-date>" --oneline -- \
+  profile-al-dev-shared/skills/<object>/ profile-al-dev-shared/agents/<object>.md \
+  .claude/skills/<object>/ .claude/agents/<object>.md
+```
+
+If the log is non-empty, report before dispatch: "Row `<object>` accepted
+<row-date> — object changed since (<commit>); possibly already implemented.
+Verify and flip the ledger row before sweeping, or the sweep may re-rank a
+fixed item." This check warns only; it never blocks the sweep on its own.
+
+Skip the guard and the stale-open check when `--resume` is present
+(resuming an interrupted sweep is not a new sweep).
 
 ## Phase 1 — Build file lists (per requested surface)
 

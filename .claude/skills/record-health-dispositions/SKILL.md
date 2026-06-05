@@ -116,3 +116,23 @@ existing format:
 
 Do not edit any plugin source file from this skill. Committing the ledger
 change is left to the user's normal commit flow.
+
+## Closure write-back rule (binding on fix sessions)
+
+The ledger is only trustworthy if closure is recorded in the same session
+that closes a finding. Any session that lands a commit resolving an
+`accepted` row MUST update the ledger before it ends:
+
+1. If the `accepted` row is **not yet committed**, edit it in place: change
+   the disposition to `fixed` and replace the note with the resolving
+   commit hash + a one-line summary.
+2. If the `accepted` row is **already committed**, append a new `fixed`
+   row for the same object + issue essence citing the commit (append-only
+   rule; the superseded row stays).
+3. Cite the ledger row in the resolving commit message (e.g. "Dispositions
+   row N") so the pairing is auditable in both directions.
+
+A fix session that ends with resolving commits but un-flipped `accepted`
+rows reproduces the closure-invisibility defect this ledger exists to
+eliminate — `/plugin-health-discover` Phase 0 flags this state as
+stale-open on the next sweep.

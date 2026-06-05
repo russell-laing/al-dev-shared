@@ -195,6 +195,12 @@ flowchart TD
   plugin graph for the plugin surface.
 - `/analyze-architectural-design` is an optional add-on that synthesizes the
   skill and agent findings from a both-surface audit.
+- **Re-sweep provenance rule:** a re-sweep may overwrite a same-day dossier
+  only when the new dossier carries a "supersedes the earlier … run" note.
+  Dossiers from prior dates are history — normalizing one retroactively must
+  keep the supersedes note so the report phase's recurrence diff against
+  prior findings stays interpretable. Prefer a new dated dossier over
+  cross-day rewrites.
 
 ### 3. Record decisions and plan accepted work
 
@@ -203,6 +209,11 @@ flowchart TD
 - `/plan-health-findings` turns accepted ledger rows into a verified
   implementation plan.
 - The plan step is a planning output, not the implementation itself.
+- **Closure write-back:** a session that lands a commit resolving an
+  `accepted` ledger row must flip that row to `fixed` (or append a `fixed`
+  row if the accepted row is already committed) before the session ends,
+  citing the commit. See the binding rule in `/record-health-dispositions`;
+  `/plugin-health-discover` Phase 0 flags violations as stale-open rows.
 
 ### 4. Refresh derived artifacts
 
