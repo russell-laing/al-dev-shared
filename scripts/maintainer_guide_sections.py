@@ -450,3 +450,152 @@ def render_stage_detail(
         cls = "orphanArtifact" if template in orphans else "artifact"
         lines.append(f'    class {_node_id("art", template)} {cls}')
     return _mermaid_block(lines), node_count
+
+
+def _first_sentence(description: str) -> str:
+    text = " ".join(description.split())
+    if not text:
+        return "(no description)"
+    if ". " in text:
+        return text.split(". ", 1)[0] + "."
+    return text if text.endswith(".") else text + "."
+
+
+def _topo_order(stage_contracts: list[WorkflowContract]) -> list[WorkflowContract]:
+    """Kahn's algorithm over same-stage next edges, alphabetical tie-break, cycle fallback."""
+    by_name = {c.skill: c for c in stage_contracts}
+    names = set(by_name)
+    indegree = {name: 0 for name in names}
+    for contract in stage_contracts:
+        for target in sorted(set(contract.next_skills)):
+            if target in names and target != contract.skill:
+                indegree[target] += 1
+    ready = sorted(name for name, degree in indegree.items() if degree == 0)
+    order: list[WorkflowContract] = []
+    placed: set[str] = set()
+    while ready:
+        current = ready.pop(0)
+        order.append(by_name[current])
+        placed.add(current)
+        for target in sorted(set(by_name[current].next_skills)):
+            if target in indegree and target not in placed and target != current:
+                indegree[target] -= 1
+                if indegree[target] == 0:
+                    insort(ready, target)
+    for name in sorted(names - placed):
+        order.append(by_name[name])
+    return order
+
+
+def render_user_journey(contracts: list[WorkflowContract]) -> str:
+    """Numbered per-stage step list of user-invoked skills in next-chain order."""
+    sections: list[str] = []
+    for stage in CORE_STAGES:
+        stage_user = [c for c in contracts if c.stage == stage and is_user_invocable(c)]
+        if not stage_user:
+            continue
+        lines = [f"### {STAGE_TITLES[stage]} steps", ""]
+        step = 0
+        for contract in _topo_order(stage_user):
+            step += 1
+            repeat = " Repeat as needed." if contract.repeatable else ""
+            lines.append(f"{step}. `/{contract.skill}` — {_first_sentence(contract.description)}{repeat}")
+            if contract.inputs:
+                lines.append("   - reads: " + ", ".join(f"`{t}`" for t in contract.inputs))
+            if contract.outputs:
+                lines.append("   - writes: " + ", ".join(f"`{t}`" for t in contract.outputs))
+            if contract.manual_followup:
+                step += 1
+                lines.append(f"{step}. Manual step: {contract.manual_followup}.")
+        sections.append("\n".join(lines))
+    return "\n\n".join(sections)
+
+
+def render_skills_tables(contracts: list[WorkflowContract]) -> str:
+    ordered = sorted(contracts, key=lambda c: (STAGES.index(c.stage), c.skill))
+    glance = [
+        "### Skills at a glance",
+        "",
+        "| Skill | Stage | Invoked by | Role |",
+        "| --- | --- | --- | --- |",
+    ]
+    for contract in ordered:
+        glance.append(
+            f"| `/{contract.skill}` | {contract.stage} | {contract.invoked_by} "
+            f"| {_first_sentence(contract.description)} |"
+        )
+
+    def cell(values: tuple[str, ...]) -> str:
+        return ", ".join(f"`{v}`" for v in values) if values else "—"
+
+    io = [
+        "### Inputs and outputs",
+        "",
+        "| Skill | Reads | Writes | Next |",
+        "| --- | --- | --- | --- |",
+    ]
+    for contract in ordered:
+        next_cell = (
+            ", ".join(f"`/{t}`" for t in contract.next_skills) if contract.next_skills else "—"
+        )
+        io.append(
+            f"| `/{contract.skill}` | {cell(contract.inputs)} | {cell(contract.outputs)} "
+            f"| {next_cell} |"
+        )
+    return "\n".join(glance) + "\n\n" + "\n".join(io)
+
+
+SIGNAL_ORDER = (
+    ("orphaned-artifact", "Orphaned artifact"),
+    ("sourceless-input", "Sourceless input"),
+    ("manual-step", "Manual step"),
+    ("missing-contract", "Missing contract"),
+    ("stale-artifact", "Artifact freshness"),
+    ("internal-only", "Internal-only skill"),
+)
+
+
+def render_gaps_table(gaps: dict[str, list[tuple[str, str]]]) -> str:
+    lines = [
+        "| Signal | Item | Detail |",
+        "| --- | --- | --- |",
+    ]
+    for key, title in SIGNAL_ORDER:
+        rows = gaps[key]
+        if not rows:
+            lines.append(f"| {title} | none | — |")
+            continue
+        for item, detail in rows:
+            lines.append(f"| {title} | `{item}` | {detail} |")
+    return "\n".join(lines)
+
+
+def _wrap(key: str, body: str) -> str:
+    return f"<!-- BEGIN GENERATED: {key} -->\n{body.rstrip()}\n<!-- END GENERATED: {key} -->"
+
+
+def build_sections(
+    contracts: list[WorkflowContract],
+    missing_contracts: list[str],
+    repo: Path,
+) -> tuple[dict[str, str], list[str]]:
+    """All nine wrapped marker sections plus node-budget warnings (warnings never fail)."""
+    gaps = compute_gaps(contracts, missing_contracts, repo)
+    orphans = {item for item, _ in gaps["orphaned-artifact"]}
+    sections: dict[str, str] = {}
+    warnings: list[str] = []
+
+    def record(key: str, body: str, node_count: int = 0) -> None:
+        if node_count > NODE_BUDGET:
+            warnings.append(f"diagram {key} has {node_count} nodes (budget {NODE_BUDGET})")
+        sections[key] = _wrap(key, body)
+
+    overview_body, overview_count = render_overview(contracts)
+    record("maintainer-workflow-overview", overview_body, overview_count)
+    for stage in STAGES:
+        body, count = render_stage_detail(contracts, stage, orphans)
+        record(f"maintainer-stage-{stage}", body, count)
+    record("maintainer-user-journey", render_user_journey(contracts))
+    record("maintainer-skills-tables", render_skills_tables(contracts))
+    record("maintainer-gaps", render_gaps_table(gaps))
+    return sections, warnings

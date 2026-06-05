@@ -351,6 +351,98 @@ def test_stage_detail_node_budget_counts_all_nodes() -> None:
         assert node_count > lib.NODE_BUDGET
 
 
+def test_user_journey_lists_only_user_invoked_skills_in_order() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text = lib.render_user_journey(contracts)
+        assert "### Discover steps" in text
+        assert "### Decide steps" in text
+        assert "`/alpha-audit`" in text
+        assert "`/beta-report`" not in text  # internal-only skills excluded
+        assert "Repeat as needed." in text
+        assert "- reads: `docs/health/<date>-dossier.md`, `docs/ledger.md`" in text
+        assert "- writes: `docs/plans/<date>-plan.md`" in text
+        assert "2. Manual step: implement the plan." in text
+
+
+def test_skills_tables_render_glance_and_io() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text = lib.render_skills_tables(contracts)
+        assert "### Skills at a glance" in text
+        assert "### Inputs and outputs" in text
+        assert "| `/alpha-audit` | discover | user | Audits the surface. |" in text
+        assert "| `/beta-report` | discover | skill:alpha-audit | Ranks findings into a dossier. |" in text
+        assert "| `/gamma-plan` | `docs/health/<date>-dossier.md`, `docs/ledger.md` | `docs/plans/<date>-plan.md` | — |" in text
+
+
+def test_gaps_table_renders_all_six_signal_groups_with_none_rows() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        skills = _build_skills_fixture(repo)
+        contracts, missing = lib.load_contracts(skills)
+        gaps = lib.compute_gaps(contracts, missing, repo)
+        text = lib.render_gaps_table(gaps)
+        for title in (
+            "Orphaned artifact",
+            "Sourceless input",
+            "Manual step",
+            "Missing contract",
+            "Artifact freshness",
+            "Internal-only skill",
+        ):
+            assert title in text, title
+        assert "| Manual step | `implement the plan` | follows /gamma-plan |" in text
+        # The fixture has every signal populated, so no "none" rows appear:
+        assert "| none | — |" not in text
+        empty = {key: [] for key in gaps}
+        empty_text = lib.render_gaps_table(empty)
+        assert empty_text.count("| none | — |") == 6
+
+
+def test_build_sections_wraps_all_marker_keys_and_warns_over_budget() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        skills = _build_skills_fixture(repo)
+        contracts, missing = lib.load_contracts(skills)
+        sections, warnings = lib.build_sections(contracts, missing, repo)
+        expected_keys = {
+            "maintainer-workflow-overview",
+            "maintainer-stage-map-sync",
+            "maintainer-stage-discover",
+            "maintainer-stage-decide",
+            "maintainer-stage-derive",
+            "maintainer-stage-support",
+            "maintainer-user-journey",
+            "maintainer-skills-tables",
+            "maintainer-gaps",
+        }
+        assert set(sections) == expected_keys
+        for key, body in sections.items():
+            assert body.startswith(f"<!-- BEGIN GENERATED: {key} -->\n"), key
+            assert body.endswith(f"\n<!-- END GENERATED: {key} -->"), key
+        assert warnings == []
+
+        # Add a 16-artifact skill to force a named node-budget warning:
+        inputs = "\n".join(f"    - docs/big/file-{i}.md" for i in range(16))
+        _write_skill(
+            skills,
+            "zz-big",
+            "name: zz-big\n"
+            "description: Big.\n"
+            "workflow:\n"
+            "  stage: derive\n"
+            "  invoked-by: user\n"
+            "  repeatable: false\n"
+            "  inputs:\n" + inputs + "\n",
+        )
+        contracts2, missing2 = lib.load_contracts(skills)
+        _, warnings2 = lib.build_sections(contracts2, missing2, repo)
+        assert any("maintainer-stage-derive" in w and "17" in w for w in warnings2), warnings2
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
