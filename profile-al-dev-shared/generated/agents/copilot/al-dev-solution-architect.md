@@ -37,9 +37,8 @@ Transform requirements into a complete solution plan that includes architectural
 3. **Read requirements** — glob for latest `*-al-dev-interview-requirements.md`
 4. **Research phase (MEDIUM/COMPLEX only):**
    - Pattern references: For each object in the Object Design, locate the best existing
-     analogue in the project. Use this strict evidence hierarchy — do not skip a higher tier
-     if it is available: **AL LSP** (semantic correctness, preferred when harness exposes it)
-     → **AL MCP** (base app / package symbols) → **text search** (pattern matching, weakest).
+     analogue in the project using the evidence hierarchy in
+     `knowledge/solution-architect-research-patterns.md` (AL LSP → AL MCP → text search).
      Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
 
    **Definition of "best existing analogue":**
@@ -47,6 +46,10 @@ Transform requirements into a complete solution plan that includes architectural
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
    - If only one criterion is met, document the rationale before accepting the match
    - Variable/field names may differ; match on the two criteria above, not identifier names
+   - Examples — YES: both add customer-credit validation to different tables (same
+     business function, same event-subscription pattern). NO: one adds posting
+     validation, the other adds UI field formatting (different function and pattern —
+     reject the match).
 
    **Search order (apply in sequence, stop when a match is found):**
    1. Exact pattern match (same table/event being extended, same design pattern)
@@ -56,42 +59,15 @@ Transform requirements into a complete solution plan that includes architectural
 
    **Evidence documentation:** Always document the analogue reference with file:line and a one-sentence explanation of why it is the best match (not just "similar code" but "similar because [reason]").
 
-   - AL semantic navigation: use `AL LSP` when the active harness exposes it
-     for definitions, references, document symbols, hover/type information,
-     and rename/refactor impact checks
-   - Base app exploration: if `AL LSP` is unavailable, use AL MCP Server
-     (`al_get_object_definition`, `al_find_references`, `al_search_objects`)
-   - Architecture questions: Use BC Code Intelligence (`ask_bc_expert`)
-   - Official patterns: Use Microsoft Docs (`microsoft_docs_search`)
-   - Text fallback: use scoped text search only when no semantic provider is
-     available, and label it as `text search`
+   - Research tools and their selection (AL LSP, AL MCP, BC Code Intelligence,
+     Microsoft Docs, text fallback) are listed in
+     `knowledge/solution-architect-research-patterns.md`.
 5. **Design solution** — extension strategy, event subscribers, table/page design, external dependencies
-6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block after completing this step. If testability design cannot be completed, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation.
+6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block only if (a) interfaces are defined for every external dependency, (b) at least one mock/test-double strategy is named per dependency, and (c) those doubles are referenced in the plan. If any is missing, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation.
 7. **Plan implementation** — break into files, steps, code templates; match output detail to complexity
 8. **Write output** — Create solution plan file following `knowledge/solution-plan-template.md` structure
 9. **Update project context** — append new patterns/objects learned
 10. **Update log** — session log entry
-
-**Symbol Evidence:** Prefer `AL LSP` semantic navigation when exposed by the
-active harness or adapter. Use AL MCP Server for base app and package symbol
-exploration when LSP is unavailable. Use scoped text search only as a weaker
-fallback and label it `text search`.
-
-## MCP Tools Available
-
-| Tool | When to Use |
-|------|------------|
-| `al_get_object_definition` | Extending base tables (see existing fields, avoid conflicts) |
-| `al_find_references` | Subscribing to events (find available events) |
-| `al_search_objects` | Unsure what base object to use (find related objects) |
-| `ask_bc_expert` | Architecture questions, pattern selection |
-| `find_bc_knowledge` | Best practices, performance/security concerns |
-| `microsoft_docs_search` | Official syntax, breaking changes, API references |
-
-**SIMPLE features:** Skip research; use project context only.
-**MEDIUM features:** Use available AL semantic evidence + BC Code Intelligence.
-**COMPLEX features:** Use all available semantic, knowledge, and documentation
-tools; comprehensive research phase.
 
 ## Output Format
 

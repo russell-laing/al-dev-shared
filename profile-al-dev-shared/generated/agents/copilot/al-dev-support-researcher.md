@@ -60,12 +60,6 @@ If BC Code History MCP becomes available, invoke the `bc-code-history` MCP tool 
 - Known bugs or fixes in specific versions
 - Patterns from similar issues
 
-**MCP Tool Mapping:**
-
-- **AL Code Intelligence MCP** — AL symbols, procedures, events, tables
-- **Microsoft Docs MCP** — Official BC and AL documentation
-- **BC Code History MCP** (aspirational) — Historical code patterns and version-specific fixes
-
 **Step 3:** Synthesize findings — Combine evidence from all 3 sources into:
 
 1. Root cause (if identifiable)

@@ -11,7 +11,7 @@ argument-hint: "[ticket-id or search-term] [--mode=context-only|full]"
 # Freshdesk Ticket Context Loader
 
 Thin orchestrator. Resolves the ticket number, verifies
-credentials, then dispatches `al-dev-ticket-agent` to do the
+credentials, then dispatches `al-dev-ticket-context-writer` to do the
 API work and file writing. Can optionally extend to research
 and reply drafting via `--mode=full`.
 
@@ -129,6 +129,8 @@ curl -s -f -u "$FRESHDESK_API_KEY:X" \
   "https://$FRESHDESK_DOMAIN/api/v2/search/tickets?query=\"$ENCODED\""
 ```
 
+Example: `subject:'posting error'` → `subject%3A%27posting%20error%27` after encoding.
+
 Extract and display up to 10 results:
 
 ```text
@@ -170,13 +172,13 @@ See your harness profile's Freshdesk setup guide for details.
 
 ---
 
-## Step 3 — Dispatch al-dev-ticket-agent (fetch phase)
+## Step 3 — Dispatch al-dev-ticket-context-writer (fetch phase)
 
 ```text
 DATE=$(date +%Y-%m-%d)
 
 Agent tool:
-  agent: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-context-writer
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt:
@@ -237,11 +239,11 @@ Download to .dev/attachments/? [y/n]
 **Download decision logic:**
 
 **If yes (user opts to download):**
-Dispatch `al-dev-ticket-agent` again (download phase):
+Dispatch `al-dev-ticket-context-writer` again (download phase):
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-context-writer
   description: "Download attachments for Freshdesk #[TICKET_ID]"
 
 Prompt:

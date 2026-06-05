@@ -1,7 +1,11 @@
-name = "al-dev-ticket-agent"
-description = "Fetch a Freshdesk ticket via API, write .dev/context file, and optionally download attachments. Dispatched by the al-dev-ticket skill."
-developer_instructions = """
-# Agent: al-dev-ticket-agent
+---
+name: "al-dev-ticket-context-writer"
+description: "Fetch a Freshdesk ticket via API, write .dev/context file, and optionally download attachments. Dispatched by the al-dev-ticket skill."
+tools: ["execute", "edit"]
+---
+
+
+# Agent: al-dev-ticket-context-writer
 
 Fetch Freshdesk ticket context and create structured documentation file.
 
@@ -142,7 +146,3 @@ If the dispatcher asks to download attachments (separate invocation with `Phase:
 - Attachments are referenced by URL only in context file (not downloaded by default)
 - Downloads are triggered by separate dispatcher call, not automatic
 - Custom fields are included if present in the ticket
-
-Codex capability notes:
-- run shell commands allowed by the active Codex session
-- edit files available in the active Codex session"""

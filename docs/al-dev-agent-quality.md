@@ -109,7 +109,7 @@ Fix: Either show actual tool-call format or add a note: "The following shows whi
 
 ---
 
-### al-dev-commit-agent-analysis
+### al-dev-commit-analyzer
 
 **[High] Lens 1 — Prompt Clarity**
 Observation: Steps 4.5 and 6.7 reference `$REPO` (e.g., `git -C "$REPO" diff ...`, `GITATTR="$REPO/.gitattributes"`) but `$REPO` is never defined in the agent instructions or the ## Inputs table. The Inputs list only `PROJECT_CONTEXT` and `FD_TICKET`.
@@ -201,7 +201,7 @@ Fix: Add `# Agent: al-dev-expert-reviewer` as the first line of the body.
 
 ---
 
-### al-dev-code-review
+### al-dev-general-code-reviewer
 
 **[High] Lens 2 — Structural Conventions**
 Observation: 9 top-level `##` sections (exceeds the 6-section limit): Role, Inputs, Outputs, Spawn Context, Review Focus, Review Process, Output Format, What NOT to Review, Debate with Other Reviewers.
@@ -253,7 +253,7 @@ Fix: Change `al-dev-python-script-engineer` to `al-dev-script-engineer` and qual
 
 ---
 
-### al-dev-commit-agent-execute
+### al-dev-commit-executor
 
 **[High] Lens 4 — Bloat**
 Observation: `## Phase: execute` is a single section spanning ~185 lines (Steps 1–3 with sub-steps 1.5, lint baseline, corruption check, OOXML gate, scrubbing, retry logic, and return block).
@@ -285,7 +285,7 @@ Fix: Minor inconsistency; consider renaming to `al-dev-support-researcher` to al
 
 ---
 
-### al-dev-ticket-agent
+### al-dev-ticket-context-writer
 
 **[High] Lens 4 — Bloat**
 Observation: `## Phase: fetch` is a single section spanning ~120 lines (Steps 1–3 with two parallel curl calls, jq parsing, status/priority mapping table, and the full output file template).

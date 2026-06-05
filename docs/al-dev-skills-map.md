@@ -7,10 +7,10 @@
 **Last updated:** 2026-06-04
 
 <!-- BEGIN GENERATED: skill-coverage -->
-**Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
+**Coverage:** 22 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
 <!-- END GENERATED: skill-coverage -->
 
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer tools are documented in separate tracking systems.
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
 
 ---
 
@@ -23,7 +23,6 @@ This diagram shows pre-planning tributaries (dashed, optional), the three main e
 flowchart TD
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     skill_al_dev_commit[al-dev-commit]
-    skill_al_dev_consolidate[al-dev-consolidate]
     skill_al_dev_develop[al-dev-develop]
     skill_al_dev_document[al-dev-document]
     skill_al_dev_explore[al-dev-explore]
@@ -43,7 +42,6 @@ flowchart TD
     skill_verify_commits[verify-commits]
 
     skill_al_dev_commit --> skill_verify_commits
-    skill_al_dev_commit -.-> skill_al_dev_consolidate
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
@@ -61,7 +59,6 @@ flowchart TD
     skill_commit_recover --> skill_al_dev_commit
 
     class skill_al_dev_commit skillNode
-    class skill_al_dev_consolidate skillNode
     class skill_al_dev_develop skillNode
     class skill_al_dev_document skillNode
     class skill_al_dev_explore skillNode
@@ -115,7 +112,7 @@ flowchart LR
     skill_al_dev_interview[al-dev-interview]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_support_reply[al-dev-support-reply]
-    agent_al_dev_ticket_agent[al-dev-ticket-agent]
+    agent_al_dev_ticket_context_writer[al-dev-ticket-context-writer]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
     artifact_ticket_context_md[.dev/ticket-context.md]
@@ -127,7 +124,7 @@ flowchart LR
     skill_al_dev_ticket -.-> skill_al_dev_interview
     skill_al_dev_ticket -.-> skill_al_dev_plan
     skill_al_dev_ticket -.-> skill_al_dev_support_reply
-    skill_al_dev_ticket --> agent_al_dev_ticket_agent
+    skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     skill_al_dev_ticket --> artifact_ticket_context_md
@@ -140,14 +137,14 @@ flowchart LR
     class skill_al_dev_interview skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_support_reply skillNode
-    class agent_al_dev_ticket_agent agentNode
+    class agent_al_dev_ticket_context_writer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class artifact_ticket_context_md artifactNode
     class artifact_ticket_reply_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-ticket-agent`
+Agents spawned: `al-dev-shared:al-dev-ticket-context-writer`
 <!-- END GENERATED: skill-drilldown-al-dev-ticket -->
 
 ### /al-dev-support-reply
@@ -642,8 +639,8 @@ flowchart LR
     Phase2["Phase 2"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
-    agent_al_dev_commit_agent_analysis[al-dev-commit-agent-analysis]
-    agent_al_dev_commit_agent_execute[al-dev-commit-agent-execute]
+    agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
+    agent_al_dev_commit_executor[al-dev-commit-executor]
     agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
     agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
@@ -663,8 +660,8 @@ flowchart LR
     skill_al_dev_commit --> Phase2
     skill_al_dev_commit --> Phase3
     skill_al_dev_commit --> Phase4
-    skill_al_dev_commit --> agent_al_dev_commit_agent_analysis
-    skill_al_dev_commit --> agent_al_dev_commit_agent_execute
+    skill_al_dev_commit --> agent_al_dev_commit_analyzer
+    skill_al_dev_commit --> agent_al_dev_commit_executor
     skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
     skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
     skill_al_dev_commit --> agent_al_dev_commit_message_drafter
@@ -685,8 +682,8 @@ flowchart LR
     class Phase2 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
-    class agent_al_dev_commit_agent_analysis agentNode
-    class agent_al_dev_commit_agent_execute agentNode
+    class agent_al_dev_commit_analyzer agentNode
+    class agent_al_dev_commit_executor agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_message_drafter agentNode
@@ -702,7 +699,7 @@ flowchart LR
     class artifact_hook_failures_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-agent-analysis`, `al-dev-shared:al-dev-commit-agent-execute`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
+Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
 <!-- END GENERATED: skill-drilldown-al-dev-commit -->
 
 ### /al-dev-explore
@@ -994,15 +991,18 @@ flowchart LR
     skill_commit_recover[commit-recover]
     agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
     artifact_commit_integrity_log[.dev/commit-integrity.log]
+    artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_learnings_md[.dev/learnings.md]
 
     skill_commit_recover --> agent_al_dev_commit_recover_fixer
     skill_commit_recover --> artifact_commit_integrity_log
+    skill_commit_recover --> artifact_compile_errors_log
     skill_commit_recover --> artifact_learnings_md
 
     class skill_commit_recover skillNode
     class agent_al_dev_commit_recover_fixer agentNode
     class artifact_commit_integrity_log artifactNode
+    class artifact_compile_errors_log artifactNode
     class artifact_learnings_md artifactNode
 ```
 
@@ -1051,46 +1051,6 @@ flowchart LR
     class skill_verify_commits skillNode
 ```
 <!-- END GENERATED: skill-drilldown-verify-commits -->
-
-### /al-dev-consolidate
-
-Standalone utility skill. No agents spawned. Consolidates `.dev/` artifacts
-into vault-ready session summaries and an Obsidian-compatible sessions index,
-using only bash extraction — file content is never read into LLM context. Phases: 0–4.
-
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-consolidate -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_al_dev_consolidate[al-dev-consolidate]
-    Phase0["Phase 0"]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
-    Phase4["Phase 4"]
-    knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
-
-    skill_al_dev_consolidate --> Phase0
-    skill_al_dev_consolidate --> Phase1
-    skill_al_dev_consolidate --> Phase2
-    skill_al_dev_consolidate --> Phase3
-    skill_al_dev_consolidate --> Phase4
-    skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
-
-    class skill_al_dev_consolidate skillNode
-    class Phase0 phaseNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
-    class Phase4 phaseNode
-    class knowledge_consolidate_extraction_patterns_md knowledgeNode
-```
-<!-- END GENERATED: skill-drilldown-al-dev-consolidate -->
 
 ---
 

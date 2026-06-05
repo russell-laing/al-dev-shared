@@ -1,6 +1,6 @@
 ---
 name: al-dev-explore
-description: Explore codebases fast with persistent output.
+description: Explore codebases fast — loads project context, classifies the question, then delegates to an Explore subagent for structured, persistent findings.
 argument-hint: "[question or area to explore]"
 ---
 

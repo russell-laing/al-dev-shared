@@ -80,11 +80,16 @@ The interview agent MUST:
    explicit signal, proceed to Phase 3.**
 
    **Completion check:** Verify agent output contains `INTERVIEW COMPLETE` and a
-   category list. If missing:
-   1. Re-dispatch with: "Please end your response with INTERVIEW COMPLETE and list
-      the question groups covered."
-   2. If still missing after re-dispatch, note the stopping point and proceed to
-      plan with partial findings.
+   category list. Mandatory categories (must be covered): Business logic, BC
+   integration, Data model, Error handling, Integration points. If `INTERVIEW
+   COMPLETE` is missing:
+   1. Re-dispatch once with: "Please end your response with INTERVIEW COMPLETE and
+      list the question groups covered."
+   2. If still missing after re-dispatch: if all five mandatory categories were
+      covered, proceed to Phase 3 with partial findings and list the skipped
+      categories in the requirements output. If fewer than five mandatory
+      categories were covered, stop and tell the user to re-run /al-dev-interview
+      before planning.
 
 ## Phase 3: Write Requirements (only after interview)
 

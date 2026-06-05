@@ -14,9 +14,8 @@
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-code-review | sonnet | Read | (none found) |
-| al-dev-commit-agent-analysis | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-agent-execute | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit` |
+| al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
@@ -27,6 +26,7 @@
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
+| al-dev-general-code-reviewer | sonnet | Read | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server | `/al-dev-release-notes` |
@@ -35,14 +35,14 @@
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
 | al-dev-support-reply-drafter | sonnet | Write | `/al-dev-support-reply` |
 | al-dev-support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/al-dev-support-reply` |
-| al-dev-ticket-agent | haiku | Bash, Write | `/al-dev-ticket` |
+| al-dev-ticket-context-writer | haiku | Bash, Write | `/al-dev-ticket` |
 <!-- END GENERATED: agent-catalog-table -->
 
 ---
 
 ## Layer 2: Per-Agent Profiles
 
-### al-dev-code-review
+### al-dev-general-code-reviewer
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
 **Model:** sonnet
@@ -64,7 +64,7 @@
 
 ---
 
-### al-dev-commit-agent-analysis
+### al-dev-commit-analyzer
 
 **Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files.
 **Model:** haiku
@@ -89,7 +89,7 @@
 
 ### al-dev-commit-message-drafter
 
-**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-agent-analysis and drafts commit messages with context-aware description. Enables independent iteration on message quality.
+**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
 **Model:** haiku
 **Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
@@ -111,7 +111,7 @@
 
 ---
 
-### al-dev-commit-agent-execute
+### al-dev-commit-executor
 
 **Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
 **Model:** haiku
@@ -179,7 +179,7 @@
 
 ### al-dev-commit-hook-fixer
 
-**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-agent-execute by handling error recovery in isolation.
+**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-executor by handling error recovery in isolation.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
 **Spawned by:** /al-dev-commit (Phase 4 — error recovery)
@@ -541,7 +541,7 @@
 
 ---
 
-### al-dev-ticket-agent
+### al-dev-ticket-context-writer
 
 **Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
 **Model:** haiku

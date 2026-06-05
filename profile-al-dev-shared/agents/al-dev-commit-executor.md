@@ -1,6 +1,16 @@
-name = "al-dev-commit-agent-execute"
-description = "Git commit execution agent. Executes git commits from an approved plan (success path only). Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. On pre-commit hook rejection, returns a HOOK_FAILURES block for the caller to hand off to al-dev-commit-hook-fixer. Never writes or edits source files directly — all fixes go through Bash."
-developer_instructions = """
+---
+name: al-dev-commit-executor
+description: >-
+  Git commit execution agent. Executes git commits from an approved plan
+  (success path only). Dispatched by al-dev-commit (execute phase) after
+  al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. On
+  pre-commit hook rejection, returns a HOOK_FAILURES block for the caller to
+  hand off to al-dev-commit-hook-fixer. Never writes or edits source files
+  directly — all fixes go through Bash.
+model: haiku
+tools: ["Bash", "Read"]
+---
+
 # Agent: al-dev-commit-agent (Execute Phase)
 
 Execute approved commits from the analysis phase. This agent owns the
@@ -72,7 +82,3 @@ SKIPPED: [N groups]
 
 HOOK_FAILURES: [group_id: raw_output] (or NONE)
 ```
-
-Codex capability notes:
-- run shell commands allowed by the active Codex session
-- read files available in the active Codex session"""

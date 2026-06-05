@@ -1,7 +1,7 @@
 ---
 name: al-dev-commit-message-drafter
 description: >-
-  Git commit message drafter agent. Consumes manifests from al-dev-commit-agent-analysis,
+  Git commit message drafter agent. Consumes manifests from al-dev-commit-analyzer,
   proposes atomic commit groups, and drafts commit messages. Dispatched by
   /al-dev-commit (message-drafting phase).
 model: haiku
@@ -17,7 +17,7 @@ manifest analysis and project context.
 
 All inputs arrive in the dispatch prompt:
 
-- `MANIFESTS` — per-file change summaries from al-dev-commit-agent-analysis
+- `MANIFESTS` — per-file change summaries from al-dev-commit-analyzer
 - `PROJECT_CONTEXT` — scopes, object ID prefix, naming patterns
 - `FD_TICKET` — Freshdesk ticket number or empty
 
@@ -25,7 +25,7 @@ All inputs arrive in the dispatch prompt:
 
 | Input | Required | Format | Description |
 |-------|----------|--------|-------------|
-| MANIFESTS | **Yes** | inline text block (dispatch prompt) | Per-file change summary from al-dev-commit-agent-analysis (object IDs, added/removed fields and procedures) |
+| MANIFESTS | **Yes** | inline text block (dispatch prompt) | Per-file change summary from al-dev-commit-analyzer (object IDs, added/removed fields and procedures) |
 | PROJECT_CONTEXT | string | inline text block (dispatch prompt) | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | inline text block (dispatch prompt) | Freshdesk ticket number |
 

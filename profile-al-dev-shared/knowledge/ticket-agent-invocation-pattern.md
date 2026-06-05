@@ -1,16 +1,16 @@
 # Ticket Agent Invocation Pattern
 
-Canonical pattern for dispatching `al-dev-ticket-agent` from skills that interact with Freshdesk.
+Canonical pattern for dispatching `al-dev-ticket-context-writer` from skills that interact with Freshdesk.
 
 ## Pattern Summary
 
-The `/al-dev-ticket` skill dispatches `al-dev-ticket-agent` for the fetch phase in both modes. When `--mode=full` is selected, `/al-dev-ticket` then chains to `/al-dev-support-reply` for research and reply drafting. This document captures the canonical fetch-phase pattern to prevent drift.
+The `/al-dev-ticket` skill dispatches `al-dev-ticket-context-writer` for the fetch phase in both modes. When `--mode=full` is selected, `/al-dev-ticket` then chains to `/al-dev-support-reply` for research and reply drafting. This document captures the canonical fetch-phase pattern to prevent drift.
 
 ## Dispatch Block Template
 
 ```bash
 Agent tool:
-  agent: al-dev-shared:al-dev-ticket-agent
+  agent: al-dev-shared:al-dev-ticket-context-writer
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt: |
@@ -75,11 +75,11 @@ When a new skill needs to fetch Freshdesk tickets, it should:
 ## Related Files
 
 ```text
-profile-al-dev-shared/agents/al-dev-ticket-agent.md
+profile-al-dev-shared/agents/al-dev-ticket-context-writer.md
 profile-al-dev-shared/skills/al-dev-ticket/SKILL.md
 ```
 
-- Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-agent.md`
+- Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-context-writer.md`
 - Skills using this pattern:
   - `/al-dev-ticket` — Fetch and contextualize the ticket (with `--mode=context-only` or `--mode=full`)
   - `/al-dev-support-reply` — Follow-on research and reply drafting after ticket context is loaded

@@ -1,14 +1,10 @@
 ---
-name: al-dev-ticket-agent
-description: >-
-  Fetch a Freshdesk ticket via API, write .dev/context file,
-  and optionally download attachments. Dispatched by the
-  al-dev-ticket skill.
-model: haiku
+description: "Fetch a Freshdesk ticket via API, write .dev/context file, and optionally download attachments. Dispatched by the al-dev-ticket skill."
 tools: ["Bash", "Write"]
 ---
 
-# Agent: al-dev-ticket-agent
+
+# Agent: al-dev-ticket-context-writer
 
 Fetch Freshdesk ticket context and create structured documentation file.
 

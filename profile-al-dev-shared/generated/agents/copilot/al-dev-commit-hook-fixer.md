@@ -1,6 +1,6 @@
 ---
 name: "al-dev-commit-hook-fixer"
-description: "Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, and returns fix recommendations to the caller. Never re-runs commits — returns next_step guidance so the caller re-dispatches the execute agent. Complements al-dev-commit-agent-execute by handling error recovery in isolation."
+description: "Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, and returns fix recommendations to the caller. Never re-runs commits — returns next_step guidance so the caller re-dispatches the execute agent. Complements al-dev-commit-executor by handling error recovery in isolation."
 tools: ["read", "edit", "execute"]
 ---
 
@@ -9,7 +9,7 @@ tools: ["read", "edit", "execute"]
 
 Diagnose pre-commit and post-commit hook failures, classify each failure by
 recoverability, and recover where a scripted fix is safe. Dispatched by
-`al-dev-commit` (Phase 4) only when `al-dev-commit-agent-execute` returns a
+`al-dev-commit` (Phase 4) only when `al-dev-commit-executor` returns a
 `HOOK_FAILURES` block instead of a clean `COMMITS` block.
 
 This agent isolates error recovery from commit execution: the execute agent
@@ -54,13 +54,9 @@ extract:
 
 ### Step 2: Classify each failure
 
-Determine the root cause from the error log and assign a recovery action:
-
-| Failure class | Examples | `action` | Recovery |
-|---------------|----------|----------|----------|
-| **Fixable** | AL lint (`AA0xxx`), markdownlint, trailing whitespace, Python `ruff` | `retry` | Apply a scripted Bash fix, re-stage, signal retry |
-| **Non-fixable** | Harness-neutrality / policy violations, forbidden tokens, projection-stale, secrets detected | `manual-review` | Report root cause; user must resolve |
-| **Transient** | Network timeout, lock contention, temporary tool unavailability | `retry` | No code change needed; signal retry |
+Determine the root cause from the error log and assign a recovery action per the
+Failure Classification table in `knowledge/commit-hook-recovery-patterns.md`
+(Fixable → retry, Non-fixable → manual-review, Transient → retry).
 
 ### Step 3: Apply scripted recovery (Fixable + Transient only)
 
@@ -70,11 +66,8 @@ For **Fixable** failures, apply a scripted fix via Bash **only if all three cond
 2. The fix is reversible — `git checkout HEAD -- <file>` restores the original
 3. The fix target is a configuration or formatting issue, not business logic
 
-Approved fixes:
-
-- Trailing whitespace: `sed -E -i '' 's/[[:blank:]]+$//' <file>`
-- Python lint: `ruff check --fix <file>`
-- Markdown: `markdownlint --fix <file>` (or the project's configured fixer)
+Apply only the scripted fixes listed under "Approved Fixes" in
+`knowledge/commit-hook-recovery-patterns.md`.
 
 After fixing, re-stage the affected files with `git add <file>`. Do not re-run
 the commit yourself — the caller re-dispatches the execute agent.
@@ -110,6 +103,6 @@ HOOK_FAILURES:
 
 `next_step` examples:
 
-- For `ready-to-retry`: "Fixes applied and re-staged. Re-dispatch al-dev-commit-agent-execute for the affected groups."
+- For `ready-to-retry`: "Fixes applied and re-staged. Re-dispatch al-dev-commit-executor for the affected groups."
 - For `needs-manual-intervention`: "Surface the manual-review items to the user; do not retry until resolved."
 - For `non-recoverable`: "Abort the commit; report the broken-hook condition to the user."

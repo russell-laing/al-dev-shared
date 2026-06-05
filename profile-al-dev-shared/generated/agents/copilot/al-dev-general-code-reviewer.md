@@ -1,11 +1,11 @@
 ---
-name: "al-dev-code-review"
+name: "al-dev-general-code-reviewer"
 description: "General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance)."
 tools: ["read"]
 ---
 
 
-# Agent: al-dev-code-review
+# Agent: al-dev-general-code-reviewer
 
 Specialist agent for comprehensive code review with high signal-to-noise ratio.
 

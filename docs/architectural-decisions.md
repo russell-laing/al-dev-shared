@@ -10,7 +10,7 @@ contradicts a decision here, reject the recommendation and reference this file.
 
 ## Agent Model Assignments
 
-### al-dev-code-review: haiku (not sonnet)
+### al-dev-general-code-reviewer: haiku (not sonnet)
 
 **Decided:** 2026-06-01
 **Reason:** No active callers — no skill references this agent in any dispatch.

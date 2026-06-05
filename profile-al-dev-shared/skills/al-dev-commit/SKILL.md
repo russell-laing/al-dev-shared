@@ -243,7 +243,7 @@ Dispatch the analysis agent to extract manifests from staged changes:
 
 Dispatch per `knowledge/commit-dispatch-template.md`:
 
-- agent: `al-dev-shared:al-dev-commit-agent-analysis`
+- agent: `al-dev-shared:al-dev-commit-analyzer`
 - description: "Commit analysis: extract manifests from staged changes"
 - phase label: `Perform ANALYSIS phase for git commit workflow.` followed by a
   `Phase: analysis` line
@@ -476,7 +476,7 @@ Dispatch the execution agent:
 
 Dispatch per `knowledge/commit-dispatch-template.md`:
 
-- agent: `al-dev-shared:al-dev-commit-agent-execute`
+- agent: `al-dev-shared:al-dev-commit-executor`
 - description: "Commit execution: [N] commits"
 - phase label: `Perform EXECUTE phase for git commit workflow.` followed by a
   `Phase: execute` line

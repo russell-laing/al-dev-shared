@@ -53,7 +53,7 @@ ruff check --fix <file> && ruff format <file> && git add <file>
 
 ### Step 3: Trailing Whitespace Fix (Text Files Only)
 
-⚠️ **Regex MUST be `[[:blank:]]+$` (horizontal whitespace only).** On BSD `sed`, do not use `[ \t]+$` or `[ \t]*$` — `\t` is treated as a literal `t`, which can strip terminal `t` characters. Never use `[[:space:]]+$` or `\s+$` — those include `\n`, collapsing entire file into one line.
+⚠️ Use `[[:blank:]]+$` only — see `knowledge/bash-safe-patterns.md` for why `[ \t]+$`, `[[:space:]]+$`, and `\s+$` are unsafe on BSD `sed`.
 
 Skip binary and OOXML files (`.docx`, `.xlsx`, `.pptx`, `.odt`). For all remaining staged text files:
 

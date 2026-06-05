@@ -169,7 +169,8 @@ to `/al-dev-plan`: `/al-dev-plan fix performance issues identified in [scope]`
 - SetLoadFields is only worth flagging when fewer than ~3 fields
   are used — do not flag comprehensive record reads
 - FindSet(true) is only a problem when the loop body has no
-  Modify/Delete/Rename
+  Modify/Delete/Rename (loop body = the statements inside the `repeat … until`
+  or `while … do` block, up to the first record modification or loop exit)
 - CalcFields on FlowFields is required — only flag when it is
   inside a loop with many iterations
 - For very large codebases, scope to specific codeunits first;
