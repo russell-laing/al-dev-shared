@@ -9,11 +9,11 @@ argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
 
 # Sync Documentation Maps — Collect
 
-Second step of the three-skill async sync workflow. Reads audit artifacts
+Second step of the four-skill async sync workflow. Reads audit artifacts
 written by the remote audit teams, presents findings to the user, and
 conditionally spawns remote update teams.
 
-**Three-skill workflow:**
+**Four-skill workflow:**
 
 1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results,
