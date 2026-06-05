@@ -283,25 +283,25 @@ Attachments saved to .dev/attachments/ ([count] files).
   retrieve them.
   ```
 
-- If MODE is `context-only`: Exit after this note
-- If MODE is `full`: Continue to Phase 5 and chain to `/al-dev-support-reply` with available context only
+- Proceed to Phase 5, which branches on `MODE`.
 
 ---
 
 ## Phase 5: Mode Branching
 
-Resolve mode from Phase 0 output:
+Branch on `MODE` as parsed in Phase 0.5:
 
 ```text
 mode ∈ {context-only, full}
 
 if mode == "context-only":
-  └─ Write CONTEXT block to .dev/ticket-context.md
-  └─ Exit workflow (Phase 5 complete, no further phases)
+  └─ Ticket context already written by Step 3 to
+     .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
+  └─ Exit workflow (no further phases)
 
 if mode == "full":
-  └─ Dispatch /al-dev-support-reply with ticket context
-  └─ Read REPLY block
-  └─ Write REPLY block to .dev/ticket-reply.md
+  └─ Dispatch /al-dev-support-reply with the ticket context file
+  └─ Read the returned REPLY block
+  └─ Write the REPLY block to .dev/$(date +%Y-%m-%d)-al-dev-ticket-reply.md
   └─ Output REPLY to caller
 ```
