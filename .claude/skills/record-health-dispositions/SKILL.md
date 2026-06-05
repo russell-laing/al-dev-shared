@@ -127,12 +127,17 @@ that closes a finding. Any session that lands a commit resolving an
    the disposition to `fixed` and replace the note with the resolving
    commit hash + a one-line summary.
 2. If the `accepted` row is **already committed**, append a new `fixed`
-   row for the same object + issue essence citing the commit (append-only
-   rule; the superseded row stays).
+   row for the same object + issue essence citing the commit and including
+   `closes row N` (N = the superseded row's data-row number) so the
+   supersession is machine-readable (append-only rule; the superseded row
+   stays).
 3. Cite the ledger row in the resolving commit message (e.g. "Dispositions
    row N") so the pairing is auditable in both directions.
 
-A fix session that ends with resolving commits but un-flipped `accepted`
-rows reproduces the closure-invisibility defect this ledger exists to
-eliminate — `/plugin-health-discover` Phase 0 flags this state as
-stale-open on the next sweep.
+Audit at any time with `python3 scripts/check_ledger_staleness.py` — it
+lists the effective-open accepted rows and flags `STALE-OPEN` any whose
+object has commits after the row date. The pre-commit gate runs the same
+check in `--staged` mode and warns when a commit touches an open row's
+object without updating the ledger. A fix session that ends with resolving
+commits but un-flipped `accepted` rows reproduces the closure-invisibility
+defect this ledger exists to eliminate.

@@ -51,4 +51,9 @@ if [ -n "$stale_files" ] && [ -z "$staged_maps" ]; then
 fi
 echo "pre-commit: doc-map check complete"
 
+echo "pre-commit: checking disposition-ledger write-back..."
+python3 scripts/check_ledger_staleness.py --staged \
+  || echo "WARN: ledger staleness check failed to run (non-blocking)" >&2
+echo "pre-commit: ledger check complete"
+
 echo "pre-commit: all neutrality checks passed."

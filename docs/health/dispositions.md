@@ -17,6 +17,14 @@ Rules:
 - `declined` and `grandfathered` rows record settled decisions. A sweep may
   not re-litigate them; revisiting one requires editing this file first.
 - Append new rows at the bottom of the table; never rewrite history.
+- A `fixed` row that supersedes a committed `accepted` row should include
+  `closes row N` in its note (N = the superseded row's data-row number,
+  counting table rows from 1). Without the token, supersession is inferred
+  by object order — ambiguous when one object has several open rows.
+- `python3 scripts/check_ledger_staleness.py` reports the effective-open
+  accepted rows and flags any whose object changed in git after the row
+  date (likely implemented but never flipped). The pre-commit gate runs it
+  in `--staged` mode.
 
 | Object | Issue | Disposition | Date | Evidence / note |
 |--------|-------|-------------|------|-----------------|
