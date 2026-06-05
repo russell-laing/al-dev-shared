@@ -446,7 +446,7 @@ If not in autonomous mode, skip this step and proceed directly to handoff.
 
 ---
 
-## Phase 4 Output: Handoff to /al-dev-review-develop
+### Handoff to /al-dev-review-develop
 
 After Phase 4 completes (including autonomous static validation if enabled), all developers have completed implementation:
 
