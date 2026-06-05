@@ -1012,11 +1012,11 @@ flowchart LR
 Agents spawned: `al-dev-shared:al-dev-commit-recover-fixer`
 <!-- END GENERATED: skill-drilldown-commit-recover -->
 
-### /al-dev-plan-swarm-validate
+### /al-dev-plan-critic-review
 
 Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
 
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-swarm-validate -->
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-critic-review -->
 ```mermaid
 flowchart LR
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
@@ -1025,15 +1025,15 @@ flowchart LR
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
-    skill_al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
+    skill_al_dev_plan_critic_review[al-dev-plan-critic-review]
     artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
 
-    skill_al_dev_plan_swarm_validate --> artifact_plan_critique_YYYYMMDD_md
+    skill_al_dev_plan_critic_review --> artifact_plan_critique_YYYYMMDD_md
 
-    class skill_al_dev_plan_swarm_validate skillNode
+    class skill_al_dev_plan_critic_review skillNode
     class artifact_plan_critique_YYYYMMDD_md artifactNode
 ```
-<!-- END GENERATED: skill-drilldown-al-dev-plan-swarm-validate -->
+<!-- END GENERATED: skill-drilldown-al-dev-plan-critic-review -->
 
 ### /verify-commits
 

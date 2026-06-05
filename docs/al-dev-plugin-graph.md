@@ -26,9 +26,9 @@ flowchart LR
         skill_al_dev_lint[al-dev-lint]
         skill_al_dev_perf[al-dev-perf]
         skill_al_dev_plan[al-dev-plan]
+        skill_al_dev_plan_critic_review[al-dev-plan-critic-review]
         skill_al_dev_plan_final_review[al-dev-plan-final-review]
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
-        skill_al_dev_plan_swarm_validate[al-dev-plan-swarm-validate]
         skill_al_dev_release_notes[al-dev-release-notes]
         skill_al_dev_review_develop[al-dev-review-develop]
         skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
@@ -273,11 +273,11 @@ flowchart LR
     skill_al_dev_perf --> artifact_project_context_md
     skill_al_dev_plan --> artifact_preflight_context_md
     skill_al_dev_plan --> artifact_progress_md
+    skill_al_dev_plan_critic_review --> artifact_plan_critique_YYYYMMDD_md
     skill_al_dev_plan_preflight --> artifact_findings_file_md
     skill_al_dev_plan_preflight --> artifact_preflight_context_md
     skill_al_dev_plan_preflight --> artifact_progress_md
     skill_al_dev_plan_preflight --> artifact_project_context_md
-    skill_al_dev_plan_swarm_validate --> artifact_plan_critique_YYYYMMDD_md
     skill_al_dev_release_notes --> artifact_YYYY_MM_DD_plugin_release_notes_md
     skill_al_dev_release_notes --> artifact_project_context_md
     skill_al_dev_review_develop --> artifact_progress_md
@@ -303,9 +303,9 @@ flowchart LR
     class skill_al_dev_lint skillNode
     class skill_al_dev_perf skillNode
     class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_critic_review skillNode
     class skill_al_dev_plan_final_review skillNode
     class skill_al_dev_plan_preflight skillNode
-    class skill_al_dev_plan_swarm_validate skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
     class skill_al_dev_review_develop_preflight skillNode
@@ -502,9 +502,9 @@ flowchart LR
 - `al-dev-interview`
 - `al-dev-lint`
 - `al-dev-perf`
+- `al-dev-plan-critic-review`
 - `al-dev-plan-final-review`
 - `al-dev-plan-preflight`
-- `al-dev-plan-swarm-validate`
 - `al-dev-release-notes`
 - `al-dev-review-develop-preflight`
 - `commit-recover`

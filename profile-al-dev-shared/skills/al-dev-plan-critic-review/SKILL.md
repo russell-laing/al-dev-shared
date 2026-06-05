@@ -1,5 +1,5 @@
 ---
-name: al-dev-plan-swarm-validate
+name: al-dev-plan-critic-review
 description: >-
   Generate a draft implementation plan from a spec, then red-team it with
   six parallel adversarial critics (security, testability, type-safety,
