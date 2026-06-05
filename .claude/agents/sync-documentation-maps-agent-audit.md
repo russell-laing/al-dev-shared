@@ -4,7 +4,7 @@ description: >-
   Audits active agents in profile-al-dev-shared/agents/ against
   docs/al-dev-agent-map.md and writes a structured JSON discrepancy report
   to the run artifact directory. Called by /sync-documentation-maps dispatch phase.
-model: claude-haiku-4-5-20251001
+model: haiku
 tools: ["Read", "Bash", "Write"]
 ---
 
