@@ -530,6 +530,30 @@ def test_cli_main_fails_closed_when_marker_pair_missing() -> None:
         assert guide.read_bytes() == before
 
 
+def test_skills_tables_escapes_pipe_in_description() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = Path(td) / ".claude" / "skills"
+        _write_skill(
+            skills,
+            "pipe-skill",
+            "name: pipe-skill\n"
+            "description: Handles foo | bar inputs.\n"
+            "workflow:\n"
+            "  stage: discover\n"
+            "  invoked-by: user\n"
+            "  repeatable: false\n",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        text = lib.render_skills_tables(contracts)
+        # The pipe in the Role cell must be backslash-escaped so the row keeps 4 columns:
+        assert r"Handles foo \| bar inputs." in text
+        glance_row = next(
+            line for line in text.splitlines() if line.startswith("| `/pipe-skill`")
+        )
+        # 4 columns => 5 unescaped delimiters; the escaped \| does not count as a delimiter.
+        assert glance_row.count("|") - glance_row.count("\\|") == 5
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:

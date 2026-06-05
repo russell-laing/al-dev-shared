@@ -511,6 +511,11 @@ def render_user_journey(contracts: list[WorkflowContract]) -> str:
     return "\n\n".join(sections)
 
 
+def _md_cell(text: str) -> str:
+    """Escape a pipe so free text is safe inside a GFM table cell."""
+    return text.replace("|", "\\|")
+
+
 def render_skills_tables(contracts: list[WorkflowContract]) -> str:
     ordered = sorted(contracts, key=lambda c: (STAGES.index(c.stage), c.skill))
     glance = [
@@ -522,7 +527,7 @@ def render_skills_tables(contracts: list[WorkflowContract]) -> str:
     for contract in ordered:
         glance.append(
             f"| `/{contract.skill}` | {contract.stage} | {contract.invoked_by} "
-            f"| {_first_sentence(contract.description)} |"
+            f"| {_md_cell(_first_sentence(contract.description))} |"
         )
 
     def cell(values: tuple[str, ...]) -> str:
