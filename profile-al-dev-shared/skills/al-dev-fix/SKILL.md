@@ -194,35 +194,9 @@ IF complexity == "medium" OR complexity == "complex":
   └─ Escalate to /al-dev-plan → /al-dev-develop
 ```
 
----
-
-## Decision Tree
-
-```text
-User: "/fix [issue]"
-    ↓
-You: Analyze complexity [Is it TRIVIAL or NON-TRIVIAL?]
-    ↓
-    ├─→ TRIVIAL (simple, obvious, single-file)
-    │   ├─→ Spawn 1 al-dev-shared:al-dev-developer-traditional
-    │   ├─→ Fix implemented
-    │   ├─→ Verify compilation
-    │   ├─→ Scope check
-    │   └─→ Present to user ✅
-    │
-    └─→ NON-TRIVIAL (complex, unclear)
-        ├─→ Spawn al-dev-shared:al-dev-solution-architect (5 min analysis)
-        ├─→ Review approach yourself
-        ├─→ Spawn al-dev-shared:al-dev-developer-tdd (if test plan) or al-dev-developer-traditional (if no test plan) with approach
-        ├─→ Fix implemented
-        ├─→ Verify compilation
-        ├─→ Scope check
-        └─→ Present to user ✅
-```
-
-Architect dispatch follows **Pattern 2: Quick Analysis** in
-`../../knowledge/architect-invocation-patterns.md` — one architect,
-time-bounded, four-section return.
+Architect dispatch for the non-trivial path follows **Pattern 2: Quick
+Analysis** in `../../knowledge/architect-invocation-patterns.md` — one
+architect, time-bounded, four-section return.
 
 ---
 
