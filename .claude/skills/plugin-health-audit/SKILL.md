@@ -7,6 +7,14 @@ description: >-
   dependency graph for the plugin surface. Never auto-edits source. Triggers on:
   "plugin health", "health sweep", "audit the plugin", "check plugin health".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
+workflow:
+  stage: discover
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  next: [plugin-health-discover]
 ---
 
 # Skill: /plugin-health-audit

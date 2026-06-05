@@ -6,6 +6,17 @@ description: >-
   the run directory, and writes both documentation maps to docs/. Run
   /sync-documentation-maps-write next to regenerate diagrams and commit.
 argument-hint: "[RUN_ID from checkpoint]"
+workflow:
+  stage: map-sync
+  invoked-by: user
+  repeatable: false
+  inputs:
+    - .dev/sync-documentation-maps-checkpoint.json
+    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md
+  outputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  next: [sync-documentation-maps-write]
 ---
 
 # Sync Documentation Maps — Apply (Validate & Write to docs/)

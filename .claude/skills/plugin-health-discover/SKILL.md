@@ -8,6 +8,17 @@ description: >-
   Called by /plugin-health-audit; can also be run standalone to refresh findings
   without re-running the report phase.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
+workflow:
+  stage: discover
+  invoked-by: both
+  repeatable: true
+  inputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+    - profile-al-dev-shared/knowledge/lens-invocation-patterns.md
+  outputs:
+    - docs/health/<date>-<surface>-findings.md
+  next: [plugin-health-report]
 ---
 
 # Skill: /plugin-health-discover

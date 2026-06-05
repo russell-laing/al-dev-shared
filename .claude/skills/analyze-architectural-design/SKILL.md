@@ -9,6 +9,14 @@ description: >-
   Triggers on: "cross-surface synthesis", "tie the findings together",
   "how do the skill and agent findings relate".
 argument-hint: ""
+workflow:
+  stage: discover
+  invoked-by: user
+  repeatable: false
+  inputs:
+    - docs/health/<date>-<surface>-health.md
+  outputs:
+    - docs/al-dev-plugin-synthesis.md
 ---
 
 # Analyze Architectural Design

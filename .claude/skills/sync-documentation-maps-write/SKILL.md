@@ -5,6 +5,20 @@ description: >-
   and the plugin graph from updated maps, then commits. Run after
   /sync-documentation-maps-apply has written the maps to docs/.
 argument-hint: "[RUN_ID from checkpoint]"
+workflow:
+  stage: map-sync
+  invoked-by: user
+  repeatable: false
+  inputs:
+    - .dev/sync-documentation-maps-checkpoint.json
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  outputs:
+    - docs/al-dev-workflow-diagrams.md
+    - docs/al-dev-plugin-graph.md
+    - docs/maintainer-tooling.md
+    - profile-al-dev-shared/generated/agents/
+  next: [plugin-health-audit]
 ---
 
 # Sync Documentation Maps — Write (Regenerate and Commit)

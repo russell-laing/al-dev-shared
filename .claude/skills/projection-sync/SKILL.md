@@ -5,6 +5,15 @@ description: >-
   from the canonical agent source, summarizes changes, and asks before committing.
   Use after editing profile-al-dev-shared/agents/*.md files.
 argument-hint: ""
+workflow:
+  stage: derive
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - profile-al-dev-shared/agents/
+  outputs:
+    - profile-al-dev-shared/generated/agents/
+  next: [align-harness-repos]
 ---
 
 # Projection Sync Skill

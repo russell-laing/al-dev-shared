@@ -7,6 +7,17 @@ description: >-
   on completion. Collect results with /sync-documentation-maps-collect.
   Triggers: "sync documentation maps", "update maps", "are the maps accurate".
 argument-hint: "[--all] [--skip-commit] [--force]"
+workflow:
+  stage: map-sync
+  invoked-by: both
+  repeatable: true
+  inputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  outputs:
+    - .dev/sync-documentation-maps-checkpoint.json
+    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json
+  next: [sync-documentation-maps-collect]
 ---
 
 # Sync Documentation Maps

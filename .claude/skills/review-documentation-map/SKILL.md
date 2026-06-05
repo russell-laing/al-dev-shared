@@ -9,6 +9,19 @@ description: >-
   map", "review skill map", "review agent map", "sync maps", "is the map
   accurate", "check the maps".
 argument-hint: "--surface skills|agents [--no-update]"
+workflow:
+  stage: map-sync
+  invoked-by: both
+  repeatable: true
+  inputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+    - profile-al-dev-shared/skills/
+    - profile-al-dev-shared/agents/
+  outputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  next: [plugin-health-audit]
 ---
 
 # Review Documentation Map

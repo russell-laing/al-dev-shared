@@ -10,6 +10,17 @@ description: >-
   Triggers on: "review maps", "update maps", "sync maps", "are the maps
   accurate", "check the maps".
 argument-hint: "[--no-update]"
+workflow:
+  stage: map-sync
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  outputs:
+    - docs/al-dev-skills-map.md
+    - docs/al-dev-agent-map.md
+  next: [review-documentation-map, sync-documentation-maps]
 ---
 
 # Review Maps

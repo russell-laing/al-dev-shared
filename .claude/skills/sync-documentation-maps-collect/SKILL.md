@@ -5,6 +5,16 @@ description: >-
   artifacts, presents discrepancy findings, asks which maps to update, and
   dispatches background update agents. Second step of the async sync workflow.
 argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
+workflow:
+  stage: map-sync
+  invoked-by: user
+  repeatable: false
+  inputs:
+    - .dev/sync-documentation-maps-checkpoint.json
+    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json
+  outputs:
+    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md
+  next: [sync-documentation-maps-apply]
 ---
 
 # Sync Documentation Maps — Collect

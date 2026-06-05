@@ -9,6 +9,16 @@ description: >-
   "disposition the findings", "accept decline health findings", "triage the
   dossier", "record health decisions".
 argument-hint: "[--surface plugin|tooling|both] [--top]"
+workflow:
+  stage: decide
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - docs/health/<date>-<surface>-health.md
+    - docs/health/dispositions.md
+  outputs:
+    - docs/health/dispositions.md
+  next: [plan-health-findings]
 ---
 
 # Record Health Dispositions

@@ -7,6 +7,17 @@ description: >-
   Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
+workflow:
+  stage: discover
+  invoked-by: both
+  repeatable: true
+  inputs:
+    - docs/health/<date>-<surface>-findings.md
+    - docs/health/dispositions.md
+  outputs:
+    - docs/health/<date>-<surface>-health.md
+    - docs/al-dev-plugin-graph.md
+  next: [analyze-architectural-design, record-health-dispositions]
 ---
 
 # Skill: /plugin-health-report

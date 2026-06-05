@@ -5,6 +5,15 @@ description: >-
   parallel agents for large audit scopes (4+ files) and can offer targeted fixes
   after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
+workflow:
+  stage: derive
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - profile-al-dev-shared/knowledge/
+  outputs:
+    - docs/al-dev-knowledge-quality.md
+  next: [fix-knowledge-quality]
 ---
 
 # Audit Knowledge Quality

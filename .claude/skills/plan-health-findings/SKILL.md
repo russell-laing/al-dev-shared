@@ -14,6 +14,18 @@ description: >-
   "implement the dossier", "act on health findings", "implement agent
   findings", "plan agent changes", "implement the health audit".
 argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
+workflow:
+  stage: decide
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - docs/health/dispositions.md
+    - docs/health/<date>-<surface>-health.md
+    - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
+  outputs:
+    - docs/superpowers/plans/<date>-<topic>.md
+  next: [projection-sync, align-harness-repos, audit-knowledge-quality]
+  manual-followup: implement accepted plan
 ---
 
 # Plan Health Findings

@@ -6,6 +6,14 @@ description: >-
   could break distributable content. Run after changes to skills, agents, or
   knowledge.
 argument-hint: ""
+workflow:
+  stage: derive
+  invoked-by: user
+  repeatable: true
+  inputs:
+    - profile-al-dev-shared/skills/
+    - profile-al-dev-shared/agents/
+    - profile-al-dev-shared/knowledge/
 ---
 
 # Skill: /align-harness-repos
