@@ -63,3 +63,24 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
 [2026-06-03] sync-documentation-maps (run 20260603T194725Z): Spawned skill-audit
   (afa7ac88e857e7d34) and agent-audit (aadfa288cb3446ea8) teams.
   Next: /sync-documentation-maps-collect --team-ids afa7ac88e857e7d34,aadfa288cb3446ea8
+[2026-06-04] sync-documentation-maps (run 20260604T071055Z): Spawned skill-audit (a29c14d216bc15c14) and agent-audit (acc347ede853bd82f) teams.
+  Next: /sync-documentation-maps-collect --team-ids a29c14d216bc15c14,acc347ede853bd82f
+[2026-06-04] sync-documentation-maps-collect complete (run 20260604T071055Z):
+  • 3 discrepancies in skills map (stale entries: al-dev-map-suggestions-verify, plugin-health-audit, al-dev-diagram-generator)
+  • 3 discrepancies in agents map (caller mismatches: al-dev-docs-writer, al-dev-explore, al-dev-script-engineer)
+  User chose to update both maps. Spawned skill-update (ace0eef349da6c14f)
+  and agent-update (a316aa747d18b716b) teams.
+  Next: /sync-documentation-maps-apply --team-ids ace0eef349da6c14f,a316aa747d18b716b
+[2026-06-04] sync-documentation-maps-apply complete (run 20260604T071055Z):
+  • Validated both update artifacts
+  • docs/al-dev-skills-map.md: 1082 lines (3 stale entries removed)
+  • docs/al-dev-agent-map.md: 598 lines (3 caller entries fixed)
+  • Checkpoint status updated to awaiting-write
+  Next: /sync-documentation-maps-write
+[2026-06-04] sync-documentation-maps-write complete (run 20260604T071055Z):
+  • Diagrams regenerated (4 map documents updated)
+  • Agent projections regenerated
+  • Dependency graph refreshed
+  • docs/al-dev-skills-map.md: 1094 lines
+  • docs/al-dev-agent-map.md: 598 lines
+  • Committed: 2ab2811 (docs: sync documentation maps with current codebase)
