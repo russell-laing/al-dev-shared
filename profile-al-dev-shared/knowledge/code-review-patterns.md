@@ -1,6 +1,6 @@
 # Code Review Patterns and Severity
 
-Referenced by: `al-dev-code-review` and `al-dev-al-pattern-reviewer` agents
+Referenced by: `al-dev-general-code-reviewer` and `al-dev-al-pattern-reviewer` agents
 
 ## Common AL Issues
 

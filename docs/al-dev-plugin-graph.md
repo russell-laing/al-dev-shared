@@ -40,7 +40,6 @@ flowchart LR
     end
     subgraph Agents[Agents]
         agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
-        agent_al_dev_code_review[al-dev-code-review]
         agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
         agent_al_dev_commit_executor[al-dev-commit-executor]
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
@@ -53,6 +52,7 @@ flowchart LR
         agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
         agent_al_dev_docs_writer[al-dev-docs-writer]
         agent_al_dev_explore[al-dev-explore]
+        agent_al_dev_general_code_reviewer[al-dev-general-code-reviewer]
         agent_al_dev_interview[al-dev-interview]
         agent_al_dev_performance_reviewer[al-dev-performance-reviewer]
         agent_al_dev_release_notes_writer[al-dev-release-notes-writer]
@@ -218,7 +218,6 @@ flowchart LR
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
     agent_al_dev_al_pattern_reviewer --> knowledge_code_review_patterns_md
     agent_al_dev_al_pattern_reviewer --> knowledge_reviewer_findings_template_md
-    agent_al_dev_code_review --> knowledge_reviewer_findings_template_md
     agent_al_dev_commit_analyzer --> knowledge_commit_analysis_patterns_md
     agent_al_dev_commit_hook_fixer --> knowledge_commit_hook_recovery_patterns_md
     agent_al_dev_commit_lint_fixer --> knowledge_bash_safe_patterns_md
@@ -234,6 +233,7 @@ flowchart LR
     agent_al_dev_developer_traditional --> knowledge_compile_output_safeguard_md
     agent_al_dev_developer_traditional --> knowledge_developer_invocation_patterns_md
     agent_al_dev_docs_writer --> knowledge_documentation_rtm_guide_md
+    agent_al_dev_general_code_reviewer --> knowledge_reviewer_findings_template_md
     agent_al_dev_interview --> knowledge_interview_question_bank_md
     agent_al_dev_performance_reviewer --> knowledge_perf_anti_patterns_prompt_md
     agent_al_dev_performance_reviewer --> knowledge_performance_review_examples_md
@@ -317,7 +317,6 @@ flowchart LR
     class skill_commit_recover skillNode
     class skill_verify_commits skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
-    class agent_al_dev_code_review agentNode
     class agent_al_dev_commit_analyzer agentNode
     class agent_al_dev_commit_executor agentNode
     class agent_al_dev_commit_hook_fixer agentNode
@@ -330,6 +329,7 @@ flowchart LR
     class agent_al_dev_diagnostics_fixer agentNode
     class agent_al_dev_docs_writer agentNode
     class agent_al_dev_explore agentNode
+    class agent_al_dev_general_code_reviewer agentNode
     class agent_al_dev_interview agentNode
     class agent_al_dev_performance_reviewer agentNode
     class agent_al_dev_release_notes_writer agentNode
@@ -469,9 +469,9 @@ flowchart LR
 <!-- BEGIN GENERATED: plugin-health-callouts -->
 **Orphan agents (spawned by no skill):**
 
-- `al-dev-code-review`
 - `al-dev-docs-writer`
 - `al-dev-explore`
+- `al-dev-general-code-reviewer`
 - `al-dev-script-engineer`
 
 **Dead knowledge (referenced by nothing):**

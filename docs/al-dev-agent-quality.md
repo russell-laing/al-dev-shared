@@ -201,7 +201,7 @@ Fix: Add `# Agent: al-dev-expert-reviewer` as the first line of the body.
 
 ---
 
-### al-dev-code-review
+### al-dev-general-code-reviewer
 
 **[High] Lens 2 — Structural Conventions**
 Observation: 9 top-level `##` sections (exceeds the 6-section limit): Role, Inputs, Outputs, Spawn Context, Review Focus, Review Process, Output Format, What NOT to Review, Debate with Other Reviewers.

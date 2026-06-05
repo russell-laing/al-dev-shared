@@ -14,7 +14,6 @@
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-code-review | sonnet | Read | (none found) |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
@@ -27,6 +26,7 @@
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
+| al-dev-general-code-reviewer | sonnet | Read | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server | `/al-dev-release-notes` |
@@ -42,7 +42,7 @@
 
 ## Layer 2: Per-Agent Profiles
 
-### al-dev-code-review
+### al-dev-general-code-reviewer
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
 **Model:** sonnet

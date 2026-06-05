@@ -2,7 +2,7 @@
 
 Canonical output format and severity taxonomy shared by the four code-review
 specialist agents: al-dev-al-pattern-reviewer, al-dev-security-reviewer,
-al-dev-performance-reviewer, and al-dev-code-review.
+al-dev-performance-reviewer, and al-dev-general-code-reviewer.
 
 ## Findings Entry Format
 
