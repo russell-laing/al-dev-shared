@@ -412,6 +412,7 @@ flowchart LR
     Phase1_5["Phase 1.5"]
     Phase1_6["Phase 1.6"]
     knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
+    knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_preflight_context_schema_md[preflight-context-schema]
     knowledge_workflow_resilience_md[workflow-resilience]
@@ -426,6 +427,7 @@ flowchart LR
     skill_al_dev_plan_preflight --> Phase1_5
     skill_al_dev_plan_preflight --> Phase1_6
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
+    skill_al_dev_plan_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
@@ -441,6 +443,7 @@ flowchart LR
     class Phase1_5 phaseNode
     class Phase1_6 phaseNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
