@@ -61,7 +61,7 @@ python3 scripts/generate-plugin-graph.py
 
 # Regenerate the maintainer guide's generated sections
 # (workflow overview, stage diagrams, user journey, skills tables, gaps table)
-# from the workflow: contracts in .claude/skills/*/SKILL.md
+# from the `workflow:` frontmatter blocks in .claude/skills/*/SKILL.md
 python3 scripts/generate-maintainer-guide.py
 ```
 

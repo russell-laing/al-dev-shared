@@ -69,7 +69,7 @@ ls -la /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md
 
 ---
 
-## Phase 1 — Regenerate Diagrams, Agent Projections, and Refresh Dependency Graph
+## Phase 1 — Regenerate Diagrams, Agent Projections, Dependency Graph, and Maintainer Guide
 
 When documentation maps are updated, agent definitions and relationships may have changed.
 Regenerate Mermaid diagrams, harness-native projections, and the plugin dependency graph to
