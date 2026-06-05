@@ -130,7 +130,19 @@ Capture the exit code. If non-zero, report:
 Dependency graph refresh failed (exit <code>).
 ```
 
-If all THREE operations succeed, continue to Phase 2.
+Then regenerate the maintainer guide:
+
+```bash
+python3 /Users/russelllaing/al-dev-shared/scripts/generate-maintainer-guide.py
+```
+
+Capture the exit code. If non-zero, report:
+
+```text
+Maintainer guide regeneration failed (exit <code>).
+```
+
+If all FOUR operations succeed, continue to Phase 2.
 
 If any fail, report:
 
@@ -161,6 +173,7 @@ Sync finalized.
     Mermaid diagrams: regenerated   (or "regeneration failed — see above")
     Agent projections: regenerated  (or "regeneration failed — see above")
     Dependency graph: refreshed     (or "refresh failed — see above")
+    Maintainer guide: regenerated   (or "regeneration failed — see above")
 
   Next: run /plugin-health-audit to find improvements against the updated maps.
 ```
@@ -182,7 +195,10 @@ Otherwise, stage and commit:
 git -C /Users/russelllaing/al-dev-shared status
 git -C /Users/russelllaing/al-dev-shared add \
     docs/al-dev-skills-map.md \
-    docs/al-dev-agent-map.md
+    docs/al-dev-agent-map.md \
+    docs/maintainer-tooling.md \
+    docs/al-dev-workflow-diagrams.md \
+    docs/al-dev-plugin-graph.md
 git -C /Users/russelllaing/al-dev-shared add \
     profile-al-dev-shared/generated/ 2>/dev/null || true
 git -C /Users/russelllaing/al-dev-shared diff --cached --stat

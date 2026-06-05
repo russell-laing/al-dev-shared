@@ -47,7 +47,7 @@ python3 scripts/generate-agent-projections.py
 
 ## Documentation Maps (Mermaid Diagrams)
 
-The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `docs/al-dev-plugin-graph.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
+The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
 
 ```bash
 # Regenerate all documentation map sections
@@ -58,6 +58,11 @@ python3 scripts/generate-map-doc-sections.py
 
 # Regenerate plugin dependency graph separately
 python3 scripts/generate-plugin-graph.py
+
+# Regenerate the maintainer guide's generated sections
+# (workflow overview, stage diagrams, user journey, skills tables, gaps table)
+# from the workflow: contracts in .claude/skills/*/SKILL.md
+python3 scripts/generate-maintainer-guide.py
 ```
 
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
