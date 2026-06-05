@@ -134,6 +134,8 @@ See `docs/development-commands.md` for the full command reference (validation, p
 
 **Start here:** `docs/al-dev-skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
+**Maintainer surface:** `docs/maintainer-tooling.md` (lifecycle diagram + skills-at-a-glance for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/al-dev-skills-map.md` scope note)
+
 **Active skills:** 19 distributed skills covering three main flows:
 
 1. **Ticket/Support flow** (`al-dev-ticket` → `al-dev-support-reply-drafter`)
