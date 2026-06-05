@@ -251,10 +251,23 @@ def _node_id(prefix: str, name: str) -> str:
 
 
 def _short_label(template: str) -> str:
-    """Keep Mermaid node labels under the 30-char style-guide limit."""
+    """Keep Mermaid node labels compact while preserving meaningful directory names."""
+    is_directory = template.endswith("/")
+    trimmed = template.rstrip("/")
+    if not is_directory and len(template) <= 30:
+        return template
+
+    parts = [part for part in trimmed.split("/") if part]
+    if is_directory:
+        if len(parts) >= 3:
+            return "/".join(parts[-2:]) + "/"
+        if parts:
+            return parts[-1] + "/"
+        return template
+
     if len(template) <= 30:
         return template
-    return ".../" + template.rsplit("/", 1)[-1]
+    return ".../" + trimmed.rsplit("/", 1)[-1]
 
 
 def _mermaid_block(lines: list[str]) -> str:
@@ -329,6 +342,123 @@ DETAIL_CLASSDEFS = (
 )
 
 
+MAP_SYNC_REQUIRED_SKILLS = {
+    "review-maps",
+    "review-documentation-map",
+    "sync-documentation-maps",
+    "sync-documentation-maps-collect",
+    "sync-documentation-maps-apply",
+    "sync-documentation-maps-write",
+}
+
+MAP_SYNC_REQUIRED_INPUTS = {
+    "review-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "review-documentation-map": (
+        "docs/al-dev-skills-map.md",
+        "docs/al-dev-agent-map.md",
+        "profile-al-dev-shared/skills/",
+        "profile-al-dev-shared/agents/",
+    ),
+    "sync-documentation-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-documentation-maps-collect": (
+        ".dev/sync-documentation-maps-checkpoint.json",
+        ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
+    ),
+    "sync-documentation-maps-apply": (
+        ".dev/sync-documentation-maps-checkpoint.json",
+        ".dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md",
+    ),
+    "sync-documentation-maps-write": (
+        ".dev/sync-documentation-maps-checkpoint.json",
+        "docs/al-dev-skills-map.md",
+        "docs/al-dev-agent-map.md",
+    ),
+}
+
+MAP_SYNC_REQUIRED_OUTPUTS = {
+    "review-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "review-documentation-map": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-documentation-maps": (
+        ".dev/sync-documentation-maps-checkpoint.json",
+        ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
+    ),
+    "sync-documentation-maps-collect": (
+        ".dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md",
+    ),
+    "sync-documentation-maps-apply": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-documentation-maps-write": (
+        "docs/al-dev-workflow-diagrams.md",
+        "docs/al-dev-plugin-graph.md",
+        "docs/maintainer-tooling.md",
+        "profile-al-dev-shared/generated/agents/",
+    ),
+}
+
+MAP_SYNC_REQUIRED_NEXT = {
+    "review-maps": ("review-documentation-map", "sync-documentation-maps"),
+    "sync-documentation-maps": ("sync-documentation-maps-collect",),
+    "sync-documentation-maps-collect": ("sync-documentation-maps-apply",),
+    "sync-documentation-maps-apply": ("sync-documentation-maps-write",),
+}
+
+DERIVE_REQUIRED_SKILLS = {
+    "projection-sync",
+    "audit-knowledge-quality",
+    "fix-knowledge-quality",
+    "align-harness-repos",
+}
+
+DERIVE_REQUIRED_INPUTS = {
+    "projection-sync": ("profile-al-dev-shared/agents/",),
+    "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
+    "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "align-harness-repos": (
+        "profile-al-dev-shared/skills/",
+        "profile-al-dev-shared/agents/",
+        "profile-al-dev-shared/knowledge/",
+    ),
+}
+
+DERIVE_REQUIRED_OUTPUTS = {
+    "projection-sync": ("profile-al-dev-shared/generated/agents/",),
+    "audit-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
+}
+
+DERIVE_REQUIRED_NEXT = {
+    "projection-sync": ("align-harness-repos",),
+    "audit-knowledge-quality": ("fix-knowledge-quality",),
+    "fix-knowledge-quality": ("align-harness-repos",),
+}
+
+
+def _has_required_templates(actual: tuple[str, ...], required: tuple[str, ...]) -> bool:
+    actual_norm = {normalize_template(value) for value in actual}
+    required_norm = {normalize_template(value) for value in required}
+    return required_norm <= actual_norm
+
+
+def _stage_has_contract_shape(
+    stage_contracts: list[WorkflowContract],
+    names: set[str],
+    required_inputs: dict[str, tuple[str, ...]],
+    required_outputs: dict[str, tuple[str, ...]],
+    required_next: dict[str, tuple[str, ...]],
+) -> bool:
+    by_name = {contract.skill: contract for contract in stage_contracts}
+    if not names <= set(by_name):
+        return False
+    for name in names:
+        contract = by_name[name]
+        if not _has_required_templates(contract.inputs, required_inputs.get(name, ())):
+            return False
+        if not _has_required_templates(contract.outputs, required_outputs.get(name, ())):
+            return False
+        if not set(required_next.get(name, ())) <= set(contract.next_skills):
+            return False
+    return True
+
+
 def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
     """Small journey overview: per-stage user-invoked entry skills plus manual-followup
     declarers; cross-stage artifacts as edge labels; repeat self-loops; amber manual nodes."""
@@ -347,12 +477,14 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
     lines = ["flowchart LR", *OVERVIEW_CLASSDEFS, ""]
     node_count = 0
     manual_ids: dict[str, str] = {}
+    present_stage_ids: list[str] = []
     for stage in CORE_STAGES:
         stage_skills = [name for name in rendered_names if by_name[name].stage == stage]
         if not stage_skills:
             continue
         stage_id = "stage_" + stage.replace("-", "_")
         lines.append(f'    subgraph {stage_id}["{STAGE_TITLES[stage]}"]')
+        present_stage_ids.append(stage_id)
         for name in stage_skills:
             lines.append(f'        {_node_id("skill", name)}["/{name}"]')
             node_count += 1
@@ -363,6 +495,8 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
                 lines.append(f'        {manual_id}["{contract.manual_followup}"]')
                 node_count += 1
         lines.append("    end")
+    for earlier, later in zip(present_stage_ids, present_stage_ids[1:]):
+        lines.append(f"    {earlier} ~~~ {later}")
     lines.append("")
     for src in rendered_names:
         successors, pooled = closure[src]
@@ -375,13 +509,126 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
                 lines.append(f'    {src_id} -- "{" + ".join(labels)}" --> {_node_id("skill", dst)}')
             else:
                 lines.append(f'    {src_id} --> {_node_id("skill", dst)}')
-        if by_name[src].repeatable:
-            lines.append(f'    {_node_id("skill", src)} -. "repeat" .-> {_node_id("skill", src)}')
     lines.append("")
     for name in rendered_names:
         lines.append(f'    class {_node_id("skill", name)} userSkill')
     for manual_id in sorted(manual_ids.values()):
         lines.append(f"    class {manual_id} manualStep")
+    return _mermaid_block(lines), node_count
+
+
+def render_map_sync_stage_detail(
+    stage_contracts: list[WorkflowContract],
+    orphans: set[str],
+) -> tuple[str, int]:
+    """Focused map-sync view: normal entry point plus in-session and async lanes."""
+    lines = [
+        "flowchart LR",
+        *DETAIL_CLASSDEFS,
+        "",
+        '    subgraph map_entry["Normal entry point"]',
+        '        skill_review_maps["/review-maps"]',
+        "    end",
+        '    subgraph map_in_session["In-session lane"]',
+        '        skill_review_documentation_map["/review-documentation-map"]',
+        "    end",
+        '    subgraph map_async["Async lane"]',
+        '        skill_sync_documentation_maps["/sync-documentation-maps"]',
+        '        skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]',
+        '        skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]',
+        '        skill_sync_documentation_maps_write["/sync-documentation-maps-write"]',
+        "    end",
+        '    art_source_dirs["skills/ + agents/"]',
+        '    art_map_docs["map docs"]',
+        '    art_async_checkpoint["checkpoint + audit artifacts"]',
+        '    art_update_artifacts["update artifacts"]',
+        '    art_downstream_generated["downstream generated"]',
+        "",
+        "    skill_review_maps --> skill_review_documentation_map",
+        "    skill_review_maps --> skill_sync_documentation_maps",
+        "    art_source_dirs --> skill_review_documentation_map",
+        "    skill_review_documentation_map --> art_map_docs",
+        "    skill_review_maps --> art_map_docs",
+        "    art_map_docs --> skill_sync_documentation_maps",
+        "    skill_sync_documentation_maps --> art_async_checkpoint",
+        "    skill_sync_documentation_maps --> skill_sync_documentation_maps_collect",
+        "    art_async_checkpoint --> skill_sync_documentation_maps_collect",
+        "    skill_sync_documentation_maps_collect --> art_update_artifacts",
+        "    skill_sync_documentation_maps_collect --> skill_sync_documentation_maps_apply",
+        "    art_update_artifacts --> skill_sync_documentation_maps_apply",
+        "    art_async_checkpoint --> skill_sync_documentation_maps_apply",
+        "    skill_sync_documentation_maps_apply --> art_map_docs",
+        "    skill_sync_documentation_maps_apply --> skill_sync_documentation_maps_write",
+        "    art_map_docs --> skill_sync_documentation_maps_write",
+        "    art_async_checkpoint --> skill_sync_documentation_maps_write",
+        "    skill_sync_documentation_maps_write --> art_downstream_generated",
+        "",
+        "    class skill_review_maps userSkill",
+        "    class skill_review_documentation_map userSkill",
+        "    class skill_sync_documentation_maps userSkill",
+        "    class skill_sync_documentation_maps_collect userSkill",
+        "    class skill_sync_documentation_maps_apply userSkill",
+        "    class skill_sync_documentation_maps_write userSkill",
+        "    class art_source_dirs artifact",
+        "    class art_map_docs artifact",
+        "    class art_async_checkpoint artifact",
+        "    class art_update_artifacts artifact",
+        "    class art_downstream_generated orphanArtifact",
+    ]
+    node_count = 11
+    return _mermaid_block(lines), node_count
+
+
+def render_derive_stage_detail(
+    stage_contracts: list[WorkflowContract],
+    orphans: set[str],
+) -> tuple[str, int]:
+    """Focused derive view: independent agent and knowledge flows converge on neutrality."""
+    generated_cls = (
+        "orphanArtifact"
+        if "profile-al-dev-shared/generated/agents/" in orphans
+        else "artifact"
+    )
+    lines = [
+        "flowchart LR",
+        *DETAIL_CLASSDEFS,
+        "",
+        '    subgraph agent_lane["Agent source changed"]',
+        '        art_agent_source["agents/"]',
+        '        skill_projection_sync["/projection-sync"]',
+        '        art_generated_agents["generated/agents/"]',
+        "    end",
+        '    subgraph knowledge_lane["Knowledge source changed"]',
+        '        art_knowledge_source["knowledge/"]',
+        '        skill_audit_knowledge_quality["/audit-knowledge-quality"]',
+        '        art_knowledge_quality_report[".../knowledge-quality.md"]',
+        '        skill_fix_knowledge_quality["/fix-knowledge-quality"]',
+        "    end",
+        '    art_shared_surface["shared authored surface"]',
+        '    skill_align_harness_repos["/align-harness-repos"]',
+        "",
+        "    art_agent_source --> skill_projection_sync",
+        "    skill_projection_sync --> art_generated_agents",
+        "    skill_projection_sync --> skill_align_harness_repos",
+        "    art_knowledge_source --> skill_audit_knowledge_quality",
+        "    skill_audit_knowledge_quality --> art_knowledge_quality_report",
+        '    art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality',
+        '    skill_audit_knowledge_quality -. "if clean" .-> skill_align_harness_repos',
+        "    skill_fix_knowledge_quality --> art_knowledge_source",
+        "    skill_fix_knowledge_quality --> skill_align_harness_repos",
+        "    art_shared_surface --> skill_align_harness_repos",
+        "",
+        "    class skill_projection_sync userSkill",
+        "    class skill_audit_knowledge_quality userSkill",
+        "    class skill_fix_knowledge_quality userSkill",
+        "    class skill_align_harness_repos userSkill",
+        "    class art_agent_source artifact",
+        f"    class art_generated_agents {generated_cls}",
+        "    class art_knowledge_source artifact",
+        "    class art_knowledge_quality_report artifact",
+        "    class art_shared_surface artifact",
+    ]
+    node_count = 9
     return _mermaid_block(lines), node_count
 
 
@@ -397,6 +644,22 @@ def render_stage_detail(
             "skills appear under Missing contract in the gaps table.",
             0,
         )
+    if stage == "map-sync" and _stage_has_contract_shape(
+        stage_contracts,
+        MAP_SYNC_REQUIRED_SKILLS,
+        MAP_SYNC_REQUIRED_INPUTS,
+        MAP_SYNC_REQUIRED_OUTPUTS,
+        MAP_SYNC_REQUIRED_NEXT,
+    ):
+        return render_map_sync_stage_detail(stage_contracts, orphans)
+    if stage == "derive" and _stage_has_contract_shape(
+        stage_contracts,
+        DERIVE_REQUIRED_SKILLS,
+        DERIVE_REQUIRED_INPUTS,
+        DERIVE_REQUIRED_OUTPUTS,
+        DERIVE_REQUIRED_NEXT,
+    ):
+        return render_derive_stage_detail(stage_contracts, orphans)
     stage_names = {c.skill for c in stage_contracts}
     by_name = {c.skill: c for c in stage_contracts}
     artifacts = sorted(
