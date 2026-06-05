@@ -61,6 +61,8 @@ Current repo-local skills:
   `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates or appends
   review-only commentary files for Superpowers plans after live repo checks.
+- `.codex/skills/extract-mermaid-diagrams/` — extracts Mermaid diagrams from
+  Markdown and renders image artifacts plus metadata for AI visual analysis.
 
 ## Shared Plugin Surface (All Harnesses)
 

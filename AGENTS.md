@@ -69,6 +69,7 @@ Current repo-local Codex skills:
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy reports against live repo state before trusting rankings or counts.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates or appends review-only commentary files for Superpowers plans after live repo checks.
+- `.codex/skills/extract-mermaid-diagrams/` — extracts Mermaid diagrams from Markdown and renders image artifacts plus metadata for AI visual analysis.
 
 ## Core Workflow Contracts
 

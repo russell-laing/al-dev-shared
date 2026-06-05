@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extract Mermaid Diagrams"
+  short_description: "Render Mermaid diagrams for AI review"
+  default_prompt: "Use $extract-mermaid-diagrams to render Mermaid diagrams from this markdown file for visual analysis."
