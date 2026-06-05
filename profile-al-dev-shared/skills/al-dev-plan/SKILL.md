@@ -135,28 +135,13 @@ preflight working state beyond these fields, so a resumed run is
 equivalent to a fresh one.
 
 Follow the **Competitive Debate** pattern in
-`knowledge/architect-invocation-patterns.md`.
+`knowledge/architect-invocation-patterns.md` (Pattern 1) for deriving 2-3
+meaningfully different starting approaches and the spawn-count guidance.
 
-Before spawning, derive 2-3 meaningfully different starting
-approaches from the requirement itself. The goal is to prevent
-convergence — each architect should have a genuinely distinct
-angle, not minor variations on the same idea.
-
-Examples of how to choose approaches (adapt to the specific
-requirement):
-
-- Data-centric feature: table extension vs. separate table
-  vs. virtual table
-- Business process: event-driven vs. direct integration
-  vs. workflow codeunit
-- External integration: REST API vs. OData vs. message
-  queue
-- Reporting: query object vs. API page vs. report extension
-
-Default fallback if nothing more specific fits — use these debate angles in order:
-(1) table extension (conservative, builds on base app);
-(2) separate table (isolated scope, decoupled from base);
-(3) event-driven (flexible, extensible, minimal coupling).
+Default fallback if nothing more specific fits — use these debate angles in
+order: (1) table extension (conservative, builds on base app); (2) separate
+table (isolated scope, decoupled from base); (3) event-driven (flexible,
+extensible, minimal coupling).
 
 Spawn 2-3 **al-dev-solution-architect** agents with DIFFERENT
 starting approaches to prevent convergence. Assign each
@@ -191,19 +176,16 @@ Design considerations:
 Your assigned approach: [specific approach for this architect]
 ```
 
-## Architect Output Requirements
+### Architect Output Contract
 
-Each architect must produce THREE outputs (not one):
+Each architect must return the three sections defined in the **Pattern 1
+dispatch block** of `knowledge/architect-invocation-patterns.md`
+(Proposal, Self-critique, Falsification), in that order.
 
-1. **Proposal** — complete solution design (recommended approach)
-2. **Critique** — specific critique of ONE other approach from briefing
-   - Must name concrete failure modes
-   - Must identify observable condition or code-level breakage
-3. **Falsification** — one realistic condition where YOUR approach fails
-   - State design limits honestly
-
-Architects without all three outputs are excluded from Phase 3 synthesis.
-Quality bar: critiques/falsifications must be substantive enough to force re-evaluation of a design.
+Skill-specific quality bar: critiques must name concrete failure modes and
+identify an observable condition or code-level breakage; falsifications must
+state one realistic condition where the approach fails. Architects missing
+any of the three sections are excluded from Phase 3 synthesis.
 
 ## Phase 3: Facilitate Debate
 
