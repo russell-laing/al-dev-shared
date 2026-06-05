@@ -1,9 +1,10 @@
 # Health Finding Dispositions
 
 The closure ledger for health-audit findings. One row per dispositioned
-finding. Consumed by `/plugin-health-report` (suppresses `declined` and
+finding. Produced by `/record-health-dispositions` (or direct edits).
+Consumed by `/plugin-health-report` (suppresses `declined` and
 `grandfathered` findings from counts and ranking; treats re-flagged `fixed`
-findings as suspect lens output) and by `/verify-map-suggestions` (plans
+findings as suspect lens output) and by `/plan-health-findings` (plans
 only `accepted` findings).
 
 Rules:
