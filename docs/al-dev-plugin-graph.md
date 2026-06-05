@@ -207,6 +207,7 @@ flowchart LR
     skill_al_dev_plan --> knowledge_solution_plan_template_md
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
+    skill_al_dev_plan_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md

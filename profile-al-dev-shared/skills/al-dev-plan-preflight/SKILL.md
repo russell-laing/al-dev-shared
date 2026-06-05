@@ -33,6 +33,15 @@ artifact is allowed as part of that planning request.
 When shell search or structured-file inspection is required, prefer `rg` and
 `jq` before falling back to broader shell text processing.
 
+## Artifact Contract
+
+This skill is governed by `../../knowledge/artifact-contracts.md`.
+
+Do not claim preflight is complete or ready for architect debate until the
+success evidence named in `../../knowledge/artifact-contracts.md` for this
+skill — `.dev/preflight-context.md` — has been written and read in the current
+run.
+
 ## Phase 0: Check for Existing Progress
 
 This skill produces the state needed to begin architect debate:
