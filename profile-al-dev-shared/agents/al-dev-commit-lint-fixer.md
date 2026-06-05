@@ -35,13 +35,19 @@ Run pre-flight lint and trailing whitespace fixes on staged source files before 
 For each file in the approved groups, capture the pre-fix line count:
 
 ```bash
+if [ -d .git ]; then
+  BASELINE_FILE=".git/.commit-baselines"
+else
+  BASELINE_FILE=".dev/commit-baselines"
+  mkdir -p .dev
+fi
 git diff --cached --name-only | while IFS= read -r f; do
   [ -f "$f" ] || continue
-  printf '%s\t%d\n' "$f" "$(wc -l < "$f")" >> .git/.commit-baselines
+  printf '%s\t%d\n' "$f" "$(wc -l < "$f")" >> "$BASELINE_FILE"
 done
 ```
 
-If `.git/` does not exist in the current directory, use `.dev/commit-baselines` as the fallback path.
+`BASELINE_FILE` falls back to `.dev/commit-baselines` when the agent runs from a directory without `.git/` (e.g. a subdirectory of the repo). Step 4 compares against whichever path Step 1 wrote.
 
 ### Step 2: Python Lint Fix
 
