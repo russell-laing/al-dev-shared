@@ -1,8 +1,8 @@
 ---
 name: sync-documentation-maps-apply
 description: >-
-  Applies validated update artifacts to docs/. First step of two-step sync
-  finalization. Validates update-agent artifacts, reads updated map content from
+  Applies validated update artifacts to docs/. Third step of the async sync
+  flow. Validates update-agent artifacts, reads updated map content from
   the run directory, and writes both documentation maps to docs/. Run
   /sync-documentation-maps-write next to regenerate diagrams and commit.
 argument-hint: "[RUN_ID from checkpoint]"
@@ -21,7 +21,7 @@ workflow:
 
 # Sync Documentation Maps — Apply (Validate & Write to docs/)
 
-First step of two-step sync finalization. Reads updated map artifacts written
+Third step of the async sync flow. Reads updated map artifacts written
 by the background update agents, validates them, and writes the canonical docs/
 maps to disk.
 
