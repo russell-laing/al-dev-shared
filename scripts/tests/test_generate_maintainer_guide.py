@@ -184,6 +184,73 @@ def test_validate_contracts_rejects_unknown_next_and_invoker() -> None:
             raise AssertionError("expected ValueError for unknown next target")
 
 
+def test_normalize_template() -> None:
+    assert (
+        lib.normalize_template("docs/health/<date>-<surface>-findings.md")
+        == "docs/health/*-*-findings.md"
+    )
+    assert (
+        lib.normalize_template(".dev/runs/RUN_ID/audit/<surface>.json")
+        == ".dev/runs/*/audit/*.json"
+    )
+    assert lib.normalize_template("docs/plain.md") == "docs/plain.md"
+
+
+def test_producers_consumers_match_on_normalized_templates() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        prod = lib.producers(contracts)
+        cons = lib.consumers(contracts)
+        assert prod["docs/health/*-findings.md"] == ["alpha-audit"]
+        assert cons["docs/health/*-findings.md"] == ["beta-report"]
+        assert prod["docs/health/*-dossier.md"] == ["beta-report"]
+        assert cons["docs/health/*-dossier.md"] == ["gamma-plan"]
+
+
+def test_artifact_status_latest_never_and_directory() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        (repo / "docs" / "health").mkdir(parents=True)
+        (repo / "docs" / "health" / "2026-06-01-findings.md").write_text("x", encoding="utf-8")
+        (repo / "profile-al-dev-shared" / "skills").mkdir(parents=True)
+        assert lib.artifact_status(repo, "docs/health/<date>-findings.md").startswith("latest ")
+        assert lib.artifact_status(repo, "docs/health/<date>-dossier.md") == "never produced"
+        assert lib.artifact_status(repo, "docs/never-written.md") == "never produced"
+        assert lib.artifact_status(repo, "profile-al-dev-shared/skills/") == "present"
+        assert lib.artifact_status(repo, "docs/missing-dir/") == "missing"
+
+
+def test_compute_gaps_reports_all_six_signals() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        skills = _build_skills_fixture(repo)
+        contracts, missing = lib.load_contracts(skills)
+        gaps = lib.compute_gaps(contracts, missing, repo)
+        assert sorted(gaps) == [
+            "internal-only",
+            "manual-step",
+            "missing-contract",
+            "orphaned-artifact",
+            "sourceless-input",
+            "stale-artifact",
+        ]
+        orphan_items = [item for item, _ in gaps["orphaned-artifact"]]
+        assert orphan_items == ["docs/plans/*-plan.md"]
+        sourceless_items = [item for item, _ in gaps["sourceless-input"]]
+        assert sourceless_items == ["docs/ledger.md"]  # allowlisted prefix exempted
+        assert gaps["manual-step"] == [("implement the plan", "follows /gamma-plan")]
+        assert gaps["missing-contract"] == [("delta-notes", "active skill with no workflow contract")]
+        assert gaps["internal-only"] == [("beta-report", "dispatched by /alpha-audit")]
+        stale_items = [item for item, _ in gaps["stale-artifact"]]
+        assert stale_items == [
+            "docs/health/*-dossier.md",
+            "docs/health/*-findings.md",
+            "docs/plans/*-plan.md",
+        ]
+        assert all(detail == "never produced" for _, detail in gaps["stale-artifact"])
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
