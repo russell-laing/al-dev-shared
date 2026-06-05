@@ -101,33 +101,27 @@ in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Use the
 `Agent` tool with `run_in_background: true` so the agents run in the background
 and the harness notifies on completion:
 
-- **Skills audit:** `Agent` with `subagent_type:
-  sync-documentation-maps-skill-audit`, prompt:
+Dispatch both audit agents with one template, varying only the three
+parameters in the table below. Use the `Agent` tool with `run_in_background:
+true`:
 
-  ```text
-  Audit skills in profile-al-dev-shared/skills/ against docs/al-dev-skills-map.md.
-
-  Inputs:
-  - run_id: <RUN_ID>
-  - result_dir: <RUN_DIR>
-
-  Write audit findings to <result_dir>/audit/skill-audit.json per the schema in
-  your agent definition.
-  ```
-
-- **Agent audit:** `Agent` with `subagent_type:
-  sync-documentation-maps-agent-audit`, prompt:
-
-  ```text
-  Audit agents in profile-al-dev-shared/agents/ against docs/al-dev-agent-map.md.
+```text
+Agent: <SUBAGENT_TYPE>
+Prompt:
+  Audit <TARGET_DESCRIPTION> against <MAP_FILE>.
 
   Inputs:
   - run_id: <RUN_ID>
   - result_dir: <RUN_DIR>
 
-  Write audit findings to <result_dir>/audit/agent-audit.json per the schema in
+  Write audit findings to <result_dir>/audit/<OUTPUT_FILE> per the schema in
   your agent definition.
-  ```
+```
+
+| Run | `<SUBAGENT_TYPE>` | `<TARGET_DESCRIPTION>` / `<MAP_FILE>` | `<OUTPUT_FILE>` |
+|-----|-------------------|----------------------------------------|-----------------|
+| Skills | `sync-documentation-maps-skill-audit` | `skills in profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md` | `skill-audit.json` |
+| Agents | `sync-documentation-maps-agent-audit` | `agents in profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md` | `agent-audit.json` |
 
 Capture the returned background agent IDs as `SKILL_TEAM_ID` and
 `AGENT_TEAM_ID`. These are informational handles for the checkpoint — the
