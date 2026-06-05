@@ -60,7 +60,6 @@ Plugin surface.
 | (Git) | Commit msg | `al-dev-release-notes` | Optional | Notes |
 | (Git) | Metadata | `al-dev-handoff` | Optional | Handoff |
 | (Git) | Diff | `al-dev-document` | Optional | Docs |
-| (Git) | Context | `al-dev-consolidate` | Optional | Summary |
 | (Git err) | History | `commit-recover` | Conditional | Recover |
 
 ---

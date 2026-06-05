@@ -7,10 +7,10 @@
 **Last updated:** 2026-06-04
 
 <!-- BEGIN GENERATED: skill-coverage -->
-**Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
+**Coverage:** 22 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
 <!-- END GENERATED: skill-coverage -->
 
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer tools are documented in separate tracking systems.
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
 
 ---
 
@@ -23,7 +23,6 @@ This diagram shows pre-planning tributaries (dashed, optional), the three main e
 flowchart TD
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     skill_al_dev_commit[al-dev-commit]
-    skill_al_dev_consolidate[al-dev-consolidate]
     skill_al_dev_develop[al-dev-develop]
     skill_al_dev_document[al-dev-document]
     skill_al_dev_explore[al-dev-explore]
@@ -43,7 +42,6 @@ flowchart TD
     skill_verify_commits[verify-commits]
 
     skill_al_dev_commit --> skill_verify_commits
-    skill_al_dev_commit -.-> skill_al_dev_consolidate
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
@@ -61,7 +59,6 @@ flowchart TD
     skill_commit_recover --> skill_al_dev_commit
 
     class skill_al_dev_commit skillNode
-    class skill_al_dev_consolidate skillNode
     class skill_al_dev_develop skillNode
     class skill_al_dev_document skillNode
     class skill_al_dev_explore skillNode
@@ -1054,46 +1051,6 @@ flowchart LR
     class skill_verify_commits skillNode
 ```
 <!-- END GENERATED: skill-drilldown-verify-commits -->
-
-### /al-dev-consolidate
-
-Standalone utility skill. No agents spawned. Consolidates `.dev/` artifacts
-into vault-ready session summaries and an Obsidian-compatible sessions index,
-using only bash extraction — file content is never read into LLM context. Phases: 0–4.
-
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-consolidate -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_al_dev_consolidate[al-dev-consolidate]
-    Phase0["Phase 0"]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
-    Phase4["Phase 4"]
-    knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
-
-    skill_al_dev_consolidate --> Phase0
-    skill_al_dev_consolidate --> Phase1
-    skill_al_dev_consolidate --> Phase2
-    skill_al_dev_consolidate --> Phase3
-    skill_al_dev_consolidate --> Phase4
-    skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
-
-    class skill_al_dev_consolidate skillNode
-    class Phase0 phaseNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
-    class Phase4 phaseNode
-    class knowledge_consolidate_extraction_patterns_md knowledgeNode
-```
-<!-- END GENERATED: skill-drilldown-al-dev-consolidate -->
 
 ---
 

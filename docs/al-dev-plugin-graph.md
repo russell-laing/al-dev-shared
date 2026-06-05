@@ -15,7 +15,6 @@ flowchart LR
 
     subgraph Skills[Skills]
         skill_al_dev_commit[al-dev-commit]
-        skill_al_dev_consolidate[al-dev-consolidate]
         skill_al_dev_develop[al-dev-develop]
         skill_al_dev_document[al-dev-document]
         skill_al_dev_explore[al-dev-explore]
@@ -80,7 +79,6 @@ flowchart LR
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
-        knowledge_consolidate_extraction_patterns_md[consolidate-extraction-patterns]
         knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
         knowledge_documentation_rtm_guide_md[documentation-rtm-guide]
         knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
@@ -179,7 +177,6 @@ flowchart LR
     skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
-    skill_al_dev_consolidate --> knowledge_consolidate_extraction_patterns_md
     skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop --> knowledge_artifact_contracts_md
     skill_al_dev_develop --> knowledge_developer_invocation_patterns_md
@@ -294,7 +291,6 @@ flowchart LR
     skill_commit_recover --> artifact_learnings_md
 
     class skill_al_dev_commit skillNode
-    class skill_al_dev_consolidate skillNode
     class skill_al_dev_develop skillNode
     class skill_al_dev_document skillNode
     class skill_al_dev_explore skillNode
@@ -355,7 +351,6 @@ flowchart LR
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
-    class knowledge_consolidate_extraction_patterns_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_documentation_rtm_guide_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
@@ -481,6 +476,7 @@ flowchart LR
 - `background-agent-dispatch.md`
 - `code-review-template.md`
 - `commit-conventions.md`
+- `consolidate-extraction-patterns.md`
 - `feedback-resolution.md`
 - `handoff-chain-map.md`
 - `harness-concepts.md`
@@ -499,7 +495,6 @@ flowchart LR
 
 **Off-path skills (not on any configured workflow path):**
 
-- `al-dev-consolidate`
 - `al-dev-document`
 - `al-dev-explore`
 - `al-dev-handoff`

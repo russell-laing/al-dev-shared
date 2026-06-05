@@ -126,7 +126,7 @@ below. Hold only the command outputs — never the full file content.
 
 Reusable bash patterns (heading extraction, per-section awk, governance token
 count, verdict lines, mermaid/image signals) are documented in
-`knowledge/consolidate-extraction-patterns.md`. Refer to that file for the
+`profile-al-dev-shared/knowledge/consolidate-extraction-patterns.md`. Refer to that file for the
 canonical pattern definitions; the group sections below specify which patterns
 to apply and any group-specific parameters.
 
