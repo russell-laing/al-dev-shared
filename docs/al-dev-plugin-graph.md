@@ -477,7 +477,6 @@ flowchart LR
 - `background-agent-dispatch.md`
 - `code-review-template.md`
 - `commit-conventions.md`
-- `consolidate-extraction-patterns.md`
 - `feedback-resolution.md`
 - `handoff-chain-map.md`
 - `harness-concepts.md`
