@@ -70,7 +70,8 @@ Extract:
   keep only those on lines that mention a write verb. The write-verb list
   (`write`, `writes`, `Write`, `save`, `output to`, `→`) is indicative, not
   exhaustive — keep a path when the line clearly directs writing it. Use:
-  `sed -E 's/\$\(date \+[^)]*\)/YYYY-MM-DD/g' <SKILL.md> | grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)'`
+  `skill_file="profile-al-dev-shared/skills/<name>/SKILL.md"`
+  `sed -E 's/\$\(date \+[^)]*\)/YYYY-MM-DD/g' "$skill_file" | grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)'`
   This captures both literal-dated and `$(date ...)`-templated artifacts in the
   normalized `YYYY-MM-DD` form used by the map.
 
