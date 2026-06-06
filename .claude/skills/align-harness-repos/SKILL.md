@@ -31,7 +31,7 @@ for forbidden patterns like "AskUserQuestion", "subagent_type", "Claude Code",
 
 ---
 
-## Step 1 — Locate and run the validation script
+## Phase 1 — Locate and run the validation script
 
 ```bash
 SCRIPT="/Users/russelllaing/al-dev-shared/scripts/validate_harness_neutrality.py"
@@ -42,7 +42,7 @@ ALIGN_EXIT=$?
 
 ---
 
-## Step 2 — Handle exit 0 (clean)
+## Phase 2 — Handle exit 0 (clean)
 
 If `ALIGN_EXIT` is 0 and the output contains "PASS":
 
@@ -54,7 +54,7 @@ Stop.
 
 ---
 
-## Step 3 — Handle exit 1 (findings found)
+## Phase 3 — Handle exit 1 (findings found)
 
 If `ALIGN_EXIT` is 1, parse the output line-by-line. Each line has format:
 
@@ -90,7 +90,7 @@ Also list the forbidden rules being checked:
 
 ---
 
-## Step 4 — USER_GATE: offer fixes
+## Phase 4 — USER_GATE: offer fixes
 
 Present a summary and offer to fix:
 
@@ -110,7 +110,7 @@ USER_GATE — wait for user response. Do not proceed until answered.
 
 ---
 
-## Step 5 — Fix flow (if user consents)
+## Phase 5 — Fix flow (if user consents)
 
 For each finding:
 
@@ -132,7 +132,7 @@ rather than auto-replacing, as the example may be illustrative.
 
 ---
 
-## Step 6 — Re-run to confirm
+## Phase 6 — Re-run to confirm
 
 After applying all fixes, re-run the validation:
 
