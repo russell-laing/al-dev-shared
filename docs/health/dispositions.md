@@ -169,5 +169,5 @@ Rules:
 | naming-convention-lens | Clarity: pipe set-notation for the plugin/tooling argument | fixed | 2026-06-07 | `6457818` — the lens and convention doc now use explicit set/prose notation instead of pipe shorthand; closes row 86 |
 | design-skill-lens-preplanning | Clarity (Low): substring-match else clause | fixed | 2026-06-07 | `f97702b` — fixed the Inputs map path and enumerated exact, substring-only, main-spine-only, and absent occurrence states; closes row 108 |
 | align-harness-repos | Structure (Low): uses "Step N" instead of "Phase N" | fixed | 2026-06-07 | `93f1370` — all workflow headers now use `Phase N` consistently; closes row 120 |
-| al-dev-diagram-generator | Clarity (Low): "partial edge" undefined | declined | 2026-06-07 | `8a4610e` — archived the orphaned maintainer skill instead of polishing a dead surface; closes row 140 |
-| al-dev-diagram-generator | Structure (Low): Phase/Sub-step numbering inconsistency | declined | 2026-06-07 | `8a4610e` — archived the orphaned maintainer skill instead of normalizing headings on a dead surface; closes row 149 |
+| al-dev-diagram-generator | Clarity (Low): "partial edge" undefined | fixed | 2026-06-07 | `8a4610e` — archived the orphaned maintainer skill instead of polishing a dead surface; closes row 140 |
+| al-dev-diagram-generator | Structure (Low): Phase/Sub-step numbering inconsistency | fixed | 2026-06-07 | `8a4610e` — archived the orphaned maintainer skill instead of normalizing headings on a dead surface; closes row 149 |
