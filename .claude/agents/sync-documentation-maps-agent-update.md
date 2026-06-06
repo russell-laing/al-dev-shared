@@ -1,9 +1,10 @@
 ---
 name: sync-documentation-maps-agent-update
 description: >-
-  Reads agent audit findings from the run artifact directory and writes an
-  updated docs/al-dev-agent-map.md to the run updates directory.
-  Called by /sync-documentation-maps-collect update dispatch phase.
+  Reads agent audit findings from the run artifact directory and writes the
+  updated map to `<result_dir>/updates/agent-map.md`, staged for
+  /sync-documentation-maps-apply to copy into docs/al-dev-agent-map.md. Called
+  by /sync-documentation-maps-collect update dispatch phase.
 model: haiku
 tools: ["Read", "Bash", "Write"]
 ---
