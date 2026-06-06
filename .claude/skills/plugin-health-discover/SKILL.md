@@ -4,9 +4,10 @@ description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
   context from documentation maps, dispatches all design, quality, and naming
   lenses,
-  and writes structured findings to docs/health/YYYY-MM-DD-<surface>-findings.md.
-  Called by /plugin-health-audit; can also be run standalone to refresh findings
-  without re-running the report phase.
+  and writes RAW (unranked) lens findings to
+  docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
+  separately by /plugin-health-report. Called by /plugin-health-audit; can also
+  be run standalone to refresh findings without re-running the report phase.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 workflow:
   stage: discover
