@@ -148,3 +148,5 @@ Rules:
 | ~19 skill files | Structure (Low): pervasive MD040 missing code-block language tags | declined | 2026-06-06 | rubber-duck 2026-06-06: claim does not hold against live file — active skills are MD040 clean; remaining hits are archived-only |
 | al-dev-diagram-generator | Structure (Low): Phase/Sub-step numbering inconsistency | accepted | 2026-06-06 | Normalize the numbering — awaiting implementation |
 | align-harness-repos | Structure (Low): uses "Step N" instead of "Phase N" | accepted | 2026-06-06 | Normalize to "Phase N" — awaiting implementation |
+| sync-documentation-maps-agent-update | Bloat: Instructions ~43 lines | fixed | 2026-06-06 | `e8efc32` — extracted shared update procedure to `.claude/knowledge/sync-map-update-shared.md`; closes row 107 |
+| sync-documentation-maps-skill-update | Bloat: Instructions ~43 lines | fixed | 2026-06-06 | `e8efc32` — extracted shared update procedure to `.claude/knowledge/sync-map-update-shared.md`; closes row 109 |
