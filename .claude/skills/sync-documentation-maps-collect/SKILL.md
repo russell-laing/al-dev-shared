@@ -3,7 +3,9 @@ name: sync-documentation-maps-collect
 description: >-
   Collect results from /sync-documentation-maps audit agents. Reads audit
   artifacts, presents discrepancy findings, asks which maps to update, and
-  dispatches background update agents. Second step of the async sync workflow.
+  dispatches background update agents. Supports Resume/Restart when a prior
+  collect state exists; `--wait` polls for both audit artifacts for up to 30
+  minutes before reading them. Second step of the async sync workflow.
 argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
 workflow:
   stage: map-sync
