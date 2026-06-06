@@ -3,9 +3,9 @@ name: review-docs
 description: >-
   Use when reviewing or maintaining human-authored files at the first level of
   docs/ for staleness, broken script or skill references, thin sections, and
-  missing code-block language tags. Triggers on: "review the docs", "check the
-  docs", "maintain docs", "audit docs", "are the docs accurate", "docs review",
-  "review documentation files".
+  archived path references, and missing code-block language tags. Triggers on:
+  "review the docs", "check the docs", "maintain docs", "audit docs", "are the
+  docs accurate", "docs review", "review documentation files".
 argument-hint: "[--file <filename>] [--fix]"
 ---
 
