@@ -43,7 +43,7 @@ read every file path in the dispatch prompt and derive each tool's name:
 
 - Living docs must match `al-dev-{object}-{kind}.md`.
 - Dated artifacts must match `{dir}/YYYY-MM-DD-{surface}-{kind}.md` with
-  `surface` ∈ `plugin` | `tooling`.
+  `surface` in `{plugin, tooling}`.
 - A documented output path that violates either pattern is a **Medium** finding.
 
 **How a deviation maps to severity** (apply the most severe that fits):

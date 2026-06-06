@@ -13,8 +13,8 @@ mechanically. Keep this doc and those two checkers in sync.
 
 Pattern: `{dimension}-{object}-lens-{aspect}`
 
-- `dimension` ∈ `design` | `quality`
-- `object` ∈ `agent` | `skill`
+- `dimension` is one of `design` or `quality`
+- `object` is one of `agent` or `skill`
 - `aspect` — a short kebab-case noun for the specific lens (e.g. `tool-hygiene`,
   `bloat`, `name-fit`)
 
@@ -28,8 +28,8 @@ words. It is the only allowed deviation from the pattern.
 
 Pattern: `{verb}-{object}-{aspect}`
 
-- `verb` ∈ `review` | `analyze` | `audit` | `plan` | `sync` | …
-- `object` ∈ `skill` | `agent` | `knowledge` | `map` | `plugin`
+- `verb` is one of `review`, `analyze`, `audit`, `plan`, `sync`, …
+- `object` is one of `skill`, `agent`, `knowledge`, `map`, `plugin`
 
 Examples: `plugin-health-audit`, `review-agent-map`, `verify-map-suggestions`.
 
@@ -51,8 +51,8 @@ Examples: `al-dev-skills-map.md`, `al-dev-agent-map.md`, `al-dev-knowledge-quali
 
 Pattern: `{dir}/YYYY-MM-DD-{surface}-{kind}.md`
 
-- `surface` ∈ `plugin` (the distributed `profile-al-dev-shared/` surface)
-  | `tooling` (the maintainer `.claude/` surface)
+- `surface` is one of `plugin` (the distributed `profile-al-dev-shared/`
+  surface) or `tooling` (the maintainer `.claude/` surface)
 
 Examples: `docs/health/2026-05-29-plugin-health.md`,
 `docs/health/2026-05-29-tooling-health.md`.
