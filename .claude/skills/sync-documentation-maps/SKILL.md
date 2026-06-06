@@ -4,7 +4,9 @@ description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
   or to verify accuracy after adding/removing skills or agents. Dispatches
   parallel background audit agents and writes a checkpoint; the harness notifies
-  on completion. Collect results with /sync-documentation-maps-collect.
+  on completion. Runs a Phase 0 cadence guard that refuses to dispatch over an
+  unfinished prior run unless `--force` is given. Collect results with
+  /sync-documentation-maps-collect.
   Triggers: "sync documentation maps", "update maps", "are the maps accurate".
 argument-hint: "[--all] [--skip-commit] [--force]"
 workflow:
@@ -225,3 +227,7 @@ that both maps are updated without prompting the user.
 **`--skip-commit`** (optional)
 Set `SKIP_COMMIT=true` — passed through to the finalize step so that map
 changes are written but not committed (dry-run / review mode).
+
+**`--force`** (optional)
+Override the Phase 0 cadence guard and dispatch even when the prior run's
+checkpoint status is not `done`.
