@@ -68,7 +68,10 @@ Read each located dossier. Collect findings from exactly these sections
 Skip `_No issues found._` sections, findings marked `← implemented` or
 `← completed`, and anything listed under "Stale (dropped)", "Dispositioned
 (suppressed)", or "Monitor-only" notes — those are already closed or
-excluded by the report phase.
+excluded by the report phase. (These markers — `← implemented`,
+`← completed`, `← already implemented` — are legacy inline dossier annotations
+the parser still accepts for compatibility; treat all three as "skip, already
+closed".)
 
 With `--top`, restrict the worklist to the dossier's "Top N ranked
 actions" entries.
