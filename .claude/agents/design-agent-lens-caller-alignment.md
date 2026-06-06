@@ -24,16 +24,15 @@ Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
 Extract the `## Inputs` and `## Outputs` sections. Then use the Grep tool to
-check how each spawning skill actually invokes the agent. "Actually invoke"
-means: the skill body contains an `al-dev-shared:<agent>` dispatch line **and**
-the context block passed alongside it (the prompt fields the skill hands the
-agent). Check both: a dispatch line with no passed context block is not evidence
-of a working contract — treat it as a potential High alignment finding (the
-agent's documented Inputs are not being supplied), not as out-of-scope.
-Likewise, passed context with no dispatch line is a finding. Search the skills
-directory:
+check how each spawning skill actually invokes the agent. Check two signals independently:
+(1) an `al-dev-shared:<agent>` dispatch line, and (2) the
+context block passed alongside it (the prompt fields the skill hands the
+agent). Three states: both present means a working contract; a dispatch line
+with no context block is a High alignment finding because the agent's
+documented Inputs are not being supplied; passed context with no dispatch line
+is also a finding. Search the skills directory:
 
-- Pattern: `al-dev-<agent-name>` in `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/`
+- Pattern: `al-dev-shared:<agent-name>` in `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/`
 
 **Red flags:**
 
@@ -48,6 +47,7 @@ A mismatch between caller behaviour and agent documentation is an Align candidat
 **Severity rules:**
 
 - High: caller passes structured data the agent's Inputs table explicitly contradicts
+- High: caller dispatches the agent with no context block
 - Medium: Inputs/Outputs table is "Not documented" but caller clearly passes
   structured context
 - Low: minor label mismatch that doesn't affect behavior but confuses future callers
