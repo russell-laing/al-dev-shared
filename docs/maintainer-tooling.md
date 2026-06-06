@@ -123,7 +123,7 @@ flowchart LR
 1. `/audit-knowledge-quality` — Audit knowledge files for stub sections and structural issues. Repeat as needed.
    - reads: `profile-al-dev-shared/knowledge/`
    - writes: `docs/al-dev-knowledge-quality.md`
-2. `/fix-knowledge-quality` — Reads HIGH-severity findings from the latest knowledge quality audit (docs/al-dev-knowledge-quality.md) and converts them into a structured task list. Repeat as needed.
+2. `/fix-knowledge-quality` — Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. Repeat as needed.
    - reads: `docs/al-dev-knowledge-quality.md`
    - writes: `profile-al-dev-shared/knowledge/`
 3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
@@ -498,7 +498,7 @@ flowchart TD
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
-| `/fix-knowledge-quality` | derive | user | Reads HIGH-severity findings from the latest knowledge quality audit (docs/al-dev-knowledge-quality.md) and converts them into a structured task list. |
+| `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. |
 | `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
@@ -552,9 +552,9 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-plugin-synthesis.md` | never produced |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-05 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-06 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-06 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-06 |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-06 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |

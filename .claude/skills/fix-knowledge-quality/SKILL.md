@@ -1,12 +1,12 @@
 ---
 name: fix-knowledge-quality
 description: >-
-  Reads HIGH-severity findings from the latest knowledge quality audit
-  (docs/al-dev-knowledge-quality.md) and converts them into a structured task
-  list. Presents tasks to the user and optionally dispatches fix agents for
-  each HIGH issue. Run /audit-knowledge-quality first if no audit file exists.
-  Triggers on: "fix knowledge quality", "fix knowledge issues", "implement
-  knowledge fixes", "address high knowledge findings".
+  Reads the HIGH-severity fix-task block produced by
+  /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the
+  tasks, and optionally dispatches fix agents for each HIGH issue. Run
+  /audit-knowledge-quality first if no audit file exists. Triggers on: "fix
+  knowledge quality", "fix knowledge issues", "implement knowledge fixes",
+  "address high knowledge findings".
 argument-hint: "[--auto-fix]"
 workflow:
   stage: derive
