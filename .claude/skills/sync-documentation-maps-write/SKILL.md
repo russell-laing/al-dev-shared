@@ -2,8 +2,9 @@
 name: sync-documentation-maps-write
 description: >-
   Final regeneration step after /sync-documentation-maps-apply; fourth step of
-  the async sync flow. Regenerates diagrams, projections, and the plugin graph
-  from updated maps, then commits.
+  the async sync flow. After the maps are applied, regenerates the map
+  diagrams, agent projections, the plugin graph, and the maintainer guide from
+  their canonical sources, then commits the resulting artifacts.
 argument-hint: "[RUN_ID from checkpoint]"
 workflow:
   stage: map-sync
