@@ -11,7 +11,7 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to `SKILL.md` files |
 | preplanning_skills | List of skills identified as pre-planning tributaries (provided in dispatch prompt) |
-| layer1_diagram_content | Content of the Layer 1 diagram from docs/al-dev-plugin-map.md (provided in dispatch prompt) |
+| layer1_diagram_content | Content of the Layer 1 diagram from docs/al-dev-skills-map.md (provided in dispatch prompt) |
 
 ## Outputs
 
@@ -37,14 +37,27 @@ found in the file list:
 2. Check whether its output filename is referenced in Layer 1 handoff labels.
 3. Check whether a downstream skill explicitly names it as an input in its body.
 
+Treat occurrence states explicitly:
+
+- Exact dashed-tributary match: the skill is correctly represented in Layer 1.
+- Substring-only match: a different node name contains the skill name, but the
+  exact tributary node is missing.
+- Main-spine-only match: the skill appears only as a main-spine node, not as a
+  dashed tributary.
+- Entirely absent: no relevant Layer 1 node exists for the skill.
+
 **Flag as Extend candidate:**
 
-- Pre-planning skill is active (has a SKILL.md) but absent from the Layer 1 diagram entirely
+- Pre-planning skill is active (has a SKILL.md) but missing its exact dashed
+  tributary representation in the Layer 1 diagram
 - Pre-planning skill feeds a downstream step but its output is unnamed in the diagram
 
 **Severity rules:**
 
 - Medium: active pre-planning skill entirely absent from Layer 1 diagram
+- Medium: active pre-planning skill appears only as a main-spine node
+- Low: active pre-planning skill appears only as a substring match in another
+  node label
 - Low: skill present in diagram but output filename not referenced in handoff labels
 
 ---
