@@ -30,7 +30,8 @@ Used by `sync-documentation-maps-agent-audit` Step 5.
 
 ## Agent surface — edit cases (update)
 
-Used by `sync-documentation-maps-agent-update` Step 3.
+Used by the canonical update procedure
+(`.claude/knowledge/sync-map-update-shared.md`) Step 3, agent surface.
 
 **Common to all cases:**
 
@@ -98,7 +99,8 @@ Used by `sync-documentation-maps-skill-audit` Step 4.
 
 ## Skill surface — edit cases (update)
 
-Used by `sync-documentation-maps-skill-update` Step 3.
+Used by the canonical update procedure
+(`.claude/knowledge/sync-map-update-shared.md`) Step 3, skill surface.
 
 **Common to all cases:**
 
