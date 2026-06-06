@@ -5,10 +5,12 @@ description: >-
   verify-map-suggestions). Reads accepted rows from
   docs/health/dispositions.md, rubber-ducks each finding against the live
   codebase before any plan content is written, then produces a verified
-  implementation plan via the writing-plans sub-skill. Use when the latest
-  health dossier in docs/health/ has accepted findings that need
-  implementing. Run /plugin-health-audit first if the plugin or tooling
-  surface has changed since the dossier was last generated. Triggers on:
+  implementation plan via the writing-plans sub-skill. Filter the worklist by
+  object type with `--skills` or `--agents` to plan only skill-design or
+  agent-design findings. Use when the latest health dossier in docs/health/ has
+  accepted findings that need implementing. Run /plugin-health-audit first if
+  the plugin or tooling surface has changed since the dossier was last
+  generated. Triggers on:
   "plan health findings", "implement health findings", "plan architectural
   changes", "plan the suggestions", "create a plan for plugin changes",
   "implement the dossier", "act on health findings", "implement agent
