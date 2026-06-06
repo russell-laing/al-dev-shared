@@ -87,7 +87,7 @@ JSON object with one key per active agent, stop caller cross-referencing.
 Skip `caller_mismatch` detection entirely for this run and state in the
 report's `summary` field that caller checks were skipped and why (e.g.
 "caller checks skipped: derive-agent-callers.py exited 1"). A per-agent
-empty list (`[]`) is **not** a failure — it is a valid result meaning
+empty list (`[]`) is a valid result meaning
 `(none found)`.
 
 Do **not** grep skill files for agent names as a fallback or supplement —
