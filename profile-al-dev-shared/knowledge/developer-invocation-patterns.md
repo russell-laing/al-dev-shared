@@ -2,9 +2,9 @@
 
 Reference document for the three contexts in which `al-dev-developer` is spawned.
 
-## Context 1: Full Scope Implementation (al-dev-develop Phase 4)
+## Context 1: Full Scope Implementation (al-dev-develop Phase 3)
 
-**Caller:** `/al-dev-develop` (Phase 4: Developer Dispatch and Implementation)
+**Caller:** `/al-dev-develop` (Phase 3: Developer Dispatch and Implementation)
 
 **Trigger:** User has approved a solution plan and /al-dev-develop is
 orchestrating parallel developer agents to implement it.
@@ -38,7 +38,7 @@ orchestrating parallel developer agents to implement it.
 **Routing decision:**
 
 ```text
-If a test plan file exists (.dev/*-test-plan.md is present and non-empty):
+If a test plan file exists (.dev/*-al-dev-test-test-plan.md is present and non-empty):
   spawn al-dev-shared:al-dev-developer-tdd
   Include in prompt: TDD cycle expectations (RED-GREEN-REFACTOR),
     TDD_CYCLE_GATE approval gates after each phase
@@ -57,7 +57,7 @@ Prompt:
 
   Solution plan: [paste .dev/*-al-dev-plan-solution-plan.md]
   Module assignment: [paste the assigned module/component section]
-  Test plan: [paste .dev/*-test-plan.md]
+  Test plan: [paste .dev/*-al-dev-test-test-plan.md]
 
   Follow the TDD cycle: RED → GREEN → REFACTOR for each requirement.
   Stop at the TDD_CYCLE_GATE after each phase for approval before proceeding.

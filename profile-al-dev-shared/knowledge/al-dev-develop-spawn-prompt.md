@@ -1,13 +1,15 @@
 # al-dev-develop Developer Spawn Prompt
 
 This document defines the structured prompt template used to dispatch
-developer agents during `al-dev-develop` Phase 4 (Spawn Developer Team).
+developer agents during `al-dev-develop` Phase 3 (Spawn Developers).
 The orchestrating skill instantiates this template once per module
 assignment so that every spawned developer receives consistent scope,
 standards, and gate rules.
 
 The spawn prompt is canonical here; the skill references this file rather
-than embedding the full prompt inline.
+than embedding the full prompt inline. Use
+`knowledge/developer-invocation-patterns.md` for the broader dispatch
+consistency rules that sit around this template.
 
 ## Prompt Structure
 
@@ -37,6 +39,7 @@ Check for a test plan before instantiating the prompt:
 
 ```bash
 TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
+[ -n "$TEST_PLAN" ] && [ -s "$TEST_PLAN" ]
 ```
 
 Choose the matching path below. Do not emit both — select one and
@@ -44,7 +47,7 @@ substitute the bracketed placeholders before dispatching.
 
 ---
 
-**If test plan exists (`$TEST_PLAN` is non-empty) — use `al-dev-developer-tdd`:**
+**If a non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-tdd`:**
 
 ```text
 Agent: al-dev-shared:al-dev-developer-tdd
@@ -101,12 +104,12 @@ Expected Output:
 - Pre-flight summary reported before code was written
 - Compilation verified for the assigned module
 - Any out-of-scope proposals surfaced through the Scope Expansion Gate
-- Report of files created/modified for Phase 4 ownership verification
+- Report of files created/modified for Phase 3 ownership verification
 ```
 
 ---
 
-**If no test plan exists (`$TEST_PLAN` is empty) — use `al-dev-developer-traditional`:**
+**If no non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-traditional`:**
 
 ```text
 Agent: al-dev-shared:al-dev-developer-traditional
@@ -164,22 +167,26 @@ Expected Output:
 - Report of files created/modified for Phase 4 ownership verification
 ```
 
-## Usage Notes (Phase 4)
+## Usage Notes (Phase 3)
 
-1. **Gather context** — read the solution plan, the Phase 2.5 checklist,
-   the Phase 3.0 scope document, and any planning symbol evidence.
+1. **Gather context** — read the solution plan,
+   the latest `.dev/*-al-dev-develop-checklist.md`, the latest
+   `.dev/*-al-dev-develop-scope.md`, and any planning symbol evidence.
 2. **Instantiate the template** once per module assignment, filling all
    placeholders from the partition, plan, and project context.
 3. **Detect the test plan** and route the agent:
 
    ```bash
    TEST_PLAN=$(ls .dev/*-al-dev-test-test-plan.md 2>/dev/null | sort | tail -1)
+   [ -n "$TEST_PLAN" ] && [ -s "$TEST_PLAN" ]
    ```
 
-   - If a test plan exists, route to `al-dev-developer-tdd` and include
-     TDD cycle expectations and the `TDD_CYCLE_GATE` approval gates.
-   - If no test plan exists, route to `al-dev-developer-traditional` and
-     include the traditional build-verify workflow.
+   - If a non-empty test plan exists, route to `al-dev-developer-tdd`
+     and include TDD cycle expectations and the `TDD_CYCLE_GATE`
+     approval gates.
+   - If no non-empty test plan exists, route to
+     `al-dev-developer-traditional` and include the traditional
+     build-verify workflow.
 4. **Dispatch** all developers (in parallel where modules own disjoint
    files), each with its instantiated prompt. See
    `knowledge/developer-invocation-patterns.md` (Context 1: Full Scope

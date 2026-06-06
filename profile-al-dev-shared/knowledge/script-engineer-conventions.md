@@ -10,15 +10,17 @@ Write async code patterns when possible; use proper concurrency primitives. For 
 **Python asyncio example:**
 ```python
 import asyncio
-import aiohttp
 import json
+from typing import Any
 
-async def fetch_data(url: str) -> dict:
+import aiohttp
+
+async def fetch_data(url: str) -> dict[str, Any]:
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             return await resp.json()
 
-async def fetch_multiple(urls: list) -> list:
+async def fetch_multiple(urls: list[str]) -> list[dict[str, Any]]:
     # Fetch all URLs in parallel, not sequentially
     tasks = [fetch_data(url) for url in urls]
     return await asyncio.gather(*tasks)
@@ -32,7 +34,7 @@ if __name__ == "__main__":
 **Why:** Sequential requests are slow — fetching 10 URLs one-by-one takes 10× the time of parallel. Use `asyncio.gather()` for true concurrency.
 This example uses `aiohttp`; include it as a dependency when the script actually performs HTTP requests.
 
-### Protocol-Based Integration
+### Structured Output Integration
 
 Scripts often need to communicate results to parent processes (the active harness, CI/CD, Slack, etc.). Use **structured protocol output** instead of free-form logging. Scripts must export structured output, preferably JSON first and CSV when tabular output is enough, that parses cleanly. Always include an exit code that indicates success/failure.
 
@@ -120,6 +122,7 @@ Use the same pattern for any protocol-emitting script: emit `completed` only aft
 #!/bin/bash
 # Long-running script writes progress to .dev/progress.json periodically
 
+mkdir -p .dev
 progress_file=".dev/progress.json"
 
 write_progress() {
@@ -192,18 +195,18 @@ Define input/output schemas; validate at boundaries. For Python, use type hints.
 **Python typed dataclass example:**
 ```python
 from dataclasses import dataclass
-from typing import Optional, List
 import json
+from typing import Any
 
 @dataclass
 class Order:
     id: str
     customer_name: str
     amount: float
-    items: List[str]
-    created_at: Optional[str] = None
+    items: list[str]
+    created_at: str | None = None
 
-def process_order(order_dict: dict) -> Order:
+def process_order(order_dict: dict[str, Any]) -> Order:
     # Validate and convert input to typed object
     try:
         order = Order(
@@ -243,7 +246,7 @@ If toolkit is not found, script should continue with reduced capability or provi
 Always match the language to the project's existing stack. Detection order:
 1. Check `package.json` (Node.js project)
 2. Check `go.mod` (Go project)
-3. Check `requirements.txt` or `setup.py` (Python project)
+3. Check `pyproject.toml`, `requirements.txt`, or `setup.py` (Python project)
 4. If none found, default to Python 3
 
 Document the detection logic in the script.
@@ -258,7 +261,8 @@ import sys
 def main():
     try:
         result = process_data()
-        print(json.dumps(result, indent=2))
+        # Use compact JSON for protocol output; reserve pretty-printing for human-only commands.
+        print(json.dumps(result))
         return 0
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
