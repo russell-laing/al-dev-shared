@@ -1,6 +1,6 @@
 # Commit Conventions
 
-Authoritative spec for commit message format across all projects.
+Authoritative baseline spec for commit message format across all projects.
 Referenced by the commit agents and each project's project instructions file.
 
 ---
@@ -28,7 +28,7 @@ Every commit uses this format, regardless of project type:
 
 ## Canonical Emoji-Type Table
 
-One emoji per type. Use only these. Choosing the wrong emoji for a type is a format violation.
+One emoji per type. Use only these. Choosing the wrong emoji for a type is a format violation. Project-specific commit guidance may extend this spec, but it must not contradict the rules in this file.
 
 | Emoji | Type | When to use |
 | --- | --- | --- |
@@ -79,9 +79,10 @@ Search the project's instruction files for sections or lines covering:
 Files to check:
 
 ```bash
-grep -rn -i "commit\|gitmoji\|emoji\|conventional\|co-authored\|freshdesk" \
-  . --include="*.md" --exclude-dir=".git" 2>/dev/null \
-  | grep -v "commit-conventions"
+rg -n -i "commit|gitmoji|emoji|conventional|co-authored|freshdesk" . \
+  --glob "*.md" \
+  --glob "!.git/**" \
+  --glob "!**/commit-conventions.md"
 ```
 
 > If the repository has a shared commit-instructions section in its project
@@ -115,6 +116,11 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 This declaration makes the project type explicit for every harness instead of
 leaving commit behavior to repo-name inference or agent guesswork.
+
+Use the surrounding file's native format. In plain markdown instruction files,
+add the three lines exactly as shown above. In frontmatter-backed instruction
+files, keep the same fields but express them in the file's existing structured
+syntax.
 
 If the repository has multiple harness-specific instruction files, add the declaration to the file used by the active harness (`AGENTS.md`, `CLAUDE.md`, or `CODEX.md` as applicable).
 
@@ -163,7 +169,7 @@ project-type: tool
 **Detection (if not explicitly specified):**
 1. Check for `app.json` → project-type: `al`
 2. Check for `package.json` or `pyproject.toml` → project-type: `tool`
-3. Check for `knowledge/` or `docs/` directory as primary content only when the repository is documentation-centric and lacks `app.json`, `package.json`, or `pyproject.toml` → project-type: `vault`
+3. Check for `knowledge/` or `docs/` directory as primary content only when the repository is documentation-centric, lacks `app.json`, `package.json`, or `pyproject.toml`, and is not primarily a maintainer/plugin/tooling repo → project-type: `vault`
 4. If unclear, ask the user to declare in their project instructions file
 
 ---
@@ -227,7 +233,7 @@ Projects: al-dev-shared, al-smart-compile, repo-maintainer-tools, automation-uti
 
 **Scope:** Component or module name — e.g. `al-dev-align`, `al-dev-commit`, `skills`, `agents`, `knowledge`, `markdown`. Match the directory or skill name.
 
-**Body:** Subject line only. No CHANGED COMPONENTS.
+**Body:** Subject line only. No WHY block and no CHANGED COMPONENTS.
 
 **Atomic unit:** One functional change = one commit. A skill update + its companion knowledge file commit together. A skill update + an unrelated agent fix = two commits. Tests that accompany a fix commit together with the fix.
 

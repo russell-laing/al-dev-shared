@@ -144,7 +144,7 @@ end;
 
 ### Event Subscriber Skeleton
 
-Event subscribers must match the event's exact signature (including `var` parameters). Use the AL symbols MCP to verify the procedure signature before writing a subscriber.
+Event subscribers must match the event's exact signature (including `var` parameters). Use the strongest available AL symbol evidence to verify the procedure signature before writing a subscriber.
 
 ```al
 [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', false, false)]
@@ -164,7 +164,7 @@ end;
 
 **Critical:** The procedure signature must match EXACTLY, including parameter names and `var` modifiers. If the event has `var SalesHeader`, your subscriber must too.
 
-**How to verify:** Use `al_search_objects` and `al_get_object_definition` MCPs to inspect the publishing procedure, OR search the base app source for the event name and signature.
+**How to verify:** Prefer `AL semantic navigation` when available. Otherwise use `AL symbol MCP` to inspect the publishing procedure, or run scoped text search against the base app source for the event name and signature.
 
 ### Performance Anti-Pattern: N+1 Queries
 
@@ -308,35 +308,35 @@ The error message:
 
 ---
 
-## Bash Command Conventions
+## Shell Command Conventions
 
-AL projects frequently have directories with spaces in their names (e.g., `SRC/Table Extension/`). Backslash-escaped whitespace in bash commands (`SRC/Table\ Extension/file.al`) triggers permission prompts. Follow these rules when constructing bash commands.
+AL projects frequently have directories with spaces in their names (e.g., `SRC/Table Extension/`). In some harnesses, backslash-escaped whitespace in shell commands (`SRC/Table\ Extension/file.al`) can trigger avoidable permission prompts or brittle command parsing. Follow these rules when constructing shell commands.
 
-### Rule 1: Single file — use the Read tool, not bash grep
+### Rule 1: Single file — read the file directly
 
-When inspecting a known specific file, use the Read tool. This avoids path construction entirely and is faster.
+When inspecting a known specific file, read it directly with the active harness capability instead of building a shell search command. This avoids path construction entirely and is faster.
 
 ```text
 ✅ Read "SRC/Table Extension/SalesLine.TableExt.al"
-❌ Bash: grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+❌ Shell: rg -n '...' SRC/Table\ Extension/SalesLine.TableExt.al
 ```
 
-### Rule 2: Multi-file search — use recursive patterns with `.`
+### Rule 2: Multi-file search — prefer recursive patterns with `.`
 
 This pattern keeps the command portable across repos and avoids permission
 prompts caused by explicit directory names with spaces.
 
-Use `--include` glob patterns with `.` as the root. `grep` and `find` traverse directories transparently, so no spaced path ever appears in the command.
+Use recursive patterns with `.` as the root. `rg` or `grep` can traverse directories transparently, so no spaced path ever appears in the command.
 
 ```bash
-# ✅ Safe — no explicit path, grep recurses from .
+# ✅ Preferred — no explicit path, rg recurses from .
+rg -n '^\s*(field|procedure|table)' . --glob "*.al"
+
+# ✅ Also safe — grep recurses from .
 grep -rn --include="*.al" -E '^\s*(field|procedure|table)' .
 
-# ✅ Safe — find recurses without explicit directory names
-find . -name "*.al" -exec grep -l "95010\|95008" {} \;
-
-# ❌ Avoid — backslash-escaped space triggers prompts
-grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+# ❌ Avoid — explicit spaced path with backslash escaping is brittle
+rg -n '...' SRC/Table\ Extension/SalesLine.TableExt.al
 ```
 
 ### Rule 3: When an explicit path is unavoidable — double-quote it
@@ -348,8 +348,8 @@ If you must reference a file by path directly, always wrap in double quotes.
 
 ```bash
 # ✅ Quoted — no prompt
-grep -E '...' "SRC/Table Extension/SalesLine.TableExt.al"
+rg -n '...' "SRC/Table Extension/SalesLine.TableExt.al"
 
-# ❌ Backslash-escaped — triggers prompt
-grep -E '...' SRC/Table\ Extension/SalesLine.TableExt.al
+# ❌ Backslash-escaped — more brittle across harnesses
+rg -n '...' SRC/Table\ Extension/SalesLine.TableExt.al
 ```

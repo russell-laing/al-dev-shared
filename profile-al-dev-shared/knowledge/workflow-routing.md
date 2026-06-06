@@ -8,7 +8,7 @@
 ```
 1. Check if .dev/project-context.md exists
 2. If exists: Read it completely (saves 5-10 minutes of exploration)
-3. If not exists: Run `/al-dev-init-context` first to create it
+3. If not exists: Suggest `al-dev-init-context` and continue when the task can proceed safely without project context
 ```
 
 ## Complexity Classification
@@ -16,7 +16,7 @@
 Analyze the user request and classify:
 
 ### 🟢 TRIVIAL (Use Fast Path - 2-5 min)
-**Route:** `/al-dev-fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
+**Route:** `al-dev-fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
 
 **Criteria:**
 - Single file modification
@@ -37,20 +37,20 @@ Analyze the user request and classify:
 3. If the fix stays obvious and single-scope, implement directly
 4. Run compile/lint verification and present the bounded result
 
-**Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `/al-dev-fix` switches automatically to its built-in escalation branch:
+**Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `al-dev-fix` switches automatically to its built-in escalation branch:
 - Spawns `al-dev-solution-architect` for quick root-cause analysis (~5 min)
 - Reviews architect's hypothesis; presents to user for approval
 - Spawns `al-dev-developer` with confirmed approach
 - Runs compile/lint verification and presents result
 
-Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `/al-dev-fix` escalation handles these efficiently.
+Do not route to `al-dev-plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `al-dev-fix` escalation handles these efficiently.
 
 **Time saved:** 15-25 min vs full workflow (direct path); 10-15 min vs full plan cycle (escalation path)
 
 ---
 
 ### 🟡 SIMPLE (Use Lightweight Path - 5-15 min)
-**Route:** Lightweight planning + implementation with code-reviewer only
+**Route:** Lightweight planning + implementation with quick review and approval
 
 **Criteria:**
 - 2-3 file changes
@@ -84,7 +84,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 ---
 
 ### 🟠 MEDIUM (Use Streamlined Path - 20-40 min)
-**Route:** Balanced planning + Development
+**Route:** Balanced planning + development
 
 **Criteria:**
 - 4-8 file changes
@@ -101,7 +101,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 1. Read project-context.md
 2. requirements-engineer → balanced requirements (100-150 lines)
 3. solution-planner → balanced plan (100-300 lines)
-   - USE MCP tools: get_table_structure, list_events, ask_bc_expert as needed
+   - Use the strongest available AL symbol evidence and BC specialist guidance as needed
 4. User approval
 5. al-developer → implement
 6. code-reviewer + diagnostics-fixer
@@ -121,7 +121,7 @@ Do not route to `/al-dev-plan` for issues that are bounded (single subsystem, cl
 ---
 
 ### 🔴 COMPLEX (Use Full Pipeline - 45-90 min)
-**Route:** `/al-dev-develop` full workflow
+**Route:** `al-dev-develop` full workflow
 
 **Criteria:**
 - New feature (not extension of existing)
@@ -291,17 +291,16 @@ Then: Synthesize results into solution plan
 
 User can force a specific path:
 
-- `/al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
-- `/al-dev-develop` → SIMPLE/MEDIUM path (no requirements phase)
-- `/al-dev-plan` → MEDIUM path (planning only)
+- `al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
+- `al-dev-develop` → SIMPLE/MEDIUM path (no requirements phase)
+- `al-dev-plan` → MEDIUM path (planning only)
 - COMPLEX path → full pipeline workflow
 
 But AI should suggest if path seems wrong:
 ```
-"This looks like a simple field addition. Would you like to use the fast path instead?
-(Direct implementation + review, saves 15-20 minutes)"
-
-[Quick Fix] [Standard Workflow]
+"This looks like a simple field addition. A fast-fix path is available.
+Would you like to use `al-dev-fix` instead of the standard workflow?
+It keeps the change bounded and usually saves 15-20 minutes."
 ```
 
 ## Success Metrics

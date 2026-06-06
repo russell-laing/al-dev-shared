@@ -62,9 +62,12 @@ Run:
 ```bash
 if command -v al-compile &>/dev/null; then
   al-compile --output .dev/compile-errors.log
-else
+elif command -v al &>/dev/null; then
   al compile /project:. /packagecachepath:.alpackages \
     /errorlog:.dev/compile-errors.log
+else
+  echo "AL compiler not found; install al-compile or AL CLI tools before retrying." \
+    | tee .dev/compile-errors.log
 fi
 ```
 
@@ -127,7 +130,7 @@ al-compile 2>&1 | grep -E "(error|warning)"
 - This keeps compile evidence durable without flooding the active session.
 - Result: forced context compacts and session restarts after 2–3 compile checks
 
-**✅ DO: Write to file, then inspect via Read or grep the file if needed:**
+**✅ DO: Write to file, then inspect the file directly or filter it with `rg` if needed:**
 
 ```bash
 # CORRECT — write diagnostics to file, suppress stdout
@@ -140,7 +143,7 @@ rg -n -e "error|warning" .dev/compile-errors.log | rg '\.(Page|PageExt)\.al'
 rg -c '^Error' .dev/compile-errors.log
 ```
 
-**Always include a short `description` on Bash tool calls invoking `al-compile`:**
+**Always include a short purpose note on tool calls invoking `al-compile`:**
 
 Use a description that clearly states whether the call is compiling,
 inspecting, or diffing the log, for example:
@@ -176,7 +179,7 @@ Parse `.dev/compile-errors.log` to separate actionable items from noise:
    ```
 
 2. **Extract file and line references** for each diagnostic using the bracketed suffix
-   `[<file>(<line>,<col>)]`. Feed these coordinates directly to the Edit tool —
+   `[<file>(<line>,<col>)]`. Feed these coordinates directly to the active file-editing capability —
    do not search the file free-text for the error message.
 3. **Group by AL code** (e.g. `AL0118`, `AA0231`) before fixing. All instances of the
    same rule can usually be fixed with a single strategy, reducing re-reads.
@@ -268,14 +271,16 @@ If only warnings remain after a clean compile, spawn
 `al-dev-diagnostics-fixer`:
 
 ```text
-Read .dev/compile-errors.log and knowledge/al-linting-rules.md.
-Fix all auto-fixable lint warnings and errors in the AL source
-files. Write .dev/lint-report.md with a fixed/unresolved summary
-structured as:
-- Fixed (scripted): rules fixed via Python script with count
-- Fixed (direct): rules fixed via Edit tool with file:line refs
-- Unresolved: rules requiring human judgment with reason
-- Compile Status: post-fix compile result
+Dispatch agent: al-dev-shared:al-dev-diagnostics-fixer
+  description: "Resolve auto-fixable diagnostics from the current compile log"
+  prompt: |
+    Read `.dev/compile-errors.log` and `knowledge/al-linting-rules.md`.
+    Fix all auto-fixable lint warnings and errors in the AL source files.
+    Write `.dev/lint-report.md` with a fixed/unresolved summary structured as:
+    - Fixed (scripted): rules fixed via Python script with count
+    - Fixed (direct): rules fixed via direct file edits with file:line refs
+    - Unresolved: rules requiring human judgment with reason
+    - Compile Status: post-fix compile result
 ```
 
 ## Step 3 — Report
