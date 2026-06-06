@@ -352,8 +352,7 @@ No skills in this stage declare a `workflow:` contract yet. Uncontracted skills 
 
 The adjacent tooling stage is intentionally light until those skills receive
 workflow contracts. Current nearby tools are `/review-docs` for first-level
-human-authored docs review, `/al-dev-diagram-generator` as the diagram-generation
-helper dispatched by design-analysis skills, and `/al-dev-consolidate` for `.dev/` session
+human-authored docs review and `/al-dev-consolidate` for `.dev/` session
 artifact consolidation.
 
 ## Async Map Sync Detail
@@ -541,7 +540,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Sourceless input | none | — |
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
-| Missing contract | `al-dev-diagram-generator` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-04 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-04 |
@@ -554,7 +552,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-06 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-06 |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-06 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-06 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |

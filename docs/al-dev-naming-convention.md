@@ -70,7 +70,6 @@ are accepted; lenses should not re-flag them:
 
 - `projection-sync` — established verb-object name; regenerates harness projections from canonical source.
 - `align-harness-repos` — validate-with-optional-fix workflow; name retained for recognisability.
-- `al-dev-diagram-generator` — noun form retained; generates workflow diagrams.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
 - `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming
   (the `-apply` member was renamed from `-wait` for clarity).
