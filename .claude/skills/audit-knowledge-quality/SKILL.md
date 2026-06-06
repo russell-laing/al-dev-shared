@@ -2,8 +2,8 @@
 name: audit-knowledge-quality
 description: >-
   Audit knowledge files for stub sections and structural issues. Dispatches
-  parallel agents for large audit scopes (4+ files) and can offer targeted fixes
-  after reporting.
+  parallel agents for large audit scopes (4+ files) and offers user-gated fix
+  guidance for HIGH-severity findings after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
 workflow:
   stage: derive
@@ -18,8 +18,8 @@ workflow:
 
 # Audit Knowledge Quality
 
-Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues. Report findings and offer targeted fixes.
-This audit can offer targeted fixes after reporting; it is not read-only.
+Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues. Report findings and offer user-gated fix guidance for HIGH-severity findings.
+After reporting, this audit offers user-gated fix guidance for HIGH-severity findings; it does not edit files autonomously.
 
 ## Purpose
 

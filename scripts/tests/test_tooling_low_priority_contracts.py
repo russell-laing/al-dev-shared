@@ -96,7 +96,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
                 "can offer or apply fixes after reporting"
             ],
             ".claude/skills/audit-knowledge-quality/SKILL.md": [
-                "can offer targeted fixes after reporting"
+                "offers user-gated fix guidance for HIGH-severity findings"
             ],
             ".claude/skills/projection-sync/SKILL.md": [
                 "unidirectionally regenerates harness-native projections"
