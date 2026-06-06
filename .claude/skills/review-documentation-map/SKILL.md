@@ -226,6 +226,10 @@ Operationalize the Mermaid check on each diagram block:
 - **Check `style` directives.** Confirm every `style X fill:...` directive's `X`
   matches a node ID that appears in a node declaration or an edge. Orphaned
   `style` lines are discrepancies (see the Phase 5 style guard for the fix).
+- Node IDs must use `[A-Za-z0-9_]` only (per `md-mermaid-helper.md`). A quoted
+  or special-character node ID is a style violation: flag it and normalize the
+  map edit to a bare canonical ID rather than treating it as a supported
+  manual-check case.
 
 Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 5.
 
