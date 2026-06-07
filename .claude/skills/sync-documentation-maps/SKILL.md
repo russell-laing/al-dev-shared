@@ -52,8 +52,7 @@ FORCE=false
 
 ### Cadence guard — no dispatch over an uncollected run
 
-Abandoned runs spawn audit agents whose results are never read. Check the
-checkpoint before dispatching:
+Check the checkpoint before dispatching:
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json 2>/dev/null

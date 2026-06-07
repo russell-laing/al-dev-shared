@@ -76,6 +76,24 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
         self.assertIn('! -path "*/archived/*"', discover)
         self.assertIn("only the other paths in `file_list`", handoff_lens)
 
+    def test_plugin_health_cadence_guard_has_explicit_happy_path(self) -> None:
+        discover = read(".claude/skills/plugin-health-discover/SKILL.md")
+
+        self.assertIn(
+            "Disposition coverage exists and is dated on or after the dossier",
+            discover,
+        )
+        self.assertIn("proceed to the stale-open check", discover)
+
+    def test_sync_maps_cadence_guard_keeps_only_operational_rule(self) -> None:
+        sync_maps = read(".claude/skills/sync-documentation-maps/SKILL.md")
+
+        self.assertNotIn(
+            "Abandoned runs spawn audit agents whose results are never read",
+            sync_maps,
+        )
+        self.assertIn("Check the checkpoint before dispatching", sync_maps)
+
     def test_low_priority_name_fit_descriptions_are_explicit(self) -> None:
         expected_fragments = {
             ".claude/skills/align-harness-repos/SKILL.md": [

@@ -66,6 +66,8 @@ confirm to sweep anyway.
 
 Then branch explicitly:
 
+- Disposition coverage exists and is dated on or after the dossier date →
+  proceed to the stale-open check.
 - User confirms → proceed to Phase 1.
 - User declines, or gives no clear confirmation → stop. Report "Sweep not
   dispatched — record dispositions via `/record-health-dispositions` and
