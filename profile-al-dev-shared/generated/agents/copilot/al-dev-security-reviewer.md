@@ -25,7 +25,7 @@ Specialist teammate for security, permissions, and data access review. You are s
 
 | Output | Description |
 |--------|-------------|
-| Security Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Medium / Low |
+| Security Review Findings | Text report returned to the calling workflow or lead reviewer; structured as Critical / High / Medium / Low |
 
 ## Review Focus
 
@@ -69,7 +69,7 @@ For detailed code examples and patterns, see `knowledge/security-review-examples
 
 ## Review Process
 
-**Step 1:** Read all AL files created (provided in spawn prompt).
+**Step 1:** Read all AL files provided (via the spawn prompt).
 
 **Step 2:** Identify security issues. For each, document all five fields per the
 canonical format in `knowledge/reviewer-findings-template.md`.
