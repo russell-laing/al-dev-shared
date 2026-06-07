@@ -65,47 +65,27 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
 
     def test_plugin_health_report_merges_rank_and_write_phase(self) -> None:
         text = read(".claude/skills/plugin-health-report/SKILL.md")
-        self.assertIn("## Phase 2 - Rank and Write Dossier", text)
+        self.assertIn("## Phase 2 — Rank and Write Dossier", text)
         self.assertNotIn("## Phase 3 - Write dossier", text)
         self.assertNotIn("## Phase 3 - Write Dossier", text)
 
-    def test_analyze_design_skills_delegate_highest_leverage_selection(self) -> None:
-        for path in [
-            ".claude/skills/analyze-agent-design/SKILL.md",
-            ".claude/skills/analyze-skill-design/SKILL.md",
-        ]:
-            with self.subTest(path=path):
-                text = read(path)
-                self.assertIn(
-                    "`/draft-map-suggestions` owns highest-leverage selection", text
-                )
-                self.assertNotIn("After Phase 5 invocation completes", text)
+    def test_plugin_health_excludes_archived_tooling_skills(self) -> None:
+        discover = read(".claude/skills/plugin-health-discover/SKILL.md")
+        handoff_lens = read(".claude/agents/design-skill-lens-handoff-gaps.md")
+
+        self.assertIn('! -path "*/archived/*"', discover)
+        self.assertIn("only the other paths in `file_list`", handoff_lens)
 
     def test_low_priority_name_fit_descriptions_are_explicit(self) -> None:
         expected_fragments = {
-            ".claude/skills/review-agent-map/SKILL.md": [
-                "Pass --no-update to run audit-only"
-            ],
-            ".claude/skills/review-skill-map/SKILL.md": [
-                "Pass --no-update to run audit-only"
-            ],
             ".claude/skills/align-harness-repos/SKILL.md": [
                 "single shared plugin surface"
-            ],
-            ".claude/skills/audit-quality/SKILL.md": [
-                "can offer or apply fixes after reporting"
             ],
             ".claude/skills/audit-knowledge-quality/SKILL.md": [
                 "offers user-gated fix guidance for HIGH-severity findings"
             ],
             ".claude/skills/projection-sync/SKILL.md": [
                 "unidirectionally regenerates harness-native projections"
-            ],
-            ".claude/skills/discover-agent-design/SKILL.md": [
-                "Internal discovery phase"
-            ],
-            ".claude/skills/discover-skill-design/SKILL.md": [
-                "Internal discovery phase"
             ],
         }
         for path, fragments in expected_fragments.items():

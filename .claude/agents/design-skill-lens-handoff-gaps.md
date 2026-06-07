@@ -31,7 +31,9 @@ chain analysis.
 2. Outputs produced by one skill (listed in body as "writes X.md") that are
    never referenced as inputs by any other skill — orphaned outputs that could
    be useful if consumed. To decide "never referenced": grep each output's
-   `.dev/` filename across all other `SKILL.md` bodies; zero matches = orphaned.
+   `.dev/` filename across only the other paths in `file_list`; zero matches =
+   orphaned. Do not search archived skill directories or let archived consumers
+   suppress an active-surface finding.
 
 **Established chain criteria:**
 
