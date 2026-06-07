@@ -15,9 +15,11 @@ from pathlib import Path
 
 
 REQUIRED_SECTIONS = [
-    "Implementation Summary",
+    "Change Summary",
     "Review Process",
     "Critical Issues",
+    "Issues for User Decision",
+    "Review Consensus",
     "Recommendation",
 ]
 
@@ -25,7 +27,6 @@ REVIEWER_KEYWORDS = [
     "security",
     "al expert",
     "performance",
-    "test coverage",
 ]
 
 # Matches AL object references like "50100" or "Object ID 50100"
@@ -63,7 +64,7 @@ def check_structure(lines: list[str]) -> list[str]:
 
 
 def check_review_completeness(text: str) -> list[str]:
-    """Verify all 4 reviewer perspectives are represented."""
+    """Verify all 3 reviewer perspectives are represented."""
     issues: list[str] = []
     text_lower = text.lower()
 
@@ -75,7 +76,7 @@ def check_review_completeness(text: str) -> list[str]:
         missing_list = ", ".join(missing)
         issues.append(
             f"Review perspectives not mentioned: {missing_list}. "
-            "Expected all 4 specialist reviewers represented."
+            "Expected all 3 specialist reviewers represented."
         )
 
     return issues

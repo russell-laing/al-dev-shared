@@ -4,7 +4,6 @@ description: >-
   Use after /audit-skills-against-map to apply discrepancies to docs/al-dev-skills-map.md.
   Writes/updates the skills map file, detects move candidates (project-local vs distributed),
   appends findings to Observations section, and commits changes.
-argument-hint: "[optional: skill name to focus on]"
 ---
 
 > **ARCHIVED 2026-05-31** — Use `/review-skill-map` instead.
@@ -15,6 +14,8 @@ argument-hint: "[optional: skill name to focus on]"
 
 Apply audit findings from `/audit-skills-against-map` to update `docs/al-dev-skills-map.md`.
 Writes changes, detects architectural candidates, commits to git.
+
+Usage: `/update-skill-map [skill-name]`.
 
 ---
 

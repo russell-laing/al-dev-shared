@@ -4,7 +4,6 @@ description: >-
   Use after /audit-agents-against-map to apply discrepancies to docs/al-dev-agent-map.md.
   Writes/updates the agent map file, detects inline candidates (agents that could be absorbed),
   appends findings to Observations section, and commits changes.
-argument-hint: "[optional: agent name to focus on]"
 ---
 
 > **ARCHIVED 2026-05-31** — Use `/review-agent-map` instead.
@@ -15,6 +14,8 @@ argument-hint: "[optional: agent name to focus on]"
 
 Apply audit findings from `/audit-agents-against-map` to update `docs/al-dev-agent-map.md`.
 Writes changes, detects inline candidates, commits to git.
+
+Usage: `/update-agent-map [agent-name]`.
 
 ---
 

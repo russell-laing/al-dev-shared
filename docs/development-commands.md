@@ -66,6 +66,7 @@ python3 scripts/generate-maintainer-guide.py
 ```
 
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
+Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artifacts, not maintained repo outputs; do not edit or commit them.
 
 ## Plugin Health and Documentation
 

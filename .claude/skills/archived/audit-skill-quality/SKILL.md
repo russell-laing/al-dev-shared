@@ -7,7 +7,6 @@ description: >-
   Run after /analyze-skill-design for a complete picture. Triggers on:
   "audit skill quality", "check skill quality", "are skills well written",
   "skill quality report", "check for skill drift", "skill bloat".
-argument-hint: "[skill-name]"
 ---
 
 # Skill: /audit-skill-quality
@@ -18,6 +17,8 @@ agents, aggregates their findings, and writes a structured report to
 
 If an argument is passed (e.g., `/audit-skill-quality al-dev-develop`), only
 that skill is audited and only its section is updated in the report.
+
+Usage: `/audit-skill-quality [skill-name]`.
 
 ---
 

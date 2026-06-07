@@ -9,7 +9,7 @@ Use this for a narrow pass at the end of a session.
 
 ## Surface Selector
 
-1. `repo-local skill` - a file under repo-local maintainer surfaces such as `.codex/skills/` or `.claude/skills/`
+1. `repo-local skill` - an active file under repo-local maintainer surfaces such as `.codex/skills/` or `.claude/skills/`; exclude `archived/` skill files from improvement passes
 2. `shared authored file` - a file under canonical shared source such as `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/`, or `profile-al-dev-shared/markdown/`
 3. `maintainer doc or report` - a maintainer-facing markdown file such as `docs/`, `.dev/`, findings, plans, reports, or commentary artifacts
 4. `script or config` - a small script, validator input, manifest, or config file used by the maintainer workflow
@@ -28,6 +28,7 @@ Invocation pattern:
 - If the focus matches no files, stop and report that no file matched.
 - If the focus matches multiple files, choose the oldest modified match and say that multiple matches existed.
 - If the user provides only the surface selector, choose the oldest modified file on that surface.
+- For `repo-local skill`, resolve only active skills; do not select files under `archived/`.
 - Treat "oldest modified" as the file with the earliest filesystem modification time among regular files on the selected surface.
 - If the selected surface is `generated artifact`, review the generated file only to identify the likely authored source, generator script, or config that should change upstream. Do not recommend hand-editing the generated file.
 - If the selected surface is `script or config`, keep the pass small: prefer guardrails, stale-path cleanup, argument consistency, scope narrowing, or obvious contract fixes over behavior expansion.

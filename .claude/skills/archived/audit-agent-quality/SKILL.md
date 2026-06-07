@@ -7,7 +7,6 @@ description: >-
   Run after /analyze-agent-design for a complete picture. Triggers on:
   "audit agent quality", "check agent quality", "are agents well written",
   "agent quality report", "check for agent drift", "agent bloat".
-argument-hint: "[agent-name]"
 ---
 
 # Skill: /audit-agent-quality
@@ -18,6 +17,8 @@ agents, aggregates their findings, and writes a structured report to
 
 If an argument is passed (e.g., `/audit-agent-quality al-dev-developer`), only
 that agent is audited and only its section is updated in the report.
+
+Usage: `/audit-agent-quality [agent-name]`.
 
 ---
 

@@ -5,7 +5,6 @@ description: >-
   in the map without modifying files. Scans agent files, extracts profiles,
   cross-references callers, compares against current map, reports discrepancies.
   For audit-only workflows (CI verification, dry-run before update).
-argument-hint: "[optional: agent name to focus on]"
 ---
 
 > **ARCHIVED 2026-05-31** — Use `/review-agent-map --no-update` instead.
@@ -17,6 +16,8 @@ argument-hint: "[optional: agent name to focus on]"
 Audit `profile-al-dev-shared/agents/` and verify `docs/al-dev-agent-map.md`
 accurately reflects the current active agents, their models, tools, and caller
 relationships. **No file modifications** — findings only.
+
+Usage: `/audit-agents-against-map [agent-name]`.
 
 ---
 

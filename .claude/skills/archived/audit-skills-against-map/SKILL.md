@@ -5,7 +5,6 @@ description: >-
   in the map without modifying files. Scans plugin structure, extracts profiles,
   compares against current map, reports discrepancies. For audit-only workflows
   (CI verification, dry-run before update).
-argument-hint: "[optional: skill name to focus on]"
 ---
 
 > **ARCHIVED 2026-05-31** — Use `/review-skill-map --no-update` instead.
@@ -17,6 +16,8 @@ argument-hint: "[optional: skill name to focus on]"
 Audit `profile-al-dev-shared` and verify `docs/al-dev-skills-map.md` accurately
 reflects the current active skills, agents, phases, file handoffs, and generated
 projection surfaces. **No file modifications** — findings only.
+
+Usage: `/audit-skills-against-map [skill-name]`.
 
 ---
 
