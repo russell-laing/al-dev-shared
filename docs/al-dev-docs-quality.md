@@ -1,12 +1,12 @@
 # Docs Quality Review
 
-Generated: 2026-06-05
-Files reviewed: 8 | Skipped (auto-generated/reports): 9
+Generated: 2026-06-08
+Files reviewed: 7 | Skipped (auto-generated/reports): 8
 
 ## Summary
 
-- BROKEN references (accuracy): 1 (aspirational, intentional)
-- Readability/staleness warnings: 4 (no "Last updated" date markers)
+- BROKEN references (accuracy): 1
+- Readability/staleness warnings: 0
 
 ---
 
@@ -20,14 +20,15 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 |------|---------|--------|
 | ✅ scripts | none referenced | — |
 | ✅ skills | none referenced | — |
-| ✅ paths | `settings.local.json` | Synthetic example, not a project path |
+| ✅ paths | `.claude/settings.json` | User-relative path, skipped per convention |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
 | ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
+| ✅ thin sections | none | — |
+| ✅ Last updated | 2026-05-31 | Within 6 months |
 
 ---
 
@@ -39,38 +40,16 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ scripts | `scripts/tests/test_naming_convention.py` | Verified on disk |
-| ✅ skills | `/plugin-health-audit` | Verified in `profile-al-dev-shared/skills/` |
-| ✅ paths | dated health examples | Illustrative naming examples (`2026-05-29-*.md`), not real references |
+| ✅ scripts | `scripts/tests/test_naming_convention.py` | Exists |
+| ✅ skills | `/plugin-health-audit` | Exists at `.claude/skills/plugin-health-audit` |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
 | ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-
----
-
-## architectural-decisions.md
-
-**Last updated:** no date marker
-
-### Technical Accuracy
-
-| Type | Finding | Detail |
-|------|---------|--------|
-| ✅ scripts | none referenced | — |
-| ✅ skills | none referenced | — |
-| ✅ paths | `profile-al-dev-shared/archived/agents/` | Verified on disk |
-
-### Readability
-
-| Type | Finding | Detail |
-|------|---------|--------|
-| ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-| WARN | no "Last updated" | File has no date marker; currency unknown |
+| ✅ thin sections | none | — |
+| ✅ Last updated | 2026-05-29 | Within 6 months |
 
 ---
 
@@ -82,44 +61,23 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ scripts | `scripts/generate-agent-projections.py` | Verified on disk |
-| ✅ scripts | `scripts/validate-lens-agents.py` | Verified on disk |
-| ✅ scripts | `scripts/validate_harness_neutrality.py` | Verified on disk |
-| ✅ scripts | `scripts/tests/test_generate_agent_projections.py` | Verified on disk |
-| ✅ scripts | `scripts/tests/test_validate_harness_neutrality.py` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/harness-concepts.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/workflow-resilience.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/intent-preflight.md` | Verified on disk |
+| ✅ scripts | `scripts/validate_harness_neutrality.py` | Exists |
+| ✅ scripts | `scripts/validate-lens-agents.py` | Exists |
+| ✅ scripts | `scripts/validate_artifact_contracts.py` | Exists |
+| ✅ scripts | `scripts/generate-agent-projections.py` | Exists |
+| ✅ tests | `scripts/tests/test_generate_agent_projections.py` | Exists |
+| ✅ tests | `scripts/tests/test_validate_harness_neutrality.py` | Exists |
+| ✅ tests | `scripts/tests/test_validate_artifact_contracts.py` | Exists |
+| ✅ knowledge | all 6 knowledge file paths referenced | Exist |
+| ✅ boundary docs | `AGENTS.md`, `CODEX.md` | Exist |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
 | ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-
----
-
-## maintainer-tooling.md
-
-**Last updated:** no date marker
-
-### Technical Accuracy
-
-| Type | Finding | Detail |
-|------|---------|--------|
-| ✅ skills | all 14 referenced skills | Verified: `/align-harness-repos`, `/audit-knowledge-quality`, `/plan-health-findings`, `/plugin-health-audit`, `/plugin-health-discover`, `/plugin-health-report`, `/projection-sync`, `/record-health-dispositions`, `/review-documentation-map`, `/review-maps`, `/sync-documentation-maps`, `/sync-documentation-maps-apply`, `/sync-documentation-maps-collect`, `/sync-documentation-maps-write` |
-| ✅ paths | `docs/health/dispositions.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | Verified on disk |
-
-### Readability
-
-| Type | Finding | Detail |
-|------|---------|--------|
-| ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-| WARN | no "Last updated" | File has no date marker; currency unknown |
+| ✅ thin sections | none | — |
+| ✅ Last updated | 2026-05-28 | Within 6 months |
 
 ---
 
@@ -131,18 +89,19 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| WARN | `/plugin-health` | No skill on disk; file header explicitly labels this an "Aspirational design document" — reference is intentional |
-| ✅ skills | `/plugin-health-audit` | Verified in `profile-al-dev-shared/skills/` |
-| ✅ skills | `/plugin-health-discover` | Verified in `profile-al-dev-shared/skills/` |
-| ✅ skills | `/plugin-health-report` | Verified in `profile-al-dev-shared/skills/` |
+| INFO | `/plugin-health` skill missing | File itself declares this "Aspirational design document" and states the skill does not exist — expected and documented |
+| ✅ skills | `/plugin-health-audit` | Exists |
+| ✅ skills | `/plugin-health-discover` | Exists |
+| ✅ skills | `/plugin-health-report` | Exists |
+| ✅ paths | `.claude/agents/`, `.claude/skills/` | Both exist |
+| ✅ paths | `profile-al-dev-shared/agents/*.md`, `profile-al-dev-shared/skills/*/SKILL.md` | Directories exist |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
 | ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-| WARN | no "Last updated" | File has no date marker; currency unknown |
+| ✅ thin sections | none | — |
 
 ---
 
@@ -154,22 +113,21 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ scripts | `scripts/generate-agent-projections.py` | Verified on disk |
-| ✅ scripts | `scripts/validate_harness_neutrality.py` | Verified on disk |
-| ✅ skills | `/al-dev-develop` | Verified in `profile-al-dev-shared/skills/` |
-| ✅ skills | `/al-dev-plan` | Verified in `profile-al-dev-shared/skills/` |
-| ✅ paths | `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/knowledge/harness-concepts.md` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/generated/agents/claude/` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/generated/agents/copilot/` | Verified on disk |
-| ✅ paths | `profile-al-dev-shared/generated/agents/codex/` | Verified on disk |
+| ✅ scripts | `scripts/generate-agent-projections.py` | Exists |
+| ✅ scripts | `scripts/validate_harness_neutrality.py` | Exists |
+| ✅ tests | `scripts/tests/test_generate_agent_projections.py` | Exists |
+| ✅ generated dirs | `profile-al-dev-shared/generated/agents/{claude,copilot,codex}` | All exist |
+| ✅ knowledge | `agent-tool-projection-policy.md`, `harness-concepts.md` | Exist |
+| ✅ skills | `/al-dev-plan`, `/al-dev-develop` | Both exist |
+| BROKEN | `model: claude-opus-4-7` in example code | Example agent definitions use the full model ID `claude-opus-4-7`, but actual agents in the repo declare `model: opus` (shorthand). Misleads maintainers adding new agents. |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
+| ✅ code blocks | all tagged (no bare openers) | — |
+| ✅ thin sections | none | — |
+| ✅ Last updated | 2026-05-31 | Within 6 months |
 
 ---
 
@@ -181,15 +139,15 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ paths | `claude.md`, `agent.md` | Generic config file names used illustratively, not project paths |
+| ✅ scripts | none referenced | — |
+| ✅ skills | none referenced | — |
 
 ### Readability
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ code blocks | all tagged | — |
-| ✅ sections | no thin headings | — |
-| WARN | no "Last updated" | File has no date marker; currency unknown |
+| ✅ code blocks | none | — |
+| ✅ thin sections | none | — |
 
 ---
 
@@ -197,10 +155,11 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | File | Reason |
 |------|--------|
-| `al-dev-agent-map.md` | Contains `<!-- BEGIN GENERATED:` section (auto-generated map) |
-| `al-dev-skills-map.md` | Contains `<!-- BEGIN GENERATED:` section (auto-generated map) |
-| `al-dev-plugin-graph.md` | Contains `<!-- BEGIN GENERATED:` section (auto-generated graph) |
-| `al-dev-workflow-diagrams.md` | Contains `<!-- BEGIN GENERATED:` section (auto-generated diagrams) |
-| `development-commands.md` | Contains `<!-- BEGIN GENERATED:` section (partially auto-generated) |
-| `al-dev-docs-quality.md` | This file (review output) |
-| `al-dev-knowledge-quality.md` | Quality report output (regenerated by skill) |
+| `al-dev-agent-map.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `al-dev-skills-map.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `al-dev-workflow-diagrams.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `al-dev-plugin-graph.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `maintainer-tooling.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `development-commands.md` | Contains `<!-- BEGIN GENERATED:` — auto-generated |
+| `al-dev-docs-quality.md` | Quality report output — regenerated by this skill |
+| `al-dev-knowledge-quality.md` | Quality report output — regenerated by a skill |

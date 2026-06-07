@@ -119,7 +119,7 @@ cat > /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/my-new-agen
 ---
 name: my-new-agent
 description: Brief description of what this agent does
-model: claude-opus-4-7
+model: opus
 tools: ["Read", "Bash", "USER_GATE"]
 ---
 
@@ -867,7 +867,7 @@ cat > profile-al-dev-shared/agents/my-experimental-agent.md << 'EOF'
 ---
 name: my-experimental-agent
 description: Test agent for feature X
-model: claude-opus-4-7
+model: opus
 tools: ["Read", "Bash", "USER_GATE"]
 ---
 

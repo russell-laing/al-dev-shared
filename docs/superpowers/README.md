@@ -9,7 +9,6 @@ Raw generated plans and specs are not current implementation guidance. They are 
 - `profile-al-dev-shared/knowledge/` for workflow guidance
 - `profile-al-dev-shared/skills/` for skill behavior
 - `profile-al-dev-shared/agents/` for agent behavior
-- `docs/architectural-decisions.md` for accepted architectural decisions
 - `scripts/` for validators and generated-artifact tooling
 
 ## Tracking Policy
