@@ -1,0 +1,124 @@
+"""Regression tests for deterministic docs/health artifact selection."""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
+
+
+class SelectHealthArtifactsTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.health_dir = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def create_artifact(self, name: str, mtime: int | None = None) -> Path:
+        path = self.health_dir / name
+        path.write_text(f"# {name}\n", encoding="utf-8")
+        if mtime is not None:
+            os.utime(path, (mtime, mtime))
+        return path
+
+    def select(
+        self,
+        *,
+        kind: str,
+        surface: str,
+        limit: int = 1,
+        offset: int = 0,
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                sys.executable,
+                str(SELECTOR),
+                "--directory",
+                str(self.health_dir),
+                "--kind",
+                kind,
+                "--surface",
+                surface,
+                "--limit",
+                str(limit),
+                "--offset",
+                str(offset),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    def test_selects_latest_artifact_independently_per_surface(self) -> None:
+        plugin = self.create_artifact("2026-06-05-plugin-health.md")
+        tooling = self.create_artifact("2026-06-07-tooling-health.md")
+        self.create_artifact("2026-06-06-tooling-health.md")
+
+        plugin_result = self.select(kind="health", surface="plugin")
+        tooling_result = self.select(kind="health", surface="tooling")
+
+        self.assertEqual(0, plugin_result.returncode, plugin_result.stderr)
+        self.assertEqual([str(plugin)], plugin_result.stdout.splitlines())
+        self.assertEqual(0, tooling_result.returncode, tooling_result.stderr)
+        self.assertEqual([str(tooling)], tooling_result.stdout.splitlines())
+
+    def test_filename_date_wins_over_filesystem_modification_time(self) -> None:
+        older = self.create_artifact(
+            "2026-06-06-tooling-health.md",
+            mtime=2_000_000_000,
+        )
+        newer = self.create_artifact(
+            "2026-06-07-tooling-health.md",
+            mtime=1_000_000_000,
+        )
+
+        result = self.select(kind="health", surface="tooling")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertNotEqual(str(older), result.stdout.strip())
+        self.assertEqual(str(newer), result.stdout.strip())
+
+    def test_offset_selects_previous_same_surface_artifact(self) -> None:
+        previous = self.create_artifact("2026-06-06-tooling-findings.md")
+        self.create_artifact("2026-06-07-tooling-findings.md")
+        self.create_artifact("2026-06-08-plugin-findings.md")
+
+        result = self.select(
+            kind="findings",
+            surface="tooling",
+            offset=1,
+        )
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(str(previous), result.stdout.strip())
+
+    def test_excludes_legacy_both_and_unrelated_markdown_files(self) -> None:
+        plugin = self.create_artifact("2026-06-05-plugin-health.md")
+        self.create_artifact("2026-06-08-both-health.md")
+        self.create_artifact("2026-06-09-audit-friction-analysis.md")
+        self.create_artifact("not-a-date-plugin-health.md")
+
+        result = self.select(kind="health", surface="plugin", limit=5)
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual([str(plugin)], result.stdout.splitlines())
+
+    def test_missing_surface_returns_success_without_output(self) -> None:
+        self.create_artifact("2026-06-07-tooling-health.md")
+
+        result = self.select(kind="health", surface="plugin")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual("", result.stdout)
+
+
+if __name__ == "__main__":
+    unittest.main()
