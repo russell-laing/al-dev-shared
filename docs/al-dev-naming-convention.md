@@ -45,7 +45,7 @@ suggestions rather than hard failures.
 Pattern: `al-dev-{object}-{kind}.md`
 
 Examples: `al-dev-skills-map.md`, `al-dev-agent-map.md`, `al-dev-knowledge-quality.md`,
-`al-dev-plugin-graph.md`, `al-dev-plugin-synthesis.md`.
+`al-dev-plugin-graph.md`.
 
 ### Point-in-time artifacts — dated
 

@@ -104,9 +104,6 @@ flowchart LR
 3. `/plugin-health-report` — Report phase of the plugin health sweep. Repeat as needed.
    - reads: `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md`
    - writes: `docs/health/<date>-<surface>-health.md`
-4. `/analyze-architectural-design` — Cross-surface synthesis add-on for the health audit.
-   - reads: `docs/health/<date>-<surface>-health.md`
-   - writes: `docs/al-dev-plugin-synthesis.md`
 
 ### Decide steps
 
@@ -208,20 +205,16 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    skill_analyze_architectural_design["/analyze-architectural-design"]
     skill_plugin_health_audit["/plugin-health-audit"]
     skill_plugin_health_discover["/plugin-health-discover"]
     skill_plugin_health_report["/plugin-health-report"]
     art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
-    art_docs_al_dev_plugin_synthesis_md[".../al-dev-plugin-synthesis.md"]
     art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
     art_docs_health_____findings_md["docs/health/*-*-findings.md"]
     art_docs_health_____health_md["docs/health/*-*-health.md"]
     art_docs_health_dispositions_md["docs/health/dispositions.md"]
     art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md[".../lens-invocation-patterns.md"]
 
-    art_docs_health_____health_md --> skill_analyze_architectural_design
-    skill_analyze_architectural_design --> art_docs_al_dev_plugin_synthesis_md
     art_docs_al_dev_agent_map_md --> skill_plugin_health_audit
     art_docs_al_dev_skills_map_md --> skill_plugin_health_audit
     skill_plugin_health_audit --> skill_plugin_health_discover
@@ -235,15 +228,12 @@ flowchart LR
     art_docs_health_____findings_md --> skill_plugin_health_report
     art_docs_health_dispositions_md --> skill_plugin_health_report
     skill_plugin_health_report --> art_docs_health_____health_md
-    skill_plugin_health_report --> skill_analyze_architectural_design
     skill_plugin_health_report -. "repeat" .-> skill_plugin_health_report
 
-    class skill_analyze_architectural_design userSkill
     class skill_plugin_health_audit userSkill
     class skill_plugin_health_discover userSkill
     class skill_plugin_health_report userSkill
     class art_docs_al_dev_agent_map_md artifact
-    class art_docs_al_dev_plugin_synthesis_md orphanArtifact
     class art_docs_al_dev_skills_map_md artifact
     class art_docs_health_____findings_md artifact
     class art_docs_health_____health_md artifact
@@ -440,8 +430,9 @@ flowchart TD
   writes the raw findings file.
 - `/plugin-health-report` ranks the findings into a dossier and presents the
   results to the user.
-- `/analyze-architectural-design` is an optional add-on that synthesizes the
-  skill and agent findings from a both-surface audit.
+- `/plan-health-findings` conditionally verifies cross-layer handoffs, model
+  assignments, and coupled changes when accepted findings span skills and
+  agents.
 - **Re-sweep provenance rule:** a re-sweep may overwrite a same-day dossier
   only when the new dossier carries a "supersedes the earlier … run" note.
   Dossiers from prior dates are history — normalizing one retroactively must
@@ -486,7 +477,6 @@ flowchart TD
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
 | `/sync-documentation-maps-write` | map-sync | user | Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow. |
-| `/analyze-architectural-design` | discover | user | Cross-surface synthesis add-on for the health audit. |
 | `/plugin-health-audit` | discover | user | Suggestions-only health sweep of the al-dev-shared plugin surfaces. |
 | `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
 | `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
@@ -507,10 +497,9 @@ flowchart TD
 | `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
 | `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
 | `/sync-documentation-maps-write` | `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
-| `/analyze-architectural-design` | `docs/health/<date>-<surface>-health.md` | `docs/al-dev-plugin-synthesis.md` | — |
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
-| `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/analyze-architectural-design`, `/record-health-dispositions` |
+| `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
 | `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
@@ -529,7 +518,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Signal | Item | Detail |
 | --- | --- | --- |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `docs/al-dev-plugin-synthesis.md` | produced by /analyze-architectural-design; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/superpowers/plans/*-*.md` | produced by /plan-health-findings; consumed by no skill |
@@ -544,7 +532,6 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-plugin-synthesis.md` | never produced |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
@@ -568,7 +555,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Edited a knowledge file | `/audit-knowledge-quality`; if HIGH findings exist, `/fix-knowledge-quality`; then `/align-harness-repos` |
 | Want to find improvement candidates | `/plugin-health-audit` |
 | Want design-only or quality-only findings | `/plugin-health-audit --dimension design` or `--dimension quality` |
-| Want the skill and agent findings tied together | `/analyze-architectural-design` after a both-surface audit |
+| Ready to plan accepted skill and agent findings together | `/plan-health-findings` |
 | Ready to record disposition decisions | `/record-health-dispositions` |
 | Ready to plan accepted findings | `/plan-health-findings` |
 | Need the current codebase truth for map updates | `/review-documentation-map` |

@@ -109,10 +109,9 @@ Files reviewed: 8 | Skipped (auto-generated/reports): 9
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ skills | all 15 referenced skills | Verified: `/align-harness-repos`, `/analyze-architectural-design`, `/audit-knowledge-quality`, `/plan-health-findings`, `/plugin-health-audit`, `/plugin-health-discover`, `/plugin-health-report`, `/projection-sync`, `/record-health-dispositions`, `/review-documentation-map`, `/review-maps`, `/sync-documentation-maps`, `/sync-documentation-maps-apply`, `/sync-documentation-maps-collect`, `/sync-documentation-maps-write` |
+| ✅ skills | all 14 referenced skills | Verified: `/align-harness-repos`, `/audit-knowledge-quality`, `/plan-health-findings`, `/plugin-health-audit`, `/plugin-health-discover`, `/plugin-health-report`, `/projection-sync`, `/record-health-dispositions`, `/review-documentation-map`, `/review-maps`, `/sync-documentation-maps`, `/sync-documentation-maps-apply`, `/sync-documentation-maps-collect`, `/sync-documentation-maps-write` |
 | ✅ paths | `docs/health/dispositions.md` | Verified on disk |
 | ✅ paths | `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | Verified on disk |
-| ✅ paths | `docs/al-dev-plugin-synthesis.md` | Generated output path (produced by `/analyze-architectural-design`); absence is expected |
 
 ### Readability
 

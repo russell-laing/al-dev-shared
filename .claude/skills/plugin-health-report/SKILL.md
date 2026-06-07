@@ -16,7 +16,7 @@ workflow:
     - docs/health/dispositions.md
   outputs:
     - docs/health/<date>-<surface>-health.md
-  next: [analyze-architectural-design, record-health-dispositions]
+  next: [record-health-dispositions]
 ---
 
 # Skill: /plugin-health-report
