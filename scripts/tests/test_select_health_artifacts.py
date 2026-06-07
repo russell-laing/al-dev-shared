@@ -12,6 +12,13 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
+HEALTH_SKILLS = [
+    ".claude/skills/plugin-health-discover/SKILL.md",
+    ".claude/skills/plugin-health-report/SKILL.md",
+    ".claude/skills/plan-health-findings/SKILL.md",
+    ".claude/skills/record-health-dispositions/SKILL.md",
+    ".claude/skills/analyze-architectural-design/SKILL.md",
+]
 
 
 class SelectHealthArtifactsTest(unittest.TestCase):
@@ -118,6 +125,35 @@ class SelectHealthArtifactsTest(unittest.TestCase):
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("", result.stdout)
+
+
+class HealthArtifactSelectionContractTest(unittest.TestCase):
+    def read(self, path: str) -> str:
+        return (REPO_ROOT / path).read_text(encoding="utf-8")
+
+    def test_active_health_consumers_use_selector_without_mtime_globs(self) -> None:
+        for path in HEALTH_SKILLS:
+            with self.subTest(path=path):
+                text = self.read(path)
+                self.assertIn("scripts/select_health_artifacts.py", text)
+                self.assertNotRegex(text, r"ls -t [^\n]*docs/health")
+
+    def test_report_uses_previous_same_surface_findings_for_recurrence(self) -> None:
+        report = self.read(".claude/skills/plugin-health-report/SKILL.md")
+
+        self.assertIn("--kind findings", report)
+        self.assertIn("--offset 1", report)
+
+    def test_multi_surface_consumers_select_plugin_and_tooling_explicitly(self) -> None:
+        for path in [
+            ".claude/skills/plugin-health-report/SKILL.md",
+            ".claude/skills/plan-health-findings/SKILL.md",
+            ".claude/skills/analyze-architectural-design/SKILL.md",
+        ]:
+            with self.subTest(path=path):
+                text = self.read(path)
+                self.assertIn("--surface plugin", text)
+                self.assertIn("--surface tooling", text)
 
 
 if __name__ == "__main__":
