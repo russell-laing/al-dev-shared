@@ -65,6 +65,14 @@ Each projection applies the mappings from `knowledge/agent-tool-projection-polic
 
 Repo-local tooling may *inspect* shared source and generated projection outputs for analysis, but its modifications or documents must maintain neutrality across all three harnesses.
 
+**Maintainer skill workflow contracts:** `.claude/skills/` files may also contain a
+`workflow:` block — a repo-local frontmatter extension consumed by
+`scripts/generate-maintainer-guide.py` to auto-generate `docs/maintainer-tooling.md`.
+This block is invisible to Claude Code and all distributed harnesses. See
+`.claude/knowledge/skill-workflow-contract.md` for the schema. Skills without a
+`workflow:` block appear in the generator's "Missing contract" gap table; skills that
+should stay out of the health audit loop must remain uncontracted.
+
 ## Skill File Format
 
 Each skill is a markdown file in `profile-al-dev-shared/skills/<name>/SKILL.md` with YAML frontmatter:
