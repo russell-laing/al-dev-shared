@@ -45,6 +45,8 @@ PATH_TEMPLATES = (
 @dataclass
 class Row:
     number: int  # 1-based data-row number
+    surface: str
+    dimension: str
     obj: str
     issue: str
     disposition: str
@@ -54,18 +56,50 @@ class Row:
     paths: list[str] = field(default_factory=list)
 
 
-def parse_ledger(path: Path) -> list[Row]:
+def parse_ledger_text(text: str) -> list[Row]:
     rows: list[Row] = []
     n = 0
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         if not line.startswith("|"):
             continue
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) < 5 or cells[0] in ("Object", "--------") or set(cells[0]) <= {"-"}:
+        if not cells or set(cells[0]) <= {"-"}:
+            continue
+        if cells[0] in ("Object", "Surface"):
             continue
         n += 1
-        rows.append(Row(n, cells[0], cells[1], cells[2].lower(), cells[3], cells[4]))
+        if len(cells) >= 7:
+            rows.append(
+                Row(
+                    n,
+                    cells[0],
+                    cells[1],
+                    cells[2],
+                    cells[3],
+                    cells[4].lower(),
+                    cells[5],
+                    cells[6],
+                )
+            )
+            continue
+        if len(cells) >= 5:
+            rows.append(
+                Row(
+                    n,
+                    "unknown",
+                    "unknown",
+                    cells[0],
+                    cells[1],
+                    cells[2].lower(),
+                    cells[3],
+                    cells[4],
+                )
+            )
     return rows
+
+
+def parse_ledger(path: Path) -> list[Row]:
+    return parse_ledger_text(path.read_text(encoding="utf-8"))
 
 
 def norm_object(obj: str) -> str:

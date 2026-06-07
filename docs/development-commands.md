@@ -72,12 +72,18 @@ Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artif
 
 ```bash
 # Run the suggestions-only health sweep (writes per-surface dossiers; never auto-edits)
-/plugin-health-audit --surface both
+/plugin-health-audit --surface both --dimension all
+/plugin-health-audit --surface both --dimension naming
+/plugin-health-audit --surface tooling --dimension quality
+/plugin-health-audit --surface plugin --dimension design --resume
 ```
 
 Dossiers are written to `docs/health/YYYY-MM-DD-<surface>-health.md` (the
 `-findings.md` file is the intermediate raw lens output the report ranks into the
 dossier).
+
+`--resume` is valid only for `/plugin-health-audit` and resumes the stored
+filter set from an interrupted discovery run.
 
 ## Updating Documentation Maps
 
@@ -88,9 +94,10 @@ When skills or agents change, synchronize the documentation:
 /sync-documentation-maps  # Async: audits and updates both maps (then -collect, -finalize)
 
 # Find improvements (one entry, all dimensions → one dossier):
-/plugin-health-audit                       # design + quality + naming
-/plugin-health-audit --dimension design    # design-only
-/plugin-health-audit --dimension quality   # quality-only
+/plugin-health-audit --surface both --dimension all
+/plugin-health-audit --surface plugin --dimension design
+/plugin-health-audit --surface tooling --dimension quality
+/plugin-health-audit --surface both --dimension naming
 ```
 
 For audit-only map checks (no updates):

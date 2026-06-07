@@ -26,6 +26,20 @@ a skill (checkpoints and agents appear in the async detail diagram only). Dotted
 self-loops marked repeat are steps commonly re-run within one loop pass.
 Edge labels in the overview name the artifacts that flow between stages.
 
+## Health Filter Contract
+
+The self-healing loop uses one canonical filter contract:
+`.claude/knowledge/health-filter-contract.md`.
+
+- `--surface plugin|tooling|both` selects which surface the audit,
+  disposition, and planning stages may read.
+- `--dimension design|quality|naming|all` selects concrete finding
+  dimensions; `all` expands to the three concrete values.
+- `--resume` is audit-only. It reuses the stored concrete filters from the
+  interrupted discovery run and fails on mismatch.
+- `/plugin-health-report` preserves the upstream filter metadata from the
+  findings artifact; it does not re-select dimensions via a public flag.
+
 ## Workflow Overview
 
 <!-- BEGIN GENERATED: maintainer-workflow-overview -->
@@ -527,17 +541,17 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-07 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | never produced |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | never produced |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-07 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-07 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -7,7 +7,7 @@ description: >-
   per-surface file list, rank findings, and write one dossier per surface to
   docs/health/. Never auto-edits source. Triggers on:
   "plugin health", "health sweep", "audit the plugin", "check plugin health".
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
   stage: discover
   invoked-by: user
@@ -30,6 +30,10 @@ Implemented as a two-phase internal workflow:
 
 - `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
 - `/plugin-health-report` — reads findings file, ranks, writes dossier, presents
+
+Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
+canonical source of truth for surface values, dimension values, defaults,
+findings metadata, legacy `unknown`, and resume mismatch handling.
 
 ## Resuming Incomplete Sweeps
 

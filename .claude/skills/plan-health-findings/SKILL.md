@@ -15,7 +15,7 @@ description: >-
   changes", "plan the suggestions", "create a plan for plugin changes",
   "implement the dossier", "act on health findings", "implement agent
   findings", "plan agent changes", "implement the health audit".
-argument-hint: "[optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
 workflow:
   stage: decide
   invoked-by: user
@@ -38,6 +38,10 @@ dossier in `docs/health/` into a verified implementation plan. The rubber-duckin
 plan task is written until the live codebase state behind each finding is
 confirmed. This prevents plans based on finding text that diverges from actual
 code.
+
+Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
+canonical source of truth for surface values, dimension values, plan provenance,
+legacy `unknown`, and filter ordering.
 
 ---
 
@@ -78,6 +82,13 @@ matching `--skills`/`--agents` filter, or all of them by default.
 
 Everything else — the rubber-duck protocol, plan output format, verification
 checklist — stays identical across all routing modes.
+
+Apply filters in this order:
+
+1. surface
+2. dimension
+3. object-type routing (`--skills` or `--agents`)
+4. finding-type routing
 
 ---
 
@@ -125,15 +136,21 @@ Then consult `docs/health/dispositions.md` (if present), matching by object
 
 Apply filters in this order:
 
-1. Object-type routing first (`--skills` or `--agents`).
-2. `FILTER_TYPE` second, if the user passed a finding type such as `connect`,
-   `merge`, or `trim`.
+1. surface
+2. dimension
+3. object-type routing (`--skills` or `--agents`)
+4. `FILTER_TYPE`, if the user passed a finding type such as `connect`,
+   `merge`, or `trim`
 
 List each collected item as: **type — subject — proposed change**.
 
 If no type argument was passed, set `FILTER_TYPE=all` and keep the routed set.
 Note both the active object-type route and the active `FILTER_TYPE` before
 proceeding to Phase 2.
+
+If no accepted rows remain after filtering, stop with:
+"No accepted findings matched the requested surface/dimension filters; no plan
+written."
 
 ---
 
@@ -258,6 +275,18 @@ Verdict:      proceed | modify [reason] | skip [reason]
 > agents. Do not merge the two vocabularies.
 
 If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do
+not write plan content for it.
+
+Every generated plan header must include:
+
+```yaml
+health_filters:
+  surfaces:
+    - plugin
+  dimensions:
+    - quality
+    - naming
+```
 not create a plan task for it. Record skipped suggestions in a `## Skipped` section at
 the end of the plan file with the reason noted.
 

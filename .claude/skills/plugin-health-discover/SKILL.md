@@ -8,7 +8,7 @@ description: >-
   docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
   be run standalone to refresh findings without re-running the report phase.
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
   stage: discover
   invoked-by: both
@@ -27,10 +27,14 @@ workflow:
 Discovery phase of the health sweep. Dispatches lenses and writes findings files
 that `/plugin-health-report` consumes.
 
+Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
+canonical source of truth for surface values, dimension values, defaults,
+findings metadata, legacy `unknown`, and resume mismatch handling.
+
 ## Phase 0 — Parse arguments
 
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
-- `--dimension` ∈ `design` | `quality` | `all` (default `all`)
+- `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
 - `--resume` ∈ present | absent (default absent)
 
 Surface → directory mapping:
@@ -220,6 +224,14 @@ For each surface that had lenses run:
    Structure:
 
    ```markdown
+   ---
+   surface: tooling
+   dimensions:
+     - quality
+   source_contract: .claude/knowledge/health-filter-contract.md
+   resume_mode: false
+   ---
+
    # <Surface> Findings — YYYY-MM-DD
 
    ## Raw lens output
@@ -243,6 +255,13 @@ For each surface that had lenses run:
    - Completed in prior sessions: P (from --resume)
    - Status: [COMPLETE / INCOMPLETE — call with --resume to finish]
    ```
+
+Use this explicit mapping:
+
+- `design` → design lenses only
+- `quality` → quality lenses only
+- `naming` → `naming-convention-lens`
+- `all` → union of the three concrete dimensions
 
 4. **Clean up disk files after assembly:**
 

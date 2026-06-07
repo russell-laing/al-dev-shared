@@ -23,6 +23,12 @@ workflow:
 
 Report phase of the health sweep. Reads a findings file and writes the dossier.
 
+Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
+canonical source of truth for filter metadata, dimension values, dossier
+wording, and legacy `unknown` handling. `/plugin-health-report` preserves and
+validates upstream dimension metadata; it does not expose a public
+`--dimension` argument.
+
 ## Phase 0 — Locate findings file
 
 If `--findings <path>` is passed, read that file.
@@ -50,6 +56,21 @@ If neither requested surface returns a path, stop.
 
 Read the findings file. Extract each `### <Lens Name> Findings` block.
 Parse each finding line: `- **[name]** | [Severity] | [observation] | [fix]`
+
+Before parsing the finding blocks, read and preserve any findings metadata near
+the top of the file:
+
+```yaml
+---
+surface: tooling
+dimensions:
+  - quality
+---
+```
+
+Validate that the findings file surface matches the selected surface and that
+the concrete `dimensions:` list matches the dispatched lenses present in the
+artifact.
 
 **Complexity Outliers exception:** lines from this lens carry an extra
 `verdict=[Atomise|Absorb|None]` field between severity and observation.
@@ -155,6 +176,10 @@ vocabulary (no harness-specific tokens). Structure:
 ```markdown
 # <Surface> Health — YYYY-MM-DD
 
+surface: tooling
+dimensions:
+  - quality
+
 ## Summary
 
 | Severity | Design | Quality | Naming | Total |
@@ -172,23 +197,27 @@ Top 5 ranked actions:
 ## Design suggestions
 
 [Atomise / Merge / Trim / Split / Align findings — each: finding | rationale | fix]
-_No issues found._  ← if empty
+_No issues found._  ← if requested and empty
+_Not requested in this run._  ← if outside the requested dimensions
 
 ## Quality findings
 
 [Bloat / Clarity / Structure / Name-fit / Description — with file:line]
-_No issues found._  ← if empty
+_No issues found._  ← if requested and empty
+_Not requested in this run._  ← if outside the requested dimensions
 
 ## Naming violations
 
 [actual name/path vs convention-expected — from naming-convention-lens]
-_No issues found._  ← if empty
+_No issues found._  ← if requested and empty
+_Not requested in this run._  ← if outside the requested dimensions
 
 ## Graph deltas
 
 [orphans, dead links, off-path skills, missing refs — plugin surface only;
  omit this section for the tooling surface]
-_No issues found._  ← if empty
+_No issues found._  ← if requested and empty
+_Not requested in this run._  ← if outside the requested dimensions
 ```
 
 Record any failed lenses at the foot of the Summary section.

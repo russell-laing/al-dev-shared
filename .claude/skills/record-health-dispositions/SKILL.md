@@ -8,7 +8,7 @@ description: >-
   before /plan-health-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
   dossier", "record health decisions".
-argument-hint: "[--surface plugin|tooling|both] [--top]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--top]"
 workflow:
   stage: decide
   invoked-by: user
@@ -33,9 +33,14 @@ Loop position:
 `/plugin-health-audit` → dossier → `/record-health-dispositions` →
 `/plan-health-findings` → plan → execute
 
+Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
+canonical source of truth for surface values, dimension values, ledger schema,
+legacy `unknown`, and migration expectations.
+
 ## Phase 0 — Parse arguments and locate inputs
 
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
+- `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
 - `--top` — disposition only the entries in the dossier's "Top N ranked
   actions" list
 
@@ -83,7 +88,8 @@ With `--top`, restrict the worklist to the dossier's "Top N ranked
 actions" entries.
 
 Then read `docs/health/dispositions.md` and drop from the worklist every
-finding that already matches a ledger row by **object + issue essence**
+finding that already matches a ledger row by **surface + dimension + object +
+issue essence**
 (not exact wording — lenses rephrase between sweeps).
 
 Report before the gate: "N open findings; M already dispositioned
@@ -120,11 +126,13 @@ Append one row per non-skip decision at the bottom of the table, in the
 existing format:
 
 ```markdown
-| <object> | <issue essence — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / reason> |
+| <surface> | <dimension> | <object> | <issue essence — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / reason> |
 ```
 
 - Date is today's real date in ISO format — never a literal placeholder.
 - Append-only: never reorder or rewrite existing rows.
+- For legacy rows whose provenance is not yet proven, `unknown` is permitted
+  until the migration audit is cleaned up.
 
 ## Phase 4 — Verify and hand off
 
