@@ -17,7 +17,6 @@ HEALTH_SKILLS = [
     ".claude/skills/plugin-health-report/SKILL.md",
     ".claude/skills/plan-health-findings/SKILL.md",
     ".claude/skills/record-health-dispositions/SKILL.md",
-    ".claude/skills/analyze-architectural-design/SKILL.md",
 ]
 
 
@@ -148,12 +147,36 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
         for path in [
             ".claude/skills/plugin-health-report/SKILL.md",
             ".claude/skills/plan-health-findings/SKILL.md",
-            ".claude/skills/analyze-architectural-design/SKILL.md",
         ]:
             with self.subTest(path=path):
                 text = self.read(path)
                 self.assertIn("--surface plugin", text)
                 self.assertIn("--surface tooling", text)
+
+    def test_architectural_synthesis_is_retired_from_active_health_flow(self) -> None:
+        active_path = (
+            REPO_ROOT
+            / ".claude"
+            / "skills"
+            / "analyze-architectural-design"
+            / "SKILL.md"
+        )
+        archived_path = (
+            REPO_ROOT
+            / ".claude"
+            / "skills"
+            / "archived"
+            / "analyze-architectural-design"
+            / "SKILL.md"
+        )
+        report = self.read(".claude/skills/plugin-health-report/SKILL.md")
+
+        self.assertFalse(active_path.exists())
+        self.assertTrue(archived_path.is_file())
+        self.assertNotIn(
+            "next: [analyze-architectural-design, record-health-dispositions]",
+            report,
+        )
 
 
 if __name__ == "__main__":
