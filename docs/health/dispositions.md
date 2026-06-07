@@ -183,3 +183,12 @@ Rules:
 | naming-convention-lens | Tool hygiene: Glob declared in frontmatter, unused in body | accepted | 2026-06-07 | Trim Glob from tools list (open since 2026-06-04) — awaiting implementation |
 | profile-al-dev-shared/generated/agents/ | Handoff gap: no downstream projection-vs-source validation skill | declined | 2026-06-07 | Net-new skill for a rare failure mode; not worth the weight now |
 | docs/al-dev-workflow-diagrams.md | Handoff gap: produced by diagram-generator/sync-write; no downstream consumer | grandfathered | 2026-06-07 | Diagram docs are human-read terminals by convention. Revisit only by editing this row. |
+| plan-health-findings | Bloat: 7 top-level sections; Phase 2b ~35 lines | fixed | 2026-06-07 | `c9a34b3` — folded Phase 2b into Phase 2; phase headings 5 → 4; record format kept inline; closes row 84 |
+| sync-documentation-maps-write | Bloat: four near-identical regeneration blocks | fixed | 2026-06-07 | `c1d55ca` — regen blocks 2-4 table-driven with one runnable bash block; closes row 83 |
+| naming-convention-lens | Tool hygiene: Glob declared in frontmatter, unused in body | fixed | 2026-06-07 | `11f4653` — trimmed Glob from tools list; closes row 153 |
+| sync-documentation-maps-agent-audit | Model fit: bash + Python + multi-file JSON aggregation on haiku | fixed | 2026-06-07 | `3cf8d5f` — model haiku → sonnet; closes row 148 |
+| sync-documentation-maps-skill-audit | Model fit: same task profile as agent-audit, on haiku | fixed | 2026-06-07 | `b3ac86f` — model haiku → sonnet; closes row 149 |
+| review-documentation-map | Bloat: Phase 4 ~70 lines across 4a/4b/4c | fixed | 2026-06-07 | `95b173a` — elevated 4a/4b/4c to Phase 4/5/6, stale refs retargeted to Phase 7; no split; closes row 75 |
+| plugin-health-report | Complexity → Atomise: 8 phases, two independently-runnable concerns | fixed | 2026-06-07 | `2d9d82f` — removed duplicate Phase 3 graph refresh (post-write-utility branch), reconciled caller contracts; closes row 144 |
+| review-docs | Bloat: Phase 2 ~94 lines (2a Technical Accuracy + 2b Readability) | fixed | 2026-06-07 | `87850bb` — PARTIAL: elevated 2a/2b to Phase 3/4 with Phase 2 as loop owner; templating the repeated verification blocks remains open (see new accepted row); closes row 74 |
+| review-docs | Bloat: repeated script/skill/path verification blocks in Technical Accuracy not templated | accepted | 2026-06-07 | Remaining half of the elevated review-docs finding — template the repeated grep→test verification idiom — awaiting implementation |
