@@ -108,43 +108,25 @@ Agent count mismatch after regeneration (disk=X coverage=Y catalog=Z).
 The maps would commit stale counts. Investigate before committing.
 ```
 
-Then regenerate agent projections:
+Then run the three remaining regenerations in sequence. Each follows the same
+pattern — execute the script and capture its exit code; on a non-zero code, report
+the labelled error (substituting the actual exit code) and stop before continuing:
+
+| Artifact | Script | Error label on non-zero exit |
+|----------|--------|------------------------------|
+| Agent projections | `generate-agent-projections.py` | `Agent projection regeneration failed (exit <code>).` |
+| Dependency graph | `generate-plugin-graph.py` | `Dependency graph refresh failed (exit <code>).` |
+| Maintainer guide | `generate-maintainer-guide.py` | `Maintainer guide regeneration failed (exit <code>).` |
 
 ```bash
 python3 /Users/russelllaing/al-dev-shared/scripts/generate-agent-projections.py
-```
-
-Capture the exit code. If non-zero, report:
-
-```text
-Agent projection regeneration failed (exit <code>).
-```
-
-Then refresh the dependency graph:
-
-```bash
 python3 /Users/russelllaing/al-dev-shared/scripts/generate-plugin-graph.py
-```
-
-Capture the exit code. If non-zero, report:
-
-```text
-Dependency graph refresh failed (exit <code>).
-```
-
-Then regenerate the maintainer guide:
-
-```bash
 python3 /Users/russelllaing/al-dev-shared/scripts/generate-maintainer-guide.py
 ```
 
-Capture the exit code. If non-zero, report:
-
-```text
-Maintainer guide regeneration failed (exit <code>).
-```
-
-If all FOUR operations succeed, continue to Phase 2.
+Run them one at a time so the failure label can be matched to the failing script.
+If all FOUR operations (the Mermaid step above plus these three) succeed, continue
+to Phase 2.
 
 If any fail, report:
 
