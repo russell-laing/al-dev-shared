@@ -438,8 +438,8 @@ flowchart TD
 - It chains `/plugin-health-discover` and `/plugin-health-report`.
 - `/plugin-health-discover` runs the design, quality, and naming lenses and
   writes the raw findings file.
-- `/plugin-health-report` ranks the findings into a dossier and refreshes the
-  plugin graph for the plugin surface.
+- `/plugin-health-report` ranks the findings into a dossier and presents the
+  results to the user.
 - `/analyze-architectural-design` is an optional add-on that synthesizes the
   skill and agent findings from a both-surface audit.
 - **Re-sweep provenance rule:** a re-sweep may overwrite a same-day dossier
