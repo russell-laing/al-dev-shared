@@ -56,6 +56,7 @@ argument-hint: "[optional args]"
 ```
 
 **Key patterns:**
+
 - Reference knowledge via relative paths: `../../knowledge/workflow-routing.md`
 - Spawn agents by name: `al-dev-shared:al-dev-developer`
 - Multi-phase skills checkpoint to `.dev/progress.md` and check Phase 0 for resume capability
@@ -92,6 +93,7 @@ python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
 ```
 
 Checks:
+
 - All expected lens agents exist
 - Skills reference only declared tools (no forbidden tools)
 - Agent frontmatter is complete
@@ -103,6 +105,7 @@ python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowl
 ```
 
 Checks:
+
 - Files reference examples or have clear structure
 - Code keywords are followed by code blocks
 - No stub sections or incomplete patterns
@@ -114,6 +117,7 @@ python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 ```
 
 Checks:
+
 - Shared authored files do not contain harness-branded instructions or tool tokens
 - Harness-aware mapping docs are excluded by allowlist
 - Generated projections are excluded because they are derived artifacts
@@ -200,8 +204,6 @@ See `AGENTS.md` (Copilot CLI), `CLAUDE.md` (Claude Code), and the generated proj
 
 - `docs/al-dev-plugin-map.md` — Skill inventory, Layer 1 lifecycle diagram, skill relationships
 - `docs/al-dev-agent-map.md` — Agent inventory, tool assignments, agent relationships
-- `docs/al-dev-skill-quality.md` — Skill clarity and structural issues (audit report)
-- `docs/al-dev-agent-quality.md` — Agent quality audit results
 - `profile-al-dev-shared/markdown/md-mermaid-helper.md` — Mermaid diagram style guide
 
 ## Code Review & Planning

@@ -18,13 +18,20 @@ frontmatter contracts in `.claude/skills/*/SKILL.md` by
 the generator instead. A skill with no `workflow:` block is not an error — it
 is reported as a missing-contract gap below.
 
-Color key: blue nodes are user-invoked skills, grey dashed nodes are internal
-skills dispatched by other skills, violet nodes are artifacts, violet nodes
-with a red dashed border are orphaned artifacts, amber nodes are manual steps,
-indigo nodes are checkpoints, and green nodes are background agents spawned by
-a skill (checkpoints and agents appear in the async detail diagram only). Dotted
-self-loops marked repeat are steps commonly re-run within one loop pass.
-Edge labels in the overview name the artifacts that flow between stages.
+**Diagram color key:**
+
+- **Blue nodes** — user-invoked skills
+- **Grey dashed nodes** — internal skills dispatched by other skills
+- **Violet nodes** — artifacts
+- **Violet nodes with red dashed border** — orphaned artifacts
+- **Amber nodes** — manual steps
+- **Indigo nodes** — checkpoints (async detail diagram only)
+- **Green nodes** — background agents spawned by a skill (async detail diagram only)
+
+**Diagram conventions:**
+
+- Dotted self-loops marked _repeat_ are steps commonly re-run within one loop pass
+- Edge labels in the overview name the artifacts that flow between stages
 
 ## Health Filter Contract
 
@@ -152,15 +159,11 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    subgraph map_entry["Normal entry point"]
-        skill_review_maps["/review-maps"]
-    end
-    subgraph map_async["Async lane"]
-        skill_sync_documentation_maps["/sync-documentation-maps"]
-        skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
-        skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
-        skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
-    end
+    skill_review_maps["/review-maps"]
+    skill_sync_documentation_maps["/sync-documentation-maps"]
+    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
+    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
+    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
     art_source_dirs["skills/ + agents/"]
     art_map_docs["map docs"]
     art_async_checkpoint["checkpoint + audit artifacts"]
@@ -526,18 +529,18 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-08 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | never produced |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | never produced |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-08 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-07 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-07 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-05 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-08 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

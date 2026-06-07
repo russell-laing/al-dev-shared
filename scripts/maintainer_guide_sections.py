@@ -513,20 +513,16 @@ def render_map_sync_stage_detail(
     stage_contracts: list[WorkflowContract],
     orphans: set[str],
 ) -> tuple[str, int]:
-    """Focused map-sync view: normal entry point plus async lane."""
+    """Focused map-sync view: all skills and artifacts in flat layout."""
     lines = [
         "flowchart LR",
         *DETAIL_CLASSDEFS,
         "",
-        '    subgraph map_entry["Normal entry point"]',
-        '        skill_review_maps["/review-maps"]',
-        "    end",
-        '    subgraph map_async["Async lane"]',
-        '        skill_sync_documentation_maps["/sync-documentation-maps"]',
-        '        skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]',
-        '        skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]',
-        '        skill_sync_documentation_maps_write["/sync-documentation-maps-write"]',
-        "    end",
+        '    skill_review_maps["/review-maps"]',
+        '    skill_sync_documentation_maps["/sync-documentation-maps"]',
+        '    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]',
+        '    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]',
+        '    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]',
         '    art_source_dirs["skills/ + agents/"]',
         '    art_map_docs["map docs"]',
         '    art_async_checkpoint["checkpoint + audit artifacts"]',
