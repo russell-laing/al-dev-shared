@@ -77,7 +77,7 @@ python3 scripts/check_ledger_staleness.py
 ```
 
 For each `STALE-OPEN` row in the output, report before dispatch: "Row
-`<object>` accepted <row-date> — object changed since (<commit>); possibly
+`<object>` accepted `&lt;row-date&gt;` — object changed since (`&lt;commit&gt;`); possibly
 already implemented. Verify and flip the ledger row before sweeping, or
 the sweep may re-rank a fixed item." This check warns only; it never
 blocks the sweep on its own.
@@ -95,7 +95,10 @@ find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents -name "*.md"
 find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills -name "SKILL.md" | sort
 # tooling surface
 find /Users/russelllaing/al-dev-shared/.claude/agents -name "*.md" | sort
-find /Users/russelllaing/al-dev-shared/.claude/skills -name "SKILL.md" ! -path "*/archived/*" | sort
+# workflow-contracted skills only; adjacent tools (no workflow: block) are excluded to avoid noise and cost
+find /Users/russelllaing/al-dev-shared/.claude/skills -name "SKILL.md" ! -path "*/archived/*" \
+  | while read f; do grep -q "^workflow:" "$f" && echo "$f"; done \
+  | sort
 ```
 
 Keep the agent list and skill list separate — different lenses target each.
