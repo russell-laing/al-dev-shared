@@ -211,6 +211,24 @@ Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
 
 `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
 
+### Cross-layer verification (conditional)
+
+When the accepted worklist contains both skill and agent findings, verify the
+two layers together before writing any verdicts:
+
+1. Trace each affected skill-to-agent handoff through the live skill callers
+   and agent "Spawned by" references. Record missing, stale, or contradictory
+   caller relationships in the relevant rubber duck records.
+2. Compare skill complexity with agent model assignments using the current
+   maps, then confirm disputed values against the live skill and agent source.
+   Do not rely on dossier-era assignments when the source has changed.
+3. Identify skill and agent changes that must land together to preserve a
+   handoff, model fit, or shared pattern. Record each coupled pair either as one
+   plan task or as explicit task dependencies.
+
+This verification creates no standalone synthesis artifact. Its evidence stays
+in the rubber duck records and the resulting implementation plan.
+
 ### Rubber duck record
 
 After each suggestion, write:
@@ -247,6 +265,8 @@ Pass as context to writing-plans:
 - All rubber duck records
 - Corrected flag names, file paths, and scope (use these, not the
   original suggestion wording where rubber ducking found a mismatch)
+- Cross-layer coupling constraints, including changes that must share a task or
+  be linked by explicit task dependencies
 - Task ordering: additive changes first (new knowledge docs, diagram
   extensions), structural changes last (merges, archives, moves)
 - The verification pattern for each task, mapped by finding verb:

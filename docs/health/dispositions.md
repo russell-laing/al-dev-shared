@@ -234,3 +234,5 @@ Rules:
 | sync-documentation-maps-apply | Structure: code blocks lack language tags | accepted | 2026-06-07 | Add bash tags — awaiting implementation |
 | sync-documentation-maps-collect | Structure: code blocks lack language tags | accepted | 2026-06-07 | Add bash tags — awaiting implementation |
 | review-docs | Bloat: repeated script/skill/path verification blocks in Technical Accuracy not templated | fixed | 2026-06-07 | `.claude/skills/review-docs/SKILL.md` now defines a shared `### Verification procedure` for resolve/apply/record before the script, skill, archived-path, and project-path adapters; closes row 164 |
+| analyze-architectural-design | Structure: code block lacks bash tag | fixed | 2026-06-07 | Archived the unused producer instead of polishing its code block; closes row 195 |
+| docs/al-dev-plugin-synthesis.md | Handoff gap: produced by analyze-architectural-design; no downstream consumer | fixed | 2026-06-07 | Producer retired after live usage analysis; cross-layer checks now run conditionally inside /plan-health-findings and write no standalone artifact; supersedes the grandfathered terminal-artifact decision in row 180 |
