@@ -135,9 +135,21 @@ def test_generate_all_writes_expected_files(tmp_path):
         },
     ]
     mod.write_all_projections(output_root, agents, mod.default_projection_policy())
+    assert (output_root / "README.md").exists()
     assert (output_root / "claude" / "al-dev-interview.md").exists()
     assert (output_root / "copilot" / "al-dev-explore.md").exists()
     assert (output_root / "codex" / "al-dev-explore.toml").exists()
+
+
+def test_generate_all_writes_generated_agents_readme(tmp_path):
+    output_root = tmp_path / "generated" / "agents"
+    mod.write_all_projections(output_root, [], mod.default_projection_policy())
+    readme = (output_root / "README.md").read_text(encoding="utf-8")
+    assert "Generated Agent Projections" in readme
+    assert "`profile-al-dev-shared/agents/*.md`" in readme
+    assert "`profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`" in readme
+    assert "python3 scripts/generate-agent-projections.py" in readme
+    assert "`*.toml`" in readme
 
 
 def test_generate_all_is_deterministic(tmp_path):

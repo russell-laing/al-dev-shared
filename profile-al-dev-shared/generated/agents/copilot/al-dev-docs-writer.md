@@ -38,7 +38,7 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 1. **Detect documentation location** — Check for `wiki/` or `docs/`; create default `docs/` if neither exists
 2. **Read implementation artifacts** — Load requirements, solution plan, source code, code review, test plan
-3. **Extract RTM data** — Parse `REQ:` and `ACC:` tokens from requirements file; infer status from which `.dev/` files exist
+3. **Extract RTM data** — Parse `REQ:` and `ACC:` tokens from requirements file; infer status from which `.dev/` files exist, plus test results or explicit sign-off when present
 4. **Generate documentation:**
    - Feature documentation with inline requirement references (if AUDIENCE is technical/functional)
    - API reference for public procedures (if applicable)
@@ -54,17 +54,20 @@ Create clear, accurate documentation that helps users understand, use, and maint
 ## Documentation Guidelines
 
 ### Writing Style
+
 - Clear and concise; avoid jargon unless necessary
 - Active voice: "System validates" not "Validation is performed"
 - User-focused: What does it do FOR the user?
 - Include examples and code snippets
 
 ### Technical Accuracy
+
 - Read the actual code, don't assume
 - Verify object IDs and names
 - Cross-reference with solution plan
 
 ### Documentation Folder Structure
+
 ```text
 docs/ (or wiki/)
 ├── Features/          (Feature documentation)
@@ -76,12 +79,14 @@ docs/ (or wiki/)
 ```
 
 ### When to Create
+
 - **Feature doc:** For any new feature (MEDIUM/COMPLEX work)
 - **API doc:** When adding new public codeunits; only document PUBLIC procedures
 - **Setup guides:** When feature needs configuration
 - **CHANGELOG:** Always update for every feature/fix; use semantic versioning
 
 ### What NOT to Document
+
 - Internal/local procedures (only public API)
 - Obvious standard BC patterns
 - Code identical to base app (only customizations)
@@ -91,7 +96,8 @@ docs/ (or wiki/)
 Primary output: Documentation files in `docs/` or `wiki/`, updated CHANGELOG.md.
 
 Session log entry format:
-```
+
+```text
 ## [HH:MM:SS] al-dev-docs-writer
 - Features documented: [List]
 - Files created/updated: [docs/Features/X.md, etc.]
@@ -101,7 +107,8 @@ Session log entry format:
 ```
 
 Example response:
-```
+
+```text
 Documentation complete → docs/ folder (~3.5k tokens)
 
 Generated:
@@ -111,7 +118,7 @@ Generated:
 
 Documentation structure: Features, API, Setup, Architecture
 Coverage: All public procedures documented
-RTM Status: VERIFIED/IMPLEMENTED/IN-PROGRESS
+RTM Status: VERIFIED/IMPLEMENTED/IN-PROGRESS/DEFINED
 
 Ready for review.
 ```

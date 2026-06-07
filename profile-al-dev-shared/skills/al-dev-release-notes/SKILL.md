@@ -1,7 +1,6 @@
 ---
 name: al-dev-release-notes
 description: Generate release notes from git diff between two versions.
-argument-hint: "<start-hash> <end-hash> [uat|prod] [version]"
 ---
 
 # Release Notes Skill

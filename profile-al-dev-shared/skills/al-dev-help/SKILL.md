@@ -1,7 +1,6 @@
 ---
 name: al-dev-help
 description: Show contextual guidance and recommend workflows.
-argument-hint: "[workflow name or situation description]"
 ---
 
 # Command: /al-dev-help
@@ -44,7 +43,7 @@ List capabilities filtered by argument.
 
 **For `skills`:**
 
-Glob `skills/*/SKILL.md` in the profile directory. Extract `description`
+Glob `profile-al-dev-shared/skills/*/SKILL.md` in the profile directory. Extract `description`
 from frontmatter of each. Format as a table:
 
 ```text
@@ -67,7 +66,7 @@ Available Skills (lazy-loaded, invoked with /):
 
 **For `agents`:**
 
-Glob `agents/*.md` in the profile directory. Extract `description` from
+Glob `profile-al-dev-shared/agents/*.md` in the profile directory. Extract `description` from
 frontmatter. Format as a table:
 
 ```text
@@ -83,7 +82,10 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |
 | al-dev-script-engineer    | Python and shell scripts for AL tooling          |
-```
+    ```
+
+This agents table is a capability reference. It does not mean
+`/al-dev-help` dispatches every listed agent directly.
 
 **For `all`:** Show all three tables in sequence.
 
@@ -100,6 +102,9 @@ Tip: Run /al-dev-help <description> for a personalized workflow recommendation.
 The user described what they want to do. Recommend the right workflow.
 
 **Step 1: Read description and classify:**
+
+Use `knowledge/workflow-routing.md` to classify complexity before recommending
+`/al-dev-fix`, `/al-dev-plan`, or `/al-dev-develop`.
 
 | Situation | Recommended workflow |
 | ----------- | --------------------- |
@@ -129,11 +134,14 @@ Apply these refinements:
   suggest `/al-dev-plan`
 - `*-al-dev-plan-solution-plan.md` exists → skip `/al-dev-plan`,
   suggest `/al-dev-develop`
+- Else, if no `.dev/` artifact narrows the path, recommend based on the user's
+  stated goal: bug/error → `/al-dev-fix`; existing-code question → `/al-dev-explore`;
+  design or multi-object feature work → `/al-dev-plan`
 
 **Step 3: Output recommendation:**
 
 ```text
-Recommended workflow: /plan
+Recommended workflow: /al-dev-plan
 
 Why: Your request involves multiple objects and design decisions
      (MEDIUM complexity).
