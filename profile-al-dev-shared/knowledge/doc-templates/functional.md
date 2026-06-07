@@ -9,7 +9,7 @@ description: >-
 # Feature: [Feature Name] — Functional Overview
 
 **Audience:** Business Analyst / Consultant
-**Status:** [Implemented / In Progress]
+**Status:** [DEFINED / IN-PROGRESS / IMPLEMENTED / VERIFIED]
 **Version:** [Plugin version or release tag]
 
 ## Business Purpose
@@ -34,10 +34,12 @@ Who benefits? What was the limitation before?]
 
 [1-2 sentences describing what this workflow achieves.]
 
-1. [Business step 1 — what the user does]
+1. [Business step 1 — what the user does (REQ-NNN if traceability is needed)]
 2. [Business step 2]
 3. [System validates/processes — what happens automatically]
 4. [Outcome — what the user sees or receives]
+
+[Optional for major workflows only.]
 
 ```mermaid
 flowchart TD
@@ -47,7 +49,8 @@ flowchart TD
     C -->|Invalid| E[Error shown to user]
 ```
 
-[Repeat this section for each major workflow.]
+[Repeat this section for each major workflow. Inline requirement references
+should stay in plain language, following the functional-audience RTM rules.]
 
 ## Validation Rules
 
@@ -62,14 +65,15 @@ The following rules are enforced automatically by the system:
 
 | Process | How It Connects |
 | --- | --- |
-| [Sales Order Processing] | [What happens at this integration point] |
-| [Finance / Ledger] | [How this affects financial entries] |
+| [Sales Order Processing] | [Business-process touchpoint only; avoid object or code references] |
+| [Finance / Ledger] | [Business impact at this integration point] |
 
 ## Requirements Traceability
 
-[Reduced RTM table — columns: ID, Status, Requirement only.
-No Type, Priority, or Acceptance Criteria columns.
-Requirement text in plain language — no code references.]
+[Reduced RTM table generated from the latest
+`*-al-dev-interview-requirements.md` REQ tokens — columns: ID, Status,
+Requirement only. No Type, Priority, or Acceptance Criteria columns.
+Requirement text stays in plain language with no code references.]
 
 | ID | Status | Requirement |
 | --- | --- | --- |

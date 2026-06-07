@@ -1,9 +1,10 @@
 # Architect Invocation Patterns
 
-`al-dev-solution-architect` is spawned by two skills using structurally
-different patterns. The domain-specific prompt content (what to analyse,
-what to produce) stays local to each skill; only the structural mechanics
-are documented here.
+`al-dev-solution-architect` is used through two structurally different
+invocation styles: competitive planning in `/al-dev-plan` and a bounded
+single-architect diagnostic pass in `/al-dev-fix`. The domain-specific prompt
+content (what to analyse, what to produce) stays local to each skill; only the
+structural mechanics are documented here.
 
 ## Pattern 1: Competitive Debate (×2-3 parallel)
 
@@ -24,8 +25,8 @@ After agents complete:
    to respond to each other's critiques.
 3. Synthesise the winner or create a hybrid from the best elements.
 
-Spawn count guidance: 2 for SIMPLE/MEDIUM; 3 for COMPLEX. Omit if
-TRIVIAL — route directly to a developer.
+Spawn count guidance: 2 for SIMPLE; 2-3 for MEDIUM / COMPLEX, matching
+`knowledge/al-dev-plan-phase-routing.md`.
 
 ### Pattern 1 dispatch block
 
@@ -46,15 +47,19 @@ Prompt:
   3. Falsification — one scenario that would prove your approach wrong
 ```
 
-Include in prompt: requirements file path (`.dev/*-al-dev-interview-requirements.md`), AL symbol
-preflight evidence, and the approach assignment derived from the requirement.
+Include in prompt: the finalized `.dev/preflight-context.md` inputs consumed by
+`/al-dev-plan` Phase 2 (`requirements`, `scope`, `user_context`, and
+`external_findings_status` when present), any AL symbol or analogue evidence
+gathered during preflight, and the approach assignment derived from the
+requirement.
 
 ## Pattern 2: Quick Analysis (×1 serial)
 
-Used by /al-dev-fix (non-trivial path).
+Used by `/al-dev-fix` only for its bounded single-architect diagnostic path.
 
 Spawn **one** `al-dev-solution-architect` with a time-bounded prompt (5 min
-max). Ask for:
+max) to diagnose a bounded fix issue, not to produce a full architecture plan.
+Ask for:
 
 1. Root cause hypothesis (2-3 sentences)
 2. Recommended fix approach (bullet points)
@@ -91,7 +96,9 @@ Prompt:
   4. Risks and side effects to watch for
 ```
 
-Include in prompt: relevant file contents and compile errors if available.
+Include in prompt: the reported symptom, likely file list, relevant file
+contents, and compile or lint output if available. Keep the request scoped to
+root-cause analysis and a minimal fix approach.
 
 ## Adding a New Caller
 

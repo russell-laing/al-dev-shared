@@ -1,9 +1,10 @@
 # Background-Agent Dispatch Pattern
 
 Canonical pattern for running several independent agents in parallel **in the
-current session** and collecting their results through files. Use this whenever a
-skill fans work out to multiple worker agents (e.g. one agent per suggestion, or
-parallel audit/update agents) and then aggregates what they produce.
+current session** and collecting their results through files. Use this when a
+skill fans work out to multiple worker agents whose outputs are handed back
+through per-unit artifacts (for example, one agent per suggestion or parallel
+audit/update agents that each write their own result file).
 
 This is the harness-neutral contract. Each harness maps the dispatch instruction
 to its own background-execution mechanism (see
@@ -25,10 +26,13 @@ instead — parallel writers to one artifact corrupt each other.
    every artifact for this run (inputs, per-unit results, manifest). Pass its
    absolute path to each agent as `result_dir`.
 
-2. **Dispatch agents in the background, in parallel.** For each unit, write:
+2. **Dispatch agents in the background, in parallel.** For each unit, issue the
+   harness-native background-dispatch instruction for the target agent:
 
    ```text
-   Dispatch agent: al-dev-shared:<agent-name>
+   Agent: al-dev-shared:<agent-name>
+   Inputs: [only the unit-specific inputs, plus run_id and result_dir]
+   Output artifact: [exact file path under result_dir]
    ```
 
    in background mode, issuing all dispatches together so they run concurrently.
@@ -36,8 +40,10 @@ instead — parallel writers to one artifact corrupt each other.
    tell it the exact artifact path it must write.
 
 3. **Record the returned agent handles** (one per dispatch) in the run manifest or
-   checkpoint for traceability. These handles are **informational only** — do not
-   treat them as pollable task IDs.
+   checkpoint artifact for traceability. If the caller does not keep a dedicated
+   run manifest, record them in the phase checkpoint the workflow already writes.
+   These handles are **informational only** — do not treat them as pollable task
+   IDs.
 
 4. **Hand off through artifacts.** Each agent writes its result to a fixed path
    under `result_dir`. The artifact file — not the agent handle — is the contract
@@ -49,6 +55,11 @@ instead — parallel writers to one artifact corrupt each other.
    missing or malformed artifact as "that unit is not done", regardless of any
    reported agent status. If artifacts are still absent, either wait and re-check,
    or report the units as pending.
+
+   Example validity checks:
+   - markdown result has the required top-level heading for that unit
+   - structured output includes the expected keys or sections
+   - error artifacts use the documented error record shape instead of partial prose
 
 ## What this pattern is not
 
@@ -63,7 +74,8 @@ collecting phase reads.
 
 - **Dispatch unavailable:** if the session cannot spawn background agents, stop and
   ask the user to rerun in a supported session, or fall back to running the units
-  inline (sequentially) for small batches.
+  inline (sequentially) for small batches while preserving the same per-unit
+  artifact paths and validation checks.
 - **Partial completion:** if some artifacts are present after a reasonable wait and
   others are not, surface the pending units via a `USER_GATE` and let the user
   choose to wait, proceed with the completed subset, or abort.
