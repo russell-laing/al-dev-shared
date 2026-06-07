@@ -89,22 +89,17 @@ flowchart LR
 <!-- BEGIN GENERATED: maintainer-user-journey -->
 ### Map sync steps
 
-1. `/review-maps` — Map accuracy sync — asks whether to run in-session or async at start. Repeat as needed.
-   - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-   - writes: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-2. `/review-documentation-map` — Review a plugin documentation map for accuracy and optionally update it. Repeat as needed.
-   - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`
-   - writes: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-3. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. Repeat as needed.
+1. `/review-maps` — Map accuracy sync — dispatches /sync-documentation-maps as the maintained path for verifying and refreshing the documentation maps. Repeat as needed.
+2. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
    - writes: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json`
-4. `/sync-documentation-maps-collect` — Collect results from /sync-documentation-maps audit agents.
+3. `/sync-documentation-maps-collect` — Collect results from /sync-documentation-maps audit agents.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json`
    - writes: `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md`
-5. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
+4. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md`
    - writes: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-6. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
+5. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
    - writes: `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `profile-al-dev-shared/generated/agents/`
 
@@ -160,9 +155,6 @@ flowchart LR
     subgraph map_entry["Normal entry point"]
         skill_review_maps["/review-maps"]
     end
-    subgraph map_in_session["In-session lane"]
-        skill_review_documentation_map["/review-documentation-map"]
-    end
     subgraph map_async["Async lane"]
         skill_sync_documentation_maps["/sync-documentation-maps"]
         skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
@@ -175,11 +167,8 @@ flowchart LR
     art_update_artifacts["update artifacts"]
     art_downstream_generated["downstream generated"]
 
-    skill_review_maps --> skill_review_documentation_map
     skill_review_maps --> skill_sync_documentation_maps
-    art_source_dirs --> skill_review_documentation_map
-    skill_review_documentation_map --> art_map_docs
-    skill_review_maps --> art_map_docs
+    art_source_dirs --> skill_sync_documentation_maps
     art_map_docs --> skill_sync_documentation_maps
     skill_sync_documentation_maps --> art_async_checkpoint
     skill_sync_documentation_maps --> skill_sync_documentation_maps_collect
@@ -195,7 +184,6 @@ flowchart LR
     skill_sync_documentation_maps_write --> art_downstream_generated
 
     class skill_review_maps userSkill
-    class skill_review_documentation_map userSkill
     class skill_sync_documentation_maps userSkill
     class skill_sync_documentation_maps_collect userSkill
     class skill_sync_documentation_maps_apply userSkill
@@ -425,9 +413,9 @@ flowchart TD
 
 ### 1. Keep the maps current
 
-- `/review-maps` is the normal entry point. It asks whether to review the maps
-  in-session or dispatch the async sync workflow.
-- `/review-documentation-map` checks one map at a time against live source.
+- `/review-maps` is the normal entry point. It dispatches the maintained async
+  sync workflow, and `--no-update` prints the audit-only sequence without
+  modifying docs.
 - `/sync-documentation-maps` dispatches background audit agents and writes the
   checkpoint.
 - `/sync-documentation-maps-collect` gathers the audit results and launches the
@@ -485,8 +473,7 @@ flowchart TD
 
 | Skill | Stage | Invoked by | Role |
 | --- | --- | --- | --- |
-| `/review-documentation-map` | map-sync | both | Review a plugin documentation map for accuracy and optionally update it. |
-| `/review-maps` | map-sync | user | Map accuracy sync — asks whether to run in-session or async at start. |
+| `/review-maps` | map-sync | user | Map accuracy sync — dispatches /sync-documentation-maps as the maintained path for verifying and refreshing the documentation maps. |
 | `/sync-documentation-maps` | map-sync | both | Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. |
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
@@ -505,8 +492,7 @@ flowchart TD
 
 | Skill | Reads | Writes | Next |
 | --- | --- | --- | --- |
-| `/review-documentation-map` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/plugin-health-audit` |
-| `/review-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/review-documentation-map`, `/sync-documentation-maps` |
+| `/review-maps` | — | — | `/sync-documentation-maps` |
 | `/sync-documentation-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `/sync-documentation-maps-collect` |
 | `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
 | `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
@@ -540,18 +526,18 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-07 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-07 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-08 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | never produced |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | never produced |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-08 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-07 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
@@ -562,9 +548,9 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Situation | Run |
 | --- | --- |
 | Added or removed a skill or agent | `/review-maps` |
-| Want to check one map only | `/review-documentation-map --surface skills` or `--surface agents` |
+| Want to audit the async sequence without updating docs | `/review-maps --no-update` |
 | Maps are out of sync and you want the async path | `/sync-documentation-maps` |
-| Maps are out of sync and you want the in-session path | `/review-maps` |
+| Maps are out of sync and you want the maintained wrapper | `/review-maps` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
 | Edited a knowledge file | `/audit-knowledge-quality`; if HIGH findings exist, `/fix-knowledge-quality`; then `/align-harness-repos` |
 | Want to find improvement candidates | `/plugin-health-audit` |
@@ -572,7 +558,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Ready to plan accepted skill and agent findings together | `/plan-health-findings` |
 | Ready to record disposition decisions | `/record-health-dispositions` |
 | Ready to plan accepted findings | `/plan-health-findings` |
-| Need the current codebase truth for map updates | `/review-documentation-map` |
+| Need the live map refresh flow | `/review-maps` |
 
 If a step feels blocked, check whether its input artifact exists and was
 produced by the preceding step — the gaps table above shows each artifact's

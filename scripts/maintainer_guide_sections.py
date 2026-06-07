@@ -344,7 +344,6 @@ DETAIL_CLASSDEFS = (
 
 MAP_SYNC_REQUIRED_SKILLS = {
     "review-maps",
-    "review-documentation-map",
     "sync-documentation-maps",
     "sync-documentation-maps-collect",
     "sync-documentation-maps-apply",
@@ -352,13 +351,7 @@ MAP_SYNC_REQUIRED_SKILLS = {
 }
 
 MAP_SYNC_REQUIRED_INPUTS = {
-    "review-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
-    "review-documentation-map": (
-        "docs/al-dev-skills-map.md",
-        "docs/al-dev-agent-map.md",
-        "profile-al-dev-shared/skills/",
-        "profile-al-dev-shared/agents/",
-    ),
+    "review-maps": (),
     "sync-documentation-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
     "sync-documentation-maps-collect": (
         ".dev/sync-documentation-maps-checkpoint.json",
@@ -376,8 +369,7 @@ MAP_SYNC_REQUIRED_INPUTS = {
 }
 
 MAP_SYNC_REQUIRED_OUTPUTS = {
-    "review-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
-    "review-documentation-map": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "review-maps": (),
     "sync-documentation-maps": (
         ".dev/sync-documentation-maps-checkpoint.json",
         ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
@@ -395,7 +387,7 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
 }
 
 MAP_SYNC_REQUIRED_NEXT = {
-    "review-maps": ("review-documentation-map", "sync-documentation-maps"),
+    "review-maps": ("sync-documentation-maps",),
     "sync-documentation-maps": ("sync-documentation-maps-collect",),
     "sync-documentation-maps-collect": ("sync-documentation-maps-apply",),
     "sync-documentation-maps-apply": ("sync-documentation-maps-write",),
@@ -446,7 +438,7 @@ def _stage_has_contract_shape(
     required_next: dict[str, tuple[str, ...]],
 ) -> bool:
     by_name = {contract.skill: contract for contract in stage_contracts}
-    if not names <= set(by_name):
+    if set(by_name) != names:
         return False
     for name in names:
         contract = by_name[name]
@@ -521,16 +513,13 @@ def render_map_sync_stage_detail(
     stage_contracts: list[WorkflowContract],
     orphans: set[str],
 ) -> tuple[str, int]:
-    """Focused map-sync view: normal entry point plus in-session and async lanes."""
+    """Focused map-sync view: normal entry point plus async lane."""
     lines = [
         "flowchart LR",
         *DETAIL_CLASSDEFS,
         "",
         '    subgraph map_entry["Normal entry point"]',
         '        skill_review_maps["/review-maps"]',
-        "    end",
-        '    subgraph map_in_session["In-session lane"]',
-        '        skill_review_documentation_map["/review-documentation-map"]',
         "    end",
         '    subgraph map_async["Async lane"]',
         '        skill_sync_documentation_maps["/sync-documentation-maps"]',
@@ -544,11 +533,8 @@ def render_map_sync_stage_detail(
         '    art_update_artifacts["update artifacts"]',
         '    art_downstream_generated["downstream generated"]',
         "",
-        "    skill_review_maps --> skill_review_documentation_map",
         "    skill_review_maps --> skill_sync_documentation_maps",
-        "    art_source_dirs --> skill_review_documentation_map",
-        "    skill_review_documentation_map --> art_map_docs",
-        "    skill_review_maps --> art_map_docs",
+        "    art_source_dirs --> skill_sync_documentation_maps",
         "    art_map_docs --> skill_sync_documentation_maps",
         "    skill_sync_documentation_maps --> art_async_checkpoint",
         "    skill_sync_documentation_maps --> skill_sync_documentation_maps_collect",
@@ -564,7 +550,6 @@ def render_map_sync_stage_detail(
         "    skill_sync_documentation_maps_write --> art_downstream_generated",
         "",
         "    class skill_review_maps userSkill",
-        "    class skill_review_documentation_map userSkill",
         "    class skill_sync_documentation_maps userSkill",
         "    class skill_sync_documentation_maps_collect userSkill",
         "    class skill_sync_documentation_maps_apply userSkill",
@@ -575,7 +560,7 @@ def render_map_sync_stage_detail(
         "    class art_update_artifacts artifact",
         "    class art_downstream_generated orphanArtifact",
     ]
-    node_count = 11
+    node_count = 10
     return _mermaid_block(lines), node_count
 
 

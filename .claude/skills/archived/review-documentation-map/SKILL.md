@@ -74,10 +74,10 @@ Build two lists:
 
 Read the whole skill or agent file before extracting anything. Use:
 
-- `.claude/knowledge/documentation-map-profile-schema.md` for the working-table
-  fields you must capture from the live source.
-- `.claude/knowledge/documentation-map-comparison-rules.md` for the caller-set
-  build and comparison rules.
+- `knowledge/documentation-map-profile-schema.md` for the working-table fields
+  you must capture from the live source.
+- `knowledge/documentation-map-comparison-rules.md` for the caller-set build
+  and comparison rules.
 
 If `SURFACE=skills`, build the skills working table only.
 

@@ -111,31 +111,7 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "  stage: map-sync\n"
         "  invoked-by: user\n"
         "  repeatable: true\n"
-        "  inputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
-        "  outputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
-        "  next: [review-documentation-map, sync-documentation-maps]\n",
-    )
-    _write_skill(
-        skills,
-        "review-documentation-map",
-        "name: review-documentation-map\n"
-        "description: Review one map.\n"
-        "workflow:\n"
-        "  stage: map-sync\n"
-        "  invoked-by: both\n"
-        "  repeatable: true\n"
-        "  inputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
-        "    - profile-al-dev-shared/skills/\n"
-        "    - profile-al-dev-shared/agents/\n"
-        "  outputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n",
+        "  next: [sync-documentation-maps]\n",
     )
     _write_skill(
         skills,
@@ -458,19 +434,51 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
             },
         )
         assert 'subgraph map_entry["Normal entry point"]' in text
-        assert 'subgraph map_in_session["In-session lane"]' in text
         assert 'subgraph map_async["Async lane"]' in text
-        assert text.index('skill_review_maps["/review-maps"]') < text.index(
-            'skill_review_documentation_map["/review-documentation-map"]'
-        )
         assert text.index('skill_review_maps["/review-maps"]') < text.index(
             'skill_sync_documentation_maps["/sync-documentation-maps"]'
         )
+        assert "review-documentation-map" not in text
+        assert "map_in_session" not in text
+        assert "skill_review_maps --> art_map_docs" not in text
+        assert "art_source_dirs --> skill_review_maps" not in text
+        assert "art_source_dirs --> skill_sync_documentation_maps" in text
         assert 'art_downstream_generated["downstream generated"]' in text
         assert "art_profile_al_dev_shared_generated_agents_" not in text
         assert ".../sync-documentation-maps-checkpoint.json" not in text
         assert "repeat" not in text
         assert node_count <= lib.NODE_BUDGET
+
+
+def test_map_sync_stage_falls_back_when_retired_skill_still_exists() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_map_sync_fixture(Path(td))
+        _write_skill(
+            skills,
+            "review-documentation-map",
+            "name: review-documentation-map\n"
+            "description: Retired lane still present.\n"
+            "workflow:\n"
+            "  stage: map-sync\n"
+            "  invoked-by: both\n"
+            "  repeatable: true\n"
+            "  inputs:\n"
+            "    - docs/al-dev-skills-map.md\n"
+            "    - docs/al-dev-agent-map.md\n"
+            "    - profile-al-dev-shared/skills/\n"
+            "    - profile-al-dev-shared/agents/\n"
+            "  outputs:\n"
+            "    - docs/al-dev-skills-map.md\n"
+            "    - docs/al-dev-agent-map.md\n",
+        )
+        contracts, _ = lib.load_contracts(skills)
+        text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
+        assert 'subgraph map_entry["Normal entry point"]' not in text
+        assert 'subgraph map_async["Async lane"]' not in text
+        assert 'skill_review_documentation_map["/review-documentation-map"]' in text
+        assert 'art_profile_al_dev_shared_skills_["skills/"]' in text
+        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
+        assert node_count > lib.NODE_BUDGET
 
 
 def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None:
@@ -569,10 +577,15 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         contracts, _ = lib.load_contracts(skills)
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
         assert 'subgraph map_entry["Normal entry point"]' not in text
+        assert 'subgraph map_async["Async lane"]' not in text
         assert 'art_downstream_generated["downstream generated"]' not in text
         assert 'skill_sync_documentation_maps_write["/sync-documentation-maps-write"]' in text
         assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
-        assert node_count > lib.NODE_BUDGET
+        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
+        assert 'art_docs_al_dev_plugin_graph_md[".../al-dev-plugin-graph.md"]' not in text
+        assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
+        assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
+        assert node_count == 13
 
 
 def test_stage_detail_empty_stage_returns_sentence() -> None:
@@ -843,9 +856,13 @@ def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
     contracts, _ = lib.load_contracts(skills)
     map_sync_text, _ = lib.render_stage_detail(contracts, "map-sync", set())
     assert 'subgraph map_entry["Normal entry point"]' in map_sync_text, (
-        "live map-sync contracts no longer match the focused-renderer shape; "
+        "live map-sync contracts no longer match the focused renderer; "
         "the guide will degrade to the dense generic diagram"
     )
+    assert 'subgraph map_async["Async lane"]' in map_sync_text
+    assert 'skill_review_documentation_map["/review-documentation-map"]' not in map_sync_text
+    assert "skill_review_maps --> art_map_docs" not in map_sync_text
+    assert "art_source_dirs --> skill_sync_documentation_maps" in map_sync_text
     derive_text, _ = lib.render_stage_detail(contracts, "derive", set())
     assert 'subgraph agent_lane["Agent source changed"]' in derive_text, (
         "live derive contracts no longer match the focused-renderer shape; "
