@@ -233,3 +233,4 @@ Rules:
 | review-maps | Structure: code block lacks bash tag | accepted | 2026-06-07 | Add bash tag — awaiting implementation |
 | sync-documentation-maps-apply | Structure: code blocks lack language tags | accepted | 2026-06-07 | Add bash tags — awaiting implementation |
 | sync-documentation-maps-collect | Structure: code blocks lack language tags | accepted | 2026-06-07 | Add bash tags — awaiting implementation |
+| review-docs | Bloat: repeated script/skill/path verification blocks in Technical Accuracy not templated | fixed | 2026-06-07 | `.claude/skills/review-docs/SKILL.md` now defines a shared `### Verification procedure` for resolve/apply/record before the script, skill, archived-path, and project-path adapters; closes row 164 |
