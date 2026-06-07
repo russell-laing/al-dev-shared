@@ -94,6 +94,7 @@ def resolve_closures(rows: list[Row]) -> None:
     """Mark accepted rows closed by later fixed rows (token first, then object order)."""
     by_number = {r.number: r for r in rows}
     accepted = [r for r in rows if r.disposition == "accepted"]
+    explicit_fixed_rows: set[int] = set()
 
     # Pass 1: explicit `closes row N` tokens.
     for r in rows:
@@ -103,11 +104,13 @@ def resolve_closures(rows: list[Row]) -> None:
             target = by_number.get(int(m.group(1)))
             if target and target.disposition == "accepted" and target.number < r.number:
                 target.closed_by = r.number
+                explicit_fixed_rows.add(r.number)
 
     # Pass 2: object-order matching — each later fixed row closes the earliest
-    # still-open accepted row with the same normalized object.
+    # still-open accepted row with the same normalized object. A fixed row that
+    # applied an explicit token must not also consume another accepted row.
     for r in rows:
-        if r.disposition != "fixed":
+        if r.disposition != "fixed" or r.number in explicit_fixed_rows:
             continue
         for a in accepted:
             if a.closed_by is None and a.number < r.number and norm_object(a.obj) == norm_object(r.obj):
