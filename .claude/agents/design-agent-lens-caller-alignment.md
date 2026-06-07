@@ -5,10 +5,12 @@ model: haiku
 tools: ["Read", "Grep"]
 ---
 
+# Caller Alignment Lens
+
 ## Inputs
 
 | Field | Description |
-|---|---|
+| --- | --- |
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | caller_map | Mapping of agent-name → list of skill names that spawn it (provided in dispatch prompt) |
 
@@ -48,6 +50,7 @@ A mismatch between caller behaviour and agent documentation is an Align candidat
 
 - High: caller passes structured data the agent's Inputs table explicitly contradicts
 - High: caller dispatches the agent with no context block
+- High: context block passed with no dispatch line
 - Medium: Inputs/Outputs table is "Not documented" but caller clearly passes
   structured context
 - Low: minor label mismatch that doesn't affect behavior but confuses future callers
@@ -63,7 +66,5 @@ Return exactly this structure (no additional prose before or after the block):
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
-
-### Caller Alignment Findings
 
 _No issues found._

@@ -5,7 +5,7 @@ description: >-
   flow. Validates update-agent artifacts, reads updated map content from
   the run directory, and writes both documentation maps to docs/. Run
   /sync-documentation-maps-write next to regenerate diagrams and commit.
-argument-hint: "[RUN_ID from checkpoint]"
+argument-hint: "--team-ids <id>[,<id>] [--skip-commit]"
 workflow:
   stage: map-sync
   invoked-by: user
@@ -70,7 +70,7 @@ the finalize-specific field requirements and phase gate below.
 Extract the following fields:
 
 | Field | Variable |
-|---|---|
+| --- | --- |
 | `run_id` | `RUN_ID` |
 | `result_dir` | `RUN_DIR` |
 | `update_choice` | `UPDATE_CHOICE` |
@@ -141,7 +141,7 @@ echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
 Apply these validation rules for each artifact:
 
 | Condition | Action |
-|---|---|
+| --- | --- |
 | File absent | Report and skip that surface |
 | File empty (0 lines) | Report invalid and skip that surface |
 | Missing `# AL Dev` header | Report invalid and skip that surface |

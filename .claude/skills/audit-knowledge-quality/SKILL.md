@@ -48,7 +48,7 @@ python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
 
 Extract flagged files and issue codes from output. Group by issue type: [THIN], [NO-CODE], [DEAD-REF].
 
-### Phase 2a: Choose dispatch mode
+### Phase 2: Choose analysis path
 
 #### Progress Tracking
 
@@ -56,7 +56,8 @@ Before analyzing any file, create one task per flagged file using `TaskCreate` n
 
 #### Decision
 
-Count the flagged files and choose the execution path:
+Count the flagged files and choose the execution path with one threshold-driven
+decision:
 
 - **4+ flagged files** → parallel path (Phase 2b, Parallel Exploration).
 - **≤3 flagged files** (or files with ordering dependencies) → sequential path (Phase 2b, Sequential Analysis).
@@ -73,6 +74,7 @@ For each flagged file:
 
 1. **Read the file** — Understand its structure and current content
 2. **Read the referencing agent/skill** — Find where the file is referenced and what guidance it's supposed to provide (search `.md` files in `profile-al-dev-shared/agents/` and `profile-al-dev-shared/skills/` for references to the knowledge file)
+   - If no referencing agent or skill is found, note the file as orphaned with severity LOW.
 3. **Understand the gap** — Determine why the section is flagged:
    - **[THIN]:** Is the section intentionally brief (overview/summary)? Or is it a topic that SHOULD have more content?
    - **[NO-CODE]:** The heading implies a pattern/example/usage. What code examples should be in the body?

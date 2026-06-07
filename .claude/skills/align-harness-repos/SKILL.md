@@ -101,7 +101,7 @@ Want me to attempt fixes?
 - Harness-specific tool tokens will be replaced with generic concept names.
 - Harness-specific paths will be replaced with role-agnostic equivalents.
 - Harness-specific phrasing will be replaced with neutral language.
-- Manual review will be needed for tokens in code blocks or unique contexts.
+- Tokens inside fenced code blocks will be flagged for manual review only.
 
 Proceed? (yes / no)
 ```
@@ -116,19 +116,12 @@ For each finding:
 
 1. Read the file containing the forbidden token.
 2. Identify the harness-specific token and its context.
-3. Replace with the generic equivalent:
-   - `AskUserQuestion` → `USER_GATE` (concept name)
-   - `subagent_type` → `agent_spawn` (concept name)
-   - `ask_user` → `USER_GATE`
-   - `agent_type:` → `agent_spawn:`
-   - `~/.claude` → `~/.harness-config`
-   - `~/.copilot` → `~/.harness-config`
-   - "Open Claude Code" → "Invoke the harness" or "Start a session"
-   - "start a new Copilot CLI session" → "Start a new harness session"
+3. Apply the replacement rules in
+   `.claude/knowledge/harness-token-map.md`.
 4. Preserve all surrounding text and formatting exactly.
 
-If a token appears in a code example (code block), flag it for manual review
-rather than auto-replacing, as the example may be illustrative.
+If the token appears inside a fenced code block, flag it for manual review only
+rather than auto-replacing it.
 
 ---
 

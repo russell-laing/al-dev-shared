@@ -2,9 +2,10 @@
 name: plugin-health-audit
 description: >-
   Suggestions-only health sweep of the al-dev-shared plugin surfaces. Dispatches
-  design + quality + naming lenses with a per-surface file list, ranks findings,
-  and writes one dossier per surface to docs/health/. Never auto-edits source.
-  Triggers on:
+  the two-phase internal workflow `/plugin-health-discover` then
+  `/plugin-health-report` to dispatch design + quality + naming lenses with a
+  per-surface file list, rank findings, and write one dossier per surface to
+  docs/health/. Never auto-edits source. Triggers on:
   "plugin health", "health sweep", "audit the plugin", "check plugin health".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|all] [--resume]"
 workflow:
@@ -25,7 +26,7 @@ auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review
 `/record-health-dispositions` (record decisions) →
 `/plan-health-findings` (rubber-duck accepted items) → plan → execute.
 
-Implemented as two sub-skills:
+Implemented as a two-phase internal workflow:
 
 - `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
 - `/plugin-health-report` — reads findings file, ranks, writes dossier, presents

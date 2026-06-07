@@ -98,6 +98,11 @@ issue, proposed fix. Collect one decision per finding from the user:
 Batch decisions are fine ("accept 1-3, decline 4 because X"). Never invent
 a decision: every non-skip row needs explicit user input.
 
+**Contradictory-batch guard:** before writing any row from a batched response,
+check whether the same object + issue essence appears twice with different
+decisions in the current batch. If it does, stop and ask the user to resolve the
+conflict first. Do not append a partial batch.
+
 **Re-litigation guard:** if a decision contradicts an existing `declined`
 or `grandfathered` row for the same object + issue essence, refuse to
 append a new row. Per the ledger rules, the existing row must be edited
@@ -132,25 +137,12 @@ change is left to the user's normal commit flow.
 
 ## Closure write-back rule (binding on fix sessions)
 
-The ledger is only trustworthy if closure is recorded in the same session
-that closes a finding. Any session that lands a commit resolving an
-`accepted` row MUST update the ledger before it ends:
+Any session that resolves an `accepted` row must close the ledger in the same
+session. Use `.claude/knowledge/ledger-closure-protocol.md` for the background
+and full rule set.
 
-1. If the `accepted` row is **not yet committed**, edit it in place: change
-   the disposition to `fixed` and replace the note with the resolving
-   commit hash + a one-line summary.
-2. If the `accepted` row is **already committed**, append a new `fixed`
-   row for the same object + issue essence citing the commit and including
-   `closes row N` (N = the superseded row's data-row number) so the
-   supersession is machine-readable (append-only rule; the superseded row
-   stays).
-3. Cite the ledger row in the resolving commit message (e.g. "Dispositions
-   row N") so the pairing is auditable in both directions.
-
-Audit at any time with `python3 scripts/check_ledger_staleness.py` — it
-lists the effective-open accepted rows and flags `STALE-OPEN` any whose
-object has commits after the row date. The pre-commit gate runs the same
-check in `--staged` mode and warns when a commit touches an open row's
-object without updating the ledger. A fix session that ends with resolving
-commits but un-flipped `accepted` rows reproduces the closure-invisibility
-defect this ledger exists to eliminate.
+- Uncommitted accepted row → flip it in place to `fixed`.
+- Committed accepted row → append a later `fixed` row with the resolving commit
+  and `closes row N`.
+- After the source change, run `python3 scripts/check_ledger_staleness.py` to
+  confirm the row no longer appears as effectively open.

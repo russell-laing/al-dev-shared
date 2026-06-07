@@ -104,7 +104,7 @@ git log --since="$FINDINGS_DATE 00:00" --oneline -- "$SUBJECT_PATH"
 
 A labelled finding may enter the top 5 only after reading the live subject
 file and confirming the claim still holds; record the spot-check ("verified
-against live file <date>") next to the action. If the claim no longer
+against live file [date]") next to the action. If the claim no longer
 holds, drop the finding from counts and list it under a "Stale (dropped)"
 note instead.
 
@@ -121,11 +121,11 @@ parsed finding against ledger rows by object + issue essence:
   finding as suspect: verify against the live subject file (Phase 1c
   protocol). If the claim no longer holds, drop it under "Stale (dropped)";
   if the issue has genuinely regressed, keep it and note "regressed —
-  previously fixed in <commit>".
+  previously fixed in [commit]".
 - **`accepted`** → keep, and annotate "(accepted YYYY-MM-DD — awaiting
   implementation)".
 
-## Phase 2 - Rank and Write Dossier
+## Phase 2 — Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality
 before naming), then by object (agent before skill). Pick the top 5 ranked actions

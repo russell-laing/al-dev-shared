@@ -70,6 +70,15 @@ on the current file only. Record all findings for every file before moving to Ph
 Run these checks against the current file (`<file>`) selected by the Phase 2 loop. Do not
 re-iterate the review list here.
 
+### Verification procedure
+
+Use one verification shape for every reference you extract:
+
+- Resolve the concrete path from the current file.
+- Apply the matching adapter below.
+- Record behavior, not line counts: exists and resolves cleanly, missing, or
+  synthetic/example path skipped by design.
+
 **Script references** — verify every `scripts/*.py` or `scripts/*.sh` path exists:
 
 ```bash

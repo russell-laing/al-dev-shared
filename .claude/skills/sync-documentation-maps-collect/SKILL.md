@@ -67,7 +67,7 @@ field table below and the full contract in
 `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
 
 | Field | Variable |
-|---|---|
+| --- | --- |
 | `run_id` | `RUN_ID` |
 | `result_dir` | `RUN_DIR` |
 | `auto_update` | `AUTO_UPDATE` |
@@ -127,6 +127,12 @@ If `WAIT_MODE=false` and an expected audit artifact is not yet present, do **not
 block: record that surface as `pending` and report that the harness will notify on
 completion; the user re-runs collect (or runs `--wait`) once notified.
 
+If the same surface is still `pending` on a later collect re-run for the same
+`RUN_ID`, treat it as stalled rather than endlessly "still pending". Report the
+missing artifact path, note that the current run did not complete its audit
+write, and tell the user to restart the workflow from
+`/sync-documentation-maps` instead of looping on collect.
+
 If **both** files are absent, advise the user and stop:
 
 ```text
@@ -139,8 +145,10 @@ or wait for the teams to finish and then re-run this collect step.
 ## Phase 3 — Prep Results
 
 Merge the parsed findings from both surfaces into a single working set. For
-each surface, sort its `discrepancies` by object name and deduplicate by
-`(object, type)` so the same finding reported twice is shown once.
+each surface, compute `name = discrepancy.skill ?? discrepancy.agent`, then
+stable-sort by `name` and discrepancy `type`. Deduplicate on `(name, type)` and
+keep the first item from that stable ordering so duplicate reports collapse
+deterministically.
 
 Display the prepared findings. For each surface with a completed audit:
 

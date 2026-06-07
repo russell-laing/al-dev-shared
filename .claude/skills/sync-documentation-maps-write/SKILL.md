@@ -108,12 +108,21 @@ Agent count mismatch after regeneration (disk=X coverage=Y catalog=Z).
 The maps would commit stale counts. Investigate before committing.
 ```
 
+Recovery order:
+
+1. If the mismatch is a known false positive caused by one stale generated
+   value, refresh the affected generated section from the just-written docs map
+   and re-run this count check once.
+2. If the mismatch persists, or the run state is no longer trustworthy, abandon
+   the old run with `/sync-documentation-maps --force` and start fresh rather
+   than committing mixed-state artifacts.
+
 Then run the three remaining regenerations in sequence. Each follows the same
 pattern — execute the script and capture its exit code; on a non-zero code, report
 the labelled error (substituting the actual exit code) and stop before continuing:
 
 | Artifact | Script | Error label on non-zero exit |
-|----------|--------|------------------------------|
+| --- | --- | --- |
 | Agent projections | `generate-agent-projections.py` | `Agent projection regeneration failed (exit <code>).` |
 | Dependency graph | `generate-plugin-graph.py` | `Dependency graph refresh failed (exit <code>).` |
 | Maintainer guide | `generate-maintainer-guide.py` | `Maintainer guide regeneration failed (exit <code>).` |

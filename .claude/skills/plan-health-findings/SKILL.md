@@ -114,15 +114,17 @@ Then consult `docs/health/dispositions.md` (if present), matching by object
   user whether to include them in this plan or record dispositions first
   via `/record-health-dispositions`.
 
-Apply the Argument Routing verb filter (`--skills` / `--agents`) to the
-collected findings.
+Apply filters in this order:
+
+1. Object-type routing first (`--skills` or `--agents`).
+2. `FILTER_TYPE` second, if the user passed a finding type such as `connect`,
+   `merge`, or `trim`.
 
 List each collected item as: **type — subject — proposed change**.
 
-If the user passed a finding type as an argument (e.g., `connect`, `merge`,
-`trim`), capture it as `FILTER_TYPE` and filter collected findings to that
-type. If no type argument was passed, set `FILTER_TYPE=all` and process all
-collected findings. Note the active filter before proceeding to Phase 2.
+If no type argument was passed, set `FILTER_TYPE=all` and keep the routed set.
+Note both the active object-type route and the active `FILTER_TYPE` before
+proceeding to Phase 2.
 
 ---
 
@@ -148,9 +150,9 @@ git log --since="$DOSSIER_DATE 00:00" --oneline -- "$SUBJECT_PATH"
 ```
 
 - **Non-empty output** → label the finding **`⚠ possibly stale`** and record the
-  commit(s). In Phase 2, rubber-duck it by reading the live subject file in full
-  first; expect the claim may no longer match (verdict `skip [already implemented]`
-  is common here).
+  commit(s). In Phase 2, rubber-duck it by reading the entire subject file from
+  start to finish before checking the claim; expect the claim may no longer
+  match (verdict `skip [already implemented]` is common here).
 - **Empty output** → the subject is unchanged since the audit; rubber-duck
   normally.
 
@@ -250,7 +252,7 @@ Pass as context to writing-plans:
 - The verification pattern for each task, mapped by finding verb:
 
   | Verb | Evidences | Command |
-  |------|-----------|---------|
+  | --- | --- | --- |
   | Atomise / Split | New phase/file boundaries exist | `grep -n '## Phase'` + `wc -l` |
   | Absorb / Merge / Inline | Source folded in, original removed | `wc -l` (delta) + `ls` (absence) |
   | Connect / Promote | Knowledge doc created and referenced | `ls` (new doc) + `grep` (reference) |

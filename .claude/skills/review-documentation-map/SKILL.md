@@ -72,80 +72,17 @@ Build two lists:
 
 ## Phase 2: Extract Profiles and Build Caller Sets
 
-### Phase 2a: Extract profiles
+Read the whole skill or agent file before extracting anything. Use:
 
-#### If SURFACE=skills
+- `.claude/knowledge/documentation-map-profile-schema.md` for the working-table
+  fields you must capture from the live source.
+- `.claude/knowledge/documentation-map-comparison-rules.md` for the caller-set
+  build and comparison rules.
 
-For each active skill (read `profile-al-dev-shared/skills/<name>/SKILL.md`):
+If `SURFACE=skills`, build the skills working table only.
 
-Extract:
-
-1. **Phases** — numbered phases described in the skill body (Phase 1, Phase 2, etc.)
-2. **Agents spawned** — any `al-dev-shared:al-dev-*` agent type mentioned with a spawn directive
-3. **Parallel pattern** — is the agent spawned ×1, ×2-3, or more?
-4. **Outputs** — `.dev/` files the skill writes
-
-**What to look for when parsing SKILL.md:**
-
-- Phase headers (`## Phase N`, `### Step N`, `## Phase N:`)
-- Agent spawn directives (`Spawn`, `spawn an`, `al-dev-developer`, `al-dev-solution-architect`, etc.)
-- Parallel markers (`in parallel`, `at once`, `×2`, `×2-3`, `parallel`)
-- Output file writes (`write to .dev/`, `save to .dev/`, `.dev/*-<skill>-*.md`)
-
-Record in a working table:
-
-| Skill | Phases | Agents spawned | Pattern | Outputs |
-|-------|--------|----------------|---------|---------|
-
-#### If SURFACE=agents
-
-For each active agent (read `profile-al-dev-shared/agents/<name>.md`):
-
-Extract from frontmatter:
-
-1. **model** — `sonnet`, `opus`, or `haiku`
-2. **tools** — full tools list
-3. **description** — first sentence only
-
-Extract from body:
-
-4. **Inputs table** — the `## Inputs` section (or "Not documented" if absent)
-5. **Outputs table** — the `## Outputs` section (or "Not documented" if absent)
-
-Record in a working table:
-
-| Agent | Model | Tools | Has Inputs? | Has Outputs? |
-|-------|-------|-------|-------------|--------------|
-
-### Phase 2b: Build caller sets
-
-#### If SURFACE=agents
-
-For each active agent, use a two-pass grep to find all skills that spawn it:
-
-```bash
-# Pass 1: qualified type name
-grep -rl "al-dev-shared:<filename-without-.md>" \
-  profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
-
-# Pass 2: short name prose references
-grep -rl "<filename-without-.md>" \
-  profile-al-dev-shared/skills/ .claude/skills/ 2>/dev/null
-```
-
-**Union/dedup ordering:** Union all grep results first (concatenate the file
-lists from both passes), **then** `sort -u` the combined set once. Do not
-`sort -u` each pass independently before unioning — dedup the merged set in a
-single pass so a file matched by both passes is counted once.
-
-Record:
-
-- **Spawned by:** list of skill names (extract directory name from matching paths)
-- **Spawn count:** single-use (1 skill) or shared (2+ skills)
-
-#### If SURFACE=skills
-
-No caller-set phase needed for skills — agents spawned are extracted in Phase 2a.
+If `SURFACE=agents`, build the agents working table and then the deduped
+caller set for each active agent.
 
 ---
 
@@ -165,7 +102,7 @@ Read the file.
 
 Check both layers and record each mismatch as a discrepancy.
 
-#### If SURFACE=skills
+### Skills surface checks
 
 **Layer 1 (Lifecycle Overview diagram):**
 
@@ -184,7 +121,7 @@ For each active skill, check the matching drill-down diagram:
 - Outputs match what the skill actually writes
 - No skill is missing from Layer 2
 
-#### If SURFACE=agents
+### Agent surface checks
 
 **Layer 1 (Agent Catalog table):**
 
@@ -235,7 +172,7 @@ Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 7.
 
 Before editing, summarise findings:
 
-#### If SURFACE=skills
+### Skills report template
 
 ```text
 Plugin map review findings:
@@ -248,7 +185,7 @@ Missing from map: [skills not in map]
 Stale in map:    [skills in map but now archived]
 ```
 
-#### If SURFACE=agents
+### Agent report template
 
 ```text
 Agent map review findings:
@@ -278,6 +215,8 @@ If `NO_UPDATE=true`, suggest specific fixes without modifying files, then stop:
 Present all suggested fixes. The user may re-run without `--no-update` to apply.
 Do not proceed to Phase 7.
 
+Otherwise, proceed to Phase 7.
+
 ---
 
 ## Phase 7: Update the Map
@@ -286,7 +225,7 @@ If `{MAP_FILE}` does not exist, create it. Otherwise make targeted edits to fix
 each discrepancy found in Phases 4a and 4b. Use the Edit tool for targeted
 changes (not full rewrites) whenever the file already exists.
 
-### If SURFACE=skills
+### Skills map updates
 
 **For Layer 1 fixes:**
 
@@ -303,7 +242,7 @@ changes (not full rewrites) whenever the file already exists.
 **Mermaid style guard:** After any edit, scan every `style X fill:...` line. Confirm
 `X` matches an ID in at least one node declaration or edge. Delete orphaned `style` lines.
 
-### If SURFACE=agents
+### Agent map updates
 
 **Document structure (for first-run creation):**
 
@@ -344,7 +283,7 @@ Update `**Last updated:**` to today's date.
 
 ## Phase 8: Verify and Commit
 
-### If SURFACE=skills
+### Skills verification
 
 ```bash
 grep -c "^### /" docs/al-dev-skills-map.md
@@ -358,7 +297,7 @@ git -C . add docs/al-dev-skills-map.md
 git -C . commit -m "docs: sync skill map with current plugin state"
 ```
 
-### If SURFACE=agents
+### Agent verification
 
 ```bash
 wc -l docs/al-dev-agent-map.md

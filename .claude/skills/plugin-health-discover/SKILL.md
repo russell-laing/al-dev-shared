@@ -48,9 +48,11 @@ known findings at full lens cost. Before dispatching:
 ls -t /Users/russelllaing/al-dev-shared/docs/health/*-<surface>-health.md 2>/dev/null | head -1
 ```
 
-If a dossier exists, check whether `docs/health/dispositions.md` contains
-any rows dated on or after that dossier's date. If it does not (or the
-ledger is absent), warn:
+If a dossier exists, check whether its actionable findings have been
+dispositioned in `docs/health/dispositions.md`. A single recent ledger row is
+not enough; the prior dossier must have recorded accept / decline / fixed /
+grandfather decisions for the findings it asked the user to triage. If the
+ledger is absent or the dossier still lacks disposition coverage, warn:
 
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
@@ -152,12 +154,13 @@ If NOT invoked with `--resume`:
 
 - `remaining_lenses = ALL_LENSES`
 
-### 3.1b Surface-scoped lenses (mandatory filter)
+### 3.1b Surface-scoped lens filter
 
 `ALL_LENSES` is surface-dependent. `design-skill-lens-surface-placement`
 exists solely to find **distributed** skills that belong in the repo-local
 maintainer surface; aimed at files already in the maintainer surface it can
-only emit false "Move" findings (9 per sweep on 2026-06-03 and 2026-06-04).
+only emit false "Move" findings. Any "Move" suggestion against a
+tooling-surface file is a non-actionable false positive.
 
 - Surface `plugin` → all lenses.
 - Surface `tooling` → exclude `design-skill-lens-surface-placement` from
