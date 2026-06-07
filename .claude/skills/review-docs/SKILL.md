@@ -60,10 +60,15 @@ Print: `Reviewing N files in docs/ (skipping M auto-generated/report files)`
 
 ## Phase 2: Review Each File
 
-For each file in the review list from Phase 1, substitute `<file>` with the actual
-filename in the commands below. Record all findings before moving to Phase 3.
+Phase 2 owns the per-file loop. For each file in the review list from Phase 1, set it as
+the current file (`<file>`) and run Phase 3 (Technical Accuracy) then Phase 4
+(Readability) against that one file. Phases 3 and 4 do not loop themselves — they operate
+on the current file only. Record all findings for every file before moving to Phase 5.
 
-### 2a: Technical Accuracy
+## Phase 3: Technical Accuracy
+
+Run these checks against the current file (`<file>`) selected by the Phase 2 loop. Do not
+re-iterate the review list here.
 
 **Script references** — verify every `scripts/*.py` or `scripts/*.sh` path exists:
 
@@ -119,7 +124,10 @@ Verify all results if ≤10 total; otherwise spot-check the first 10 non-synthet
 Skip clearly synthetic examples (`{surface}/`, `<name>.md`) and user-relative paths
 (`~/.claude/`). Use `test -f` / `test -d` to verify each.
 
-### 2b: Readability
+## Phase 4: Readability
+
+Run these checks against the current file (`<file>`) selected by the Phase 2 loop. Do not
+re-iterate the review list here.
 
 **Code blocks without language tags:**
 
@@ -153,7 +161,7 @@ grep "Last updated" docs/<file>
 Dates more than 6 months before today are potentially stale.
 Flag as `[STALE?]` with the actual date.
 
-## Phase 3: Write Findings Report
+## Phase 5: Write Findings Report
 
 After reviewing all files, write to `docs/al-dev-docs-quality.md`:
 
@@ -202,7 +210,7 @@ Verify the report was written:
 ls -la docs/al-dev-docs-quality.md
 ```
 
-## Phase 4: Report and Offer Fixes
+## Phase 6: Report and Offer Fixes
 
 Print a brief summary:
 
