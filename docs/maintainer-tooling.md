@@ -103,7 +103,7 @@ flowchart LR
    - writes: `docs/health/<date>-<surface>-findings.md`
 3. `/plugin-health-report` — Report phase of the plugin health sweep. Repeat as needed.
    - reads: `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md`
-   - writes: `docs/health/<date>-<surface>-health.md`, `docs/al-dev-plugin-graph.md`
+   - writes: `docs/health/<date>-<surface>-health.md`
 4. `/analyze-architectural-design` — Cross-surface synthesis add-on for the health audit.
    - reads: `docs/health/<date>-<surface>-health.md`
    - writes: `docs/al-dev-plugin-synthesis.md`
@@ -213,7 +213,6 @@ flowchart LR
     skill_plugin_health_discover["/plugin-health-discover"]
     skill_plugin_health_report["/plugin-health-report"]
     art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
-    art_docs_al_dev_plugin_graph_md["docs/al-dev-plugin-graph.md"]
     art_docs_al_dev_plugin_synthesis_md[".../al-dev-plugin-synthesis.md"]
     art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
     art_docs_health_____findings_md["docs/health/*-*-findings.md"]
@@ -235,7 +234,6 @@ flowchart LR
     skill_plugin_health_discover -. "repeat" .-> skill_plugin_health_discover
     art_docs_health_____findings_md --> skill_plugin_health_report
     art_docs_health_dispositions_md --> skill_plugin_health_report
-    skill_plugin_health_report --> art_docs_al_dev_plugin_graph_md
     skill_plugin_health_report --> art_docs_health_____health_md
     skill_plugin_health_report --> skill_analyze_architectural_design
     skill_plugin_health_report -. "repeat" .-> skill_plugin_health_report
@@ -245,7 +243,6 @@ flowchart LR
     class skill_plugin_health_discover userSkill
     class skill_plugin_health_report userSkill
     class art_docs_al_dev_agent_map_md artifact
-    class art_docs_al_dev_plugin_graph_md orphanArtifact
     class art_docs_al_dev_plugin_synthesis_md orphanArtifact
     class art_docs_al_dev_skills_map_md artifact
     class art_docs_health_____findings_md artifact
@@ -513,7 +510,7 @@ flowchart TD
 | `/analyze-architectural-design` | `docs/health/<date>-<surface>-health.md` | `docs/al-dev-plugin-synthesis.md` | — |
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
-| `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md`, `docs/al-dev-plugin-graph.md` | `/analyze-architectural-design`, `/record-health-dispositions` |
+| `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/analyze-architectural-design`, `/record-health-dispositions` |
 | `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
@@ -531,7 +528,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 <!-- BEGIN GENERATED: maintainer-gaps -->
 | Signal | Item | Detail |
 | --- | --- | --- |
-| Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /plugin-health-report, /sync-documentation-maps-write; consumed by no skill |
+| Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-synthesis.md` | produced by /analyze-architectural-design; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
@@ -551,9 +548,9 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-05 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-06 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-06 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-06 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-07 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -2,8 +2,8 @@
 name: plugin-health-report
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
-  /plugin-health-discover, ranks findings, writes the dossier, optionally
-  refreshes the dependency graph, and presents results to the user.
+  /plugin-health-discover, ranks findings, writes the dossier, and presents
+  results to the user.
   Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
@@ -16,7 +16,6 @@ workflow:
     - docs/health/dispositions.md
   outputs:
     - docs/health/<date>-<surface>-health.md
-    - docs/al-dev-plugin-graph.md
   next: [analyze-architectural-design, record-health-dispositions]
 ---
 
@@ -179,17 +178,7 @@ _No issues found._  ← if empty
 
 Record any failed lenses at the foot of the Summary section.
 
-## Phase 3 — Refresh dependency graph (plugin surface only)
-
-If the findings file is for the plugin surface, run:
-
-```bash
-python3 /Users/russelllaing/al-dev-shared/scripts/generate-plugin-graph.py
-```
-
-The generator writes `docs/al-dev-plugin-graph.md` and exits 0 even on parse errors.
-
-## Phase 4 — Present to user
+## Phase 3 — Present to user
 
 Print, per surface: dossier path + severity counts (new vs recurring) + the
 top action.
