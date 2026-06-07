@@ -164,10 +164,10 @@ affected surface before continuing.
 
 ---
 
-## Phase 2: Rubber Duck — setup
+## Phase 2: Rubber Duck
 
-For **every** suggestion, run the checklist in Phase 2b. Do not write any plan
-content until all suggestions are rubber-ducked.
+For **every** suggestion, run the checks and record the result. Do not write any
+plan content until all suggestions are rubber-ducked.
 
 > **The rubber duck is a blocker, not a suggestion.** If a check finds a
 > mismatch or gap, resolve it before moving to the next suggestion.
@@ -194,12 +194,7 @@ Each agent should: read the affected file(s) in full, run U2 artifact checks,
 run the type-specific grep(s), and return a structured rubber duck record.
 Collect all records before writing any plan content.
 
-When every layer contains ≤2 suggestions, the sequential
-inline path is fine — keep it as the fallback.
-
----
-
-## Phase 2b: Rubber Duck — checks & records
+When every layer contains ≤2 suggestions, the sequential inline path is fine.
 
 ### Checks
 
@@ -227,7 +222,15 @@ Scope gap:    [anything the suggestion underspecifies, or "none"]
 Verdict:      proceed | modify [reason] | skip [reason]
 ```
 
-If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do not create a plan task for it. Record skipped suggestions in a `## Skipped` section at the end of the plan file with the reason noted.
+> **Verdict vocabulary note:** This record uses the planning verdict
+> `proceed | modify | skip`, which is local to this skill's planning stage. It is
+> deliberately distinct from the `ACCEPT | DEFER | REJECT` classification in
+> `map-change-rubber-duck-checks.md`, which governs the upstream health-audit duck
+> agents. Do not merge the two vocabularies.
+
+If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do
+not create a plan task for it. Record skipped suggestions in a `## Skipped` section at
+the end of the plan file with the reason noted.
 
 ---
 
