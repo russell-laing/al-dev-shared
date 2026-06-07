@@ -115,8 +115,6 @@ flowchart LR
     agent_al_dev_ticket_context_writer[al-dev-ticket-context-writer]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
-    artifact_ticket_context_md[.dev/ticket-context.md]
-    artifact_ticket_reply_md[.dev/ticket-reply.md]
 
     skill_al_dev_ticket --> Phase0
     skill_al_dev_ticket --> Phase0_5
@@ -127,8 +125,6 @@ flowchart LR
     skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_al_dev_ticket --> knowledge_artifact_contracts_md
     skill_al_dev_ticket --> knowledge_ticket_agent_invocation_pattern_md
-    skill_al_dev_ticket --> artifact_ticket_context_md
-    skill_al_dev_ticket --> artifact_ticket_reply_md
 
     class skill_al_dev_ticket skillNode
     class Phase0 phaseNode
@@ -140,8 +136,6 @@ flowchart LR
     class agent_al_dev_ticket_context_writer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
-    class artifact_ticket_context_md artifactNode
-    class artifact_ticket_reply_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-ticket-context-writer`
@@ -251,7 +245,6 @@ flowchart LR
     skill_al_dev_fix[al-dev-fix]
     skill_al_dev_develop[al-dev-develop]
     skill_al_dev_plan[al-dev-plan]
-    agent_al_dev_developer_tdd[al-dev-developer-tdd]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
     agent_al_dev_solution_architect[al-dev-solution-architect]
     knowledge_al_dev_fix_examples_md[al-dev-fix-examples]
@@ -264,7 +257,6 @@ flowchart LR
 
     skill_al_dev_fix -.-> skill_al_dev_develop
     skill_al_dev_fix -.-> skill_al_dev_plan
-    skill_al_dev_fix --> agent_al_dev_developer_tdd
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
@@ -278,7 +270,6 @@ flowchart LR
     class skill_al_dev_fix skillNode
     class skill_al_dev_develop skillNode
     class skill_al_dev_plan skillNode
-    class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_solution_architect agentNode
     class knowledge_al_dev_fix_examples_md knowledgeNode
@@ -290,7 +281,7 @@ flowchart LR
     class artifact_test_plan_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-solution-architect`
+Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-dev-solution-architect`
 <!-- END GENERATED: skill-drilldown-al-dev-fix -->
 
 ### /al-dev-plan
@@ -956,6 +947,7 @@ flowchart LR
     skill_al_dev_help[al-dev-help]
     skill_al_dev_develop[al-dev-develop]
     skill_al_dev_plan[al-dev-plan]
+    knowledge_workflow_routing_md[workflow-routing]
     artifact_2026_05_19_al_dev_develop_code_review_md[.dev/2026-05-19-al-dev-develop-code-review.md]
     artifact_2026_05_19_al_dev_interview_requirements_md[.dev/2026-05-19-al-dev-interview-requirements.md]
     artifact_2026_05_19_al_dev_plan_solution_plan_md[.dev/2026-05-19-al-dev-plan-solution-plan.md]
@@ -963,6 +955,7 @@ flowchart LR
 
     skill_al_dev_help -.-> skill_al_dev_develop
     skill_al_dev_help -.-> skill_al_dev_plan
+    skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_help --> artifact_2026_05_19_al_dev_develop_code_review_md
     skill_al_dev_help --> artifact_2026_05_19_al_dev_interview_requirements_md
     skill_al_dev_help --> artifact_2026_05_19_al_dev_plan_solution_plan_md
@@ -971,6 +964,7 @@ flowchart LR
     class skill_al_dev_help skillNode
     class skill_al_dev_develop skillNode
     class skill_al_dev_plan skillNode
+    class knowledge_workflow_routing_md knowledgeNode
     class artifact_2026_05_19_al_dev_develop_code_review_md artifactNode
     class artifact_2026_05_19_al_dev_interview_requirements_md artifactNode
     class artifact_2026_05_19_al_dev_plan_solution_plan_md artifactNode

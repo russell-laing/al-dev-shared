@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-04 (analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-07 (analysis refreshed with 5 new suggestions)
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
@@ -21,7 +21,7 @@
 | al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
-| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
+| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
@@ -204,7 +204,7 @@
 **Description:** Implement AL code using test-driven development when a test plan exists.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop, /al-dev-fix
+**Spawned by:** /al-dev-develop
 
 **Inputs:**
 
@@ -231,7 +231,7 @@
 **Description:** Implement AL code following an implementation plan without test-driven development.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop, /al-dev-fix, /al-dev-review-develop (autonomous mode)
+**Spawned by:** /al-dev-develop, /al-dev-fix
 
 **Inputs:**
 
@@ -278,7 +278,7 @@
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
 **Tools:** Read, Write
-**Spawned by:** `/al-dev-document`, `.claude/skills/fix-knowledge-quality`
+**Spawned by:** (none found)
 
 **Inputs:**
 
@@ -330,7 +330,7 @@
 **Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization.
 **Model:** haiku
 **Tools:** Read, Glob, Grep, Write
-**Spawned by:** `/al-dev-explore`, `/al-dev-handoff`
+**Spawned by:** (none found)
 
 **Inputs:**
 
@@ -428,7 +428,7 @@
 **Description:** Write, validate, and run scripts for AL development and documentation workflows.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** `/al-dev-help`
+**Spawned by:** (none found)
 
 **Inputs:**
 

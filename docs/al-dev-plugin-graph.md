@@ -101,6 +101,7 @@ flowchart LR
         knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
         knowledge_ticket_image_patterns_md[ticket-image-patterns]
         knowledge_workflow_resilience_md[workflow-resilience]
+        knowledge_workflow_routing_md[workflow-routing]
     end
     subgraph Artifacts[Artifacts]
         artifact_2026_05_19_al_dev_develop_code_review_md[.dev/2026-05-19-al-dev-develop-code-review.md]
@@ -129,7 +130,6 @@ flowchart LR
         artifact_source_solution_plan_md[.dev/source-solution-plan.md]
         artifact_source_ticket_context_md[.dev/source-ticket-context.md]
         artifact_test_plan_md[.dev/test-plan.md]
-        artifact_ticket_context_md[.dev/ticket-context.md]
         artifact_ticket_reply_md[.dev/ticket-reply.md]
     end
 
@@ -158,7 +158,6 @@ flowchart LR
     skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_develop --> agent_al_dev_developer_tdd
     skill_al_dev_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_fix --> agent_al_dev_developer_tdd
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
     skill_al_dev_interview --> agent_al_dev_interview
@@ -191,6 +190,7 @@ flowchart LR
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
@@ -285,8 +285,6 @@ flowchart LR
     skill_al_dev_review_develop_preflight --> artifact_progress_md
     skill_al_dev_support_reply --> artifact_2026_06_01_al_dev_ticket_ticket_context_md
     skill_al_dev_support_reply --> artifact_ticket_reply_md
-    skill_al_dev_ticket --> artifact_ticket_context_md
-    skill_al_dev_ticket --> artifact_ticket_reply_md
     skill_commit_recover --> artifact_commit_integrity_log
     skill_commit_recover --> artifact_compile_errors_log
     skill_commit_recover --> artifact_learnings_md
@@ -374,6 +372,7 @@ flowchart LR
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class knowledge_ticket_image_patterns_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
+    class knowledge_workflow_routing_md knowledgeNode
     class artifact_2026_05_19_al_dev_develop_code_review_md artifactNode
     class artifact_2026_05_19_al_dev_explore_findings_md artifactNode
     class artifact_2026_05_19_al_dev_interview_requirements_md artifactNode
@@ -400,7 +399,6 @@ flowchart LR
     class artifact_source_solution_plan_md artifactNode
     class artifact_source_ticket_context_md artifactNode
     class artifact_test_plan_md artifactNode
-    class artifact_ticket_context_md artifactNode
     class artifact_ticket_reply_md artifactNode
 ```
 <!-- END GENERATED: plugin-dependency-mermaid -->
@@ -491,7 +489,6 @@ flowchart LR
 - `session-analysis-report-format.md`
 - `skill-test-format.md`
 - `verification-and-planning.md`
-- `workflow-routing.md`
 
 **Off-path skills (not on any configured workflow path):**
 

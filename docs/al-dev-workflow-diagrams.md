@@ -77,7 +77,6 @@ flowchart LR
     skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_develop --> agent_al_dev_developer_tdd
     skill_al_dev_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_fix --> agent_al_dev_developer_tdd
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
     skill_al_dev_interview --> agent_al_dev_interview
@@ -145,6 +144,7 @@ flowchart LR
         skill_al_dev_develop[al-dev-develop]
         skill_al_dev_explore[al-dev-explore]
         skill_al_dev_fix[al-dev-fix]
+        skill_al_dev_help[al-dev-help]
         skill_al_dev_interview[al-dev-interview]
         skill_al_dev_investigate[al-dev-investigate]
         skill_al_dev_lint[al-dev-lint]
@@ -210,6 +210,7 @@ flowchart LR
         knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
         knowledge_ticket_image_patterns_md[ticket-image-patterns]
         knowledge_workflow_resilience_md[workflow-resilience]
+        knowledge_workflow_routing_md[workflow-routing]
     end
 
     skill_al_dev_commit --> knowledge_artifact_contracts_md
@@ -231,6 +232,7 @@ flowchart LR
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
@@ -291,6 +293,7 @@ flowchart LR
     class skill_al_dev_develop skillNode
     class skill_al_dev_explore skillNode
     class skill_al_dev_fix skillNode
+    class skill_al_dev_help skillNode
     class skill_al_dev_interview skillNode
     class skill_al_dev_investigate skillNode
     class skill_al_dev_lint skillNode
@@ -352,5 +355,6 @@ flowchart LR
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class knowledge_ticket_image_patterns_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
+    class knowledge_workflow_routing_md knowledgeNode
 ```
 <!-- END GENERATED: workflow-knowledge-mermaid -->
