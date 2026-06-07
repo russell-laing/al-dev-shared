@@ -42,8 +42,14 @@ Loop position:
 Locate the latest dossier per requested surface:
 
 ```bash
-ls -t docs/health/*-plugin-health.md 2>/dev/null | head -1
-ls -t docs/health/*-tooling-health.md 2>/dev/null | head -1
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind health \
+  --surface plugin
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind health \
+  --surface tooling
 ```
 
 If no dossier exists for a requested surface, report "No `<surface>` dossier

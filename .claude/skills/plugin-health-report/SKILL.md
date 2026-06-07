@@ -27,13 +27,24 @@ Report phase of the health sweep. Reads a findings file and writes the dossier.
 
 If `--findings <path>` is passed, read that file.
 
-Otherwise, find the most recent findings file for each surface requested:
+Otherwise, select the most recent findings independently for each requested
+surface. Run only the command(s) matching `--surface`; when `--surface` is
+omitted, run both:
 
 ```bash
-ls -t /Users/russelllaing/al-dev-shared/docs/health/*-findings.md 2>/dev/null | head -2
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind findings \
+  --surface plugin
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind findings \
+  --surface tooling
 ```
 
-If no findings file exists, report: "No findings file found. Run /plugin-health-audit first." and stop.
+If a requested surface returns no path, report: "No `<surface>` findings file
+found. Run /plugin-health-audit for that surface first." Skip only that surface.
+If neither requested surface returns a path, stop.
 
 ## Phase 1 — Parse findings
 
@@ -62,7 +73,11 @@ re-ranked as new every run. Annotate repeats instead.
 Locate the previous findings file for the same surface:
 
 ```bash
-ls -t /Users/russelllaing/al-dev-shared/docs/health/*-<surface>-findings.md 2>/dev/null | sed -n '2p'
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind findings \
+  --surface <surface> \
+  --offset 1
 ```
 
 If none exists, skip this phase (every finding is new). Otherwise, for each

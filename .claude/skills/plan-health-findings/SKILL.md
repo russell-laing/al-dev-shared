@@ -86,11 +86,20 @@ checklist — stays identical across all routing modes.
 Locate the most recent health dossier per surface:
 
 ```bash
-ls -t /Users/russelllaing/al-dev-shared/docs/health/*-health.md 2>/dev/null | head -2
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind health \
+  --surface plugin
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind health \
+  --surface tooling
 ```
 
-If no dossier exists, report: "No health dossier found. Run
-`/plugin-health-audit` first." and stop.
+If one surface returns no path, report: "No `<surface>` health dossier found.
+Run `/plugin-health-audit` for that surface first." Skip only that surface; do
+not substitute a dossier from the other surface or a legacy `both` artifact.
+If neither surface returns a path, stop.
 
 Read the latest dossier(s). Collect every open finding from these sections:
 

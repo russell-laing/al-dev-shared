@@ -45,7 +45,10 @@ known findings at full lens cost. Before dispatching:
 
 ```bash
 # Most recent dossier for the surface
-ls -t /Users/russelllaing/al-dev-shared/docs/health/*-<surface>-health.md 2>/dev/null | head -1
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind health \
+  --surface <surface>
 ```
 
 If a dossier exists, check whether its actionable findings have been
