@@ -2,7 +2,7 @@
 name: naming-convention-lens
 description: Apply the Naming Convention lens to maintainer tool files and output paths — flags any tool name or output filename that violates docs/al-dev-naming-convention.md. Returns a findings block.
 model: haiku
-tools: ["Read", "Glob"]
+tools: ["Read"]
 ---
 
 ## Inputs
