@@ -159,11 +159,9 @@ a profile row, and (for agents) a deduped caller set from Phase 2b.
 
 ## Phase 4: Compare Against Map File
 
-If `{MAP_FILE}` does not exist, skip to Phase 5 (write from scratch).
+If `{MAP_FILE}` does not exist, skip to Phase 7 (write from scratch).
 
 Read the file.
-
-### Phase 4a: Compare against map
 
 Check both layers and record each mismatch as a discrepancy.
 
@@ -203,7 +201,7 @@ For each active agent, verify the `### <filename-without-.md>` section:
 - Spawned-by list matches the Phase 2b caller set
 - Inputs/Outputs match Phase 2a findings (or "Not documented" if absent)
 
-### Phase 4b: Style-guard
+## Phase 5: Style-guard
 
 Only applies when `{MAP_FILE}` contains Mermaid diagrams (the skills surface).
 
@@ -225,15 +223,15 @@ Operationalize the Mermaid check on each diagram block:
   each ghost node as a discrepancy.
 - **Check `style` directives.** Confirm every `style X fill:...` directive's `X`
   matches a node ID that appears in a node declaration or an edge. Orphaned
-  `style` lines are discrepancies (see the Phase 5 style guard for the fix).
+  `style` lines are discrepancies (see Phase 7, Update the Map, for the fix).
 - Node IDs must use `[A-Za-z0-9_]` only (per `md-mermaid-helper.md`). A quoted
   or special-character node ID is a style violation: flag it and normalize the
   map edit to a bare canonical ID rather than treating it as a supported
   manual-check case.
 
-Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 5.
+Record any ghost nodes or orphaned `style` lines as discrepancies for Phase 7.
 
-### Phase 4c: Report and Audit-Only Exit
+## Phase 6: Report and Audit-Only Exit
 
 Before editing, summarise findings:
 
@@ -278,11 +276,11 @@ If `NO_UPDATE=true`, suggest specific fixes without modifying files, then stop:
 - Layer 2: rewrite/add/remove `### agent-name` sections
 
 Present all suggested fixes. The user may re-run without `--no-update` to apply.
-Do not proceed to Phase 5.
+Do not proceed to Phase 7.
 
 ---
 
-## Phase 5: Update the Map
+## Phase 7: Update the Map
 
 If `{MAP_FILE}` does not exist, create it. Otherwise make targeted edits to fix
 each discrepancy found in Phases 4a and 4b. Use the Edit tool for targeted
@@ -344,7 +342,7 @@ Update `**Last updated:**` to today's date.
 
 ---
 
-## Phase 6: Verify and Commit
+## Phase 8: Verify and Commit
 
 ### If SURFACE=skills
 
