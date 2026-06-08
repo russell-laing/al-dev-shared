@@ -97,6 +97,8 @@ Plugin surface.
 
 ### Identified Handoff Gaps
 
+A handoff gap occurs when an artifact produced by one skill is not guaranteed to be consumed by its intended downstream consumer, or when a critical dependency is missing from the chain. These gaps represent points where workflow continuity may be interrupted, creating risk of lost context or unprocessed outputs.
+
 #### 1. Lint Report Optional Consumption
 
 **Issue:** `al-dev-lint` produces `.dev/*-al-dev-lint-lint-report.md`, but no

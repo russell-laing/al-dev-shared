@@ -441,22 +441,150 @@ These patterns help duck agents recognize types of issues:
 - Duck check must handle both relative paths and absolute paths
 - Relativize to `profile-al-dev-shared/` base when searching
 
+**Examples:**
+
+A finding may reference a file using an absolute path from the developer's environment:
+
+```
+Suggestion found: TRIM skill located at /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/old-skill/SKILL.md
+```
+
+Normalize this for searching and verification by stripping the environment prefix:
+
+```
+Normalized path: profile-al-dev-shared/skills/old-skill/SKILL.md
+Search command: ls -la profile-al-dev-shared/skills/old-skill/SKILL.md
+```
+
+This matters because ducks run in different environments and may see different absolute prefixes. Relativizing ensures the finding is reproducible across runs and harnesses.
+
 ### Pattern: Tool invocation syntax varies
 
 - Agent invocation: `al-dev-shared:<agent-name>`
 - Skill invocation: `/skill-name`
 - Tool invocation: Tool name in YAML frontmatter `tools:` list
 
+**Example invocations:**
+
+```markdown
+# Agent SKILL.md file invoking another agent:
+## Procedure
+1. Gather requirements
+2. Run `/al-dev-plan` to create the solution plan
+3. Dispatch the plan to al-dev-shared:al-dev-develop for implementation
+
+# Agent frontmatter with tools list:
+---
+name: al-dev-review-develop
+description: Review a completed code implementation
+tools:
+  - Read
+  - Bash
+  - Edit
+---
+
+# Generated agent YAML (Copilot CLI format) invoking tools:
+tools:
+  - bash
+  - file_read
+  - file_write
+```
+
 ### Pattern: Knowledge reference paths vary
 
-- From skill: `../../knowledge/file.md`
-- From agent: `../../knowledge/file.md`
-- From generated projection: Paths are updated during projection
+Knowledge is referenced in multiple contexts with differing relative paths and syntax
+patterns. Verify references during duck checks by understanding how paths are expressed
+in each artifact type.
+
+**In skill files** (from `profile-al-dev-shared/skills/<name>/SKILL.md`):
+
+```markdown
+## Intent Preflight
+
+Before dispatching architect agents or writing a plan artifact, apply
+`knowledge/intent-preflight.md`.
+
+## Artifact Contract
+
+Use `knowledge/artifact-contracts.md` as the source of truth for this skill's
+durable outputs and success evidence.
+
+See `../../knowledge/commit-workflow-orchestration.md` — keep phase templates in sync.
+```
+
+**In agent files** (from `profile-al-dev-shared/agents/<name>.md`):
+
+```markdown
+Extract change manifests using the patterns in `knowledge/commit-analysis-patterns.md`.
+
+All sequences follow the validation loop outlined in `knowledge/compile-lint-procedure.md`.
+```
+
+**In generated projections** (from `profile-al-dev-shared/generated/agents/claude/<name>.md`):
+
+```markdown
+Extract change manifests using the patterns in `knowledge/commit-analysis-patterns.md`.
+```
+
+**Path variations to handle during verification:**
+
+- Backtracking paths from skill subdirectories: `../../knowledge/file.md`
+- Direct paths from agent files: `knowledge/file.md`
+- Paths in backticks and inline prose: `` `knowledge/artifact-contracts.md` ``
+- Paths in generated projections: Updated during projection to match location relative to the generated file
 
 ### Pattern: Generated artifacts should not be edited
 
+```markdown
+# SOURCE ARTIFACTS (Edit Here)
+profile-al-dev-shared/agents/al-dev-commit-analyzer.md
+profile-al-dev-shared/agents/al-dev-developer.md
+profile-al-dev-shared/skills/al-dev-develop/SKILL.md
+profile-al-dev-shared/knowledge/artifact-contracts.md
+
+# GENERATED ARTIFACTS (Read-Only)
+profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md
+profile-al-dev-shared/generated/agents/copilot/al-dev-commit-analyzer.md
+profile-al-dev-shared/generated/agents/codex/al-dev-commit-analyzer.md
+profile-al-dev-shared/generated/agents/claude/al-dev-developer.md
+
+# REJECTION EXAMPLES
+REJECT: "Fix typo in profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md"
+REASON: Edit source file profile-al-dev-shared/agents/al-dev-commit-analyzer.md instead
+
+REJECT: "Reorganize tool list in profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md"
+REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd.md; regenerate projections
+
+# CORRECT WORKFLOW
+1. Edit the source artifact (e.g., profile-al-dev-shared/agents/al-dev-commit-analyzer.md)
+2. Run projection regeneration (scripts/generate-projections.py)
+3. Generated artifacts in profile-al-dev-shared/generated/agents/*/ update automatically
+```
+
 - Never use ducks to suggest changes to `profile-al-dev-shared/generated/**`
 - Generated artifacts are outputs; suggest changes to shared source instead
+
+**Source-to-Generated Mapping:**
+
+| Content Type | Source Path (Edit Here) | Generated Paths (Read-Only) |
+| --- | --- | --- |
+| Agent | `profile-al-dev-shared/agents/al-dev-commit-analyzer.md` | `profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md` and similar for copilot/, codex/ |
+| Skill | `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` | No generated copies; distributed as-is |
+| Knowledge | `profile-al-dev-shared/knowledge/artifact-contracts.md` | No generated copies; distributed as-is |
+
+**Example violations to reject:**
+
+- Duck suggests: "Fix typo in `profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md`"
+  → REJECT: Edit the source file `profile-al-dev-shared/agents/al-dev-commit-analyzer.md` instead
+  
+- Duck suggests: "Reorganize tool list in `profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md`"
+  → REJECT: Make changes to source `profile-al-dev-shared/agents/al-dev-developer-tdd.md`; regenerate projections afterward
+
+**Correct workflow:**
+
+1. Edit the source artifact (e.g., `profile-al-dev-shared/agents/al-dev-commit-analyzer.md`)
+2. Run the projection regeneration step (e.g., `scripts/generate-projections.py`)
+3. Generated artifacts in `profile-al-dev-shared/generated/agents/*/` are updated automatically
 
 ---
 
