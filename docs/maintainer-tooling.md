@@ -529,14 +529,14 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-07 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-07 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-05 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-07 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-10 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-10 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-08 |

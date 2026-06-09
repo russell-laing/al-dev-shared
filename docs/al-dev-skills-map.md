@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-04
+**Last updated:** 2026-06-10
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 22 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -1063,3 +1063,5 @@ flowchart LR
 > History: in-map suggestions through 2026-05-27 were retired when findings
 > converged on the health dossier (2026-06-02).
 >
+
+</content>

@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-07 (analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-10 (analysis refreshed with 5 new suggestions)
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
@@ -18,7 +18,7 @@
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-message-drafter | haiku | (none) | `/al-dev-commit` |
+| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop` |
@@ -26,7 +26,7 @@
 | al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
-| al-dev-general-code-reviewer | sonnet | Read | (none found) |
+| al-dev-general-code-reviewer | haiku | Read | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server | `/al-dev-release-notes` |
@@ -45,7 +45,7 @@
 ### al-dev-general-code-reviewer
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
@@ -90,7 +90,7 @@
 ### al-dev-commit-message-drafter
 
 **Description:** Git commit message drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** (none)
 **Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
 
