@@ -2,8 +2,9 @@
 name: plugin-health-report
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
-  /plugin-health-discover, ranks findings, writes the dossier, and presents
-  results to the user.
+  /plugin-health-discover, filters out stale and disposition-suppressed
+  findings, ranks the remainder, writes the dossier, and presents results to
+  the user.
   Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
@@ -104,7 +105,7 @@ python3 scripts/select_health_artifacts.py \
 If none exists, skip this phase (every finding is new). Otherwise, for each
 parsed finding, check whether the same object with substantially the same
 issue appears in the previous findings file (match on substance, not
-wording). For each repeat:
+wording — i.e. the same object with the same observable finding, even if rephrased). For each repeat:
 
 - Annotate the finding line in the dossier with `(open since YYYY-MM-DD)`.
   Carry the **earliest** known date forward — if the prior dossier already
@@ -157,7 +158,8 @@ parsed finding against ledger rows by object + issue essence:
   finding as suspect: verify against the live subject file (Phase 1c
   protocol). If the claim no longer holds, drop it under "Stale (dropped)";
   if the issue has genuinely regressed, keep it and note "regressed —
-  previously fixed in [commit]".
+  previously fixed in [commit]". This suspect rule applies only to findings marked `fixed`;
+  `declined`, `grandfathered`, and `accepted` dispositions follow their own bullets in this list.
 - **`accepted`** → keep, and annotate "(accepted YYYY-MM-DD — awaiting
   implementation)".
 
