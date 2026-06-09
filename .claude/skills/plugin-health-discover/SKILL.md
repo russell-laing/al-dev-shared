@@ -2,8 +2,8 @@
 name: plugin-health-discover
 description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
-  context from documentation maps, dispatches all design, quality, and naming
-  lenses,
+  context from documentation maps, dispatches design, quality, and naming lenses
+  (surface-scoped — one design lens excluded for the tooling surface; see Phase 3.1b),
   and writes RAW (unranked) lens findings to
   docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
@@ -58,8 +58,10 @@ python3 scripts/select_health_artifacts.py \
 If a dossier exists, check whether its actionable findings have been
 dispositioned in `docs/health/dispositions.md`. A single recent ledger row is
 not enough; the prior dossier must have recorded accept / decline / fixed /
-grandfather decisions for the findings it asked the user to triage. If the
-ledger is absent or the dossier still lacks disposition coverage, warn:
+grandfather decisions for the findings it asked the user to triage.
+Coverage means every actionable finding in that dossier has a ledger row
+(accepted, declined, grandfathered, or fixed). If the ledger is absent or
+the dossier still lacks disposition coverage, warn:
 
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
@@ -98,16 +100,18 @@ Skip the guard and the stale-open check when `--resume` is present
 
 ## Phase 1 — Build file lists (per requested surface)
 
-For each requested surface, glob both object types:
+For each requested surface, glob both object types. All paths are absolute;
+set `REPO` first so the commands work on any machine:
 
 ```bash
+REPO=$(git rev-parse --show-toplevel)
 # plugin surface
-find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents -name "*.md" | sort
-find /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills -name "SKILL.md" | sort
+find "$REPO/profile-al-dev-shared/agents" -name "*.md" | sort
+find "$REPO/profile-al-dev-shared/skills" -name "SKILL.md" | sort
 # tooling surface
-find /Users/russelllaing/al-dev-shared/.claude/agents -name "*.md" | sort
+find "$REPO/.claude/agents" -name "*.md" | sort
 # workflow-contracted skills only; adjacent tools (no workflow: block) are excluded to avoid noise and cost
-find /Users/russelllaing/al-dev-shared/.claude/skills -name "SKILL.md" ! -path "*/archived/*" \
+find "$REPO/.claude/skills" -name "SKILL.md" ! -path "*/archived/*" \
   | while read f; do grep -q "^workflow:" "$f" && echo "$f"; done \
   | sort
 ```
@@ -130,6 +134,8 @@ Extract context from documentation maps before dispatching lenses.
 - Extract the Layer 1 diagram block → `layer1_diagram_content`
 - For each skill section: extract phase count, agent references, output files
 - Build: `phase_counts`, `handoff_chains`, `preplanning_skills` (skills with `-.->` arrows)
+
+### Derived dispatch context
 
 **Compute derived mappings:**
 
@@ -165,15 +171,13 @@ If NOT invoked with `--resume`:
 
 ### 3.1b Surface-scoped lens filter
 
-`ALL_LENSES` is surface-dependent. `design-skill-lens-surface-placement`
-exists solely to find **distributed** skills that belong in the repo-local
-maintainer surface; aimed at files already in the maintainer surface it can
-only emit false "Move" findings. Any "Move" suggestion against a
-tooling-surface file is a non-actionable false positive.
+`ALL_LENSES` is surface-dependent:
 
 - Surface `plugin` → all lenses.
 - Surface `tooling` → exclude `design-skill-lens-surface-placement` from
-  `ALL_LENSES` before computing `remaining_lenses`.
+  `ALL_LENSES` before computing `remaining_lenses` — it is designed to find
+  distributed skills that belong in the maintainer surface; aimed at
+  tooling-surface files, it can only emit non-actionable Move false positives.
 
 ### 3.2 Dispatch lenses in-session (parallel, isolated subagents)
 
