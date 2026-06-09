@@ -7,7 +7,9 @@ description: >-
   codebase before any plan content is written, then produces a verified
   implementation plan via the writing-plans sub-skill. Filter the worklist by
   object type with `--skills` or `--agents` to plan only skill-design or
-  agent-design findings. Use when the latest health dossier in docs/health/ has
+  agent-design findings, and scope it by surface and dimension with `--surface
+  plugin|tooling|both` and `--dimension design|quality|naming|all`. Use when the
+  latest health dossier in docs/health/ has
   accepted findings that need implementing. Run /plugin-health-audit first if
   the plugin or tooling surface has changed since the dossier was last
   generated. Triggers on:
@@ -38,9 +40,9 @@ plan task is written until the live codebase state behind each finding is
 confirmed. This prevents plans based on finding text that diverges from actual
 code.
 
-Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
-canonical source of truth for surface values, dimension values, plan provenance,
-legacy `unknown`, and filter ordering.
+**MUST READ before Phase 1:** Read `.claude/knowledge/health-filter-contract.md`
+and treat it as the canonical source of truth for surface values, dimension
+values, plan provenance, legacy `unknown`, and filter ordering.
 
 ---
 
@@ -106,10 +108,15 @@ python3 scripts/select_health_artifacts.py \
   --surface tooling
 ```
 
-If one surface returns no path, report: "No `<surface>` health dossier found.
-Run `/plugin-health-audit` for that surface first." Skip only that surface; do
-not substitute a dossier from the other surface or a legacy `both` artifact.
-If neither surface returns a path, stop.
+Branch on the two `select_health_artifacts.py` results:
+
+- **Exactly one surface returns no path:** report `No <surface> health dossier
+  found. Run /plugin-health-audit for that surface first.`, skip only that
+  surface (do not substitute the other surface's dossier or a legacy `both`
+  artifact), and continue with the surface that did return a path.
+- **Neither surface returns a path:** stop with `No health dossier found for
+  either surface; run /plugin-health-audit first.` Write no plan.
+- **Both surfaces return a path:** proceed with both.
 
 Read the latest dossier(s). Collect every open finding from these sections:
 
@@ -158,7 +165,10 @@ written."
 A dossier is a point-in-time snapshot. Findings are routinely implemented
 piecemeal between the audit and this planning step, so any finding whose
 subject file changed *after* the dossier was generated is likely already
-addressed (or has drifted out from under the finding text). Flag these before
+addressed (or has drifted out from under the finding text). The
+staleness command below uses `--since="$DOSSIER_DATE 00:00"`, so any commit on or
+after 00:00 on the dossier date counts as "after" (e.g. for a `2026-06-10`
+dossier, a commit at `2026-06-10 08:29` is in scope). Flag these before
 spending rubber-duck effort on them.
 
 For each dossier, take its date from the filename (`YYYY-MM-DD-<surface>-health.md`).
@@ -215,11 +225,13 @@ produces or modifies; dispatch in topological order, parallelising any set with
 no incoming edges.
 
 When any topological layer (a set of suggestions with no incoming edges) contains
-3+ suggestions, invoke `superpowers:dispatching-parallel-agents` for that layer
-before starting rubber-ducking. Dispatch one Explore subagent per suggestion.
-Each agent should: read the affected file(s) in full, run U2 artifact checks,
-run the type-specific grep(s), and return a structured rubber duck record.
-Collect all records before writing any plan content.
+3+ suggestions, dispatch that layer to parallel exploration agents before starting
+rubber-ducking (in Claude Code, invoke `superpowers:dispatching-parallel-agents`),
+dispatching one Explore subagent per suggestion. Each agent should: read the
+affected file(s) in full, run U2 artifact checks, run the type-specific grep(s),
+and return a structured rubber duck record. Collect all records before writing any
+plan content. If parallel dispatch is unavailable, rubber-duck the layer
+sequentially instead.
 
 When every layer contains ≤2 suggestions, the sequential inline path is fine.
 
@@ -242,7 +254,9 @@ When the accepted worklist contains both skill and agent findings, verify the
 two layers together before writing any verdicts:
 
 1. Trace each affected skill-to-agent handoff through the live skill callers
-   and agent "Spawned by" references. Record missing, stale, or contradictory
+   (a *live skill caller* is a skill file that spawns the agent — search active
+   skill bodies for the agent's `al-dev-shared:<agent-name>` invocation) and
+   agent "Spawned by" references. Record missing, stale, or contradictory
    caller relationships in the relevant rubber duck records.
 2. Compare skill complexity with agent model assignments using the current
    maps, then confirm disputed values against the live skill and agent source.
