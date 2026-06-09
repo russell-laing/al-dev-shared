@@ -119,48 +119,37 @@ still open work), but the Summary must split the totals: new vs recurring.
 
 ## Phase 1c — Staleness gate (before ranking)
 
-A lens may re-issue an old complaint against text that has already been
-fixed, and a findings file goes stale the moment fix commits land. Label
-suspect findings before they can be ranked:
+Apply the **staleness spot-check protocol** from
+`../../knowledge/health-audit-preconditions.md` to every High finding and every
+top-5 candidate before ranking. Resolve the subject to its file path (skill →
+`profile-al-dev-shared/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`;
+agent → the matching `agents/<name>.md`), then run the protocol's `git log --since`
+check, supplying `FINDINGS_DATE` (from this skill's findings-file name) in place of
+the protocol's generic `DOSSIER_DATE` boundary — and, for recurring findings, again
+with `PRIOR_DATE` from Phase 1b, since a repeat whose
+subject changed between sweeps may be a lens re-issuing a complaint against
+already-fixed text. Label any whose subject changed `⚠ possibly stale`.
 
-For every High finding and every top-5 candidate, resolve the subject to a
-file path (skill → `profile-al-dev-shared/skills/<name>/SKILL.md` or
-`.claude/skills/<name>/SKILL.md`; agent → the matching `agents/<name>.md`),
-then check:
-
-```bash
-# FINDINGS_DATE from the findings filename; PRIOR_DATE from Phase 1b
-git log --since="$FINDINGS_DATE 00:00" --oneline -- "$SUBJECT_PATH"
-```
-
-- Non-empty output → the subject changed **after** the findings were
-  generated: label `⚠ possibly stale`.
-- For recurring findings, also run with `--since="$PRIOR_DATE 00:00"` — a
-  repeat whose subject changed between sweeps may be a lens re-issuing a
-  complaint against already-fixed text: label `⚠ possibly stale`.
-
-A labelled finding may enter the top 5 only after reading the live subject
-file and confirming the claim still holds; record the spot-check ("verified
-against live file [date]") next to the action. If the claim no longer
-holds, drop the finding from counts and list it under a "Stale (dropped)"
-note instead.
+A labelled finding may enter the top 5 only after reading the live subject file
+and confirming the claim still holds; record the spot-check ("verified against
+live file [date]") next to the action. If the claim no longer holds, drop the
+finding from counts and list it under a "Stale (dropped)" note instead.
 
 ## Phase 1d — Disposition suppression
 
-Read `docs/health/dispositions.md` (skip this phase if absent). Match each
-parsed finding against ledger rows by object + issue essence:
+Read `docs/health/dispositions.md` (skip this phase if absent). Match each parsed
+finding against ledger rows by object + issue essence, then apply the
+**disposition suppression rules** from
+`../../knowledge/health-audit-preconditions.md`:
 
-- **`declined` / `grandfathered`** → suppress: exclude from severity
-  counts, dimension grouping, and top-5. List one line each under a
-  "Dispositioned (suppressed)" note at the foot of the dossier. These are
-  settled decisions; the dossier must not re-litigate them.
-- **`fixed`** → if the lens has re-flagged the same issue, treat the
-  finding as suspect: verify against the live subject file (Phase 1c
-  protocol). If the claim no longer holds, drop it under "Stale (dropped)";
-  if the issue has genuinely regressed, keep it and note "regressed —
-  previously fixed in [commit]". This suspect rule applies only to findings marked `fixed`;
-  `declined`, `grandfathered`, and `accepted` dispositions follow their own bullets in this list.
-- **`accepted`** → keep, and annotate "(accepted YYYY-MM-DD — awaiting
+- **`declined` / `grandfathered`** → suppress (exclude from severity counts,
+  dimension grouping, and top-5); list one line each under a
+  "Dispositioned (suppressed)" note at the foot of the dossier.
+- **`fixed`** → treat a re-flagged finding as suspect and verify it against the
+  live subject file (Phase 1c spot-check); drop it under "Stale (dropped)" if the
+  claim no longer holds, or keep it with a "regressed — previously fixed in
+  [commit]" note if it genuinely regressed.
+- **`accepted`** → keep, annotated "(accepted YYYY-MM-DD — awaiting
   implementation)".
 
 ## Phase 2 — Rank and Write Dossier
