@@ -210,30 +210,10 @@ plan content until all suggestions are rubber-ducked.
 > mismatch or gap, resolve it before moving to the next suggestion.
 > See `knowledge/rubber-duck.md` for the underlying protocol.
 
-### Progress tracking
-
-Before rubber-ducking any suggestion, create one TodoWrite todo per suggestion
-named `[Type] [Subject]`. Mark each todo in-progress when rubber-ducking begins,
-complete when the rubber duck record is written.
-
-### Parallel exploration
-
-Two suggestions are **independent** iff (a) the file sets they would modify are
-disjoint, AND (b) neither suggestion's subject file is read during the other's
-rubber-duck checks. Build a directed edge A→B when B's checks must read a file A
-produces or modifies; dispatch in topological order, parallelising any set with
-no incoming edges.
-
-When any topological layer (a set of suggestions with no incoming edges) contains
-3+ suggestions, dispatch that layer to parallel exploration agents before starting
-rubber-ducking (in Claude Code, invoke `superpowers:dispatching-parallel-agents`),
-dispatching one Explore subagent per suggestion. Each agent should: read the
-affected file(s) in full, run U2 artifact checks, run the type-specific grep(s),
-and return a structured rubber duck record. Collect all records before writing any
-plan content. If parallel dispatch is unavailable, rubber-duck the layer
-sequentially instead.
-
-When every layer contains ≤2 suggestions, the sequential inline path is fine.
+**Before running checks:** read `../../knowledge/rubber-duck-orchestration.md`.
+It covers progress tracking, the independence/parallel-exploration rule, and
+cross-layer (skill↔agent) verification. This skill keeps only the check pointer
+and the record format.
 
 ### Checks
 
@@ -247,26 +227,6 @@ For all checks — Universal (U1–U3) and type-specific (Connect, Extend, Merge
 Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
 
 `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
-
-### Cross-layer verification (conditional)
-
-When the accepted worklist contains both skill and agent findings, verify the
-two layers together before writing any verdicts:
-
-1. Trace each affected skill-to-agent handoff through the live skill callers
-   (a *live skill caller* is a skill file that spawns the agent — search active
-   skill bodies for the agent's `al-dev-shared:<agent-name>` invocation) and
-   agent "Spawned by" references. Record missing, stale, or contradictory
-   caller relationships in the relevant rubber duck records.
-2. Compare skill complexity with agent model assignments using the current
-   maps, then confirm disputed values against the live skill and agent source.
-   Do not rely on dossier-era assignments when the source has changed.
-3. Identify skill and agent changes that must land together to preserve a
-   handoff, model fit, or shared pattern. Record each coupled pair either as one
-   plan task or as explicit task dependencies.
-
-This verification creates no standalone synthesis artifact. Its evidence stays
-in the rubber duck records and the resulting implementation plan.
 
 ### Rubber duck record
 
