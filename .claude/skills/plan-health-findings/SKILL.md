@@ -32,7 +32,6 @@ workflow:
 
 # Plan Health Findings
 
-Invoked as `/plan-health-findings` (formerly `/verify-map-suggestions`).
 Translates findings from the latest health
 dossier in `docs/health/` into a verified implementation plan. The rubber-ducking phase is **mandatory** — no
 plan task is written until the live codebase state behind each finding is
@@ -268,11 +267,7 @@ Scope gap:    [anything the suggestion underspecifies, or "none"]
 Verdict:      proceed | modify [reason] | skip [reason]
 ```
 
-> **Verdict vocabulary note:** This record uses the planning verdict
-> `proceed | modify | skip`, which is local to this skill's planning stage. It is
-> deliberately distinct from the `ACCEPT | DEFER | REJECT` classification in
-> `map-change-rubber-duck-checks.md`, which governs the upstream health-audit duck
-> agents. Do not merge the two vocabularies.
+> **Verdict vocabulary:** Use `proceed | modify | skip` here; do not conflate with the duck-check `ACCEPT | DEFER | REJECT` in `map-change-rubber-duck-checks.md`.
 
 If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do
 not write plan content for it.
@@ -287,6 +282,7 @@ health_filters:
     - quality
     - naming
 ```
+
 not create a plan task for it. Record skipped suggestions in a `## Skipped` section at
 the end of the plan file with the reason noted.
 
