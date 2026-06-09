@@ -2,8 +2,7 @@
 name: record-health-dispositions
 description: >-
   Disposition phase of the health-audit loop. Walks the open findings in the
-  latest health dossier(s), collects an accept / decline / grandfather /
-  fixed decision per finding at a user gate, and appends correctly formatted
+  latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding at a user gate, and appends correctly formatted
   rows to docs/health/dispositions.md. Run after /plugin-health-audit and
   before /plan-health-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
@@ -92,6 +91,9 @@ finding that already matches a ledger row by **surface + dimension + object +
 issue essence**
 (not exact wording — lenses rephrase between sweeps).
 
+Declined, grandfathered, and fixed findings are closed: skip them entirely (no row, no re-litigation).
+Keep only undispositioned and accepted findings in this round's worklist.
+
 Report before the gate: "N open findings; M already dispositioned
 (skipped)."
 
@@ -107,8 +109,10 @@ issue, proposed fix. Collect one decision per finding from the user:
 - `fixed` — requires a commit hash or "verified against live file `<date>`"
 - `skip` — leave undispositioned this round (no row written)
 
-Batch decisions are fine ("accept 1-3, decline 4 because X"). Never invent
-a decision: every non-skip row needs explicit user input.
+Batch decisions are fine when the user groups them explicitly ("accept 1-3,
+decline 4 because X"); each batch still needs an explicit justification covering
+its members. Never invent a decision: every non-skip row needs explicit user
+input.
 
 **Contradictory-batch guard:** before writing any row from a batched response,
 check whether the same object + issue essence appears twice with different
@@ -122,8 +126,7 @@ first — name the conflicting row and stop on that finding only.
 
 ## Phase 3 — Append rows
 
-Append one row per non-skip decision at the bottom of the table, in the
-existing format:
+Append one row per non-skip decision at the bottom of the table, using the seven-column schema defined below.
 
 ```markdown
 | <surface> | <dimension> | <object> | <issue essence — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / reason> |
