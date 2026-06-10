@@ -236,6 +236,178 @@ Error(InvalidValueErr, fieldValue);
 // InvalidValueErr = 'Invalid value: %1';
 ```
 
+### Error('') — Empty-String Error Call
+
+**Pattern:** Calling `Error('')` or `Error(StrSubstNo(''))` produces no
+user-facing message. Any cancellation or failure silently absorbs the error
+with a blank dialog, which is both confusing and violates BC UX conventions.
+
+Bad:
+
+```al
+// Inside a TryFunction — let it return false; don't swallow with Error('')
+if not Email.Send(Message) then
+    Error('');   // No message; user sees nothing useful
+```
+
+Good:
+
+```al
+// TryFunction: let false propagate naturally — caller checks return value
+if not Email.Send(Message) then
+    exit;   // or: IsHandled := false;  Let caller handle the false result
+
+// For user-initiated cancellation:
+OperationCancelledErr: Label 'Operation was cancelled by the user.';
+...
+Error(OperationCancelledErr);
+```
+
+**Rule:** Every `Error()` call must include a non-empty, translateable label
+as its first argument. Never pass an empty string literal.
+
+---
+
+### Hardcoded Business Constants in Logic and Field MaxValue
+
+**Pattern:** Business-logic thresholds (e.g., max retry count, interval
+minutes) hardcoded in both field `MaxValue` and inline `if` comparisons.
+Changing the limit requires two edits with no compile-time link, and admins
+cannot configure the value at runtime.
+
+Bad:
+
+```al
+// Tab50509 field definition
+field(5; "Retry Count"; Integer) { MaxValue = 3; }   // constant 1
+
+// Cod50504 comparison
+if Entry."Retry Count" >= 3 then    // constant 2 — silently diverges
+    exit;
+```
+
+Good:
+
+```al
+// Setup table holds the configurable value
+field(10; "Max Retry Count"; Integer) { InitValue = 3; }
+
+// Logic reads from setup
+if Entry."Retry Count" >= Setup."Max Retry Count" then
+    exit;
+```
+
+**Review checklist item:** When a business-logic constant appears in more
+than one location, flag it. When the feature has a setup table, verify that
+configurable thresholds are fields on that setup table, not inline literals.
+
+---
+
+### GetSafe() Concurrent Insert Race
+
+**Pattern:** The common `if not Get() then Insert()` initialization pattern
+is unsafe under concurrency. Two sessions can both fail the `Get()` check
+simultaneously and both call `Insert()` — one throws a duplicate-key error.
+Especially dangerous in event subscriber contexts (inside another transaction).
+
+Bad:
+
+```al
+procedure GetSetupSafe()
+begin
+    if not Get() then begin
+        Init();
+        Insert();   // Race: two sessions can reach here simultaneously
+    end;
+end;
+```
+
+Good — option A (insert-or-ignore pattern):
+
+```al
+procedure GetSetupSafe()
+begin
+    if not Get() then begin
+        Init();
+        if not Insert() then   // If duplicate key, another session won — just Get()
+            Get();
+    end;
+end;
+```
+
+Good — option B (pre-create exclusively in install codeunit):
+
+```al
+// OnInstallAppPerCompany — create the record once
+procedure OnInstallAppPerCompany()
+var
+    Setup: Record "Retry Setup";
+begin
+    if not Setup.Get() then begin
+        Setup.Init();
+        Setup.Insert();
+    end;
+end;
+
+// GetSetupSafe — just Get(); never inserts
+procedure GetSetupSafe()
+begin
+    if not Get() then
+        Error(SetupNotFoundErr);
+end;
+```
+
+**Review checklist item:** Search all `GetSetupSafe`-style procedures for
+the `if not Get() then Insert()` pattern. Flag any that do not use option A
+or B above. Also flag any `GetSetupSafe` called from within event subscriber
+context — unexpected inserts inside another transaction can corrupt outer
+transaction state.
+
+---
+
+### Option Field Instead of Enum
+
+**Pattern:** Using the `Option` type for a field when the values could be
+an independent `Enum`. Option types create two independent OptionMember
+lists with no compile-time link — if one diverges, there is no error.
+
+Bad:
+
+```al
+// Field definition
+field(7; "Sender Type"; Option)
+{
+    OptionMembers = User,Application,Unknown;
+}
+
+// Codeunit — mirrored Option list; divergence is silent
+var
+    SenderType: Option User,Application,Unknown;
+```
+
+Good:
+
+```al
+// Separate enum object
+enum 50501 "ACAKAU08 Email Sender Type"
+{
+    Extensible = false;
+    value(0; User) { Caption = 'User'; }
+    value(1; Application) { Caption = 'Application'; }
+    value(2; Unknown) { Caption = 'Unknown'; }
+}
+
+// Field uses the enum
+field(7; "Sender Type"; Enum "ACAKAU08 Email Sender Type") { }
+
+// Codeunit parameter uses same enum — single definition
+procedure ResolveSender(var SenderType: Enum "ACAKAU08 Email Sender Type")
+```
+
+**Note:** Changing an `Option` field to an `Enum` is a schema-impacting
+change on a live table. Flag it as MEDIUM and note the upgrade codeunit
+requirement. Do not block on this finding — document and defer.
+
 ## Severity Classification
 
 ### Critical
