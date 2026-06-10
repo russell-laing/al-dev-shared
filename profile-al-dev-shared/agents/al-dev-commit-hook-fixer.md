@@ -1,11 +1,12 @@
 ---
 name: al-dev-commit-hook-fixer
 description: >-
-  Diagnose and recover from pre-commit hook failures. Analyzes hook error logs,
-  identifies root causes, applies scripted fixes, and re-stages affected files.
-  Never re-runs commits itself — returns next_step guidance so the caller
-  re-dispatches the execute agent. Complements al-dev-commit-executor by
-  handling the error path in isolation.
+  Apply scripted recovery fixes for classified pre-commit hook failures.
+  Reads the HOOK_CLASSIFICATIONS block from al-dev-commit-hook-classifier,
+  applies scripted bash fixes for Fixable failures, re-stages affected files,
+  and returns recovery status. Never re-runs commits itself — returns next_step
+  guidance so the caller re-dispatches the execute agent. Handles the error
+  path in isolation; classification is handled by al-dev-commit-hook-classifier.
 model: sonnet
 tools: ["Read", "Write", "Bash"]
 ---
@@ -24,11 +25,12 @@ owns the success path, this agent owns the error path.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/hook-failures.json` | **Yes** | Hook execution output and error logs from the failed commit attempt (hook name, exit code, captured stderr/stdout) |
+| `HOOK_CLASSIFICATIONS` block | **Yes** | Per-failure classification from al-dev-commit-hook-classifier; provided in the dispatch prompt or in `.dev/hook-classifications.json` if written by the caller |
 | `.dev/commits.json` | **Yes** | Commit details that triggered the hooks (group id, files, approved message) |
 
-If either input file is missing, read the `HOOK_FAILURES` block from the
-dispatch prompt instead, and note the missing artifact in your output.
+If `.dev/hook-classifications.json` is missing, read the `HOOK_CLASSIFICATIONS`
+block from the dispatch prompt. If `.dev/commits.json` is missing, read the
+group file list from the dispatch prompt context.
 
 ## Outputs
 
@@ -47,23 +49,20 @@ to make a commit pass.
 
 ## Procedure
 
-### Step 1: Load failure context
+### Step 1: Load classification context
 
-Read `.dev/hook-failures.json` and `.dev/commits.json`. For each failed group,
-extract:
+Read the `HOOK_CLASSIFICATIONS` block from the dispatch prompt (or from
+`.dev/hook-classifications.json` if written by the caller). Read
+`.dev/commits.json` for the staged file list per group.
 
-- `hook_name` — which hook rejected the commit
-- `exit_code` — the hook's exit code
-- `error_log` — the captured hook output (stderr/stdout)
-- the staged files for that group (from `commits.json`)
+For each failure in `HOOK_CLASSIFICATIONS.failures`, extract:
 
-### Step 2: Classify each failure
+- `hook_name`
+- `recoverability` — the classification assigned by al-dev-commit-hook-classifier
+- `root_cause`
+- `recommended_fix`
 
-Determine the root cause from the error log and assign a recovery action per the
-Failure Classification table in `knowledge/commit-hook-recovery-patterns.md`
-(Fixable → retry, Non-fixable → manual-review, Transient → retry).
-
-### Step 3: Apply scripted recovery (Fixable + Transient only)
+### Step 2: Apply scripted recovery (Fixable + Transient only)
 
 For **Fixable** failures, apply a scripted fix via Bash **only if all three conditions are met**:
 
@@ -94,7 +93,7 @@ For **Transient** failures, no file change is needed; mark for retry.
 For **Non-fixable** failures, do NOT attempt an edit. Record the root cause and
 a concrete manual recommendation.
 
-### Step 4: Determine recovery status
+### Step 3: Determine recovery status
 
 Aggregate per-failure actions into one overall `recovery_status`:
 
@@ -102,7 +101,7 @@ Aggregate per-failure actions into one overall `recovery_status`:
 - `needs-manual-intervention` — at least one failure is `manual-review`; caller must surface to the user before any retry
 - `non-recoverable` — failures cannot be fixed by retry or by the user within this workflow (e.g., a hook itself is broken); caller must abort the commit
 
-### Step 5: Return block
+### Step 4: Return block
 
 ```text
 HOOK_FAILURES:
