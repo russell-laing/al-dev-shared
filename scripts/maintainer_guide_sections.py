@@ -285,13 +285,23 @@ def _assert_unique_artifact_ids(templates: list[str]) -> None:
 
 
 def _entry_skills(contracts: list[WorkflowContract]) -> list[WorkflowContract]:
-    """User-invocable core-stage skills not named in any same-stage skill's next list."""
+    """User-invocable core-stage skills not named in any same-stage skill's next list.
+
+    Only non-user-invocable same-stage targets (i.e. skill-dispatched steps) are
+    suppressed from the overview.  User-invocable same-stage targets remain visible
+    so that chains like record-health-dispositions → plan-health-findings both appear
+    in the decide subgraph.
+    """
     by_name = {c.skill: c for c in contracts}
     same_stage_targets: set[str] = set()
     for contract in contracts:
         for target in contract.next_skills:
             target_contract = by_name.get(target)
-            if target_contract is not None and target_contract.stage == contract.stage:
+            if (
+                target_contract is not None
+                and target_contract.stage == contract.stage
+                and not is_user_invocable(target_contract)
+            ):
                 same_stage_targets.add(target)
     return [
         c

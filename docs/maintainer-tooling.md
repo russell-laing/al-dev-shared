@@ -57,18 +57,27 @@ flowchart LR
 
     subgraph stage_map_sync["Map sync"]
         skill_review_maps["/review-maps"]
+        skill_sync_documentation_maps["/sync-documentation-maps"]
+        skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
+        skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
+        skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
     end
     subgraph stage_discover["Discover"]
         skill_plugin_health_audit["/plugin-health-audit"]
+        skill_plugin_health_discover["/plugin-health-discover"]
+        skill_plugin_health_report["/plugin-health-report"]
     end
     subgraph stage_decide["Decide"]
+        skill_plan_health_findings["/plan-health-findings"]
         skill_record_health_dispositions["/record-health-dispositions"]
     end
     subgraph stage_implement["Implement"]
         skill_implement_health_plan["/implement-health-plan"]
     end
     subgraph stage_derive["Derive"]
+        skill_align_harness_repos["/align-harness-repos"]
         skill_audit_knowledge_quality["/audit-knowledge-quality"]
+        skill_fix_knowledge_quality["/fix-knowledge-quality"]
         skill_projection_sync["/projection-sync"]
     end
     stage_map_sync ~~~ stage_discover
@@ -76,18 +85,38 @@ flowchart LR
     stage_decide ~~~ stage_implement
     stage_implement ~~~ stage_derive
 
+    skill_audit_knowledge_quality -- "docs/al-dev-knowledge-quality.md" --> skill_fix_knowledge_quality
+    skill_fix_knowledge_quality -- "profile-al-dev-shared/knowledge/" --> skill_align_harness_repos
+    skill_implement_health_plan --> skill_align_harness_repos
     skill_implement_health_plan --> skill_audit_knowledge_quality
     skill_implement_health_plan --> skill_projection_sync
-    skill_plugin_health_audit -- "docs/health/*-*-health.md" --> skill_record_health_dispositions
-    skill_record_health_dispositions -- "docs/health/dispositions.md + docs/superpowers/plans/*-*.md" --> skill_implement_health_plan
-    skill_review_maps -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_plugin_health_audit
+    skill_plan_health_findings -- "docs/superpowers/plans/*-*.md" --> skill_implement_health_plan
+    skill_plugin_health_audit --> skill_plugin_health_discover
+    skill_plugin_health_discover -- "docs/health/*-*-findings.md" --> skill_plugin_health_report
+    skill_plugin_health_report -- "docs/health/*-*-health.md" --> skill_record_health_dispositions
+    skill_projection_sync --> skill_align_harness_repos
+    skill_record_health_dispositions -- "docs/health/dispositions.md" --> skill_plan_health_findings
+    skill_review_maps --> skill_sync_documentation_maps
+    skill_sync_documentation_maps -- ".dev/sync-documentation-maps-checkpoint.json + .dev/sync-documentation-maps-runs/*/audit/*-audit.json" --> skill_sync_documentation_maps_collect
+    skill_sync_documentation_maps_apply -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_sync_documentation_maps_write
+    skill_sync_documentation_maps_collect -- ".dev/sync-documentation-maps-runs/*/updates/*-map.md" --> skill_sync_documentation_maps_apply
+    skill_sync_documentation_maps_write --> skill_plugin_health_audit
 
+    class skill_align_harness_repos userSkill
     class skill_audit_knowledge_quality userSkill
+    class skill_fix_knowledge_quality userSkill
     class skill_implement_health_plan userSkill
+    class skill_plan_health_findings userSkill
     class skill_plugin_health_audit userSkill
+    class skill_plugin_health_discover userSkill
+    class skill_plugin_health_report userSkill
     class skill_projection_sync userSkill
     class skill_record_health_dispositions userSkill
     class skill_review_maps userSkill
+    class skill_sync_documentation_maps userSkill
+    class skill_sync_documentation_maps_apply userSkill
+    class skill_sync_documentation_maps_collect userSkill
+    class skill_sync_documentation_maps_write userSkill
 ```
 <!-- END GENERATED: maintainer-workflow-overview -->
 
@@ -571,7 +600,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-10 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/health/*-*-findings.md` | never produced |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
