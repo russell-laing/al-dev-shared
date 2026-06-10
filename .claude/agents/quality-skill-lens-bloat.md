@@ -11,6 +11,8 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to `SKILL.md` files |
 
+**Note:** The step/phase count check counts top-level `## Step` and `## Phase` headers specifically — other heading levels (e.g. `###`) are not counted toward the >8 threshold.
+
 ## Outputs
 
 Returns a findings block. See Output Format.
