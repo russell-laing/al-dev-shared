@@ -59,8 +59,8 @@ Before analyzing any file, create one task per flagged file using `TaskCreate` n
 Count the flagged files and choose the execution path with one threshold-driven
 decision:
 
-- **4+ flagged files** → parallel path (Phase 2b, Parallel Exploration).
-- **≤3 flagged files** (or files with ordering dependencies) → sequential path (Phase 2b, Sequential Analysis).
+- **4 or more flagged files AND no ordering dependencies among them** → parallel path (Phase 2b, Parallel Exploration).
+- **Otherwise** (3 or fewer flagged files, or any ordering dependency between flagged files) → sequential path (Phase 2b, Sequential Analysis).
 
 ### Phase 2b: Analyze (parallel or sequential)
 
