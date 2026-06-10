@@ -17,6 +17,8 @@ tools: ["Read", "Bash", "Write"]
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
 | result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
 
+**Preconditions:** Repository root must contain `profile-al-dev-shared/skills/`, `profile-al-dev-shared/archived/skills/` (may be absent), and `docs/al-dev-skills-map.md`. All relative paths in instructions assume root `/Users/russelllaing/al-dev-shared`.
+
 ## Outputs
 
 Writes `<result_dir>/audit/skill-audit.json` and returns its absolute path as

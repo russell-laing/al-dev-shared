@@ -19,6 +19,8 @@ tools: ["Read", "Bash", "Write"]
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
 | result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
 
+**Preconditions:** `scripts/derive-agent-callers.py` must exist at `<repo-root>/scripts/`. If the script is absent or exits non-zero, caller cross-referencing is skipped (see Step 3 failure path).
+
 ## Outputs
 
 Writes `<result_dir>/audit/agent-audit.json` and returns its absolute path as
