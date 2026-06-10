@@ -55,13 +55,11 @@ python3 scripts/select_health_artifacts.py \
   --surface <surface>
 ```
 
-If a dossier exists, check whether its actionable findings have been
-dispositioned in `docs/health/dispositions.md`. A single recent ledger row is
-not enough; the prior dossier must have recorded accept / decline / fixed /
-grandfather decisions for the findings it asked the user to triage.
-Coverage means every actionable finding in that dossier has a ledger row
-(accepted, declined, grandfathered, or fixed). If the ledger is absent or
-the dossier still lacks disposition coverage, warn:
+If a dossier exists, check whether its actionable findings have disposition
+coverage in `docs/health/dispositions.md` per the **disposition coverage
+criterion** in `../../knowledge/health-audit-preconditions.md` (a single recent
+row is not enough — every actionable finding needs its own ledger row). If the
+ledger is absent or coverage is incomplete, warn:
 
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
@@ -81,9 +79,10 @@ Then branch explicitly:
 
 ### Stale-open check (per requested surface)
 
-An `accepted` ledger row whose object has since changed in git is often
-already implemented but never flipped to `fixed` (the closure write-back
-rule in `/record-health-dispositions` was skipped). Before dispatching:
+An `accepted` ledger row whose object changed in git after the row date is
+**stale-open** (see the stale-open rule in
+`../../knowledge/health-audit-preconditions.md`) — often already implemented but
+never flipped to `fixed`. Before dispatching:
 
 ```bash
 python3 scripts/check_ledger_staleness.py
@@ -146,9 +145,7 @@ Extract context from documentation maps before dispatching lenses.
 
 ## Phase 3 — Resume & dispatch
 
-### 3.1 Resume detection (if --resume flag)
-
-If invoked with `--resume` flag:
+**3.1 — Resume detection (if `--resume` flag).** If invoked with `--resume` flag:
 
 1. **Scan `.dev/` directory for existing lens output files:**
 
@@ -169,9 +166,7 @@ If NOT invoked with `--resume`:
 
 - `remaining_lenses = ALL_LENSES`
 
-### 3.1b Surface-scoped lens filter
-
-`ALL_LENSES` is surface-dependent:
+**3.1b — Surface-scoped lens filter.** `ALL_LENSES` is surface-dependent:
 
 - Surface `plugin` → all lenses.
 - Surface `tooling` → exclude `design-skill-lens-surface-placement` from
@@ -179,9 +174,8 @@ If NOT invoked with `--resume`:
   distributed skills that belong in the maintainer surface; aimed at
   tooling-surface files, it can only emit non-actionable Move false positives.
 
-### 3.2 Dispatch lenses in-session (parallel, isolated subagents)
-
-If `remaining_lenses` is empty, skip dispatch and proceed to Phase 4.
+**3.2 — Dispatch lenses in-session (parallel, isolated subagents).** If
+`remaining_lenses` is empty, skip dispatch and proceed to Phase 4.
 
 Dispatch the `remaining_lenses` as parallel subagents in this session — one
 Agent per lens, each an isolated context. Use
@@ -196,11 +190,9 @@ Each lens subagent returns a findings block. As each returns, write it to
 `findings`, `suggestion_count`, and `completed_at` (ISO timestamp), where
 `<today>` is the current date used for every `.dev/` output filename.
 
-### 3.3 Confirm returns (check for missing lenses)
-
-Compare the lens identifiers that returned a findings block against
-`remaining_lenses`. Any lens in `remaining_lenses` that did not return is a
-missing lens.
+**3.3 — Confirm returns (check for missing lenses).** Compare the lens
+identifiers that returned a findings block against `remaining_lenses`. Any lens
+in `remaining_lenses` that did not return is a missing lens.
 
 Record missing lenses in a `## Failed lenses` section at the top of the
 findings file, one per line:

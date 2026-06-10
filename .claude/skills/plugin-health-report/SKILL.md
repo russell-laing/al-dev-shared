@@ -2,8 +2,9 @@
 name: plugin-health-report
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
-  /plugin-health-discover, ranks findings, writes the dossier, and presents
-  results to the user.
+  /plugin-health-discover, filters out stale and disposition-suppressed
+  findings, ranks the remainder, writes the dossier, and presents results to
+  the user.
   Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
@@ -104,7 +105,7 @@ python3 scripts/select_health_artifacts.py \
 If none exists, skip this phase (every finding is new). Otherwise, for each
 parsed finding, check whether the same object with substantially the same
 issue appears in the previous findings file (match on substance, not
-wording). For each repeat:
+wording — i.e. the same object with the same observable finding, even if rephrased). For each repeat:
 
 - Annotate the finding line in the dossier with `(open since YYYY-MM-DD)`.
   Carry the **earliest** known date forward — if the prior dossier already
@@ -118,47 +119,37 @@ still open work), but the Summary must split the totals: new vs recurring.
 
 ## Phase 1c — Staleness gate (before ranking)
 
-A lens may re-issue an old complaint against text that has already been
-fixed, and a findings file goes stale the moment fix commits land. Label
-suspect findings before they can be ranked:
+Apply the **staleness spot-check protocol** from
+`../../knowledge/health-audit-preconditions.md` to every High finding and every
+top-5 candidate before ranking. Resolve the subject to its file path (skill →
+`profile-al-dev-shared/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`;
+agent → the matching `agents/<name>.md`), then run the protocol's `git log --since`
+check, supplying `FINDINGS_DATE` (from this skill's findings-file name) in place of
+the protocol's generic `DOSSIER_DATE` boundary — and, for recurring findings, again
+with `PRIOR_DATE` from Phase 1b, since a repeat whose
+subject changed between sweeps may be a lens re-issuing a complaint against
+already-fixed text. Label any whose subject changed `⚠ possibly stale`.
 
-For every High finding and every top-5 candidate, resolve the subject to a
-file path (skill → `profile-al-dev-shared/skills/<name>/SKILL.md` or
-`.claude/skills/<name>/SKILL.md`; agent → the matching `agents/<name>.md`),
-then check:
-
-```bash
-# FINDINGS_DATE from the findings filename; PRIOR_DATE from Phase 1b
-git log --since="$FINDINGS_DATE 00:00" --oneline -- "$SUBJECT_PATH"
-```
-
-- Non-empty output → the subject changed **after** the findings were
-  generated: label `⚠ possibly stale`.
-- For recurring findings, also run with `--since="$PRIOR_DATE 00:00"` — a
-  repeat whose subject changed between sweeps may be a lens re-issuing a
-  complaint against already-fixed text: label `⚠ possibly stale`.
-
-A labelled finding may enter the top 5 only after reading the live subject
-file and confirming the claim still holds; record the spot-check ("verified
-against live file [date]") next to the action. If the claim no longer
-holds, drop the finding from counts and list it under a "Stale (dropped)"
-note instead.
+A labelled finding may enter the top 5 only after reading the live subject file
+and confirming the claim still holds; record the spot-check ("verified against
+live file [date]") next to the action. If the claim no longer holds, drop the
+finding from counts and list it under a "Stale (dropped)" note instead.
 
 ## Phase 1d — Disposition suppression
 
-Read `docs/health/dispositions.md` (skip this phase if absent). Match each
-parsed finding against ledger rows by object + issue essence:
+Read `docs/health/dispositions.md` (skip this phase if absent). Match each parsed
+finding against ledger rows by object + issue essence, then apply the
+**disposition suppression rules** from
+`../../knowledge/health-audit-preconditions.md`:
 
-- **`declined` / `grandfathered`** → suppress: exclude from severity
-  counts, dimension grouping, and top-5. List one line each under a
-  "Dispositioned (suppressed)" note at the foot of the dossier. These are
-  settled decisions; the dossier must not re-litigate them.
-- **`fixed`** → if the lens has re-flagged the same issue, treat the
-  finding as suspect: verify against the live subject file (Phase 1c
-  protocol). If the claim no longer holds, drop it under "Stale (dropped)";
-  if the issue has genuinely regressed, keep it and note "regressed —
-  previously fixed in [commit]".
-- **`accepted`** → keep, and annotate "(accepted YYYY-MM-DD — awaiting
+- **`declined` / `grandfathered`** → suppress (exclude from severity counts,
+  dimension grouping, and top-5); list one line each under a
+  "Dispositioned (suppressed)" note at the foot of the dossier.
+- **`fixed`** → treat a re-flagged finding as suspect and verify it against the
+  live subject file (Phase 1c spot-check); drop it under "Stale (dropped)" if the
+  claim no longer holds, or keep it with a "regressed — previously fixed in
+  [commit]" note if it genuinely regressed.
+- **`accepted`** → keep, annotated "(accepted YYYY-MM-DD — awaiting
   implementation)".
 
 ## Phase 2 — Rank and Write Dossier
