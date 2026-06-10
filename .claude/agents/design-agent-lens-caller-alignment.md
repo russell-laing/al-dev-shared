@@ -14,6 +14,8 @@ tools: ["Read", "Grep"]
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | caller_map | Mapping of agent-name → list of skill names that spawn it (provided in dispatch prompt) |
 
+**Implicit dependency:** The agent searches the hardcoded path `profile-al-dev-shared/skills/` for dispatch patterns (body line 37). This path is embedded in the agent body — callers do not supply it.
+
 ## Outputs
 
 Returns a findings block. See Output Format.
