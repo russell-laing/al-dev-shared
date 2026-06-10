@@ -3,7 +3,9 @@ name: sync-documentation-maps-apply
 description: >-
   Applies validated update artifacts to docs/. Third step of the async sync
   flow. Validates update-agent artifacts, reads updated map content from
-  the run directory, and writes both documentation maps to docs/. Run
+  the run directory, and writes both documentation maps to docs/. Each surface
+  is validated independently — an invalid or missing artifact for one map does
+  not block writing the other. Run
   /sync-documentation-maps-write next to regenerate diagrams and commit.
 argument-hint: "--team-ids <id>[,<id>] [--skip-commit]"
 workflow:
@@ -65,7 +67,8 @@ cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.js
 
 Use the read pattern in
 `.claude/skills/sync-documentation-maps/checkpoint-patterns.md` while applying
-the finalize-specific field requirements and phase gate below.
+the finalize-specific field requirements and phase gate below. If that reference
+is unavailable, parse the JSON fields in the table below directly with `jq`.
 
 Extract the following fields:
 
@@ -137,6 +140,12 @@ CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent
   "${RUN_DIR}/updates/agent-map.md" | grep -c '^| al-dev')
 echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
 ```
+
+The `grep -c '^| al-dev'` count assumes each catalog row begins with `| al-dev`
+(one space after the pipe) — the format the agent-map catalog generator emits.
+This pattern is whitespace- and prefix-sensitive: if the generator changes the
+row prefix or spacing, update it here and in `/sync-documentation-maps-write`
+Phase 1, which uses the same pattern.
 
 Apply these validation rules for each artifact:
 
