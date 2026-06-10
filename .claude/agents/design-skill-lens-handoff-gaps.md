@@ -9,7 +9,7 @@ tools: ["Read"]
 
 | Field | Description |
 |---|---|
-| file_list | Newline-separated absolute paths to `SKILL.md` files |
+| file_list | Newline-separated absolute paths to `SKILL.md` files. Also used to cross-reference `.dev/` output filenames across skill bodies when checking for orphaned outputs. |
 | handoff_chains | Traced chains of .dev/ file handoffs between skills (provided in dispatch prompt) |
 
 ## Outputs

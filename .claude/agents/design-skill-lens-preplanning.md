@@ -10,7 +10,7 @@ tools: ["Read"]
 | Field | Description |
 |---|---|
 | file_list | Newline-separated absolute paths to `SKILL.md` files |
-| preplanning_skills | List of skills identified as pre-planning tributaries (provided in dispatch prompt) |
+| preplanning_skills | Starting list of pre-planning tributary skills (provided in dispatch prompt). Agent also searches `file_list` autonomously for additional pre-planning skills not already in this list. |
 | layer1_diagram_content | Content of the Layer 1 diagram from docs/al-dev-skills-map.md (provided in dispatch prompt) |
 
 ## Outputs

@@ -10,8 +10,8 @@ tools: ["Read"]
 | Field | Description |
 |---|---|
 | file_list | Newline-separated absolute paths to `SKILL.md` files |
-| phase_counts | Mapping of skill-name → phase/step count (provided in dispatch prompt) |
-| no_agent_skills | List of skills with no dedicated agent spawned (provided in dispatch prompt) |
+| phase_counts | Mapping of skill-name → phase/step count (provided in dispatch prompt). Format: JSON object `{ "skill-name": N, … }` |
+| no_agent_skills | List of skills with no dedicated agent spawned (provided in dispatch prompt). Format: JSON array `["skill-name", …]` |
 
 ## Outputs
 
