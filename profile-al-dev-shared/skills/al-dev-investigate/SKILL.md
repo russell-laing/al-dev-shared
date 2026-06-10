@@ -133,7 +133,7 @@ influence hypothesis prioritisation during Step 3:
 
 ### Step 3 — Formulate Hypotheses
 
-Before spawning agents, list 2–4 initial hypotheses inline.
+Before spawning agents, list 2–4 initial hypotheses inline in your response to the user.
 
 Each hypothesis must be:
 
