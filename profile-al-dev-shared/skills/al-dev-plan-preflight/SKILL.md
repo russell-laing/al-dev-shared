@@ -145,9 +145,12 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 
 **Clarification retry logic:**
 
-- **First vague response:** Ask for clarification once. Expected context: (1) business goal, (2) key workflows, (3) affected BC objects.
-- **Second vague response:** Ask for clarification a second time with specific prompt: "Please provide: (1) the business goal (what problem does this solve?), (2) the key user workflows (who does what?), and (3) the BC objects affected (which tables/pages/events?)."
-- **Third vague response:** Stop and escalate to user with message: "I've asked twice for clarification. To proceed, I need these three pieces of information: (1) business goal — what problem this solves, (2) key workflows — who does what and when, (3) affected BC objects — which tables/pages/events. Please provide all three, or consider running /interview first for guided discovery."
+| Attempt | Action |
+|---------|--------|
+| 1st vague | Ask once. Required context: (1) business goal, (2) key workflows, (3) affected BC objects. |
+| 2nd vague | Ask with explicit scaffold: "Please provide: (1) the business goal (what problem does this solve?), (2) the key user workflows (who does what?), and (3) the BC objects affected (which tables/pages/events?)." |
+| 3rd vague | Stop and escalate: "I've asked twice for clarification. To proceed I need: (1) business goal — what problem this solves, (2) key workflows — who does what and when, (3) affected BC objects — which tables/pages/events. Please provide all three, or consider running /interview first for guided discovery." |
+
 - Do NOT mark preflight complete if after 2 clarification attempts the description remains too vague (e.g., "make it better", "improve the system").
 
 1. **Read input from $ARGUMENTS** — Extract the user's feature request and preliminary scope. If missing, gate requires clarification.
