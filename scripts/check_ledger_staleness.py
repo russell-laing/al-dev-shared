@@ -186,7 +186,9 @@ def resolve_closures(rows: list[Row]) -> None:
         # Try ID-based lookup first
         for m in CLOSES_ID_RE.finditer(r.note):
             target_id = m.group(1)
-            target = by_id.get(target_id)
+            # by_id keys include the '#' prefix (e.g. '#398'); the regex captures
+            # without it (e.g. '398') — try both forms.
+            target = by_id.get(f"#{target_id}") or by_id.get(target_id)
             if target and target.disposition == "accepted" and target.number < r.number:
                 target.closed_by = r.number
                 explicit_fixed_rows.add(r.number)
