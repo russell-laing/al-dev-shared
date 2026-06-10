@@ -7,7 +7,7 @@
 **Last updated:** 2026-06-10
 
 <!-- BEGIN GENERATED: skill-coverage -->
-**Coverage:** 22 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
+**Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
 <!-- END GENERATED: skill-coverage -->
 
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
@@ -445,6 +445,29 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-plan-preflight -->
 
+### /al-dev-plan-with-critics
+
+Generate an implementation plan then dispatch 6 parallel critic agents to red-team it. Synthesizes findings, applies auto-fixes, and gates user approval before execution.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-with-critics -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_al_dev_plan_with_critics[al-dev-plan-with-critics]
+    artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
+
+    skill_al_dev_plan_with_critics --> artifact_plan_critique_YYYYMMDD_md
+
+    class skill_al_dev_plan_with_critics skillNode
+    class artifact_plan_critique_YYYYMMDD_md artifactNode
+```
+<!-- END GENERATED: skill-drilldown-al-dev-plan-with-critics -->
+
 ### /al-dev-develop
 
 **Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–5.
@@ -628,73 +651,145 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_commit[al-dev-commit]
+    skill_al_dev_commit_execute[al-dev-commit-execute]
+    skill_al_dev_commit_preflight[al-dev-commit-preflight]
+    knowledge_intent_preflight_md[intent-preflight]
+    artifact_commit_preflight_md[.dev/commit-preflight.md]
+
+    skill_al_dev_commit -.-> skill_al_dev_commit_execute
+    skill_al_dev_commit -.-> skill_al_dev_commit_preflight
+    skill_al_dev_commit --> knowledge_intent_preflight_md
+    skill_al_dev_commit --> artifact_commit_preflight_md
+
+    class skill_al_dev_commit skillNode
+    class skill_al_dev_commit_execute skillNode
+    class skill_al_dev_commit_preflight skillNode
+    class knowledge_intent_preflight_md knowledgeNode
+    class artifact_commit_preflight_md artifactNode
+```
+<!-- END GENERATED: skill-drilldown-al-dev-commit -->
+
+### /al-dev-commit-execute
+
+Phases 3–4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-execute -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_al_dev_commit_execute[al-dev-commit-execute]
+    Phase0["Phase 0"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
+    agent_al_dev_commit_executor[al-dev-commit-executor]
+    agent_al_dev_commit_hook_classifier[al-dev-commit-hook-classifier]
+    agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
+    agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
+    agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
+    knowledge_commit_dispatch_template_md[commit-dispatch-template]
+    artifact_commit_preflight_md[.dev/commit-preflight.md]
+    artifact_commits_json[.dev/commits.json]
+    artifact_hook_failures_json[.dev/hook-failures.json]
+
+    skill_al_dev_commit_execute --> Phase0
+    skill_al_dev_commit_execute --> Phase3
+    skill_al_dev_commit_execute --> Phase4
+    skill_al_dev_commit_execute --> agent_al_dev_commit_executor
+    skill_al_dev_commit_execute --> agent_al_dev_commit_hook_classifier
+    skill_al_dev_commit_execute --> agent_al_dev_commit_hook_fixer
+    skill_al_dev_commit_execute --> agent_al_dev_commit_lint_fixer
+    skill_al_dev_commit_execute --> agent_al_dev_commit_ooxml_validator
+    skill_al_dev_commit_execute --> knowledge_commit_dispatch_template_md
+    skill_al_dev_commit_execute --> artifact_commit_preflight_md
+    skill_al_dev_commit_execute --> artifact_commits_json
+    skill_al_dev_commit_execute --> artifact_hook_failures_json
+
+    class skill_al_dev_commit_execute skillNode
+    class Phase0 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
+    class agent_al_dev_commit_executor agentNode
+    class agent_al_dev_commit_hook_classifier agentNode
+    class agent_al_dev_commit_hook_fixer agentNode
+    class agent_al_dev_commit_lint_fixer agentNode
+    class agent_al_dev_commit_ooxml_validator agentNode
+    class knowledge_commit_dispatch_template_md knowledgeNode
+    class artifact_commit_preflight_md artifactNode
+    class artifact_commits_json artifactNode
+    class artifact_hook_failures_json artifactNode
+```
+
+Agents spawned: `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-commit-hook-classifier`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-ooxml-validator`
+<!-- END GENERATED: skill-drilldown-al-dev-commit-execute -->
+
+### /al-dev-commit-preflight
+
+Phases 0–2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
+
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-preflight -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_al_dev_commit_preflight[al-dev-commit-preflight]
     Phase0["Phase 0"]
     Phase1["Phase 1"]
     Phase2["Phase 2"]
-    Phase3["Phase 3"]
-    Phase4["Phase 4"]
+    skill_al_dev_commit_execute[al-dev-commit-execute]
     agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
-    agent_al_dev_commit_executor[al-dev-commit-executor]
-    agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
-    agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
     agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
-    agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_commit_dispatch_template_md[commit-dispatch-template]
     knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_intent_preflight_md[intent-preflight]
-    artifact_commits_json[.dev/commits.json]
+    artifact_commit_preflight_md[.dev/commit-preflight.md]
     artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_file_sizes_json[.dev/file-sizes.json]
-    artifact_hook_failures_json[.dev/hook-failures.json]
 
-    skill_al_dev_commit --> Phase0
-    skill_al_dev_commit --> Phase1
-    skill_al_dev_commit --> Phase2
-    skill_al_dev_commit --> Phase3
-    skill_al_dev_commit --> Phase4
-    skill_al_dev_commit --> agent_al_dev_commit_analyzer
-    skill_al_dev_commit --> agent_al_dev_commit_executor
-    skill_al_dev_commit --> agent_al_dev_commit_hook_fixer
-    skill_al_dev_commit --> agent_al_dev_commit_lint_fixer
-    skill_al_dev_commit --> agent_al_dev_commit_message_drafter
-    skill_al_dev_commit --> agent_al_dev_commit_ooxml_validator
-    skill_al_dev_commit --> knowledge_artifact_contracts_md
-    skill_al_dev_commit --> knowledge_commit_dispatch_template_md
-    skill_al_dev_commit --> knowledge_commit_workflow_orchestration_md
-    skill_al_dev_commit --> knowledge_compile_lint_procedure_md
-    skill_al_dev_commit --> knowledge_intent_preflight_md
-    skill_al_dev_commit --> artifact_commits_json
-    skill_al_dev_commit --> artifact_compile_errors_log
-    skill_al_dev_commit --> artifact_file_sizes_json
-    skill_al_dev_commit --> artifact_hook_failures_json
+    skill_al_dev_commit_preflight --> Phase0
+    skill_al_dev_commit_preflight --> Phase1
+    skill_al_dev_commit_preflight --> Phase2
+    skill_al_dev_commit_preflight -.-> skill_al_dev_commit_execute
+    skill_al_dev_commit_preflight --> agent_al_dev_commit_analyzer
+    skill_al_dev_commit_preflight --> agent_al_dev_commit_message_drafter
+    skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
+    skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
+    skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
+    skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
+    skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_commit_preflight --> artifact_commit_preflight_md
+    skill_al_dev_commit_preflight --> artifact_compile_errors_log
+    skill_al_dev_commit_preflight --> artifact_file_sizes_json
 
-    class skill_al_dev_commit skillNode
+    class skill_al_dev_commit_preflight skillNode
     class Phase0 phaseNode
     class Phase1 phaseNode
     class Phase2 phaseNode
-    class Phase3 phaseNode
-    class Phase4 phaseNode
+    class skill_al_dev_commit_execute skillNode
     class agent_al_dev_commit_analyzer agentNode
-    class agent_al_dev_commit_executor agentNode
-    class agent_al_dev_commit_hook_fixer agentNode
-    class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_message_drafter agentNode
-    class agent_al_dev_commit_ooxml_validator agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
-    class artifact_commits_json artifactNode
+    class artifact_commit_preflight_md artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_file_sizes_json artifactNode
-    class artifact_hook_failures_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-commit-hook-fixer`, `al-dev-shared:al-dev-commit-lint-fixer`, `al-dev-shared:al-dev-commit-message-drafter`, `al-dev-shared:al-dev-commit-ooxml-validator`
-<!-- END GENERATED: skill-drilldown-al-dev-commit -->
+Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-message-drafter`
+<!-- END GENERATED: skill-drilldown-al-dev-commit-preflight -->
 
 ### /al-dev-explore
 
@@ -778,27 +873,27 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_lint[al-dev-lint]
-    agent_al_dev_diagnostics_fixer[al-dev-diagnostics-fixer]
+    agent_al_dev_diagnostics_resolver[al-dev-diagnostics-resolver]
     knowledge_al_linting_rules_md[al-linting-rules]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_intent_preflight_md[intent-preflight]
     artifact_compile_errors_log[.dev/compile-errors.log]
 
-    skill_al_dev_lint --> agent_al_dev_diagnostics_fixer
+    skill_al_dev_lint --> agent_al_dev_diagnostics_resolver
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
     skill_al_dev_lint --> artifact_compile_errors_log
 
     class skill_al_dev_lint skillNode
-    class agent_al_dev_diagnostics_fixer agentNode
+    class agent_al_dev_diagnostics_resolver agentNode
     class knowledge_al_linting_rules_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class artifact_compile_errors_log artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-diagnostics-fixer`
+Agents spawned: `al-dev-shared:al-dev-diagnostics-resolver`
 <!-- END GENERATED: skill-drilldown-al-dev-lint -->
 
 ### /al-dev-document
@@ -908,6 +1003,7 @@ flowchart LR
     artifact_project_context_md[.dev/project-context.md]
     artifact_source_explore_findings_md[.dev/source-explore-findings.md]
     artifact_source_project_context_md[.dev/source-project-context.md]
+    artifact_source_release_notes_md[.dev/source-release-notes.md]
     artifact_source_requirements_md[.dev/source-requirements.md]
     artifact_source_solution_plan_md[.dev/source-solution-plan.md]
     artifact_source_ticket_context_md[.dev/source-ticket-context.md]
@@ -916,6 +1012,7 @@ flowchart LR
     skill_al_dev_handoff --> artifact_project_context_md
     skill_al_dev_handoff --> artifact_source_explore_findings_md
     skill_al_dev_handoff --> artifact_source_project_context_md
+    skill_al_dev_handoff --> artifact_source_release_notes_md
     skill_al_dev_handoff --> artifact_source_requirements_md
     skill_al_dev_handoff --> artifact_source_solution_plan_md
     skill_al_dev_handoff --> artifact_source_ticket_context_md
@@ -925,6 +1022,7 @@ flowchart LR
     class artifact_project_context_md artifactNode
     class artifact_source_explore_findings_md artifactNode
     class artifact_source_project_context_md artifactNode
+    class artifact_source_release_notes_md artifactNode
     class artifact_source_requirements_md artifactNode
     class artifact_source_solution_plan_md artifactNode
     class artifact_source_ticket_context_md artifactNode
@@ -1005,29 +1103,6 @@ flowchart LR
 
 Agents spawned: `al-dev-shared:al-dev-commit-recover-fixer`
 <!-- END GENERATED: skill-drilldown-commit-recover -->
-
-### /al-dev-plan-critic-review
-
-Spawns 6 parallel critic agents (generic Agent tool calls) to red-team a plan. Synthesizes findings into ranked recommendations.
-
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-critic-review -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_al_dev_plan_critic_review[al-dev-plan-critic-review]
-    artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
-
-    skill_al_dev_plan_critic_review --> artifact_plan_critique_YYYYMMDD_md
-
-    class skill_al_dev_plan_critic_review skillNode
-    class artifact_plan_critique_YYYYMMDD_md artifactNode
-```
-<!-- END GENERATED: skill-drilldown-al-dev-plan-critic-review -->
 
 ### /verify-commits
 

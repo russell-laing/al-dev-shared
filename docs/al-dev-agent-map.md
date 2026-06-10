@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-10 (analysis refreshed with 5 new suggestions)
 
 <!-- BEGIN GENERATED: agent-coverage -->
-**Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
+**Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
 <!-- END GENERATED: agent-coverage -->
 
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
@@ -13,17 +13,18 @@
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit` |
-| al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit` |
-| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit` |
-| al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit` |
+| al-dev-al-pattern-reviewer | haiku | Read | `/al-dev-review-develop` |
+| al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
+| al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
+| al-dev-commit-hook-classifier | haiku | Read | `/al-dev-commit-execute` |
+| al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
+| al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
+| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit-preflight` |
+| al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit-execute` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
-| al-dev-diagnostics-fixer | sonnet | Read, Edit, Bash | `/al-dev-lint` |
+| al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
 | al-dev-general-code-reviewer | haiku | Read | (none found) |
