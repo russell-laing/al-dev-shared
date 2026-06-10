@@ -87,25 +87,24 @@ Extract and hold in working memory:
 
 ### 0.2.1 — Freshdesk Ticket Context (Optional)
 
-```text
-IF caller supplies --ticket-id=<ID>:
-  └─ Fetch ticket context from Freshdesk API
-  └─ Append ticket context to commit message
-  └─ Continue to Phase 1
+Ticket context is optional. If available, load it; otherwise skip to 0.3.
 
-IF caller does not supply --ticket-id:
-  └─ Check for a ticket context file from a prior /al-dev-ticket run:
-       TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \
-         | sort | tail -1)
-       [ -n "$TICKET" ] && head -10 "$TICKET"
-     Extract ticket number from `TICKET: #<number>` if present.
-     Hold as FD ticket number (may be empty).
-  └─ Proceed without ticket context if no file found (ticket link is optional)
-  └─ Continue to Phase 1
-
-IF Freshdesk API is unavailable:
-  └─ Log warning: "Freshdesk unreachable; proceeding without ticket context"
-  └─ Continue to Phase 1
+```bash
+# 1. Prefer --ticket-id if supplied by caller
+if [[ "$ARGUMENTS" =~ --ticket-id=([^ ]+) ]]; then
+  TICKET_ID="${BASH_REMATCH[1]}"
+  # Fetch context from Freshdesk API; append to commit message
+  # (Freshdesk unreachable → log warning and proceed without ticket context)
+else
+  # 2. Fall back to a prior /al-dev-ticket context file
+  TICKET=$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)
+  if [[ -n "$TICKET" ]]; then
+    head -10 "$TICKET"
+    # Extract ticket number from "TICKET: #<number>" if present
+  fi
+  # No file found → proceed without ticket context (ticket link is optional)
+fi
+# Continue to 0.3 in all cases
 ```
 
 ### 0.3 — Verify File Integrity & Staged Files
