@@ -198,9 +198,18 @@ If a finding's subject cannot be resolved to a single file (e.g. a cross-surface
 or handoff finding), skip the gate for it and rubber-duck normally.
 
 Report the stale-labelled count before Phase 2 (e.g. "3 of 10 findings flagged
-possibly-stale — their subjects changed after the dossier date"). If **all**
-findings are flagged stale, advise re-running `/plugin-health-audit` for the
-affected surface before continuing.
+possibly-stale — their subjects changed after the dossier date"). Handle
+stale findings by tier:
+
+- **All findings flagged stale:** advise re-running `/plugin-health-audit` for
+  the affected surface before continuing. Do not proceed.
+- **≥80% of findings flagged stale:** report the high stale ratio and offer the
+  user a choice: (a) re-run `/plugin-health-audit` to refresh the dossier, or
+  (b) proceed with heightened scrutiny (expect many skips due to prior
+  implementation). Only proceed to Phase 2 if the user explicitly chooses (b).
+- **<80% stale:** proceed to Phase 2 normally. Mark stale findings with `⚠
+  possibly stale` in the worklist so Phase 2 rubber-ducks them by reading the
+  entire subject file from start to finish.
 
 ---
 
@@ -213,10 +222,10 @@ plan content until all suggestions are rubber-ducked.
 > mismatch or gap, resolve it before moving to the next suggestion.
 > See `knowledge/rubber-duck.md` for the underlying protocol.
 
-**Before running checks:** read `../../knowledge/rubber-duck-orchestration.md`.
-It covers progress tracking, the independence/parallel-exploration rule, and
-cross-layer (skill↔agent) verification. This skill keeps only the check pointer
-and the record format.
+**Before running checks:** read `.claude/knowledge/rubber-duck-orchestration.md`
+(the maintainer-tooling orchestration layer). It covers progress tracking, the
+independence/parallel-exploration rule, and cross-layer (skill↔agent)
+verification. This skill keeps only the check pointer and the record format.
 
 ### Checks
 

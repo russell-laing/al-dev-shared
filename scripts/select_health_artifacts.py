@@ -12,6 +12,7 @@ from pathlib import Path
 ARTIFACT_PATTERN = re.compile(
     r"^(?P<date>\d{4}-\d{2}-\d{2})-"
     r"(?P<surface>plugin|tooling)-"
+    r"(?P<dimension>design|quality|naming)?-?"
     r"(?P<kind>findings|health)\.md$"
 )
 
@@ -37,6 +38,7 @@ def select_artifacts(
     surface: str,
     limit: int,
     offset: int,
+    dimension: str | None = None,
 ) -> list[Path]:
     matches: list[tuple[date, str, Path]] = []
 
@@ -48,6 +50,8 @@ def select_artifacts(
         if match is None:
             continue
         if match["kind"] != kind or match["surface"] != surface:
+            continue
+        if dimension is not None and match["dimension"] != dimension:
             continue
         try:
             artifact_date = date.fromisoformat(match["date"])
@@ -66,6 +70,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--directory", type=Path, default=Path("docs/health"))
     parser.add_argument("--kind", choices=("findings", "health"), required=True)
     parser.add_argument("--surface", choices=("plugin", "tooling"), required=True)
+    parser.add_argument("--dimension", choices=("design", "quality", "naming"), default=None)
     parser.add_argument("--limit", type=positive_int, default=1)
     parser.add_argument("--offset", type=non_negative_int, default=0)
     return parser.parse_args()
@@ -79,6 +84,7 @@ def main() -> int:
         surface=args.surface,
         limit=args.limit,
         offset=args.offset,
+        dimension=args.dimension,
     ):
         print(path)
     return 0
