@@ -16,4 +16,6 @@ docs/superpowers/specs/
 !docs/superpowers/
 !docs/superpowers/README.md
 !docs/superpowers/history.md
-docs/health/*-findings.md
+docs/health/*
+!docs/health/dispositions.md
+!docs/health/dispositions-migration-audit.md
