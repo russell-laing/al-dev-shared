@@ -4,7 +4,9 @@ description: >-
   Final regeneration step after /sync-documentation-maps-apply; fourth step of
   the async sync flow. After the maps are applied, regenerates the map
   diagrams, agent projections, the plugin graph, and the maintainer guide from
-  their canonical sources, then commits the resulting artifacts.
+  their canonical sources, then commits the resulting artifacts. A regeneration
+  failure does not block the commit; the failed artifact is reported and may be
+  left stale.
 argument-hint: "[RUN_ID from checkpoint]"
 workflow:
   stage: map-sync
@@ -26,8 +28,8 @@ workflow:
 
 Final regeneration step after `/sync-documentation-maps-apply`; fourth step of
 the async sync flow. Regenerates Mermaid diagrams, harness-native agent
-projections, and the plugin dependency graph from the updated maps, then commits
-all changes.
+projections, the plugin dependency graph, and the maintainer guide from the
+updated maps, then commits all changes.
 
 **Four-skill workflow:**
 
@@ -108,18 +110,22 @@ Agent count mismatch after regeneration (disk=X coverage=Y catalog=Z).
 The maps would commit stale counts. Investigate before committing.
 ```
 
-Recovery order:
+Choose the recovery path by the mismatch cause:
 
-1. If the mismatch is a known false positive caused by one stale generated
-   value, refresh the affected generated section from the just-written docs map
-   and re-run this count check once.
-2. If the mismatch persists, or the run state is no longer trustworthy, abandon
-   the old run with `/sync-documentation-maps --force` and start fresh rather
-   than committing mixed-state artifacts.
+- **Single stale generated value (known false positive)** — exactly one of the
+  catalog table or the `Coverage` line lags the just-written docs map by one
+  regeneration. Refresh the affected generated section from the docs map and
+  re-run this count check once.
+- **Any other case** — the mismatch persists after that refresh, more than one
+  value disagrees, or the run state is no longer trustworthy. Abandon the old
+  run with `/sync-documentation-maps --force` and start fresh rather than
+  committing mixed-state artifacts.
 
-Then run the three remaining regenerations in sequence. Each follows the same
-pattern — execute the script and capture its exit code; on a non-zero code, report
-the labelled error (substituting the actual exit code) and stop before continuing:
+Once the count check passes — either it agreed on the first run, or the
+single-stale-value refresh above brought it into agreement — run the three
+remaining regenerations in sequence. Each follows the same pattern — execute the
+script and capture its exit code; on a non-zero code, report the labelled error
+(substituting the actual exit code) and stop before continuing:
 
 | Artifact | Script | Error label on non-zero exit |
 | --- | --- | --- |
