@@ -90,7 +90,7 @@ See `knowledge/compile-output-safeguard.md`.
 ## Governance Tokens
 
 | Token | Gate | Action |
-|-------|------|--------|
+| ------- | ------ | -------- |
 | `PLAN_READ_GATE` | Before writing code | Read solution plan and test plan first |
 | `SYMBOL_PREFLIGHT_GATE` | Before writing any AL code | Complete `knowledge/al-symbol-pre-flight.md` checklist — report pre-flight summary before coding starts; stop if any item cannot be verified |
 | `TDD_CYCLE_GATE` | After each RED, GREEN, and REFACTOR phase | Hard stop — present phase output and wait for user approval before the next phase |
