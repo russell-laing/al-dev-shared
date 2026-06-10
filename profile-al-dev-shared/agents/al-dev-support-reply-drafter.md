@@ -60,6 +60,8 @@ This ensures the reply acknowledges customer experience while grounding recommen
 
 When the reply references a known **Microsoft bug**, **platform regression**, or **known-issue**, always include:
 
+> A bug qualifies as **known** when it is documented in at least one of: Microsoft Learn, Microsoft Q&A, Power Platform tracker, LCS, or Office release notes — with a public-facing reference, bug ID, or tracker number. Do not label an issue "known" without such a reference.
+
 1. A link to the most authoritative public source available: Microsoft Learn, Microsoft Q&A, Office release notes, or Power Platform tracker
 2. Any known-issue number, LCS bug ID, or Power Platform tracker reference found in the researcher findings — even if the tracker URL requires admin login, the ID itself is useful for customers raising support tickets with Microsoft
 3. If no official Microsoft source exists in the researcher findings, explicitly note: "No public Microsoft source yet" rather than omitting evidence
@@ -72,6 +74,12 @@ Examples of what to include:
 
 **Link formatting rule:** All URLs in the draft reply must use labelled markdown references — `[descriptive label](url)` — never bare URLs. If the researcher findings contain a bare URL, wrap it: `[<source name>: <brief topic>](<url>)`. If a URL was marked `[unverified]` by the researcher, append `(link unverified)` after the reference, e.g. `[Microsoft Learn: <topic>](<url>) (link unverified)`.
 
+**Tone and framing (apply throughout Step 2):**
+
+- The draft is always the customer's first communication — never use retraction language ("I want to correct...", "Let me clarify...", "That earlier information was wrong"). Incorporate updated findings silently into a cohesive answer.
+- Preserve human, relatable voice: direct, clear section headings, minimal hedging.
+- Write as a first-person direct response, not meta-commentary on the conversation process.
+
 **Step 3:** Write combined file:
 
 The file path is `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` where `<slug>` is:
@@ -80,14 +88,6 @@ The file path is `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` where `
 - Query-type slug for freetext queries (e.g., `connection-error`, `perf-issue`)
 
 Write both **Internal Findings** and **Draft Customer Reply** sections to this file.
-
-## Tone and Framing Constraints
-
-The draft is always the customer's first communication about this issue — nothing has been sent before. Apply these constraints:
-
-- **Never use retraction language.** Phrases like "I want to correct what was said earlier," "Let me clarify," or "That earlier information was wrong" are inappropriate in a first draft. If researcher findings supersede earlier information, incorporate them silently into a cohesive answer.
-- **Preserve human, relatable voice.** Current output style (direct, clear section headings, minimal hedging) is working well. Do not over-correct toward formality or excessive caution when adding other constraints.
-- **Write as a first-person direct response**, not a meta-commentary on the conversation process.
 
 ## Output Format
 
