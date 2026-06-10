@@ -176,7 +176,7 @@ page 50517 "Email Retry Setup"
 }
 ```
 
-**Good:**
+**Good — Option 1: OnOpenPage guard with elevated role check**
 
 ```al
 page 50517 "Email Retry Setup"
@@ -189,6 +189,17 @@ page 50517 "Email Retry Setup"
         if not (UserSetupMgt.IsAdminUser(UserId())) then
             Error(NotAuthorizedAdminErr);
     end;
+}
+```
+
+**Good — Option 2: AccessByPermission at page level (BC standard pattern)**
+
+```al
+page 50517 "Email Retry Setup"
+{
+    UsageCategory = Administration;
+    SourceTable = "Email Retry Setup";
+    AccessByPermission = tabledata "Email Retry Setup" = M;
 }
 ```
 
@@ -285,22 +296,26 @@ whether `RMID` on setup tables is accessible to all permission set holders.
 
 ### AccessByPermission vs OnOpenPage SUPER Check
 
-Why it matters: Guarding a page solely with a boolean flag on User Setup
-(`"Is Email Retry Admin"`) is inconsistent with BC's permission-set model.
-A SUPER user is blocked unless they have the flag set, and the auth approach
-is non-standard and hard to discover.
+Why it matters: Authentication and authorization in BC follow a layered
+permission model. `AccessByPermission` declares the baseline permission set
+requirement for the page. `OnOpenPage` is reserved for elevated or
+role-specific supplementary checks, not as a replacement for the permission
+model. Guarding a page solely with a boolean flag on User Setup (`"Is Email
+Retry Admin"`) as the *only* access control is non-standard and hard to
+discover; instead, use `AccessByPermission` for base access, then add the
+boolean check in `OnOpenPage` only when an elevated secondary role is needed.
 
-**Preferred BC pattern:**
+**Preferred BC pattern — layered authorization:**
 
 ```al
 page 50516 "Email Retry Entries"
 {
-    // Base-level access: declared at page level — no code needed
+    // Base-level access: declared at page level per BC's permission model
     AccessByPermission = tabledata "Email Retry Entry" = R;
 
     trigger OnOpenPage()
     begin
-        // Elevated admin check only (not a full auth gate)
+        // Elevated admin check only (supplementary to AccessByPermission, not a replacement)
         if not UserSetupMgt.IsEmailRetryAdmin(UserId()) then
             Error(NotRetryAdminErr,
                   'You must be designated as Email Retry Admin in User Setup.' +
@@ -309,6 +324,15 @@ page 50516 "Email Retry Entries"
 }
 ```
 
-`AccessByPermission` at the page level handles base access without code.
-Reserve `OnOpenPage` for elevated/role-specific checks only, and use an
-actionable error message that tells the user what to do next.
+**Key rules:**
+
+1. `AccessByPermission` at the page level provides base access control per
+   BC's standard permission model — this is mandatory.
+2. The `OnOpenPage` check with `IsEmailRetryAdmin()` is an *additional*
+   elevated authorization layer (e.g., a feature admin role that sits *above*
+   the base permission set).
+3. The User Setup boolean (`IsEmailRetryAdmin`) is acceptable *only* as a
+   secondary elevated check in the `OnOpenPage` trigger, not as the sole
+   access control mechanism.
+4. Always pair `AccessByPermission` with an actionable error message in
+   `OnOpenPage` that tells the user what to do next.
