@@ -71,6 +71,10 @@ For **Fixable** failures, apply a scripted fix via Bash **only if all three cond
 2. The fix is reversible — `git checkout HEAD -- <file>` restores the original
 3. The fix target is a configuration or formatting issue, not business logic
 
+If any condition is not met, reclassify the failure as **manual-review** — do not
+apply a scripted fix. Record the root cause and a concrete manual recommendation
+instead (see Non-fixable path below).
+
 Apply only the scripted fixes listed under "Approved Fixes" in
 `knowledge/commit-hook-recovery-patterns.md`.
 
