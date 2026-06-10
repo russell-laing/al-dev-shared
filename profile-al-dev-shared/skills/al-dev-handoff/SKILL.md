@@ -1,6 +1,9 @@
 ---
 name: al-dev-handoff
-description: Package context and prompt for cross-repo session migration.
+description: >-
+  Package investigation context and generate a session-continuation prompt
+  for cross-repo root-cause migration. Use when investigation confirms the
+  root cause lives in a different repository.
 argument-hint: "[path to target repository]"
 ---
 

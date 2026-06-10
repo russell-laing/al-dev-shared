@@ -1,8 +1,8 @@
 ---
 name: al-dev-support-reply
 description: >-
-  Research and draft customer replies for support tickets. Executes phases 6–8 of
-  ticket workflow: multi-source research (AL symbols, MS Docs, BC history),
+  Research and draft customer replies for Freshdesk support tickets. Executes phases 6–8 of
+  Freshdesk ticket workflow: multi-source research (AL symbols, MS Docs, BC history),
   synthesis of findings, and customer-facing reply drafting. Input: ticket context
   from al-dev-ticket Phase 5 (CONTEXT block, or auto-detected latest). Output: a REPLY
   metadata block plus the full customer reply written to `.dev/ticket-reply.md`.

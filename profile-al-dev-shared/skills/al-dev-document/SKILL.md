@@ -1,6 +1,8 @@
 ---
 name: al-dev-document
-description: Generate comprehensive technical documentation.
+description: >-
+  Generate comprehensive technical documentation including a requirements
+  traceability matrix (RTM) with inline requirement references.
 argument-hint: "[feature name or file path to document]"
 ---
 
