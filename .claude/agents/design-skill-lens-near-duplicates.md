@@ -29,8 +29,8 @@ that use the same agent types.
 For each pair sharing the same agent types:
 
 1. Compare phase counts. If phase counts differ by at most 2, read both files.
-2. Ask: is the difference between them a small delta (one extra phase, one extra
-   output file, one additional reviewer)?
+2. Ask: is the difference a small delta — the two skills differ by ≤2 phases
+   AND the complex skill adds **only one** of: one output file, one reviewer, or one option flag?
 3. If yes: could the simpler skill become an option or mode of the more complex one?
 
 **Merge criteria (all should be true):**

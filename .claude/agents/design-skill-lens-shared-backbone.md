@@ -40,10 +40,13 @@ whitespace, ordering, and incidental wording):
 - Same context fields passed (same field set, regardless of order)
 - Same output expectation
 
+Patterns are **significantly different** when at least two of these three signals
+differ; a single differing signal still counts as identical for drift purposes.
+
 **Severity rules:**
 
 - Medium: identical pattern copy-pasted across 2+ skills (drift risk when pattern needs updating)
-- Low: similar but not identical patterns (worth noting but lower urgency)
+- Low: patterns with exactly one differing signal (structurally close; lower drift risk than copy-paste)
 
 ---
 

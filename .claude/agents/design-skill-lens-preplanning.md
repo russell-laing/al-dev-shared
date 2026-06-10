@@ -31,8 +31,8 @@ found in the file list:
 
 1. Check whether it appears in `layer1_diagram_content` as a dashed tributary
    arrow (`-.->`) rather than a main-spine node. Require an **exact**
-   tributary-label match (the node label equals the skill name), not a substring
-   match — `al-dev-explore` must not be counted as present merely because
+   tributary-label match (the node label text — not the node ID — equals the
+   skill name), not a substring match — `al-dev-explore` must not be counted as present merely because
    `al-dev-explore-deep` appears in the diagram.
 2. Check whether its output filename is referenced in Layer 1 handoff labels.
 3. Check whether a downstream skill explicitly names it as an input in its body.

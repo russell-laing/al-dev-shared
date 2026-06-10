@@ -1,6 +1,6 @@
 ---
 name: design-skill-lens-complexity
-description: Apply the Complexity Outliers lens to plugin skills — ranks skills by phase count to find high-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb). Returns findings.
+description: Apply the Complexity Outliers lens to plugin skills — evaluates skills ranked by phase count to find high-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb). Returns findings.
 model: haiku
 tools: ["Read"]
 ---
@@ -27,8 +27,8 @@ Read every file path provided in the dispatch prompt. Use `phase_counts` for ran
 Read each. Ask: do the phases cluster into two distinct concerns (e.g., pre-flight +
 execution, or discovery + analysis + output)? Flag as Atomise candidate only if
 **each concern spans ≥2 phases and is independently runnable** (the concern's phases
-form a contiguous block that produces a usable result without the other concern's
-phases). A concern that is a single phase, or that cannot run without the rest of the
+form a contiguous block that produces a deliverable usable by a downstream step
+without executing the other concern's phases). A concern that is a single phase, or that cannot run without the rest of the
 skill, is not an Atomise candidate.
 
 **Zero-agent, 2-phase skills (from `no_agent_skills`):**
