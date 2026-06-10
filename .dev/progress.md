@@ -104,3 +104,7 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
   (ab122be68caf62aee) and agent-audit (a483733e5204f84d8) teams.
   Next: /sync-documentation-maps-collect
 [2026-06-10] sync-documentation-maps-write complete — 20260610T065001Z maps written and committed.
+[2026-06-10] sync-documentation-maps (run 20260610T095127Z): Dispatched skill-audit (a808cdca24744b2ae) and agent-audit (a7d6786929fe6e088) teams.
+  Next: /sync-documentation-maps-collect
+[2026-06-10] sync-documentation-maps-write complete — 20260610T095127Z maps written and committed (60cfb5b).
+  Skills map: 3 agent name references corrected.

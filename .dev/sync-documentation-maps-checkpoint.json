@@ -1,15 +1,15 @@
 {
   "operation": "sync-documentation-maps",
-  "run_id": "20260610T065001Z",
-  "spawned_at": "2026-06-10T06:50:01Z",
-  "skill_audit_team_id": "ab122be68caf62aee",
-  "agent_audit_team_id": "a483733e5204f84d8",
-  "agent_update_team_id": "a65e2a8a98916ca43",
-  "update_choice": "agents",
+  "run_id": "20260610T095127Z",
+  "spawned_at": "2026-06-10T09:51:27Z",
+  "skill_audit_team_id": "a808cdca24744b2ae",
+  "agent_audit_team_id": "a7d6786929fe6e088",
+  "skill_update_team_id": "a18c9107e2fe02b1e",
+  "update_choice": "skills",
   "phase": "complete",
   "status": "done",
   "auto_update": false,
   "skip_commit": false,
-  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T065001Z",
-  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T065001Z/manifest.json"
+  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T095127Z",
+  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T095127Z/manifest.json"
 }
