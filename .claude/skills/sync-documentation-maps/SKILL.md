@@ -24,7 +24,7 @@ workflow:
 
 # Sync Documentation Maps
 
-Lightweight dispatch coordinator. Spawns parallel background audit agents for
+Lightweight dispatch coordinator. Dispatches parallel background audit agents for
 skills and agents, writes a checkpoint with their agent IDs and artifact paths,
 then returns. The agents run in the background; the harness notifies on
 completion (roughly 5 minutes), so the user is free to work meanwhile.
@@ -104,7 +104,7 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 ---
 
-## Phase 3 — Spawn Background Audit Agents
+## Phase 3 — Dispatch Background Audit Agents
 
 Dispatch **both** audit agents simultaneously (do not wait for one before
 starting the other), using the canonical in-session background-dispatch pattern
@@ -147,16 +147,13 @@ with `TaskGet`.
 Write a checkpoint file so `/sync-documentation-maps-collect` can locate the
 running teams and their artifact paths.
 
-Write the checkpoint with the following fields. Before writing, check whether
-`.dev/sync-documentation-maps-checkpoint.json` already exists:
-
-```bash
-ls -la .dev/sync-documentation-maps-checkpoint.json 2>/dev/null
-```
-
-If it **exists**, read it with the Read tool first, then use the Edit tool to
-replace the entire JSON block. If it **does not exist**, use the Write tool
-directly. Apply the same read-first rule to `${RUN_DIR}/manifest.json`.
+Write the checkpoint with the following fields. The root checkpoint
+`.dev/sync-documentation-maps-checkpoint.json` may already exist from a prior
+run, so update it with the canonical read-preserve-write **Merge Pattern** in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md` (read first,
+merge the fields below, write atomically). `${RUN_DIR}/manifest.json` is always
+new on this first write, so create it directly with the Write tool — no prior
+read.
 
 | Field | Value |
 |---|---|
@@ -186,7 +183,7 @@ Append a progress entry to `.dev/progress.md`:
 
 ```bash
 cat >> .dev/progress.md << 'EOF'
-[2026-05-31] sync-documentation-maps (run ${RUN_ID}): Spawned skill-audit
+[2026-05-31] sync-documentation-maps (run ${RUN_ID}): Dispatched skill-audit
   (${SKILL_TEAM_ID}) and agent-audit (${AGENT_TEAM_ID}) teams.
   Next: /sync-documentation-maps-collect --team-ids ${SKILL_TEAM_ID},${AGENT_TEAM_ID}
 EOF
