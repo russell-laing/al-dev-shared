@@ -67,6 +67,9 @@ rg -n \
 | Name contains Batch/Process/Import/Post/Transfer/Run | Batch Processor | +1 level |
 | None of the above | Utility | none |
 
+When a codeunit matches multiple indicators, apply the highest-priority
+classification: Entry Point > Batch Processor > Hot Path > Utility.
+
 If neither `AL LSP` nor `AL MCP` is available and scoped text search finds no
 entry-point indicators, default to Utility (no modifier). Do not block the
 analysis. Label the source as `text search` if the fallback search ran, or
