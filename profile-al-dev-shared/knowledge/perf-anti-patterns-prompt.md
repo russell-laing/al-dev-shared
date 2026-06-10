@@ -29,6 +29,25 @@ P8 (MEDIUM baseline) — Full Table Scan: FindSet() with no prior
   Escalate to HIGH if the codeunit is a heuristic hot-path entry point
   or batch processor.
   Do NOT flag FindSet on small config/setup tables.
+P9 (HIGH) — Record variable Insert() immediately followed by
+  an unconditional Modify() on the same variable in the same
+  procedure. All field assignments must be made before Insert();
+  the trailing Modify() is redundant and adds a round-trip.
+  Exception: do NOT flag if there is an explicit reason for the
+  post-Insert Modify (e.g., a trigger sets a field that must then
+  be updated).
+P10 (MEDIUM) — Commit() called inside a FindSet() / Next() iteration
+  loop. After Commit() the server cursor state may reset on some BC
+  versions, causing records to be re-processed or skipped. Collect
+  primary keys into a temporary table first, then iterate the temp
+  table with Commit() per iteration.
+P11 (HIGH) — A FlowField (CalcFormula) is placed in a page repeater
+  (List or ListPart) without either:
+  (a) SetAutoCalcFields([FieldName]) on the page source, or
+  (b) CalcFields([FieldName]) in the OnAfterGetRecord trigger.
+  The platform issues one extra SQL query per visible row to resolve
+  the FlowField on demand, producing N+1 query behaviour identical
+  to P1 for the visible page rows.
 
 For EACH finding report:
 PATTERN: [P1–P8 ID]
@@ -51,6 +70,14 @@ Do NOT flag:
 - Count() before FindSet when the count value is used
   (stored, displayed, or drives control flow) rather than
   immediately discarded
+- P9 when the post-Insert Modify has an explicit code comment explaining
+  why a second write is required (e.g., setting a field that the
+  Insert trigger populates and must be overridden).
+- P10 when the loop iterates a Temporary table (no cursor risk on temp
+  records) or when the comment documents a deliberate "commit-per-record"
+  design accepted by the team.
+- P11 when the FlowField page source already uses SetAutoCalcFields
+  in the page OnInit or OnOpenPage trigger.
 ```
 
 ---
@@ -64,6 +91,7 @@ Severity levels indicate the urgency of remediation and the likely user-visible 
 The pattern causes O(N) or O(N²) database round-trips that scale with business data volume. Even a small dataset will degrade noticeably; large datasets can cause timeouts or lock contention. Remediation must happen before the code ships.
 
 **Examples:**
+
 - P1: Inner `FindSet` inside outer `FindSet` loop — 1 000 customers × 1 000 ledger entries = 1 M DB calls per batch run.
 - P3 inside a Batch Processor codeunit that processes all open Sales Orders — CalcFields on each line multiplies DB calls by line count.
 - `Entry Point` and `Batch Processor` are heuristic hot-path labels from `/al-dev-perf` classification, not formal AL object types.
@@ -73,24 +101,30 @@ The pattern causes O(N) or O(N²) database round-trips that scale with business 
 The pattern adds measurable overhead per record but does not cause exponential scaling. Performance degrades proportionally to data volume and becomes user-visible above moderate table sizes (>10 000 rows). Remediation is required before release.
 
 **Examples:**
+
 - P2: `Customer.Get(No)` with no `SetLoadFields` when only `Name` and `Credit Limit` are read — fetches all 80+ Customer fields per call.
 - P3 outside a loop but called from a function invoked per-line in a report — same CalcFields overhead, lower urgency than CRITICAL because it is not nested.
 - P8 escalated: unfiltered `FindSet` on Item Ledger Entry inside a heuristically classified hot-path entry point.
+- P9: `Insert()` + unconditional `Modify()` on the same record — one extra round-trip per write event. At low volume it is negligible; in high-frequency event subscribers (e.g., `OnAfterEmailSendFailed`) it compounds with every email failure.
+- P11: FlowField in page repeater without `CalcFields`/`SetAutoCalcFields` — 100 visible rows = 100 extra `SELECT` statements per page load.
 
 ### Medium
 
 The pattern is wasteful or stylistically incorrect but has limited runtime impact at typical data volumes. Flag and recommend a fix, but do not block release on this finding alone.
 
 **Examples:**
+
 - P4: `FindSet(true)` with no write operations — unnecessary write lock acquired, slight overhead, risk of blocking other sessions.
 - P5: Setup table `Get()` inside a loop of 50 records — adds 50 redundant DB calls; noticeable only at high call frequencies.
 - P8 baseline: unfiltered `FindSet` on a large table inside a non-batch helper — wasteful but low observed frequency.
+- P10: `Commit()` inside `FindSet()` loop — potential cursor-reset behaviour on some BC server versions; also increases lock hold time across the loop.
 
 ### Low
 
 The pattern is an inefficiency or code-style issue with negligible runtime cost. Report it for completeness; remediation is optional.
 
 **Examples:**
+
 - P6: `SetRange` covering full PK then `FindFirst` — functionally identical to `Get()`; minor clarity and micro-performance improvement available.
 - P7: `Count()` immediately before `FindSet()` on the same variable — two table scans where one suffices; impact is minimal unless table is very large.
 
@@ -103,6 +137,7 @@ These rules prevent false positives that waste developer review time. Apply each
 ### Loop-body DB call exclusions (P1, P3, P5)
 
 Do NOT flag a DB call inside a loop when:
+
 - The call uses the same key on every iteration and the result is expected to vary due to concurrent writes (intentional re-read pattern).
 - The inner table is a small lookup table guaranteed to be cached by the platform (e.g., Currency, Unit of Measure, Language). Indicator: table has fewer than 200 rows in a typical BC installation and no user-editable volume data.
 - The call is inside a `TransactionModel::AutoCommit` or `Commit()` block where re-reading is required by design to see committed state.
@@ -110,6 +145,7 @@ Do NOT flag a DB call inside a loop when:
 ### SetLoadFields exclusions (P2)
 
 Do NOT flag missing `SetLoadFields` when:
+
 - The procedure subsequently accesses 3 or more distinct fields from the record. The cost of the additional round-trip to read missing fields outweighs the savings.
 - The record is fetched via `Get()` on a very small table where field projection overhead likely exceeds the benefit.
 - The record is immediately passed by reference (var) to another procedure that may access any field. You cannot statically determine the field set.
@@ -117,12 +153,14 @@ Do NOT flag missing `SetLoadFields` when:
 ### FindSet(true) exclusions (P4)
 
 Do NOT flag `FindSet(true)` when:
+
 - Any of `Modify()`, `Delete()`, or `Rename()` is called anywhere in the loop body, including inside nested procedure calls that are visible in the same file.
 - The code comment explicitly states a write lock is required for concurrency control.
 
 ### Full Table Scan exclusions (P8)
 
 Do NOT flag an unfiltered `FindSet` when:
+
 - The table is a setup, config, or enumeration table (recognisable by name: anything ending in Setup, Template, Type, Group, Code, or having fewer than 1 000 expected rows).
 - The codeunit is a one-time migration or upgrade codeunit (contains `OnUpgradePerCompany` or `OnInstallPerCompany` subscribers).
 - A comment above the FindSet explicitly documents why a full scan is required (e.g., reindexing, data correction).
@@ -138,12 +176,14 @@ Not every performance anti-pattern should be fixed the same way. The right fix d
 **Decision Framework:**
 
 Choose the *clean* (slower but maintainable) fix when:
+
 - The code runs fewer than 100 times per user session, so throughput gain is negligible
 - The performance gain (fast fix) is < 5% vs. baseline, AND code complexity increases >30%
 - The fast fix requires unsafe patterns (unchecked ARRAY operations, unsafe type casts, global state mutation) that create regression risk
 - The code is in a shared library (codeunit/table) where maintainability affects other modules' performance debugging
 
 Choose the *fast* fix when:
+
 - User-facing latency is >2s and clean rewrite requires weeks
 - The fix is isolated to one code path with no shared dependencies
 - The performance gain (fast fix) is >20% improvement over clean approach
@@ -151,6 +191,7 @@ Choose the *fast* fix when:
 **Example:** Query returning 10,000 records for a FactBox display
 
 SLOW BUT CLEAN FIX:
+
 ```al
 procedure GetCustomerSummaryByDateRange(StartDate: Date; EndDate: Date): JsonObject
 var
@@ -174,6 +215,7 @@ end;
 ```
 
 FAST BUT RISKY FIX:
+
 ```al
 procedure GetCustomerSummaryCached(var Customer: Record Customer): JsonObject
 var
@@ -193,12 +235,14 @@ end;
 **Decision Framework:**
 
 A performance fix introduces *business logic risk* when it:
+
 - Changes which records are processed (filtering, batching boundaries)
 - Modifies when validations run (early exit vs. full validation)
 - Alters transaction scope (split one transaction into many, or vice versa)
 - Removes intermediate steps that provide audit/compliance trail
 
 **RED FLAGS — Ask for requirements review before implementing:**
+
 - "Skip validation on bulk inserts for speed"
 - "Cache customer balance instead of querying each time"
 - "Process payments in batches instead of one-by-one"
@@ -208,6 +252,7 @@ These are NOT performance problems; they are requirements problems.
 **Example: "Slow Sales Order validation"**
 
 RISKY FIX (skips validation):
+
 ```al
 procedure PostSalesOrderFast(var SalesHeader: Record "Sales Header")
 begin
@@ -217,6 +262,7 @@ end;
 ```
 
 SAFE FIX (validates earlier):
+
 ```al
 procedure PostSalesOrderOptimized(var SalesHeader: Record "Sales Header")
 var
@@ -240,12 +286,14 @@ end;
 ### Batch Processing vs. UI code paths — Different Trade-off Rules
 
 **Batch Processing code path trade-offs:**
+
 - Can sacrifice user-facing latency for throughput (10 seconds for 1M records is OK)
 - Can use memory-intensive caching/indexing strategies
 - Must prioritize **correctness** over speed (batch runs unattended; no way to retry fast)
 - Best approach: Clean code + async architecture (fire and forget)
 
 **UI Code Path Trade-offs:**
+
 - Must keep response <500ms (user perception threshold)
 - Memory constraints (UI thread must not block)
 - Can sacrifice data completeness for responsiveness (show 100 records, not 10K)
@@ -254,6 +302,7 @@ end;
 **Example Decision:**
 
 **Batch Processor — Recalculate Inventory:**
+
 ```al
 procedure RecalculateAllInventory()  // Called from batch job
 var
@@ -273,6 +322,7 @@ end;
 ```
 
 **UI Code Path — Show Customer Balance:**
+
 ```al
 procedure GetCustomerBalance(CustomerNo: Code[20]): Decimal
 begin
@@ -287,16 +337,19 @@ end;
 ### Caching as trade-off — When Cache Correctness Matters
 
 **When Caching Improves Performance:**
+
 - Data is read-heavy (100+ reads per write)
 - Query is expensive (10+ table joins, complex filtering)
 - Update frequency is known and bounded (daily batch, weekly reconciliation)
 
 **When Caching Creates Risk:**
+
 - Cache invalidation is unclear (how to know cache is stale?)
 - Data consistency is critical (customer balance, inventory, compliance audit)
 - Multiple systems write the same data (integration scenarios)
 
 **Invalidation Patterns:**
+
 - **Time-based:** Cache expires after N minutes (OK for non-critical reads like "top 10 customers")
 - **Event-based:** Cache clears when related data changes (OK for materialized views, requires event hook)
 - **Manual:** Code explicitly clears cache on Save (OK for small caches, risky if forgotten)
@@ -304,6 +357,7 @@ end;
 **Example: Customer Credit Limit Cache**
 
 WRONG (high invalidation cost):
+
 ```al
 var CreditCache: Dictionary of [Code[20], Decimal];
 
@@ -319,6 +373,7 @@ end;
 ```
 
 RIGHT (invalidation is clear):
+
 ```al
 procedure GetCustomerCreditLimit(CustomerNo: Code[20]): Decimal
 var
@@ -335,6 +390,7 @@ end;
 ### Complexity budget — When Code Gets Too Clever
 
 **Complexity warning signs:**
+
 - Function exceeds 50 lines (split into procedures)
 - More than 3 nested IF statements (extract to separate procedure)
 - More than 2 data structures (Dictionary + Array + custom record) in one function
@@ -353,6 +409,7 @@ end;
 **Example: Don't Trade Maintainability for Micro-optimizations**
 
 OVER-COMPLEX (unrolled loop for 5% speed gain):
+
 ```al
 procedure ProcessOrdersFast(var SalesHeaders: Record "Sales Header")
 begin
@@ -377,6 +434,7 @@ end;
 ```
 
 SIMPLE AND SUFFICIENT (clear, 95% speed of over-complex version):
+
 ```al
 procedure ProcessOrders(var SalesHeaders: Record "Sales Header")
 begin
