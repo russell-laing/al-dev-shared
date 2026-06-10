@@ -98,8 +98,8 @@ If resuming:
 ## Phase 1: Read Context & Route Mode
 
 **Mode detection:**
-Check `$ARGUMENTS` for `--autonomous`. If present, autonomous-mode routing applies
-throughout this run:
+Check `$ARGUMENTS` for `--autonomous`. Set `AUTONOMOUS_MODE=true` if found;
+otherwise `AUTONOMOUS_MODE=false`. This value applies for the entire run:
 
 - After Step 3 below, run signature verification (inlined below)
 - After Phase 4 (Verify on Completion), run static validation (inlined in Phase 4)
@@ -125,7 +125,7 @@ modules outside the specified scope.
 
 ### Step 2: Signature Verification (Autonomous Mode Only)
 
-If `--autonomous` is present in `$ARGUMENTS`, before dispatching any developer,
+If `AUTONOMOUS_MODE=true`, before dispatching any developer,
 verify every external procedure signature using the strongest available AL symbol evidence.
 
 Preferred evidence order:
@@ -373,7 +373,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 ### Step 2: Static Validation (Autonomous Mode Only)
 
-If `--autonomous` is present in `$ARGUMENTS`, run these checks on all newly
+If `AUTONOMOUS_MODE=true`, run these checks on all newly
 created AL files before the review team is spawned. Fix CRITICAL issues by
 dispatching a developer before proceeding.
 
