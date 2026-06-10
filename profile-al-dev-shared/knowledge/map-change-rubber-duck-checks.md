@@ -535,6 +535,14 @@ Extract change manifests using the patterns in `knowledge/commit-analysis-patter
 
 ### Pattern: Generated artifacts should not be edited
 
+Generated artifacts under `profile-al-dev-shared/generated/` are pipeline outputs
+produced by translating canonical source files into harness-native formats — they are
+not authored files. Any hand-edit made directly to a generated artifact will be silently
+overwritten the next time `scripts/generate-projections.py` is run, leaving no trace of
+the change. Duck agents must therefore redirect all edit suggestions to the canonical
+source files in `profile-al-dev-shared/agents/` or `profile-al-dev-shared/skills/`,
+and treat a suggestion targeting a path under `generated/` as an automatic REJECT.
+
 ```markdown
 # SOURCE ARTIFACTS (Edit Here)
 profile-al-dev-shared/agents/al-dev-commit-analyzer.md

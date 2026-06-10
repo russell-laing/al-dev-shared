@@ -212,6 +212,8 @@ See workflow-routing.md for the full tiers (TRIVIAL/SIMPLE/MEDIUM/COMPLEX).
 
 ### Example: Conditional routing in spawning skill
 
+Conditional routing applies when a spawning skill has classified the incoming task using the TRIVIAL/SIMPLE/MEDIUM/COMPLEX taxonomy (see `workflow-routing.md`) and needs to select a model for the developer spawn. The decision criteria are straightforward: TRIVIAL tasks route to `claude-haiku-4-5` (single file, all symbols known, no scope expansion risk), while MEDIUM and COMPLEX tasks route to `claude-sonnet-4-6` (multi-file, symbol verification required, or integration risk present). SIMPLE tasks default to sonnet for safety unless symbols are fully pre-verified. The spawning skill must make this choice explicitly at dispatch time because the agent's declared model can be overridden via the `model` parameter — it cannot be changed mid-run.
+
 ```text
 ## Determine developer model based on complexity
 
@@ -295,6 +297,8 @@ if any(risk in assignment for risk in scope_risks):
 
 #### Real example: Conditional spawn logic
 
+The two examples below illustrate the extremes of the routing decision: Example 1 shows a genuinely TRIVIAL scope where haiku is appropriate (single file, pre-verified symbol, no integration risk), while Example 2 shows a MEDIUM scope where sonnet is required (multiple files, validation logic, risk signals present).
+
 **Example 1: Haiku dispatch (TRIVIAL scope)**
 
 ```python
@@ -349,6 +353,8 @@ agent = spawn_developer(
 )
 ```
 
+Together, these examples instantiate the decision logic from the preceding subsection: the scope object's `files` count and `risk_signals` list map directly onto the tier table, and the resulting `model` value is passed unchanged to the Agent dispatch call.
+
 #### Applicable contexts
 
 Not all three spawning contexts are candidates for conditional routing:
@@ -381,13 +387,33 @@ Do not apply conditional routing here because:
 
 **Recommendation:** Wire Context 1 first. Context 2 is lower priority; Context 3 should always use sonnet.
 
+Quick reference — context → model routing:
+
+| Context | Apply conditional routing? | Model at dispatch |
+| ------- | ------------------------- | ----------------- |
+| Context 1 — Full Scope Implementation | ✅ Primary candidate | haiku (1 file, symbols known) or sonnet (SIMPLE+) |
+| Context 2 — Trivial Direct Fix | ⚠️ Optional | haiku (trivial pre-filtered) or sonnet (if risk signals present) |
+| Context 3 — Error Correction | ❌ No — always sonnet | sonnet unconditionally |
+
+```text
+# Dispatch-time model selection (apply to Context 1 and 2 only):
+IF context == 3:
+  model = claude-sonnet-4-6
+ELSE IF scope.files == 1 AND scope.risk_signals == [] AND scope.symbols_unverified == []:
+  model = claude-haiku-4-5
+ELSE:
+  model = claude-sonnet-4-6
+```
+
+See the tier table and concrete examples in the "Real example" subsection above.
+
 #### Safety: mid-task scope expansion
 
 A haiku developer may discover mid-task that scope expands beyond single-file expectations. Provide clear escalation guidance:
 
 **If scope expansion is detected:**
 
-```
+```text
 You started with 1 file, but the fix requires changes to [X, Y, Z] files.
 This crosses the haiku/sonnet boundary.
 
@@ -417,7 +443,7 @@ The skill that spawned the developer should:
 
 1. Provide a clear halt condition in the dispatch prompt:
 
-   ```
+   ```text
    "Stop before implementing changes outside your assigned scope.
     If you discover multi-file scope, return a scope-expansion summary
     instead of implementing further. Do not attempt multi-file changes."

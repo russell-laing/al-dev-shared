@@ -130,6 +130,19 @@ TESTS:
 
 ### Invocation Pattern: Agent Spawn Parameters
 
+Quick reference:
+
+```text
+Agent invocation (Skill tool):
+  skill: al-dev-ticket-context-writer
+  args: "TICKET_ID=12345"
+
+This internally dispatches:
+  agent: al-dev-shared:al-dev-ticket-context-writer
+  with environment: FRESHDESK_API_KEY, FRESHDESK_DOMAIN
+  with prompt: "Fetch Freshdesk ticket and write .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md. Phase: fetch. Ticket ID: 12345"
+```
+
 For the canonical fetch phase, the live dispatch contract is intentionally small:
 
 - `TICKET_ID` in the dispatch prompt
