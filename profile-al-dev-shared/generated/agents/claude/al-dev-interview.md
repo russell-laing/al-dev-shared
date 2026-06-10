@@ -49,7 +49,7 @@ a note on which groups were not completed.
 
 **Step 3: Clarification Technique** — When an answer is vague, ask for specifics. Example: "We need better reporting" → "What metrics? How often? Who's the audience?"
 
-**Step 4: Handle Ambiguity** — Document conflicts; don't decide. "I see tension between X and Y. Let's document this for stakeholder resolution."
+**Step 4: Handle Ambiguity** — Document conflicts; don't decide. "I see tension between X and Y. Let's document this for stakeholder resolution." If ambiguity persists after 2–3 clarification attempts, escalate: "After several attempts, we still have conflicting views. Option 1: Document as an open question for stakeholder decision. Option 2: I proceed with a pragmatic assumption and document it explicitly. Which do you prefer?"
 
 **Step 5: Confirm Understanding** — Repeat back what you heard. "So if I understand correctly, [assumption]. Is that right?"
 
