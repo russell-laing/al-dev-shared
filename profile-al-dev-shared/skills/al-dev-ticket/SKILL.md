@@ -65,6 +65,17 @@ if [[ ! "$MODE" =~ ^(context-only|full)$ ]]; then
 fi
 ```
 
+**Test cases — trailing-argument boundary:**
+
+| Input `$ARGUMENTS` | Expected `$MODE` |
+|---|---|
+| `--mode=full` | `full` (last and only token) |
+| `1234 --mode=full` | `full` (last arg; `[^ ]+` captures to end-of-string) |
+| `--mode=full --other-flag` | `full` (`[^ ]+` captures until next space) |
+| (empty) | `context-only` (default) |
+
+The `[^ ]+` capture group matches one or more non-space characters, so `--mode=full` at the end of `$ARGUMENTS` is captured correctly without a trailing space.
+
 ---
 
 ## Phase 0 — Load Interview Requirements (Optional)
