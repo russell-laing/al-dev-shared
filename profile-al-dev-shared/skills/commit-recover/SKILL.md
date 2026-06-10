@@ -49,7 +49,8 @@ Prompt:
    Incident file path: [file path from log]
    Baseline lines: [original line count from log]
    Current lines: [wc -l output]
-   Git history (last 3-5 commits for this file): [git log output]
+   Git history (last 3-5 commits for this file):
+$(git log --oneline -n 5 -- <file path from log>)
    Known patterns from .dev/learnings.md: [learnings content]
 
    Return:
@@ -120,28 +121,3 @@ Append successful recovery patterns to `.dev/learnings.md`:
 
 - Date, file, pattern matched, recovery method, success flag
 - Update running statistics (incidents, recovered, escalations)
-
-## Internal Workflow
-
-**Triggered by:** `User: /commit-recover` or `/commit-recover --auto-fix`
-
-**Fixer subagent receives:**
-
-- Incident file path
-- Baseline/current line count
-- Git history (last 3-5 commits for file)
-- Current `.dev/learnings.md` content
-
-**Fixer returns:**
-
-- Root cause hypothesis
-- Fallback strategy to use
-- Success/failure result
-- Learning record (pattern, strategy, success rate)
-
-**Post-recovery:**
-
-- Create repair commit with prefix `fix(commit-integrity):`
-- Append to `.dev/learnings.md`:
-  - Date, file, pattern matched, recovery method, success
-  - Update statistics (incidents, recovered, escalations)
