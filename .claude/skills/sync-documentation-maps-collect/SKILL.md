@@ -2,7 +2,7 @@
 name: sync-documentation-maps-collect
 description: >-
   Collect results from /sync-documentation-maps audit agents. Reads audit
-  artifacts, presents discrepancy findings, asks which maps to update, and
+  artifacts, presents discrepancy findings, asks which maps to update (skipped when `--all`/auto-update is set), and
   dispatches background update agents. Supports Resume/Restart when a prior
   collect state exists; `--wait` polls for both audit artifacts for up to 30
   minutes before reading them. Second step of the async sync workflow.
@@ -88,57 +88,27 @@ A previous collect run reached status "<status>". How would you like to proceed?
 [3] Cancel — stop without changes
 ```
 
-On Resume, continue with the existing `update_choice` and team IDs already in
-the checkpoint. On Restart, ignore prior update fields and proceed fresh. On
-Cancel, stop. If `status` is unset or `"audit"`, proceed normally.
+- **Resume** re-reads the existing artifacts and continues with the
+  `update_choice` and team IDs already in the checkpoint. Valid after any of
+  `dispatched` / `complete` / `skipped`.
+- **Restart** discards the prior update fields and re-runs this collect step
+  from a clean state. It does **not** re-dispatch the audit agents — re-running
+  the audits is `/sync-documentation-maps`'s job, not this skill's.
+- **Cancel** stops with no changes.
+
+If `status` is unset or `"audit"`, proceed normally.
 
 ---
 
 ## Phase 2 — Poll & Read
 
-**Poll (only if `WAIT_MODE=true`).** The audit agents run in the background and
-write their results to `${RUN_DIR}/audit/`. Poll on **artifact presence** —
-`ls "${RUN_DIR}/audit/skill-audit.json"` and `…/agent-audit.json` — until both
-files exist or the timeout is reached. Log which files are present after each
-check. Do not wait more than 30 minutes total; if the timeout is reached, advise
-the user to retry later and stop. (Background-agent IDs are not pollable with
-`TaskGet`; the artifact files are the authoritative completion signal.)
-
-If `WAIT_MODE=false`, skip polling — the harness notifies when the background
-agents finish, and the read step below handles any artifact still absent.
-
-**Read audit artifacts.** Verify presence of both audit results:
-
-```bash
-ls -la "${RUN_DIR}/audit/skill-audit.json" 2>/dev/null
-ls -la "${RUN_DIR}/audit/agent-audit.json" 2>/dev/null
-```
-
-For each present file, read and parse the JSON. Extract:
-
-- `surface` — which surface was audited
-- `discrepancies` — array of discrepancy objects
-- `summary` — human-readable summary string
-
-For each absent file, note it as "pending" — that audit team has not yet
-written its result.
-
-If `WAIT_MODE=false` and an expected audit artifact is not yet present, do **not**
-block: record that surface as `pending` and report that the harness will notify on
-completion; the user re-runs collect (or runs `--wait`) once notified.
-
-If the same surface is still `pending` on a later collect re-run for the same
-`RUN_ID`, treat it as stalled rather than endlessly "still pending". Report the
-missing artifact path, note that the current run did not complete its audit
-write, and tell the user to restart the workflow from
-`/sync-documentation-maps` instead of looping on collect.
-
-If **both** files are absent, advise the user and stop:
-
-```text
-Audit results not yet available. Re-run with --wait to block until complete,
-or wait for the teams to finish and then re-run this collect step.
-```
+Run the poll-then-read state machine in
+`.claude/skills/sync-documentation-maps/collect-polling-patterns.md`, passing
+`WAIT_MODE` and `RUN_DIR`. It polls on artifact presence when `WAIT_MODE=true`
+(30-minute cap), reads and parses each present `*-audit.json` into `surface`,
+`discrepancies`, and `summary`, records an absent surface as `pending` (and a
+surface still pending on a same-`RUN_ID` re-run as stalled), and stops with the
+"Audit results not yet available" message when both artifacts are absent.
 
 ---
 
