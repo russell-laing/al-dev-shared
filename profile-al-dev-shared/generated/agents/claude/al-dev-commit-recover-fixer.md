@@ -1,5 +1,5 @@
 ---
-description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/YYYY-MM-DD-plugin-recover-report.md. Dispatched by /commit-recover Step 2 with one fixer spawned per corruption incident found in .dev/commit-integrity.log."
+description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/$(date +%Y-%m-%d)-plugin-recover-report.md. Dispatched by /commit-recover Step 2 with one fixer spawned per corruption incident found in .dev/commit-integrity.log."
 tools: ["Write", "Bash"]
 ---
 
@@ -51,5 +51,5 @@ Return to `/commit-recover` with:
 RECOVERED: <file count> files
 UNRECOVERABLE: <file count> files
 STRATEGIES_USED: [git restore | regex reconstruction | schema rebuild]
-REPORT_FILE: .dev/YYYY-MM-DD-plugin-recover-report.md
+REPORT_FILE: .dev/$(date +%Y-%m-%d)-plugin-recover-report.md
 ```

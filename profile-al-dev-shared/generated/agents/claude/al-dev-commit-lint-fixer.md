@@ -55,7 +55,13 @@ ruff check --fix <file> && ruff format <file> && git add <file>
 
 ⚠️ Use `[[:blank:]]+$` only — see `knowledge/bash-safe-patterns.md` for why `[ \t]+$`, `[[:space:]]+$`, and `\s+$` are unsafe on BSD `sed`.
 
-Skip binary and OOXML files (`.docx`, `.xlsx`, `.pptx`, `.odt`). For all remaining staged text files:
+Skip binary and OOXML files. Detect binary files via:
+
+```bash
+file --mime-encoding "$f" | grep -q 'binary' && continue
+```
+
+OOXML files are detected by extension (`.docx`, `.xlsx`, `.pptx`, `.odt`). For all remaining staged text files:
 
 ```bash
 git diff --cached --name-only | grep -v -E '\.(docx|xlsx|pptx|odt)$' | while IFS= read -r f; do
