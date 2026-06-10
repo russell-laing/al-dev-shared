@@ -62,8 +62,6 @@ flowchart LR
         skill_plugin_health_audit["/plugin-health-audit"]
     end
     subgraph stage_decide["Decide"]
-        skill_plan_health_findings["/plan-health-findings"]
-        manual_plan_health_findings["implement accepted plan"]
         skill_record_health_dispositions["/record-health-dispositions"]
     end
     subgraph stage_implement["Implement"]
@@ -80,21 +78,16 @@ flowchart LR
 
     skill_implement_health_plan --> skill_audit_knowledge_quality
     skill_implement_health_plan --> skill_projection_sync
-    skill_plan_health_findings --> manual_plan_health_findings
-    manual_plan_health_findings --> skill_audit_knowledge_quality
-    manual_plan_health_findings --> skill_projection_sync
     skill_plugin_health_audit -- "docs/health/*-*-health.md" --> skill_record_health_dispositions
-    skill_record_health_dispositions -- "docs/health/dispositions.md" --> skill_plan_health_findings
+    skill_record_health_dispositions -- "docs/health/dispositions.md + docs/superpowers/plans/*-*.md" --> skill_implement_health_plan
     skill_review_maps -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_plugin_health_audit
 
     class skill_audit_knowledge_quality userSkill
     class skill_implement_health_plan userSkill
-    class skill_plan_health_findings userSkill
     class skill_plugin_health_audit userSkill
     class skill_projection_sync userSkill
     class skill_record_health_dispositions userSkill
     class skill_review_maps userSkill
-    class manual_plan_health_findings manualStep
 ```
 <!-- END GENERATED: maintainer-workflow-overview -->
 
@@ -136,7 +129,6 @@ flowchart LR
 2. `/plan-health-findings` — Verify and plan accepted health-audit findings (formerly verify-map-suggestions). Repeat as needed.
    - reads: `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
    - writes: `docs/superpowers/plans/<date>-<topic>.md`
-3. Manual step: implement accepted plan.
 
 ### Implement steps
 
@@ -273,7 +265,6 @@ flowchart LR
 
     skill_plan_health_findings["/plan-health-findings"]
     skill_record_health_dispositions["/record-health-dispositions"]
-    manual_plan_health_findings["implement accepted plan"]
     art_docs_health_____health_md["docs/health/*-*-health.md"]
     art_docs_health_dispositions_md["docs/health/dispositions.md"]
     art_docs_superpowers_plans_____md["docs/superpowers/plans/*-*.md"]
@@ -283,7 +274,6 @@ flowchart LR
     art_docs_health_dispositions_md --> skill_plan_health_findings
     art_profile_al_dev_shared_knowledge_map_change_rubber_duck_checks_md --> skill_plan_health_findings
     skill_plan_health_findings --> art_docs_superpowers_plans_____md
-    skill_plan_health_findings --> manual_plan_health_findings
     skill_plan_health_findings -. "repeat" .-> skill_plan_health_findings
     art_docs_health_____health_md --> skill_record_health_dispositions
     art_docs_health_dispositions_md --> skill_record_health_dispositions
@@ -293,7 +283,6 @@ flowchart LR
 
     class skill_plan_health_findings userSkill
     class skill_record_health_dispositions userSkill
-    class manual_plan_health_findings manualStep
     class art_docs_health_____health_md artifact
     class art_docs_health_dispositions_md artifact
     class art_docs_superpowers_plans_____md artifact
@@ -546,7 +535,7 @@ flowchart TD
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
 | `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
-| `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
+| `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/implement-health-plan` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
@@ -570,7 +559,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /projection-sync, /sync-documentation-maps-write; consumed by no skill |
 | Sourceless input | none | — |
-| Manual step | `implement accepted plan` | follows /plan-health-findings |
+| Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/implement-health-plan-progress.md` | never produced |

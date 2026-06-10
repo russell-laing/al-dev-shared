@@ -1,0 +1,41 @@
+skill: implement-health-plan
+scenarios:
+  - id: implement-health-plan-primary
+    status: golden
+    user_prompt: "implement the health plan"
+    expected_artifacts:
+      - ".dev/implement-health-plan-progress.md"
+    notes: "Primary trigger phrase — should locate the latest plan containing closes_rows: and begin Phase 0."
+
+  - id: run-the-health-plan
+    status: golden
+    user_prompt: "run the health plan"
+    expected_artifacts:
+      - ".dev/implement-health-plan-progress.md"
+    notes: "Alternate trigger phrase listed in the skill description; same execution path as the primary trigger."
+
+  - id: execute-accepted-plan
+    status: golden
+    user_prompt: "execute the accepted plan from the health audit"
+    expected_artifacts:
+      - ".dev/implement-health-plan-progress.md"
+    notes: "Paraphrase of 'implement the accepted plan' trigger phrase; confirms routing when user says 'execute' rather than 'implement'."
+
+  - id: close-the-ledger
+    status: golden
+    user_prompt: "close the disposition ledger after the health plan tasks are done"
+    expected_artifacts:
+      - ".dev/implement-health-plan-progress.md"
+    notes: "Matches the 'close the ledger' trigger phrase; Phase 3 is the ledger-close step so this prompt should resolve to this skill."
+
+  - id: no-trigger-plan-health-findings
+    status: golden
+    user_prompt: "plan the health findings from the latest dossier and create an implementation plan"
+    expected_artifacts: []
+    notes: "Should route to plan-health-findings, not this skill. This skill executes an existing plan; plan-health-findings creates one. No progress checkpoint should be written."
+
+  - id: no-trigger-plugin-health-audit
+    status: golden
+    user_prompt: "audit the plugin health and run a full health sweep"
+    expected_artifacts: []
+    notes: "Should route to plugin-health-audit, not this skill. Health auditing produces a dossier; this skill acts on an already-accepted plan. No progress checkpoint should be written."

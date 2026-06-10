@@ -28,8 +28,7 @@ workflow:
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
-  next: [projection-sync, align-harness-repos, audit-knowledge-quality]
-  manual-followup: implement accepted plan
+  next: [implement-health-plan]
 ---
 
 # Plan Health Findings
