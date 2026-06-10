@@ -76,9 +76,9 @@ No lint issues found in the current compile output. Current-run success evidence
 
 Stop here.
 
-## Step 2: Spawn diagnostics-fixer
+## Step 2: Spawn diagnostics-resolver
 
-Spawn `al-dev-diagnostics-fixer`:
+Spawn `al-dev-diagnostics-resolver`:
 
 ```text
 Read .dev/compile-errors.log and knowledge/al-linting-rules.md.

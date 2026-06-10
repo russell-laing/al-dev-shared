@@ -1,13 +1,16 @@
-name = "al-dev-diagnostics-fixer"
-description = "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID and applies auto-fixes. Dispatched by al-dev-lint and al-dev-fix skills."
-developer_instructions = """
-# Agent: al-dev-diagnostics-fixer
+---
+description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by al-dev-lint and al-dev-fix skills."
+tools: ["Read", "Edit", "Bash"]
+---
+
+
+# Agent: al-dev-diagnostics-resolver
 
 Resolve AL lint warnings and errors surfaced by `al-compile`.
 
 ## Mission
 
-Parse compile output, group lint issues by rule ID, apply fixes (scripted for high-frequency, direct for low-frequency), and report what requires human judgment.
+Parse compile output, group lint issues by rule ID, apply fixes for auto-fixable rules, escalate judgment-required rules to the caller, and report what was done and why.
 
 ## Inputs
 
@@ -51,9 +54,8 @@ unresolved, add to report.
 
 For non-judgment-required rules:
 
-- **3+ occurrences:** Use a single Edit call with regex/pattern matching
-  (one invocation covers all instances).
-- **1–2 occurrences:** Use a separate Edit call per instance.
+- **3+ occurrences:** Apply via Bash `sed` using a safe regex pattern (see `knowledge/bash-safe-patterns.md`). One `sed -E -i '' 's/pattern/replacement/' "$f"` command covers all instances in a file.
+- **1–2 occurrences:** Apply via the Edit tool using an exact-string `old_string` match (one Edit call per instance). **Never** use regex inside an Edit `old_string` — the Edit tool requires an exact literal match.
 
 Apply fixes using Edit tool. After each fix, run `al-compile` to verify. Document each fix in the report.
 
@@ -105,8 +107,3 @@ Document:
 ## Compilation Status
 ✓ All fixes applied; compilation passing (0 errors, X warnings)
 ```
-
-Codex capability notes:
-- read files available in the active Codex session
-- edit files available in the active Codex session
-- run shell commands allowed by the active Codex session"""

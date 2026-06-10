@@ -5,6 +5,7 @@
 ## CRITICAL: Read Project Context First
 
 **BEFORE making any workflow decision, ALWAYS:**
+
 ```
 1. Check if .dev/project-context.md exists
 2. If exists: Read it completely (saves 5-10 minutes of exploration)
@@ -16,15 +17,18 @@
 Analyze the user request and classify:
 
 ### 🟢 TRIVIAL (Use Fast Path - 2-5 min)
+
 **Route:** `al-dev-fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
 
 **Criteria:**
+
 - Single file modification
 - Obvious fix location
 - No architectural decisions
 - Clear implementation
 
 **Examples:**
+
 - "Fix compilation error in line 47"
 - "Change field caption from X to Y"
 - "Add field to page extension"
@@ -32,12 +36,14 @@ Analyze the user request and classify:
 - "Update variable name for consistency"
 
 **Steps (direct-fix path, 2-5 min):**
+
 1. Read project-context.md
 2. Locate the likely file with minimal search
 3. If the fix stays obvious and single-scope, implement directly
 4. Run compile/lint verification and present the bounded result
 
 **Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `al-dev-fix` switches automatically to its built-in escalation branch:
+
 - Spawns `al-dev-solution-architect` for quick root-cause analysis (~5 min)
 - Reviews architect's hypothesis; presents to user for approval
 - Spawns `al-dev-developer` with confirmed approach
@@ -50,21 +56,25 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 ---
 
 ### 🟡 SIMPLE (Use Lightweight Path - 5-15 min)
+
 **Route:** Lightweight planning + implementation with quick review and approval
 
 **Criteria:**
+
 - 2-3 file changes
 - Pattern exists in project
 - Clear requirements
 - No new architecture
 
 **Examples:**
+
 - "Add validation field to Customer extension"
 - "Extend existing event subscriber with new check"
 - "Add similar field to another page"
 - "Implement validation like we did for X"
 
 **Steps:**
+
 1. Read project-context.md
 2. requirements-engineer → brief plan (50-75 lines max)
 3. solution-planner → lightweight plan (50-100 lines max)
@@ -84,36 +94,41 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 ---
 
 ### 🟠 MEDIUM (Use Streamlined Path - 20-40 min)
+
 **Route:** Balanced planning + development
 
 **Criteria:**
+
 - 4-8 file changes
 - Multiple objects involved
 - Some design decisions needed
 - Extends existing patterns
 
 **Examples:**
+
 - "Add credit limit warning on sales orders"
 - "Implement cascading field update across extensions"
 - "Add new validation with 3 error conditions"
 
 **Steps:**
+
 1. Read project-context.md
 2. requirements-engineer → balanced requirements (100-150 lines)
 3. solution-planner → balanced plan (100-300 lines)
    - Use the strongest available AL symbol evidence and BC specialist guidance as needed
 4. User approval
 5. al-developer → implement
-6. code-reviewer + diagnostics-fixer
+6. code-reviewer + diagnostics-resolver
 7. Update project-context.md
 8. Done
 
-**Internal workflow roles used:** requirements-engineer (balanced), solution-planner (balanced), al-developer, code-reviewer, diagnostics-fixer
+**Internal workflow roles used:** requirements-engineer (balanced), solution-planner (balanced), al-developer, code-reviewer, diagnostics-resolver
 **Planning style:** See `knowledge/proportional-planning.md` - MEDIUM guidelines (200-400 lines total)
 **Phases skipped:** test-engineer (unless critical)
 **Time saved:** 10-15 minutes vs full workflow
 
 **When to add testing:**
+
 - User explicitly requests tests
 - Business-critical logic
 - Complex validation rules
@@ -121,9 +136,11 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 ---
 
 ### 🔴 COMPLEX (Use Full Pipeline - 45-90 min)
+
 **Route:** `al-dev-develop` full workflow
 
 **Criteria:**
+
 - New feature (not extension of existing)
 - Multiple integration points
 - Unclear requirements need clarification
@@ -131,12 +148,14 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 - New patterns not in codebase
 
 **Examples:**
+
 - "Add approval workflow system"
 - "Integrate with external API"
 - "Implement new posting routine"
 - "Add complex multi-table validation logic"
 
 **Steps:**
+
 1. Read project-context.md (still helps!)
 2. requirements-engineer → comprehensive (150-300 lines)
 3. solution-planner → comprehensive (300-600 lines)
@@ -144,7 +163,7 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 4. Approval gate
 5. al-developer
 6. code-reviewer + iterations
-7. diagnostics-fixer
+7. diagnostics-resolver
 8. test-engineer
 9. test-reviewer
 10. Update project-context.md extensively
@@ -223,24 +242,28 @@ Clear requirements + extends existing?
 ## Example Classifications
 
 ### User: "Add IsBlocked field to Customer extension"
+
 **Classification:** 🟡 SIMPLE
 **Reason:** Pattern exists (table extension), single concept, 2 files (table + page)
 **Route:** Direct implementation + code-reviewer
 **Skip:** requirements, solution plan, testing
 
 ### User: "Fix error AL0432 in SalesOrderValidation.al line 87"
+
 **Classification:** 🟢 TRIVIAL
 **Reason:** Specific location, compilation error, obvious fix
 **Route:** Direct fix + compile
 **Skip:** All agents
 
 ### User: "Add credit limit validation when posting sales orders with warning threshold"
+
 **Classification:** 🟠 MEDIUM
 **Reason:** Multiple files (event subscriber, validation logic, UI), design decisions (threshold logic), extends existing validation
 **Route:** solution-planner → al-developer → review → diagnostics
 **Skip:** requirements-engineer, testing (unless critical)
 
 ### User: "Implement multi-level approval workflow for purchase orders with email notifications"
+
 **Classification:** 🔴 COMPLEX
 **Reason:** New architectural component, external integration (email), multiple tables, unclear approval logic
 **Route:** Full pipeline with all agents
@@ -272,12 +295,14 @@ Then: Synthesize results into solution plan
 ### When to Update Project Context
 
 **Always update after:**
+
 - Discovering new architectural patterns
 - Adding new objects (tables, pages, codeunits)
 - Learning base app integration points
 - Establishing new validation patterns
 
 **Quick updates (append only):**
+
 ```markdown
 ## Recent Changes Log
 
@@ -297,6 +322,7 @@ User can force a specific path:
 - COMPLEX path → full pipeline workflow
 
 But AI should suggest if path seems wrong:
+
 ```
 "This looks like a simple field addition. A fast-fix path is available.
 Would you like to use `al-dev-fix` instead of the standard workflow?
@@ -306,11 +332,13 @@ It keeps the change bounded and usually saves 15-20 minutes."
 ## Success Metrics
 
 Track actual vs estimated complexity:
+
 - If TRIVIAL took >10 min → should have been SIMPLE
 - If MEDIUM took >50 min → should have been COMPLEX
 - Learn and adjust classification
 
 Store in `.dev/workflow-metrics.json`:
+
 ```json
 {
   "classifications": {

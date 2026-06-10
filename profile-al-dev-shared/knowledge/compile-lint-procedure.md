@@ -158,6 +158,7 @@ After parsing `.dev/compile-errors.log`, summarize the result
 instead of replaying raw log lines into the session.
 
 Required summary fields:
+
 - `Errors:` count
 - `Warnings:` count
 - `Representative diagnostics:` up to 3
@@ -262,16 +263,16 @@ Warning AA0462: The procedure 'ProcessOrder' is too long (62 statements)
 
 Splitting a long procedure requires understanding intent; log as Unresolved.
 
-## Step 2 — Spawn diagnostics-fixer
+## Step 2 — Spawn diagnostics-resolver
 
 If compile errors were found, spawn `al-dev-fix` to fix them first,
 re-compile, then continue.
 
 If only warnings remain after a clean compile, spawn
-`al-dev-diagnostics-fixer`:
+`al-dev-diagnostics-resolver`:
 
 ```text
-Dispatch agent: al-dev-shared:al-dev-diagnostics-fixer
+Dispatch agent: al-dev-shared:al-dev-diagnostics-resolver
   description: "Resolve auto-fixable diagnostics from the current compile log"
   prompt: |
     Read `.dev/compile-errors.log` and `knowledge/al-linting-rules.md`.
