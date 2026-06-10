@@ -23,7 +23,10 @@ Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
 **Check for — flag every occurrence:**
-- Instructions interpretable in more than one way — record the ambiguous sentence verbatim
+
+- Instructions interpretable in more than one way — flag a sentence when a
+  reader could plausibly act two different ways from it and those two readings
+  lead to different observable actions; record the ambiguous sentence verbatim
 - Vague qualifiers with no operative definition: "as needed", "appropriate", "reasonable", "if necessary"
 - `if X` branches with no `else` / `otherwise` clause (incomplete conditional)
 - Bash code blocks that are pseudo-code rather than runnable commands: unrecognised
@@ -33,6 +36,7 @@ agent name from the filename (strip directory path and `.md` extension).
 - Steps that reference undefined placeholders or variables
 
 **Severity rules:**
+
 - High: ambiguity that changes observable behavior
 - Medium: vague qualifiers with no definition
 - Low: minor style issues
@@ -44,9 +48,11 @@ agent name from the filename (strip directory path and `.md` extension).
 Return exactly this structure (no additional prose before or after the block):
 
 ### Prompt Clarity Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Prompt Clarity Findings
+
 _No issues found._
