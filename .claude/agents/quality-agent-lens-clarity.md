@@ -11,6 +11,8 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to agent `.md` files |
 
+**Note:** All checks analyze the prose instructions in each agent file directly — no external context is required beyond the file list. The incomplete-conditional check looks for `if` clauses in prose that have no corresponding `else`/`otherwise` branch; it does not analyze code blocks.
+
 ## Outputs
 
 Returns a findings block. See Output Format.
