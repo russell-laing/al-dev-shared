@@ -178,8 +178,9 @@ Use this format:
 - Risk: Developer must not guess this signature
 ```
 
-A procedure is "required" if it is explicitly referenced in the approved solution plan
-and the assigned developer task must call it.
+A procedure is "required" if it is named in the approved solution plan's
+**Procedures/Triggers** section (or equivalent implementation-step) and the assigned
+developer task must call it. Acceptance criteria alone do not qualify.
 
 **Decision tree if any required external procedure is NOT VERIFIED:**
 
@@ -385,9 +386,10 @@ rg -rn -e \
   --glob="*.al" .
 ```
 
-For each match, the object name is everything after the numeric
-ID. Count its characters. Flag any name exceeding 30 characters
-as a CRITICAL issue.
+For each match, the object name is the identifier token immediately after the numeric ID —
+the name itself, excluding any surrounding whitespace. Count only the name
+token's characters (not the leading whitespace or numeric ID). Flag any name
+token exceeding 30 characters as a CRITICAL issue.
 
 ### Check 2: Compile Guard Logic
 
