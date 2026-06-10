@@ -1,7 +1,7 @@
 ---
 name: projection-sync
 description: >-
-  Validates shared agent source and unidirectionally regenerates harness-native projections
+  Validates shared agent source and unidirectionally regenerates harness-native agent projections
   from the canonical agent source, summarizes changes, and asks before committing.
   Use after editing profile-al-dev-shared/agents/*.md files.
 argument-hint: ""
@@ -20,7 +20,7 @@ workflow:
 
 ## Overview
 
-This skill validates the canonical agent source under `profile-al-dev-shared/agents/`, regenerates harness-native projections (Claude Code, Copilot CLI, Codex), summarizes the changes, and asks for approval before committing.
+This skill validates the canonical agent source under `profile-al-dev-shared/agents/`, regenerates harness-native agent projections (Claude Code, Copilot CLI, Codex), summarizes the changes, and asks for approval before committing.
 
 ---
 
@@ -30,7 +30,11 @@ This skill validates the canonical agent source under `profile-al-dev-shared/age
 
 Check `.dev/projection-sync-progress.md`:
 
-- **If exists:** Offer `Resume` (continue from next incomplete phase) or `Restart` (begin from Phase 1). If the user does not respond, default to `Restart` (regenerate from a clean state).
+- **If exists:** Read the `status` field. If the status value is unrecognized or
+  the field is missing, treat the checkpoint as corrupted and default to `Restart`.
+  Otherwise offer `Resume` (continue from next incomplete phase) or `Restart` (begin
+  from Phase 1). If the user does not respond, default to `Restart` (regenerate from
+  a clean state).
 - **If not exists:** Proceed to Phase 1
 
 Progress checkpoint file location: `.dev/projection-sync-progress.md`
