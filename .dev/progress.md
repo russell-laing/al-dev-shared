@@ -108,3 +108,12 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
   Next: /sync-documentation-maps-collect
 [2026-06-10] sync-documentation-maps-write complete — 20260610T095127Z maps written and committed (60cfb5b).
   Skills map: 3 agent name references corrected.
+
+[2026-06-10] sync-documentation-maps (run 20260610T125038Z): Dispatched skill-audit
+  (a8b7cac162291d203) and agent-audit (a336b86b98a8a089d) teams.
+  Next: /sync-documentation-maps-collect --team-ids a8b7cac162291d203,a336b86b98a8a089d
+
+[2026-06-10] sync-documentation-maps (run 20260610T125038Z): Collect complete.
+  Skills: 22 files → 22 map entries (no discrepancies)
+  Agents: 23 files → 23 map entries (no discrepancies)
+  Status: documentation maps are accurate, no updates required.
