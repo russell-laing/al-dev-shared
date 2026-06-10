@@ -227,19 +227,12 @@ the findings template.
 > **Reconciliation Gate (required if Root Cause is labelled
 > "pre-existing" or "environmental"):**
 >
-> If you are about to write Root Cause as a pre-existing defect or
-> environmental cause, you MUST first reconcile with the Regression
-> Timeline above:
->
-> - If **Recently working = yes**: a pre-existing label is a
->   contradiction. Either (a) the defect was latent and a recent
->   change triggered it — identify the trigger, OR (b) the Recently
->   Working assessment was wrong — explain how. Do NOT submit
->   "pre-existing" without one of these reconciliations.
-> - If **Recently working = no**: state the evidence that rules out
->   a recent trigger before accepting pre-existing.
-> - If **Recently working = unknown**: state the evidence that rules
->   out a recent trigger before accepting pre-existing.
+> Before writing a "pre-existing" or "environmental" Root Cause,
+> apply the timeline prioritisation rules from Step 2 (Recently working
+> = yes / no / unknown) to verify the label is consistent with the
+> captured timeline values. If the timeline contradicts the label,
+> either revise the Root Cause or document how you reconciled the
+> contradiction before proceeding.
 >
 > Write the reconciliation as a paragraph immediately under Root
 > Cause, prefixed `**Reconciliation:**`.
