@@ -95,11 +95,20 @@ If no plan passes the filter, stop with:
 
 Check `.dev/implement-health-plan-progress.md`:
 
-- **If exists:** Read the `status` field. If the status value is unrecognized
-  or the field is missing, treat the checkpoint as corrupted and default to
-  `Restart`. Otherwise offer `Resume` (continue from next incomplete task) or
-  `Restart` (begin task execution from Task 1). If the user does not respond,
-  default to `Restart`.
+- **If exists:** Read the `phase` and `status` fields. Recognized pairs and
+  their meaning:
+  - `phase: 0, status: complete` — Phase 0 done; proceed to Phase 1 Task 1.
+  - `phase: 1, status: in_progress` + non-empty `tasks_completed` list —
+    partial Phase 1 run; offer Resume (continue from the next incomplete task)
+    or Restart.
+  - `phase: 1, status: complete` — Phase 1 done; proceed to Phase 2 / 3.
+  - `phase: 3, status: complete` + `result: ledger_closed` — full loop already
+    closed for this plan; inform the user and ask whether to re-run from Phase 1.
+
+  If the `phase` / `status` combination is not in the list above, or either
+  field is missing, treat the checkpoint as corrupted and default to `Restart`.
+  On Restart, **overwrite** the existing checkpoint file with the fresh Phase 0
+  checkpoint written below. If the user does not respond, default to `Restart`.
 - **If not exists:** Proceed to Phase 1.
 
 Write initial checkpoint before proceeding:
@@ -206,6 +215,17 @@ git diff HEAD~1 -- <changed-files> | grep -E \
 Any hit is a blocker. Fix the file and amend or commit a correction before
 continuing.
 
+**Note:** The grep above scans the diff for `[date]`, `TODO`, `TBD`, and
+harness debug tokens. Two additional patterns must be checked **manually in
+the actual file content** (not the diff, where they appear legitimately in
+context lines):
+
+- `YYYY-MM-DD` as a literal unrendered date placeholder — open the changed
+  file and confirm any `YYYY-MM-DD` occurrence is inside an instructional
+  prose example, not a field value that should hold a real date.
+- `Co-Authored-By` in code comment lines — confirm any occurrence is only in
+  git commit trailer blocks, not inside source file comments.
+
 ### Acceptance criteria check
 
 Re-read each acceptance criterion from the task spec and confirm it is met in
@@ -218,6 +238,11 @@ memory of what was written.
 
 This is the core new behavior. For each completed task, resolve its
 `closes_rows:` list.
+
+**Tasks without `closes_rows:`:** If a completed task has no `closes_rows:`
+field (or the field is present but empty), skip ledger close-back for that
+task entirely. Record it in the final report as "no ledger rows to close" and
+continue with the next task.
 
 ### Resolve each row
 
@@ -299,7 +324,9 @@ mv <plan-path> docs/superpowers/plans/archived/
 ### Archive the dossier and findings file
 
 Identify the dossier that sourced the plan. Check the plan's `health_filters:`
-block for the surface(s), then select the matching dossier:
+block for the surface(s), then select the matching dossier. **If
+`health_filters.surfaces` lists multiple values (e.g., `[plugin, tooling]`),
+run the selection and archival steps once per surface.**
 
 ```bash
 python3 scripts/select_health_artifacts.py \
@@ -314,6 +341,9 @@ Move the dossier and its companion `*-findings.md` (same date prefix):
 mv docs/health/<date>-<surface>-health.md docs/health/archived/
 mv docs/health/<date>-<surface>-findings.md docs/health/archived/
 ```
+
+Repeat the `select_health_artifacts.py` call and both `mv` commands for each
+additional surface listed in `health_filters.surfaces`.
 
 If a `*-findings.md` does not exist for the selected dossier (e.g., the dossier
 predates the findings-file convention), skip the findings move and note it in
@@ -331,7 +361,9 @@ execution.
 - If any skills, agents, or knowledge files under `profile-al-dev-shared/`
   changed → invoke `align-harness-repos`
 
-Check by inspecting the task commits:
+Check by inspecting the task commits. `<first-task-commit>` is the `commit`
+value of the first entry in `tasks_completed` from the checkpoint file
+(`.dev/implement-health-plan-progress.md`):
 
 ```bash
 git diff <first-task-commit>~1 HEAD --name-only \
