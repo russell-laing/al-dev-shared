@@ -1063,5 +1063,3 @@ flowchart LR
 > History: in-map suggestions through 2026-05-27 were retired when findings
 > converged on the health dossier (2026-06-02).
 >
-
-</content>
