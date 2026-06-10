@@ -89,13 +89,23 @@ for name in EXPECTED_AGENTS:
 
     content = open(path).read()
 
-    if "model: haiku" not in content:
-        failures.append(_format_failure(
-            path,
-            "agent-model",
-            "model is not set to haiku",
-            f'add "model: haiku" to the YAML frontmatter in {path}',
-        ))
+    # design-skill-lens-shared-backbone uses sonnet for multi-file synthesis; all others use haiku
+    if name == "design-skill-lens-shared-backbone":
+        if "model: sonnet" not in content:
+            failures.append(_format_failure(
+                path,
+                "agent-model",
+                "model is not set to sonnet",
+                f'add "model: sonnet" to the YAML frontmatter in {path}',
+            ))
+    else:
+        if "model: haiku" not in content:
+            failures.append(_format_failure(
+                path,
+                "agent-model",
+                "model is not set to haiku",
+                f'add "model: haiku" to the YAML frontmatter in {path}',
+            ))
 
     tools_match = re.search(r'tools:\s*\[([^\]]*)\]', content)
     if tools_match:
