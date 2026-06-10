@@ -105,8 +105,9 @@ This is metadata for the investigation and a gate against
 
 Extract or ask the user for:
 
-- **Last known good:** date/version when this last worked correctly
-  (or "unknown" if never confirmed working)
+- **Last known good:** date/version when the behavior was last confirmed
+  working as intended by the user or in production
+  (or "unknown" if this was never confirmed working)
 - **First reported failure:** date/event of the first failure report
 - **Recently working?** yes / no / unknown
 

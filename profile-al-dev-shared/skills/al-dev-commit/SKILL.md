@@ -165,6 +165,8 @@ If `$AL_STAGED` is non-empty, run the compile gate before proceeding:
 4. If `Errors > 0`, stop the commit workflow and tell the user the staged changes are not ready to commit
 5. Only continue when the compile result shows zero errors
 
+If `$AL_STAGED` is empty, no AL files are staged — skip the compile gate and continue to 0.4.
+
 Critical rule: never claim the staged set is ready, "clean compile", or "zero errors"
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.

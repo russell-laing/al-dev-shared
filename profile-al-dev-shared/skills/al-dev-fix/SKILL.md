@@ -53,7 +53,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ---
 
-## How This Command Works (v3.0)
+## How This Command Works
 
 **Your Role:** Engineering Manager (but streamlined)
 **Teammates:** Usually 1 al-dev-shared:al-dev-developer-traditional (or -tdd if test plan), sometimes 1 al-dev-shared:al-dev-solution-architect for complex fixes

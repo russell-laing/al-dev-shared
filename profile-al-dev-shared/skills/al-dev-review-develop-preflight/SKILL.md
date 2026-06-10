@@ -74,6 +74,7 @@ Combine two sources:
    ```
 
    Filter both commands to: `*.al`, `app.json`, `*.al.json`
+   (use case-insensitive matching for `.al` and `.al.json` on case-insensitive filesystems)
 
 Deduplicate the combined list into `CHANGED_FILES`.
 

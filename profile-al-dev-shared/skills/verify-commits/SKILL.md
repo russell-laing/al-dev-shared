@@ -27,6 +27,9 @@ git commit.
    - only local, unpublished commits are in scope
    - the affected commits are the recent commits just inspected
    - the user wants history rewritten
+   If the user does not confirm (declines the rewrite), stop. Inform them:
+   "Leaving the combined commit as-is. To split manually later:
+   `git reset --soft HEAD~<N>` then re-commit each approved group separately."
 6. If that safety check passes, use `git reset --soft HEAD~<N>` to unstage and
    re-commit each approved group as a separate atomic commit.
 7. Re-run `git log --oneline -n <N>` and confirm the final commits match the
