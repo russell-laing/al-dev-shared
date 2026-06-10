@@ -18,7 +18,7 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
   "skill_audit_team_id": "team-id",
   "agent_audit_team_id": "team-id",
   "phase": "audit|update|complete",
-  "status": "dispatched|skipped|complete|done",
+  "status": "dispatched|skipped|complete|awaiting-write|done",
   "result_dir": "/absolute/path",
   "auto_update": false,
   "skip_commit": false,
@@ -100,6 +100,7 @@ ls -la "$checkpoint_file" >/dev/null || exit 1
 - **Dispatch**: `phase="audit"`, `status="dispatched"`
 - **Collect updates selected**: `phase="update"`, `status="dispatched"`
 - **Collect no updates needed**: `status="complete"` or `status="skipped"` depending on outcome
+- **Apply complete**: `status="awaiting-write"` (gates `/sync-documentation-maps-write`)
 - **Finalize**: `phase="complete"`, `status="done"`
 
 ### Side Effects
