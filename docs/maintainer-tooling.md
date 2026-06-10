@@ -112,7 +112,7 @@ flowchart LR
 
 ### Discover steps
 
-1. `/plugin-health-audit` — Suggestions-only health sweep of the al-dev-shared plugin surfaces. Repeat as needed.
+1. `/plugin-health-audit` — Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
 2. `/plugin-health-discover` — Discovery phase of the plugin health sweep. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`
@@ -139,7 +139,7 @@ flowchart LR
 2. `/fix-knowledge-quality` — Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. Repeat as needed.
    - reads: `docs/al-dev-knowledge-quality.md`
    - writes: `profile-al-dev-shared/knowledge/`
-3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
+3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
    - reads: `profile-al-dev-shared/agents/`
    - writes: `profile-al-dev-shared/generated/agents/`
 4. `/align-harness-repos` — Validate harness neutrality in the al-dev-shared single shared plugin surface. Repeat as needed.
@@ -481,7 +481,7 @@ flowchart TD
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
 | `/sync-documentation-maps-write` | map-sync | user | Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow. |
-| `/plugin-health-audit` | discover | user | Suggestions-only health sweep of the al-dev-shared plugin surfaces. |
+| `/plugin-health-audit` | discover | user | Standing suggestions-only entry point for the al-dev-shared plugin surfaces. |
 | `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
 | `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
@@ -489,7 +489,7 @@ flowchart TD
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. |
-| `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native projections from the canonical agent source, summarizes changes, and asks before committing. |
+| `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
 
@@ -537,10 +537,10 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-10 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-07 |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-08 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-10 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -473,7 +473,7 @@
 **Description:** Design BC-integrated solutions and create detailed implementation plans.
 **Model:** opus
 **Tools:** Read, Write, Glob, Grep
-**Spawned by:** /al-dev-plan, /al-dev-fix
+**Spawned by:** /al-dev-fix, /al-dev-plan
 
 **Inputs:**
 
