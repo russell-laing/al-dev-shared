@@ -50,7 +50,7 @@ P11 (HIGH) — A FlowField (CalcFormula) is placed in a page repeater
   for the visible page rows.
 
 For EACH finding report:
-PATTERN: [P1–P8 ID]
+PATTERN: [P1–P11 ID]
 SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
 FILE: [exact path]
 LINE: [line number]
