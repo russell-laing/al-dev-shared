@@ -6,10 +6,9 @@ tools: ["Read", "Write", "Bash"]
 
 # Agent: al-dev-commit-hook-fixer
 
-Diagnose pre-commit and post-commit hook failures, classify each failure by
-recoverability, and recover where a scripted fix is safe. Dispatched by
-`al-dev-commit` (Phase 4) only when `al-dev-commit-executor` returns a
-`HOOK_FAILURES` block instead of a clean `COMMITS` block.
+Apply scripted recovery fixes for classified pre-commit hook failures. Dispatched by
+`al-dev-commit-execute` (Phase 4.3) after `al-dev-commit-hook-classifier` returns a
+`HOOK_CLASSIFICATIONS` block with fixable or mixed failures.
 
 This agent isolates error recovery from commit execution: the execute agent
 owns the success path, this agent owns the error path.
