@@ -130,10 +130,14 @@ Skip any section marked `_No issues found._` and any finding already marked
 `← implemented`, `← completed`, or `← already implemented`.
 
 Then consult `docs/health/dispositions.md` (if present), matching by object
-
-- issue essence:
+and issue essence:
 
 - Findings marked `accepted` are the primary planning input — keep them.
+  **Capture the 1-based data-row number** of each accepted row (the
+  sequential count of non-header, non-blank `|`-prefixed rows, which is
+  the same numbering used by `check_ledger_staleness.py`). Carry this row
+  number forward to Phase 3 so each plan task can record which ledger rows
+  it closes.
 - Skip findings marked `declined`, `grandfathered`, or `fixed` (note the
   skip count).
 - Findings with no ledger row are undispositioned: list them and ask the
@@ -287,6 +291,26 @@ Pass as context to writing-plans:
   | Move | File relocated to target surface | `ls` (new path) + `ls` (old path gone) |
   | Extend | New downstream consumer reads the artifact | `grep` (read site) |
   | Trim / Remodel / Align | Field/tool removed or value changed | `grep` (presence/absence) |
+
+- The ledger row numbers captured in Phase 1 for the accepted findings each
+  task implements. Each task's **verification block** must include a
+  `closes_rows:` line in this exact format:
+
+  ```text
+  closes_rows: [N, M, ...]   # data-row numbers from docs/health/dispositions.md
+  ```
+
+  Place this line **inside the verification block**, not in the task title or
+  header. `implement-health-plan` Phase 3 greps for this token to close the
+  ledger entries after implementation.
+
+  > **Survival caveat:** `writing-plans` must preserve the full verification-block
+  > content for this field to survive into the output plan. The verification block
+  > is chosen as the placement site precisely because `writing-plans` preserves it
+  > there. If the sub-skill's task template strips arbitrary verification-block
+  > lines, `closes_rows:` will be silently dropped and the loop will never
+  > close — check the written plan file to confirm the field is present before
+  > treating the planning step as complete.
 
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-plugin-map-<short-label>.md`
