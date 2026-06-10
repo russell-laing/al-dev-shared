@@ -58,25 +58,10 @@ Fix, and Context 3: Error Correction all route here when no test plan exists).
 
 ### AL Code Patterns
 
-Before writing any AL code, complete the symbol pre-flight checklist
-(`knowledge/al-symbol-pre-flight.md`). This is enforced by
-`SYMBOL_PREFLIGHT_GATE` — report your pre-flight summary before
-implementation begins. The summary must name the evidence source for
-each required symbol: `AL LSP`, `AL MCP`, `text search`, or `unverified`.
-
-Prefer `AL LSP` semantic navigation when the active harness exposes it for
-definition lookup, references, document symbols, hover/type information, and
-rename/refactor impact checks. If unavailable, use AL MCP. Use scoped text
-search only as a weaker fallback with exact file:line evidence. Stop before
-implementation if a required symbol remains `unverified`.
-
-> **Definition of `unverified`:** A symbol is unverified when it cannot be
-> located via AL LSP query, AL MCP lookup, or scoped text search with
-> documented `file:line` evidence.
-
-Follow `knowledge/al-developer-patterns.md` for AL patterns, common mistakes,
-error handling (labels not StrSubstNo), naming conventions, DRY/SOLID reuse, and
-performance (SetLoadFields, avoid N+1, ≤30-line procedures).
+See `knowledge/al-symbol-pre-flight.md` for the pre-flight checklist and
+tool selection guidance (`AL LSP` → `AL MCP` → text search; stop on
+`unverified`). See `knowledge/al-developer-patterns.md` for AL patterns,
+error handling, naming conventions, and performance rules.
 
 ### Compilation
 
