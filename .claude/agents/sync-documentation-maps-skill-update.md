@@ -2,9 +2,11 @@
 name: sync-documentation-maps-skill-update
 description: >-
   Reads skill audit findings from the run artifact directory and writes the
-  updated map to `<result_dir>/updates/skills-map.md`, staged for
-  /sync-documentation-maps-apply to copy into docs/al-dev-skills-map.md. Called
-  by /sync-documentation-maps-collect update dispatch phase.
+  updated map to `<result_dir>/updates/skills-map.md` by following the shared
+  canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
+  staged for /sync-documentation-maps-apply to copy into
+  docs/al-dev-skills-map.md. Called by /sync-documentation-maps-collect update
+  dispatch phase.
 model: haiku
 tools: ["Read", "Bash", "Write"]
 ---
