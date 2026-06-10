@@ -66,14 +66,20 @@ flowchart LR
         manual_plan_health_findings["implement accepted plan"]
         skill_record_health_dispositions["/record-health-dispositions"]
     end
+    subgraph stage_implement["Implement"]
+        skill_implement_health_plan["/implement-health-plan"]
+    end
     subgraph stage_derive["Derive"]
         skill_audit_knowledge_quality["/audit-knowledge-quality"]
         skill_projection_sync["/projection-sync"]
     end
     stage_map_sync ~~~ stage_discover
     stage_discover ~~~ stage_decide
-    stage_decide ~~~ stage_derive
+    stage_decide ~~~ stage_implement
+    stage_implement ~~~ stage_derive
 
+    skill_implement_health_plan --> skill_audit_knowledge_quality
+    skill_implement_health_plan --> skill_projection_sync
     skill_plan_health_findings --> manual_plan_health_findings
     manual_plan_health_findings --> skill_audit_knowledge_quality
     manual_plan_health_findings --> skill_projection_sync
@@ -82,6 +88,7 @@ flowchart LR
     skill_review_maps -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_plugin_health_audit
 
     class skill_audit_knowledge_quality userSkill
+    class skill_implement_health_plan userSkill
     class skill_plan_health_findings userSkill
     class skill_plugin_health_audit userSkill
     class skill_projection_sync userSkill
@@ -130,6 +137,12 @@ flowchart LR
    - reads: `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
    - writes: `docs/superpowers/plans/<date>-<topic>.md`
 3. Manual step: implement accepted plan.
+
+### Implement steps
+
+1. `/implement-health-plan` — Execute an accepted health-findings implementation plan and close the disposition ledger. Repeat as needed.
+   - reads: `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md`
+   - writes: `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md`
 
 ### Derive steps
 
@@ -283,10 +296,39 @@ flowchart LR
     class manual_plan_health_findings manualStep
     class art_docs_health_____health_md artifact
     class art_docs_health_dispositions_md artifact
-    class art_docs_superpowers_plans_____md orphanArtifact
+    class art_docs_superpowers_plans_____md artifact
     class art_profile_al_dev_shared_knowledge_map_change_rubber_duck_checks_md artifact
 ```
 <!-- END GENERATED: maintainer-stage-decide -->
+
+### Implement stage
+
+<!-- BEGIN GENERATED: maintainer-stage-implement -->
+```mermaid
+flowchart LR
+    classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef internalSkill fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 5,font-weight:bold
+    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
+    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+
+    skill_implement_health_plan["/implement-health-plan"]
+    art__dev_implement_health_plan_progress_md[".../implement-health-plan-progress.md"]
+    art_docs_health_dispositions_md["docs/health/dispositions.md"]
+    art_docs_superpowers_plans_____md["docs/superpowers/plans/*-*.md"]
+
+    art_docs_health_dispositions_md --> skill_implement_health_plan
+    art_docs_superpowers_plans_____md --> skill_implement_health_plan
+    skill_implement_health_plan --> art__dev_implement_health_plan_progress_md
+    skill_implement_health_plan --> art_docs_health_dispositions_md
+    skill_implement_health_plan -. "repeat" .-> skill_implement_health_plan
+
+    class skill_implement_health_plan userSkill
+    class art__dev_implement_health_plan_progress_md orphanArtifact
+    class art_docs_health_dispositions_md artifact
+    class art_docs_superpowers_plans_____md artifact
+```
+<!-- END GENERATED: maintainer-stage-implement -->
 
 ### Derive stage
 
@@ -486,6 +528,7 @@ flowchart TD
 | `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
+| `/implement-health-plan` | implement | user | Execute an accepted health-findings implementation plan and close the disposition ledger. |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. |
@@ -505,6 +548,7 @@ flowchart TD
 | `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
 | `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
+| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/align-harness-repos` |
@@ -520,27 +564,28 @@ only place cross-stage gaps are guaranteed to appear in full.
 <!-- BEGIN GENERATED: maintainer-gaps -->
 | Signal | Item | Detail |
 | --- | --- | --- |
+| Orphaned artifact | `.dev/implement-health-plan-progress.md` | produced by /implement-health-plan; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `docs/superpowers/plans/*-*.md` | produced by /plan-health-findings; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /projection-sync, /sync-documentation-maps-write; consumed by no skill |
 | Sourceless input | none | — |
 | Manual step | `implement accepted plan` | follows /plan-health-findings |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | never produced |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-10 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-10 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-10 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | never produced |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | never produced |
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-10 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-08 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-10 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-10 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-10 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
