@@ -220,6 +220,16 @@ any of the three sections are excluded from Phase 3 synthesis.
 Push architects to think deeper. Do not accept superficial
 solutions.
 
+**Phase 3 ends when any of these conditions is met:**
+
+- (a) All spawned architects have submitted their three required sections
+  (Proposal, Self-critique, Falsification).
+- (b) A clear trade-off comparison is visible across all dimensions reviewed
+  in this phase.
+- (c) The user explicitly requests a decision without further debate.
+
+Proceed to Phase 4 when any condition is met.
+
 Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 ## Phase 4: Evaluate and Select
