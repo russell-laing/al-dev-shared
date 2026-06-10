@@ -2,8 +2,8 @@
 name: audit-knowledge-quality
 description: >-
   Audit knowledge files for stub sections and structural issues. Dispatches
-  parallel agents for large audit scopes (4+ files) and offers user-gated fix
-  guidance for HIGH-severity findings after reporting.
+  parallel agents for large audit scopes (4+ files) and optionally provides fix
+  guidance for HIGH-severity findings when the user opts in after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
 workflow:
   stage: derive
@@ -18,8 +18,8 @@ workflow:
 
 # Audit Knowledge Quality
 
-Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues. Report findings and offer user-gated fix guidance for HIGH-severity findings.
-After reporting, this audit offers user-gated fix guidance for HIGH-severity findings; it does not edit files autonomously.
+Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues.
+After reporting, this audit optionally provides fix guidance for HIGH-severity findings when the user opts in; it does not edit files autonomously.
 
 ## Purpose
 
@@ -66,7 +66,7 @@ decision:
 
 #### Parallel Exploration (4+ files)
 
-Invoke `superpowers:dispatching-parallel-agents`. Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
+Invoke `superpowers:dispatching-parallel-agents` (if parallel dispatch is unavailable, use the sequential path instead). Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
 
 #### Sequential Analysis (≤3 files or fallback)
 
@@ -143,7 +143,7 @@ After writing the report:
 
 1. Print: `Knowledge quality report written to docs/al-dev-knowledge-quality.md`
 2. Ask the user: "Would you like to fix any of these issues?"
-3. If yes, offer targeted guidance for each HIGH issue
+3. If yes, present a structured list of concrete fix instructions, one per HIGH issue
 
 ## Output Format
 
