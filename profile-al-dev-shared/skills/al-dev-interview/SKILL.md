@@ -81,7 +81,11 @@ The interview agent MUST:
 
    **Completion check:** Verify agent output contains `INTERVIEW COMPLETE` and a
    category list. Mandatory categories (must be covered): Business logic, BC
-   integration, Data model, Error handling, Integration points. If `INTERVIEW
+   integration, Data model, Error handling, Integration points.
+
+   ### Completion failure recovery
+
+   If `INTERVIEW
    COMPLETE` is missing:
    1. Re-dispatch once with: "Please end your response with INTERVIEW COMPLETE and
       list the question groups covered."
