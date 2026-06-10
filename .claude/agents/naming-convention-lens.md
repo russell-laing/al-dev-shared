@@ -39,7 +39,8 @@ read every file path in the dispatch prompt and derive each tool's name:
   grandfather set — do not hardcode names here, as the set is consolidated and
   maintained in the convention doc.
 
-**Check output paths** mentioned in the body (Write/output targets):
+**Check output paths** named in prose instructions only — exclude YAML frontmatter
+and code-block examples (Write/output targets):
 
 - Living docs must match `al-dev-{object}-{kind}.md`.
 - Dated artifacts must match `{dir}/YYYY-MM-DD-{surface}-{kind}.md` with
