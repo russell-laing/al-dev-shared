@@ -21,6 +21,7 @@ Generate release notes from the git diff between two commits. Audience: business
 | `RELEASE_TYPE` | **Yes** | `uat` or `prod` |
 | `VERSION` | No | Label (e.g., `v2.1.0`); short hash if omitted |
 | `PROJECT_CONTEXT` | No | Content of `.dev/project-context.md` if exists |
+| `AL_DEV_SHARED_PLUGIN_ROOT` | No | Path to the shared plugin root used to locate `markdown/md-mermaid-helper.md`. Auto-detected via `find . -name "md-mermaid-helper.md" -type f \| head -1` if not set. |
 
 ## Outputs
 
@@ -40,7 +41,7 @@ Generate release notes from the git diff between two commits. Audience: business
 ## Phase 2: Write Notes
 
 1. Research AL objects using AL MCP Server (get object definitions, understand context)
-2. Identify diagrams — If changes include architecture updates, reference relevant diagrams
+2. Identify diagrams — If changes include architecture or data model updates, reference relevant diagrams. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.
 3. Write release notes sections: Summary, New Features, Bug Fixes, Improvements, Breaking Changes, Performance, etc.
 4. Follow template structure from `knowledge/release-notes-template.md`
 
@@ -62,7 +63,9 @@ If changes include architecture or data model updates:
 For mermaid helper reference:
 
 ```bash
-MERMAID_HELPER="$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md"
+# Use env var if set; fall back to find if not
+MERMAID_HELPER="${AL_DEV_SHARED_PLUGIN_ROOT:+$AL_DEV_SHARED_PLUGIN_ROOT/markdown/md-mermaid-helper.md}"
+MERMAID_HELPER="${MERMAID_HELPER:-$(find . -name "md-mermaid-helper.md" -type f | head -1)}"
 ```
 
 ## Output Response
