@@ -67,9 +67,12 @@ Extract:
 - **Agents spawned:** extract all `al-dev-shared:<agent-name>` patterns.
 - **Output files:** extract all `.dev/` write-target paths. First normalize any
   templated date to the literal `YYYY-MM-DD`, then extract candidate paths, then
-  keep only those on lines that mention a write verb. The write-verb list
-  (`write`, `writes`, `Write`, `save`, `output to`, `→`) is indicative, not
-  exhaustive — keep a path when the line clearly directs writing it. Use:
+  keep only those on lines that mention a write verb. Keep a path when its line
+  contains a write verb from the list (`write`, `writes`, `Write`, `save`,
+  `output to`, `→`) **and** the path appears in the same clause as that verb.
+  The list is indicative, not exhaustive: count a synonym (e.g. `emit`,
+  `record to`) only when it likewise directs writing the path in the same
+  clause. Use:
   `skill_file="profile-al-dev-shared/skills/<name>/SKILL.md"`
   `sed -E 's/\$\(date \+[^)]*\)/YYYY-MM-DD/g' "$skill_file" | grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)'`
   This captures both literal-dated and `$(date ...)`-templated artifacts in the
