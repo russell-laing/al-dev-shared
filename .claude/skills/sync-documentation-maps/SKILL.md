@@ -7,8 +7,9 @@ description: >-
   on completion. Runs a Phase 0 cadence guard that refuses to dispatch over an
   unfinished prior run unless `--force` is given. Collect results with
   /sync-documentation-maps-collect.
-  Triggers: "sync documentation maps", "update maps", "are the maps accurate".
-argument-hint: "[--all] [--skip-commit] [--force]"
+  Triggers: "sync documentation maps", "review maps", "update maps", "sync maps",
+  "are the maps accurate", "check the maps".
+argument-hint: "[--all] [--skip-commit] [--force] [--no-update]"
 workflow:
   stage: map-sync
   invoked-by: both
@@ -45,10 +46,21 @@ Read the arguments supplied by the user:
 AUTO_UPDATE=false
 SKIP_COMMIT=false
 FORCE=false
+NO_UPDATE=false
 
 - If `--all` is present, set `AUTO_UPDATE=true`.
 - If `--skip-commit` is present, set `SKIP_COMMIT=true`.
 - If `--force` is present, set `FORCE=true`.
+- If `--no-update` is present, set `NO_UPDATE=true`.
+
+If `NO_UPDATE=true`, print the maintained async sequence and stop:
+
+```text
+1. /sync-documentation-maps
+2. /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id>
+3. /sync-documentation-maps-apply --team-ids <id>[,<id>]
+4. /sync-documentation-maps-write
+```
 
 ### Cadence guard — no dispatch over an uncollected run
 
@@ -226,3 +238,8 @@ changes are written but not committed (dry-run / review mode).
 **`--force`** (optional)
 Override the Phase 0 cadence guard and dispatch even when the prior run's
 checkpoint status is not `done`.
+
+**`--no-update`** (optional)
+Print the maintained four-skill async sequence and stop — no agents are dispatched
+and no checkpoint is written. Use when you want to review the steps without starting
+a sync run.

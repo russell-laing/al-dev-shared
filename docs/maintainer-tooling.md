@@ -56,7 +56,6 @@ flowchart LR
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
     subgraph stage_map_sync["Map sync"]
-        skill_review_maps["/review-maps"]
         skill_sync_documentation_maps["/sync-documentation-maps"]
         skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
         skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
@@ -96,7 +95,6 @@ flowchart LR
     skill_plugin_health_report -- "docs/health/*-*-health.md" --> skill_record_health_dispositions
     skill_projection_sync --> skill_align_harness_repos
     skill_record_health_dispositions -- "docs/health/dispositions.md" --> skill_plan_health_findings
-    skill_review_maps --> skill_sync_documentation_maps
     skill_sync_documentation_maps -- ".dev/sync-documentation-maps-checkpoint.json + .dev/sync-documentation-maps-runs/*/audit/*-audit.json" --> skill_sync_documentation_maps_collect
     skill_sync_documentation_maps_apply -- "docs/al-dev-agent-map.md + docs/al-dev-skills-map.md" --> skill_sync_documentation_maps_write
     skill_sync_documentation_maps_collect -- ".dev/sync-documentation-maps-runs/*/updates/*-map.md" --> skill_sync_documentation_maps_apply
@@ -112,7 +110,6 @@ flowchart LR
     class skill_plugin_health_report userSkill
     class skill_projection_sync userSkill
     class skill_record_health_dispositions userSkill
-    class skill_review_maps userSkill
     class skill_sync_documentation_maps userSkill
     class skill_sync_documentation_maps_apply userSkill
     class skill_sync_documentation_maps_collect userSkill
@@ -125,17 +122,16 @@ flowchart LR
 <!-- BEGIN GENERATED: maintainer-user-journey -->
 ### Map sync steps
 
-1. `/review-maps` — Map accuracy sync — dispatches /sync-documentation-maps as the maintained path for verifying and refreshing the documentation maps. Repeat as needed.
-2. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. Repeat as needed.
+1. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
    - writes: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json`
-3. `/sync-documentation-maps-collect` — Collect results from /sync-documentation-maps audit agents.
+2. `/sync-documentation-maps-collect` — Collect results from /sync-documentation-maps audit agents.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json`
    - writes: `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md`
-4. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
+3. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md`
    - writes: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-5. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
+4. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
    - reads: `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
    - writes: `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `profile-al-dev-shared/generated/agents/`
 
@@ -193,43 +189,56 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    skill_review_maps["/review-maps"]
     skill_sync_documentation_maps["/sync-documentation-maps"]
-    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
     skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
+    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
     skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
-    art_source_dirs["skills/ + agents/"]
-    art_map_docs["map docs"]
-    art_async_checkpoint["checkpoint + audit artifacts"]
-    art_update_artifacts["update artifacts"]
-    art_downstream_generated["downstream generated"]
+    art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]
+    art__dev_sync_documentation_maps_runs___audit___audit_json[".../*-audit.json"]
+    art__dev_sync_documentation_maps_runs___updates___map_md[".../*-map.md"]
+    art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
+    art_docs_al_dev_plugin_graph_md["docs/al-dev-plugin-graph.md"]
+    art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
+    art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]
+    art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]
+    art_profile_al_dev_shared_generated_agents_["generated/agents/"]
 
-    skill_review_maps --> skill_sync_documentation_maps
-    art_source_dirs --> skill_sync_documentation_maps
-    art_map_docs --> skill_sync_documentation_maps
-    skill_sync_documentation_maps --> art_async_checkpoint
+    art_docs_al_dev_agent_map_md --> skill_sync_documentation_maps
+    art_docs_al_dev_skills_map_md --> skill_sync_documentation_maps
+    skill_sync_documentation_maps --> art__dev_sync_documentation_maps_checkpoint_json
+    skill_sync_documentation_maps --> art__dev_sync_documentation_maps_runs___audit___audit_json
     skill_sync_documentation_maps --> skill_sync_documentation_maps_collect
-    art_async_checkpoint --> skill_sync_documentation_maps_collect
-    skill_sync_documentation_maps_collect --> art_update_artifacts
-    skill_sync_documentation_maps_collect --> skill_sync_documentation_maps_apply
-    art_update_artifacts --> skill_sync_documentation_maps_apply
-    art_async_checkpoint --> skill_sync_documentation_maps_apply
-    skill_sync_documentation_maps_apply --> art_map_docs
+    skill_sync_documentation_maps -. "repeat" .-> skill_sync_documentation_maps
+    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_apply
+    art__dev_sync_documentation_maps_runs___updates___map_md --> skill_sync_documentation_maps_apply
+    skill_sync_documentation_maps_apply --> art_docs_al_dev_agent_map_md
+    skill_sync_documentation_maps_apply --> art_docs_al_dev_skills_map_md
     skill_sync_documentation_maps_apply --> skill_sync_documentation_maps_write
-    art_map_docs --> skill_sync_documentation_maps_write
-    art_async_checkpoint --> skill_sync_documentation_maps_write
-    skill_sync_documentation_maps_write --> art_downstream_generated
+    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_collect
+    art__dev_sync_documentation_maps_runs___audit___audit_json --> skill_sync_documentation_maps_collect
+    skill_sync_documentation_maps_collect --> art__dev_sync_documentation_maps_runs___updates___map_md
+    skill_sync_documentation_maps_collect --> skill_sync_documentation_maps_apply
+    art__dev_sync_documentation_maps_checkpoint_json --> skill_sync_documentation_maps_write
+    art_docs_al_dev_agent_map_md --> skill_sync_documentation_maps_write
+    art_docs_al_dev_skills_map_md --> skill_sync_documentation_maps_write
+    skill_sync_documentation_maps_write --> art_docs_al_dev_plugin_graph_md
+    skill_sync_documentation_maps_write --> art_docs_al_dev_workflow_diagrams_md
+    skill_sync_documentation_maps_write --> art_docs_maintainer_tooling_md
+    skill_sync_documentation_maps_write --> art_profile_al_dev_shared_generated_agents_
 
-    class skill_review_maps userSkill
     class skill_sync_documentation_maps userSkill
-    class skill_sync_documentation_maps_collect userSkill
     class skill_sync_documentation_maps_apply userSkill
+    class skill_sync_documentation_maps_collect userSkill
     class skill_sync_documentation_maps_write userSkill
-    class art_source_dirs artifact
-    class art_map_docs artifact
-    class art_async_checkpoint artifact
-    class art_update_artifacts artifact
-    class art_downstream_generated orphanArtifact
+    class art__dev_sync_documentation_maps_checkpoint_json artifact
+    class art__dev_sync_documentation_maps_runs___audit___audit_json artifact
+    class art__dev_sync_documentation_maps_runs___updates___map_md artifact
+    class art_docs_al_dev_agent_map_md artifact
+    class art_docs_al_dev_plugin_graph_md orphanArtifact
+    class art_docs_al_dev_skills_map_md artifact
+    class art_docs_al_dev_workflow_diagrams_md orphanArtifact
+    class art_docs_maintainer_tooling_md orphanArtifact
+    class art_profile_al_dev_shared_generated_agents_ orphanArtifact
 ```
 <!-- END GENERATED: maintainer-stage-map-sync -->
 
@@ -409,9 +418,8 @@ artifact consolidation.
 
 ## Async Map Sync Detail
 
-Use this view when the maps are stale and the in-session `/review-maps` path is
-not the right fit. The checkpoint and run directory are the handoff surfaces
-between each async step.
+Use this view when the maps are stale. The checkpoint and run directory are the
+handoff surfaces between each async step.
 
 ```mermaid
 flowchart TD
@@ -476,9 +484,9 @@ flowchart TD
 
 ### 1. Keep the maps current
 
-- `/review-maps` is the normal entry point. It dispatches the maintained async
-  sync workflow, and `--no-update` prints the audit-only sequence without
-  modifying docs.
+- `/sync-documentation-maps` is the maintained entry point. Pass `--no-update`
+  to print the async sequence without dispatching; omit the flag to start the
+  full audit workflow.
 - `/sync-documentation-maps` dispatches background audit agents and writes the
   checkpoint.
 - `/sync-documentation-maps-collect` gathers the audit results and launches the
@@ -536,7 +544,6 @@ flowchart TD
 
 | Skill | Stage | Invoked by | Role |
 | --- | --- | --- | --- |
-| `/review-maps` | map-sync | user | Map accuracy sync — dispatches /sync-documentation-maps as the maintained path for verifying and refreshing the documentation maps. |
 | `/sync-documentation-maps` | map-sync | both | Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. |
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
@@ -556,7 +563,6 @@ flowchart TD
 
 | Skill | Reads | Writes | Next |
 | --- | --- | --- | --- |
-| `/review-maps` | — | — | `/sync-documentation-maps` |
 | `/sync-documentation-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `/sync-documentation-maps-collect` |
 | `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
 | `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
@@ -591,7 +597,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | never produced |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-10 |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-10 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-10 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-10 |
@@ -613,10 +619,9 @@ only place cross-stage gaps are guaranteed to appear in full.
 
 | Situation | Run |
 | --- | --- |
-| Added or removed a skill or agent | `/review-maps` |
-| Want to audit the async sequence without updating docs | `/review-maps --no-update` |
-| Maps are out of sync and you want the async path | `/sync-documentation-maps` |
-| Maps are out of sync and you want the maintained wrapper | `/review-maps` |
+| Added or removed a skill or agent | `/sync-documentation-maps` |
+| Want to audit the async sequence without updating docs | `/sync-documentation-maps --no-update` |
+| Maps are out of sync | `/sync-documentation-maps` |
 | Edited an agent `.md` file | `/projection-sync`, then `/align-harness-repos` |
 | Edited a knowledge file | `/audit-knowledge-quality`; if HIGH findings exist, `/fix-knowledge-quality`; then `/align-harness-repos` |
 | Want to find improvement candidates | `/plugin-health-audit` |
@@ -624,7 +629,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Ready to plan accepted skill and agent findings together | `/plan-health-findings` |
 | Ready to record disposition decisions | `/record-health-dispositions` |
 | Ready to plan accepted findings | `/plan-health-findings` |
-| Need the live map refresh flow | `/review-maps` |
+| Need the live map refresh flow | `/sync-documentation-maps` |
 
 If a step feels blocked, check whether its input artifact exists and was
 produced by the preceding step — the gaps table above shows each artifact's
