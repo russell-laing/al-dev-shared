@@ -175,7 +175,12 @@ def candidate_paths(obj: str) -> list[str]:
 def resolve_closures(rows: list[Row]) -> None:
     """Mark accepted rows closed by later fixed rows (token first, then object order)."""
     by_number = {r.number: r for r in rows}
-    by_id = {r.id: r for r in rows if r.id}  # Build ID lookup for 8-column ledger
+    # Build ID lookup — keep the FIRST occurrence per ID so that later fixed rows
+    # do not shadow the accepted row they are meant to close.
+    by_id: dict[str, Row] = {}
+    for r in rows:
+        if r.id and r.id not in by_id:
+            by_id[r.id] = r
     accepted = [r for r in rows if r.disposition == "accepted"]
     explicit_fixed_rows: set[int] = set()
 
