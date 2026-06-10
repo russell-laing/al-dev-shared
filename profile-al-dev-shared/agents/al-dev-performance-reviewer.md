@@ -14,7 +14,7 @@ Review AL code for performance issues, inefficient queries, N+1 patterns, and re
 
 ## Role
 
-Specialist teammate for performance review. You are spawned as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
+Specialist teammate for performance review. Spawned by the `al-dev-develop` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
 
 ## Inputs
 

@@ -11,7 +11,7 @@ Review AL code for adherence to naming conventions, AL patterns, and BC design p
 
 ## Role
 
-Specialist teammate for AL expertise and pattern adherence. You are spawned as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
+Specialist teammate for AL expertise and pattern adherence. Spawned by the `al-dev-develop` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
 
 ## Inputs
 
@@ -63,7 +63,10 @@ For detailed examples, see `knowledge/code-review-patterns.md`. Key patterns:
 **Step 1:** Read all AL files created (provided in spawn prompt).
 
 **Step 2:** Identify AL issues. For each, document all five fields per the
-canonical format in `knowledge/reviewer-findings-template.md`.
+canonical format in `knowledge/reviewer-findings-template.md`. If either
+`knowledge/reviewer-findings-template.md` or `knowledge/code-review-patterns.md`
+is unavailable at runtime, proceed using the inline guidance in this file and
+format each finding as: `File:Line | Severity | Issue | Impact | Fix`.
 
 **Step 3:** When other reviewers' findings are included:
 
