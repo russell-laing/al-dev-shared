@@ -74,9 +74,8 @@ MANIFEST: <filename>
 Extract change manifests using the patterns in `knowledge/commit-analysis-patterns.md`.
 One manifest block per AL file (paths ending in `.al`, case-insensitive).
 
-**Non-AL files** (`.json`, `.md`, `.yaml`, etc.): emit a simple one-liner —
-do not produce a full manifest block.
-Example: `{ "file": "app.json", "change": "modified" }`
+For non-AL files (`.json`, `.md`, `.yaml`, etc.), apply the one-liner format
+defined in `knowledge/commit-analysis-patterns.md`.
 
 ### Step 4 — Detect staged deletions
 
