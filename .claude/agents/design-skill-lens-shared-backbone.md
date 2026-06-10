@@ -46,6 +46,7 @@ differ; a single differing signal still counts as identical for drift purposes.
 **Severity rules:**
 
 - Medium: identical pattern copy-pasted across 2+ skills (drift risk when pattern needs updating)
+- Low: significantly different patterns (≥2 signals differ) flagged as Promote candidates (variation worth making explicit)
 - Low: patterns with exactly one differing signal (structurally close; lower drift risk than copy-paste)
 
 ---

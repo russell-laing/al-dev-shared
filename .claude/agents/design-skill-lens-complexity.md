@@ -28,8 +28,8 @@ Read each. Ask: do the phases cluster into two distinct concerns (e.g., pre-flig
 execution, or discovery + analysis + output)? Flag as Atomise candidate only if
 **each concern spans ≥2 phases and is independently runnable** (the concern's phases
 form a contiguous block that produces a deliverable usable by a downstream step
-without executing the other concern's phases). A concern that is a single phase, or that cannot run without the rest of the
-skill, is not an Atomise candidate.
+without executing the other concern's phases). A concern that is a single phase,
+or that cannot run without the rest of the skill, is not an Atomise candidate.
 
 **Zero-agent, 2-phase skills (from `no_agent_skills`):**
 Ask: could this skill be absorbed into an adjacent skill as an option flag or
