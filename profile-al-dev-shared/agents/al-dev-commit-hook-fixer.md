@@ -2,10 +2,10 @@
 name: al-dev-commit-hook-fixer
 description: >-
   Diagnose and recover from pre-commit hook failures. Analyzes hook error logs,
-  identifies root causes, and returns fix recommendations to the caller.
-  Never re-runs commits — returns next_step guidance so the caller re-dispatches
-  the execute agent. Complements al-dev-commit-executor by handling error
-  recovery in isolation.
+  identifies root causes, applies scripted fixes, and re-stages affected files.
+  Never re-runs commits itself — returns next_step guidance so the caller
+  re-dispatches the execute agent. Complements al-dev-commit-executor by
+  handling the error path in isolation.
 model: sonnet
 tools: ["Read", "Write", "Bash"]
 ---
@@ -78,8 +78,16 @@ instead (see Non-fixable path below).
 Apply only the scripted fixes listed under "Approved Fixes" in
 `knowledge/commit-hook-recovery-patterns.md`.
 
-After fixing, re-stage the affected files with `git add <file>`. Do not re-run
-the commit yourself — the caller re-dispatches the execute agent.
+After fixing, verify the fix is reversible before re-staging:
+
+```bash
+git show HEAD:<file> > /dev/null 2>&1 && echo "reversible" || echo "not in HEAD"
+```
+
+If the command returns `not in HEAD` (file is untracked — no HEAD version exists),
+reclassify the failure as **non-recoverable** and do not re-stage.
+If reversible, re-stage with `git add <file>`. Do not re-run the commit yourself —
+the caller re-dispatches the execute agent.
 
 For **Transient** failures, no file change is needed; mark for retry.
 
