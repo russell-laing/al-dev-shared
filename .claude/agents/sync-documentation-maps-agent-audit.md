@@ -114,7 +114,9 @@ Read `docs/al-dev-agent-map.md`. Extract:
   Skip generic headings like "Quality suggestions", "Agents used by only one
   skill", or any other non-agent headings that appear in the Observations section.
   For each matched heading, also note the `model:` and `tools:` values recorded
-  in that Layer 2 section, and the `Spawned by:` field.
+  in that Layer 2 section, and the `Spawned by:` field. Map entries record an
+  empty tools list as `(none)` — compare directly against the `(none)` string
+  produced by Step 2's normalization.
 
 ### Step 5 — Identify discrepancies
 
