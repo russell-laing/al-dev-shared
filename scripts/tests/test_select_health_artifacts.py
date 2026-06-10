@@ -125,6 +125,30 @@ class SelectHealthArtifactsTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("", result.stdout)
 
+    def test_archived_subdirectory_files_are_not_returned(self) -> None:
+        """Files under an archived/ subdirectory must not appear in results.
+
+        select_artifacts uses directory.iterdir() (non-recursive).  This test
+        locks that contract so a future change to rglob cannot silently
+        re-include archived findings.
+        """
+        self.create_artifact("2026-06-05-plugin-health.md")
+        archived_dir = self.health_dir / "archived"
+        archived_dir.mkdir()
+        (archived_dir / "2026-06-09-plugin-health.md").write_text(
+            "# archived\n", encoding="utf-8"
+        )
+
+        result = self.select(kind="health", surface="plugin", limit=5)
+
+        returned_paths = result.stdout.splitlines()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertFalse(
+            any("archived" in p for p in returned_paths),
+            f"archived/ file leaked into results: {returned_paths}",
+        )
+        self.assertEqual(1, len(returned_paths), returned_paths)
+
 
 class HealthArtifactSelectionContractTest(unittest.TestCase):
     def read(self, path: str) -> str:
