@@ -119,7 +119,7 @@ Prompt:
    [PERF_PATTERNS — content of knowledge/perf-anti-patterns-prompt.md loaded above]
 
    For EACH finding report:
-   PATTERN: [P1–P8 ID]
+   PATTERN: [P1–P11 ID]
    SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
    FILE: [exact path]
    LINE: [line number]

@@ -34,20 +34,20 @@ P9 (HIGH) — Record variable Insert() immediately followed by
   procedure. All field assignments must be made before Insert();
   the trailing Modify() is redundant and adds a round-trip.
   Exception: do NOT flag if there is an explicit reason for the
-  post-Insert Modify (e.g., a trigger sets a field that must then
-  be updated).
-P10 (MEDIUM) — Commit() called inside a FindSet() / Next() iteration
+  post-Insert Modify (e.g., a trigger auto-populates a field that
+  must be overridden after insertion).
+P10 (HIGH) — Commit() called inside a FindSet() / Next() iteration
   loop. After Commit() the server cursor state may reset on some BC
-  versions, causing records to be re-processed or skipped. Collect
-  primary keys into a temporary table first, then iterate the temp
-  table with Commit() per iteration.
+  versions, causing records to be re-processed or skipped, which is
+  a correctness risk. Collect primary keys into a temporary table
+  first, then iterate the temp table with Commit() per iteration.
 P11 (HIGH) — A FlowField (CalcFormula) is placed in a page repeater
   (List or ListPart) without either:
   (a) SetAutoCalcFields([FieldName]) on the page source, or
   (b) CalcFields([FieldName]) in the OnAfterGetRecord trigger.
   The platform issues one extra SQL query per visible row to resolve
-  the FlowField on demand, producing N+1 query behaviour identical
-  to P1 for the visible page rows.
+  the FlowField on demand, producing a similar N+1 query pattern
+  for the visible page rows.
 
 For EACH finding report:
 PATTERN: [P1–P8 ID]
@@ -106,6 +106,7 @@ The pattern adds measurable overhead per record but does not cause exponential s
 - P3 outside a loop but called from a function invoked per-line in a report — same CalcFields overhead, lower urgency than CRITICAL because it is not nested.
 - P8 escalated: unfiltered `FindSet` on Item Ledger Entry inside a heuristically classified hot-path entry point.
 - P9: `Insert()` + unconditional `Modify()` on the same record — one extra round-trip per write event. At low volume it is negligible; in high-frequency event subscribers (e.g., `OnAfterEmailSendFailed`) it compounds with every email failure.
+- P10: `Commit()` inside `FindSet()` loop — server cursor state may reset on some BC versions, causing records to be re-processed or skipped; this is a correctness/data integrity risk, not just performance inefficiency.
 - P11: FlowField in page repeater without `CalcFields`/`SetAutoCalcFields` — 100 visible rows = 100 extra `SELECT` statements per page load.
 
 ### Medium
@@ -117,7 +118,6 @@ The pattern is wasteful or stylistically incorrect but has limited runtime impac
 - P4: `FindSet(true)` with no write operations — unnecessary write lock acquired, slight overhead, risk of blocking other sessions.
 - P5: Setup table `Get()` inside a loop of 50 records — adds 50 redundant DB calls; noticeable only at high call frequencies.
 - P8 baseline: unfiltered `FindSet` on a large table inside a non-batch helper — wasteful but low observed frequency.
-- P10: `Commit()` inside `FindSet()` loop — potential cursor-reset behaviour on some BC server versions; also increases lock hold time across the loop.
 
 ### Low
 
