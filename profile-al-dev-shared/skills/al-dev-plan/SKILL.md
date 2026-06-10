@@ -143,7 +143,11 @@ order: (1) table extension (conservative, builds on base app); (2) separate
 table (isolated scope, decoupled from base); (3) event-driven (flexible,
 extensible, minimal coupling).
 
-Spawn 2-3 **al-dev-solution-architect** agents with DIFFERENT
+**Spawn count:** Default 2 architects. Use 1 if the scope is clearly
+defined and only one viable approach exists. Use 3 if the scope is
+highly complex, contested, or spans multiple architectural concerns.
+
+Spawn 2–3 **al-dev-solution-architect** agents with DIFFERENT
 starting approaches to prevent convergence. Assign each
 a distinct approach derived above.
 
