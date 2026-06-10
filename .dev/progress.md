@@ -87,3 +87,20 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
 [2026-06-07] sync-documentation-maps (run 20260607T045303Z): Spawned skill-audit (a62e55eae7861dad2) and agent-audit (ad7eb901196f7a8c8) teams.
   Next: /sync-documentation-maps-collect --team-ids a62e55eae7861dad2,ad7eb901196f7a8c8
 [2026-06-07] sync-documentation-maps-write complete — 20260607T045303Z maps written and committed.
+[2026-06-09] sync-documentation-maps (run 20260609T192935Z): Spawned skill-audit
+  (ae3f6a47a2e6c9f8f) and agent-audit (a1c6ea55e76b90963) teams.
+  Next: /sync-documentation-maps-collect --team-ids ae3f6a47a2e6c9f8f,a1c6ea55e76b90963
+[2026-06-09] sync-documentation-maps (run 20260609T192935Z): Collected audit results.
+  Findings: Skills (0 discrepancies), Agents (2 model_mismatch).
+  Spawned updates for both maps:
+  - skill-update (a05a59992bf9334dc)
+  - agent-update (a9699adee7da37081)
+  Next: /sync-documentation-maps-apply
+[2026-06-09] sync-documentation-maps-write complete — Run 20260609T192935Z
+  maps written and committed (ac489c1).
+  Agent model mismatches fixed: al-dev-commit-message-drafter (sonnet),
+  al-dev-general-code-reviewer (haiku).
+[2026-06-10] sync-documentation-maps (run 20260610T065001Z): Dispatched skill-audit
+  (ab122be68caf62aee) and agent-audit (a483733e5204f84d8) teams.
+  Next: /sync-documentation-maps-collect
+[2026-06-10] sync-documentation-maps-write complete — 20260610T065001Z maps written and committed.

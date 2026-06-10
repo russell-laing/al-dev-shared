@@ -1,48 +1,20 @@
 # Knowledge File Quality Report
 
-Generated: 2026-06-08 (Updated)  
-Issues found: 8 across 5 files  
-Severity breakdown: 1 HIGH, 1 MEDIUM, 6 LOW
+Generated: 2026-06-10
+Issues found: 7 warnings across 5 files
+Severity breakdown: 0 HIGH, 0 MEDIUM, 7 LOW (all false positives)
 
 ---
 
 ## HIGH Severity (Blocks Agent Guidance)
 
-### File: knowledge/map-change-rubber-duck-checks.md
-
-**Issue — [NO-CODE]** Section "Pattern: Generated artifacts should not be edited" (lines 519–545)
-
-**Status: RESOLVED** ✅
-
-The section now contains a comprehensive fenced code block (lines 521–545) immediately after the heading, with concrete examples of:
-
-- SOURCE ARTIFACTS (canonical files to edit)
-- GENERATED ARTIFACTS (read-only projection files)
-- REJECTION EXAMPLES (violations that duck agents should reject)
-- CORRECT WORKFLOW (three-step process)
-
-The code block is properly formatted and provides all guidance duck agents need to recognize and reject suggestions for editing generated artifacts.
-
-Note: The validator still reports this as "1 content line" due to imprecise line-counting heuristics, but the structural requirement (fenced code block + examples) has been met.
+None.
 
 ---
 
 ## MEDIUM Severity (Incomplete Guidance)
 
-### File: knowledge/map-change-rubber-duck-checks.md
-
-**Issue — [THIN]** Section "Pattern: File reference is absolute path" (lines 439–459)
-
-**Status: RESOLVED** ✅
-
-The section has been expanded with concrete examples showing:
-
-- Actual absolute path as it might appear (`/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/old-skill/SKILL.md`)
-- Normalized relative form (`profile-al-dev-shared/skills/old-skill/SKILL.md`)
-- Practical verification command (`ls -la`)
-- Explanation of why relativization matters (reproducibility across harnesses)
-
-The expanded guidance now provides duck agents with authentic examples and context for normalizing paths during verification.
+None.
 
 ---
 
@@ -50,65 +22,105 @@ The expanded guidance now provides duck agents with authentic examples and conte
 
 ### File: knowledge/developer-invocation-patterns.md
 
-**Issue — [THIN]** Section "Example: Conditional routing in spawning skill" (lines 213–236)
+**Issue — [THIN]** Section "Example: Conditional routing in spawning skill"
 
-Validator flags as thin, but the section is a code example block. This is correctly formatted for a code pattern example.
+Validator flags as thin (1 prose line before the code block), but the section contains a complete pseudocode example with explanatory comments and an `Agent()` call template. The THIN flag fires because the validator counts only prose lines, not fenced code block content.
 
-- **Assessment:** FALSE POSITIVE — Code examples are expected to be concise; this is properly structured
+Referenced by: `profile-al-dev-shared/skills/al-dev-develop/SKILL.md`, `al-dev-fix/SKILL.md`, `agents/al-dev-developer-tdd.md`, `agents/al-dev-developer-traditional.md`
+
+- **Assessment:** FALSE POSITIVE — Section is substantively complete; code example with comments provides full pattern guidance. A 1–2 sentence introductory preamble would be a minor improvement but is not blocking.
+
+---
 
 ### File: knowledge/handoff-chain-map.md
 
-**Issue — [STUB]** Section "Identified Handoff Gaps" (line 98–100)
+**Issue — [THIN]** Section "Identified Handoff Gaps"
 
-A 2-sentence introductory paragraph was added explaining handoff gaps and workflow continuity risk. Validator still reports "1 content line" because its line counter may not recognize multi-line paragraphs or has an off-by-one error.
+The section spans lines 100–179 and contains 5 detailed gap analyses with Impact and Mitigation subsections. The THIN flag appears to miscount the first line of the section. The file is not referenced by any active agent or skill — it is standalone reference/planning documentation.
 
-- **Assessment:** RESOLVED — Content added; validator heuristic is imprecise
+Referenced by: (none found)
+
+- **Assessment:** FALSE POSITIVE — Section is substantively populated; orphaned reference documentation with no active runtime consumers.
+
+---
 
 ### File: knowledge/investigate-findings-template.md
 
-**Issue — [NO-CODE]** Section "Regression Timeline" (lines 18–23)
+**Issue — [NO-CODE]** Section "Regression Timeline"
 
-Validator expects code because heading contains "Timeline," but the section correctly structures as a template with field placeholders.
+Validator flags because "Timeline" implies code, but the section correctly presents structured placeholder fields (dates, yes/no choices, one-sentence notes) — this is a data-capture form, not a runnable example. The `al-dev-investigate` skill references this template for output structure (line 248: "Produce the findings using the structure in `knowledge/investigate-findings-template.md`").
 
-- **Assessment:** FALSE POSITIVE — Template sections should not have code blocks; they should have field placeholders (which they do)
+Referenced by: `profile-al-dev-shared/skills/al-dev-investigate/SKILL.md` (line 248)
 
-### File: knowledge/map-change-rubber-duck-checks.md
+- **Assessment:** FALSE POSITIVE — Template field placeholders are the correct form here; code blocks are not appropriate in a data-capture metadata section.
 
-**Issues — [DEAD-REF]** References to `knowledge/file.md` (lines 452–453 in original)
+---
 
-These are example paths shown in the "Pattern: Knowledge reference paths vary" section to illustrate how reference syntax varies. The placeholder `file.md` is intentional to show a generic reference pattern.
+### File: knowledge/map-change-rubber-duck-checks.md (3 issues)
 
-- **Assessment:** FALSE POSITIVE (×2) — These are examples, not actual file references
+**Issue 1 — [THIN]** Section "Pattern: Generated artifacts should not be edited"
+
+Validator flags as thin, but section spans lines 536–588 with a comprehensive fenced code block, a source-to-generated mapping table, violation examples, and a 3-step correct workflow. THIN flag is a heuristic false positive.
+
+**Issue 2 & 3 — [DEAD-REF] ×2** References to `knowledge/file.md`
+
+These appear in the "Pattern: Knowledge reference paths vary" section as generic placeholder examples illustrating different reference syntax formats (`knowledge/file.md` vs. `../../knowledge/file.md`). They are intentional examples, not actual file targets. The adjacent line correctly references `knowledge/artifact-contracts.md` as a real example.
+
+Referenced by: (none found in agents/ or skills/)
+
+- **Assessment:** ALL THREE FALSE POSITIVES — The THIN section is substantive; the dead refs are intentional generic placeholders in pattern documentation.
+
+---
 
 ### File: knowledge/ticket-agent-invocation-pattern.md
 
-**Issue — [NO-CODE]** Section "Invocation Pattern: Agent Spawn Parameters" (lines 129–137)
+**Issue — [NO-CODE]** Section "Invocation Pattern: Agent Spawn Parameters"
 
-Validator expects code because heading contains "Invocation Pattern" and "Agent Spawn Parameters," but content is deliberately prose explaining what the dispatch contract does NOT include.
+Validator flags because heading contains "Invocation Pattern" and "Agent Spawn Parameters," but the section is prose explaining the minimal contract scope as a design principle ("intentionally small"). The actual dispatch template with a fenced code block already appears earlier in the file (lines 9–25) and is replicated in both referencing files with their own code blocks.
 
-- **Assessment:** FALSE POSITIVE — This is prose explaining a design decision, not a code example section
+Referenced by: `profile-al-dev-shared/agents/al-dev-ticket-context-writer.md` (line 20), `profile-al-dev-shared/skills/al-dev-ticket/SKILL.md` (line 204)
+
+- **Assessment:** FALSE POSITIVE — Design-principle prose section; dispatch code examples are present earlier in the file and in both referencing files.
+
+---
+
+## Fix Recommendations
+
+### High Priority
+
+None — no HIGH issues found.
+
+### Medium Priority
+
+None — no MEDIUM issues found.
+
+---
+
+## High-Priority Fix Tasks
+
+<!-- auto-generated by /audit-knowledge-quality — consumed by /fix-knowledge-quality -->
+
+```yaml
+tasks: []
+```
 
 ---
 
 ## Summary
 
-**Actionable Issues:**
+| Severity | Count | Status |
+|----------|-------|--------|
+| HIGH     | 0     | N/A    |
+| MEDIUM   | 0     | N/A    |
+| LOW      | 7     | N/A (all false positives, no action required) |
 
-| Severity | Count | Status | Notes |
-|----------|-------|--------|-------|
-| HIGH | 1 | ✅ RESOLVED | Fenced code block added to "Pattern: Generated artifacts should not be edited" |
-| MEDIUM | 1 | ✅ RESOLVED | Examples added to "Pattern: File reference is absolute path" |
-| LOW | 6 | N/A | False positives; no action required |
+All 7 validator warnings are false positives caused by heuristic limitations:
 
-**Resolution Summary**
+- **THIN flags** fire when prose before a code block is minimal, even if the code block itself is complete
+- **NO-CODE flags** fire on section headings containing "Pattern," "Timeline," or "Invocation Pattern" regardless of whether the content type warrants code
+- **DEAD-REF flags** fire on generic placeholder examples (`file.md`) used in pattern documentation
 
-All HIGH and MEDIUM priority issues have been addressed:
-
-1. ✅ **HIGH:** `map-change-rubber-duck-checks.md` — "Pattern: Generated artifacts should not be edited"  
-   Added fenced code block with SOURCE ARTIFACTS, GENERATED ARTIFACTS, REJECTION EXAMPLES, and CORRECT WORKFLOW sections.
-
-2. ✅ **MEDIUM:** `map-change-rubber-duck-checks.md` — "Pattern: File reference is absolute path"  
-   Expanded with concrete examples showing absolute path normalization and verification commands.
+No changes to knowledge files are recommended.
 
 ---
 
@@ -116,8 +128,6 @@ All HIGH and MEDIUM priority issues have been addressed:
 
 The structural validator uses heuristic checks that may not recognize all content types equally:
 
-- **Code recognition:** Validator looks for classic fenced code blocks (```language...```). Tables and inline markdown syntax are not counted as "code" even though they contain code patterns.
-- **Line counting:** Some content (multi-line paragraphs, nested structures) may be undercounted, leading to false "thin section" flags.
-- **Reference resolution:** Example paths shown as illustration patterns are flagged as dead refs even when intentionally exemplary.
-
-These are mostly validator heuristic limitations, not actual knowledge gaps. The HIGH and MEDIUM issues have been resolved despite the validator's continued flagging — the fixes are substantive and address the actual guidance needs for duck verification agents.
+- **Code recognition:** Counts fenced code blocks only; tables, inline examples, and pseudocode are not counted
+- **Line counting:** Prose before a code block is counted separately from code block content
+- **Reference resolution:** Example paths used as illustration patterns are flagged as dead refs even when intentionally exemplary
