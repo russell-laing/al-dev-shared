@@ -61,18 +61,54 @@ Use these categories to structure BC/AL project interviews. Adapt questions to t
 - How will the team learn the system?
 - Are there known limitations or future enhancements?
 
+### User Interface / Workflows
+
+- Which BC pages or role centres are affected?
+- Are there new list pages, card pages, or FactBoxes required?
+- What user actions trigger this workflow?
+- Are there approval flows or notification requirements?
+- What should the user see when the process completes or fails?
+
+### Error Handling & Edge Cases
+
+- What are the known edge cases or boundary conditions?
+- What happens when required data is missing or malformed?
+- Are there retry mechanisms for integration failures?
+- How should partial failures be handled (e.g., batch processing)?
+- What user-facing messages should appear on errors?
+
+### Deployment & Migration
+
+- Are there existing data records that need migration?
+- What is the cutover strategy (parallel run, big-bang, feature flag)?
+- Are there database upgrade codeunits or migration scripts required?
+- What test data is needed for staging?
+- What is the rollback procedure if the deployment fails?
+
+### Unknowns & Open Questions
+
+- What requirements are still uncertain or pending stakeholder input?
+- Are there dependencies on other teams or systems not yet confirmed?
+- What assumptions have been made that need explicit sign-off?
+- Are there regulatory or compliance requirements still under review?
+
 ## Interview Guidelines
 
 ### Clarification Technique
+
 When an answer is vague, ask for specifics:
+
 - Bad: "We need better reporting"
 - Good: "What metrics do you need to see? How often? Who's the audience?"
 
 ### Handling Ambiguity
+
 When requirements conflict, don't decide — document the conflict and note that it needs to be resolved:
+
 - "I see a tension between [A] and [B]. Let's document that and escalate to stakeholders."
 
 ### Follow-Up Questions
+
 For each answer, ask "Why is that important?" and "What would failure look like?"
 
 ## Tips for Effective Interviews

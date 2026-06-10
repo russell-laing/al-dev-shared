@@ -72,17 +72,8 @@ Categories covered: [list of 7-11 categories from below]
 
 **Required categories (must be covered in interview questions):**
 
-1. Business Logic & Requirements (process flow, validation rules, sequences)
-2. Data Model (tables, fields, relationships, volume)
-3. Integration Points (external systems, APIs, webhooks)
-4. Performance & Scaling (expected volume, SLAs, concurrency)
-5. Security & Compliance (sensitive data, access control, audit)
-6. Testing & UAT (test scenarios, UAT timing, rollback plan)
-7. Maintenance & Support (ownership, monitoring, escalation)
-8. User Interface / Workflows
-9. Error Handling & Edge Cases
-10. Deployment & Migration
-11. Unknowns & Open Questions
+All 11 categories defined in `knowledge/interview-question-bank.md` must be covered.
+Confirm each is addressed before stating INTERVIEW COMPLETE.
 
 Always end your response with the exact phrase `INTERVIEW COMPLETE` followed by
 a bullet list of the question groups covered.
