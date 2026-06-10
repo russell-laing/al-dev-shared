@@ -5,6 +5,7 @@ Referenced by: `al-dev-developer-tdd` and `al-dev-developer-traditional` agents
 ## Standard AL Patterns
 
 ### RecordRef Operations
+
 Pattern for operations on record references with error handling. Use RecordRef for dynamic table access when the table isn't known at compile time. Always validate the table ID before operations.
 
 ```al
@@ -23,6 +24,7 @@ end;
 ```
 
 Key operations:
+
 - `RecRef.Open(TableID)` — open a table by ID
 - `RecRef.Get(RecordID)` — retrieve a specific record
 - `RecRef.FindSet()` — iterate through filtered records
@@ -30,6 +32,7 @@ Key operations:
 - Always wrap in `if RecRef.Get()` guards — RecordRef operations fail silently otherwise
 
 ### Query Performance Best Practices
+
 When writing queries, use filters to reduce record set scope; use `SetLoadFields` when you only need a subset of fields to limit column reads.
 
 **SetLoadFields Pattern:** Specify only the fields you need before calling FindSet when the procedure reads a small subset of the record. Omitting SetLoadFields loads ALL columns from the table, which is expensive with large tables.
@@ -119,6 +122,43 @@ begin
 end;
 ```
 
+**Commit() inside FindSet loops is dangerous:**
+
+Calling `Commit()` while iterating a `FindSet()` result may reset the server
+cursor state on some BC versions, causing records to be re-processed or skipped.
+It also holds locks across the full loop duration.
+
+```al
+// ❌ BAD: Commit inside FindSet — cursor may reset
+procedure ProcessPending(var Entry: Record "Email Retry Entry")
+begin
+    if Entry.FindSet() then
+        repeat
+            Commit();                // Dangerous: cursor may reset after commit
+            RetryRecord(Entry);
+        until Entry.Next() = 0;
+end;
+
+// ✅ GOOD: collect keys first, then iterate the collected set
+procedure ProcessPending(var Entry: Record "Email Retry Entry")
+var
+    TempEntry: Record "Email Retry Entry" temporary;
+begin
+    if Entry.FindSet() then
+        repeat
+            TempEntry := Entry;
+            TempEntry.Insert();
+        until Entry.Next() = 0;
+
+    if TempEntry.FindSet() then
+        repeat
+            Entry.Get(TempEntry."Entry No.");
+            RetryRecord(Entry);
+            Commit();              // Safe: iterating temp table, not live cursor
+        until TempEntry.Next() = 0;
+end;
+```
+
 ### FilterGroup Usage
 
 Use `FilterGroup` to separate user-visible filters (FilterGroup 0) from system filters (FilterGroup 2). This is essential in pages to prevent users from accidentally removing your required filters.
@@ -155,6 +195,7 @@ end;
 ```
 
 **Subscriber attributes:**
+
 - `ObjectType` — Type of object publishing the event (Codeunit, Table, Page, etc.)
 - `Object ID` — the object's name or ID
 - `Event name` — the exact event procedure name
@@ -226,17 +267,95 @@ end;
 
 Remove unused variables during code review or refactoring. They should not appear in GREEN or REFACTOR phases.
 
+### Missing Access = Internal on Extension-Private Codeunits
+
+A codeunit without an `Access` modifier defaults to `Access = Public`,
+meaning any other extension can call it directly — bypassing any page-level
+authorization guard.
+
+If a codeunit is only ever called from within this extension (not exposed as
+a public API), declare it `Access = Internal`.
+
+```al
+// ❌ BAD: public by default — callable from any extension
+codeunit 50504 "Email Retry Mgt."
+{
+    procedure RetryRecord(var Entry: Record "Email Retry Entry")
+    begin
+        // Auth guard is only on the calling page; bypassed here
+    end;
+}
+
+// ✅ GOOD: restricted to this extension
+codeunit 50504 "Email Retry Mgt."
+{
+    Access = Internal;
+    procedure RetryRecord(var Entry: Record "Email Retry Entry")
+    begin
+        // Caller is always from this extension
+    end;
+}
+```
+
+**Decision rule:** If the codeunit is not documented as part of the
+extension's public API and is not intended for external callers, always add
+`Access = Internal`.
+
+### Unsafe Singleton Setup Initialization (GetSafe Race)
+
+The `if not Get() then Insert()` pattern is a concurrent-insert race.
+Two sessions can both fail the `Get()` check simultaneously and both
+call `Insert()` — one throws a duplicate-key error. This is especially
+dangerous inside event subscriber context (which runs inside another
+active transaction).
+
+```al
+// ❌ BAD: race condition — concurrent sessions both Insert()
+procedure GetSetupSafe()
+begin
+    if not Get() then begin
+        Init();
+        Insert();
+    end;
+end;
+
+// ✅ GOOD option A — insert-or-ignore
+procedure GetSetupSafe()
+begin
+    if not Get() then begin
+        Init();
+        if not Insert() then
+            Get();   // Another session already inserted — just read it
+    end;
+end;
+
+// ✅ GOOD option B — pre-create in install, never insert at runtime
+//   OnInstallAppPerCompany creates the record once.
+//   GetSetupSafe() only reads; never inserts.
+procedure GetSetupSafe()
+begin
+    if not Get() then
+        Error(SetupRecordMissingErr);
+end;
+```
+
+Prefer option B when the feature has an install codeunit — pre-creating the
+record in `OnInstallAppPerCompany` is the cleanest and safest approach.
+
 ## Error Handling Rules
 
 ### String Substitution with Labels
+
 Use `Error(label, args)` instead of `Error(StrSubstNo(...))` to satisfy AA0231.
 
 Good:
+
 ```al
 Error(SomeLabel, fieldValue);
 ```
 
 Bad:
+
 ```al
 Error(StrSubstNo(SomeLabel, fieldValue));
 ```
@@ -267,6 +386,47 @@ The GOOD version:
 - Names the action that failed ("Purchase order must be in Open status")
 - Shows the current state ("Current status: X")
 - Is readable without understanding internal field names
+
+### Error('') Is Forbidden
+
+Calling `Error('')` with an empty string (or no-argument form) produces a blank
+error dialog. The user sees nothing useful and the failure is invisible.
+
+**Rule:** Every `Error()` call must pass a non-empty Label as its first argument.
+No exceptions.
+
+```al
+// ❌ BAD: silent failure
+if not CanProceed then
+    Error('');
+
+// ✅ GOOD: named label
+OperationNotAllowedErr: Label 'This operation is not allowed in the current state.';
+...
+if not CanProceed then
+    Error(OperationNotAllowedErr);
+```
+
+For `TryFunction` return paths, do NOT call `Error('')` to propagate failure —
+instead let the `TryFunction` return `false` naturally and let the caller handle it:
+
+```al
+// ❌ BAD in a TryFunction: swallows the real error with a blank one
+[TryFunction]
+procedure TrySend(): Boolean
+begin
+    if not Email.Send(Message) then
+        Error('');   // blank; original Send error lost
+end;
+
+// ✅ GOOD in a TryFunction: let false propagate; caller checks the return value
+[TryFunction]
+procedure TrySend(): Boolean
+begin
+    if not Email.Send(Message) then
+        exit(false);   // or just: Email.Send(Message);  (TryFunction traps it)
+end;
+```
 
 ### Handling Missing Information
 
