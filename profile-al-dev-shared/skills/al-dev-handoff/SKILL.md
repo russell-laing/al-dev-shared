@@ -63,6 +63,7 @@ Copy these files if they exist:
 | `.dev/project-context.md` | `.dev/source-project-context.md` |
 | `$(ls .dev/*-al-dev-plan-solution… ...)` | `.dev/source-solution-plan.md` |
 | `$(ls .dev/*-al-dev-interview-… ...)` | `.dev/source-requirements.md` |
+| `$(ls .dev/*-al-dev-release-notes-*.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-release-notes.md` |
 
 Rename `project-context.md` → `source-project-context.md` to avoid
 overwriting the target repo's own context document.
@@ -112,6 +113,13 @@ REQUIREMENTS=$(ls .dev/*-al-dev-interview-requirements.md \
   echo "✅ requirements.md → source-requirements.md" || \
   echo "⏭ requirements.md (not found)"
 
+RELEASE_NOTES=$(ls .dev/*-al-dev-release-notes-*.md 2>/dev/null | \
+  sort | tail -1)
+[ -n "$RELEASE_NOTES" ] && \
+  cp "$RELEASE_NOTES" "$TARGET/.dev/source-release-notes.md" && \
+  echo "✅ source-release-notes.md" || \
+  echo "⏭ source-release-notes.md (not found)"
+
 ls "$TARGET/.dev/"
 ```
 
@@ -155,6 +163,7 @@ cause is in Cod50741.al in this repo. The source repo
 - `source-project-context.md` — context from [source repo name]
 - `source-solution-plan.md` — prior solution plan from [source repo name], if copied
 - `source-requirements.md` — prior requirements/context from [source repo name], if copied
+- `source-release-notes.md` — release notes for the version shipped from [source repo name], if copied
 
 ## Key objects to examine in this repo
 
