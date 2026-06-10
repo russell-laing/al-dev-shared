@@ -39,7 +39,7 @@ stop. The caller (`al-dev-commit` Phase 4) will dispatch
 
 ## Phase: execute
 
-### Step 1: Execute commit (success path)
+### Step 1: Execute commit
 
 For each approved group:
 
