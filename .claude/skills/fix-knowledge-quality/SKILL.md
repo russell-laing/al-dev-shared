@@ -61,40 +61,27 @@ Present parsed tasks to the user:
 
 ## Phase 2 — Choose execution mode
 
-Ask:
+If `--auto-fix` was not passed, present the following prompt:
 
 > How do you want to fix these issues?
 >
 > 1. Show task list only — I will fix them manually
-> 2. Auto-fix — dispatch one fix agent per issue (applies --auto-fix)
+> 2. Auto-fix — dispatch one fix agent per issue
 
-If `--auto-fix` was passed at invocation, skip this prompt and proceed directly
-to Phase 3.
+If `--auto-fix` was passed at invocation, skip the prompt above and proceed
+directly to Phase 3.
 
-If [1] (or --auto-fix not passed and user selects 1): print task list and exit.
+If [1]: print task list and exit.
 
 If [2] (or --auto-fix passed): proceed to Phase 3.
 
 ## Phase 3 — Dispatch fix agents (auto-fix mode)
 
-For each HIGH task, dispatch one `al-dev-shared:al-dev-docs-writer` agent:
-
-```text
-Agent: al-dev-shared:al-dev-docs-writer
-Prompt:
-  Fix a knowledge file quality issue.
-
-  File: {file}
-  Issue type: {issue_type}
-  Description: {description}
-  Required action: {suggested_action}
-
-  Read the file in full, apply the fix, and verify the result is coherent.
-  Do not add content you are not confident about — mark genuine gaps with
-  [NEEDS CONTENT: reason] instead of guessing.
-  Return: a summary of what was changed and what (if any) was left for
-  human review.
-```
+For each HIGH task, dispatch one `al-dev-shared:al-dev-docs-writer` agent
+(`al-dev-shared:` is the plugin namespace prefix; see CLAUDE.md — Agent File
+Format). Use the dispatch template in
+`.claude/knowledge/fix-knowledge-quality-dispatch.md`, substituting `{file}`,
+`{issue_type}`, `{description}`, `{suggested_action}` from the parsed task.
 
 Wait for all agents to complete. Present each agent's summary.
 
