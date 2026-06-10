@@ -1,6 +1,6 @@
 ---
 name: design-agent-lens-caller-alignment
-description: Apply Caller Alignment lens to agent files — compares documented Inputs/Outputs against how spawning skills actually invoke each agent. Returns a findings block for Align suggestions.
+description: Apply Caller Alignment lens to agent files — evaluates documented Inputs/Outputs against how spawning skills actually invoke each agent. Returns a findings block for Align suggestions.
 model: haiku
 tools: ["Read", "Grep"]
 ---
@@ -29,10 +29,10 @@ Extract the `## Inputs` and `## Outputs` sections. Then use the Grep tool to
 check how each spawning skill actually invokes the agent. Check two signals independently:
 (1) an `al-dev-shared:<agent>` dispatch line, and (2) the
 context block passed alongside it (the prompt fields the skill hands the
-agent). Three states: both present means a working contract; a dispatch line
-with no context block is a High alignment finding because the agent's
-documented Inputs are not being supplied; passed context with no dispatch line
-is also a finding. Search the skills directory:
+agent). Three states: both present and the supplied fields matching the agent's Inputs
+table means a working contract; a dispatch line with no context block is a High
+alignment finding because the agent's documented Inputs are not being supplied;
+passed context with no dispatch line is also a finding. Search the skills directory:
 
 - Pattern: `al-dev-shared:<agent-name>` in `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/`
 
