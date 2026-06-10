@@ -1,7 +1,7 @@
 ---
 name: design-skill-lens-shared-backbone
 description: Apply Shared Execution Backbone lens to plugin skills — identifies agent types used by 2+ skills whose invocation patterns could be documented in knowledge/ to prevent drift. Returns findings for Connect/Promote suggestions.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
