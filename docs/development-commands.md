@@ -90,10 +90,7 @@ filter set from an interrupted discovery run.
 When skills or agents change, synchronize the documentation:
 
 ```bash
-# Keep the maps accurate (maintained wrapper entry point):
-/review-maps  # Dispatches the maintained async map-sync flow
-
-# Raw async flow (use directly only when you want to bypass the wrapper):
+# Keep the maps accurate (maintained entry point):
 /sync-documentation-maps  # Async step 1: dispatch audits for both maps
 /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id>  # Step 2: collect audits and stage updates
 /sync-documentation-maps-apply --team-ids <id>[,<id>]  # Step 3: validate and write map docs
@@ -109,7 +106,7 @@ When skills or agents change, synchronize the documentation:
 For audit-only map checks (no updates):
 
 ```bash
-/review-maps --no-update   # Print the maintained async sequence without dispatching or modifying docs
+/sync-documentation-maps --no-update   # Print the maintained async sequence without dispatching or modifying docs
 ```
 
 These skills write to:
