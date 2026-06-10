@@ -16,12 +16,13 @@ import re
 
 import yaml
 
-STAGES = ("map-sync", "discover", "decide", "derive", "support")
-CORE_STAGES = ("map-sync", "discover", "decide", "derive")
+STAGES = ("map-sync", "discover", "decide", "implement", "derive", "support")
+CORE_STAGES = ("map-sync", "discover", "decide", "implement", "derive")
 STAGE_TITLES = {
     "map-sync": "Map sync",
     "discover": "Discover",
     "decide": "Decide",
+    "implement": "Implement",
     "derive": "Derive",
     "support": "Adjacent tooling",
 }

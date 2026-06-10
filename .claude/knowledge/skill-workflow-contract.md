@@ -8,7 +8,7 @@ It is not consumed by Claude Code or any distributed harness.
 
 ```yaml
 workflow:
-  stage: map-sync | discover | decide | derive | support
+  stage: map-sync | discover | decide | implement | derive | support
   invoked-by: user | both | skill:<name>
   repeatable: true | false
   inputs:                       # optional — list of input path templates
@@ -30,6 +30,7 @@ Required fields: `stage` and `invoked-by`. All others are optional.
 | `map-sync` | Synchronises documentation maps with the plugin surface |
 | `discover` | Dispatches lenses and gathers raw findings |
 | `decide` | Presents findings to the user for disposition or planning |
+| `implement` | Executes implementation tasks and closes the disposition ledger |
 | `derive` | Generates or validates derived artifacts from the plugin surface |
 | `support` | Adjacent tooling — not in the core self-healing loop |
 
