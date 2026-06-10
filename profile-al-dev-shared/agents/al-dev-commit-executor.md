@@ -5,8 +5,8 @@ description: >-
   (success path only). Dispatched by al-dev-commit (execute phase) after
   al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. On
   pre-commit hook rejection, returns a HOOK_FAILURES block for the caller to
-  hand off to al-dev-commit-hook-fixer. Never writes or edits source files
-  directly — all fixes go through Bash.
+  hand off to al-dev-commit-hook-fixer. Never attempts fixes or retries —
+  this agent owns the success path only.
 model: haiku
 tools: ["Bash", "Read"]
 ---
@@ -60,7 +60,8 @@ If commit fails (pre-commit hook rejection, exit code non-zero):
 - Capture the raw hook output (`git commit` stderr) for that group
 - Do NOT attempt scripted fixes, retries, force-push, or hook overrides
 - Record the group in the `HOOK_FAILURES` block with its raw hook output
-- Stop attempting subsequent groups that depend on the failed group; count them as SKIPPED
+- Stop attempting subsequent groups that depend on the failed group; count them as SKIPPED.
+  A group **depends** on a failed group when: (a) the dispatcher's `APPROVED_PLAN` explicitly marks it as dependent, OR (b) it stages files in the same directory as the failed group. If neither condition can be determined, stop all subsequent groups (conservative default).
 
 Diagnosis and recovery are out of scope for this agent. The caller detects the
 `HOOK_FAILURES` block and dispatches `al-dev-commit-hook-fixer` for recovery.
