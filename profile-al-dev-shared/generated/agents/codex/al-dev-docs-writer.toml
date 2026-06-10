@@ -45,7 +45,7 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 **RTM handling:** Read `knowledge/documentation-rtm-guide.md` for RTM status inference, token parsing, inline references, and audience-based RTM rules.
 
-**Diagrams:** Include Mermaid flowchart for `functional` and `user` audiences if workflow aids understanding. Read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram.
+**Diagrams:** Include a Mermaid flowchart for `functional` and `user` audiences when the workflow has 3 or more decision points **or** 3 or more actors. If neither threshold is met, omit the diagram. Always read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram block.
 
 ## Documentation Guidelines
 
