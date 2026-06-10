@@ -160,6 +160,6 @@ and full rule set.
 
 - Uncommitted accepted row → flip it in place to `fixed`.
 - Committed accepted row → append a later `fixed` row with the resolving commit
-  and `closes row N`.
+  and `closes #NNN`.
 - After the source change, run `python3 scripts/check_ledger_staleness.py` to
   confirm the row no longer appears as effectively open.

@@ -158,7 +158,7 @@ result: tasks_executing
 tasks_completed:
   - task: "Task 1 — <title>"
     commit: <hash>
-    closes_rows: [N, M]
+    closes_rows: ["#NNN", "#MMM"]
 ```
 
 ---
@@ -246,14 +246,14 @@ continue with the next task.
 
 ### Resolve each row
 
-`closes_rows:` lists 1-based **data-row numbers** from
-`docs/health/dispositions.md`. Data-row N is the Nth non-header, non-blank
-`|`-prefixed row in the table (same numbering used by
-`check_ledger_staleness.py`). It is **never** a file-line number.
+`closes_rows:` lists **`#NNN` IDs** from the ID column of
+`docs/health/dispositions.md`. These are the machine-readable identifiers
+assigned in the leftmost column of the disposition table. It is **never** a
+file-line number.
 
-Read `docs/health/dispositions.md`. Count data rows from 1. Locate row N and
-extract its values for **Surface**, **Dimension**, **Object**, and **Finding**
-verbatim.
+Read `docs/health/dispositions.md`. For each `#NNN` ID in `closes_rows:`,
+locate the row with that ID and extract its values for **Surface**,
+**Dimension**, **Object**, and **Finding** verbatim.
 
 ### Verify the live subject file
 
@@ -274,12 +274,12 @@ Object, and Finding verbatim from the accepted row N, then set:
 - **Disposition** = `fixed`
 - **Date** = today's ISO date (real date — never a placeholder)
 - **Evidence / note** = `<commit-hash> — <brief evidence>; verified live
-  <date>; closes row N`
+  <date>; closes #NNN`
 
 Example:
 
 ```markdown
-| tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes row 42 |
+| tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes #042 |
 ```
 
 Append each `fixed` row at the bottom of the table. Never reorder or rewrite
@@ -435,6 +435,6 @@ tasks_total: <N>
 tasks_completed:
   - task: "Task N — <title>"
     commit: <hash>
-    closes_rows: [N, M]
+    closes_rows: ["#NNN", "#MMM"]
 stale_open_rows: <count>    # populated in Phase 3
 ```

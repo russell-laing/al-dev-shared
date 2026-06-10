@@ -15,7 +15,7 @@ the row falsely open and causes later sweeps to re-rank fixed work.
    commit hash plus a short summary.
 2. If the accepted row is already committed, append a new `fixed` row for the
    same object and issue essence. Include the resolving commit hash and
-   `closes row N` so the supersession is machine-readable.
+   `closes #NNN` so the supersession is machine-readable.
 3. Cite the ledger row in the resolving commit message when practical so the
    closure is auditable from git history.
 

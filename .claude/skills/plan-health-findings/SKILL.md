@@ -132,10 +132,9 @@ Then consult `docs/health/dispositions.md` (if present), matching by object
 and issue essence:
 
 - Findings marked `accepted` are the primary planning input — keep them.
-  **Capture the 1-based data-row number** of each accepted row (the
-  sequential count of non-header, non-blank `|`-prefixed rows, which is
-  the same numbering used by `check_ledger_staleness.py`). Carry this row
-  number forward to Phase 3 so each plan task can record which ledger rows
+  **Capture the `#NNN` ID from the ID column** of each accepted row
+  (the machine-readable identifier in the leftmost column). Carry this ID
+  forward to Phase 3 so each plan task can record which ledger rows
   it closes.
 - Skip findings marked `declined`, `grandfathered`, or `fixed` (note the
   skip count).
@@ -300,12 +299,12 @@ Pass as context to writing-plans:
   | Extend | New downstream consumer reads the artifact | `grep` (read site) |
   | Trim / Remodel / Align | Field/tool removed or value changed | `grep` (presence/absence) |
 
-- The ledger row numbers captured in Phase 1 for the accepted findings each
+- The ledger row IDs captured in Phase 1 for the accepted findings each
   task implements. Each task's **verification block** must include a
   `closes_rows:` line in this exact format:
 
   ```text
-  closes_rows: [N, M, ...]   # data-row numbers from docs/health/dispositions.md
+  closes_rows: ["#NNN", "#MMM", ...]   # IDs from docs/health/dispositions.md
   ```
 
   Place this line **inside the verification block**, not in the task title or
