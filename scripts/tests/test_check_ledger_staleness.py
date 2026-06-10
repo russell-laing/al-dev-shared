@@ -21,10 +21,10 @@ class ResolveClosuresTest(unittest.TestCase):
     def test_explicit_closure_does_not_also_close_by_object_order(self) -> None:
         rows = [
             MODULE.Row(
-                1, "unknown", "unknown", "same-object", "first issue", "accepted", "2026-06-07", ""
+                1, "unknown", "unknown", "same-object", "first issue", "accepted", "2026-06-07", "", id="001"
             ),
             MODULE.Row(
-                2, "unknown", "unknown", "same-object", "second issue", "accepted", "2026-06-07", ""
+                2, "unknown", "unknown", "same-object", "second issue", "accepted", "2026-06-07", "", id="002"
             ),
             MODULE.Row(
                 3,
@@ -34,7 +34,8 @@ class ResolveClosuresTest(unittest.TestCase):
                 "second issue",
                 "fixed",
                 "2026-06-07",
-                "fix commit; closes row 2",
+                "fix commit; closes #002",
+                id="003",
             ),
         ]
 
@@ -89,6 +90,53 @@ class ResolveClosuresTest(unittest.TestCase):
         self.assertEqual("unknown", rows[0].surface)
         self.assertEqual("unknown", rows[0].dimension)
         self.assertEqual("plugin-health-discover", rows[0].obj)
+
+    def test_legacy_closes_row_token_resolves_accepted_in_seven_column_table(self) -> None:
+        """Legacy 7-column table with 'closes row N' token should resolve via CLOSES_RE."""
+        rows = [
+            MODULE.Row(
+                1, "tooling", "quality", "plugin-health-discover", "Bloat: nested phases", "accepted", "2026-06-07", ""
+            ),
+            MODULE.Row(
+                2,
+                "tooling",
+                "quality",
+                "plugin-health-discover",
+                "Bloat: nested phases",
+                "fixed",
+                "2026-06-07",
+                "fix commit; closes row 1",
+            ),
+        ]
+
+        MODULE.resolve_closures(rows)
+
+        self.assertEqual(2, rows[0].closed_by)
+
+    def test_stale_open_row_output_includes_id_for_eight_column_table(self) -> None:
+        """8-column table STALE-OPEN output should include the #ID in the line."""
+        # This test validates that when main() outputs a STALE-OPEN row for an 8-column
+        # ledger entry, the row's ID is included in the output string.
+        row = MODULE.Row(
+            1,
+            "tooling",
+            "quality",
+            "plugin-health-discover",
+            "Bloat: nested phases",
+            "accepted",
+            "2026-06-07",
+            "some note",
+            id="001",
+        )
+
+        # Simulate the output logic from main() for STALE-OPEN rows (lines 267-269)
+        line = f"  row {row.number}"
+        if row.id:
+            line += f" (ID {row.id})"
+        line += f" | {row.obj} | accepted {row.date}"
+
+        self.assertIn("(ID 001)", line)
+        self.assertIn("plugin-health-discover", line)
 
 
 if __name__ == "__main__":

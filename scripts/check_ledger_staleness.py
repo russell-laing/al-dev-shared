@@ -30,6 +30,7 @@ from pathlib import Path
 
 LEDGER = Path("docs/health/dispositions.md")
 CLOSES_RE = re.compile(r"closes row (\d+)", re.IGNORECASE)
+CLOSES_ID_RE = re.compile(r"closes #([\w-]+)", re.IGNORECASE)
 PAREN_RE = re.compile(r"\s*\([^)]*\)")
 
 # Surfaces an object name may live under (skills are directories,
@@ -52,6 +53,7 @@ class Row:
     disposition: str
     date: str
     note: str
+    id: str = ""  # stable ID from 8-column ledger; empty for 7-column legacy
     closed_by: int | None = None
     paths: list[str] = field(default_factory=list)
 
@@ -59,16 +61,59 @@ class Row:
 def parse_ledger_text(text: str) -> list[Row]:
     rows: list[Row] = []
     n = 0
+    header_col_count = None
+
     for line in text.splitlines():
         if not line.startswith("|"):
             continue
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         if not cells or set(cells[0]) <= {"-"}:
             continue
-        if cells[0] in ("Object", "Surface"):
+
+        # Detect header row to determine column structure
+        if cells[0] in ("ID", "Surface"):
+            # 8-column format: ID | Surface | Dimension | Object | Issue | Disposition | Date | Note
+            if cells[0] == "ID":
+                header_col_count = 8
+            else:
+                # Legacy 7-column format: Surface | Dimension | Object | Issue | Disposition | Date | Note
+                header_col_count = 7
             continue
+
+        if cells[0] in ("Object",):
+            continue
+
         n += 1
+
+        # Default to 7-column if no header detected yet
+        if header_col_count is None:
+            header_col_count = 7
+            if len(cells) == 8:
+                header_col_count = 8
+
+        # Warn if 7-column file is detected
+        if header_col_count == 7 and n == 1:
+            print("Ledger lacks ID column — run migrate_health_dispositions.py --stamp-ids", file=sys.stderr)
+
+        if header_col_count == 8 and len(cells) >= 8:
+            # 8-column: ID | Surface | Dimension | Object | Issue | Disposition | Date | Note
+            rows.append(
+                Row(
+                    n,
+                    cells[1],
+                    cells[2],
+                    cells[3],
+                    cells[4],
+                    cells[5].lower(),
+                    cells[6],
+                    cells[7],
+                    id=cells[0],
+                )
+            )
+            continue
+
         if len(cells) >= 7:
+            # 7-column legacy: Surface | Dimension | Object | Issue | Disposition | Date | Note
             rows.append(
                 Row(
                     n,
@@ -79,9 +124,11 @@ def parse_ledger_text(text: str) -> list[Row]:
                     cells[4].lower(),
                     cells[5],
                     cells[6],
+                    id="",
                 )
             )
             continue
+
         if len(cells) >= 5:
             rows.append(
                 Row(
@@ -93,6 +140,7 @@ def parse_ledger_text(text: str) -> list[Row]:
                     cells[2].lower(),
                     cells[3],
                     cells[4],
+                    id="",
                 )
             )
     return rows
@@ -127,13 +175,22 @@ def candidate_paths(obj: str) -> list[str]:
 def resolve_closures(rows: list[Row]) -> None:
     """Mark accepted rows closed by later fixed rows (token first, then object order)."""
     by_number = {r.number: r for r in rows}
+    by_id = {r.id: r for r in rows if r.id}  # Build ID lookup for 8-column ledger
     accepted = [r for r in rows if r.disposition == "accepted"]
     explicit_fixed_rows: set[int] = set()
 
-    # Pass 1: explicit `closes row N` tokens.
+    # Pass 1: explicit `closes #ID` tokens (prefer ID-based), then `closes row N` (legacy).
     for r in rows:
         if r.disposition != "fixed":
             continue
+        # Try ID-based lookup first
+        for m in CLOSES_ID_RE.finditer(r.note):
+            target_id = m.group(1)
+            target = by_id.get(target_id)
+            if target and target.disposition == "accepted" and target.number < r.number:
+                target.closed_by = r.number
+                explicit_fixed_rows.add(r.number)
+        # Fall back to number-based lookup for legacy format
         for m in CLOSES_RE.finditer(r.note):
             target = by_number.get(int(m.group(1)))
             if target and target.disposition == "accepted" and target.number < r.number:
@@ -207,7 +264,10 @@ def main() -> int:
     stale = 0
     print(f"ledger-check: {len(open_rows)} effective-open accepted row(s)")
     for r in open_rows:
-        line = f"  row {r.number} | {r.obj} | accepted {r.date}"
+        line = f"  row {r.number}"
+        if r.id:
+            line += f" (ID {r.id})"
+        line += f" | {r.obj} | accepted {r.date}"
         if not r.paths:
             print(line + " | (object not mappable to repo paths — verify manually)")
             continue
