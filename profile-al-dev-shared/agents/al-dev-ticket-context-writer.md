@@ -64,6 +64,8 @@ For `data:image/` URIs specifically: note as "inline base64 image (not downloade
 
 If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
 
+**Large image sets:** If more than 20 inline images are detected, report only the first 20 and set `INLINE_IMAGES_COUNT: 20+ (first 20 reported — further images omitted to avoid session bloat)`. Do not attempt to count beyond 20.
+
 ### Step 2: Write Context File
 
 Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:

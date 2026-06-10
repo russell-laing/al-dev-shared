@@ -51,9 +51,9 @@ Invoke the `microsoft-docs` MCP tool to search official documentation:
 - Search for API documentation if relevant
 - For each URL in the results: mark it `[verified]` if a full document was fetched (title + content returned); mark it `[unverified]` if only a search-result snippet was returned and the full page was not fetched
 
-### Source 3: BC Code History *(aspirational — not yet available)*
+### Source 3: BC Code History *(conditional — check availability first)*
 
-If BC Code History MCP becomes available, invoke the `bc-code-history` MCP tool to search BC history for:
+Check whether `bc-code-history` appears in your active tool list before using this source. If it is **not available**, skip this source entirely and record `BC History: not available` in the SOURCES line of the return block. If it **is available**, invoke the `bc-code-history` MCP tool to search BC history for:
 
 - Recent changes to related functionality
 - Known bugs or fixes in specific versions
