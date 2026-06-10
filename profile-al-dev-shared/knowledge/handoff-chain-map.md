@@ -99,6 +99,54 @@ Plugin surface.
 
 A handoff gap occurs when an artifact produced by one skill is not guaranteed to be consumed by its intended downstream consumer, or when a critical dependency is missing from the chain. These gaps represent points where workflow continuity may be interrupted, creating risk of lost context or unprocessed outputs.
 
+## Current Deployment Gaps
+
+These gaps exist in the currently active, deployed skill chains and require immediate attention to prevent workflow disruption.
+
+#### 1. Performance Analysis Optional Route
+
+**Issue:** `/al-dev-perf` produces `perf-analysis.md` which is optionally consumed by `/al-dev-plan`. However, when findings are routed downstream to `/al-dev-fix`, the connection is implicit with no gating ensuring performance findings are validated against the plan before fix workflow begins.
+
+**Impact:** Performance-critical recommendations may be acted upon without validation that they align with the solution plan or architectural decisions. Risk of fixing performance issues in ways that contradict planned refactoring, or applying unnecessary optimizations that introduce unreviewed code changes.
+
+**Mitigation Status:** None documented. Current workflow relies on manual user judgment to surface perf findings in fix context.
+
+#### 2. Explore Findings Staleness
+
+**Issue:** `/al-dev-explore` produces `findings.md` which persists across session boundaries without explicit refresh or invalidation checks. Phase 0 logic does not flag whether findings are stale relative to recent code changes or time elapsed.
+
+**Impact:** Plans built on outdated exploration may miss recent architectural changes, bug fixes, or refactoring. Users may commit decisions based on findings that no longer apply, leading to rework or technical debt.
+
+**Mitigation Status:** None documented. No session-boundary check or freshness validation in consuming skills.
+
+#### 3. Investigate Findings Dual Route
+
+**Issue:** `/al-dev-investigate` produces `findings.md` that can route to both `/al-dev-plan` and `/al-dev-fix` (see chains, row: Investigate findings to fix). No documented criteria distinguish which downstream path is appropriate, and no artifact-level gating prevents misrouting.
+
+**Impact:** Complex findings appropriate for full planning may be sent directly to fix, resulting in narrow patches instead of systemic solutions. Conversely, simple investigation results may be over-engineered through full planning when direct fixing would suffice.
+
+**Mitigation Status:** None documented. Routing decision is implicit and relies entirely on user request routing.
+
+#### 4. Post-Development Review Feedback Loop
+
+**Issue:** If `/al-dev-review-develop` discovers blocking issues (compilation errors, architectural violations, out-of-scope changes), there is no documented handoff back to `/al-dev-develop` to signal rework. The artifact flow is one-directional: develop → review → commit.
+
+**Impact:** Blocking review findings may force manual rework or commitment of flawed code. No automated path exists to re-engage development with reviewer feedback; workflow may stall or fork into ad-hoc repair paths outside the documented chain.
+
+**Mitigation Status:** None documented. Review findings are presented to user but have no formal downstream consumer.
+
+#### 5. Lint Report Accumulation
+
+**Issue:** Multiple lint runs may accumulate reports in `.dev/` with no documented cleanup or versioning strategy. Old reports from prior sessions can coexist with new ones, and Phase 0 logic does not distinguish current from stale lint output.
+
+**Impact:** Resume logic may act on old lint findings that have already been addressed; users see conflicting guidance when multiple reports exist. Accumulation can create ambiguity about which issues remain unresolved.
+
+**Mitigation Status:** None documented. Lint reports are optional consumption; no cleanup or consolidation step exists.
+
+## Future Enhancement Gaps
+
+The following gaps represent desired improvements and Phase B/C architectural enhancements.
+
 #### 1. Lint Report Optional Consumption
 
 **Issue:** `al-dev-lint` produces `.dev/*-al-dev-lint-lint-report.md`, but no
@@ -115,7 +163,7 @@ Risk of accumulating unresolved diagnostics.
 - Future: integrate lint reporting into Phase 0 resumption logic to
   flag stale reports across sessions.
 
-#### 2. Commit Manifest Missing
+#### 2. Commit Manifest Missing (Phase B/C)
 
 **Issue:** `al-dev-commit` performs analysis (scope creep detection,
 hallucination checks) but produces no durable artifact for downstream
@@ -134,7 +182,7 @@ the analysis; checks message-to-plan alignment only.
   - Readiness verdict
 - Enable resume of interrupted workflows and historical audit.
 
-#### 3. Interview Requirements Optional
+#### 3. Interview Requirements Optional (Phase B/C)
 
 **Issue:** `al-dev-interview` is optional upstream; many plans proceed without
 running it. No gating enforces interview-first discipline for MEDIUM/COMPLEX
@@ -150,7 +198,7 @@ increases rework risk.
 - Phase 0 can suggest interview completion if missing for complex
   scope.
 
-#### 4. Release Notes Orphaned
+#### 4. Release Notes Orphaned (Phase B/C)
 
 **Issue:** `al-dev-release-notes` is optional post-commit and produces no
 artifact that blocks or gates downstream deployment. It is purely
@@ -164,7 +212,7 @@ deployment workflows.
 - Future: tie release-notes to deployment gating
   (`al-dev-publish-to-marketplace`).
 
-#### 5. Compile Errors Log Not Cleared on Success
+#### 5. Compile Errors Log Not Cleared on Success (Phase B)
 
 **Issue:** `.dev/compile-errors.log` persists across runs. A successful
 compile can be masked by a stale error log from a prior session.

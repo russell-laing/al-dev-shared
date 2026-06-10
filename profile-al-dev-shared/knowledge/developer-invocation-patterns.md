@@ -235,6 +235,215 @@ Agent(
 # Both selections are orthogonal.
 ```
 
+#### How to measure complexity tier
+
+The model routing decision hinges on objective scope measures. Use this algorithm:
+
+**Step 1: Count affected files**
+
+```python
+affected_files = count_files_in_scope(assignment)
+```
+
+- **1 file** → candidate for TRIVIAL
+- **2–3 files** → SIMPLE or candidate for conditional haiku if homogeneous
+- **4+ files** → MEDIUM or COMPLEX
+
+**Step 2: Symbol verification**
+
+For each symbol referenced in the implementation:
+
+```python
+symbols_unverified = []
+for symbol in required_symbols:
+  evidence_source = check_al_lsp() or check_al_mcp() or check_text_search()
+  if not evidence_source:
+    symbols_unverified.append(symbol)
+
+if symbols_unverified:
+  model = claude-sonnet-4-6  # Must verify before proceeding
+else:
+  model = <candidate_from_step_1>
+```
+
+See `knowledge/al-symbol-pre-flight.md` for preflight checklist.
+
+**Step 3: Scope expansion risk assessment**
+
+Check for signals that scope may expand mid-task:
+
+```python
+scope_risks = [
+  "Touches validation or integration logic",
+  "Requires changes to multiple subsystems",
+  "Affects external APIs or notifications",
+  "References symbols from multiple modules"
+]
+
+if any(risk in assignment for risk in scope_risks):
+  model = claude-sonnet-4-6  # Higher risk → sonnet for safety
+```
+
+**Concrete tier mapping:**
+
+| Tier | Files | Symbols | Risk | Model |
+|------|-------|---------|------|-------|
+| TRIVIAL | 1 | all known via LSP | none | haiku |
+| SIMPLE | 2–3 | all known | low | haiku or sonnet (prefer sonnet for safety) |
+| MEDIUM | 4–8 | mostly known | medium | sonnet |
+| COMPLEX | 8+ | mixed/unknown | high | sonnet |
+
+#### Real example: Conditional spawn logic
+
+**Example 1: Haiku dispatch (TRIVIAL scope)**
+
+```python
+# Fix: Change field caption from "Amount" to "Invoice Amount" in Codeunit 50101
+
+scope = {
+  "files": ["SalesInvoiceExt.al"],
+  "symbols": ["MyTableExt"],  # Verified via AL LSP in prior phase
+  "changes": ["update field caption"],
+  "risk_signals": []
+}
+
+# Decision logic
+if len(scope["files"]) == 1 and scope["risk_signals"] == []:
+  model = "claude-haiku-4-5"
+  context = "Single file, obvious change, no scope expansion risk"
+
+# Spawn
+agent = spawn_developer(
+  agent: al-dev-shared:al-dev-developer-traditional,
+  model: claude-haiku-4-5,
+  prompt: f"Fix: {description}. File: {scope['files'][0]}. Change: {scope['changes'][0]}"
+)
+```
+
+**Example 2: Sonnet dispatch (MEDIUM scope)**
+
+```python
+# Implement: Add credit limit validation across sales orders
+# (requires event subscriber, validation codeunit, and page UI changes)
+
+scope = {
+  "files": ["SalesOrderExt.al", "CreditValidationMgt.Codeunit.al", "SalesOrderPageExt.al"],
+  "symbols": ["SalesHeader", "SalesLine", "Customer"],  # Some verified, some require MCP
+  "changes": ["event subscriber", "validation logic", "page warning control"],
+  "risk_signals": [
+    "Touches validation logic",
+    "Affects multiple subsystems (schema, UI, logic)"
+  ]
+}
+
+# Decision logic
+if len(scope["files"]) >= 3 or any(risk in scope["risk_signals"]):
+  model = "claude-sonnet-4-6"
+  context = "Multi-file scope + validation integration = sonnet required"
+
+# Spawn
+agent = spawn_developer(
+  agent: al-dev-shared:al-dev-developer-traditional,
+  model: claude-sonnet-4-6,
+  prompt: f"Implement credit limit validation. Files: {scope['files']}. Pattern: existing validation codeunit referenced. Stop before out-of-scope edits."
+)
+```
+
+#### Applicable contexts
+
+Not all three spawning contexts are candidates for conditional routing:
+
+**Context 1 (Full Scope Implementation)** — ✅ **PRIMARY CANDIDATE**
+
+Conditional routing is most useful here because:
+
+- Solution plan contains detailed scope; file list and complexity are known
+- Developer is implementing a pre-planned module, not exploratory work
+- Risk is contained: architect has already decided on approach
+- Example: "Implement the CreditValidationMgt module from the approved plan"
+
+**Context 2 (Trivial Direct Fix)** — ⚠️ **CONSTRAINED CANDIDATE**
+
+Conditional routing is possible but less valuable because:
+
+- Trivial fixes are already pre-filtered to single-file scope
+- If the fix proves non-trivial mid-task, /al-dev-fix escalates to architect
+- Conditional routing here mostly avoids unnecessary sonnet overhead for obvious fixes
+
+**Context 3 (Error Correction)** — ❌ **NOT APPLICABLE**
+
+Do not apply conditional routing here because:
+
+- Error correction is reactive (fixing failures, not executing a plan)
+- Scope is determined by the error list, not architectural decisions
+- The developer must fully understand the context of the failure
+- Always use sonnet for error correction to ensure correctness
+
+**Recommendation:** Wire Context 1 first. Context 2 is lower priority; Context 3 should always use sonnet.
+
+#### Safety: mid-task scope expansion
+
+A haiku developer may discover mid-task that scope expands beyond single-file expectations. Provide clear escalation guidance:
+
+**If scope expansion is detected:**
+
+```
+You started with 1 file, but the fix requires changes to [X, Y, Z] files.
+This crosses the haiku/sonnet boundary.
+
+ACTION: Do not continue. Halt implementation and report the scope expansion.
+
+Options for developer:
+1. Return: "Scope expanded to {files}. Requires sonnet model. Return to spawning skill for restart."
+2. (If spawning skill supports it) Request mid-session model swap: "Requesting upgrade from haiku to sonnet for scope {new_scope}."
+
+Examples of mid-task expansion:
+- Started: "Fix field caption in one extension" (1 file)
+  Discovered: "Must also update validation in base table event subscriber" (2+ files)
+  → Escalate
+
+- Started: "Add single field to page" (1 file)
+  Discovered: "Field requires new table relation to Customer" (2+ files)
+  → Escalate
+
+- Started: "Update variable name for consistency" (1 file, 1 scope)
+  Discovered: "Variable also used in 4 other objects; refactoring required" (5+ files)
+  → Escalate
+```
+
+**Spawning skill responsibility:**
+
+The skill that spawned the developer should:
+
+1. Provide a clear halt condition in the dispatch prompt:
+
+   ```
+   "Stop before implementing changes outside your assigned scope.
+    If you discover multi-file scope, return a scope-expansion summary
+    instead of implementing further. Do not attempt multi-file changes."
+   ```
+
+2. Check the developer's return message for scope-expansion indicators.
+
+3. If scope expanded: either restart the developer with sonnet + expanded scope, or
+   return to user for approval of new scope.
+
+Example restart dispatch:
+
+```python
+# Developer reported scope expansion
+prior_scope = ["SalesOrderExt.al"]
+expanded_scope = ["SalesOrderExt.al", "SalesHeaderExt.al", "PostingMgt.Codeunit.al"]
+
+# Restart with sonnet
+agent = spawn_developer(
+  agent: al-dev-shared:al-dev-developer-traditional,
+  model: claude-sonnet-4-6,  # Upgraded from haiku
+  context: "Previous scope was single-file. Scope has expanded; restarting with full context.",
+  prompt: f"Implement across {expanded_scope}. Original assignment: {original_assignment}. Expand to handle: {expanded_changes}."
+)
+```
+
 ### Current implementation status
 
 - `/al-dev-fix`: Has explicit conditional routing on the *architect* spawn

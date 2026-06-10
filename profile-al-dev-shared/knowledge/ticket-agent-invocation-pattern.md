@@ -42,6 +42,7 @@ These are resolved from the harness environment, not passed in the dispatch prom
 Fetch Freshdesk ticket metadata, conversations, and attachments. Output structured ticket context.
 
 **Agent behavior:**
+
 1. Use `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` from environment
 2. Make sequential API calls (not parallel) to avoid rate-limiting
 3. Extract inline images from conversation HTML (regex scan for `src=` attributes)
@@ -107,6 +108,7 @@ If a ticket requires changes to 3+ files, the ticket agent should:
 **Example:** Feature ticket requesting "Add customer credit limit field and enforce it on sales orders"
 
 Affected file mapping:
+
 ```
 TABLES:
 - Customer table (add Credit Limit field, validation)
@@ -135,3 +137,84 @@ For the canonical fetch phase, the live dispatch contract is intentionally small
 - `FRESHDESK_DOMAIN` in the environment
 
 Do not assume richer typed routing metadata is available unless the calling workflow explicitly adds it as a separate downstream context block.
+
+#### Complete Dispatch Example
+
+The skill invokes the agent using the Skill tool with the dispatch block template shown earlier (lines 11–25). Here is a fully populated example:
+
+```
+Skill: superpowers:dispatching-parallel-agents
+
+skill: al-dev-ticket-context-writer
+args: "TICKET_ID=12345"
+```
+
+The complete agent invocation includes:
+
+```text
+Agent invocation (Skill tool):
+  skill: al-dev-ticket-context-writer
+  args: "TICKET_ID=12345"
+
+This internally dispatches:
+  agent: al-dev-shared:al-dev-ticket-context-writer
+  with environment: FRESHDESK_API_KEY, FRESHDESK_DOMAIN
+  with prompt: "Fetch Freshdesk ticket and write .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md. Phase: fetch. Ticket ID: 12345"
+```
+
+#### Environment Variable Injection
+
+The harness (Claude Code, Copilot CLI, or Codex) resolves `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` from the user's environment before spawning the agent. These credentials must be set in the user's global settings, not in project-local configuration:
+
+**Setting credentials in Claude Code settings.json:**
+
+```json
+{
+  "env": {
+    "FRESHDESK_API_KEY": "<your-api-key>",
+    "FRESHDESK_DOMAIN": "company.freshdesk.com"
+  }
+}
+```
+
+These are resolved as **global settings** (user-level), not project-local, to prevent credential leakage into version control. At dispatch time, the harness injects them into the agent's environment before execution.
+
+#### Prompt Block Pattern
+
+When dispatching the agent, the skill extracts the ticket ID from user input and constructs the dispatch prompt. Here is a worked example:
+
+**User input:**
+
+```
+"Fix ticket #12345 — customer reports login failures"
+```
+
+**Extraction and dispatch:**
+
+1. Parse user message to extract ticket ID: `TICKET_ID=12345`
+2. Construct dispatch prompt with the extracted ID:
+
+```text
+Prompt: |
+  Fetch Freshdesk ticket and write
+  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md.
+
+  Phase: fetch
+  Ticket ID: 12345
+
+  FRESHDESK_API_KEY and FRESHDESK_DOMAIN are set in the
+  environment — use them directly in curl commands.
+```
+
+3. Invoke the agent with the completed prompt and TICKET_ID argument
+
+The agent receives both the ticket ID in the prompt (for display and context) and as an argument (for programmatic extraction by downstream steps).
+
+#### Return Block Format
+
+The agent writes a structured `.dev/` file and returns a summary block. For the complete structure and parsing details, see the "Return block format" section (lines 53–63). In brief:
+
+- **Output file:** `.dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md` (structured markdown with metadata, conversations, and attachments)
+- **Return summary:** A text block with fields like `TICKET_CONTEXT_WRITTEN`, `TICKET_ID`, `STATUS`, `PRIORITY`, `COMMENTS_COUNT`, `ATTACHMENTS`, `INLINE_IMAGES_COUNT`
+
+The calling skill parses this return block to extract the output file path and use it in subsequent phases (e.g., routing to `/al-dev-support-reply` for full-mode analysis).
