@@ -48,6 +48,8 @@ Analyse staged changes and build per-file manifests with object IDs and change s
 git diff --cached --name-only --diff-filter=ACMRDT
 ```
 
+If the Step 1 output is empty (no staged files match the filter), Steps 2–5 produce no output. Return `MANIFESTS: (none)` and `WARNINGS: NONE` immediately.
+
 ### Step 2 — Read each staged diff
 
 For every staged file:
@@ -110,6 +112,7 @@ while IFS= read -r -d '' f; do
   case "$f" in
     *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
   esac
+# < <(...) feeds NUL-delimited filenames as stdin to the while loop (process substitution — not a subshell).
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
 ```
 
