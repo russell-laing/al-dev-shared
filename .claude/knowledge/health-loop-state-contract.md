@@ -26,11 +26,11 @@ only; never harness-specific tokens.
 breadcrumb write is **committed**. Therefore:
 
 - A loop skill MUST write the breadcrumb **before** creating its final commit
-  and stage it into that same commit's staged set. For the loop-closing skill
+  and include it in that commit. For the loop-closing skill
   (`/implement-health-plan`), that is the ledger-close commit.
-- A breadcrumb write left unstaged after the final commit is
+- A breadcrumb write left uncommitted after the final commit is
   local-working-tree-only: it is lost if the worktree is removed, and the
-  committed copy points at the prior stage. Treat that as a defect, not a
+  committed copy reflects the prior loop step. Treat that as a defect, not a
   supported mode.
 
 ## Schema
