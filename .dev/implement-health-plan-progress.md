@@ -1,64 +1,28 @@
-phase: 5
+phase: 3
 status: complete
-result: loop_closed_for_plan
-ledger_close_commit: f18ad19
-plan_path: docs/superpowers/plans/2026-06-11-tooling-design-quality-fixes.md
-tasks_total: 16
-stale_open_rows: 10
-stale_open_note: "10 remaining stale-open rows are PRE-EXISTING and OUT OF SCOPE (#341, #344, #545, #556-#560, #562, #563 from earlier dossiers). User decision 2026-06-11: finish this plan, defer the 10 to separate triage. This plan's own rows (#570-#594) are all closed."
+result: ledger_closed
+plan_path: docs/superpowers/plans/archived/2026-06-11-plugin-map-health-loop-tooling-fixes.md
+tasks_total: 5
+stale_open_rows: 5
+stale_open_note: >-
+  5 residual open rows (#342, #544, #545, #547, #572) are pre-existing and out
+  of scope for this plan. Require separate disposition rows before --strict
+  reaches exit 0.
+ledger_close_commit: 49ecb8e
 tasks_completed:
 
-- task: "Pre-flight — tooling test baseline"
-    commit: n/a
-    closes_rows: []
-- task: "Task 1"
-    commit: 3849a42
-    closes_rows: ["#573", "#574", "#575"]
-- task: "Task 2"
-    commit: b33c3ab
-    closes_rows: ["#580"]
-- task: "Task 3"
-    commit: cdddad8
-    closes_rows: ["#576", "#577", "#578", "#579"]
-- task: "Task 4"
-    commit: 0983124
-    closes_rows: ["#582"]
-- task: "Task 5"
-    commit: 06d2b0d
-    closes_rows: ["#583"]
-- task: "Task 7"
-    commit: b92a1cf
-    closes_rows: ["#585"]
-- task: "Task 8"
-    commit: 6907c8b
-    closes_rows: ["#586"]
-- task: "Task 9"
-    commit: 6753f96
-    closes_rows: ["#587"]
-- task: "Task 10"
-    commit: 755bcb0
-    closes_rows: ["#588"]
-- task: "Task 11"
-    commit: 973e00b
-    closes_rows: ["#589"]
-- task: "Task 12"
-    commit: d55700c
-    closes_rows: ["#590"]
-- task: "Task 13"
-    commit: 6439ead
-    closes_rows: ["#592"]
-- task: "Task 14"
-    commit: bf4ae4a
-    closes_rows: ["#593"]
-- task: "Task 15"
-    commit: cecd079
-    closes_rows: ["#570", "#571"]
-- task: "Task 6"
-    commit: c067651
-    closes_rows: ["#584"]
-- task: "Task 0 — does-not-reproduce reconciliation"
-    commit: n/a
-    closes_rows: ["#581", "#591", "#594"]
-- task: "#572 grandfathered (ledger reconciliation, pre-existing row)"
-    commit: n/a
-    closes_rows: []
+- task: "Task 1 — al-dev-explore: reference bash-safe-patterns (#534)"
+    commit: fb49bdb
+    closes_rows: ["#534"]
+- task: "Task 2 — sync-documentation-maps: name four-skill sequence + --no-update in description (#339, #348)"
+    commit: f052286
+    closes_rows: ["#339", "#348"]
+- task: "Task 3 — health-loop-state-contract: define breadcrumb persistence semantics (#561)"
+    commit: 38c5ec8
+    closes_rows: ["#561"]
+- task: "Task 4 — plan-health-findings: require case-walkthrough for decision-logic changes (#563)"
+    commit: 751fcda
+    closes_rows: ["#563"]
+- task: "Task 5 — implement-health-plan: six clarity/remodel fixes (#556, #557, #558, #559, #560, #562)"
+    commit: 8a69a61
+    closes_rows: ["#556", "#557", "#558", "#559", "#560", "#562"]

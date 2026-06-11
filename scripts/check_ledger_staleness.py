@@ -215,6 +215,24 @@ def resolve_closures(rows: list[Row]) -> None:
                 a.closed_by = r.number
                 break
 
+    # Pass 3: grandfathered/declined rows also close accepted rows for the same
+    # finding — handles the case where a disposition changes after initial acceptance.
+    # ID-based match takes priority; fall back to object-order matching.
+    for r in rows:
+        if r.disposition not in ("grandfathered", "declined"):
+            continue
+        # ID-based: a later row with the same stable ID supersedes the earlier accepted row.
+        if r.id:
+            target = by_id.get(r.id)
+            if target and target.disposition == "accepted" and target.closed_by is None and target.number < r.number:
+                target.closed_by = r.number
+                continue
+        # Object-order fallback: close the earliest still-open accepted row for the same object.
+        for a in accepted:
+            if a.closed_by is None and a.number < r.number and norm_object(a.obj) == norm_object(r.obj):
+                a.closed_by = r.number
+                break
+
 
 def commits_since(date: str, paths: list[str]) -> list[str]:
     if not paths:
