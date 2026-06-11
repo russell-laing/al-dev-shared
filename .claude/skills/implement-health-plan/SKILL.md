@@ -71,6 +71,12 @@ Loop position:
 
 ### Locate the target plan
 
+First read `.dev/health-loop-state.md` if it exists (schema:
+`.claude/knowledge/health-loop-state-contract.md`). If its `next_command` names
+this skill, prefer its `next_inputs` plan path over a blind scan. If it names a
+different loop step, tell the user the pointer expects `<that command>` and ask
+whether to continue here anyway. If absent, fall back to the scan below.
+
 If `--plan <path>` was passed, use that path directly. Otherwise, scan
 `docs/superpowers/plans/` (non-recursively — archived/ is excluded) and select
 the **latest file by date prefix that contains the literal string
@@ -391,6 +397,21 @@ git add docs/health/archived/<dossier-file>
 git add docs/health/archived/<findings-file>  # if archived
 git commit -m "chore(health): close ledger rows [N,...] — <plan-topic>"
 ```
+
+### Close the loop breadcrumb
+
+After the ledger-close commit is staged, overwrite `.dev/health-loop-state.md`
+(schema: `.claude/knowledge/health-loop-state-contract.md`) to mark the loop
+closed:
+
+- `stage_completed: implement-health-plan`
+- `completed_at:` today's ISO date
+- `next_command: none`
+- `next_inputs: []`
+- `fresh_session_recommended: false`
+- `note:` loop closed; ledger staleness check passed. If source under
+  `profile-al-dev-shared/` changed, run `/projection-sync` and
+  `/align-harness-repos` next (see Phase 4.5).
 
 ### Final report
 
