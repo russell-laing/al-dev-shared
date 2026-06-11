@@ -41,38 +41,23 @@ completion (roughly 5 minutes), so the user is free to work meanwhile.
 
 ## Phase 0 — Parse Arguments
 
-Read the arguments supplied by the user:
+| Argument | Default | Behaviour |
+|---|---|---|
+| `--all` | off | Auto-update both maps without prompting (passed to collect/finalize) |
+| `--skip-commit` | off | Write map changes but do not commit (dry-run) |
+| `--force` | off | Override the cadence guard and dispatch over an uncollected run |
+| `--no-update` | off | Print the four-skill sequence and stop — no dispatch, no checkpoint |
 
-AUTO_UPDATE=false
-SKIP_COMMIT=false
-FORCE=false
-NO_UPDATE=false
-
-- If `--all` is present, set `AUTO_UPDATE=true`.
-- If `--skip-commit` is present, set `SKIP_COMMIT=true`.
-- If `--force` is present, set `FORCE=true`.
-- If `--no-update` is present, set `NO_UPDATE=true`.
-
-If `NO_UPDATE=true`, print the maintained async sequence and stop:
-
-```text
-1. /sync-documentation-maps
-2. /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id>
-3. /sync-documentation-maps-apply --team-ids <id>[,<id>]
-4. /sync-documentation-maps-write
-```
+Set booleans from the flags above. If `NO_UPDATE=true`, print the four-skill workflow
+sequence (steps 1–4 from the header) and stop without dispatching.
 
 ### Cadence guard — no dispatch over an uncollected run
 
-Check the checkpoint before dispatching:
+Check the checkpoint before dispatching. If `status` is not `"done"`, stop unless `FORCE=true`:
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json 2>/dev/null
 ```
-
-If the checkpoint exists and its `status` is anything other than `"done"`,
-a prior run is still in flight or uncollected. Unless `FORCE=true`, stop
-with:
 
 ```text
 Prior sync run <run_id> is incomplete (status: <status>).
@@ -80,8 +65,7 @@ Collect it first (/sync-documentation-maps-collect, then -apply, -write),
 or re-run with --force to abandon it and start fresh.
 ```
 
-With `FORCE=true`, note the abandoned `run_id` in the new run's progress
-entry so the orphaned artifacts are traceable.
+With `FORCE=true`, note the abandoned `run_id` in the new run's progress entry.
 
 ---
 
@@ -137,16 +121,9 @@ with `TaskGet`.
 
 ## Phase 4 — Write Checkpoint
 
-Write a checkpoint file so `/sync-documentation-maps-collect` can locate the
-running teams and their artifact paths.
-
-Write the checkpoint with the following fields. The root checkpoint
-`.dev/sync-documentation-maps-checkpoint.json` may already exist from a prior
-run, so update it with the canonical read-preserve-write **Merge Pattern** in
-`.claude/skills/sync-documentation-maps/checkpoint-patterns.md` (read first,
-merge the fields below, write atomically). `${RUN_DIR}/manifest.json` is always
-new on this first write, so create it directly with the Write tool — no prior
-read.
+Write these fields to `.dev/sync-documentation-maps-checkpoint.json` (merge pattern in
+`checkpoint-patterns.md`; root checkpoint may exist from a prior run) and identically to
+`${RUN_DIR}/manifest.json` (always new — create directly with Write):
 
 | Field | Value |
 |---|---|
@@ -162,25 +139,13 @@ read.
 | `result_dir` | `RUN_DIR` |
 | `manifest_path` | `${RUN_DIR}/manifest.json` |
 
-Write the identical JSON to `${RUN_DIR}/manifest.json` (this is always new,
-so Write is safe without a prior read).
-
 Verify both files exist:
 
 ```bash
-ls -la .dev/sync-documentation-maps-checkpoint.json
-ls -la "${RUN_DIR}/manifest.json"
+ls -la .dev/sync-documentation-maps-checkpoint.json && ls -la "${RUN_DIR}/manifest.json"
 ```
 
-Append a progress entry to `.dev/progress.md`:
-
-```bash
-cat >> .dev/progress.md << 'EOF'
-[2026-05-31] sync-documentation-maps (run ${RUN_ID}): Dispatched skill-audit
-  (${SKILL_TEAM_ID}) and agent-audit (${AGENT_TEAM_ID}) teams.
-  Next: /sync-documentation-maps-collect --team-ids ${SKILL_TEAM_ID},${AGENT_TEAM_ID}
-EOF
-```
+Append the dispatch progress entry to `.dev/progress.md`.
 
 ---
 
