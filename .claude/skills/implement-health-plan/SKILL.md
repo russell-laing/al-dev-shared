@@ -99,23 +99,20 @@ If no plan passes the filter, stop with:
 
 ### Resume check
 
-Check `.dev/implement-health-plan-progress.md`:
+**If the checkpoint file exists,** check `phase` and `status`:
 
-- **If exists:** Read the `phase` and `status` fields. Recognized pairs and
-  their meaning:
-  - `phase: 0, status: complete` — Phase 0 done; proceed to Phase 1 Task 1.
-  - `phase: 1, status: in_progress` + non-empty `tasks_completed` list —
-    partial Phase 1 run; offer Resume (continue from the next incomplete task)
-    or Restart.
-  - `phase: 1, status: complete` — Phase 1 done; proceed to Phase 2 / 3.
-  - `phase: 3, status: complete` + `result: ledger_closed` — full loop already
-    closed for this plan; inform the user and ask whether to re-run from Phase 1.
+| phase | status | Action |
+|---|---|---|
+| `0` | `complete` | Proceed to Phase 1 Task 1 |
+| `1` | `in_progress` (non-empty `tasks_completed`) | Offer Resume or Restart |
+| `1` | `complete` | Proceed to Phase 2 / 3 |
+| `3` | `complete` + `result: ledger_closed` | Inform user; ask whether to re-run |
+| any other combination | — | Treat as corrupted; default to Restart |
 
-  If the `phase` / `status` combination is not in the list above, or either
-  field is missing, treat the checkpoint as corrupted and default to `Restart`.
-  On Restart, **overwrite** the existing checkpoint file with the fresh Phase 0
-  checkpoint written below. If the user does not respond, default to `Restart`.
-- **If not exists:** Proceed to Phase 1.
+On Restart, **overwrite** the existing checkpoint with the fresh Phase 0 checkpoint
+below. If the user does not respond, default to Restart.
+
+**If the checkpoint file does not exist:** proceed to Phase 1.
 
 Write initial checkpoint before proceeding:
 
@@ -152,8 +149,9 @@ every dispatch prompt:
 > 1. File persistence check: `git status` shows expected file changes (not
 >    empty, no unexpected extras)
 > 2. Forbidden-pattern scan: no `[date]`, bare `YYYY-MM-DD` placeholders,
->    `TODO`, `TBD`, `Co-Authored-By` in code comments, or `claude:`/`copilot:`
->    prefixed debug tokens in changed files
+>    `TODO`, `TBD`, `Co-Authored-By` (forbidden in file content AND git trailers,
+>    per `commit-conventions.md`), or `claude:`/`copilot:` prefixed debug tokens
+>    in changed files
 > 3. Acceptance criteria: each criterion stated in the task spec is met in
 >    actual file content
 > 4. On verification failure: re-execute with the specific failure embedded in
@@ -218,27 +216,21 @@ Scan every changed file for:
 - `[date]` — unrendered date placeholder
 - Bare `YYYY-MM-DD` as a literal value (not a path-format specifier or example)
 - `TODO` or `TBD`
-- `Co-Authored-By` in code comment lines (OK only in git trailers)
+- `Co-Authored-By` — AI attribution forbidden per `commit-conventions.md` (file content AND git trailers)
 - `claude:` or `copilot:` prefixed debug tokens
 
 ```bash
-git diff HEAD~1 -- <changed-files> | grep -E \
-  '\[date\]|TODO|TBD|claude:|copilot:'
+git diff HEAD~1 -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
+grep -rEn '[0-9]{4}-[0-9]{2}-[0-9]{2}' <changed-files>   # bare YYYY-MM-DD placeholders
+grep -rn  'Co-Authored-By'             <changed-files>   # AI attribution (forbidden per commit-conventions.md)
 ```
 
 Any hit is a blocker. Fix the file and amend or commit a correction before
 continuing.
 
-**Note:** The grep above scans the diff for `[date]`, `TODO`, `TBD`, and
-harness debug tokens. Two additional patterns must be checked **manually in
-the actual file content** (not the diff, where they appear legitimately in
-context lines):
-
-- `YYYY-MM-DD` as a literal unrendered date placeholder — open the changed
-  file and confirm any `YYYY-MM-DD` occurrence is inside an instructional
-  prose example, not a field value that should hold a real date.
-- `Co-Authored-By` in code comment lines — confirm any occurrence is only in
-  git commit trailer blocks, not inside source file comments.
+<!-- Note: the global CLAUDE.md commit practice appends a Co-Authored-By trailer;
+     that practice must be reconciled against commit-conventions.md separately — do not
+     edit CLAUDE.md or commit-conventions.md here. -->
 
 ### Acceptance criteria check
 
