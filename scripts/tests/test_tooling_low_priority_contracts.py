@@ -15,10 +15,17 @@ ACTIVE_TOOLING_SKILLS = sorted(
 )
 
 SYNC_MAP_AGENTS = [
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-audit.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-audit.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-metadata.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-discrepancy.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-metadata.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-discrepancy.md",
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-update.md",
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-update.md",
+]
+
+ARCHIVED_AUDIT_AGENTS = [
+    REPO_ROOT / ".claude" / "agents" / "archived" / "sync-documentation-maps-agent-audit.md",
+    REPO_ROOT / ".claude" / "agents" / "archived" / "sync-documentation-maps-skill-audit.md",
 ]
 
 
@@ -62,6 +69,59 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
             if untagged_fence_lines(path)
         }
         self.assertEqual({}, failures)
+
+    def test_old_audit_agents_are_archived_not_active(self) -> None:
+        """Old audit agents must be in archived/, not in the active .claude/agents/ root."""
+        active_agents_dir = REPO_ROOT / ".claude" / "agents"
+        for archived_path in ARCHIVED_AUDIT_AGENTS:
+            # Must exist in archived/
+            self.assertTrue(
+                archived_path.exists(),
+                f"Expected archived agent at {archived_path}",
+            )
+            # Must NOT exist in the active agents directory root
+            active_path = active_agents_dir / archived_path.name
+            self.assertFalse(
+                active_path.exists(),
+                f"Old audit agent {archived_path.name} still present as active agent",
+            )
+
+    def test_sync_maps_skill_metadata_schema_has_phase_count_and_spawned_agents(
+        self,
+    ) -> None:
+        """skill-metadata agent must document phase_count and spawned_agents fields
+        so discrepancy agent can detect phase_count_mismatch and agent_name_mismatch."""
+        text = read(
+            ".claude/agents/sync-documentation-maps-skill-metadata.md"
+        )
+        self.assertIn("phase_count", text)
+        self.assertIn("spawned_agents", text)
+
+    def test_sync_maps_agent_discrepancy_documents_all_five_types(self) -> None:
+        """agent-discrepancy agent must document all five canonical discrepancy types."""
+        text = read(".claude/agents/sync-documentation-maps-agent-discrepancy.md")
+        for dtype in (
+            "missing_from_map",
+            "stale_in_map",
+            "model_mismatch",
+            "tools_mismatch",
+            "caller_mismatch",
+        ):
+            with self.subTest(dtype=dtype):
+                self.assertIn(dtype, text)
+
+    def test_sync_maps_skill_discrepancy_documents_all_four_types(self) -> None:
+        """skill-discrepancy agent must document all four canonical discrepancy types
+        including phase_count_mismatch and agent_name_mismatch."""
+        text = read(".claude/agents/sync-documentation-maps-skill-discrepancy.md")
+        for dtype in (
+            "missing_from_map",
+            "stale_in_map",
+            "phase_count_mismatch",
+            "agent_name_mismatch",
+        ):
+            with self.subTest(dtype=dtype):
+                self.assertIn(dtype, text)
 
     def test_plugin_health_report_merges_rank_and_write_phase(self) -> None:
         text = read(".claude/skills/plugin-health-report/SKILL.md")

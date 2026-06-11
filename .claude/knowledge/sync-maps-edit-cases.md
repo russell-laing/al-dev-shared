@@ -8,7 +8,7 @@ surfaces × two roles (audit / update).
 
 ## Agent surface — discrepancy types (audit)
 
-Used by `sync-documentation-maps-agent-audit` Step 5.
+Used by `sync-documentation-maps-agent-discrepancy` Step 3.
 
 - **`missing_from_map`** — an active agent has no entry in the Layer 1 Catalog
   table OR no `### <agent-name>` section in Layer 2. Flag if either layer is
@@ -81,7 +81,7 @@ from `scripts/derive-agent-callers.py`.
 
 ## Skill surface — discrepancy types (audit)
 
-Used by `sync-documentation-maps-skill-audit` Step 4.
+Used by `sync-documentation-maps-skill-discrepancy` Step 3.
 
 - **`missing_from_map`** — an active skill has no `### /skill-name` section in
   Layer 2 of `docs/al-dev-skills-map.md`.

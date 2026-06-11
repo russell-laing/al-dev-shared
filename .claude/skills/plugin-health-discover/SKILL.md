@@ -61,7 +61,7 @@ REPO=$(git rev-parse --show-toplevel)
 find "$REPO/profile-al-dev-shared/agents" -name "*.md" | sort
 find "$REPO/profile-al-dev-shared/skills" -name "SKILL.md" | sort
 # tooling surface
-find "$REPO/.claude/agents" -name "*.md" | sort
+find "$REPO/.claude/agents" -name "*.md" ! -path "*/archived/*" | sort
 # workflow-contracted skills only; adjacent tools (no workflow: block) are excluded to avoid noise and cost
 find "$REPO/.claude/skills" -name "SKILL.md" ! -path "*/archived/*" \
   | while read f; do grep -q "^workflow:" "$f" && echo "$f"; done \

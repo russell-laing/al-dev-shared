@@ -100,22 +100,37 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 ---
 
-## Phase 3 — Dispatch Background Audit Agents
+## Phase 3 — Dispatch Audit Agents
 
-Dispatch **both** audit agents simultaneously (do not wait for one before
-starting the other), using the canonical in-session background-dispatch pattern
-in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Use the
-`Agent` tool with `run_in_background: true` so the agents run in the background
-and the harness notifies on completion:
+### Step 3.1 — Dispatch metadata agents (parallel)
+
+Dispatch in parallel:
+
+- `al-dev-shared:sync-documentation-maps-agent-metadata` (writes `agent-metadata.json`)
+- `al-dev-shared:sync-documentation-maps-skill-metadata` (writes `skill-metadata.json`)
+
+Pass `run_id` and `result_dir` to both. Wait for both to complete.
 
 For the canonical dispatch template and surface parameterization table, follow
 `.claude/skills/sync-documentation-maps/sync-documentation-maps-dispatch-patterns.md`.
 
-Capture the returned background agent IDs as `SKILL_TEAM_ID` and
-`AGENT_TEAM_ID`. These are informational handles for the checkpoint — the
-authoritative handoff is the audit JSON each agent writes to `${RUN_DIR}/audit/`,
-which `/sync-documentation-maps-collect` reads directly. They are **not** polled
-with `TaskGet`.
+Capture the returned agent IDs as `AGENT_METADATA_TEAM_ID` and `SKILL_METADATA_TEAM_ID`.
+
+### Step 3.2 — Dispatch discrepancy agents (parallel)
+
+Dispatch in parallel after metadata agents complete:
+
+- `al-dev-shared:sync-documentation-maps-agent-discrepancy` (reads `agent-metadata.json`,
+  writes `agent-audit.json`)
+- `al-dev-shared:sync-documentation-maps-skill-discrepancy` (reads `skill-metadata.json`,
+  writes `skill-audit.json`)
+
+Pass `run_id` and `result_dir` to both. Wait for both to complete.
+
+Capture the returned agent IDs as `AGENT_DISCREPANCY_TEAM_ID` and `SKILL_DISCREPANCY_TEAM_ID`.
+These are informational handles for the checkpoint — the authoritative handoff is the
+audit JSON each agent writes to `${RUN_DIR}/audit/`, which `/sync-documentation-maps-collect`
+reads directly. They are **not** polled with `TaskGet`.
 
 ---
 
@@ -130,8 +145,10 @@ Write these fields to `.dev/sync-documentation-maps-checkpoint.json` (merge patt
 | `operation` | `"sync-documentation-maps"` |
 | `run_id` | `RUN_ID` |
 | `spawned_at` | `"${SPAWNED_AT}"` |
-| `skill_audit_team_id` | `SKILL_TEAM_ID` |
-| `agent_audit_team_id` | `AGENT_TEAM_ID` |
+| `skill_metadata_team_id` | `SKILL_METADATA_TEAM_ID` |
+| `agent_metadata_team_id` | `AGENT_METADATA_TEAM_ID` |
+| `skill_discrepancy_team_id` | `SKILL_DISCREPANCY_TEAM_ID` |
+| `agent_discrepancy_team_id` | `AGENT_DISCREPANCY_TEAM_ID` |
 | `phase` | `"audit"` |
 | `status` | `"audit"` |
 | `auto_update` | `AUTO_UPDATE` (true/false) |
@@ -156,14 +173,16 @@ Print a summary and exit:
 ```text
 Audit teams dispatched.
 
-  Run ID:            RUN_ID
-  Skills team ID:    SKILL_TEAM_ID
-  Agents team ID:    AGENT_TEAM_ID
-  Run directory:     RUN_DIR
-  Checkpoint:        .dev/sync-documentation-maps-checkpoint.json
+  Run ID:                      RUN_ID
+  Skill metadata team ID:      SKILL_METADATA_TEAM_ID
+  Agent metadata team ID:      AGENT_METADATA_TEAM_ID
+  Skill discrepancy team ID:   SKILL_DISCREPANCY_TEAM_ID
+  Agent discrepancy team ID:   AGENT_DISCREPANCY_TEAM_ID
+  Run directory:               RUN_DIR
+  Checkpoint:                  .dev/sync-documentation-maps-checkpoint.json
 
 Next step (collect results when the agents finish):
-  /sync-documentation-maps-collect --team-ids SKILL_TEAM_ID,AGENT_TEAM_ID
+  /sync-documentation-maps-collect --team-ids SKILL_DISCREPANCY_TEAM_ID,AGENT_DISCREPANCY_TEAM_ID
 ```
 
 Return without blocking. The audit agents run in the background; the harness

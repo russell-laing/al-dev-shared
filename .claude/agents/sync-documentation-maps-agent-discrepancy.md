@@ -1,0 +1,88 @@
+---
+name: sync-documentation-maps-agent-discrepancy
+description: >-
+  Compares agent metadata from agent-metadata.json against docs/al-dev-agent-map.md
+  and writes a structured JSON discrepancy report to the run artifact directory.
+  Called by /sync-documentation-maps dispatch phase after
+  sync-documentation-maps-agent-metadata completes.
+model: sonnet
+tools: ["Read", "Bash", "Write"]
+---
+
+# sync-documentation-maps-agent-discrepancy
+
+## Inputs
+
+| Field | Description |
+|---|---|
+| run_id | The timestamp run ID (e.g. `20260531T143000`) |
+| result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
+
+**Precondition:** `<result_dir>/audit/agent-metadata.json` must exist (written by
+`sync-documentation-maps-agent-metadata`).
+
+## Outputs
+
+Writes `<result_dir>/audit/agent-audit.json` and returns its absolute path.
+Do not summarise findings — return only the path.
+
+**JSON schema:**
+
+```json
+{
+  "surface": "agents",
+  "run_id": "<run_id>",
+  "total_files": 12,
+  "map_entries": 11,
+  "discrepancies": [
+    {
+      "type": "missing_from_map",
+      "agent": "al-dev-example",
+      "detail": "Active agent has no Layer 2 section in docs/al-dev-agent-map.md"
+    }
+  ],
+  "summary": "1 discrepancy found: 1 missing_from_map."
+}
+```
+
+Valid `type` values: `missing_from_map`, `stale_in_map`, `model_mismatch`,
+`tools_mismatch`, `caller_mismatch`.
+
+---
+
+## Instructions
+
+All relative paths are from the repository root: `/Users/russelllaing/al-dev-shared`.
+
+### Step 1 — Load metadata
+
+Read `<result_dir>/audit/agent-metadata.json`. Use the `agents` list and `callers`
+map from that file for all subsequent comparisons.
+
+### Step 2 — Parse docs/al-dev-agent-map.md
+
+Read `docs/al-dev-agent-map.md`. Extract Layer 1 Catalog table rows and Layer 2
+sections. Use:
+
+```bash
+grep "^### al-dev-" docs/al-dev-agent-map.md
+```
+
+For each matched heading, note the `model:`, `tools:`, and `Spawned by:` values
+recorded in that Layer 2 section. Map entries record an empty tools list as
+`(none)` — compare directly against the `(none)` string from Step 1.
+
+### Step 3 — Identify discrepancies
+
+Compare the agents list and metadata against map data. Discrepancy type definitions
+are in `.claude/knowledge/sync-maps-edit-cases.md`,
+**"Agent surface — discrepancy types (audit)"** section.
+
+If `caller_check_skipped` is `true` in the metadata JSON, skip `caller_mismatch`
+detection and note it in the summary.
+
+### Step 4 — Write JSON report and return path
+
+For path setup, JSON construction, and artifact verification, follow
+`.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
+Write to `<result_dir>/audit/agent-audit.json`. Return only the absolute path.

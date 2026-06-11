@@ -15,8 +15,10 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
   "operation": "sync-documentation-maps",
   "run_id": "timestamp-id",
   "spawned_at": "iso-timestamp",
-  "skill_audit_team_id": "team-id",
-  "agent_audit_team_id": "team-id",
+  "skill_metadata_team_id": "team-id",
+  "agent_metadata_team_id": "team-id",
+  "skill_discrepancy_team_id": "team-id",
+  "agent_discrepancy_team_id": "team-id",
   "phase": "audit|update|complete",
   "status": "dispatched|skipped|complete|awaiting-write|done",
   "result_dir": "/absolute/path",
@@ -28,6 +30,12 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
   "agent_update_team_id": null
 }
 ```
+
+The audit phase uses four team IDs: `skill_metadata_team_id` and
+`agent_metadata_team_id` for the synchronous metadata prerequisite step (Step 3.1),
+and `skill_discrepancy_team_id` and `agent_discrepancy_team_id` for the discrepancy
+detection step (Step 3.2). The `collect` step consumes the discrepancy team IDs
+(`skill_discrepancy_team_id`, `agent_discrepancy_team_id`) when reading audit results.
 
 `sync-documentation-maps` writes the initial fields. `sync-documentation-maps-collect`
 adds update fields. `sync-documentation-maps-write` marks completion. Preserve
