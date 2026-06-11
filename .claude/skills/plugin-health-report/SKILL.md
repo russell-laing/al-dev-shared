@@ -215,12 +215,29 @@ Record any failed lenses at the foot of the Summary section.
 
 ## Phase 3 — Present to user
 
+Read `.dev/health-loop-state.md` first (schema:
+`.claude/knowledge/health-loop-state-contract.md`). If it exists and its
+`next_command` names a *later* loop step (e.g. `/implement-health-plan`), warn
+the user that a prior loop is still in flight and unclosed before presenting a
+fresh dossier.
+
 Print, per surface: dossier path + severity counts (new vs recurring) + the
 top action.
 List any failed lenses.
-Ask: "Review the dossier, record accept/decline decisions via
-`/record-health-dispositions` (or directly in
-`docs/health/dispositions.md`), then run `/plan-health-findings` on the
-accepted items?" — recording dispositions is what stops the next sweep from
-re-ranking the same findings as new.
+
+Write `.dev/health-loop-state.md` (schema:
+`.claude/knowledge/health-loop-state-contract.md`):
+
+- `stage_completed: plugin-health-report`
+- `next_command: /record-health-dispositions`
+- `next_inputs:` the dossier path(s) just written, plus
+  `docs/health/dispositions.md`
+- `fresh_session_recommended: false`
+- `note:` recording dispositions is what stops the next sweep from re-ranking
+  the same findings as new.
+
+Then tell the user: "Dossier ready. Next in the loop:
+`/record-health-dispositions` to triage accept/decline decisions (the pointer
+is saved in `.dev/health-loop-state.md`). After that, `/plan-health-findings`
+plans the accepted items."
 Do not edit any source file.
