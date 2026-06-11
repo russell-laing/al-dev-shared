@@ -47,6 +47,8 @@ and code-block examples (Write/output targets):
   `surface` in `{plugin, tooling}`.
 - A documented output path that violates either pattern is a **Medium** finding.
 
+## Severity Rules
+
 **How a deviation maps to severity** (apply the most severe that fits):
 
 - **High:** the name breaks an enforced (MUST) pattern — a lens-agent filename

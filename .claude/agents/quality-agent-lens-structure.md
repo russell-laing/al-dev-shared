@@ -50,7 +50,9 @@ agent name from the filename (strip directory path and `.md` extension).
   in the same file
 - Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
 
-**Severity rules:**
+---
+
+## Severity Rules
 
 - High: missing `model` or `tools` frontmatter fields
 - Medium: missing Inputs/Outputs sections, non-canonical tool names, filename not

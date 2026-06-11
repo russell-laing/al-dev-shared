@@ -36,6 +36,10 @@ Ask: could this skill be absorbed into an adjacent skill as an option flag or
 sub-step rather than a separate invocation? Flag as Absorb candidate if the
 skill's entire body could fit as one extra phase in an existing adjacent skill.
 
+---
+
+## Verdict and Severity Rules
+
 **Severity rules:**
 
 - High: skill has 8+ phases with two clearly separable concerns (significant

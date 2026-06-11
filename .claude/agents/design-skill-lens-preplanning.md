@@ -19,12 +19,14 @@ Returns a findings block. See Output Format.
 
 ---
 
-## Lens: Pre-planning and Brainstorming Skills
-
-Canonical pre-planning skills in this plugin:
+## Reference: Canonical pre-planning skills
 
 - `/al-dev-interview` — produces `interview-requirements.md`
 - `/al-dev-explore` — produces `explore-findings.md`
+
+---
+
+## Lens: Pre-planning and Brainstorming Skills
 
 For each skill in `preplanning_skills` and any additional pre-planning skills
 found in the file list:
@@ -37,6 +39,16 @@ found in the file list:
 2. Check whether its output filename is referenced in Layer 1 handoff labels.
 3. Check whether a downstream skill explicitly names it as an input in its body.
 
+**Flag as Extend candidate:**
+
+- Pre-planning skill is active (has a SKILL.md) but missing its exact dashed
+  tributary representation in the Layer 1 diagram
+- Pre-planning skill feeds a downstream step but its output is unnamed in the diagram
+
+---
+
+## Severity Rules
+
 Treat occurrence states explicitly:
 
 - Exact dashed-tributary match: the skill is correctly represented in Layer 1.
@@ -45,12 +57,6 @@ Treat occurrence states explicitly:
 - Main-spine-only match: the skill appears only as a main-spine node, not as a
   dashed tributary.
 - Entirely absent: no relevant Layer 1 node exists for the skill.
-
-**Flag as Extend candidate:**
-
-- Pre-planning skill is active (has a SKILL.md) but missing its exact dashed
-  tributary representation in the Layer 1 diagram
-- Pre-planning skill feeds a downstream step but its output is unnamed in the diagram
 
 **Severity rules:**
 
