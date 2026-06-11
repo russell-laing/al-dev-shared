@@ -56,47 +56,20 @@ Print the usage hint:
 Usage: /sync-documentation-maps-collect --team-ids <skill-id>,<agent-id> [--wait]
 ```
 
-**Load checkpoint.** Read the checkpoint written by `/sync-documentation-maps`:
-
-```bash
-cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
-```
-
-Extract fields `run_id`, `result_dir`, `auto_update`, `skip_commit` per the
-field table below and the full contract in
+**Load checkpoint.** Read `.dev/sync-documentation-maps-checkpoint.json` and
+extract `run_id` → `RUN_ID`, `result_dir` → `RUN_DIR`, `auto_update` →
+`AUTO_UPDATE`, `skip_commit` → `SKIP_COMMIT`. Full field contract:
 `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
 
-| Field | Variable |
+**Resume / restart.** Check `status` in the checkpoint and act per the table
+below. Full branch semantics (Resume / Restart / Cancel) are in
+`.claude/skills/sync-documentation-maps/collect-resume-patterns.md`.
+
+| Checkpoint `status` | Action |
 | --- | --- |
-| `run_id` | `RUN_ID` |
-| `result_dir` | `RUN_DIR` |
-| `auto_update` | `AUTO_UPDATE` |
-| `skip_commit` | `SKIP_COMMIT` |
-
-Error and stop if the checkpoint file is absent. Advise the user to run
-`/sync-documentation-maps` first to generate it.
-
-**Resume / restart.** If the checkpoint `status` is already `"dispatched"`,
-`"complete"`, or `"skipped"`, this collect step has already run. Use a
-`USER_GATE` prompt to offer:
-
-```text
-A previous collect run reached status "<status>". How would you like to proceed?
-
-[1] Resume — re-read artifacts and continue from where it left off
-[2] Restart — re-run the full collect step from a clean state
-[3] Cancel — stop without changes
-```
-
-- **Resume** re-reads the existing artifacts and continues with the
-  `update_choice` and team IDs already in the checkpoint. Valid after any of
-  `dispatched` / `complete` / `skipped`.
-- **Restart** discards the prior update fields and re-runs this collect step
-  from a clean state. It does **not** re-dispatch the audit agents — re-running
-  the audits is `/sync-documentation-maps`'s job, not this skill's.
-- **Cancel** stops with no changes.
-
-If `status` is unset or `"audit"`, proceed normally.
+| unset or `"audit"` | Proceed normally with fresh Phase 1 |
+| `"dispatched"` / `"complete"` / `"skipped"` | USER\_GATE: Resume / Restart / Cancel (see `collect-resume-patterns.md`) |
+| file absent | Stop — advise running `/sync-documentation-maps` first |
 
 ---
 
