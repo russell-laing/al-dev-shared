@@ -263,6 +263,8 @@ Verdict:      proceed | modify [reason] | skip [reason]
 ```
 
 > **Verdict vocabulary:** Use `proceed | modify | skip` here; do not conflate with the duck-check `ACCEPT | DEFER | REJECT` in `map-change-rubber-duck-checks.md`.
+>
+> **Decision criterion:** Judge each finding by whether the live subject file substantiates, contradicts, or partially substantiates its claim. A claim may assert the *absence* of something — confirmed absence substantiates it. `proceed` — live evidence substantiates the claim. `skip` — live evidence contradicts the claim (already fixed, never existed, or the asserted gap is in fact covered). `modify` — the claim is partially substantiated but the fix scope or approach needs adjustment. When a duck-check record carries a canonical verdict, map `ACCEPT` → `proceed`, `REJECT` → `skip`, and `DEFER` → `skip` with the deferral reason recorded in the plan's Skipped section.
 
 If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do
 not write plan content for it.
