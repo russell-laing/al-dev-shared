@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-10 (analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-11 (analysis refreshed with 5 new suggestions)
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
@@ -67,16 +67,16 @@
 
 ### al-dev-commit-analyzer
 
-**Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files.
+**Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit-preflight (analysis phase). Read-only — never modifies files.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit (Phase 1 — analysis phase)
+**Spawned by:** /al-dev-commit-preflight
 
 **Inputs:**
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /al-dev-commit |
+| Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /al-dev-commit-preflight |
 | Staged git index | **Yes** | Read via `git diff --cached` commands |
 
 **Outputs:**
@@ -93,13 +93,13 @@
 **Description:** Git commit message drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
 **Model:** sonnet
 **Tools:** (none)
-**Spawned by:** /al-dev-commit (Phase 2 — message-drafting phase)
+**Spawned by:** /al-dev-commit-preflight
 
 **Inputs:**
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /al-dev-commit |
+| Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /al-dev-commit-preflight |
 | Project context | No | `.dev/project-context.md` for domain knowledge |
 
 **Outputs:**
@@ -114,10 +114,10 @@
 
 ### al-dev-commit-executor
 
-**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
+**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit-execute (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit (Phase 3 — execution phase)
+**Spawned by:** /al-dev-commit-execute
 
 **Inputs:**
 
@@ -138,10 +138,10 @@
 
 ### al-dev-commit-lint-fixer
 
-**Description:** Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by al-dev-commit (Step 9.5a) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files.
+**Description:** Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by al-dev-commit-execute (preflight) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit (Step 9.5a — lint pre-flight)
+**Spawned by:** /al-dev-commit-execute
 
 **Inputs:**
 
@@ -159,10 +159,10 @@
 
 ### al-dev-commit-ooxml-validator
 
-**Description:** OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit (Step 9.5b) after lint preflight. Read-only: never modifies files.
+**Description:** OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit-execute (validation) after lint preflight. Read-only: never modifies files.
 **Model:** haiku
 **Tools:** Bash
-**Spawned by:** /al-dev-commit (Step 9.5b — OOXML validation)
+**Spawned by:** /al-dev-commit-execute
 
 **Inputs:**
 
@@ -178,12 +178,34 @@
 
 ---
 
+### al-dev-commit-hook-classifier
+
+**Description:** Classify pre-commit hook failures by recoverability. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Dispatched by al-dev-commit-execute before al-dev-commit-hook-fixer.
+**Model:** haiku
+**Tools:** Read
+**Spawned by:** /al-dev-commit-execute
+
+**Inputs:**
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| `.dev/hook-failures.json` | **Yes** | Hook execution output (hook name, exit code, stderr/stdout). Read from file; fall back to the `HOOK_FAILURES` block in the dispatch prompt if missing. |
+| `.dev/commits.json` | No | Commit details that triggered the hooks; used for context only |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `HOOK_CLASSIFICATIONS` block | Per-failure classification: recoverability, root cause, recommended fix |
+
+---
+
 ### al-dev-commit-hook-fixer
 
-**Description:** Diagnose and recover from pre-commit hook failures. Analyzes hook error logs, identifies root causes, recommends fixes, and optionally reruns commits with corrections applied. Complements al-dev-commit-executor by handling error recovery in isolation.
+**Description:** Apply scripted recovery fixes for classified pre-commit hook failures. Reads the HOOK_CLASSIFICATIONS block from al-dev-commit-hook-classifier, applies scripted bash fixes for Fixable failures, re-stages affected files, and returns recovery status. Never re-runs commits itself — returns next_step guidance so the caller re-dispatches the execute agent. Handles the error path in isolation; classification is handled by al-dev-commit-hook-classifier.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-commit (Phase 4 — error recovery)
+**Spawned by:** /al-dev-commit-execute
 
 **Inputs:**
 
@@ -253,10 +275,10 @@
 
 ### al-dev-diagnostics-resolver
 
-**Description:** Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by al-dev-lint and al-dev-fix skills.
+**Description:** Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by al-dev-lint skill.
 **Model:** sonnet
 **Tools:** Read, Edit, Bash
-**Spawned by:** `/al-dev-lint`, `/al-dev-fix`
+**Spawned by:** `/al-dev-lint`
 
 **Inputs:**
 
@@ -307,7 +329,7 @@
 ### al-dev-al-pattern-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** Read
 **Spawned by:** /al-dev-review-develop
 
