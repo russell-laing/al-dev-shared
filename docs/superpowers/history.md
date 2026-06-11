@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-11
+
+### Tooling Quality — Clarity & Bloat Fixes — 2026-06-11 Implementation Plan
+
+- Path: `docs/superpowers/plans/2026-06-11-tooling-quality-clarity.md`
+- Kind: plan
+- Status: implemented
+- Summary: Closed tooling-surface quality findings #548–#555 (with #553 closed as already satisfied, no source change) after incorporating the 2026-06-11 consolidated plan review; routed eight out-of-scope executor and loop-contract findings to the disposition ledger as accepted rows #556–#563.
+
 ## 2026-06-07
 
 ### Tooling Health Fixes — 2026-06-07 Implementation Plan
