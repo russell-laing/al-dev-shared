@@ -24,9 +24,13 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
 → skill name `al-dev-develop`).
 
 **Check for — flag every occurrence:**
+
 - Instructions interpretable in more than one way — record the ambiguous sentence verbatim
 - Vague qualifiers with no operative definition: "as needed", "appropriate", "reasonable", "if necessary"
-- `if X` branches with no `else` / `otherwise` clause (incomplete conditional)
+- Incomplete prose conditionals: a prose sentence stating a condition and its
+  outcome (`if X, do Y` / `when X, Y`) with no `else` / `otherwise` outcome
+  for the unmet case. Applies to prose sentences only — do not analyze
+  conditionals inside fenced code blocks.
 - Bash code blocks that are pseudo-code rather than runnable commands: unrecognised
   binary names, unexplained `<placeholder>` syntax, variables defined nowhere.
   (Note: In these instructions, `<placeholder>` is meta-notation indicating a substitution point;
@@ -34,6 +38,7 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
 - Steps that reference undefined placeholders or variables
 
 **Severity rules:**
+
 - High: ambiguity that changes observable behavior
 - Medium: vague qualifiers with no definition
 - Low: minor style issues
@@ -45,9 +50,11 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
 Return exactly this structure (no additional prose before or after the block):
 
 ### Prompt Clarity Findings
+
 - **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Prompt Clarity Findings
+
 _No issues found._
