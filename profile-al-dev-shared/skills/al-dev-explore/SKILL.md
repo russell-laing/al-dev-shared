@@ -206,3 +206,6 @@ a solution? Run /plan." or "Start requirements gathering with
   context integration prompt after exploration
 - For deep multi-angle exploration, use the Explore agent with
   `thoroughness: very thorough` in the spawn prompt
+- Before writing any embedded bash (e.g. the `$(ls ...)` and `$(date ...)`
+  snippets in Steps 1 and 3), read `knowledge/bash-safe-patterns.md` and follow
+  it; bash safety is enforced by script validation.
