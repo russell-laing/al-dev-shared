@@ -235,6 +235,16 @@ with the reason noted.
 Every generated plan header must include a `health_filters:` block listing the
 active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality, naming]`).
 
+### Decision-logic verification
+
+When a plan task changes this skill's **decision logic** — filter ordering
+(Argument Routing / Phase 1), classification boundaries, or verdict-vocabulary
+mappings (Phase 2) — grep-only structural checks are insufficient. That task's
+verification MUST include a case-walkthrough (or scenario test) that traces at
+least one concrete input through the changed logic and confirms the expected
+branch or verdict. Keep grep as a structural assertion only, consistent with
+CLAUDE.md's Plan Task Verification Standard.
+
 ---
 
 ## Phase 3: Write the Implementation Plan
