@@ -26,6 +26,7 @@ agent name from the filename (strip directory path and `.md` extension).
 Check the `model` frontmatter field and evaluate against the task described in the body.
 
 **Model appropriateness criteria:**
+
 - **Haiku-appropriate:** Single-step retrieval, simple API calls, basic
   formatting, mechanical rule-checking — no multi-file reasoning or synthesis
 - **Sonnet (default):** Multi-step implementation, code review, analysis tasks
@@ -34,13 +35,15 @@ Check the `model` frontmatter field and evaluate against the task described in t
   complex reasoning requiring broad codebase understanding
 
 **Flag as Remodel candidate:**
+
 - `opus` assigned for a task that is single-step, single-file, or purely mechanical
 - `sonnet` assigned for a task that is clearly haiku-appropriate (e.g., simple
   grep + format, single API call, basic file read + structured output)
 
 **Severity rules:**
+
 - High: `opus` for a single-step or mechanical task (wasted tokens on every invocation)
-- Medium: `sonnet` where `haiku` is clearly sufficient
+- Medium: `sonnet` where `haiku` is clearly sufficient — i.e., the task is single-step retrieval, simple API call, basic formatting, or mechanical rule-checking with no multi-file reasoning
 - Low: `haiku` where `sonnet` might provide marginally better output
 
 ---
@@ -50,9 +53,11 @@ Check the `model` frontmatter field and evaluate against the task described in t
 Return exactly this structure (no additional prose before or after the block):
 
 ### Model Fit Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Model Fit Findings
+
 _No issues found._
