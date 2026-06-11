@@ -109,7 +109,7 @@ If no plan passes the filter, stop with:
 | `3` | `complete` + `result: ledger_closed` | Inform user; ask whether to re-run |
 | any other combination | — | Treat as corrupted; default to Restart |
 
-**Plan-path guard (run before applying the resume table):** Compare the
+**Plan-path guard (evaluate after reading the resume table, before acting on it):** Compare the
 checkpoint's `plan_path` to the plan selected above (`--plan` arg or scan
 result). If they differ, the checkpoint belongs to a different plan — do NOT
 resume it. Discard it and write a fresh Phase 0 checkpoint for the current plan.
@@ -237,7 +237,7 @@ Scan every changed file for:
 - `claude:` or `copilot:` prefixed debug tokens
 
 ```bash
-git diff HEAD~1 -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
+git show <task-commit> -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
 grep -rEn '[0-9]{4}-[0-9]{2}-[0-9]{2}' <changed-files>   # bare YYYY-MM-DD placeholders
 grep -rn  'Co-Authored-By'             <changed-files>   # AI attribution (forbidden per commit-conventions.md)
 ```
@@ -370,7 +370,7 @@ mv docs/superpowers/plans/<plan>-review.md docs/superpowers/plans/archived/ 2>/d
 
 Append a terminal-status entry for the consumed plan to
 `docs/superpowers/history.md` (tracked): one line —
-`<date> | <plan-topic> | implemented; rows closed: [N,...]`.
+`<date> | <plan-topic> | implemented; rows closed: [#NNN, ...]`.
 
 ---
 
@@ -438,10 +438,11 @@ Present:
 - Tasks completed (count and titles)
 - Disposition rows closed (row numbers and objects)
 - Artifacts archived (plan path → archived path)
-- `check_ledger_staleness.py --strict` result: stale-open = 0
+- Global backlog count from `check_ledger_staleness.py --strict` (informational)
 
-The loop is closed when `check_ledger_staleness.py --strict` exits 0 in the
-current run and the ledger-close commit has landed.
+The loop is closed when all `closes_rows` IDs in the plan have verified `fixed`
+rows in the ledger and the ledger-close commit has landed. Report the global
+backlog count separately.
 
 ---
 
@@ -452,8 +453,8 @@ Conservative failure mode:
 - Do not edit `docs/health/dispositions.md` until Phase 2 verification passes
   for the relevant task
 - Do not archive any artifact until the ledger-close commit is staged
-- Do not claim the loop is closed until `check_ledger_staleness.py --strict`
-  exits 0 in the current run
+- Do not claim the loop is closed until all plan `closes_rows` IDs have `fixed`
+  rows (run `check_ledger_staleness.py --strict` for informational backlog count)
 - Always update `.dev/implement-health-plan-progress.md` to reflect blocked
   state on failure; do not delete the checkpoint
 
@@ -476,5 +477,5 @@ tasks_completed:
     commit: <hash>
     closes_rows: ["#NNN", "#MMM"]
 stale_open_rows: <count>    # populated in Phase 3
-executor_revision: <short-hash>    # hash of this skill file at run start
+executor_revision: <git short-hash of implement-health-plan/SKILL.md at run start>
 ```
