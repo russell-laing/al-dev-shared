@@ -41,7 +41,8 @@ whitespace, ordering, and incidental wording):
 - Same output expectation
 
 Patterns are **significantly different** when at least two of these three signals
-differ; a single differing signal still counts as identical for drift purposes.
+differ; a single differing signal still poses lower drift risk than copy-paste
+patterns — treat it as a Low "structurally close" finding per the severity rules below.
 
 **Severity rules:**
 
