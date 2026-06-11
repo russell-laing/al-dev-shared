@@ -25,7 +25,7 @@ After reporting, this audit optionally provides fix guidance for HIGH-severity f
 
 Detects knowledge files that are referenced by agents for operational guidance but contain incomplete or thin section bodies. Complements the automated validator run at commit time by providing semantic context for why sections are stubs and what content should be added.
 
-## Your Mission
+Its mission:
 
 1. Run the structural validator to identify potential stubs
 2. For each flagged file, read it and the agent/skill that references it
@@ -48,42 +48,12 @@ python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
 
 Extract flagged files and issue codes from output. Group by issue type: [THIN], [NO-CODE], [DEAD-REF].
 
-### Phase 2: Choose analysis path
+### Phase 2: Analyze
 
-#### Progress Tracking
-
-Before analyzing any file, create one task per flagged file using `TaskCreate` named `[issue-type] [filename]`. Update each task to `in_progress` when analysis begins, `completed` when the file analysis is written to findings.
-
-#### Decision
-
-Count the flagged files and choose the execution path with one threshold-driven
-decision:
-
-- **4 or more flagged files AND no ordering dependencies among them** → parallel path (Phase 2b, Parallel Exploration).
-- **Otherwise** (3 or fewer flagged files, or any ordering dependency between flagged files) → sequential path (Phase 2b, Sequential Analysis).
-
-### Phase 2b: Analyze (parallel or sequential)
-
-#### Parallel Exploration (4+ files)
-
-Invoke `superpowers:dispatching-parallel-agents` (if parallel dispatch is unavailable, use the sequential path instead). Dispatch one Explore subagent per file to: read the knowledge file, search for referencing agent/skill, and run the gap/severity assessment (steps 1–4). Each subagent must return YAML with fields: `{file, issue_type, gap_description, severity}`. Collect all records before proceeding to Phase 3.
-
-#### Sequential Analysis (≤3 files or fallback)
-
-For each flagged file:
-
-1. **Read the file** — Understand its structure and current content
-2. **Read the referencing agent/skill** — Find where the file is referenced and what guidance it's supposed to provide (search `.md` files in `profile-al-dev-shared/agents/` and `profile-al-dev-shared/skills/` for references to the knowledge file)
-   - If no referencing agent or skill is found, note the file as orphaned with severity LOW.
-3. **Understand the gap** — Determine why the section is flagged:
-   - **[THIN]:** Is the section intentionally brief (overview/summary)? Or is it a topic that SHOULD have more content?
-   - **[NO-CODE]:** The heading implies a pattern/example/usage. What code examples should be in the body?
-   - **[DEAD-REF]:** Is the referenced file truly missing, or is the reference malformed?
-
-4. **Assess severity:**
-   - **HIGH:** Agent explicitly references the file for guidance it doesn't contain (e.g., "Reference knowledge/X.md for examples"). Missing content blocks the agent.
-   - **MEDIUM:** File is referenced but content gap is incomplete/shallow (agent can work around it).
-   - **LOW:** False positive (file is intentionally brief) or formatting issue (easily fixed).
+Analyze each Phase 1 issue per `.claude/knowledge/knowledge-audit-analysis.md` — it
+defines path selection (parallel for 4+ files, sequential for ≤3), progress tracking,
+the mandatory referencing-agent/skill reads, the per-issue THIN/NO-CODE/DEAD-REF
+treatment, and the structured return schema that Phase 3 consumes.
 
 ### Phase 3: Write Findings Report
 
@@ -164,16 +134,16 @@ Report written to: docs/al-dev-knowledge-quality.md
 Run `cat docs/al-dev-knowledge-quality.md` to see full report.
 ```
 
-## When to Run
-
-- After `/audit-knowledge-quality` is invoked (user-triggered)
-- Periodically (e.g., before major plugin releases)
-- After significant knowledge file updates
-- If the `/al-dev-commit` advisory surfaces knowledge warnings
-
 ## Success Criteria
 
 ✅ All HIGH severity findings have concrete fix recommendations  
 ✅ False positives (LOW severity) are clearly marked and explained  
 ✅ Report is actionable — user can immediately address MEDIUM/HIGH issues  
 ✅ DEAD-REF issues are investigated (not every broken link is a real problem)
+
+**When to run:**
+
+- After `/audit-knowledge-quality` is invoked (user-triggered)
+- Periodically (e.g., before major plugin releases)
+- After significant knowledge file updates
+- If the `/al-dev-commit` advisory surfaces knowledge warnings
