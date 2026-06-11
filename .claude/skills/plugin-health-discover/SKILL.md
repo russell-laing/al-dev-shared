@@ -3,7 +3,7 @@ name: plugin-health-discover
 description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
   context from documentation maps, dispatches design, quality, and naming lenses
-  (surface-scoped — one design lens excluded for the tooling surface; see Phase 3.1b),
+  (surface-scoped — one design lens excluded for the tooling surface; see Phase 3),
   and writes RAW (unranked) lens findings to
   docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
@@ -42,60 +42,13 @@ Surface → directory mapping:
 - `plugin` → `profile-al-dev-shared/`
 - `tooling` → `.claude/`
 
-### Cadence guard (per requested surface)
+**Pre-conditions (per requested surface):** Run the full pre-condition orchestration in
+`.claude/knowledge/health-audit-preconditions.md` — cadence guard, stale-open check,
+dossier disposition-coverage test, user override, and the `--resume` exemption. If a
+check blocks the run (and no override/`--resume` applies), report the condition and stop.
 
-Re-sweeping before the prior dossier is dispositioned mostly re-measures
-known findings at full lens cost. Before dispatching:
-
-```bash
-# Most recent dossier for the surface
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind health \
-  --surface <surface>
-```
-
-If a dossier exists, check whether its actionable findings have disposition
-coverage in `docs/health/dispositions.md` per the **disposition coverage
-criterion** in `../../knowledge/health-audit-preconditions.md` (a single recent
-row is not enough — every actionable finding needs its own ledger row). If the
-ledger is absent or coverage is incomplete, warn:
-
-```text
-The latest <surface> dossier (<date>) has no recorded dispositions.
-A new sweep will largely re-discover its open findings. Record
-accept/decline/fixed rows via /record-health-dispositions first, or
-confirm to sweep anyway.
-```
-
-Then branch explicitly:
-
-- Disposition coverage exists and is dated on or after the dossier date →
-  proceed to the stale-open check.
-- User confirms → proceed to Phase 1.
-- User declines, or gives no clear confirmation → stop. Report "Sweep not
-  dispatched — record dispositions via `/record-health-dispositions` and
-  re-run." Do not dispatch any lens.
-
-### Stale-open check (per requested surface)
-
-An `accepted` ledger row whose object changed in git after the row date is
-**stale-open** (see the stale-open rule in
-`../../knowledge/health-audit-preconditions.md`) — often already implemented but
-never flipped to `fixed`. Before dispatching:
-
-```bash
-python3 scripts/check_ledger_staleness.py
-```
-
-For each `STALE-OPEN` row in the output, report before dispatch: "Row
-`<object>` accepted `&lt;row-date&gt;` — object changed since (`&lt;commit&gt;`); possibly
-already implemented. Verify and flip the ledger row before sweeping, or
-the sweep may re-rank a fixed item." This check warns only; it never
-blocks the sweep on its own.
-
-Skip the guard and the stale-open check when `--resume` is present
-(resuming an interrupted sweep is not a new sweep).
+**Happy path:** when Disposition coverage exists and is dated on or after the dossier
+date, proceed to the stale-open check, then dispatch normally.
 
 ## Phase 1 — Build file lists (per requested surface)
 
@@ -143,60 +96,43 @@ Extract context from documentation maps before dispatching lenses.
 - `already_inline_candidates`: filter of `single_use_agents`
 - `no_agent_skills`: skills with zero spawned agents
 
-## Phase 3 — Resume & dispatch
+## Phase 3 — Dispatch
 
-**3.1 — Resume detection (if `--resume` flag).** If invoked with `--resume` flag:
+Execute the following state machine in order:
 
-1. **Scan `.dev/` directory for existing lens output files:**
+1. **Build `ALL_LENSES` (surface-scoped):** Start with the full lens set.
+   For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
+   targets distributed skills and produces only non-actionable Move false
+   positives against tooling-surface files. For surface `plugin`, use all
+   lenses unchanged.
+
+2. **Apply `--resume` filter:** If `--resume` is present, scan `.dev/` for
+   completed lens output files and build `completed_lenses`:
 
    ```bash
    ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
    ```
 
-2. **Extract completed lens names:**
-   - For each `.json` file, parse the `"lens"` field
-   - Build `completed_lenses` set
+   Parse the `"lens"` field from each `.json` file.
+   `remaining_lenses = [l for l in ALL_LENSES if l not in completed_lenses]`.
+   Log: `"Resuming: X lenses already completed, Y remaining"`. If
+   `remaining_lenses` is empty, log all-complete and skip to Phase 4.
+   If `--resume` is absent, `remaining_lenses = ALL_LENSES`.
 
-3. **Filter remaining lenses:**
-   - `remaining_lenses = [l for l in ALL_LENSES if l not in completed_lenses]`
-   - Log: `"Resuming: X lenses already completed, Y remaining"`
-   - If `remaining_lenses` is empty, log: `"Resuming: all lenses already complete; skipping dispatch and assembling findings from disk."`
+3. **Dispatch remaining lenses simultaneously (parallel, isolated subagents):**
+   If `remaining_lenses` is empty, skip dispatch and proceed to Phase 4.
+   Use `superpowers:dispatching-parallel-agents` when 3+ lenses remain.
+   Dispatch one Agent per lens; pass only the context fields it requires (per
+   `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`): agent/skill
+   list from Phase 1 and relevant aggregated mappings from Phase 2. As each
+   subagent returns, write its findings block to
+   `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
+   `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
 
-If NOT invoked with `--resume`:
-
-- `remaining_lenses = ALL_LENSES`
-
-**3.1b — Surface-scoped lens filter.** `ALL_LENSES` is surface-dependent:
-
-- Surface `plugin` → all lenses.
-- Surface `tooling` → exclude `design-skill-lens-surface-placement` from
-  `ALL_LENSES` before computing `remaining_lenses` — it is designed to find
-  distributed skills that belong in the maintainer surface; aimed at
-  tooling-surface files, it can only emit non-actionable Move false positives.
-
-**3.2 — Dispatch lenses in-session (parallel, isolated subagents).** If
-`remaining_lenses` is empty, skip dispatch and proceed to Phase 4.
-
-Dispatch the `remaining_lenses` as parallel subagents in this session — one
-Agent per lens, each an isolated context. Use
-`superpowers:dispatching-parallel-agents` when 3+ lenses remain. For each
-lens, pass only the context fields it requires (per
-`profile-al-dev-shared/knowledge/lens-invocation-patterns.md`): the agent
-list or skill list from Phase 1 and the relevant aggregated mappings from
-Phase 2.
-
-Each lens subagent returns a findings block. As each returns, write it to
-`.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
-`findings`, `suggestion_count`, and `completed_at` (ISO timestamp), where
-`<today>` is the current date used for every `.dev/` output filename.
-
-**3.3 — Confirm returns (check for missing lenses).** Compare the lens
-identifiers that returned a findings block against `remaining_lenses`. Any lens
-in `remaining_lenses` that did not return is a missing lens.
-
-Record missing lenses in a `## Failed lenses` section at the top of the
-findings file, one per line:
-`- <lens-name>: not returned (no findings block)`
+4. **Check for missing lenses:** Compare returned identifiers against
+   `remaining_lenses`. Record any missing lens in a `## Failed lenses`
+   section at the top of the findings file:
+   `- <lens-name>: not returned (no findings block)`
 
 ## Phase 4 — Assemble findings file from disk
 
