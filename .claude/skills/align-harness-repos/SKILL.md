@@ -77,15 +77,7 @@ Harness-specific tokens found in shared files:
     - Copilot tool token: "ask_user"
 ```
 
-Also list the forbidden rules being checked:
-
-- "Claude tool token" (AskUserQuestion, USER_GATE, etc.)
-- "Claude dispatch token" (subagent_type)
-- "Copilot tool token" (ask_user, etc.)
-- "Claude settings path" (~/.claude)
-- "Copilot settings path" (~/.copilot)
-- "Claude MCP token" (mcp__plugin_profile-claude)
-- "Claude/Copilot session wording" (phrases like "Open Claude Code")
+Also list the seven forbidden classes described in the skill overview.
 
 ---
 
