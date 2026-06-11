@@ -1,9 +1,6 @@
-stage_completed: record-health-dispositions
+stage_completed: implement-health-plan
 completed_at: 2026-06-11
-next_command: /plan-health-findings
-next_inputs:
-
-- docs/health/dispositions.md
-- docs/health/archived/2026-06-11-tooling-health.md
+next_command: none
+next_inputs: []
 fresh_session_recommended: false
-note: plan only accepted rows #564–#569; 33 skipped findings from tooling quality dossier remain undispositioned for a future sweep
+note: loop closed for plan 2026-06-11-tooling-quality-clarity-fixes.md; ledger rows #564-#569 fixed (commit 7460b08); plan archived to docs/superpowers/plans/archived/
