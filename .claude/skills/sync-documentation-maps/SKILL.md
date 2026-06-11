@@ -6,7 +6,9 @@ description: >-
   parallel background audit agents and writes a checkpoint; the harness notifies
   on completion. Runs a Phase 0 cadence guard that refuses to dispatch over an
   unfinished prior run unless `--force` is given. Collect results with
-  /sync-documentation-maps-collect.
+  /sync-documentation-maps-collect. A `--no-update` preview mode prints the
+  four-skill sync sequence and stops without dispatching agents or writing a
+  checkpoint.
   Triggers: "sync documentation maps", "review maps", "update maps", "sync maps",
   "are the maps accurate", "check the maps".
 argument-hint: "[--all] [--skip-commit] [--force] [--no-update]"
@@ -49,7 +51,7 @@ completion (roughly 5 minutes), so the user is free to work meanwhile.
 | `--no-update` | off | Print the four-skill sequence and stop — no dispatch, no checkpoint |
 
 Set booleans from the flags above. If `NO_UPDATE=true`, print the four-skill workflow
-sequence (steps 1–4 from the header) and stop without dispatching.
+(sync → collect → apply → write) sequence (steps 1–4 from the header) and stop without dispatching.
 
 ### Cadence guard — no dispatch over an uncollected run
 
@@ -205,6 +207,8 @@ Override the Phase 0 cadence guard and dispatch even when the prior run's
 checkpoint status is not `done`.
 
 **`--no-update`** (optional)
-Print the maintained four-skill async sequence and stop — no agents are dispatched
+Print the maintained four-skill async sequence — `/sync-documentation-maps` →
+`/sync-documentation-maps-collect` → `/sync-documentation-maps-apply` →
+`/sync-documentation-maps-write` — and stop; no agents are dispatched
 and no checkpoint is written. Use when you want to review the steps without starting
 a sync run.
