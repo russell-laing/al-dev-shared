@@ -11,8 +11,12 @@ note: >-
   Phase 4.5: profile-al-dev-shared/knowledge changed (lens-invocation-patterns.md,
   map-change-rubber-duck-checks.md) → align-harness-repos neutrality PASS; no agents
   changed so projection-sync not required.
-  CAVEAT: check_ledger_staleness.py --strict still exits 1 due to 10 PRE-EXISTING,
-  OUT-OF-SCOPE stale-open rows from earlier dossiers (#341, #344, #545, #556, #557, #558,
-  #559, #560, #562, #563) — deferred to separate triage per user decision 2026-06-11.
-  These were left open by prior loops despite fix-looking commits; verify each against its
-  cited commit + live file before flipping to fixed.
+  DEFERRED-ROW TRIAGE (2026-06-11, commit 57a87e3): of the 10 pre-existing out-of-scope
+  stale rows, #341 (does-not-reproduce — no pseudo-code in live file) and #344 (fixed by
+  3a15917 — description now signals caller-contract) were verified resolved and closed.
+  CAVEAT: check_ledger_staleness.py --strict still exits 1 due to 8 GENUINELY-OPEN findings
+  from the 2026-06-11 consolidated plan review that need IMPLEMENTATION (not closeable by
+  triage): #545 (al-dev-plan-preflight surface-placement decision); #556/#557/#558/#559/#560/#562
+  (implement-health-plan clarity/design defects — #556 stale-checkpoint plan_path compare,
+  #558 global-vs-scoped strict gate, #559 gitignored archive git-add were all observed live
+  this run); #563 (plan-health-findings grep-only verification gap). Route to a follow-up plan.
