@@ -143,3 +143,12 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
   • All agent counts verified (disk=24, coverage=24, catalog=24)
   • Committed: 79a1ddc (docs: sync documentation maps with current codebase)
   • Checkpoint marked complete
+
+## [2026-06-11] tooling-design-quality-fixes — Pre-flight baseline
+
+- pytest unavailable; ran via `python3 -m unittest scripts.tests.test_tooling_low_priority_contracts`
+- baseline: 7 tests = 5 passed, 2 failed
+- pre-existing failures (NOT to be fixed by this plan):
+  - test_low_priority_name_fit_descriptions_are_explicit (audit-knowledge-quality SKILL.md fragment)
+  - test_low_priority_name_fit_descriptions_are_explicit (projection-sync SKILL.md fragment)
+- later test additions (Tasks 13, 15) measured against this baseline
