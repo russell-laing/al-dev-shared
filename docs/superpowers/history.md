@@ -4,6 +4,13 @@ Current source of truth: active implementation guidance lives in the current sha
 
 ## 2026-06-11
 
+### Health-Loop Tooling & Plugin Clarity Fixes — 2026-06-11
+
+- Path: `docs/superpowers/plans/archived/2026-06-11-plugin-map-health-loop-tooling-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-11 | health-loop tooling and plugin clarity fixes | implemented; rows closed: [#534, #339, #348, #561, #563, #556, #557, #558, #559, #560, #562]
+
 ### Tooling Quality — Clarity & Bloat Fixes — 2026-06-11 Implementation Plan
 
 - Path: `docs/superpowers/plans/2026-06-11-tooling-quality-clarity.md`
