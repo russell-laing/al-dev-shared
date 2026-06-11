@@ -38,41 +38,24 @@ legacy `unknown`, and migration expectations.
 
 ## Phase 0 — Parse arguments and locate inputs
 
-First read `.dev/health-loop-state.md` if it exists (schema:
-`.claude/knowledge/health-loop-state-contract.md`). If its `next_command`
-names this skill, adopt its `next_inputs` (the dossier path(s)) as the located
-inputs. If it names a different loop step, tell the user the pointer expects
-`<that command>` and ask whether to continue here anyway. If `next_command`
-is `none`, the previous loop closed cleanly — treat as a fresh entry and
-proceed normally. If the file is absent, proceed normally.
+Check `.dev/health-loop-state.md` for resume context; adoption rules are in
+`.claude/knowledge/health-disposition-rules.md` § Loop-State Adoption. If no
+valid resume pointer exists, locate the latest dossier per surface with
+`select_health_artifacts.py --directory docs/health --kind health`.
 
-- `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
-- `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
-- `--top` — disposition only the entries in the dossier's "Top N ranked
-  actions" list
-
-Locate the latest dossier per requested surface:
-
-```bash
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind health \
-  --surface plugin
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind health \
-  --surface tooling
-```
+| Argument | Default | Behaviour |
+|---|---|---|
+| `--surface <value>` | from loop-state or `both` | Filter findings to this surface |
+| `--dimension <value>` | from loop-state or `all` | Filter findings to this dimension |
+| `--top` | off | Disposition only the dossier's "Top N ranked actions" entries |
 
 If no dossier exists for a requested surface, report "No `<surface>` dossier
 found — run /plugin-health-audit first." and skip that surface.
 
 If `docs/health/dispositions.md` does not exist, create it first with the
-canonical header (title, purpose sentence naming this skill as producer and
-`/plugin-health-report` + `/plan-health-findings` as consumers, the four
-ledger rules, and the empty five-column table) by copying the header block
-from the live ledger's git history — or, if no history exists, the rules
-listed under "Re-litigation guard" and "Append rows" below.
+canonical header (title, purpose sentence, four ledger rules, empty table)
+from the live ledger's git history or the rules in
+`.claude/knowledge/health-disposition-rules.md`.
 
 ## Phase 1 — Collect open findings
 
@@ -117,20 +100,11 @@ issue, proposed fix. Collect one decision per finding from the user:
 - `fixed` — requires a commit hash or "verified against live file `<date>`"
 - `skip` — leave undispositioned this round (no row written)
 
-Batch decisions are fine when the user groups them explicitly ("accept 1-3,
-decline 4 because X"); each batch still needs an explicit justification covering
-its members. Never invent a decision: every non-skip row needs explicit user
-input.
-
-**Contradictory-batch guard:** before writing any row from a batched response,
-check whether the same object + issue essence appears twice with different
-decisions in the current batch. If it does, stop and ask the user to resolve the
-conflict first. Do not append a partial batch.
-
-**Re-litigation guard:** if a decision contradicts an existing `declined`
-or `grandfathered` row for the same object + issue essence, refuse to
-append a new row. Per the ledger rules, the existing row must be edited
-first — name the conflicting row and stop on that finding only.
+Batch decisions are fine when the user groups them explicitly; each batch still
+needs explicit justification. Never invent a decision: every non-skip row needs
+explicit user input. Apply the **contradictory-batch guard** and the
+**re-litigation guard** as defined in
+`.claude/knowledge/health-disposition-rules.md`.
 
 ## Phase 3 — Append rows
 
@@ -144,6 +118,10 @@ Append one row per non-skip decision at the bottom of the table, using the seven
 - Append-only: never reorder or rewrite existing rows.
 - For legacy rows whose provenance is not yet proven, `unknown` is permitted
   until the migration audit is cleaned up.
+
+Any session that resolves an `accepted` row must apply the **closure write-back
+rule** in the same session. Full procedure in
+`.claude/knowledge/health-disposition-rules.md` § Closure Write-Back Rule.
 
 ## Phase 4 — Verify and hand off
 
@@ -171,15 +149,3 @@ Append one row per non-skip decision at the bottom of the table, using the seven
 
 Do not edit any plugin source file from this skill. Committing the ledger
 change is left to the user's normal commit flow.
-
-## Closure write-back rule (binding on fix sessions)
-
-Any session that resolves an `accepted` row must close the ledger in the same
-session. Use `.claude/knowledge/ledger-closure-protocol.md` for the background
-and full rule set.
-
-- Uncommitted accepted row → flip it in place to `fixed`.
-- Committed accepted row → append a later `fixed` row with the resolving commit
-  and `closes #NNN`.
-- After the source change, run `python3 scripts/check_ledger_staleness.py` to
-  confirm the row no longer appears as effectively open.
