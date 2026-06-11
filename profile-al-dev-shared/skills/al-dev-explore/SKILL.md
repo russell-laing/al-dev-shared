@@ -208,4 +208,4 @@ a solution? Run /plan." or "Start requirements gathering with
   `thoroughness: very thorough` in the spawn prompt
 - Before writing any embedded bash (e.g. the `$(ls ...)` and `$(date ...)`
   snippets in Steps 1 and 3), read `knowledge/bash-safe-patterns.md` and follow
-  it; bash safety is enforced by script validation.
+  it; bash safety is enforced by script validation
