@@ -74,7 +74,10 @@ Extract:
   `output to`, `→`) **and** the path appears in the same clause as that verb.
   The list is indicative, not exhaustive: count a synonym (e.g. `emit`,
   `record to`) only when it likewise directs writing the path in the same
-  clause. Use:
+  clause. In these commands, substitute `<name>` with the skill directory name. For
+  example, for the `al-dev-develop` skill:
+  `skill_file="profile-al-dev-shared/skills/al-dev-develop/SKILL.md"`
+  The generic pattern is:
   `skill_file="profile-al-dev-shared/skills/<name>/SKILL.md"`
   `sed -E 's/\$\(date \+[^)]*\)/YYYY-MM-DD/g' "$skill_file" | grep -oE '\.dev/[A-Za-z0-9._/-]+\.(md|json|log)'`
   This captures both literal-dated and `$(date ...)`-templated artifacts in the
