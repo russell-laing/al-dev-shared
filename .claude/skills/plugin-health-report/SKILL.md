@@ -75,82 +75,41 @@ artifact.
 
 **Complexity Outliers exception:** lines from this lens carry an extra
 `verdict=[Atomise|Absorb|None]` field between severity and observation.
-Parse it. Findings with `verdict=None` are monitor-only. **Monitor-only
-(operative definition):** an observation worth tracking but carrying no
-implementation action — the lens looked and concluded the current state is
-acceptable or expected. Excluded so the severity counts measure actionable
-findings only: exclude them from the severity counts, the dimension
-grouping, and top-5 eligibility in Phase 2. List them in a one-line "Monitor-only (excluded from counts)" note
-under Design suggestions instead. A Complexity line missing the verdict
-field entirely is a lens regression — count it normally but flag it in the
-dossier as "verdict missing".
+Parse it. `verdict=None` = monitor-only (no implementation action; exclude
+from severity counts, dimension grouping, and top-5). List them in a
+one-line "Monitor-only (excluded from counts)" note under Design
+suggestions. A Complexity line missing the verdict field is a lens
+regression — count it normally but flag as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 
-## Phase 1b — Recurrence annotation
+## Phase 1b — Filter and verify findings
 
-Sweeps have no memory by default, so open findings are re-discovered and
-re-ranked as new every run. Annotate repeats instead.
+Full procedures are in `.claude/knowledge/report-input-gates.md`.
 
-Locate the previous findings file for the same surface:
+### Recurrence annotation
 
-```bash
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind findings \
-  --surface <surface> \
-  --offset 1
-```
+Look up the previous findings file (`--offset 1`). If none exists, skip
+(every finding is new). For each repeat, annotate with `(open since YYYY-MM-DD)`,
+carrying the **earliest** known date forward. Split the Summary totals:
+new vs recurring. See `report-input-gates.md §1b` for the full procedure.
 
-If none exists, skip this phase (every finding is new). Otherwise, for each
-parsed finding, check whether the same object with substantially the same
-issue appears in the previous findings file (match on substance, not
-wording — i.e. the same object with the same observable finding, even if rephrased). For each repeat:
+### Staleness spot-check
 
-- Annotate the finding line in the dossier with `(open since YYYY-MM-DD)`.
-  Carry the **earliest** known date forward — if the prior dossier already
-  dated the finding, reuse that date rather than resetting it.
-- If the severity differs from the prior sweep with no change to the
-  subject file, append `(was <severity> on <date>)` — severity churn is
-  signal about the lens, not about progress.
+Apply the staleness spot-check protocol from
+`../../knowledge/health-audit-preconditions.md` (lines 120–136) to every High
+finding and every top-5 candidate before ranking. Supply `FINDINGS_DATE` from
+the findings-file name; for recurring findings also check with `PRIOR_DATE`
+from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
+before top-5 inclusion; drop non-holding claims under "Stale (dropped)".
+See `report-input-gates.md §1c` for the full procedure.
 
-Recurring findings stay in the dossier and in the severity counts (they are
-still open work), but the Summary must split the totals: new vs recurring.
+### Disposition suppression
 
-## Phase 1c — Staleness gate (before ranking)
-
-Apply the **staleness spot-check protocol** from
-`../../knowledge/health-audit-preconditions.md` to every High finding and every
-top-5 candidate before ranking. Resolve the subject to its file path (skill →
-`profile-al-dev-shared/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`;
-agent → the matching `agents/<name>.md`), then run the protocol's `git log --since`
-check, supplying `FINDINGS_DATE` (from this skill's findings-file name) in place of
-the protocol's generic `DOSSIER_DATE` boundary — and, for recurring findings, again
-with `PRIOR_DATE` from Phase 1b, since a repeat whose
-subject changed between sweeps may be a lens re-issuing a complaint against
-already-fixed text. Label any whose subject changed `⚠ possibly stale`.
-
-A labelled finding may enter the top 5 only after reading the live subject file
-and confirming the claim still holds; record the spot-check ("verified against
-live file [date]") next to the action. If the claim no longer holds, drop the
-finding from counts and list it under a "Stale (dropped)" note instead.
-
-## Phase 1d — Disposition suppression
-
-Read `docs/health/dispositions.md` (skip this phase if absent). Match each parsed
-finding against ledger rows by object + issue essence, then apply the
-**disposition suppression rules** from
-`../../knowledge/health-audit-preconditions.md`:
-
-- **`declined` / `grandfathered`** → suppress (exclude from severity counts,
-  dimension grouping, and top-5); list one line each under a
-  "Dispositioned (suppressed)" note at the foot of the dossier.
-- **`fixed`** → treat a re-flagged finding as suspect and verify it against the
-  live subject file (Phase 1c spot-check); drop it under "Stale (dropped)" if the
-  claim no longer holds, or keep it with a "regressed — previously fixed in
-  [commit]" note if it genuinely regressed.
-- **`accepted`** → keep, annotated "(accepted YYYY-MM-DD — awaiting
-  implementation)".
+Read `docs/health/dispositions.md` (skip if absent). Apply the four outcomes:
+declined/grandfathered → suppress; fixed → re-verify (spot-check then drop or
+flag regressed); accepted → keep annotated. See `report-input-gates.md §1d`
+for the full suppression rules.
 
 ## Phase 2 — Rank and Write Dossier
 
