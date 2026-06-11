@@ -237,9 +237,9 @@ active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality
 
 ### Decision-logic verification
 
-When a plan task changes this skill's **decision logic** — filter ordering
-(Argument Routing / Phase 1), classification boundaries, or verdict-vocabulary
-mappings (Phase 2) — grep-only structural checks are insufficient. That task's
+When a plan task changes this skill's **Phase 1–2 decision logic** — filter ordering
+(Argument Routing / Phase 1), classification boundaries (staleness tier table / Phase 1b),
+or verdict-vocabulary mappings (Phase 2) — grep-only structural checks are insufficient. That task's
 verification MUST include a case-walkthrough (or scenario test) that traces at
 least one concrete input through the changed logic and confirms the expected
 branch or verdict. Keep grep as a structural assertion only, consistent with
