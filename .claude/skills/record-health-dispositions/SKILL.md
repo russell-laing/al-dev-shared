@@ -42,8 +42,9 @@ First read `.dev/health-loop-state.md` if it exists (schema:
 `.claude/knowledge/health-loop-state-contract.md`). If its `next_command`
 names this skill, adopt its `next_inputs` (the dossier path(s)) as the located
 inputs. If it names a different loop step, tell the user the pointer expects
-`<that command>` and ask whether to continue here anyway. If the file is
-absent, proceed normally.
+`<that command>` and ask whether to continue here anyway. If `next_command`
+is `none`, the previous loop closed cleanly — treat as a fresh entry and
+proceed normally. If the file is absent, proceed normally.
 
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
 - `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
@@ -157,6 +158,7 @@ Append one row per non-skip decision at the bottom of the table, using the seven
    (schema: `.claude/knowledge/health-loop-state-contract.md`):
 
    - `stage_completed: record-health-dispositions`
+   - `completed_at:` today's ISO date
    - `next_command: /plan-health-findings`
    - `next_inputs: docs/health/dispositions.md` plus the dossier path(s)
    - `fresh_session_recommended: false`

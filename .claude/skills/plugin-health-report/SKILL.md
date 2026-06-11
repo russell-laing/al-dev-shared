@@ -229,6 +229,7 @@ Write `.dev/health-loop-state.md` (schema:
 `.claude/knowledge/health-loop-state-contract.md`):
 
 - `stage_completed: plugin-health-report`
+- `completed_at:` today's ISO date
 - `next_command: /record-health-dispositions`
 - `next_inputs:` the dossier path(s) just written, plus
   `docs/health/dispositions.md`
