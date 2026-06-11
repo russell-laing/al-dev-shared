@@ -38,6 +38,13 @@ legacy `unknown`, and migration expectations.
 
 ## Phase 0 — Parse arguments and locate inputs
 
+First read `.dev/health-loop-state.md` if it exists (schema:
+`.claude/knowledge/health-loop-state-contract.md`). If its `next_command`
+names this skill, adopt its `next_inputs` (the dossier path(s)) as the located
+inputs. If it names a different loop step, tell the user the pointer expects
+`<that command>` and ask whether to continue here anyway. If the file is
+absent, proceed normally.
+
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
 - `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
 - `--top` — disposition only the entries in the dossier's "Top N ranked
@@ -146,8 +153,19 @@ Append one row per non-skip decision at the bottom of the table, using the seven
    unrendered date placeholders).
 3. Summarize: accepted / declined / grandfathered / fixed counts, plus how
    many findings remain undispositioned.
-4. If at least one row is `accepted`, offer: "Run `/plan-health-findings`
-   on the accepted items now?"
+4. If at least one row is `accepted`, write `.dev/health-loop-state.md`
+   (schema: `.claude/knowledge/health-loop-state-contract.md`):
+
+   - `stage_completed: record-health-dispositions`
+   - `next_command: /plan-health-findings`
+   - `next_inputs: docs/health/dispositions.md` plus the dossier path(s)
+   - `fresh_session_recommended: false`
+   - `note:` plan only the `accepted` rows.
+
+   Then tell the user: "Recorded N accepted rows. Next in the loop:
+   `/plan-health-findings` (pointer saved in `.dev/health-loop-state.md`)."
+   If no row is `accepted`, do not write the breadcrumb; report that there is
+   nothing to plan.
 
 Do not edit any plugin source file from this skill. Committing the ledger
 change is left to the user's normal commit flow.
