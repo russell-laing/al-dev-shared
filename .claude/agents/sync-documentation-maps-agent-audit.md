@@ -88,10 +88,10 @@ in the map.
 
 **Failure path:** if the script exits non-zero, or its output is not a
 JSON object with one key per active agent, stop caller cross-referencing.
-Skip `caller_mismatch` detection entirely for this run and state in the
+Skip `caller_mismatch` detection entirely for this run, state in the
 report's `summary` field that caller checks were skipped and why (e.g.
-"caller checks skipped: derive-agent-callers.py exited 1"). A per-agent
-empty list (`[]`) is a valid result meaning
+"caller checks skipped: derive-agent-callers.py exited 1"), then continue
+to Step 4. A per-agent empty list (`[]`) is a valid result meaning
 `(none found)`.
 
 Do **not** grep skill files for agent names as a fallback or supplement —
