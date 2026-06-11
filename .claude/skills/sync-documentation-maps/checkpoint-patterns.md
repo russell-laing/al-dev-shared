@@ -130,3 +130,49 @@ to their canonical documentation paths.
 
 Future async workflows may reuse the read-preserve-update pattern, but should
 document their own schemas instead of sharing this exact field set by default.
+
+## Apply-stage Artifact Validation
+
+`/sync-documentation-maps-apply` validates each expected update artifact before
+writing to `docs/`. Validation is **per-surface-independent**: an invalid or
+missing artifact for one map surface must not block writing the other.
+
+### Validation Matrix
+
+| Condition | Action |
+| --- | --- |
+| File absent | Report and skip that surface |
+| File empty (0 lines) | Report invalid and skip that surface |
+| Missing `# AL Dev` header | Report invalid and skip that surface |
+| Agent artifact: `CATALOG_ROWS` ≠ `DISK_AGENTS` | Report invalid and skip that surface — the audit/update pass missed or duplicated catalog entries |
+| Passes all checks | Read content and proceed to write |
+
+The catalog count check uses:
+
+```bash
+DISK_AGENTS=$(ls /path/to/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
+CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
+  "${RUN_DIR}/updates/agent-map.md" | grep -c '^| al-dev')
+echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
+```
+
+The `grep -c '^| al-dev'` pattern is whitespace- and prefix-sensitive: each
+catalog row must begin with `| al-dev` (one space after the pipe) — the format
+the agent-map catalog generator emits. If the generator changes row prefix or
+spacing, update this pattern here and in any skill that reuses it.
+
+### All-surfaces-invalid Stop Rule
+
+If **all expected artifacts** are missing or invalid, stop with:
+
+```text
+No valid update artifacts found. Update teams may still be running.
+Re-run this step once the teams have completed, or run with --wait
+in the collect step next time.
+```
+
+### Per-surface Independence Rule
+
+Each surface is validated independently. A valid artifact for one surface is
+written to `docs/` even when the other surface's artifact is absent, empty,
+missing its header, or has a catalog count mismatch.
