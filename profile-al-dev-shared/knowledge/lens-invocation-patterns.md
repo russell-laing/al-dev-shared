@@ -118,6 +118,11 @@ Convention doc:
 [absolute path to docs/al-dev-naming-convention.md in the repo under audit]
 ```
 
+> **Caller contract:** `naming-convention-lens` has exactly one dispatcher
+> (`plugin-health-discover`) and one downstream consumer (`plugin-health-report`).
+> Changes to this lens's input contract or output format affect only those two
+> skills — no other callers exist in the tooling surface.
+
 ---
 
 ## Background

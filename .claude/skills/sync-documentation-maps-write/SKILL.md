@@ -251,3 +251,34 @@ Print a final confirmation:
 ```text
 sync-documentation-maps workflow complete. Run ID: RUN_ID
 ```
+
+## Phase 4b — Update health-loop-state breadcrumb (health-loop runs only)
+
+Check whether `.dev/health-loop-state.md` exists:
+
+```bash
+ls .dev/health-loop-state.md 2>/dev/null
+```
+
+If the file **does not exist**, skip this step entirely — this is not a health-loop
+run and no breadcrumb should be fabricated.
+
+If the file **exists**, overwrite it with the following content (substituting
+`<today's ISO date>` with the actual current date at runtime, and choosing the
+appropriate `note` value based on the commit outcome from Phase 3):
+
+```yaml
+stage_completed: sync-documentation-maps-write
+completed_at: <today's ISO date>
+next_command: /plugin-health-audit
+next_inputs: []
+fresh_session_recommended: false
+note: <see wording rule below>
+```
+
+Wording rule for `note:`:
+
+- If `SKIP_COMMIT=false` and the Phase 3 commit **succeeded** →
+  `maps regenerated and committed; run /plugin-health-audit to resume the health loop`
+- If `SKIP_COMMIT=true` **or** the Phase 3 commit **failed** →
+  `maps regenerated (not committed — review/commit pending); run /plugin-health-audit after committing`

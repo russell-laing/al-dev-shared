@@ -85,10 +85,21 @@ Format). Use the dispatch template in
 
 Wait for all agents to complete. Present each agent's summary.
 
-## Phase 4 — Re-audit (optional)
+## Phase 4 — Validate neutrality, then post-fix options
 
-Ask:
+**Mandatory neutrality gate.** If any file edited in this run is under
+`profile-al-dev-shared/`, automatically invoke `/align-harness-repos` (or run
+`scripts/validate_harness_neutrality.py` directly) before offering any further choice.
+If it reports forbidden harness tokens, surface them and stop — the fixes are not
+complete until neutrality passes. If no shared file was edited, note "no shared-surface
+edits — neutrality check not required" and continue.
 
-> Would you like to re-run `/audit-knowledge-quality` to verify the fixes?
+Only after the neutrality result is known, ask:
 
-If yes: invoke `/audit-knowledge-quality`.
+> Neutrality: <passed | not required>. Choose a next step:
+>
+> 1. Re-run `/audit-knowledge-quality` to verify the fixes
+> 2. Done — no further action
+
+If [1]: invoke `/audit-knowledge-quality`.
+If [2]: stop.
