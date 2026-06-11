@@ -92,6 +92,16 @@ Apply filters in this order:
 
 ---
 
+## Phase 0: Read loop state
+
+Read `.dev/health-loop-state.md` if it exists (schema:
+`.claude/knowledge/health-loop-state-contract.md`). If its `next_command` names
+this skill, adopt its `next_inputs` as the dossier/ledger inputs. If it names a
+different loop step, tell the user the pointer expects `<that command>` and ask
+whether to continue here anyway. If the file is absent, proceed normally.
+
+---
+
 ## Phase 1: Extract Findings
 
 Locate the most recent health dossier per surface:
@@ -279,6 +289,14 @@ After all suggestions are rubber-ducked, invoke:
 
 **REQUIRED SUB-SKILL: Use superpowers:writing-plans**
 
+**Suppress the writing-plans Execution Handoff.** `writing-plans` ends by
+presenting its own **Execution Handoff** ("Subagent-Driven / Inline" — "Which
+approach?"). Inside the health loop that ending is wrong: it skips
+`/implement-health-plan` and the ledger close-back. Instruct `writing-plans`,
+in the context block below, **not** to present that handoff — control returns
+to **Phase 4** of this skill, which owns the ending. If the "Which approach?"
+prompt appears anyway, do **not** answer it; proceed to Phase 4.
+
 Pass as context to writing-plans:
 
 - All rubber duck records
@@ -319,5 +337,48 @@ Pass as context to writing-plans:
   > close — check the written plan file to confirm the field is present before
   > treating the planning step as complete.
 
+- **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
+  Inline" prompt or ask "Which approach?". Hand control back to the caller
+  (`plan-health-findings` Phase 4), which routes execution to
+  `/implement-health-plan`.
+
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-plugin-map-<short-label>.md`
+
+---
+
+## Phase 4: Hand off to implement (overrides the writing-plans Execution Handoff)
+
+`superpowers:writing-plans` ends with its own **Execution Handoff** offering
+"Subagent-Driven" or "Inline" execution. **Those endings do not apply in the
+health loop** — executing the plan through them skips `/implement-health-plan`
+Phase 3, so the `closes_rows:` rows are never written `fixed` and the loop
+never closes. Phase 3 already instructed `writing-plans` to suppress that
+handoff; this phase is the authoritative ending. If the "Which approach?"
+prompt appeared anyway, do **not** answer it — supersede it by running the
+steps below.
+
+1. **Confirm the plan carries `closes_rows:`** — `grep -c "closes_rows:" <plan-path>`.
+   If the count is 0, the survival caveat in Phase 3 was violated; fix the plan
+   before handing off.
+
+2. **Write `.dev/health-loop-state.md`** (schema:
+   `.claude/knowledge/health-loop-state-contract.md`):
+
+   - `stage_completed: plan-health-findings`
+   - `completed_at:` today's ISO date
+   - `next_command: /implement-health-plan --plan <plan-path>`
+   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions.md`
+   - `fresh_session_recommended: true`
+   - `note:` run `/implement-health-plan` to execute AND close the ledger; do
+     NOT use the writing-plans Subagent-Driven/Inline options — they skip
+     ledger close-back.
+
+3. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
+   `<plan-path>` with `closes_rows:` for ledger close-back. This transition is
+   context-heavy — start a **fresh session** and run
+   `/implement-health-plan --plan <plan-path>` to execute the plan and close the
+   ledger. (Ignore the writing-plans Subagent-Driven/Inline prompt — it bypasses
+   ledger close-back.) The pointer is saved in `.dev/health-loop-state.md`."
+   Do not invoke `superpowers:subagent-driven-development` or
+   `superpowers:executing-plans` from this skill.
