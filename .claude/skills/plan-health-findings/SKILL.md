@@ -174,51 +174,28 @@ written."
 
 ## Phase 1b: Staleness Gate (mandatory)
 
-A dossier is a point-in-time snapshot. Findings are routinely implemented
-piecemeal between the audit and this planning step, so any finding whose
-subject file changed *after* the dossier was generated is likely already
-addressed (or has drifted out from under the finding text). The
-staleness command below uses `--since="$DOSSIER_DATE 00:00"`, so any commit on or
-after 00:00 on the dossier date counts as "after" (e.g. for a `2026-06-10`
-dossier, a commit at `2026-06-10 08:29` is in scope). Flag these before
-spending rubber-duck effort on them.
-
-For each dossier, take its date from the filename (`YYYY-MM-DD-<surface>-health.md`).
-For each collected finding, resolve its subject to a file path:
-
-- skill → `profile-al-dev-shared/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`
-- agent → `profile-al-dev-shared/agents/<name>.md` or `.claude/agents/<name>.md`
-
-Then check whether that file changed since the dossier date:
+Run the staleness check per `.claude/knowledge/health-findings-staleness-gate.md`.
+For each finding, resolve its subject to a file path and run:
 
 ```bash
 # DOSSIER_DATE from the dossier filename; SUBJECT_PATH per finding
 git log --since="$DOSSIER_DATE 00:00" --oneline -- "$SUBJECT_PATH"
 ```
 
-- **Non-empty output** → label the finding **`⚠ possibly stale`** and record the
-  commit(s). In Phase 2, rubber-duck it by reading the entire subject file from
-  start to finish before checking the claim; expect the claim may no longer
-  match (verdict `skip [already implemented]` is common here).
-- **Empty output** → the subject is unchanged since the audit; rubber-duck
-  normally.
+- **Non-empty output** → label the finding **`⚠ possibly stale`** and record the commit(s).
+- **Empty output** → the subject is unchanged since the audit; rubber-duck normally.
 
-If a finding's subject cannot be resolved to a single file (e.g. a cross-surface
-or handoff finding), skip the gate for it and rubber-duck normally.
+If a finding's subject cannot be resolved to a single file, skip the gate for it and rubber-duck normally.
 
-Report the stale-labelled count before Phase 2 (e.g. "3 of 10 findings flagged
-possibly-stale — their subjects changed after the dossier date"). Handle
-stale findings by tier:
+Report the stale-labelled count before Phase 2. Handle by tier:
 
-- **All findings flagged stale:** advise re-running `/plugin-health-audit` for
-  the affected surface before continuing. Do not proceed.
-- **≥80% of findings flagged stale:** report the high stale ratio and offer the
-  user a choice: (a) re-run `/plugin-health-audit` to refresh the dossier, or
-  (b) proceed with heightened scrutiny (expect many skips due to prior
-  implementation). Only proceed to Phase 2 if the user explicitly chooses (b).
-- **<80% stale:** proceed to Phase 2 normally. Mark stale findings with `⚠
-  possibly stale` in the worklist so Phase 2 rubber-ducks them by reading the
-  entire subject file from start to finish.
+| Stale ratio | Action |
+|---|---|
+| 100% (all findings) | Advise re-running `/plugin-health-audit`; do not proceed |
+| ≥80% | Report ratio; offer (a) re-run audit or (b) proceed with heightened scrutiny; only proceed if user chooses (b) |
+| <80% | Proceed; mark stale findings `⚠ possibly stale` in the worklist |
+
+See `.claude/knowledge/health-findings-staleness-gate.md` for full tier-handling logic.
 
 ---
 
@@ -238,50 +215,25 @@ verification. This skill keeps only the check pointer and the record format.
 
 ### Checks
 
-> **Design note:** All per-check procedures are delegated to
-> `knowledge/map-change-rubber-duck-checks.md` (the canonical check registry).
-> This skill orchestrates the rubber-duck flow; the knowledge file owns the
-> per-check logic. This is intentional separation of concerns — do not inline
-> check procedures here.
-
-For all checks — Universal (U1–U3) and type-specific (Connect, Extend, Merge,
-Move, Promote, Trim, Remodel, Split, Inline, Align) — see:
-
-`profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
+> All per-check procedures (Universal U1–U3 and type-specific: Connect, Extend,
+> Merge, Move, Promote, Trim, Remodel, Split, Inline, Align) are in
+> `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`.
 
 ### Rubber duck record
 
-After each suggestion, write:
+After each suggestion, write a record using the format in
+`profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` (Rubber-Duck Record Format section).
 
-```text
-RUBBER DUCK: [Type — Subject]
-Claim:        [what the suggestion says]
-State:        [what reading the code reveals]
-Side-effects: [files/scripts that depend on what's being changed]
-Scope gap:    [anything the suggestion underspecifies, or "none"]
-Verdict:      proceed | modify [reason] | skip [reason]
-```
+> **Verdict vocabulary:** `proceed` (claim substantiated), `skip` (claim refuted),
+> `modify` (partially substantiated — adjust scope). Maps from duck-check:
+> `ACCEPT` → `proceed`, `REJECT` → `skip`, `DEFER` → `skip`.
 
-> **Verdict vocabulary:** Use `proceed | modify | skip` here; do not conflate with the duck-check `ACCEPT | DEFER | REJECT` in `map-change-rubber-duck-checks.md`.
->
-> **Decision criterion:** Judge each finding by whether the live subject file substantiates, contradicts, or partially substantiates its claim. A claim may assert the *absence* of something — confirmed absence substantiates it. `proceed` — live evidence substantiates the claim. `skip` — live evidence contradicts the claim (already fixed, never existed, or the asserted gap is in fact covered). `modify` — the claim is partially substantiated but the fix scope or approach needs adjustment. When a duck-check record carries a canonical verdict, map `ACCEPT` → `proceed`, `REJECT` → `skip`, and `DEFER` → `skip` with the deferral reason recorded in the plan's Skipped section.
+If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely.
+Record skipped suggestions in a `## Skipped` section at the end of the plan file
+with the reason noted.
 
-If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely — do
-not write plan content for it.
-
-Every generated plan header must include:
-
-```yaml
-health_filters:
-  surfaces:
-    - plugin
-  dimensions:
-    - quality
-    - naming
-```
-
-not create a plan task for it. Record skipped suggestions in a `## Skipped` section at
-the end of the plan file with the reason noted.
+Every generated plan header must include a `health_filters:` block listing the
+active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality, naming]`).
 
 ---
 
@@ -291,58 +243,15 @@ After all suggestions are rubber-ducked, invoke:
 
 **REQUIRED SUB-SKILL: Use superpowers:writing-plans**
 
-**Suppress the writing-plans Execution Handoff.** `writing-plans` ends by
-presenting its own **Execution Handoff** ("Subagent-Driven / Inline" — "Which
-approach?"). Inside the health loop that ending is wrong: it skips
-`/implement-health-plan` and the ledger close-back. Instruct `writing-plans`,
-in the context block below, **not** to present that handoff — control returns
-to **Phase 4** of this skill, which owns the ending. If the "Which approach?"
-prompt appears anyway, do **not** answer it; proceed to Phase 4.
+Pass as context to writing-plans all items listed in
+`.claude/knowledge/health-plan-context-template.md`.
 
-Pass as context to writing-plans:
-
-- All rubber duck records
-- Corrected flag names, file paths, and scope (use these, not the
-  original suggestion wording where rubber ducking found a mismatch)
-- Cross-layer coupling constraints, including changes that must share a task or
-  be linked by explicit task dependencies
-- Task ordering: additive changes first (new knowledge docs, diagram
-  extensions), structural changes last (merges, archives, moves)
-- The verification pattern for each task, mapped by finding verb:
-
-  | Verb | Evidences | Command |
-  | --- | --- | --- |
-  | Atomise / Split | New phase/file boundaries exist | `grep -n '## Phase'` + `wc -l` |
-  | Absorb / Merge / Inline | Source folded in, original removed | `wc -l` (delta) + `ls` (absence) |
-  | Connect / Promote | Knowledge doc created and referenced | `ls` (new doc) + `grep` (reference) |
-  | Move | File relocated to target surface | `ls` (new path) + `ls` (old path gone) |
-  | Extend | New downstream consumer reads the artifact | `grep` (read site) |
-  | Trim / Remodel / Align | Field/tool removed or value changed | `grep` (presence/absence) |
-
-- The ledger row IDs captured in Phase 1 for the accepted findings each
-  task implements. Each task's **verification block** must include a
-  `closes_rows:` line in this exact format:
-
-  ```text
-  closes_rows: ["#NNN", "#MMM", ...]   # IDs from docs/health/dispositions.md
-  ```
-
-  Place this line **inside the verification block**, not in the task title or
-  header. `implement-health-plan` Phase 3 greps for this token to close the
-  ledger entries after implementation.
-
-  > **Survival caveat:** `writing-plans` must preserve the full verification-block
-  > content for this field to survive into the output plan. The verification block
-  > is chosen as the placement site precisely because `writing-plans` preserves it
-  > there. If the sub-skill's task template strips arbitrary verification-block
-  > lines, `closes_rows:` will be silently dropped and the loop will never
-  > close — check the written plan file to confirm the field is present before
-  > treating the planning step as complete.
+> **Survival caveat:** After writing-plans completes, run
+> `grep -c "closes_rows:" <plan-path>` and confirm the count equals the number
+> of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually.
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
-  Inline" prompt or ask "Which approach?". Hand control back to the caller
-  (`plan-health-findings` Phase 4), which routes execution to
-  `/implement-health-plan`.
+  Inline" prompt or ask "Which approach?".
 
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-plugin-map-<short-label>.md`

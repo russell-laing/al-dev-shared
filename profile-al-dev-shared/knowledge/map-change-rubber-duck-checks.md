@@ -596,6 +596,33 @@ REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd
 
 ---
 
+## Rubber-Duck Record Format
+
+After each suggestion is checked in `plan-health-findings` Phase 2, write a record
+using this format:
+
+```text
+RUBBER DUCK: [Type — Subject]
+Claim:        [what the suggestion says]
+State:        [what reading the code reveals]
+Side-effects: [files/scripts that depend on what's being changed]
+Scope gap:    [anything the suggestion underspecifies, or "none"]
+Verdict:      proceed | modify [reason] | skip [reason]
+```
+
+**Verdict vocabulary:**
+
+- `proceed` — live evidence substantiates the claim.
+- `skip` — live evidence contradicts the claim (already fixed, never existed, or the
+  asserted gap is in fact covered).
+- `modify` — the claim is partially substantiated but the fix scope or approach needs
+  adjustment.
+
+**Mapping from duck-check verdicts:** `ACCEPT` → `proceed`, `REJECT` → `skip`,
+`DEFER` → `skip` (with the deferral reason recorded in the plan's Skipped section).
+
+---
+
 ## References
 
 - `docs/al-dev-skills-map.md` — Skill inventory and relationships
