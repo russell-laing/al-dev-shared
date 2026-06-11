@@ -1,13 +1,16 @@
 {
   "operation": "sync-documentation-maps",
-  "run_id": "20260610T125038Z",
-  "spawned_at": "2026-06-10T12:50:38Z",
-  "skill_audit_team_id": "a8b7cac162291d203",
-  "agent_audit_team_id": "a336b86b98a8a089d",
+  "run_id": "20260611T000220Z",
+  "spawned_at": "2026-06-11T00:02:20Z",
+  "skill_audit_team_id": "a5f853c9a0e281772",
+  "agent_audit_team_id": "a4b4b505a48e1a682",
+  "skill_update_team_id": "ac79894a5e28c3b02",
+  "agent_update_team_id": "a93d1f7f75093f7b7",
   "phase": "complete",
-  "status": "complete",
-  "auto_update": false,
+  "status": "done",
+  "update_choice": "both",
+  "auto_update": true,
   "skip_commit": false,
-  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T125038Z",
-  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260610T125038Z/manifest.json"
+  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260611T000220Z",
+  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260611T000220Z/manifest.json"
 }

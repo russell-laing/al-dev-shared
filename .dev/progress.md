@@ -117,3 +117,29 @@ and committed. Agent map fixed tool mismatches (3 discrepancies).
   Skills: 22 files → 22 map entries (no discrepancies)
   Agents: 23 files → 23 map entries (no discrepancies)
   Status: documentation maps are accurate, no updates required.
+
+[2026-06-11] sync-documentation-maps (run 20260611T000220Z): Dispatched skill-audit
+  (a5f853c9a0e281772) and agent-audit (a4b4b505a48e1a682) teams.
+  Both completed. Next: /sync-documentation-maps-collect --team-ids a5f853c9a0e281772,a4b4b505a48e1a682
+
+[2026-06-11] sync-documentation-maps-collect complete (run 20260611T000220Z):
+  • Skills map: 0 discrepancies (no updates needed)
+  • Agent map: 9 discrepancies (7 caller_mismatch for commit-workflow, 1 missing_from_map, 1 model_mismatch)
+  • AUTO_UPDATE=true; spawned skill-update (ac79894a5e28c3b02) and agent-update (a93d1f7f75093f7b7) teams.
+  • Next: /sync-documentation-maps-apply --team-ids ac79894a5e28c3b02,a93d1f7f75093f7b7
+
+[2026-06-11] sync-documentation-maps-apply complete (run 20260611T000220Z):
+  • Skills map: 0 discrepancies, no update needed
+  • Agent map: Updated with 9 fixes (7 caller refs, 1 missing section, 1 model fix)
+  • docs/al-dev-agent-map.md: 625 lines (24 catalog entries)
+  • Checkpoint status updated to awaiting-write
+  • Next: /sync-documentation-maps-write
+
+[2026-06-11] sync-documentation-maps-write complete — Run 20260611T000220Z
+  • Mermaid diagrams regenerated (4 map documents updated)
+  • Agent projections regenerated (harness-native formats)
+  • Dependency graph refreshed
+  • Maintainer guide regenerated
+  • All agent counts verified (disk=24, coverage=24, catalog=24)
+  • Committed: 79a1ddc (docs: sync documentation maps with current codebase)
+  • Checkpoint marked complete
