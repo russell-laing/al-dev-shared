@@ -109,8 +109,19 @@ If no plan passes the filter, stop with:
 | `3` | `complete` + `result: ledger_closed` | Inform user; ask whether to re-run |
 | any other combination | — | Treat as corrupted; default to Restart |
 
+**Plan-path guard (run before applying the resume table):** Compare the
+checkpoint's `plan_path` to the plan selected above (`--plan` arg or scan
+result). If they differ, the checkpoint belongs to a different plan — do NOT
+resume it. Discard it and write a fresh Phase 0 checkpoint for the current plan.
+Apply the resume table only when `plan_path` matches.
+
 On Restart, **overwrite** the existing checkpoint with the fresh Phase 0 checkpoint
 below. If the user does not respond, default to Restart.
+
+On resume, if the current `executor_revision` differs from the checkpoint's, this
+skill was self-edited mid-run — require a restart (the self-edit ordering rule
+already mandates that a task editing this skill runs last, with a restart
+boundary before any later phase; do not re-add that rule, cross-reference it).
 
 **If the checkpoint file does not exist:** proceed to Phase 1.
 
@@ -123,6 +134,7 @@ result: plan_located
 plan_path: <path>
 tasks_total: <N>
 tasks_completed: []
+executor_revision: <git short-hash of .claude/skills/implement-health-plan/SKILL.md at run start>
 ```
 
 ---
@@ -201,13 +213,18 @@ proceeds.
 
 ### File persistence check
 
+For each completed task, resolve its recorded commit hash from
+`tasks_completed[].commit` in the checkpoint and verify that commit's scope. Do
+NOT use a bare `HEAD~1` — when Phase 2 runs after all tasks it covers only the
+final commit, so earlier task commits escape verification.
+
 ```bash
-git status
-git diff --name-only HEAD~1
+git show --stat <task-commit>                 # files changed in that task's commit
+git show <task-commit> -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
 ```
 
-Expected: only the files named in the task spec appear as changed. No
-unexpected extras, no empty diff.
+If a task has no recorded commit hash, or the commit is missing/out of scope,
+fail the gate for that task.
 
 ### Forbidden-pattern scan
 
@@ -275,16 +292,19 @@ Example:
 
 | #042 | tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes #042 |
 
-**Post-loop staleness check** — after all `fixed` rows are appended for the
-current plan:
+**Post-loop close gate (scoped to this plan)** — after all `fixed` rows are
+appended, confirm each `#NNN` in the plan's `closes_rows` list now has a `fixed` row
+in the ledger. This scoped check is the closure gate — not a global pass.
+
+The global checker is run for INFORMATION only; an unrelated open backlog does
+NOT block closing this plan:
 
 ```bash
-python3 scripts/check_ledger_staleness.py --strict
+python3 scripts/check_ledger_staleness.py --strict || true   # informational; unrelated backlog reported, not blocking
 ```
 
-**Success criteria:** exit 0 AND 0 stale-open rows reported. This skill may
-NOT claim "loop closed" until this command passes in the current run. If the
-check reports stale rows, fix the offending entries before continuing.
+**Success criteria:** every `closes_rows` ID for this plan has a verified `fixed`
+row. Report the global backlog count separately.
 
 Update checkpoint:
 
@@ -338,6 +358,20 @@ If a `*-findings.md` does not exist for the selected dossier (e.g., the dossier
 predates the findings-file convention), skip the findings move and note it in
 the report.
 
+### Archive paired review artifacts and record terminal status
+
+If the plan has paired review/commentary artifacts (e.g.
+`docs/superpowers/plans/<plan>-review.md`, or per-task code-review outputs in
+`.dev/`), move them alongside the plan:
+
+```bash
+mv docs/superpowers/plans/<plan>-review.md docs/superpowers/plans/archived/ 2>/dev/null || true
+```
+
+Append a terminal-status entry for the consumed plan to
+`docs/superpowers/history.md` (tracked): one line —
+`<date> | <plan-topic> | implemented; rows closed: [N,...]`.
+
 ---
 
 ## Phase 4.5: Regenerate Derived Artifacts
@@ -365,25 +399,9 @@ If no `profile-al-dev-shared/` files changed, skip this phase entirely.
 
 ## Phase 5: Commit and Report
 
-### Ledger-close commit
-
-The per-task implementation commits were already created in Phase 1. Add ONE
-dedicated commit covering:
-
-- The `fixed` rows appended to `docs/health/dispositions.md`
-- The archived plan and dossier moves
-
-```bash
-git add docs/health/dispositions.md
-git add docs/superpowers/plans/archived/<plan-file>
-git add docs/health/archived/<dossier-file>
-git add docs/health/archived/<findings-file>  # if archived
-git commit -m "chore(health): close ledger rows [N,...] — <plan-topic>"
-```
-
 ### Close the loop breadcrumb
 
-After the ledger-close commit is staged, overwrite `.dev/health-loop-state.md`
+**Write this BEFORE the ledger-close commit.** Overwrite `.dev/health-loop-state.md`
 (schema: `.claude/knowledge/health-loop-state-contract.md`) to mark the loop
 closed:
 
@@ -395,6 +413,23 @@ closed:
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/projection-sync` and
   `/align-harness-repos` next (see Phase 4.5).
+
+### Ledger-close commit
+
+The per-task implementation commits were already created in Phase 1. Add ONE
+dedicated commit covering:
+
+- The `fixed` rows appended to `docs/health/dispositions.md`
+- The `.dev/health-loop-state.md` breadcrumb written above
+
+```bash
+git add docs/health/dispositions.md
+# docs/superpowers/plans/ and docs/health/* are gitignored (see .gitignore); the
+# archived plan and dossier were relocated by `mv` in Phase 4 and are NOT tracked
+# — do NOT `git add` them (the add is a no-op/error). Stage only tracked files.
+git add .dev/health-loop-state.md            # tracked breadcrumb — write it BEFORE this commit (see health-loop-state-contract Persistence semantics)
+git commit -m "chore(health): close ledger rows [N,...] — <plan-topic>"
+```
 
 ### Final report
 
@@ -441,4 +476,5 @@ tasks_completed:
     commit: <hash>
     closes_rows: ["#NNN", "#MMM"]
 stale_open_rows: <count>    # populated in Phase 3
+executor_revision: <short-hash>    # hash of this skill file at run start
 ```
