@@ -19,6 +19,20 @@ disk, not only in conversation context.
 loop pointer). It references generic skill slash-commands and artifact paths
 only; never harness-specific tokens.
 
+## Persistence semantics
+
+`.dev/health-loop-state.md` is git-tracked, so the durability claim above
+(surviving fresh sessions and worktree boundaries) holds only when the latest
+breadcrumb write is **committed**. Therefore:
+
+- A loop skill MUST write the breadcrumb **before** creating its final commit
+  and stage it into that same commit's staged set. For the loop-closing skill
+  (`/implement-health-plan`), that is the ledger-close commit.
+- A breadcrumb write left unstaged after the final commit is
+  local-working-tree-only: it is lost if the worktree is removed, and the
+  committed copy points at the prior stage. Treat that as a defect, not a
+  supported mode.
+
 ## Schema
 
 ```yaml
