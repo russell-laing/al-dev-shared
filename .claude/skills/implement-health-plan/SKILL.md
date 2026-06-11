@@ -133,8 +133,16 @@ tasks_completed: []
 ## Phase 1: Execute Tasks
 
 **REQUIRED SUB-SKILL:** Invoke `superpowers:subagent-driven-development` for
-plans with independent tasks that can run in parallel, or
-`superpowers:executing-plans` for large or strictly sequential plans.
+same-session execution, or `superpowers:executing-plans` for execution in a
+separate session. Both run one implementation subagent at a time — never
+dispatch two implementation subagents concurrently in one worktree.
+
+**Task ordering rule:** Execute tasks in plan order by default. A task may be
+scheduled out of order only when its write set is disjoint from every other
+task's write set and it reads no other task's output (the independence
+definition in `.claude/knowledge/rubber-duck-orchestration.md`). A task that
+edits this skill itself must run last, with a restart boundary before any
+later phase that depends on the edited text.
 
 Pass the full CLAUDE.md **Plan Task Verification Standard** checklist into
 every dispatch prompt:
@@ -250,50 +258,33 @@ field (or the field is present but empty), skip ledger close-back for that
 task entirely. Record it in the final report as "no ledger rows to close" and
 continue with the next task.
 
-### Resolve each row
+For each `#NNN` ID in a completed task's `closes_rows:`, work through one
+Resolve → Verify → Append pass before moving to the next ID:
 
-`closes_rows:` lists **`#NNN` IDs** from the ID column of
-`docs/health/dispositions.md`. These are the machine-readable identifiers
-assigned in the leftmost column of the disposition table. It is **never** a
-file-line number.
+1. **Resolve** — `closes_rows:` lists `#NNN` IDs from the ID column (leftmost)
+   of `docs/health/dispositions.md` — never a file-line number. Locate the row
+   with that ID and extract its ID, Surface, Dimension, Object, and Finding
+   verbatim.
+2. **Verify** — read the live subject file named in the task and confirm the
+   change is present. Do not append a row for an unverified change.
+3. **Append** — add one `fixed` row at the bottom of the table. The ledger
+   uses the **eight-column** schema:
 
-Read `docs/health/dispositions.md`. For each `#NNN` ID in `closes_rows:`,
-locate the row with that ID and extract its values for **Surface**,
-**Dimension**, **Object**, and **Finding** verbatim.
+   `| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |`
 
-### Verify the live subject file
-
-Before appending a `fixed` row, read the live subject file named in the task
-(the skill or agent the finding targeted) and confirm the change is present.
-
-### Append a `fixed` row
-
-The disposition table uses a **seven-column** schema:
-
-```text
-| Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |
-```
-
-A five-column row is **malformed** — do not write one. Copy Surface, Dimension,
-Object, and Finding verbatim from the accepted row N, then set:
-
-- **Disposition** = `fixed`
-- **Date** = today's ISO date (real date — never a placeholder)
-- **Evidence / note** = `<commit-hash> — <brief evidence>; verified live
-  <date>; closes #NNN`
+   Copy ID, Surface, Dimension, Object, and Finding verbatim from the
+   accepted row, then set Disposition = `fixed`, Date = today's ISO date
+   (never a placeholder), and Evidence / note =
+   `<commit-hash> — <brief evidence>; verified live <date>; closes #NNN`.
+   Re-read the appended row and confirm all eight cells are populated. Never
+   reorder or rewrite existing rows.
 
 Example:
 
-```markdown
-| tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes #042 |
-```
+| #042 | tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes #042 |
 
-Append each `fixed` row at the bottom of the table. Never reorder or rewrite
-existing rows.
-
-### Run the staleness check
-
-After all `fixed` rows are appended for the current plan:
+**Post-loop staleness check** — after all `fixed` rows are appended for the
+current plan:
 
 ```bash
 python3 scripts/check_ledger_staleness.py --strict
