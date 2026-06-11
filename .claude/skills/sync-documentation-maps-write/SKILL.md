@@ -91,39 +91,12 @@ Capture the exit code. If non-zero, report:
 Mermaid diagram regeneration failed (exit <code>).
 ```
 
-After a successful regeneration, run the count-consistency gate. The
-generator owns the `Coverage` line and the catalog table; all three numbers
-below must agree before anything is committed:
+**Count-consistency gate:** Before committing, run the three-way count check in
+`.claude/knowledge/map-count-consistency-gate.md` (active files on disk vs generated
+Coverage count vs generated catalog rows). On mismatch, stop and follow the bounded
+recovery defined there.
 
-```bash
-DISK_AGENTS=$(ls /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
-COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -o '[0-9]*')
-CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -c '^| al-dev')
-echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
-```
-
-If the three values differ, **stop before Phase 3 (commit)** and report:
-
-```text
-Agent count mismatch after regeneration (disk=X coverage=Y catalog=Z).
-The maps would commit stale counts. Investigate before committing.
-```
-
-Choose the recovery path by the mismatch cause:
-
-- **Single stale generated value (known false positive)** — exactly one of the
-  catalog table or the `Coverage` line lags the just-written docs map by one
-  regeneration. Refresh the affected generated section from the docs map and
-  re-run this count check once.
-- **Any other case** — the mismatch persists after that refresh, more than one
-  value disagrees, or the run state is no longer trustworthy. Abandon the old
-  run with `/sync-documentation-maps --force` and start fresh rather than
-  committing mixed-state artifacts.
-
-Once the count check passes — either it agreed on the first run, or the
-single-stale-value refresh above brought it into agreement — run the three
-remaining regenerations in sequence. Each follows the same pattern — execute the
+Once the count check passes, run the three remaining regenerations in sequence. Each follows the same pattern — execute the
 script and capture its exit code; on a non-zero code, report the labelled error
 (substituting the actual exit code) and stop before continuing:
 
