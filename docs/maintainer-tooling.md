@@ -163,7 +163,7 @@ flowchart LR
 
 ### Implement steps
 
-1. `/implement-health-plan` — Execute an accepted health-findings implementation plan and close the disposition ledger. Repeat as needed.
+1. `/implement-health-plan` — Execute an accepted health-findings implementation plan and append `fixed` rows to docs/health/dispositions.md (closing the accepted rows). Repeat as needed.
    - reads: `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md`
    - writes: `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md`
 
@@ -570,7 +570,7 @@ flowchart TD
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/revise-health-plan` | decide | user | Use when a health-loop implementation plan in docs/superpowers/plans/ has a separate review, commentary, or consolidated-findings document critiquing it, and the plan must be reconciled with that review before it is executed — or when some review findings are out of scope and need re-dispositioning to docs/health/dispositions.md instead of becoming plan tasks. |
-| `/implement-health-plan` | implement | user | Execute an accepted health-findings implementation plan and close the disposition ledger. |
+| `/implement-health-plan` | implement | user | Execute an accepted health-findings implementation plan and append `fixed` rows to docs/health/dispositions.md (closing the accepted rows). |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. |

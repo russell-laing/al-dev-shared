@@ -1,8 +1,8 @@
 ---
 name: implement-health-plan
 description: >-
-  Execute an accepted health-findings implementation plan and close the
-  disposition ledger. Locates the latest docs/superpowers/plans/ plan containing
+  Execute an accepted health-findings implementation plan and append `fixed`
+  rows to docs/health/dispositions.md (closing the accepted rows). Locates the latest docs/superpowers/plans/ plan containing
   `closes_rows:`, dispatches superpowers:subagent-driven-development for task
   execution, verifies each change, appends `fixed` rows to
   docs/health/dispositions.md, archives consumed artifacts, and optionally
@@ -109,7 +109,7 @@ If no plan passes the filter, stop with:
 | `3` | `complete` + `result: ledger_closed` | Inform user; ask whether to re-run |
 | any other combination | — | Treat as corrupted; default to Restart |
 
-**Plan-path guard (evaluate after reading the resume table, before acting on it):** Compare the
+**Plan-path guard (evaluate after reading the resume table, before deciding Resume vs Restart):** Compare the
 checkpoint's `plan_path` to the plan selected above (`--plan` arg or scan
 result). If they differ, the checkpoint belongs to a different plan — do NOT
 resume it. Discard it and write a fresh Phase 0 checkpoint for the current plan.
@@ -151,7 +151,9 @@ scheduled out of order only when its write set is disjoint from every other
 task's write set and it reads no other task's output (the independence
 definition in `.claude/knowledge/rubber-duck-orchestration.md`). A task that
 edits this skill itself must run last, with a restart boundary before any
-later phase that depends on the edited text.
+later phase that depends on the edited text. (A *restart boundary* means: stop
+after the task's commit and require an explicit re-invocation of this skill
+before any later phase proceeds.)
 
 Pass the full CLAUDE.md **Plan Task Verification Standard** checklist into
 every dispatch prompt:
@@ -276,6 +278,12 @@ Resolve → Verify → Append pass before moving to the next ID:
    verbatim.
 2. **Verify** — read the live subject file named in the task and confirm the
    change is present. Do not append a row for an unverified change.
+   If verification fails: report the failure, omit the ledger row for that task,
+   write `phase: 3` and `status: blocked` to
+   `.dev/implement-health-plan-progress.md`, and stop. Do not continue close-back
+   and do not write `result: ledger_closed` while any task is unverified. (To drop
+   a task from the closure set, amend or re-disposition its rows first — there is
+   no in-run abandonment path.)
 3. **Append** — add one `fixed` row at the bottom of the table. The ledger
    uses the **eight-column** schema:
 
