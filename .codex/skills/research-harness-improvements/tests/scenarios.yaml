@@ -1,0 +1,36 @@
+skill: research-harness-improvements
+scenarios:
+  - id: research-agent-skill-practices
+    status: golden
+    user_prompt: "Research current best practices for AI agent skills and identify evidence-backed improvements that may apply to this harness repository."
+    expected_artifacts:
+      - ".dev/*-harness-improvement-research*.md"
+    notes: "Must inspect current repo coverage first, use current external sources, distinguish evidence from inference, and leave shared authored files unchanged."
+
+  - id: verify-latest-harness-capabilities
+    status: golden
+    user_prompt: "Compare the latest official Codex, Claude Code, and GitHub Copilot agent capabilities that affect our shared agent and tool projection model."
+    expected_artifacts:
+      - ".dev/*-harness-improvement-research*.md"
+    notes: "Must use first-party documentation for current capability claims, record exact access dates, and map findings to harness-concepts.md plus agent-tool-projection-policy.md."
+
+  - id: research-mcp-memory-and-context
+    status: golden
+    user_prompt: "Investigate MCP, agent memory, and context-management patterns that could improve our AI harness files."
+    expected_artifacts:
+      - ".dev/*-harness-improvement-research*.md"
+    notes: "Must cover only the requested components, prefer primary specifications and implementation repositories, and identify existing local coverage before proposing candidate patterns."
+
+  - id: filter-nonportable-harness-advice
+    status: golden
+    user_prompt: "Research popular Claude Code hooks and recommend which ones should be copied into the shared profile."
+    expected_artifacts:
+      - ".dev/*-harness-improvement-research*.md"
+    notes: "Must reject direct copying of harness-specific mechanics unless a portable shared rule exists underneath, and must route concrete shared-profile decisions through review-improvement-reports."
+
+  - id: avoid-duplicate-research-surface
+    status: golden
+    user_prompt: "Find new agent-evaluation ideas for this repo, but first check whether our current skills, knowledge, validators, or scenarios already implement them."
+    expected_artifacts:
+      - ".dev/*-harness-improvement-research*.md"
+    notes: "Must classify apparently new ideas against live repo evidence and explicitly identify duplicates, partial coverage, and genuine gaps."
