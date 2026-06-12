@@ -78,6 +78,13 @@ Compare the agents list and metadata against map data. Discrepancy type definiti
 are in `.claude/knowledge/sync-maps-edit-cases.md`,
 **"Agent surface — discrepancy types (audit)"** section.
 
+If that section is missing or unreadable, **stop and report** the missing
+canonical comparison contract (`.claude/knowledge/sync-maps-edit-cases.md`).
+Do not emit a discrepancy report from the legal `type` names alone — the section
+holds the classification rules (either-layer absence, archived-object detection,
+tools/caller normalization, phase-node interpretation), without which the audit
+cannot be relied on.
+
 If `caller_check_skipped` is `true` in the metadata JSON, skip `caller_mismatch`
 detection and note it in the summary.
 

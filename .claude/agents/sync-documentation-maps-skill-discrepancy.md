@@ -82,6 +82,13 @@ Compare the active skill list and extracted metadata against the map data.
 Discrepancy type definitions are in `.claude/knowledge/sync-maps-edit-cases.md`,
 **"Skill surface — discrepancy types (audit)"** section.
 
+If that section is missing or unreadable, **stop and report** the missing
+canonical comparison contract (`.claude/knowledge/sync-maps-edit-cases.md`).
+Do not emit a discrepancy report from the legal `type` names alone — the section
+holds the classification rules (either-layer absence, archived-object detection,
+tools/caller normalization, phase-node interpretation), without which the audit
+cannot be relied on.
+
 For each type found, construct a discrepancy entry with `type`, `skill`, and
 `detail` fields. Populate `detail` with context (e.g., for `phase_count_mismatch`,
 record both the map-derived count and the SKILL.md count from `skill-metadata.json`).
