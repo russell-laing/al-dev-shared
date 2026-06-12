@@ -172,7 +172,7 @@ flowchart LR
 1. `/audit-knowledge-quality` — Audit knowledge files for stub sections and structural issues. Repeat as needed.
    - reads: `profile-al-dev-shared/knowledge/`
    - writes: `docs/al-dev-knowledge-quality.md`
-2. `/fix-knowledge-quality` — Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. Repeat as needed.
+2. `/fix-knowledge-quality` — Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. Repeat as needed.
    - reads: `docs/al-dev-knowledge-quality.md`
    - writes: `profile-al-dev-shared/knowledge/`
 3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
@@ -573,7 +573,7 @@ flowchart TD
 | `/implement-health-plan` | implement | user | Execute an accepted health-findings implementation plan and close the disposition ledger. |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
-| `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches fix agents for each HIGH issue. |
+| `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. |
 | `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
@@ -615,7 +615,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-11 |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-12 |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-11 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-11 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-11 |

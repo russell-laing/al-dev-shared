@@ -3,7 +3,7 @@ name: fix-knowledge-quality
 description: >-
   Reads the HIGH-severity fix-task block produced by
   /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the
-  tasks, and optionally dispatches fix agents for each HIGH issue. Run
+  tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. Run
   /audit-knowledge-quality first if no audit file exists. Triggers on: "fix
   knowledge quality", "fix knowledge issues", "implement knowledge fixes",
   "address high knowledge findings".
