@@ -46,7 +46,18 @@ fi
 python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
 ```
 
-Extract flagged files and issue codes from output. Group by issue type: [THIN], [NO-CODE], [DEAD-REF].
+`validate-knowledge-quality.py` emits one multiline record per finding:
+
+```text
+<path>
+  rule: <rule>
+  issue: <detail>
+  fix: <action>
+```
+
+Parse each record and map its `rule` value to an issue group:
+`knowledge-stub → THIN`, `knowledge-no-code → NO-CODE`,
+`knowledge-dead-ref → DEAD-REF`. Group findings by the mapped issue type.
 
 ### Phase 2: Analyze
 
@@ -57,7 +68,12 @@ treatment, and the structured return schema that Phase 3 consumes.
 
 ### Phase 3: Write Findings Report
 
-Write to `docs/al-dev-knowledge-quality.md` with structure:
+Write to `docs/al-dev-knowledge-quality.md`. The report **always** contains the
+`## Fix Recommendations` and `## High-Priority Fix Tasks` blocks — they are written
+unconditionally. Whether they are re-presented interactively is governed by the
+USER_GATE in Phase 4.
+
+Structure:
 
 ```markdown
 # Knowledge File Quality Report
@@ -112,8 +128,18 @@ MEDIUM or LOW issues in this block.
 After writing the report:
 
 1. Print: `Knowledge quality report written to docs/al-dev-knowledge-quality.md`
-2. Ask the user: "Would you like to fix any of these issues?"
-3. If yes, present a structured list of concrete fix instructions, one per HIGH issue
+2. Present the audit summary (findings count by severity and top 3 HIGH issues).
+
+**USER_GATE — fix-guidance presentation.** The written report
+(`docs/al-dev-knowledge-quality.md`) always contains the `## Fix Recommendations`
+and `## High-Priority Fix Tasks` blocks. This gate controls only whether they are
+re-presented interactively. After presenting the audit summary, ask:
+
+> HIGH-severity stub findings were found. Walk through the fix guidance now?
+> (yes / no)
+
+On `yes`, present the recommendations inline; on `no` or no response, stop after
+the summary — the guidance remains in the report file for later use.
 
 ## Output Format
 
@@ -136,9 +162,11 @@ Run `cat docs/al-dev-knowledge-quality.md` to see full report.
 
 ## Success Criteria
 
-✅ All HIGH severity findings have concrete fix recommendations  
-✅ False positives (LOW severity) are clearly marked and explained  
-✅ Report is actionable — user can immediately address MEDIUM/HIGH issues  
+✅ All HIGH severity findings have concrete fix recommendations written to `docs/al-dev-knowledge-quality.md`
+✅ The report always contains `## Fix Recommendations` and `## High-Priority Fix Tasks` (written unconditionally)
+✅ The USER_GATE in Phase 4 gates interactive re-presentation only — not generation of the report sections
+✅ False positives (LOW severity) are clearly marked and explained
+✅ Report is actionable — user can immediately address MEDIUM/HIGH issues
 ✅ DEAD-REF issues are investigated (not every broken link is a real problem)
 
 **When to run:**
