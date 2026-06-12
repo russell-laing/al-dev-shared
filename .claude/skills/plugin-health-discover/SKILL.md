@@ -7,7 +7,8 @@ description: >-
   and writes RAW (unranked) lens findings to
   docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
-  be run standalone to refresh findings without re-running the report phase.
+  be run standalone to refresh findings without re-running the report phase, but it requires the same
+  pre-conditions as a full audit run.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
   stage: discover
@@ -114,7 +115,9 @@ Execute the following state machine in order:
    ```
 
    Parse the `"lens"` field from each `.json` file.
-   `remaining_lenses = [l for l in ALL_LENSES if l not in completed_lenses]`.
+   Compute `remaining_lenses` as the lenses in `ALL_LENSES` that are not in
+   `completed_lenses` (set difference). This is a filtering step you perform
+   directly — no script is invoked here.
    Log: `"Resuming: X lenses already completed, Y remaining"`. If
    `remaining_lenses` is empty, log all-complete and skip to Phase 4.
    If `--resume` is absent, `remaining_lenses = ALL_LENSES`.
