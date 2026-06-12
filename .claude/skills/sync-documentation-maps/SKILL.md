@@ -113,6 +113,10 @@ Dispatch in parallel:
 
 Pass `run_id` and `result_dir` to both. Wait for both to complete.
 
+Verify `.claude/skills/sync-documentation-maps/sync-documentation-maps-dispatch-patterns.md`
+exists before dispatching; if it is absent, stop and report the missing canonical
+dispatch template rather than improvising agent IDs/parameters.
+
 For the canonical dispatch template and surface parameterization table, follow
 `.claude/skills/sync-documentation-maps/sync-documentation-maps-dispatch-patterns.md`.
 
