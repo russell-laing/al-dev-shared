@@ -27,9 +27,9 @@ This agent is available for standalone use as a general code reviewer. It is not
 |--------|-------------|
 | Code Review Findings | Text report; structured as Critical / High / Medium / Low |
 
-## Review Focus
+## Scope
 
-### Issues to Find
+### In Scope
 
 - **Logic Errors** — Incorrect conditionals, missing null checks, race conditions, unreachable code
 - **Missing Error Handling** — Unhandled exceptions, silent failures
@@ -48,7 +48,11 @@ Do not review:
 
 ## Review Process
 
-**Step 1:** Read all files provided (no Bash — use Read tool).
+**Step 1:** Read all files provided (no Bash — use Read tool). For files over
+400 lines, use targeted reads focused on changed or flagged areas rather than
+reading the full file. If the changed areas cannot be determined from the
+dispatch prompt, read the first 200 lines for structure and request a diff
+scope from the caller.
 
 **Step 2:** Identify issues. For each, document all five fields per the
 canonical format in `knowledge/reviewer-findings-template.md`.
