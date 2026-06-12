@@ -189,6 +189,9 @@ If a finding's subject cannot be resolved to a single file, skip the gate for it
 
 Report the stale-labelled count before Phase 2. Handle by tier:
 
+Define **stale ratio** = (count of findings labelled `⚠ possibly stale`) ÷
+(count of all findings rubber-ducked this run).
+
 | Stale ratio | Action |
 |---|---|
 | 100% (all findings) | Advise re-running `/plugin-health-audit`; do not proceed |
@@ -258,7 +261,8 @@ Pass as context to writing-plans all items listed in
 
 > **Survival caveat:** After writing-plans completes, run
 > `grep -c "closes_rows:" <plan-path>` and confirm the count equals the number
-> of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually.
+> of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
+> `closes_rows: [...]` line inside each task's verification block before handoff.
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
   Inline" prompt or ask "Which approach?".
