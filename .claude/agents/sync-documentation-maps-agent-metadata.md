@@ -75,6 +75,9 @@ On failure (non-zero exit or invalid JSON output): set `callers: {}` and
 `caller_check_skipped: true` in the output JSON. Do not grep skill files as
 a fallback.
 
+Do not abort: still write the JSON with all metadata extracted in Step 2 (only
+the callers map is emptied). Proceed to Step 4.
+
 ### Step 4 — Write JSON and return path
 
 Ensure `<result_dir>/audit/` exists (`mkdir -p`). Write `agent-metadata.json`.
