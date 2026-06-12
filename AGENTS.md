@@ -70,6 +70,7 @@ Current repo-local Codex skills:
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates, appends, or losslessly consolidates review-only findings for Superpowers plans after live repo checks.
 - `.codex/skills/extract-mermaid-diagrams/` — extracts Mermaid diagrams from Markdown and renders image artifacts plus metadata for AI visual analysis.
+- `.codex/skills/generate-duplicate-text-report/` — scans active repository surfaces for exact repeated text blocks and writes durable Markdown reports for maintainer review.
 
 ## Core Workflow Contracts
 

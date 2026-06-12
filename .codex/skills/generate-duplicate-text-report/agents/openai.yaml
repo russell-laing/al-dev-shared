@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Duplicate Text Report"
+  short_description: "Find exact repeated text blocks for review"
+  default_prompt: "Use $generate-duplicate-text-report to scan the active repository surfaces for exact duplicate text blocks and summarize the drift risks."

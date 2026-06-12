@@ -64,6 +64,9 @@ Current repo-local skills:
   repo checks.
 - `.codex/skills/extract-mermaid-diagrams/` — extracts Mermaid diagrams from
   Markdown and renders image artifacts plus metadata for AI visual analysis.
+- `.codex/skills/generate-duplicate-text-report/` — scans active repository
+  surfaces for exact repeated text blocks and writes durable Markdown reports
+  for maintainer review.
 
 ## Shared Plugin Surface (All Harnesses)
 
