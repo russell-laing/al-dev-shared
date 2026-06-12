@@ -1,5 +1,10 @@
 # Ledger Closure Protocol
 
+> See `.claude/knowledge/health-disposition-storage-contract.md` for the
+> authoritative storage layout. `docs/health/dispositions-history/` is the
+> append-only source of truth; `docs/health/dispositions.md` is the generated
+> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+
 Use this protocol when a fix session resolves an `accepted` health finding.
 
 ## Why closure matters

@@ -1,5 +1,10 @@
 # Health Disposition Rules
 
+> See `.claude/knowledge/health-disposition-storage-contract.md` for the
+> authoritative storage layout. `docs/health/dispositions-history/` is the
+> append-only source of truth; `docs/health/dispositions.md` is the generated
+> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+
 Shared rules extracted from `/record-health-dispositions` for loop-state adoption,
 batch guards, and re-litigation prevention.
 

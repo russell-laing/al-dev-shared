@@ -1,5 +1,10 @@
 # Report Input Gates
 
+> See `.claude/knowledge/health-disposition-storage-contract.md` for the
+> authoritative storage layout. `docs/health/dispositions-history/` is the
+> append-only source of truth; `docs/health/dispositions.md` is the generated
+> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+
 Operative procedures for the `/plugin-health-report` Phase 1b–1d filter stages.
 These rules are canonical; the SKILL.md sub-sections point here.
 
