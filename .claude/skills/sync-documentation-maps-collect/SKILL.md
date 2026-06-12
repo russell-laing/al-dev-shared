@@ -4,7 +4,9 @@ description: >-
   Collect results from /sync-documentation-maps audit agents. Reads audit
   artifacts, presents discrepancy findings, asks which maps to update (skipped when `--all`/auto-update is set), and
   dispatches background update agents. Supports Resume/Restart when a prior
-  collect state exists; `--wait` polls for both audit artifacts for up to 30
+  collect state exists (decision table in
+  `.claude/skills/sync-documentation-maps/collect-resume-patterns.md`);
+  `--wait` polls for both audit artifacts for up to 30
   minutes before reading them. Second step of the async sync workflow.
 argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
 workflow:
