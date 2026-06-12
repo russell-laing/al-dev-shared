@@ -26,9 +26,11 @@ chain analysis.
 **Look for:**
 
 1. A well-established chain that has an obvious next step not yet covered.
-   An obvious next step is one documented in existing issues or team notes,
-   or common in analogous tool chains (e.g., a chain ending at `commit` where
-   a natural `release` or `deploy` step would complete the workflow).
+   An obvious next step is one that conventionally completes the chain's terminal
+   artifact, judged from `handoff_chains` alone (e.g., a chain ending at `commit`
+   with no `release` or `deploy` successor). "Conventionally completes" means the
+   next step is a standard successor for that artifact type — derivable from the
+   chain structure, not merely plausible.
 2. Outputs produced by one skill (listed in body as "writes X.md") that are
    never referenced as inputs by any other skill — orphaned outputs that could
    be useful if consumed. To decide "never referenced": grep each output's
