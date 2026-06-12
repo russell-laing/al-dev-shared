@@ -174,3 +174,4 @@ Current source of truth: active implementation guidance lives in the current sha
 - Kind: plan
 - Status: implemented
 - Summary: Remediate the 9 confirmed-open High-severity findings from the 2026-06-04 plugin + tooling health dossiers, after rubber-ducking each against live code.
+2026-06-13 | plugin-quality-commit-agents | implemented; rows closed: [#676, #677, #678, #679, #681, #682, #683, #685, #686, #687, #688, #689, #690, #691, #692]
