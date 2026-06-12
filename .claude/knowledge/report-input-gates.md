@@ -38,7 +38,8 @@ still open work), but the Summary must split the totals: new vs recurring.
 ## 1c — Staleness spot-check
 
 Apply the **staleness spot-check protocol** from
-`../../knowledge/health-audit-preconditions.md` (lines 120–136) to every High
+`../../knowledge/health-audit-preconditions.md` (see its
+"## Staleness spot-check protocol" section) to every High
 finding and every top-5 candidate before ranking.
 
 Resolve the subject to its file path (skill →

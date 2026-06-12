@@ -97,7 +97,8 @@ new vs recurring. See `report-input-gates.md §1b` for the full procedure.
 ### Staleness spot-check
 
 Apply the staleness spot-check protocol from
-`../../knowledge/health-audit-preconditions.md` (lines 120–136) to every High
+`../../knowledge/health-audit-preconditions.md` (see its
+"## Staleness spot-check protocol" section) to every High
 finding and every top-5 candidate before ranking. Supply `FINDINGS_DATE` from
 the findings-file name; for recurring findings also check with `PRIOR_DATE`
 from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
