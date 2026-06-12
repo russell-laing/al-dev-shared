@@ -127,12 +127,15 @@ for name in EXPECTED_AGENTS:
             f'add a "## Output Format" section to {path} describing the findings block structure',
         ))
 
-    if "_No issues found._" not in content:
+    # Accept either emphasis marker: markdownlint MD049 (default "consistent")
+    # normalizes the sentinel's emphasis to each file's dominant marker via the
+    # post-edit --fix hook, so this content-presence check must not pin one form.
+    if "_No issues found._" not in content and "*No issues found.*" not in content:
         failures.append(_format_failure(
             path,
             "agent-no-issues-pattern",
-            'no "_No issues found._" fallback pattern in body',
-            f'add "_No issues found._" to the ## Output Format section in {path}',
+            'no "No issues found." fallback pattern in body',
+            f'add "_No issues found._" (or "*No issues found.*") to the ## Output Format section in {path}',
         ))
 
 for skill_path in SKILLS_TO_CHECK:
