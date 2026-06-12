@@ -71,10 +71,21 @@ def main() -> None:
         action="store_true",
         help="Print the migration plan without writing any files",
     )
+    parser.add_argument(
+        "--rebuild-current-only",
+        action="store_true",
+        help="Regenerate dispositions.md from history shards without touching shards",
+    )
     args = parser.parse_args()
 
     source = Path(args.source)
     history_root = Path(args.history_root)
+
+    if args.rebuild_current_only:
+        store = _load_store()
+        store.render_current_view(source, list(store.iter_history_rows(history_root)))
+        print("rebuilt current view")
+        return
 
     report = migrate_store(source, history_root, dry_run=args.dry_run)
 

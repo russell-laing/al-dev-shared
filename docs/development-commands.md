@@ -68,6 +68,17 @@ python3 scripts/generate-maintainer-guide.py
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
 Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artifacts, not maintained repo outputs; do not edit or commit them.
 
+## Health Disposition Store
+
+- Inspect current state (generated projection):
+  `head -80 docs/health/dispositions.md`
+- Inspect the latest history shard:
+  `ls docs/health/dispositions-history/$(date +%Y)/` then `head -80 <shard>`
+- Run the closure-staleness check:
+  `python3 scripts/check_ledger_staleness.py`
+- Rebuild the generated current view from history shards (re-run after manual shard edits):
+  `python3 scripts/migrate_health_disposition_store.py --rebuild-current-only`
+
 ## Plugin Health and Documentation
 
 ```bash
