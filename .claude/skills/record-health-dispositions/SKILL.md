@@ -2,7 +2,9 @@
 name: record-health-dispositions
 description: >-
   Disposition phase of the health-audit loop. Walks the open findings in the
-  latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding at a user gate, and appends correctly formatted
+  latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding
+  at a user gate (recorded as `accepted`, `declined`, `grandfathered`, `fixed`, or
+  omitted for `skip`), and appends correctly formatted
   rows to docs/health/dispositions.md. Run after /plugin-health-audit and
   before /plan-health-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
@@ -96,8 +98,8 @@ issue, proposed fix. Collect one decision per finding from the user:
 
 - `accepted` — to be implemented; note may name the intended change
 - `declined` — requires a reason (recorded in Evidence / note)
-- `grandfathered` — deliberate or settled; requires a reason
-- `fixed` — requires a commit hash or "verified against live file `<date>`"
+- `grandfather` (verb) — deliberate or settled; requires a reason (recorded ledger value: `grandfathered`)
+- `fixed` — requires a commit hash or "verified against live file `<date>`" (recorded ledger value: `fixed`)
 - `skip` — leave undispositioned this round (no row written)
 
 Batch decisions are fine when the user groups them explicitly; each batch still
@@ -108,10 +110,14 @@ explicit user input. Apply the **contradictory-batch guard** and the
 
 ## Phase 3 — Append rows
 
-Append one row per non-skip decision at the bottom of the table, using the seven-column schema defined below.
+Append one row per non-skip decision at the bottom of the table, using the
+eight-column schema (canonical column order):
+
+1. `ID` · 2. `Surface` · 3. `Dimension` · 4. `Object` · 5. `Finding` ·
+6. `Disposition` · 7. `Date` · 8. `Evidence / note`
 
 ```markdown
-| <surface> | <dimension> | <object> | <issue essence — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / reason> |
+| <id> | <surface> | <dimension> | <object> | <finding — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / note> |
 ```
 
 - Date is today's real date in ISO format — never a literal placeholder.
