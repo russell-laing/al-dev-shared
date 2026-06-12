@@ -43,9 +43,7 @@ All inputs arrive in the dispatch prompt:
 
 Given manifests from the analyzer, propose atomic commit groups and draft commit messages.
 
-### Commit Group Proposal (Steps 1–1a)
-
-#### Step 1 — Propose commit groups
+### Step 1 — Propose Commit Groups
 
 Group staged files into **deployable atomic commit units**:
 
@@ -57,9 +55,13 @@ Group staged files into **deployable atomic commit units**:
 1. **Deployable unit constraint** — if file A references file B
    at compile time, they **must** be in the same commit.
 1. **Single-commit default** — 1-3 files with a clear single
-   purpose → propose one commit.
+   purpose → propose one commit. A "clear single purpose" means all
+   files contribute to one feature or fix with no mixed concerns
+   (e.g., a bug fix and a refactor belong in separate commits).
 
-#### Step 1a — Draft commit messages
+---
+
+### Step 2 — Draft Commit Messages
 
 For each group, draft a message using this format:
 
