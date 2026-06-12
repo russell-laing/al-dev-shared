@@ -14,7 +14,10 @@ tools: ["Read", "Grep"]
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | caller_map | Mapping of agent-name → list of skill names that spawn it (provided in dispatch prompt) |
 
-**Implicit dependency:** The agent searches the hardcoded path `profile-al-dev-shared/skills/` for dispatch patterns (body line 37). This path is embedded in the agent body — callers do not supply it.
+**Implicit dependency:** The agent searches the hardcoded path
+`profile-al-dev-shared/skills/` for dispatch patterns (see the "Lens: Caller
+Alignment" section). This path is embedded in the agent body — callers do not
+supply it.
 
 ## Outputs
 
@@ -24,37 +27,28 @@ Returns a findings block. See Output Format.
 
 ## Lens: Caller Alignment (→ Align)
 
-Read every file path provided in the dispatch prompt. For each file, derive the
-agent name from the filename (strip directory path and `.md` extension).
+For each agent file: derive the agent name (strip path + `.md` extension), extract
+its `## Inputs` / `## Outputs` sections, then Grep `profile-al-dev-shared/skills/`
+for `al-dev-shared:<agent-name>` to check how spawning skills invoke it.
 
-Extract the `## Inputs` and `## Outputs` sections. Then use the Grep tool to
-check how each spawning skill actually invokes the agent. Check two signals independently:
-(1) an `al-dev-shared:<agent>` dispatch line, and (2) the
-context block passed alongside it (the prompt fields the skill hands the
-agent). Three states: both present and the supplied fields matching the agent's Inputs
-table means a working contract; a dispatch line with no context block is a High
-alignment finding because the agent's documented Inputs are not being supplied;
-passed context with no dispatch line is also a finding. Search the skills directory:
+Classify into three states:
 
-- Pattern: `al-dev-shared:<agent-name>` in `/Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/`
+- **Both present, fields match** — working contract; no finding
+- **Dispatch line, no context block** — High; documented Inputs are not supplied
+- **Context block, no dispatch line** — High; unreferenced invocation
 
 **Red flags:**
 
-- Spawning skill passes a structured context block (file paths, data) that the
-  agent's Inputs table does not document
-- Agent's Outputs table names a file the spawning skill never reads or references
-- Agent Inputs table says "Not documented" but the spawning skill passes a
-  structured prompt with specific fields
-
-A mismatch between caller behaviour and agent documentation is an Align candidate.
+- Spawning skill passes structured context the agent's Inputs table does not document
+- Agent Outputs table names a file the spawning skill never reads or references
+- Inputs table says "Not documented" but caller passes structured fields
 
 **Severity rules:**
 
-- High: caller passes structured data the agent's Inputs table explicitly contradicts
-- High: caller dispatches the agent with no context block
+- High: caller passes structured data the Inputs table explicitly contradicts
+- High: caller dispatches with no context block
 - High: context block passed with no dispatch line
-- Medium: Inputs/Outputs table is "Not documented" but caller clearly passes
-  structured context
+- Medium: Inputs/Outputs table is "Not documented" but caller passes structured context
 - Low: minor label mismatch that doesn't affect behavior but confuses future callers
 
 ---
