@@ -59,9 +59,9 @@ prompt instead.
 
 For each failure, consult the Failure Classification table in
 `knowledge/commit-hook-recovery-patterns.md` and assign a per-failure
-recoverability label from the Failure Taxonomy above. Inline fallback if the
-knowledge file is unavailable: fixable = scripted fix exists; transient =
-retry safe with no file change; non-fixable = human review required.
+recoverability label from the Failure Taxonomy above. If the knowledge file
+is unavailable, use this inline fallback: fixable = scripted fix exists;
+transient = retry safe with no file change; non-fixable = human review required.
 
 Assign `root_cause`: one-line diagnosis derived from the error log and hook name.
 Assign `recommended_fix`: concrete next action for the caller.
