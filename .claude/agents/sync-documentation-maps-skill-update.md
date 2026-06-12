@@ -33,6 +33,10 @@ Returns absolute path only — no other prose.
 All relative paths in these instructions are from the repository root:
 `/Users/russelllaing/al-dev-shared`. Adjust paths if the working directory differs.
 
+Verify `.claude/knowledge/sync-map-update-shared.md` exists before following it;
+if it is absent, stop and report the missing canonical update procedure rather
+than improvising the map edit.
+
 Follow the canonical update procedure in
 `.claude/knowledge/sync-map-update-shared.md`, with these surface parameters:
 
