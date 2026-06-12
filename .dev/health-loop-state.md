@@ -1,13 +1,14 @@
 stage_completed: implement-health-plan
-completed_at: 2026-06-12
+completed_at: 2026-06-13
 next_command: none
 next_inputs: []
 fresh_session_recommended: false
 note: >-
-  Loop closed. The 2026-06-12 tooling-quality clarity & bloat plan (20 tasks)
-  was implemented and all 30 accepted rows (#595–#642 subset) closed with
-  `fixed` rows in docs/health/dispositions.md; check_ledger_staleness.py
-  --strict reports 0 effective-open accepted rows. Plan + dossier + findings
-  archived. No profile-al-dev-shared/ source changed (all edits are repo-local
-  .claude/ maintainer tooling), so no /projection-sync or /align-harness-repos
-  is required.
+  Loop closed; ledger staleness check passed. Plugin quality sweep
+  (2026-06-12), --surface plugin --dimension quality. 15 fixed rows
+  appended (closes #676, #677, #678, #679, #681, #682, #683, #685,
+  #686, #687, #688, #689, #690, #691, #692). #680 and #684 skipped
+  (already resolved). Source files under profile-al-dev-shared/agents/
+  changed — projections were bundled in task commits and are in sync.
+  If needed, run /projection-sync and /align-harness-repos to verify
+  neutrality.
