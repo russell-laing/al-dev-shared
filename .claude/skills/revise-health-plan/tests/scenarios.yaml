@@ -1,0 +1,40 @@
+skill: revise-health-plan
+scenarios:
+  - id: revise-from-consolidated-findings
+    status: golden
+    user_prompt: "use the consolidated findings doc to improve the implementation plan and add anything out of scope to the dispositions ledger"
+    expected_artifacts:
+      - ".dev/health-loop-state.md"
+    notes: "Primary trigger — an existing plan plus a separate review/findings doc. Should reconcile the plan and re-disposition out-of-scope findings, then write the hand-off breadcrumb."
+
+  - id: revise-apply-commentary
+    status: golden
+    user_prompt: "apply the plan commentary to the plan and re-disposition the findings that don't earn their closure"
+    expected_artifacts:
+      - ".dev/health-loop-state.md"
+    notes: "Paraphrase using 'commentary' (the plan-commentary output) rather than 'consolidated findings'; same reconcile path."
+
+  - id: revise-reconcile-before-run
+    status: golden
+    user_prompt: "reconcile the review document against the health plan before we run it"
+    expected_artifacts:
+      - ".dev/health-loop-state.md"
+    notes: "Trigger emphasising the 'before execution' timing; confirms routing when the user frames it as a pre-implement reconciliation."
+
+  - id: no-trigger-plan-health-findings
+    status: golden
+    user_prompt: "plan the accepted health findings from the latest dossier and create an implementation plan"
+    expected_artifacts: []
+    notes: "Should route to plan-health-findings, not this skill. There is no existing plan + review pair here — the user wants a NEW plan built from a dossier."
+
+  - id: no-trigger-implement-health-plan
+    status: golden
+    user_prompt: "implement the health plan and close the disposition ledger"
+    expected_artifacts: []
+    notes: "Should route to implement-health-plan, not this skill. This skill revises a plan; it does not execute one or write fixed rows."
+
+  - id: no-trigger-record-dispositions
+    status: golden
+    user_prompt: "record dispositions for the findings in the latest dossier"
+    expected_artifacts: []
+    notes: "Should route to record-health-dispositions, not this skill. Dispositioning raw dossier findings (no plan or review doc involved) is the record step, not a plan revision."
