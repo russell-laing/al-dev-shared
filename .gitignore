@@ -20,3 +20,4 @@ docs/health/*
 !docs/health/dispositions.md
 !docs/health/dispositions-migration-audit.md
 !docs/health/dispositions-id-migration-audit.md
+!docs/health/dispositions-history/

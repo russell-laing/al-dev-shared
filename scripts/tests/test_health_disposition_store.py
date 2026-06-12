@@ -138,5 +138,42 @@ class RenderCurrentViewTest(unittest.TestCase):
             )
 
 
+MIGRATE_PATH = REPO_ROOT / "scripts" / "migrate_health_disposition_store.py"
+
+
+def _load_migrate() -> object:
+    spec = importlib.util.spec_from_file_location("migrate_health_disposition_store", MIGRATE_PATH)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class MigrateStoreTest(unittest.TestCase):
+    def test_migration_preserves_row_count_and_produces_smaller_current_view(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            source = Path(d) / "docs" / "health" / "dispositions.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "# Health Finding Dispositions\n\n"
+                "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
+                "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
+                "| #595 | tooling | quality | record-health-dispositions"
+                " | Schema count mismatch | accepted | 2026-06-12 | queued |\n"
+                "| #596 | tooling | quality | record-health-dispositions"
+                " | Schema count mismatch | fixed | 2026-06-13 | abc1234 closes row 1 |\n",
+                encoding="utf-8",
+            )
+            history_root = Path(d) / "docs" / "health" / "dispositions-history"
+
+            mod = _load_migrate()
+            report = mod.migrate_store(source, history_root)
+
+            self.assertEqual(report["source_rows"], 2)
+            self.assertEqual(report["written_rows"], 2)
+            self.assertEqual(report["current_rows"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
