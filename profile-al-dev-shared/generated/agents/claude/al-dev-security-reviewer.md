@@ -45,7 +45,7 @@ Specialist teammate for security, permissions, and data access review. Spawned b
 ### 3. Authentication/Authorization
 
 - Missing user authentication checks
-- Inadequate authorization before actions
+- Inadequate authorization before actions (inadequate = missing or bypassable permission check before any state-mutating operation that creates, modifies, or deletes data or configuration)
 - Bypassing BC security model
 - Inconsistent permission patterns
 
@@ -58,13 +58,7 @@ Specialist teammate for security, permissions, and data access review. Spawned b
 
 ### Common Security Issues
 
-For detailed code examples and patterns, see `knowledge/security-review-examples.md`. Key vulnerability categories:
-
-- SQL Injection via string concatenation
-- Credential storage vulnerabilities
-- Permission elevation risks
-- Data exposure in logs
-- Insufficient input validation
+For detailed code examples and patterns covering all four Review Focus categories above, see `knowledge/security-review-examples.md`.
 
 ## Review Process
 
