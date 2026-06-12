@@ -1,6 +1,6 @@
 ---
 name: "al-dev-commit-hook-classifier"
-description: "Classify pre-commit hook failures by recoverability. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Dispatched by al-dev-commit-execute before al-dev-commit-hook-fixer."
+description: "Read-only classifier for pre-commit hook failures. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Never modifies files. Dispatched by al-dev-commit-execute (Phase 4.3) before al-dev-commit-hook-fixer."
 tools: ["read"]
 ---
 
@@ -13,6 +13,16 @@ Classify each pre-commit hook failure by recoverability. Dispatched by
 This agent isolates diagnosis from repair: it reads failure logs, classifies
 each failure, and returns a structured block — it never modifies files or runs
 bash commands.
+
+## Failure Taxonomy
+
+| Label | Meaning |
+|-------|---------|
+| **fixable** | A scripted fix exists in "Approved Fixes"; safe to apply automatically |
+| **transient** | No file change needed; retry is safe (e.g., network timeout) |
+| **non-fixable** | Requires human intervention before any retry |
+
+This taxonomy applies at two levels: per-failure recoverability (Step 2) and overall recoverability (Step 3).
 
 ## Inputs
 
@@ -43,11 +53,10 @@ prompt instead.
 ### Step 2: Classify each failure
 
 For each failure, consult the Failure Classification table in
-`knowledge/commit-hook-recovery-patterns.md` and assign:
-
-- **fixable** — a scripted fix exists in "Approved Fixes"; safe to apply automatically
-- **transient** — no file change needed; retry is safe (e.g. network timeout)
-- **non-fixable** — requires human intervention before any retry
+`knowledge/commit-hook-recovery-patterns.md` and assign a per-failure
+recoverability label from the Failure Taxonomy above. Inline fallback if the
+knowledge file is unavailable: fixable = scripted fix exists; transient =
+retry safe with no file change; non-fixable = human review required.
 
 Assign `root_cause`: one-line diagnosis derived from the error log and hook name.
 Assign `recommended_fix`: concrete next action for the caller.
