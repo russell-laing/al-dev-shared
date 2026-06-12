@@ -34,7 +34,7 @@ def shard_path_for_date(iso_date: str) -> Path:
 
     Callers combine with a history root: history_root / shard_path_for_date(date).
     """
-    year, month, _day = iso_date.split("-")
+    year, month, _ = iso_date.split("-")
     return Path(year) / f"{year}-{month}.md"
 
 
