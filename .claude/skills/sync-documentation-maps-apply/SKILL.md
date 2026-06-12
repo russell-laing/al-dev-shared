@@ -102,7 +102,11 @@ Check for each expected artifact based on `UPDATE_CHOICE`:
   `"${RUN_DIR}/updates/agent-map.md"`
 
 For each expected artifact, run `ls -la` and `wc -l`. For the **agent**
-artifact, also run the catalog count check.
+artifact, also run the **catalog count check** defined in
+`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`
+("Apply-stage Artifact Validation"): confirm the generated agent-catalog rows
+match the live agent files (`CATALOG_ROWS == DISK_AGENTS`). On mismatch, report it
+in the final summary and do not silently proceed.
 
 Apply the validation rules and all-surfaces-invalid stop rule from the
 "Apply-stage artifact validation" section in
