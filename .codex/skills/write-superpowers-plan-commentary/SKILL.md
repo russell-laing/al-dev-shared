@@ -1,90 +1,98 @@
 ---
 name: write-superpowers-plan-commentary
-description: Use when creating or appending review-only commentary for docs/superpowers/plans after rubber-ducking implementation risks, fixes, improvements, staging commands, generated artifacts, or verification claims.
+description: Use when reviewing docs/superpowers/plans, appending another adversarial pass to existing commentary, or creating a uniquely named grouped findings document without changing the source plan.
 ---
 
 # Write Superpowers Plan Commentary
 
-Write paired commentary for a Superpowers plan after checking live repo state.
-Commentary is review-only unless the user explicitly asks to patch the plan.
+## Overview
+
+Create traceable review-only artifacts from live repository evidence. Source
+plans and earlier review text are immutable.
 
 ## Use When
 
-- Source is under `docs/superpowers/plans/`.
-- User says `rubber duck`, `commentary`, `improvements`, `fixes`, `another
-  pass`, or names an existing `*-commentary.md` file.
-- Goal is catching implementation blockers, misleading verification,
-  staging/commit risks, generated-artifact gaps, or stale claims.
+- The source is under `docs/superpowers/plans/`.
+- The user asks for commentary, rubber-ducking, another pass, or consolidation.
 
-For broad recommendation-heavy reports outside `docs/superpowers/plans/`, prefer
-`review-self-healing-report`.
+Use `review-self-healing-report` for recommendation-heavy reports outside this
+directory.
 
-## Path Rule
+## Artifact Modes
 
-If the user gives only `docs/superpowers/plans/YYYY-MM-DD-topic.md`, write:
+| Request | Output |
+| --- | --- |
+| First review | `<plan-stem>-commentary.md` |
+| Another pass | Append to the same commentary |
+| Group/consolidate | `<plan-stem>-consolidated-findings-<timestamp><timezone>.md` |
 
-```text
-docs/superpowers/plans/YYYY-MM-DD-topic-commentary.md
-```
-
-If the commentary exists, append a clearly labeled further-findings section.
-Do not replace earlier findings unless asked.
+For unique names use `date '+%Y%m%dT%H%M%S%Z'`, then require `test ! -e`.
 
 ## Workflow
 
-1. Read the full source plan with line numbers and read existing commentary.
-2. Check live repo state before judging claims:
+1. Read the full plan with line numbers and all existing commentary.
+2. Before writing, snapshot ignored inputs with `shasum -a 256`; copy existing
+   commentary to `/tmp` when appending or consolidating. `git diff` cannot prove
+   an ignored, untracked plan is unchanged.
+3. Check live state:
 
    ```bash
    git status --short
-   rg -n "git add|commit|generate|validate|markdownlint|workflow:|KEEP VERBATIM|BEGIN GENERATED|END GENERATED" docs/superpowers/plans/<plan>.md
+   rg -n "git add|commit|generate|validate|markdownlint|workflow:|KEEP VERBATIM|BEGIN GENERATED|END GENERATED" <plan>
    ```
 
-3. Read exact files behind plan claims. For code snippets, run cheap syntax or
-   reproduction checks in `/tmp` when practical. For commit tasks, compare
-   planned `git add` commands with the dirty tree and generated outputs.
-4. Classify only findings that matter for execution:
-   - `Valid blocker`
-   - `Valid but lower priority`
-   - `Overstated`
-   - `Stale`
-   - `Unsupported`
-5. For each finding, include source line refs, live evidence, execution risk,
-   and the concrete correction.
-6. Keep the source plan untouched unless explicitly asked to edit it.
+4. Read exact files behind claims. Reproduce cheap snippets, trace generators,
+   and compare staging with the dirty tree.
+5. Keep execution-relevant findings only. Use `Valid blocker`,
+   `Valid but lower priority`, `Overstated`, `Stale`, or `Unsupported`.
+6. Each finding needs source lines, live evidence, execution risk, and a
+   concrete correction.
 
-## Commentary Shape
+## Repeated Passes
 
-New files start with `# Rubber-Duck Commentary: <Plan Title>`, the source plan
-path, a review-only note, then `## Findings`. Repeat passes append `## Further
-Findings From Second Pass` or a later pass number.
+Treat earlier finding blocks as immutable. Compare every candidate against all
+prior passes by target, violated contract, failure mode, and correction.
 
-## Friction Guards
+- Same failure with different wording or another example: duplicate; omit it.
+- Stronger evidence: preserve the old block; add a labeled addendum if needed.
+- Distinct executable failure: append under
+  `## Further Findings From <Ordinal> Pass` using the next finding number.
+- No novel evidence-backed finding: report that result without inventing one.
 
-| Friction | Guard |
-| --- | --- |
-| `docs/superpowers/plans/` is ignored, so `git status --short <file>` may be silent. | Verify with `test -f` or `ls`, then use `git status --short --ignored=matching <commentary>`. |
-| Same-day plans contain unverified claims. | Re-run cheap live checks; mark unverified claims as `Overstated` or `Unsupported`. |
-| Repeat passes can erase earlier review context. | Append a new section and preserve prior findings. |
-| Staging commands can sweep unrelated work. | Check `git status --short` and require exact-path staging in the recommendation. |
-| Generated artifacts are easy to omit from commits. | Trace each generator in the plan to the files it writes and compare with planned `git add`. |
-| Verification snippets may not prove what they claim. | Check command ordering, cached-vs-working-tree diff usage, expected stdout, and failure modes. |
+After appending, prove the saved commentary snapshot is a byte-identical prefix
+of the new file.
+
+## Lossless Consolidation
+
+Create a separate timestamped artifact with source paths, executive assessment,
+complete crosswalk, concern groups, and implementation order.
+
+Copy every original finding block exactly once. Preserve its number, title,
+classification, source references, evidence, risk, correction, and wording.
+Only group headings, crosswalks, and synthesis prose may be new. Do not
+paraphrase finding blocks or allow "equivalent formatting."
+
+Parse source and destination by numbered `###` headings and assert:
+
+- identical finding-number sets with no duplicates
+- one block per number
+- exact title and body equality
+- all required finding fields are present
 
 ## Validation
 
-Before reporting completion:
-
 ```bash
-rg -n "Valid blocker|Valid but lower priority|Overstated|Stale|Unsupported|Further Findings" <commentary>
-git diff -- <source-plan>
-test -f <commentary>
-git status --short --ignored=matching <commentary>
+test -f <artifact>
+git status --short --ignored=matching -- <plan> <commentary> <artifact>
+npx --yes markdownlint-cli2 <artifact>
 ```
 
-Report if the source plan diff is non-empty. Mention unrelated dirty files
-briefly; do not stage or revert them.
+Also compare pre/post hashes for source plan and source commentary, verify the
+append-only prefix for later passes, and run the exact-block comparison for a
+consolidation. Report unrelated dirty files; never stage, rewrite, or revert
+them.
 
 ## Scenario Tests
 
-Pressure scenarios live in `tests/scenarios.yaml`; use them when changing this
-skill.
+Pressure scenarios live in `tests/scenarios.yaml`. Run RED without this skill,
+then GREEN with it, before changing this contract.

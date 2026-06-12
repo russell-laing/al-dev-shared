@@ -27,3 +27,19 @@ scenarios:
     expected_artifacts:
       - "docs/superpowers/plans/YYYY-MM-DD-topic-commentary.md"
     notes: "Must account for docs/superpowers/plans being ignored; use existence checks and --ignored status instead of treating silent git status as missing."
+
+  - id: append-later-pass-novel-only
+    status: golden
+    user_prompt: "Perform another pass on a plan whose commentary already contains Findings and Further Findings From Second Pass."
+    expected_artifacts:
+      - "docs/superpowers/plans/YYYY-MM-DD-topic-commentary.md"
+    notes: "Must re-check live evidence, compare candidate findings with every earlier pass, append only genuinely new findings under the next ordinal pass heading, preserve numbering, and leave the source plan and earlier commentary text unchanged."
+    baseline_observation: "Without the revised skill, an agent used git diff and plain git status as proof for ignored artifacts; both can be silent while proving nothing."
+
+  - id: consolidate-losslessly-with-unique-name
+    status: golden
+    user_prompt: "Create a new document that consolidates and groups all commentary findings without losing valuable information; ensure the document name is unique."
+    expected_artifacts:
+      - "docs/superpowers/plans/YYYY-MM-DD-topic-consolidated-findings-<timestamp><timezone>.md"
+    notes: "Must create a collision-resistant timestamped derived file, keep source plan/commentary untouched, preserve every original finding number/classification/source/evidence/risk/correction exactly, add a complete crosswalk and grouped implementation order, and mechanically verify one-to-one block preservation plus markdown lint."
+    baseline_observation: "Without the revised skill, an agent allowed equivalent formatting and field-count checks instead of exact title/body equality for every finding block."
