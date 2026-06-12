@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 
@@ -141,7 +142,7 @@ class RenderCurrentViewTest(unittest.TestCase):
 MIGRATE_PATH = REPO_ROOT / "scripts" / "migrate_health_disposition_store.py"
 
 
-def _load_migrate() -> object:
+def _load_migrate() -> types.ModuleType:
     spec = importlib.util.spec_from_file_location("migrate_health_disposition_store", MIGRATE_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)

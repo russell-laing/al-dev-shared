@@ -15,10 +15,11 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import sys
+import types
 from pathlib import Path
 
 
-def _load_store() -> object:
+def _load_store() -> types.ModuleType:
     store_path = Path(__file__).resolve().parent / "health_disposition_store.py"
     spec = importlib.util.spec_from_file_location("health_disposition_store", store_path)
     assert spec is not None and spec.loader is not None
