@@ -26,8 +26,10 @@ skill name from the parent directory name.
 
 - `name` field in YAML frontmatter matches the parent directory name exactly
 - `description` field is present in frontmatter
-- `argument-hint` is present in frontmatter when the body references an
-  optional argument (look for `If an argument was passed` or `[arg]` patterns)
+- `argument-hint` is present in frontmatter when the body references an optional
+  argument **in instruction prose** (look for `If an argument was passed` or
+  `[arg]` patterns; count only prose mentions — exclude frontmatter and fenced
+  code/example blocks)
 - Phase/step headers are numbered consistently — not mixing "Phase N" and
   "Step N" in the same file
 - Output files named in prose step instructions — exclude frontmatter `outputs:`
