@@ -109,7 +109,9 @@ For each finding:
 2. Identify the harness-specific token and its context.
 3. Apply the replacement rules in
    `.claude/knowledge/harness-token-map.md`.
-4. Preserve all surrounding text and formatting exactly.
+4. Preserve line count and visual indentation; accept minor whitespace variance
+   that is justified by the replacement token's differing length. Do not reflow
+   or re-wrap surrounding lines.
 
 If the token appears inside a fenced code block, flag it for manual review only
 rather than auto-replacing it.
