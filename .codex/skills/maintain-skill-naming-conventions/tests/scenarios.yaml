@@ -11,11 +11,11 @@ scenarios:
 
   - id: fix-stale-inventory
     status: golden
-    user_prompt: "The root docs still list an old repo-local skill name. Update AGENTS.md and CODEX.md so the inventory matches the live .codex/skills surface."
+    user_prompt: "The root docs still omit a live repo-local skill such as research-harness-improvements. Update AGENTS.md and CODEX.md so the inventory matches the live .codex/skills surface."
     expected_artifacts:
       - "AGENTS.md"
       - "CODEX.md"
-    notes: "Checks that the skill is used to keep both inventory docs current."
+    notes: "Checks that the skill keeps both inventories complete when a new repo-local maintainer skill is added."
 
   - id: preserve-aligned-name
     status: golden
