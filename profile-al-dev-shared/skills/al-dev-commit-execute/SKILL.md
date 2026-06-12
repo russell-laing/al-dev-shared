@@ -75,7 +75,7 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
 
   CRITICAL RULES:
   - NEVER use Write or Edit on staged source files — all fixes via Bash only
-  - Skip binary and OOXML files in trailing-whitespace step
+  - Skip binary and OOXML files in trailing-whitespace step (binary = *.png, *.jpg, *.gif, *.ico, *.pdf, *.zip, *.tar, *.gz, or any file where `file --mime-type` returns a non-text/* type; OOXML = *.docx, *.xlsx, *.pptx, *.odt)
   - Stop immediately if corruption detected (line count collapses)
   ```
 
