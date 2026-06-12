@@ -148,8 +148,11 @@ your changes, then run `/al-dev-commit` again."
 **Stop.**
 
 **AL-affecting staged set check:** Run this compile gate when staged changes include any
-`.al`, `app.json`, or `.al.json` files. Skip for pure documentation (`.md`, `.txt`),
-changelog, or manifest-only edits.
+`.al`, `app.json`, or `.al.json` files. Skip the compile gate when **all** staged files
+match documentation or config-only patterns: `.md`, `.txt`, `.rst`, `CHANGELOG*`,
+`LICENSE*`, `.markdownlint.json`, `package.json`, `.gitignore`, `.editorconfig`, or
+other non-AL `.json` configuration files (i.e., when `$AL_STAGED` is empty after the
+filter above).
 
 ```bash
 AL_STAGED=$(git diff --cached --name-only --diff-filter=ACMRDT \
@@ -255,6 +258,8 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
 - return format: `MANIFESTS block, DELETIONS, WARNINGS` — append verbatim
   `Message drafting is handled in the next step.` after the return-format line
 
+---
+
 ### 1.2 — Deletion Audit Gate
 
 Read the `DELETIONS` block from the analysis agent output.
@@ -282,6 +287,8 @@ Wait for user response:
   `git restore --staged <file>` for each, then **stop**
 
 If no deleted files: continue to 1.3.
+
+---
 
 ### 1.3 — Dispatch Message-Drafting Agent
 
