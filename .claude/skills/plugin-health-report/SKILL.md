@@ -112,6 +112,13 @@ declined/grandfathered → suppress; fixed → re-verify (spot-check then drop o
 flag regressed); accepted → keep annotated. See `report-input-gates.md §1d`
 for the full suppression rules.
 
+- Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
+- Read `docs/health/dispositions.md` for ordinary suppression and planning checks.
+- If a step needs closure chronology, query the history store via `scripts/health_disposition_store.py iter_history_rows`.
+- Verification must confirm both artifacts changed together:
+  - one history shard appended under `docs/health/dispositions-history/`
+  - `docs/health/dispositions.md` regenerated
+
 ## Phase 2 — Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -137,6 +139,36 @@ class ResolveClosuresTest(unittest.TestCase):
 
         self.assertIn("(ID 001)", line)
         self.assertIn("plugin-health-discover", line)
+
+
+def _run_checker(repo_root: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(MODULE_PATH), "--root", str(repo_root)],
+        capture_output=True,
+        text=True,
+    )
+
+
+class ShardedStoreCheckerTest(unittest.TestCase):
+    def test_checker_reads_history_store_and_reports_zero_open(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            history = root / "docs" / "health" / "dispositions-history" / "2026"
+            history.mkdir(parents=True)
+
+            (history / "2026-06.md").write_text(
+                "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
+                "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
+                "| #595 | tooling | quality | record-health-dispositions"
+                " | Schema count mismatch | accepted | 2026-06-12 | queued |\n"
+                "| #596 | tooling | quality | record-health-dispositions"
+                " | Schema count mismatch | fixed | 2026-06-13 | abc1234 closes #595 |\n",
+                encoding="utf-8",
+            )
+
+            result = _run_checker(root)
+
+            self.assertIn("0 effective-open accepted row(s)", result.stdout)
 
 
 if __name__ == "__main__":

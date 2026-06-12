@@ -150,6 +150,45 @@ def parse_ledger(path: Path) -> list[Row]:
     return parse_ledger_text(path.read_text(encoding="utf-8"))
 
 
+def dict_to_row(d: dict[str, str], n: int) -> Row:
+    return Row(
+        number=n,
+        surface=d["surface"],
+        dimension=d["dimension"],
+        obj=d["object"],
+        issue=d["finding"],
+        disposition=d["disposition"].lower(),
+        date=d["date"],
+        note=d["note"],
+        id=d.get("id", ""),
+    )
+
+
+def load_rows_from_store(repo_root: Path) -> list[Row]:
+    import importlib.util as _ilu
+    import sys as _sys
+
+    # Locate the store helper relative to this script, not repo_root,
+    # so that --root pointing to a temp/test tree still resolves the helper.
+    store_path = Path(__file__).resolve().parent / "health_disposition_store.py"
+    spec = _ilu.spec_from_file_location("health_disposition_store", store_path)
+    if spec is None or spec.loader is None:
+        return []
+    mod = _ilu.module_from_spec(spec)
+    _sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+
+    history_root = repo_root / "docs" / "health" / "dispositions-history"
+    if history_root.exists():
+        raw = list(mod.iter_history_rows(history_root))
+        current = mod.materialize_current_view(raw)
+        return [dict_to_row(d, i + 1) for i, d in enumerate(current)]
+
+    # fallback: monolithic file
+    ledger = repo_root / LEDGER
+    return parse_ledger(ledger)
+
+
 def norm_object(obj: str) -> str:
     return PAREN_RE.sub("", obj.replace("`", "")).strip().lower()
 
@@ -258,13 +297,19 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--strict", action="store_true", help="exit 1 on stale-open rows")
     ap.add_argument("--staged", action="store_true", help="pre-commit warn mode")
+    ap.add_argument(
+        "--root",
+        default=".",
+        help="Repo root to resolve ledger paths against (default: cwd)",
+    )
     args = ap.parse_args()
 
-    if not LEDGER.exists():
+    repo_root = Path(args.root).resolve()
+    if not (repo_root / LEDGER).exists() and not (repo_root / "docs" / "health" / "dispositions-history").exists():
         print(f"ledger-check: {LEDGER} not found (run from repo root)", file=sys.stderr)
         return 0 if args.staged else 1
 
-    rows = parse_ledger(LEDGER)
+    rows = load_rows_from_store(repo_root)
     resolve_closures(rows)
     open_rows = [r for r in rows if r.disposition == "accepted" and r.closed_by is None]
     for r in open_rows:
