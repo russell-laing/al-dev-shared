@@ -1,4 +1,29 @@
 #!/bin/bash
+
+# resolve_checkpoint_status: reads the status field from a checkpoint file.
+# Recognized values are "complete" and "blocked" (the only values this workflow writes).
+# Outputs one of: complete | blocked | corrupt
+# Usage: resolve_checkpoint_status <file>
+resolve_checkpoint_status() {
+  local file="$1"
+  if ! grep -q '^status:' "$file"; then
+    echo "corrupt"
+    return
+  fi
+  local s
+  s=$(grep '^status:' "$file" | head -1 | awk '{print $2}')
+  case "$s" in
+    complete|blocked) echo "$s" ;;
+    *)                echo "corrupt" ;;
+  esac
+}
+
+# When sourced for unit-testing (PROJECTION_SYNC_TEST=1), the helper functions
+# above are now defined; return before executing phase logic / git / python.
+if [ "${PROJECTION_SYNC_TEST:-0}" = "1" ]; then
+  return 0 2>/dev/null || exit 0
+fi
+
 set -e
 
 # Projection Sync — Phase 0–4 orchestrator
@@ -13,25 +38,34 @@ if [ -f "$PROGRESS_FILE" ]; then
   echo ""
   cat "$PROGRESS_FILE"
   echo ""
-  read -p "Resume (r) or Restart (s)? [r/s]: " resume_choice
 
-  if [ "$resume_choice" = "s" ] || [ "$resume_choice" = "S" ]; then
+  # Validate checkpoint status before offering Resume
+  checkpoint_status=$(resolve_checkpoint_status "$PROGRESS_FILE")
+  if [ "$checkpoint_status" = "corrupt" ]; then
+    echo "Checkpoint status is unrecognized or missing — treating as corrupted. Defaulting to Restart."
     rm "$PROGRESS_FILE"
-    echo "Checkpoint cleared. Starting from Phase 1..."
     current_phase=0
   else
-    # Extract current phase from checkpoint
-    if grep -q '^phase:' "$PROGRESS_FILE"; then
-      current_phase=$(grep '^phase:' "$PROGRESS_FILE" | head -1 | awk '{print $2}')
-      if [ "$current_phase" = "1" ] && grep -q 'blocked' "$PROGRESS_FILE"; then
-        current_phase=1  # Stay on Phase 1 if blocked, user can retry
-      else
-        current_phase=$((current_phase + 1))
-      fi
+    read -p "Resume (r) or Restart (s)? [r/s]: " resume_choice
+
+    if [ "$resume_choice" = "s" ] || [ "$resume_choice" = "S" ]; then
+      rm "$PROGRESS_FILE"
+      echo "Checkpoint cleared. Starting from Phase 1..."
+      current_phase=0
     else
-      current_phase=1
+      # Extract current phase from checkpoint
+      if grep -q '^phase:' "$PROGRESS_FILE"; then
+        current_phase=$(grep '^phase:' "$PROGRESS_FILE" | head -1 | awk '{print $2}')
+        if [ "$current_phase" = "1" ] && [ "$checkpoint_status" = "blocked" ]; then
+          current_phase=1  # Stay on Phase 1 if blocked, user can retry
+        else
+          current_phase=$((current_phase + 1))
+        fi
+      else
+        current_phase=1
+      fi
+      echo "Resuming from Phase $current_phase..."
     fi
-    echo "Resuming from Phase $current_phase..."
   fi
 else
   current_phase=0
