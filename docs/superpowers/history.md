@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-12
+
+### Tooling-Quality Clarity & Bloat Remediation Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-12-plugin-map-tooling-quality-clarity.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-12 | tooling-quality clarity & bloat remediation | implemented; rows closed: [#595, #641, #637, #597, #640, #598, #599, #619, #620, #624, #625, #628, #629, #633, #642, #635, #604, #617, #606, #609, #611, #612, #614, #613, #615, #616, #621, #622, #623, #638]
+
 ## 2026-06-11
 
 ### Health-Loop Tooling & Plugin Clarity Fixes — 2026-06-11
