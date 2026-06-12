@@ -37,6 +37,8 @@ If no OOXML files are present in the approved groups, return immediately:
 OOXML_FAILURES: NONE
 ```
 
+Otherwise (OOXML files are present), proceed to Step 2.
+
 ### Step 2: ZIP Integrity Check
 
 For each OOXML file:
@@ -57,7 +59,7 @@ If OOXML failures occurred:
 OOXML_FAILURES: [filename: unzip exit code N] (one entry per failed file)
 ```
 
-If all files passed (or no OOXML files present):
+If all files passed:
 
 ```text
 OOXML_FAILURES: NONE
