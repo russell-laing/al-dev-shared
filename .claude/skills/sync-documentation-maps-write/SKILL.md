@@ -98,7 +98,7 @@ recovery defined there.
 
 Once the count check passes, run the three remaining regenerations in sequence. Each follows the same pattern — execute the
 script and capture its exit code; on a non-zero code, report the labelled error
-(substituting the actual exit code) and stop before continuing:
+(substituting the actual exit code), record the non-zero result, and continue to the next regeneration script — do not skip the remaining generators:
 
 | Artifact | Script | Error label on non-zero exit |
 | --- | --- | --- |
@@ -124,7 +124,7 @@ may be stale. Check the errors above and re-run /sync-documentation-maps
 to regenerate missing artifacts.
 ```
 
-Continue to Phase 2 regardless of exit code.
+After all regeneration scripts have run, report the accumulated failures (if any) using the block above, then continue to Phase 2 regardless of exit code.
 
 ---
 
