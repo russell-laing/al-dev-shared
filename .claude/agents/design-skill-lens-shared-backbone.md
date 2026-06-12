@@ -34,7 +34,9 @@ For each such agent type:
 
 **What constitutes an "identical" pattern:** a structural workflow match, not an
 exact string match. Treat patterns as identical when all three hold (ignoring
-whitespace, ordering, and incidental wording):
+whitespace, ordering, and incidental wording — *incidental* meaning
+pronouns, determiners, and synonym choices; as opposed to *structural* elements
+like step counts, context-field names, and output expectations):
 
 - Same dispatch prompt template (same steps/structure, even if phrased differently)
 - Same context fields passed (same field set, regardless of order)
