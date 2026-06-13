@@ -91,7 +91,7 @@ Full procedures are in `.claude/knowledge/report-input-gates.md`.
 
 Look up the previous findings file (`--offset 1`). If none exists, skip
 (every finding is new). For each repeat, annotate with `(open since YYYY-MM-DD)`,
-carrying the **earliest** known date forward. Split the Summary totals:
+carrying forward the date of the **earliest** prior occurrence of that finding. Split the Summary totals:
 new vs recurring. See `report-input-gates.md §1b` for the full procedure.
 
 ### Staleness spot-check
