@@ -187,9 +187,7 @@ tasks_completed:
     closes_rows: ["#NNN", "#MMM"]
 ```
 
----
-
-## Phase 1b: Code Review
+### Per-task and mid-point code review
 
 **REQUIRED SUB-SKILL:** After each task, invoke
 `superpowers:requesting-code-review` for a per-task scope review.
@@ -291,7 +289,8 @@ Resolve → Verify → Append pass before moving to the next ID:
 
    Copy ID, Surface, Dimension, Object, and Finding verbatim from the
    accepted row, then set Disposition = `fixed`, Date = today's ISO date
-   (never a placeholder), and Evidence / note =
+   (never a placeholder such as a literal `[date]` or a
+   bare `YYYY-MM-DD` string), and Evidence / note =
    `<commit-hash> — <brief evidence>; verified live <date>; closes #NNN`.
    Re-read the appended row and confirm all eight cells are populated. Never
    reorder or rewrite existing rows.
@@ -325,7 +324,7 @@ stale_open_rows: 0
 
 ---
 
-## Phase 4: Archive Consumed Artifacts
+## Phase 4: Finalize Artifacts
 
 Move the implemented plan and its source health artifacts to the archive
 directories. The `archived/` subdirectory is auto-excluded by
@@ -380,9 +379,7 @@ Append a terminal-status entry for the consumed plan to
 `docs/superpowers/history.md` (tracked): one line —
 `<date> | <plan-topic> | implemented; rows closed: [#NNN, ...]`.
 
----
-
-## Phase 4.5: Regenerate Derived Artifacts
+### Regenerate derived artifacts
 
 Run downstream regeneration **only if source files changed** during task
 execution.
@@ -420,7 +417,7 @@ closed:
 - `fresh_session_recommended: false`
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/projection-sync` and
-  `/align-harness-repos` next (see Phase 4.5).
+  `/align-harness-repos` next (see Phase 4 "Regenerate derived artifacts").
 
 ### Ledger-close commit
 
@@ -475,7 +472,7 @@ Location: `.dev/implement-health-plan-progress.md`
 YAML structure:
 
 ```yaml
-phase: <0|1|1b|2|3|4|5>
+phase: <0|1|2|3|4|5>
 status: <pending|in_progress|complete|blocked>
 result: <description>
 plan_path: <path>
