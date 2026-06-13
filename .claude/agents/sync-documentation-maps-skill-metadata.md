@@ -71,7 +71,10 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
 - **argument_hint:** the `argument-hint:` frontmatter field value (empty string if absent).
 - **workflow_stage:** the `workflow.stage:` frontmatter field value (empty string if absent).
 - **phase_count:** count headings matching `## Phase N` (where N is a digit).
-- **spawned_agents:** extract all `al-dev-shared:<agent-name>` patterns from the body.
+- **spawned_agents:** extract only well-formed `al-dev-shared:[a-z-]+` references
+  from the body (lowercase agent slug after the namespace prefix). Skip malformed
+  references (e.g. trailing punctuation, uppercase, or empty slug) rather than
+  recording them.
 
 ### Step 3 — Write JSON and return path
 
