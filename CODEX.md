@@ -51,6 +51,9 @@ Current repo-local skills:
 - `.codex/skills/review-improvement-reports/` — reviews supplied usage or
   improvement reports and writes evidence-backed assessments without editing
   the shared plugin profile directly.
+- `.codex/skills/research-harness-improvements/` — researches current AI
+  harness practices and produces source-backed briefings for evidence-gated
+  improvement review.
 - `.codex/skills/heal-surface/` — performs a small, surface-specific self-heal
   pass near the end of a session.
 - `.codex/skills/repeat-plan-execution/` — runs an established implementation
