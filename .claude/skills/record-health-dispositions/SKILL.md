@@ -5,7 +5,8 @@ description: >-
   latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding
   at a user gate (recorded as `accepted`, `declined`, `grandfathered`, `fixed`, or
   omitted for `skip`), and appends correctly formatted
-  rows to docs/health/dispositions.md. Run after /plugin-health-audit and
+  rows to docs/health/dispositions.md, creating
+  that ledger with a canonical header if it is absent. Run after /plugin-health-audit and
   before /plan-health-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
   dossier", "record health decisions".
