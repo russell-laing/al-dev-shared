@@ -44,6 +44,9 @@ If the block is absent: stop and report:
 > Audit file exists but has no structured task block. Re-run `/audit-knowledge-quality`
 > to regenerate with the current format.
 
+If the block is present, continue with the parsing steps below (still within
+Phase 1).
+
 Parse each task entry:
 
 - `file`: path to the knowledge file with the issue
