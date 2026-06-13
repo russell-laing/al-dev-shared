@@ -1,47 +1,65 @@
 # Knowledge File Quality Report
 
-Generated: 2026-06-11
-Issues: HIGH: 0 | MEDIUM: 1 | LOW: 6
+Generated: 2026-06-13
+Issues: HIGH: 0 | MEDIUM: 0 | LOW: 4 (6 validator flags, all false positives or minor structural notes)
 
 ## HIGH Severity (Blocks Agent Guidance)
 
-None found.
+None.
 
 ## MEDIUM Severity (Incomplete Guidance)
 
-- **File:** `knowledge/developer-invocation-patterns.md`
-  - **Reference:** `skills/al-dev-develop/SKILL.md` (dispatcher consistency); `agents/al-dev-developer-*.md` (2 agent files)
-  - **Issue:** [NO-CODE] — Section "Applicable contexts" discusses implementation decisions (which dispatch context to wire, when to use conditional model routing) but provides no code example or decision table showing context → model mapping
-  - **Missing Content:** A minimal pseudocode block or decision table mapping the three dispatch contexts to their model-selection rules (e.g., Context 1 → haiku, Context 3 → always sonnet). The "Real Example" section (lines 298–354) covers this in full, but the "Applicable contexts" section leaves readers to cross-reference without a local anchor.
-  - **Fix:** Add a brief decision table (4-row markdown table) or a pseudocode reference block under "Applicable contexts" that maps each context to its model selection rule, with a pointer to the full example section.
+None.
 
 ## LOW Severity (Minor/False Positives)
 
 - **File:** `knowledge/developer-invocation-patterns.md`
-  - **Issue:** [THIN] — Section "Example: Conditional routing in spawning skill" flagged as having 2 content lines
-  - **Assessment:** False positive. The section contains a full explanatory paragraph plus a complete pseudocode block with logic and comments. The validator appears to be miscounting by not treating the code block lines as content. No action required.
+  - **Reference:** `agents/al-dev-developer-tdd.md:75`, `agents/al-dev-developer-traditional.md:57`,
+    `skills/al-dev-develop/SKILL.md:285,322`, `skills/al-dev-fix/SKILL.md:118`
+  - **Issue:** THIN — "Example: Conditional routing in spawning skill" has 2 prose lines
+    before the first code block
+  - **Assessment:** False positive. The section is well-developed: two context-setting prose
+    lines immediately precede extensive code examples, a tier table, concrete haiku/sonnet
+    examples, subsections on mid-task escalation, and an applicable-contexts table. The
+    validator counts only non-code content lines; the section itself covers ~200 lines of
+    material.
+  - **Fix:** None required.
 
 - **File:** `knowledge/handoff-chain-map.md`
-  - **Reference:** none found
-  - **Issue:** [THIN] — Section "Identified Handoff Gaps" has 1 content line; actual gap content sits in sibling section "Current Deployment Gaps"
-  - **Assessment:** Formatting issue. The level-3 header is architecturally misaligned — it reads as a definitional preamble but the 5 detailed gaps are under a separate level-2 sibling ("Current Deployment Gaps"). No agent references this file for guidance.
-  - **Fix:** Either (1) remove the "Identified Handoff Gaps" header and merge its 2-sentence definition into the "Gap Analysis" intro, or (2) promote it to level-2 (`##`) so "Current Deployment Gaps" and "Future Enhancement Gaps" become proper subsections beneath it.
+  - **Reference:** `docs/al-dev-plugin-graph.md` only (not referenced by any agent or skill
+    for operational guidance)
+  - **Issue:** THIN — "Identified Handoff Gaps" has 1 content line (a definition paragraph);
+    actual gap content lives in adjacent `## Current Deployment Gaps` section
+  - **Assessment:** Minor structural note. No agent reads this specific section for guidance.
+    The definition paragraph correctly introduces the concept; detailed gaps follow immediately
+    under a peer heading. Orphaned section relative to the operational surface.
+  - **Fix:** Optional — consider either merging the definition into the `## Gap Analysis`
+    intro or promoting `## Current Deployment Gaps` to `### Identified Handoff Gaps`
+    to make the nesting self-consistent. Low priority.
 
 - **File:** `knowledge/investigate-findings-template.md`
-  - **Reference:** `skills/al-dev-investigate/SKILL.md:242` (explicit reference to template)
-  - **Issue:** [NO-CODE] — Section "Regression Timeline" flagged for lacking a fenced code block
-  - **Assessment:** False positive. Section is intentionally narrative metadata guidance (dates, version, status) illustrated with structured text examples. No code block is needed or appropriate.
-
-- **File:** `knowledge/investigate-findings-template.md`
-  - **Reference:** `skills/al-dev-investigate/SKILL.md:124–131` (Step 2 references this logic)
-  - **Issue:** [NO-CODE] — Section "Example B: Long-standing defect (Recently working = no)" flagged for lacking a fenced code block
-  - **Assessment:** False positive. The "Example" in the heading triggered the validator, but this is a narrative investigative-strategy example, not a code pattern. No code block is needed.
+  - **Reference:** `skills/al-dev-investigate/SKILL.md:242`
+  - **Issue:** NO-CODE — "Regression Timeline" and "Example B: Long-standing defect" lack
+    fenced code blocks (validator flags headings containing "Timeline" and "Example" as
+    implying code)
+  - **Assessment:** False positive (×2). Both sections are markdown template sections
+    expressed as bullet-point prose — the appropriate format for investigation findings.
+    The "Regression Timeline" section shows date placeholder bullets; "Example B" shows
+    a narrative scenario. Neither is a code pattern or algorithm; no fenced code block
+    is needed.
+  - **Fix:** None required.
 
 - **File:** `knowledge/map-change-rubber-duck-checks.md`
-  - **Reference:** `.claude/skills/plan-health-findings/SKILL.md` (reads this file)
-  - **Issue:** [DEAD-REF] × 2 — Two references to `knowledge/file.md` flagged as unresolvable
-  - **Assessment:** False positives. Both occurrences are in the "Pattern: Knowledge reference paths vary" subsection (lines 531–532) and are intentional placeholder examples demonstrating how relative paths differ across artifact types. Real existing-file references elsewhere in the same section (`knowledge/artifact-contracts.md`, `knowledge/commit-analysis-patterns.md`) all resolve correctly.
-  - **Fix:** Add an inline comment `<!-- template example -->` after each placeholder line if future validator runs should distinguish examples from real references.
+  - **Reference:** `.claude/knowledge/rubber-duck-orchestration.md:6`,
+    `.claude/skills/plan-health-findings/SKILL.md:28,229,234`
+  - **Issue:** DEAD-REF — two references to `knowledge/file.md` (lines 531–532)
+  - **Assessment:** False positive (×2). Lines 531–532 appear in a documentation block
+    listing knowledge path variation patterns, where `../../knowledge/file.md` and
+    `knowledge/file.md` are placeholder/example filenames (analogous to `foo.md`),
+    not references to a real knowledge file. The validator treats any backtick-quoted
+    path matching `knowledge/*.md` as a live reference.
+  - **Fix:** None required. If the validator noise is distracting, the examples could be
+    renamed to `../../knowledge/example-file.md` to make the placeholder intent clearer.
 
 ---
 
@@ -53,15 +71,22 @@ None.
 
 ### Medium Priority
 
-1. **`knowledge/developer-invocation-patterns.md` — "Applicable contexts" section**
-   Add a 4-row decision table (Context | Model | When to apply) or a short pseudocode block showing context-to-model routing rules. Link to the "Real Example" section for the full implementation pattern. This prevents skills dispatching developers from needing to cross-reference to find the model-selection rule.
+None.
+
+### Low Priority
+
+- **`knowledge/handoff-chain-map.md`** — Optional structural cleanup: merge the definition
+  in `### Identified Handoff Gaps` into the `## Gap Analysis` section intro, or align
+  the heading hierarchy so the gap list sits under the `### Identified Handoff Gaps` heading
+  directly. No operational impact.
+
+- **`knowledge/map-change-rubber-duck-checks.md`** — Optional: rename example paths at
+  lines 531–532 from `knowledge/file.md` to `knowledge/example-file.md` to silence the
+  validator without requiring a validator rule change.
 
 ---
 
 ## High-Priority Fix Tasks
 
 <!-- auto-generated by /audit-knowledge-quality — consumed by /fix-knowledge-quality -->
-
-```yaml
 tasks: []
-```
