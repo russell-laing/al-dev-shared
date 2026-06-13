@@ -186,7 +186,11 @@ If the commit exits non-zero, report the error and advise the user to inspect
 
 ## Phase 4 — Update Checkpoint
 
-Set `phase` to `"complete"` and `status` to `"done"` in both checkpoint files:
+Set `phase` to `"complete"` and `status` to `"done"` in both checkpoint files.
+These are two distinct fields, not duplicates: `phase` records the furthest
+workflow position reached, while `status` records the run's lifecycle state that
+downstream skills (the `/sync-documentation-maps` Phase 0 cadence guard,
+`-collect`, and `-apply`) read. Do not collapse them into one field.
 
 ```bash
 # Update .dev/sync-documentation-maps-checkpoint.json
