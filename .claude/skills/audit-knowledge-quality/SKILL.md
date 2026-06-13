@@ -2,8 +2,9 @@
 name: audit-knowledge-quality
 description: >-
   Audit knowledge files for stub sections and structural issues. Dispatches
-  parallel agents for large audit scopes (4+ files) and optionally provides fix
-  guidance for HIGH-severity findings when the user opts in after reporting.
+  parallel agents for large audit scopes (4+ files). It always writes
+  HIGH-severity fix-guidance blocks to the report and optionally
+  walks through them interactively when the user opts in after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
 workflow:
   stage: derive
@@ -63,7 +64,9 @@ Parse each record and map its `rule` value to an issue group:
 
 Analyze each Phase 1 issue per `.claude/knowledge/knowledge-audit-analysis.md` — it
 defines path selection (parallel for 4+ files, sequential for ≤3), progress tracking,
-the mandatory referencing-agent/skill reads, the per-issue THIN/NO-CODE/DEAD-REF
+the mandatory referencing-agent/skill reads (the agent or skill named in the
+finding's `Reference:` field — the one that defers to the knowledge file),
+the per-issue THIN/NO-CODE/DEAD-REF
 treatment, and the structured return schema that Phase 3 consumes.
 
 ### Phase 3: Write Findings Report
