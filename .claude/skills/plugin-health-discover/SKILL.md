@@ -73,29 +73,13 @@ Keep the agent list and skill list separate — different lenses target each.
 
 ## Phase 2 — Pre-dispatch aggregation
 
-Extract context from documentation maps before dispatching lenses.
-
-**Read and parse `docs/al-dev-agent-map.md`:**
-
-- Extract the Agent Catalog table
-- For each agent row: extract agent name, model, tools list, and "Spawned by" field
-- Build: `tool_inventory`, `model_assignments`, `caller_map`
-- "Spawned by" may contain comma-separated names or "(none found)" — treat the latter as empty list
-
-**Read and parse `docs/al-dev-skills-map.md`:**
-
-- Extract the Layer 1 diagram block → `layer1_diagram_content`
-- For each skill section: extract phase count, agent references, output files
-- Build: `phase_counts`, `handoff_chains`, `preplanning_skills` (skills with `-.->` arrows)
-
-### Derived dispatch context
-
-**Compute derived mappings:**
-
-- `agent_usage_counts`: agent → count of spawning skills
-- `single_use_agents`: agents where `agent_usage_counts == 1`
-- `already_inline_candidates`: filter of `single_use_agents`
-- `no_agent_skills`: skills with zero spawned agents
+Before dispatching lenses, extract context from the documentation maps
+(`docs/al-dev-agent-map.md` and `docs/al-dev-skills-map.md`) following the full
+procedure in `.claude/knowledge/health-discover-aggregation.md`. It defines the
+map-parse steps and the derived dispatch mappings (`tool_inventory`,
+`model_assignments`, `caller_map`, `layer1_diagram_content`, `phase_counts`,
+`handoff_chains`, `preplanning_skills`, `agent_usage_counts`, `single_use_agents`,
+`already_inline_candidates`, `no_agent_skills`) that the Phase 3 lenses consume.
 
 ## Phase 3 — Dispatch
 
