@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-10
+**Last updated:** 2026-06-13
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -470,7 +470,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–5.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
@@ -639,7 +639,7 @@ Agents spawned: `al-dev-shared:al-dev-al-pattern-reviewer`, `al-dev-shared:al-de
 
 ### /al-dev-commit
 
-**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0–4.
+**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0–2.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit -->
 ```mermaid
@@ -671,7 +671,7 @@ flowchart LR
 
 ### /al-dev-commit-execute
 
-Phases 3–4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
+Phases 0, 3–4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-execute -->
 ```mermaid
@@ -804,17 +804,20 @@ flowchart LR
 
     skill_al_dev_explore[al-dev-explore]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_bash_safe_patterns_md[bash-safe-patterns]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     artifact_2026_05_19_al_dev_explore_findings_md[.dev/2026-05-19-al-dev-explore-findings.md]
     artifact_project_context_md[.dev/project-context.md]
 
     skill_al_dev_explore --> knowledge_artifact_contracts_md
+    skill_al_dev_explore --> knowledge_bash_safe_patterns_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_explore --> artifact_2026_05_19_al_dev_explore_findings_md
     skill_al_dev_explore --> artifact_project_context_md
 
     class skill_al_dev_explore skillNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_bash_safe_patterns_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class artifact_2026_05_19_al_dev_explore_findings_md artifactNode
     class artifact_project_context_md artifactNode

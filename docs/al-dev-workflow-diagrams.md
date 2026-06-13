@@ -241,6 +241,7 @@ flowchart LR
     skill_al_dev_develop --> knowledge_scope_expansion_gate_md
     skill_al_dev_develop --> knowledge_workflow_resilience_md
     skill_al_dev_explore --> knowledge_artifact_contracts_md
+    skill_al_dev_explore --> knowledge_bash_safe_patterns_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
     skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
