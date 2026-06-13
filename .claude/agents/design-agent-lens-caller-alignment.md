@@ -1,6 +1,6 @@
 ---
 name: design-agent-lens-caller-alignment
-description: Apply Caller Alignment lens to agent files — evaluates documented Inputs/Outputs against how spawning skills actually invoke each agent by autonomously grepping profile-al-dev-shared/skills/ for dispatch patterns and context blocks. Returns a findings block for Align suggestions.
+description: Apply Caller Alignment lens to agent files — evaluates documented Inputs/Outputs against how spawning skills actually invoke each agent by looking up dispatch patterns in the provided caller_map (distributed-surface agents only). Returns a findings block for Align suggestions. Skips tooling-surface agents (.claude/agents/) — their callers live in .claude/skills/ and are out of scope.
 model: haiku
 tools: ["Read", "Grep"]
 ---
@@ -14,10 +14,10 @@ tools: ["Read", "Grep"]
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | caller_map | Mapping of agent-name → list of skill names that spawn it (provided in dispatch prompt) |
 
-**Implicit dependency:** The agent searches the hardcoded path
-`profile-al-dev-shared/skills/` for dispatch patterns (see the "Lens: Caller
-Alignment" section). This path is embedded in the agent body — callers do not
-supply it.
+**Implicit dependency:** For distributed-surface agents, the lens looks up
+callers from the `caller_map` provided in the dispatch context. For
+tooling-surface agents, caller-alignment analysis is skipped — their callers
+live in `.claude/skills/`, which is out of scope for this lens.
 
 ## Outputs
 
@@ -28,10 +28,20 @@ Returns a findings block. See Output Format.
 ## Lens: Caller Alignment (→ Align)
 
 For each agent file: derive the agent name (strip path + `.md` extension), extract
-its `## Inputs` / `## Outputs` sections, then Grep `profile-al-dev-shared/skills/`
-for `al-dev-shared:<agent-name>` to check how spawning skills invoke it.
+its `## Inputs` / `## Outputs` sections.
 
-Classify into three states:
+**Detect agent surface from file path:**
+
+- **Distributed-surface agent** (path contains `profile-al-dev-shared/agents/`):
+  Look up the agent name in `caller_map` to get the list of skills that spawn it.
+  If the agent is absent from `caller_map` or its caller list is empty, treat it
+  as unreferenced in the distributed surface.
+
+- **Tooling-surface agent** (path contains `.claude/agents/`):
+  Callers live in `.claude/skills/`, which is out of scope for this lens. Skip
+  caller-alignment analysis for this agent and emit no finding.
+
+For distributed-surface agents, classify into three states:
 
 - **Both present, fields match** — working contract; no finding
 - **Dispatch line, no context block** — High; documented Inputs are not supplied
