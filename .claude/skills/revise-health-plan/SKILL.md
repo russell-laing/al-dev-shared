@@ -117,9 +117,7 @@ missing**. Compute it explicitly:
 # (plan closes_rows arrays)  ∪  (new ledger rows with closes #<ID>)  ==  accepted range
 ```
 
-State the arithmetic in your summary (e.g. "30 plan rows + 20 ledger rows = 50 =
-
-# 595–#644")
+State the arithmetic in your summary (e.g. "30 plan rows + 20 ledger rows = 50 = #595–#644").
 
 ## Self-verification (mandatory before claiming done)
 
