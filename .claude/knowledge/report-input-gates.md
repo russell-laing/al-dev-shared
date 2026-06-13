@@ -66,6 +66,23 @@ instead.
 
 ## 1d — Disposition suppression
 
+**Run the deterministic matcher first.** Before judging matches by hand, run:
+
+```bash
+python3 scripts/health_disposition_store.py match \
+  --findings docs/health/YYYY-MM-DD-<surface>-findings.md
+```
+
+It classifies each finding against the current-view ledger as `suppress`
+(matches a declined/grandfathered row), `verify` (matches a fixed row), or
+`keep` (no decided match), matching on surface + dimension + object membership +
+finding-type with rephrase-tolerant text overlap. The output is a
+**high-precision candidate shortlist, not an auto-decision**: confirm each
+`suppress`/`verify` candidate against the cited ledger row before acting, and
+still scan the `keep` set by hand for matches the script missed (it favours
+precision over recall, so heavily-rephrased matches can fall through). Then
+apply the rules below to the confirmed set.
+
 Read `docs/health/dispositions.md` (skip if absent). Match each parsed finding
 against ledger rows by object + issue essence, then apply the
 **disposition suppression rules** from

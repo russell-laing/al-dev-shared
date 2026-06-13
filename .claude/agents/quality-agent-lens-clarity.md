@@ -11,7 +11,24 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to agent `.md` files |
 
-**Note:** All checks analyze the prose instructions in each agent file directly — no external context is required beyond the file list. The incomplete-conditional check looks for `if` clauses in prose that have no corresponding `else`/`otherwise` branch; it does not analyze code blocks.
+**Note:** All checks analyze the prose instructions in each agent file. The
+incomplete-conditional check looks for `if` clauses in prose that have no
+corresponding `else`/`otherwise` branch; it does not analyze code blocks.
+
+**Definition check — run before flagging any occurrence.** A term, qualifier, or
+conditional is only a finding when it is unresolved in the material available to
+you. Before flagging:
+
+- Scan the **entire file**, not just the sentence in question — later sections,
+  a Severity Rules block, a table, a subsequent step, or an enumerated list often
+  define the term or supply the missing `else` branch. If the term is defined,
+  enumerated, or disambiguated anywhere in the same file, do **not** flag it.
+- If the text defers definition to a named repo doc (e.g. "see
+  `knowledge/foo.md`") and that relative path resolves, Read it; if the term is
+  defined there, do **not** flag it.
+
+Flag only what stays unresolved after both checks. Resolving a term elsewhere is
+not a miss — genuine ambiguity (undefined everywhere) still fires.
 
 ## Outputs
 

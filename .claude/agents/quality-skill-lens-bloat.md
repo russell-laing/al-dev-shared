@@ -32,16 +32,26 @@ skill name from the parent directory name.
 **Check for:**
 
 - Step/phase count (top-level `## Step` or `## Phase` headers) > 8
-- Any single step > 30 lines
+- Any single step > 30 lines **that is not inherent content** (see carve-out below)
 - `skip if...` or `only if...` conditions that always evaluate the same way in all
   realistic invocations based on the agent's documented contract (dead branches)
 - Repetitive instruction blocks across steps that could be stated once
 - Accumulated historical commentary ("as of v2", "previously this was", "now uses")
   that belongs in git history, not the skill body
 
+**Inherent-length carve-out.** Length alone is not bloat. A step over 30 lines is
+**not** a finding when its length is inherent to the content — a sequential
+numbered procedure, a dispatch/control-flow state machine, or a required
+schema/template/output format. For such a step, flag only when the content is
+**repetitive** (the same instruction restated and stateable once), **dead** (a
+branch that never executes), or **extractable** to a knowledge doc with no loss of
+operative meaning. A step that is long only because the procedure it documents is
+long is acceptable as authored — do not flag it.
+
 **Severity rules:**
 
-- High: any single step > 30 lines or > 8 total top-level steps
+- High: > 8 total top-level steps; OR a single step > 30 lines that is
+  repetitive, dead, or extractable (not merely long inherent content)
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
 

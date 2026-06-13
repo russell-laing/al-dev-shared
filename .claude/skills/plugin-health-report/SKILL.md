@@ -107,10 +107,19 @@ See `report-input-gates.md §1c` for the full procedure.
 
 ### Disposition suppression
 
-Read `docs/health/dispositions.md` (skip if absent). Apply the four outcomes:
+Run the deterministic matcher first to get a candidate shortlist, then confirm:
+
+```bash
+python3 scripts/health_disposition_store.py match \
+  --findings docs/health/YYYY-MM-DD-<surface>-findings.md
+```
+
+Apply the four outcomes to the confirmed set:
 declined/grandfathered → suppress; fixed → re-verify (spot-check then drop or
-flag regressed); accepted → keep annotated. See `report-input-gates.md §1d`
-for the full suppression rules.
+flag regressed); accepted → keep annotated. The matcher is a high-precision
+candidate list, not an auto-decision — confirm each `suppress`/`verify` against
+the cited row and still hand-scan the `keep` set for missed matches. See
+`report-input-gates.md §1d` for the full suppression rules.
 
 - Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
 - Read `docs/health/dispositions.md` for ordinary suppression and planning checks.

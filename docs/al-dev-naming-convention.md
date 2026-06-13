@@ -68,6 +68,10 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
+- `plugin-health-audit`, `plugin-health-discover`, `plugin-health-report` —
+  health-sweep entry-point and workflow-phase family; the `{object}-{aspect}-{verb}`
+  ordering predates the `{verb}-{object}-{aspect}` convention and is kept for the
+  family's recognisability.
 - `projection-sync` — established verb-object name; regenerates harness projections from canonical source.
 - `align-harness-repos` — validate-with-optional-fix workflow; name retained for recognisability.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.

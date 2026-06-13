@@ -50,6 +50,13 @@ agent name from the filename (strip directory path and `.md` extension).
   in the same file
 - Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
 
+**Not a structural requirement — do not flag:** the presence, absence, or style
+of a top-level `# <name>` heading. Lens agents conventionally begin directly with
+`## Inputs` and need no top-level heading; agents that do carry one may word it
+freely. Do not raise a finding for a missing top-level heading or for
+heading-style variance between sibling agents — there is no convention requiring
+either.
+
 ---
 
 ## Severity Rules

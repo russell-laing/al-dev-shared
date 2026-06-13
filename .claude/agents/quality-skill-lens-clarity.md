@@ -15,6 +15,21 @@ tools: ["Read"]
 
 Returns a findings block. See Output Format.
 
+**Definition check — run before flagging any occurrence.** A term, qualifier, or
+conditional is only a finding when it is unresolved in the material available to
+you. Before flagging:
+
+- Scan the **entire file**, not just the sentence in question — later sections, a
+  Severity Rules block, a table, a subsequent phase, or an enumerated list often
+  define the term or supply the missing `else` branch. If the term is defined,
+  enumerated, or disambiguated anywhere in the same file, do **not** flag it.
+- If the text defers definition to a named repo doc (e.g. "see
+  `knowledge/foo.md`") and that relative path resolves, Read it; if the term is
+  defined there, do **not** flag it.
+
+Flag only what stays unresolved after both checks. Resolving a term elsewhere is
+not a miss — genuine ambiguity (undefined everywhere) still fires.
+
 ---
 
 ## Lens: Prompt Clarity
