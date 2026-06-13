@@ -5,7 +5,9 @@ description: >-
   separate review, commentary, or consolidated-findings document critiquing it,
   and the plan must be reconciled with that review before it is executed — or
   when some review findings are out of scope and need re-dispositioning to
-  docs/health/dispositions.md instead of becoming plan tasks. Triggers on:
+  docs/health/dispositions.md instead of becoming plan tasks. This skill never
+  auto-executes the plan — it reconciles the plan and hands off
+  to /implement-health-plan in a fresh session. Triggers on:
   "apply the review to the plan", "improve the plan using the findings",
   "reconcile the consolidated findings", "revise the health plan",
   "use the commentary to update the plan", "act on the plan review".
@@ -116,7 +118,8 @@ missing**. Compute it explicitly:
 ```
 
 State the arithmetic in your summary (e.g. "30 plan rows + 20 ledger rows = 50 =
-# 595–#644").
+
+# 595–#644")
 
 ## Self-verification (mandatory before claiming done)
 
