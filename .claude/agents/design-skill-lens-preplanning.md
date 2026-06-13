@@ -31,6 +31,11 @@ Returns a findings block. See Output Format.
 For each skill in `preplanning_skills` and any additional pre-planning skills
 found in the file list:
 
+A skill qualifies as **pre-planning** if it is listed in `preplanning_skills` or
+its body produces a named brainstorming/exploration artifact consumed by a
+downstream planning skill. A skill that is neither listed nor autonomously
+detected as pre-planning is **out of scope** — skip it and emit no finding for it.
+
 1. Check whether it appears in `layer1_diagram_content` as a dashed tributary
    arrow (`-.->`) rather than a main-spine node. Require an **exact**
    tributary-label match (the node label text — not the node ID — equals the
