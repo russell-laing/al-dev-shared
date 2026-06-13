@@ -5,7 +5,8 @@ description: >-
   the two-phase internal workflow `/plugin-health-discover` then
   `/plugin-health-report` to dispatch design + quality + naming lenses with a
   per-surface file list, rank findings, and write one dossier per surface to
-  docs/health/. Never auto-edits source — all outputs are read-only observations. Triggers on:
+  docs/health/. Never auto-edits source — all outputs are read-only observations. Supports
+  --resume to continue an interrupted sweep. Triggers on:
   "plugin health", "health sweep", "audit the plugin", "check plugin health".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
@@ -29,7 +30,7 @@ auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review
 Implemented as a two-phase internal workflow:
 
 - `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
-- `/plugin-health-report` — reads findings file, ranks, writes dossier, presents
+- `/plugin-health-report` — reads findings file, ranks (see its ranking criteria), writes dossier, presents
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for surface values, dimension values, defaults,
