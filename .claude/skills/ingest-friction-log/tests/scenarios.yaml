@@ -1,0 +1,34 @@
+skill: ingest-friction-log
+scenarios:
+  - id: ingest-friction-log-primary
+    status: golden
+    user_prompt: "ingest the friction logs"
+    expected_artifacts:
+      - "docs/health/friction-ingest-log.md"
+    notes: "Primary trigger phrase — should locate un-archived friction logs and begin Phase 0."
+
+  - id: process-friction-logs
+    status: golden
+    user_prompt: "process the friction logs in ~/friction-log"
+    expected_artifacts:
+      - "docs/health/friction-ingest-log.md"
+    notes: "Paraphrase trigger; same execution path as the primary trigger."
+
+  - id: fold-friction-into-loop
+    status: golden
+    user_prompt: "fold the friction logs into the health loop"
+    expected_artifacts:
+      - "docs/health/friction-ingest-log.md"
+    notes: "Trigger phrase referencing loop integration."
+
+  - id: no-trigger-plugin-health-audit
+    status: golden
+    user_prompt: "run a plugin health audit"
+    expected_artifacts: []
+    notes: "Should route to plugin-health-audit, not this skill. This skill ingests friction logs; it does not dispatch lenses."
+
+  - id: no-trigger-record-dispositions
+    status: golden
+    user_prompt: "record dispositions for the latest dossier"
+    expected_artifacts: []
+    notes: "Should route to record-health-dispositions. Ingestion is upstream of dispositioning."
