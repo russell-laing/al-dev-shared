@@ -83,9 +83,26 @@ durable state files and explicit contracts, not on prompt-formatting alone.
    - Source:
      local repo evidence only.
 
+6. The loop-state contract is enforced by prose plus a static-text guard, not by
+   a content validator.
+   - `scripts/check_health_loop_handoffs.py` is, by its own docstring, a STATIC
+     TEXT guard: it counts breadcrumb-path references per loop skill and checks
+     the writing-plans override position. It states plainly: “A PASS means the
+     wiring text is in place; confirm actual loop closure in a live run.”
+   - Nothing validates the *content* of `.dev/health-loop-state.md` against the
+     schema in `health-loop-state-contract.md` — required fields present, a
+     `next_command` valid against the lifecycle table, a boolean
+     `fresh_session_recommended`. The contract is prose-specified but not
+     machine-checked.
+   - Source:
+     local repo evidence only.
+
 Inference: XML tags are most justified when the failure mode is prompt-section
 confusion inside one model call. They are less justified when the dominant
 failure mode is stale state, missing handoff artifacts, or missing validation.
+The one concrete, repo-aligned improvement this run surfaced is a content
+validator for `.dev/health-loop-state.md` — independent of XML and consistent
+with the repo’s JSON-first convention.
 
 ## Repository Comparison
 
@@ -120,8 +137,12 @@ failure mode is stale state, missing handoff artifacts, or missing validation.
    - Evidence: repo artifact contracts and workflow-resilience guidance already
      treat missing evidence as a stop condition; this is closer to the current
      failure model than delimiter choice.
-   - Likely surface: `scripts/check_health_loop_handoffs.py`,
-     checkpoint readers, and any self-healing workflow validators.
+   - Likely surface: a content validator for the `.dev/health-loop-state.md`
+     breadcrumb that checks it against the schema in
+     `health-loop-state-contract.md` (required fields, `next_command` valid per
+     the lifecycle table, boolean `fresh_session_recommended`) — sitting
+     alongside the existing static-text `scripts/check_health_loop_handoffs.py`,
+     which only checks wiring text, not breadcrumb content.
    - Portability: `repo-local`
    - Risk reduced: false-complete claims and loop-closure regressions.
 
@@ -151,6 +172,7 @@ failure mode is stale state, missing handoff artifacts, or missing validation.
 | E4 | OpenAI recommends Structured Outputs with JSON Schema for reliable type-safe machine-readable output | `https://developers.openai.com/api/docs/guides/structured-outputs` | first-party vendor docs | not stated on page | 2026-06-14 | high |
 | E5 | The repo itself prefers machine-parseable structured protocol output, preferably JSON first | `profile-al-dev-shared/knowledge/script-engineer-conventions.md` | live repo evidence | current repo file | 2026-06-14 | high |
 | E6 | The self-healing loop already has explicit durable state and handoff contracts | `.claude/knowledge/health-loop-state-contract.md`, `.claude/knowledge/skill-workflow-contract.md`, `profile-al-dev-shared/knowledge/workflow-resilience.md`, `profile-al-dev-shared/knowledge/artifact-contracts.md` | live repo evidence | current repo files | 2026-06-14 | high |
+| E7 | The health-loop handoff guard is a static-text check; no validator parses the `.dev/health-loop-state.md` breadcrumb against its schema | `scripts/check_health_loop_handoffs.py`, `.claude/knowledge/health-loop-state-contract.md` | live repo evidence | current repo files | 2026-06-14 | high |
 
 ## Gaps And Uncertainty
 
@@ -165,4 +187,14 @@ failure mode is stale state, missing handoff artifacts, or missing validation.
 
 ## Recommended Next Step
 
-no action
+No XML action. The evidence does not justify an XML convention for the
+self-healing tooling; the dominant failure mode here is stale state and missing
+validation, not prompt-section confusion inside one model call.
+
+Separate lever (candidate for separate scoping, not an XML change): add a content
+validator for `.dev/health-loop-state.md` that checks it against the schema in
+`health-loop-state-contract.md` — required fields present, `next_command` valid
+against the lifecycle table, `fresh_session_recommended` boolean. Today the only
+guard, `scripts/check_health_loop_handoffs.py`, is static-text-only by its own
+docstring and never parses the breadcrumb. This is recorded here as a finding,
+not auto-actioned.
