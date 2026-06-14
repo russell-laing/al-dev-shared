@@ -62,6 +62,7 @@ flowchart LR
         skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
     end
     subgraph stage_discover["Discover"]
+        skill_ingest_friction_log["/ingest-friction-log"]
         skill_plugin_health_audit["/plugin-health-audit"]
         skill_plugin_health_discover["/plugin-health-discover"]
         skill_plugin_health_report["/plugin-health-report"]
@@ -91,6 +92,7 @@ flowchart LR
     skill_implement_health_plan --> skill_align_harness_repos
     skill_implement_health_plan --> skill_audit_knowledge_quality
     skill_implement_health_plan --> skill_projection_sync
+    skill_ingest_friction_log --> skill_plugin_health_report
     skill_plan_health_findings -- "docs/superpowers/plans/*-*.md" --> skill_implement_health_plan
     skill_plugin_health_audit --> skill_plugin_health_discover
     skill_plugin_health_discover -- "docs/health/*-*-findings.md" --> skill_plugin_health_report
@@ -107,6 +109,7 @@ flowchart LR
     class skill_audit_knowledge_quality userSkill
     class skill_fix_knowledge_quality userSkill
     class skill_implement_health_plan userSkill
+    class skill_ingest_friction_log userSkill
     class skill_plan_health_findings userSkill
     class skill_plugin_health_audit userSkill
     class skill_plugin_health_discover userSkill
@@ -141,12 +144,15 @@ flowchart LR
 
 ### Discover steps
 
-1. `/plugin-health-audit` — Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Repeat as needed.
+1. `/ingest-friction-log` — Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. Repeat as needed.
+   - reads: `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json`
+   - writes: `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/friction-ingest-log.md`
+2. `/plugin-health-audit` — Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`
-2. `/plugin-health-discover` — Discovery phase of the plugin health sweep. Repeat as needed.
+3. `/plugin-health-discover` — Discovery phase of the plugin health sweep. Repeat as needed.
    - reads: `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`
    - writes: `docs/health/<date>-<surface>-findings.md`
-3. `/plugin-health-report` — Report phase of the plugin health sweep. Repeat as needed.
+4. `/plugin-health-report` — Report phase of the plugin health sweep. Repeat as needed.
    - reads: `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md`
    - writes: `docs/health/<date>-<surface>-health.md`
 
@@ -260,16 +266,27 @@ flowchart LR
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
     classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
+    skill_ingest_friction_log["/ingest-friction-log"]
     skill_plugin_health_audit["/plugin-health-audit"]
     skill_plugin_health_discover["/plugin-health-discover"]
     skill_plugin_health_report["/plugin-health-report"]
     art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
     art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
     art_docs_health_____findings_md["docs/health/*-*-findings.md"]
+    art_docs_health_____friction_findings_md[".../*-*-friction-findings.md"]
     art_docs_health_____health_md["docs/health/*-*-health.md"]
     art_docs_health_dispositions_md["docs/health/dispositions.md"]
+    art_docs_health_friction_ingest_log_md[".../friction-ingest-log.md"]
     art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md[".../lens-invocation-patterns.md"]
+    art___friction_log___findings_md["~/friction-log/*-findings.md"]
+    art___friction_log___signals_json["~/friction-log/*-signals.json"]
 
+    art___friction_log___findings_md --> skill_ingest_friction_log
+    art___friction_log___signals_json --> skill_ingest_friction_log
+    skill_ingest_friction_log --> art_docs_health_____friction_findings_md
+    skill_ingest_friction_log --> art_docs_health_friction_ingest_log_md
+    skill_ingest_friction_log --> skill_plugin_health_report
+    skill_ingest_friction_log -. "repeat" .-> skill_ingest_friction_log
     art_docs_al_dev_agent_map_md --> skill_plugin_health_audit
     art_docs_al_dev_skills_map_md --> skill_plugin_health_audit
     skill_plugin_health_audit --> skill_plugin_health_discover
@@ -285,15 +302,20 @@ flowchart LR
     skill_plugin_health_report --> art_docs_health_____health_md
     skill_plugin_health_report -. "repeat" .-> skill_plugin_health_report
 
+    class skill_ingest_friction_log userSkill
     class skill_plugin_health_audit userSkill
     class skill_plugin_health_discover userSkill
     class skill_plugin_health_report userSkill
     class art_docs_al_dev_agent_map_md artifact
     class art_docs_al_dev_skills_map_md artifact
     class art_docs_health_____findings_md artifact
+    class art_docs_health_____friction_findings_md orphanArtifact
     class art_docs_health_____health_md artifact
     class art_docs_health_dispositions_md artifact
+    class art_docs_health_friction_ingest_log_md orphanArtifact
     class art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md artifact
+    class art___friction_log___findings_md artifact
+    class art___friction_log___signals_json artifact
 ```
 <!-- END GENERATED: maintainer-stage-discover -->
 
@@ -565,6 +587,7 @@ flowchart TD
 | `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-documentation-maps-collect` | map-sync | user | Collect results from /sync-documentation-maps audit agents. |
 | `/sync-documentation-maps-write` | map-sync | user | Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow. |
+| `/ingest-friction-log` | discover | user | Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. |
 | `/plugin-health-audit` | discover | user | Standing suggestions-only entry point for the al-dev-shared plugin surfaces. |
 | `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
 | `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
@@ -585,6 +608,7 @@ flowchart TD
 | `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
 | `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
 | `/sync-documentation-maps-write` | `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
+| `/ingest-friction-log` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/friction-ingest-log.md` | `/plugin-health-report` |
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
 | `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
@@ -610,9 +634,13 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Orphaned artifact | `.dev/implement-health-plan-progress.md` | produced by /implement-health-plan; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
+| Orphaned artifact | `docs/health/*-*-friction-findings.md` | produced by /ingest-friction-log; consumed by no skill |
+| Orphaned artifact | `docs/health/friction-ingest-log.md` | produced by /ingest-friction-log; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /projection-sync, /sync-documentation-maps-write; consumed by no skill |
 | Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-health-plan; produced by no skill |
+| Sourceless input | `~/friction-log/*-findings.md` | consumed by /ingest-friction-log; produced by no skill |
+| Sourceless input | `~/friction-log/*-signals.json` | consumed by /ingest-friction-log; produced by no skill |
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
@@ -621,14 +649,16 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-14 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-13 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/health/friction-ingest-log.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-14 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
