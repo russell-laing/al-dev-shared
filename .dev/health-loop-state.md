@@ -1,8 +1,9 @@
-stage_completed: implement-health-plan
-completed_at: 2026-06-14
-next_command: none
-next_inputs: []
+stage_completed: plugin-health-report
+completed_at: 2026-06-15
+next_command: /record-health-dispositions
+next_inputs:
+
+- docs/health/2026-06-15-tooling-health.md
+- docs/health/dispositions.md
 fresh_session_recommended: false
-note: >-
-  loop closed; ledger staleness check passed. No profile-al-dev-shared/ files
-  changed so projection-sync and align-harness-repos are not needed.
+note: recording dispositions is what stops the next sweep from re-ranking the same findings as new.
