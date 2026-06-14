@@ -50,10 +50,11 @@ skill's entire body could fit as one extra phase in an existing adjacent skill.
 
 **Verdict gates severity.** Every finding carries an explicit verdict:
 `Atomise`, `Absorb`, or `None`. High and Medium both require separable
-concerns, so they are only valid with verdict `Atomise` or `Absorb`. A skill
-that is "not a candidate" — however many phases it has — takes verdict
-`None` and severity Low. Never emit a High or Medium finding with verdict
-`None`.
+concerns — they are only valid with verdict `Atomise` or `Absorb`. Verdict
+`None` means no actionable finding: the skill does not meet the Atomise or
+Absorb criteria, regardless of its phase count. A `None`-verdict finding
+carries severity Low as an informational note only — it is not a Low-severity
+defect flag. Never emit a High or Medium finding with verdict `None`.
 
 ---
 
