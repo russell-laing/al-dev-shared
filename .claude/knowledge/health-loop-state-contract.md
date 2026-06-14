@@ -58,6 +58,7 @@ the table below).
 
 | Skill | Reads | Writes `next_command` |
 | --- | --- | --- |
+| `/ingest-friction-log` | loop breadcrumb (warn if later step in flight) | `/plugin-health-report` |
 | `/plugin-health-report` | breadcrumb (warn if a loop is already in flight) | `/record-health-dispositions` |
 | `/record-health-dispositions` | breadcrumb | `/plan-health-findings` |
 | `/plan-health-findings` | breadcrumb | `/implement-health-plan --plan <path>` |
