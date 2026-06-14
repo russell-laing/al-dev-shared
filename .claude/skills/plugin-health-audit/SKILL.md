@@ -27,10 +27,13 @@ auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review
 `/record-health-dispositions` (record decisions) →
 `/plan-health-findings` (rubber-duck accepted items) → plan → execute.
 
-Implemented as a two-phase internal workflow:
+Implemented as a two-phase workflow across two sessions:
 
-- `/plugin-health-discover` — builds file lists, aggregates context, dispatches lenses with per-lens disk streaming, writes findings file
-- `/plugin-health-report` — reads findings file, ranks (see its ranking criteria), writes dossier, presents
+- **Session 1 — `/plugin-health-discover`:** builds file lists, aggregates context,
+  dispatches lenses, writes findings file, then stops and recommends a fresh session.
+- **Session 2 — `/plugin-health-report`:** reads findings file (auto-detected via
+  breadcrumb), ranks, writes dossier, presents. Triggered by re-invoking
+  `/plugin-health-audit` in a fresh session (Phase 0 detects the breadcrumb).
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for surface values, dimension values, defaults,
@@ -56,6 +59,17 @@ If a sweep is interrupted by session limits:
 
 3. **Final dossier will aggregate all lens results** (prior session + current session)
 
+## Phase 0 — Check for discover breadcrumb
+
+Read `.dev/health-loop-state.md` if it exists (schema:
+`.claude/knowledge/health-loop-state-contract.md`).
+
+- If `stage_completed = plugin-health-discover`: skip Phase 1. Extract all paths
+  from `next_inputs` as the findings file path(s) for Phase 2. Jump to Phase 2.
+- If `next_command` names a different, later loop step: warn the user that a prior
+  loop is in flight, and ask whether to continue here or follow the pointer.
+- If `next_command` is `none`, or the file is absent: proceed to Phase 1 normally.
+
 ## Phase 1 — Run discover
 
 Invoke `/plugin-health-discover`, passing through all arguments received:
@@ -63,6 +77,12 @@ Invoke `/plugin-health-discover`, passing through all arguments received:
 
 `/plugin-health-discover` writes one findings file per surface to `docs/health/`.
 Collect the findings file path(s) it returns.
+
+After `/plugin-health-discover` completes, it writes a fresh-session breadcrumb and
+instructs the user to start a new session. **Stop here — do not proceed to Phase 2
+in the same session.** Phase 2 is reached only when the user re-invokes
+`/plugin-health-audit` in a fresh session and Phase 0 detects the
+`plugin-health-discover` breadcrumb.
 
 ## Phase 2 — Run report
 

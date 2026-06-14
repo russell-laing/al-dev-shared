@@ -197,3 +197,21 @@ Use this explicit mapping:
 
 5. **Return to caller:**
    Print the findings file path, line count, and resume status.
+
+6. **Write `.dev/health-loop-state.md`** (schema:
+   `.claude/knowledge/health-loop-state-contract.md`):
+
+   - `stage_completed: plugin-health-discover`
+   - `completed_at:` today's ISO date
+   - `next_command: /plugin-health-report --findings <findings_file_path>`
+     (list the first findings path; all paths are in `next_inputs`)
+   - `next_inputs:` all findings file paths written this session (one per surface)
+   - `fresh_session_recommended: true`
+   - `note:` discover phase is context-heavy; start a fresh session before running
+     the report to avoid compaction.
+
+7. **Stop — do not auto-invoke `/plugin-health-report`.** Tell the user (as plain
+   assistant text, not wrapped in bash/echo): "Findings written to `<path>`. Start a
+   **fresh session** and re-run `/plugin-health-audit` (or invoke
+   `/plugin-health-report --findings <path>` directly) to generate the dossier —
+   the pointer is saved in `.dev/health-loop-state.md`."
