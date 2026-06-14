@@ -48,8 +48,9 @@ Split `--team-ids` on comma to populate `UPDATE_TEAM_IDS` (one or two values).
 Set `SKIP_COMMIT=false` (default). If `--skip-commit` is present, set
 `SKIP_COMMIT=true`.
 
-Error and stop if `--team-ids` is absent or produces zero values.
-Print a clear usage hint:
+Error and stop if any of the following are true: `--team-ids` is absent; it is
+present but is an empty string; or splitting its value on comma yields zero
+non-empty segments. Print a clear usage hint:
 
 ```text
 Usage: /sync-documentation-maps-apply --team-ids <id>[,<id>] [--skip-commit]
