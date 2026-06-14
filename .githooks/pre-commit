@@ -56,4 +56,7 @@ python3 scripts/check_ledger_staleness.py --staged \
   || echo "WARN: ledger staleness check failed to run (non-blocking)" >&2
 echo "pre-commit: ledger check complete"
 
+echo "pre-commit: validating health-loop state breadcrumb..."
+python3 scripts/validate_health_loop_state.py --staged
+
 echo "pre-commit: all neutrality checks passed."

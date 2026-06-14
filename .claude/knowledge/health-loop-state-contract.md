@@ -45,6 +45,15 @@ fresh_session_recommended: <true | false>
 note: <one line; why this is next, and any guard the next skill should honour>
 ```
 
+## Validation
+
+The schema above is machine-checked by `scripts/validate_health_loop_state.py`,
+run in `--staged` mode at pre-commit (blocking). It verifies required fields,
+date format, `fresh_session_recommended` boolean, `next_inputs` list structure,
+`next_command` token against the lifecycle table, and the lifecycle-consistency
+invariant (given `stage_completed`, `next_command` must equal the successor from
+the table below).
+
 ## Lifecycle
 
 | Skill | Reads | Writes `next_command` |
