@@ -39,9 +39,13 @@ Its mission:
 ### Phase 1: Discover Issues
 
 ```bash
-VALIDATOR="$(find ~/.claude/plugins -name "validate-knowledge-quality.py" 2>/dev/null | head -1)"
-if [ -z "$VALIDATOR" ]; then
-  echo "Error: validate-knowledge-quality.py not found"
+# Canonical location: in-repo scripts/; global plugin is the fallback.
+VALIDATOR="scripts/validate-knowledge-quality.py"
+if [ ! -f "$VALIDATOR" ]; then
+  VALIDATOR="$(find ~/.claude/plugins -name "validate-knowledge-quality.py" 2>/dev/null | head -1)"
+fi
+if [ -z "$VALIDATOR" ] || [ ! -f "$VALIDATOR" ]; then
+  echo "Error: validate-knowledge-quality.py not found in scripts/ or ~/.claude/plugins"
   exit 1
 fi
 python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
@@ -63,11 +67,15 @@ Parse each record and map its `rule` value to an issue group:
 ### Phase 2: Analyze
 
 Analyze each Phase 1 issue per `.claude/knowledge/knowledge-audit-analysis.md` — it
-defines path selection (parallel for 4+ files, sequential for ≤3), progress tracking,
+defines path selection (parallel for 4+ files: dispatch one analysis agent per file;
+sequential for ≤3 files: analyze each in the current session), progress tracking,
 the mandatory referencing-agent/skill reads (the agent or skill named in the
 finding's `Reference:` field — the one that defers to the knowledge file),
-the per-issue THIN/NO-CODE/DEAD-REF
-treatment, and the structured return schema that Phase 3 consumes.
+the per-issue treatment (THIN: content is too sparse to guide an agent — add
+missing substantive guidance; NO-CODE: code examples are absent from a section
+that requires them — add working code; DEAD-REF: the file cross-references a
+path that no longer exists — update or remove the reference), and the
+structured return schema that Phase 3 consumes.
 
 ### Phase 3: Write Findings Report
 
