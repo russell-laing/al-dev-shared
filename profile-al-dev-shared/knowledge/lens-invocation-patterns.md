@@ -9,6 +9,25 @@ See also: `knowledge/architect-invocation-patterns.md` (parallel pattern for
 
 ---
 
+## Finding evidence contract
+
+Append this contract to every lens prompt, regardless of lens class. It is the
+first-line defence against false-positive findings: a lens that must quote the
+offending text cannot flag a problem that is not actually present.
+
+Every finding a lens returns must include:
+
+- the subject location as `file:line`,
+- a short quoted snippet of the offending text at that location, and
+- a one-line reason the snippet is a real issue (not a stylistic preference).
+
+A lens must **omit** any finding it cannot ground in a quoted snippet — drop
+speculative "consider whether…" or "it may be worth…" observations rather than
+emitting them. Unverifiable findings are downstream-dropped at the report stage,
+so emitting them only adds noise.
+
+---
+
 ## Design Agent Lenses
 
 Agents: `design-agent-lens-caller-alignment`, `design-agent-lens-model-fit`,

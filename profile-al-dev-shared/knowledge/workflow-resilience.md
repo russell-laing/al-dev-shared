@@ -40,6 +40,7 @@ latest checkpoint.
 ### Develop-Specific Resume Pack
 
 For `/al-dev-develop`, maintain these files together:
+
 - `.dev/progress.md` — latest checkpoint
 - `.dev/YYYY-MM-DD-al-dev-develop-progress.md` — dated session
   narrative
@@ -49,6 +50,7 @@ For `/al-dev-develop`, maintain these files together:
   boundary
 
 Resume order:
+
 1. `.dev/progress.md`
 2. latest dated progress file
 3. latest checklist
@@ -64,6 +66,7 @@ path for the current skill.
 
 For `/al-dev-develop`, the Develop-Specific Resume Pack above is
 authoritative:
+
 - Read `.dev/progress.md` if it exists
 - Read the latest dated develop progress file if it exists
 - Read the latest checklist if it exists
@@ -106,3 +109,22 @@ If an agent returns empty output or hits a usage limit:
    (agent hit limit)"`
 4. For plan/develop waves, prefer single-agent execution if
    a parallel wave has already failed once
+
+## Recovery After Working-Tree Loss
+
+If a user reports that a working-tree change was lost — for example after a
+`git reset`, `git checkout`, or a failed stash pop — and asks you to reapply
+it, **do not search git history**. Git only records *committed* work; an
+uncommitted edit that was discarded leaves no trace in `git show`, `git log`,
+or `git reflog` of a commit. Searching history burns tool calls on a dead end.
+
+Instead, reconstruct the intended final state directly from the source:
+
+1. Ask the user (or infer from the request) what the change was meant to
+   achieve.
+2. Search the relevant source files for the current state and apply the
+   intended edit directly.
+
+Example: a user reports that a procedure was made `internal` and the change was
+lost to a hard reset. Do not hunt for the commit — grep the feature's source
+for the public procedure and change its scope to `internal` directly.

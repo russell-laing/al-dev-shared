@@ -49,6 +49,17 @@ Lines prefixed `<` are diagnostics your edits resolved.
 New `Warning` lines introduced by your edits must be acknowledged
 (even if the compile is technically clean).
 
+> **⛔ Never mutate the working tree to manufacture a baseline.**
+> Do not use `git stash` / `git stash pop` / `git reset` (or `git checkout`)
+> to isolate a baseline compile. These commands can fail on untracked or
+> binary files and tempt a destructive recovery (`git reset --hard`) that
+> permanently erases staged and unstaged work. The baseline must be captured
+> by writing `.dev/compile-baseline.log` **before the session's first edit**
+> and diffing it against the current `.dev/compile-errors.log` (the mechanism
+> shown above). If no pre-edit baseline was captured, do **not** create one by
+> changing the working tree — compile the current state and report all
+> diagnostics as-is.
+
 ## Step 1 — Compile
 
 Ensure output directory exists:

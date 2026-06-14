@@ -15,6 +15,12 @@ Reads the preflight context written by `/al-dev-review-develop-preflight`,
 then dispatches the three-specialist review panel in parallel and synthesises
 findings into a single code-review artifact.
 
+> **Run from a low-context state.** This skill dispatches a parallel reviewer
+> panel, which injects a large prompt. If the session has already accumulated
+> bulky tool output (compile logs, large diffs), that injection can overflow the
+> context window mid-dispatch. When the session is already context-heavy,
+> compact it before invoking this skill so the panel dispatches cleanly.
+
 ## Artifact Contract
 
 Use `knowledge/artifact-contracts.md` as the source of truth for this skill's

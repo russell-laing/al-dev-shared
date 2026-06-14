@@ -70,20 +70,26 @@ findings have disposition coverage in `docs/health/dispositions.md` per the
 every actionable finding needs its own ledger row.
 
 **Warning branch (undispositioned dossier):** If the ledger is absent or coverage
-is incomplete, warn:
+is incomplete, print this warning as plain assistant text and ask the binary
+confirmation inline — do **not** invoke a structured question tool (e.g.
+`AskUserQuestion`) for this single yes/no; a malformed structured call (missing
+`questions`) has stalled this gate before. End the message with the literal
+prompt `Proceed with the sweep anyway? (yes / no)` and wait for the reply:
 
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
 A new sweep will largely re-discover its open findings. Record
 accept/decline/fixed rows via /record-health-dispositions first, or
 confirm to sweep anyway.
+
+Proceed with the sweep anyway? (yes / no)
 ```
 
 **User override and stop path:**
 
 - Disposition coverage exists and is dated on or after the dossier date → proceed
   to the stale-open check.
-- User confirms override → proceed to Phase 1.
+- User replies `yes` (override) → proceed to Phase 1.
 - User declines, or gives no clear confirmation → stop. Report "Sweep not
   dispatched — record dispositions via `/record-health-dispositions` and re-run."
   Do not dispatch any lens.

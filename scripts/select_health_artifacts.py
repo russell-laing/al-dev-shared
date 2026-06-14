@@ -16,6 +16,12 @@ ARTIFACT_PATTERN = re.compile(
     r"(?P<kind>findings|health)\.md$"
 )
 
+FRICTION_PATTERN = re.compile(
+    r"^(?P<date>\d{4}-\d{2}-\d{2})-"
+    r"(?P<surface>plugin|tooling)-"
+    r"friction-findings\.md$"
+)
+
 
 def non_negative_int(value: str) -> int:
     parsed = int(value)
@@ -45,19 +51,32 @@ def select_artifacts(
     if not directory.is_dir():
         return []
 
-    for path in directory.iterdir():
-        match = ARTIFACT_PATTERN.fullmatch(path.name)
-        if match is None:
-            continue
-        if match["kind"] != kind or match["surface"] != surface:
-            continue
-        if dimension is not None and match["dimension"] != dimension:
-            continue
-        try:
-            artifact_date = date.fromisoformat(match["date"])
-        except ValueError:
-            continue
-        matches.append((artifact_date, path.name, path))
+    if kind == "friction-findings":
+        for path in directory.iterdir():
+            match = FRICTION_PATTERN.fullmatch(path.name)
+            if match is None:
+                continue
+            if match["surface"] != surface:
+                continue
+            try:
+                artifact_date = date.fromisoformat(match["date"])
+            except ValueError:
+                continue
+            matches.append((artifact_date, path.name, path))
+    else:
+        for path in directory.iterdir():
+            match = ARTIFACT_PATTERN.fullmatch(path.name)
+            if match is None:
+                continue
+            if match["kind"] != kind or match["surface"] != surface:
+                continue
+            if dimension is not None and match["dimension"] != dimension:
+                continue
+            try:
+                artifact_date = date.fromisoformat(match["date"])
+            except ValueError:
+                continue
+            matches.append((artifact_date, path.name, path))
 
     matches.sort(reverse=True)
     return [path for _, _, path in matches[offset : offset + limit]]
@@ -68,7 +87,7 @@ def parse_args() -> argparse.Namespace:
         description="Select docs/health artifacts by filename date.",
     )
     parser.add_argument("--directory", type=Path, default=Path("docs/health"))
-    parser.add_argument("--kind", choices=("findings", "health"), required=True)
+    parser.add_argument("--kind", choices=("findings", "health", "friction-findings"), required=True)
     parser.add_argument("--surface", choices=("plugin", "tooling"), required=True)
     parser.add_argument("--dimension", choices=("design", "quality", "naming"), default=None)
     parser.add_argument("--limit", type=positive_int, default=1)

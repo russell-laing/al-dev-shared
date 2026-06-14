@@ -9,9 +9,9 @@ disk, not only in conversation context.
 
 ## Loop order
 
-`/plugin-health-audit` → dossier → `/plugin-health-report` →
-`/record-health-dispositions` → `/plan-health-findings` → plan →
-`/implement-health-plan` → ledger closed
+`/plugin-health-audit` → `/plugin-health-discover` → [fresh session] →
+`/plugin-health-report` → dossier → `/record-health-dispositions` →
+`/plan-health-findings` → plan → `/implement-health-plan` → ledger closed
 
 ## File location
 
@@ -58,6 +58,8 @@ the table below).
 
 | Skill | Reads | Writes `next_command` |
 | --- | --- | --- |
+| `/ingest-friction-log` | loop breadcrumb (warn if later step in flight) | `/plugin-health-report` |
+| `/plugin-health-discover` | breadcrumb (written by discover on completion) | `/plugin-health-report --findings <path>` |
 | `/plugin-health-report` | breadcrumb (warn if a loop is already in flight) | `/record-health-dispositions` |
 | `/record-health-dispositions` | breadcrumb | `/plan-health-findings` |
 | `/plan-health-findings` | breadcrumb | `/implement-health-plan --plan <path>` |
@@ -82,6 +84,7 @@ On successful completion, overwrite `.dev/health-loop-state.md` with the schema
 above, filling `next_command` per the lifecycle table. Set
 `fresh_session_recommended: true` at heavy transitions (any handoff into a skill
 that dispatches sub-agents or re-reads many full files — notably
+`plugin-health-discover → plugin-health-report` and
 `plan-health-findings → implement-health-plan`).
 
 ## writing-plans override rule (binding on plan-health-findings)

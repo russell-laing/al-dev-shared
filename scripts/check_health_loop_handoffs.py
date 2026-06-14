@@ -18,6 +18,7 @@ STATE = ".dev/health-loop-state.md"
 CONTRACT = pathlib.Path(".claude/knowledge/health-loop-state-contract.md")
 
 LOOP = [
+    "plugin-health-discover",
     "plugin-health-report",
     "record-health-dispositions",
     "plan-health-findings",

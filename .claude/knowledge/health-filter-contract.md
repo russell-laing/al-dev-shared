@@ -41,6 +41,44 @@ Defaults:
 - `naming` -> naming-convention lens only
 - `all` -> union of the three concrete dimensions
 
+## Friction Source
+
+`/ingest-friction-log` is a discover-stage source that is **not a lens**. Its
+findings files are named `YYYY-MM-DD-<surface>-friction-findings.md`. The
+`select_health_artifacts.py` selector regex intentionally does **not** match this
+name (the `friction-findings` token fails the `(design|quality|naming)?-?(findings|health)`
+grammar), so friction findings are consumed only via
+`/plugin-health-report --findings <path>`, never by automatic selection.
+
+Friction findings are grouped under pseudo-lens blocks whose heading names the
+dimension in parentheses:
+
+- `### Friction: Workflow (design) Findings` -> dimension `design`
+- `### Friction: Instruction Quality (quality) Findings` -> dimension `quality`
+- `### Friction: Naming (naming) Findings` -> dimension `naming`
+
+When `/plugin-health-report` consumes a friction findings file, it maps each
+friction block to the dimension named in its parenthetical suffix for
+`dimensions:` validation and dossier grouping. No dedicated dossier section is
+added; friction findings appear under the existing Design / Quality / Naming
+headings.
+
+### Recurrence
+
+For prior-artifact lookup when the report processes a friction findings file
+(path ends in `-friction-findings.md`), the prior-artifact selector MUST use
+`--kind friction-findings` (not `--kind findings`), so recurrence comparison
+stays within the friction family:
+
+```bash
+select_health_artifacts.py --directory docs/health --kind friction-findings --surface <surface> --offset 1
+```
+
+The `--kind friction-findings` mode is added by the companion selector
+extension task. Until the report skill is updated to invoke this mode, all
+friction findings will appear as new on every run (recurrence counts will be
+unsound). This is a known v1 limitation.
+
 ## Findings Metadata
 
 `/plugin-health-discover` findings files should carry provenance metadata near
