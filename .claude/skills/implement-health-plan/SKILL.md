@@ -5,8 +5,8 @@ description: >-
   verifies each change, and appends `fixed` rows to docs/health/dispositions.md
   for every `closes_rows:` entry (the distinguishing ledger close-back).
   Locates the latest docs/superpowers/plans/ plan containing `closes_rows:`,
-  dispatches superpowers:subagent-driven-development for task execution,
-  archives consumed artifacts, and optionally triggers downstream regeneration.
+  executes tasks inline (one at a time), archives consumed artifacts, and
+  optionally triggers downstream regeneration.
   Triggers on:
   "implement health plan", "run the health plan", "execute health findings plan",
   "implement the accepted plan", "close the ledger", "run implement-health-plan".
@@ -142,12 +142,20 @@ executor_revision: <git short-hash of .claude/skills/implement-health-plan/SKILL
 
 ## Phase 1: Execute Tasks
 
-**REQUIRED SUB-SKILL:** Invoke `superpowers:subagent-driven-development` for
-same-session execution, or `superpowers:executing-plans` for execution in a
-separate session. Both run one implementation subagent at a time. If you are about to dispatch a
-second implementation subagent before the first has committed, stop and report:
-"Sequential-only enforcement: a prior implementation subagent is still in flight.
-Wait for it to complete and commit before dispatching the next task."
+**Execution mode:** Inline, one task at a time. These tasks are characteristically
+small (targeted single-file edits); subagent dispatch adds briefing overhead without
+benefit. Execute each task directly using Read/Edit/Bash, then commit before moving
+to the next.
+
+**Plan-size guidance:** Plans with more than ~10 tasks risk context compaction in a
+single session. If the plan exceeds 10 tasks, note it to the user before starting.
+If compaction occurs mid-run, start a fresh session and re-invoke — Phase 0 resumes
+from the checkpoint.
+
+**Sequential enforcement:** Execute one task at a time. If you are about to begin a
+second task before the first has committed, stop and report: "Sequential-only
+enforcement: the prior task has not yet committed. Complete and commit it before
+starting the next."
 
 **Task ordering rule:** Execute tasks in plan order by default. A task may be
 scheduled out of order only when its write set is disjoint from every other
@@ -158,25 +166,21 @@ later phase that depends on the edited text. (A *restart boundary* means: stop
 after the task's commit and require an explicit re-invocation of this skill
 before any later phase proceeds.)
 
-Pass the full CLAUDE.md **Plan Task Verification Standard** checklist into
-every dispatch prompt:
+**Per-task verification** (run before each commit):
 
-> Before completing each task:
->
-> 1. File persistence check: `git status` shows expected file changes (not
->    empty, no unexpected extras)
-> 2. Forbidden-pattern scan: no `[date]`, bare `YYYY-MM-DD` placeholders,
->    `TODO`, `TBD`, `Co-Authored-By` (forbidden in file content AND git trailers,
->    per `commit-conventions.md`), or `claude:`/`copilot:` prefixed debug tokens
->    in changed files
-> 3. Acceptance criteria: each criterion stated in the task spec is met in
->    actual file content
-> 4. On verification failure: re-execute with the specific failure embedded in
->    context; cap at 3 retries; escalate on the third failure
+1. File persistence check: `git status` shows expected file changes (not
+   empty, no unexpected extras)
+2. Forbidden-pattern scan: no `[date]`, bare `YYYY-MM-DD` placeholders,
+   `TODO`, `TBD`, `Co-Authored-By` (forbidden in file content AND git trailers,
+   per `commit-conventions.md`), or `claude:`/`copilot:` prefixed debug tokens
+   in changed files
+3. Acceptance criteria: each criterion stated in the task spec is met in
+   actual file content
+4. On verification failure: re-execute with the specific failure embedded in
+   context; cap at 3 retries; escalate on the third failure
 
-**Commit discipline:** commit per task as the sub-skill default. Do NOT squash
-task commits — the per-task commit hashes are needed for Phase 3 ledger
-close-back.
+**Commit discipline:** commit per task. Do NOT squash task commits — the
+per-task commit hashes are needed for Phase 3 ledger close-back.
 
 Update `.dev/implement-health-plan-progress.md` as each task completes:
 
@@ -190,21 +194,16 @@ tasks_completed:
     closes_rows: ["#NNN", "#MMM"]
 ```
 
-### Per-task and mid-point code review
+### Mid-point consistency check
 
-**REQUIRED SUB-SKILL:** After each task, invoke
-`superpowers:requesting-code-review` for a per-task scope review.
+For plans with more than 5 tasks, pause at the halfway point and verify
+cross-task consistency before continuing:
 
-For plans with more than two tasks, schedule a **mid-point integration review**
-after the halfway task (e.g., after Task 2 of 4, or Task 3 of 5). The
-integration review inspects the whole module assembled so far, not just the
-latest task. Integration review checklist:
-
-- Patterns and rules tested against the full input set, not only inputs
-  introduced in the current task
-- Interface names (flags, field names) consistent across all definitions added
+- No two tasks introduce conflicting terminology or instruction patterns in
+  the same shared surface
+- Interface names (flags, field names) consistent across all tasks completed
   so far
-- No cross-task regressions introduced by the sequence of changes
+- No cross-task regressions visible in the changed files
 
 ---
 
