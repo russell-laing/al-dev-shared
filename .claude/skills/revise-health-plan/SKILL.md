@@ -1,17 +1,17 @@
 ---
 name: revise-health-plan
 description: >-
-  Use when a health-loop implementation plan in docs/superpowers/plans/ has a
-  separate review, commentary, or consolidated-findings document critiquing it,
-  and the plan must be reconciled with that review before it is executed — or
-  when some review findings are out of scope and need re-dispositioning to
-  docs/health/dispositions.md instead of becoming plan tasks. This skill never
-  auto-executes the plan — it reconciles the plan and hands off
-  to /implement-health-plan in a fresh session. Triggers on:
+  Reconciles a health-loop implementation plan against a review document and
+  re-dispositions out-of-scope findings to the ledger. Use when a plan in
+  docs/superpowers/plans/ has a paired review or commentary document critiquing
+  it — in-scope findings become plan edits, out-of-scope findings become
+  `declined`/`grandfathered` ledger rows. This skill never auto-executes the
+  plan — it reconciles, re-dispositions, and hands off to /implement-health-plan
+  in a fresh session. Triggers on:
   "apply the review to the plan", "improve the plan using the findings",
   "reconcile the consolidated findings", "revise the health plan",
   "use the commentary to update the plan", "act on the plan review".
-argument-hint: "<review-doc-path> <plan-path>"
+argument-hint: "[<review-doc-path> <plan-path>]"
 workflow:
   stage: decide
   invoked-by: user
@@ -85,8 +85,9 @@ digraph classify {
 ```
 
 **The fork rule (the #1 baseline failure):** when a finding says a task "does not
-earn its closure" and offers *re-author OR re-disposition*, that is a scope
-decision the user owns — especially when re-authoring would collide with a
+earn its closure" and presents *both re-author and re-disposition as equally valid
+options* (neither clearly ruled out by the review), that is a scope decision the
+user owns — especially when re-authoring would collide with a
 standing `declined`/`grandfathered` ledger row. Surface it with `AskUserQuestion`;
 never default to one branch.
 
