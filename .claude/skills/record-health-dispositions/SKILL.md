@@ -103,8 +103,10 @@ issue, proposed fix. Collect one decision per finding from the user:
 - `fixed` — requires a commit hash or "verified against live file `<date>`" (recorded ledger value: `fixed`)
 - `skip` — leave undispositioned this round (no row written)
 
-Batch decisions are fine when the user groups them explicitly; each batch still
-needs explicit justification. Never invent a decision: every non-skip row needs
+Batch decisions are fine when the user groups them explicitly; one justification
+per batch suffices (not per row within the batch), but the justification must
+cover all rows in the batch — a justification that applies only to a subset of
+the batch is not accepted. Never invent a decision: every non-skip row needs
 explicit user input. Apply the **contradictory-batch guard** and the
 **re-litigation guard** as defined in
 `.claude/knowledge/health-disposition-rules.md`.
