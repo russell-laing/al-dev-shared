@@ -124,7 +124,7 @@ may be stale. Check the errors above and re-run /sync-documentation-maps
 to regenerate missing artifacts.
 ```
 
-After all regeneration scripts have run, report the accumulated failures (if any) using the block above, then continue to Phase 2 regardless of exit code.
+After all regeneration scripts have run, report the accumulated failures (if any) using the block above, then continue to Phase 2 regardless of exit code. **Failure behavior:** regeneration failures do not block Phase 2 (summary) or Phase 3 (commit). Map changes are committed even when derived artifacts are stale. Each failed artifact is labeled in the Phase 2 summary template as "regeneration failed — see above".
 
 ---
 
