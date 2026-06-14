@@ -135,10 +135,10 @@ For trivial fixes:
    If compilation fails, fix only errors caused by the small
    change and re-run compile once.
 
-5. Pre-commit scope check — run `git status` and classify every
-   changed file against the original symptom. Populate each entry
-   below from the `git status` output — list every modified or new
-   file, classified as in- or out-of-scope:
+5. Pre-commit scope check (implements `../../knowledge/scope-expansion-gate.md`) —
+   run `git status` and classify every changed file against the original symptom.
+   Populate each entry below from the `git status` output — list every modified or
+   new file, classified as in- or out-of-scope:
 
    ```text
    Scope diff:
