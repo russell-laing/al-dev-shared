@@ -32,7 +32,7 @@ Check `.dev/projection-sync-progress.md`:
 
 - **If exists:** Read the `status` field. Recognized values are `complete` and
   `blocked` (the only statuses this workflow writes). If the status value is
-  none of these (unrecognized) or the field is missing, treat the checkpoint as
+  neither `complete` nor `blocked`, or the field is absent, treat the checkpoint as
   corrupted and default to `Restart`. Otherwise offer `Resume` (continue from
   next incomplete phase) or `Restart` (begin from Phase 1). If the user does not
   respond, default to `Restart` (regenerate from a clean state).
