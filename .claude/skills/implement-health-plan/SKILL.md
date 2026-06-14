@@ -284,8 +284,14 @@ Resolve → Verify → Append pass before moving to the next ID:
    and do not write `result: ledger_closed` while any task is unverified. (To drop
    a task from the closure set, amend or re-disposition its rows first — there is
    no in-run abandonment path.)
-3. **Append** — add one `fixed` row at the bottom of the table. The ledger
-   uses the **eight-column** schema:
+3. **Append** — add one `fixed` row to **both** of the following locations:
+
+   - `docs/health/dispositions.md` — the monolithic ledger
+   - `docs/health/dispositions-history/2026/YYYY-MM.md` — the month shard
+     matching today's date (e.g. `2026/2026-06.md`). Create the shard file
+     with the standard header if the month shard does not yet exist.
+
+   Both files use the **eight-column** schema:
 
    `| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |`
 
@@ -294,8 +300,13 @@ Resolve → Verify → Append pass before moving to the next ID:
    (never a placeholder such as a literal `[date]` or a
    bare `YYYY-MM-DD` string), and Evidence / note =
    `<commit-hash> — <brief evidence>; verified live <date>; closes #NNN`.
-   Re-read the appended row and confirm all eight cells are populated. Never
-   reorder or rewrite existing rows.
+   Re-read the appended row in both files and confirm all eight cells are
+   populated. Never reorder or rewrite existing rows.
+
+   **Why both files:** `check_ledger_staleness.py` reads exclusively from the
+   history shards when `docs/health/dispositions-history/` exists. Fixed rows
+   written only to the monolithic file are invisible to the checker and will
+   be reported as stale-open indefinitely.
 
 Example:
 
