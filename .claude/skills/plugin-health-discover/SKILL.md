@@ -91,32 +91,34 @@ Execute the following state machine in order:
    positives against tooling-surface files. For surface `plugin`, use all
    lenses unchanged.
 
-2. **Apply `--resume` filter:** If `--resume` is present, scan `.dev/` for
-   completed lens output files and build `completed_lenses`:
+2. **Filter `remaining_lenses` and dispatch:**
+   - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
+   - If `--resume` is present: scan `.dev/` for completed lens output files:
 
-   ```bash
-   ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
-   ```
+     ```bash
+     ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
+     ```
 
-   Parse the `"lens"` field from each `.json` file.
-   Compute `remaining_lenses` as the lenses in `ALL_LENSES` that are not in
-   `completed_lenses` (set difference). This is a filtering step you perform
-   directly — no script is invoked here.
-   Log: `"Resuming: X lenses already completed, Y remaining"`. If
-   `remaining_lenses` is empty, log all-complete and skip to Phase 4.
-   If `--resume` is absent, `remaining_lenses = ALL_LENSES`.
+     Parse the `"lens"` field from each `.json` file. Compute
+     `remaining_lenses = ALL_LENSES − completed_lenses` (set difference —
+     no script). Log: `"Resuming: X lenses already completed, Y remaining"`.
 
-3. **Dispatch remaining lenses simultaneously (parallel, isolated subagents):**
-   If `remaining_lenses` is empty, skip dispatch and proceed to Phase 4.
-   Use `superpowers:dispatching-parallel-agents` when 3+ lenses remain.
-   Dispatch one Agent per lens; pass only the context fields it requires (per
-   `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`): agent/skill
-   list from Phase 1 and relevant aggregated mappings from Phase 2. As each
-   subagent returns, write its findings block to
-   `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
-   `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
+   - If `remaining_lenses` is empty: log all-complete and skip to Phase 4.
+     When Phase 4 runs with no new dispatch (all lenses were already complete
+     in a prior session), it assembles findings from any lens `.json` files
+     already on disk. If none exist on disk either, Phase 4 writes a findings
+     file containing only `## Raw lens output: _No lenses ran this session._`
+     with status `INCOMPLETE`.
 
-4. **Check for missing lenses:** Compare returned identifiers against
+   - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
+     subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
+     remain. Pass per-lens context from
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`. As each
+     subagent returns, write its findings block to
+     `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
+     `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
+
+3. **Check for missing lenses:** Compare returned identifiers against
    `remaining_lenses`. Record any missing lens in a `## Failed lenses`
    section at the top of the findings file:
    `- <lens-name>: not returned (no findings block)`
