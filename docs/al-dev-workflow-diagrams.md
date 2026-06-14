@@ -233,6 +233,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
+    skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop --> knowledge_artifact_contracts_md

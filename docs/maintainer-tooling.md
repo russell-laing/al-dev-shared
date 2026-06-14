@@ -645,20 +645,20 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-14 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-14 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-15 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-14 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-15 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-15 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-15 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-15 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-13 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/health/friction-ingest-log.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

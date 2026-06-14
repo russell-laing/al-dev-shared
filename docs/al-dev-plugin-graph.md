@@ -117,6 +117,7 @@ flowchart LR
         artifact_commit_integrity_log[.dev/commit-integrity.log]
         artifact_commit_preflight_md[.dev/commit-preflight.md]
         artifact_commits_json[.dev/commits.json]
+        artifact_compile_baseline_log[.dev/compile-baseline.log]
         artifact_compile_errors_log[.dev/compile-errors.log]
         artifact_explore_findings_md[.dev/explore-findings.md]
         artifact_file_sizes_json[.dev/file-sizes.json]
@@ -186,6 +187,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
+    skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop --> knowledge_artifact_contracts_md
@@ -265,6 +267,7 @@ flowchart LR
     skill_al_dev_commit_execute --> artifact_commits_json
     skill_al_dev_commit_execute --> artifact_hook_failures_json
     skill_al_dev_commit_preflight --> artifact_commit_preflight_md
+    skill_al_dev_commit_preflight --> artifact_compile_baseline_log
     skill_al_dev_commit_preflight --> artifact_compile_errors_log
     skill_al_dev_commit_preflight --> artifact_file_sizes_json
     skill_al_dev_develop --> artifact_progress_md
@@ -404,6 +407,7 @@ flowchart LR
     class artifact_commit_integrity_log artifactNode
     class artifact_commit_preflight_md artifactNode
     class artifact_commits_json artifactNode
+    class artifact_compile_baseline_log artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_explore_findings_md artifactNode
     class artifact_file_sizes_json artifactNode

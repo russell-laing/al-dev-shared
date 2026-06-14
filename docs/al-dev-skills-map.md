@@ -94,7 +94,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 5.
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 1, 1.5, 2.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-ticket -->
 ```mermaid
@@ -751,8 +751,10 @@ flowchart LR
     knowledge_commit_dispatch_template_md[commit-dispatch-template]
     knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
+    knowledge_compile_output_safeguard_md[compile-output-safeguard]
     knowledge_intent_preflight_md[intent-preflight]
     artifact_commit_preflight_md[.dev/commit-preflight.md]
+    artifact_compile_baseline_log[.dev/compile-baseline.log]
     artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_file_sizes_json[.dev/file-sizes.json]
 
@@ -766,8 +768,10 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
+    skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_commit_preflight --> artifact_commit_preflight_md
+    skill_al_dev_commit_preflight --> artifact_compile_baseline_log
     skill_al_dev_commit_preflight --> artifact_compile_errors_log
     skill_al_dev_commit_preflight --> artifact_file_sizes_json
 
@@ -782,8 +786,10 @@ flowchart LR
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
+    class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class artifact_commit_preflight_md artifactNode
+    class artifact_compile_baseline_log artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_file_sizes_json artifactNode
 ```
