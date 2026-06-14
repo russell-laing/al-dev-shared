@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-11 (analysis refreshed with 5 new suggestions)
+**Last updated:** 2026-06-14
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).

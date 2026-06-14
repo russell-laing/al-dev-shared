@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-13
+**Last updated:** 2026-06-14
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -143,7 +143,7 @@ Agents spawned: `al-dev-shared:al-dev-ticket-context-writer`
 
 ### /al-dev-support-reply
 
-Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0–3.
+Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0, 1, 2, 3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-support-reply -->
 ```mermaid
@@ -286,7 +286,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-
 
 ### /al-dev-plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2–4.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2, 3, 4, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
@@ -385,7 +385,7 @@ flowchart LR
 
 ### /al-dev-plan-preflight
 
-Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0, 0.5, 1, 1.5, 1.6.
+Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0, 0.5, 1, 1.5, 1.6, 2.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-preflight -->
 ```mermaid
@@ -470,7 +470,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0–4.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
@@ -540,7 +540,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-review-develop-preflight
 
-Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0–3.
+Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
 ```mermaid
@@ -584,7 +584,7 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4–6.
+**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4, 5, 6.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
@@ -639,7 +639,7 @@ Agents spawned: `al-dev-shared:al-dev-al-pattern-reviewer`, `al-dev-shared:al-de
 
 ### /al-dev-commit
 
-**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0–2.
+**Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0, 1, 2.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit -->
 ```mermaid
@@ -671,7 +671,7 @@ flowchart LR
 
 ### /al-dev-commit-execute
 
-Phases 0, 3–4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
+Phases 0, 3, 4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-execute -->
 ```mermaid
@@ -729,7 +729,7 @@ Agents spawned: `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-co
 
 ### /al-dev-commit-preflight
 
-Phases 0–2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
+Phases 0, 1, 2, 3 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-preflight -->
 ```mermaid
@@ -826,7 +826,7 @@ flowchart LR
 
 ### /al-dev-interview
 
-Phases: 1–4.
+Phases: 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-interview -->
 ```mermaid
