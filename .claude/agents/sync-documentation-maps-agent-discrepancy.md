@@ -85,6 +85,12 @@ holds the classification rules (either-layer absence, archived-object detection,
 tools/caller normalization, phase-node interpretation), without which the audit
 cannot be relied on.
 
+If that section is **present but contains definitions for only a subset of the
+valid `type` values**, use the definitions that are present. For any `type` value
+that appears in the audit JSON but has no definition in the section, add a
+discrepancy entry: `type: "unclassifiable_type"`, `agent: <name>`,
+`detail: "type '<value>' has no definition in sync-maps-edit-cases.md Agent surface section"`.
+
 If `caller_check_skipped` is `true` in the metadata JSON, skip `caller_mismatch`
 detection and note it in the summary.
 
