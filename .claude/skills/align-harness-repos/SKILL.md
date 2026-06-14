@@ -5,7 +5,6 @@ description: >-
   Scans for forbidden harness-specific tokens (Claude Code, Copilot, etc.) that
   could break distributable content. Run after changes to skills, agents, or
   knowledge.
-argument-hint: ""
 workflow:
   stage: derive
   invoked-by: user
@@ -14,6 +13,7 @@ workflow:
     - profile-al-dev-shared/skills/
     - profile-al-dev-shared/agents/
     - profile-al-dev-shared/knowledge/
+  next: [audit-knowledge-quality]
 ---
 
 # Skill: /align-harness-repos
@@ -79,6 +79,16 @@ Harness-specific tokens found in shared files:
 
 Also list the seven forbidden classes described in the skill overview.
 
+If `ALIGN_EXIT` is 2 or higher (validator runtime error), stop immediately and
+report:
+
+```text
+Validator exited with error code ALIGN_EXIT — see output above.
+Fix the validator invocation or report a bug before re-running.
+```
+
+Do not proceed to Phase 4 on a runtime error.
+
 ---
 
 ## Phase 4 — USER_GATE: offer fixes
@@ -130,3 +140,8 @@ ALIGN_EXIT=$?
 If exit 0, report: "✓ All harness-neutrality issues resolved."
 
 If exit 1, present remaining findings and note which require manual review.
+
+**Knowledge-quality loop:** This is the final step of the
+`/audit-knowledge-quality` → `/fix-knowledge-quality` → `/align-harness-repos`
+loop. On exit 0, re-run `/audit-knowledge-quality` to confirm the fixes are
+clean.
