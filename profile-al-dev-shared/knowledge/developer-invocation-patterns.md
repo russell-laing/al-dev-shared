@@ -212,6 +212,8 @@ See workflow-routing.md for the full tiers (TRIVIAL/SIMPLE/MEDIUM/COMPLEX).
 
 ### Example: Conditional routing in spawning skill
 
+When a spawning skill needs to dispatch a developer agent, the `model` parameter can be selected at dispatch time based on task complexity and scope — rather than using the agent's default model for all invocations.
+
 Conditional routing applies when a spawning skill has classified the incoming task using the TRIVIAL/SIMPLE/MEDIUM/COMPLEX taxonomy (see `workflow-routing.md`) and needs to select a model for the developer spawn. The decision criteria are straightforward: TRIVIAL tasks route to `claude-haiku-4-5` (single file, all symbols known, no scope expansion risk), while MEDIUM and COMPLEX tasks route to `claude-sonnet-4-6` (multi-file, symbol verification required, or integration risk present). SIMPLE tasks default to sonnet for safety unless symbols are fully pre-verified. The spawning skill must make this choice explicitly at dispatch time because the agent's declared model can be overridden via the `model` parameter — it cannot be changed mid-run.
 
 ```text

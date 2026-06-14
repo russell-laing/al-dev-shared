@@ -30,13 +30,43 @@
 - **Recently working?** yes
 - **Investigation focus:** Changes between 2026-05-15 and 2026-06-02 — use blame-driven hypothesis prioritization. Git log and changelogs in that window will reveal commits, config changes, or dependency updates likely responsible. Start with "what changed?" before considering design flaws.
 
+**Investigation commands:**
+
+```bash
+# Find commits in the regression window
+git log --oneline --since="2026-05-15" --until="2026-06-02" -- path/to/affected/file.al
+
+# Use git blame to identify which commit changed a specific line
+git blame -L336,340 src/codeunit/Cod50741.al
+
+# Search commit messages for related changes
+git log --grep="feature-keyword" --oneline --since="2026-05-15"
+```
+
 ### Example B: Long-standing defect (Recently working = no)
 
 **Timeline:**
+
 - Last known good: unknown (feature may never have worked reliably)
 - First reported failure: 2026-03-10 (initial discovery date)
 - **Recently working?** no
 - **Investigation focus:** Feature design review and stress-test hypotheses. No recent change to blame; the issue is likely a pre-existing design limitation, corner case, or environmental constraint that was only uncovered under specific load or edge-case input. Prioritize hypothesis families around architectural assumptions, boundary conditions, and integration contracts.
+
+**Investigation commands:**
+
+```bash
+# Search for when the feature was first added or related functionality was changed
+git log --oneline -- path/to/affected/file.al | head -20
+
+# Search commit messages for keywords related to the feature
+git log --grep="feature-keyword" --oneline
+
+# Find all commits that touched a specific function or concept
+git log -S "function_name_or_pattern" --follow -- path/to/file.al
+
+# Check git history for relevant architectural decisions or comments
+git log -p -- path/to/file.al | grep -A5 -B5 "design\|assumption\|constraint"
+```
 
 ### Decision Gate
 

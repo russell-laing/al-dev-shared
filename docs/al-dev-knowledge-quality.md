@@ -1,65 +1,74 @@
 # Knowledge File Quality Report
 
-Generated: 2026-06-13
-Issues: HIGH: 0 | MEDIUM: 0 | LOW: 4 (6 validator flags, all false positives or minor structural notes)
+Generated: 2026-06-14
+Issues: HIGH (0), MEDIUM (2), LOW (2)
 
 ## HIGH Severity (Blocks Agent Guidance)
 
-None.
+None identified.
+
+---
 
 ## MEDIUM Severity (Incomplete Guidance)
 
-None.
+### developer-invocation-patterns.md
+
+**Section:** Example: Conditional routing in spawning skill (lines 213–238)
+
+**Reference:**
+
+- `agents/al-dev-developer-traditional.md` — Developer agent defers to this for dispatch patterns
+- `agents/al-dev-developer-tdd.md` — Developer agent defers to this for dispatch patterns
+- `skills/al-dev-fix/SKILL.md` — Skill references this for Context 2 spawning guidance
+- `skills/al-dev-develop/SKILL.md` — Skill references this multiple times for dispatcher consistency
+
+**Issue:** THIN — Section header "Example: Conditional routing in spawning skill" introduces the concept with 2 content lines before presenting extensive code examples. While the section as a whole is comprehensive, the introductory prose is minimal. The section assumes readers understand when conditional routing applies and why.
+
+**Missing Content:**
+
+- Clearer explanation of when/why conditional routing applies (vs. static routing)
+- Decision tree showing haiku vs. Sonnet routing logic before jumping to code examples
+
+**Fix:** Add 1–2 sentences explaining the purpose and decision criteria before the code examples begin. This will make the section more self-contained and easier for developers implementing dispatcher logic to follow.
+
+---
+
+### investigate-findings-template.md
+
+**Sections:** "Regression Timeline" (lines 18–46) and "Example B: Long-standing defect (Recently working = no)" (lines 33–39)
+
+**Reference:**
+
+- `skills/al-dev-investigate/SKILL.md` — Skill explicitly reads this template before writing investigation findings
+
+**Issue:** NO-CODE — The sections are titled to suggest code or structured investigation procedures, but provide no code examples or command snippets showing how to perform the investigations. Readers see narrative examples but no concrete `git` commands, search patterns, or output structures to follow.
+
+**Missing Content:**
+
+- For "Regression Timeline": Example `git log` or `git blame` command showing what to look for when tracing recent changes (Recently working = yes case)
+- For "Example B": Sample investigation commands or output for approaching long-standing defects without recent blame data (e.g., git log with date ranges, searching commit messages)
+
+**Fix:** Add fenced bash code blocks with actual commands or expected command output. Even pseudocode showing the investigation workflow would clarify the procedure.
+
+---
 
 ## LOW Severity (Minor/False Positives)
 
-- **File:** `knowledge/developer-invocation-patterns.md`
-  - **Reference:** `agents/al-dev-developer-tdd.md:75`, `agents/al-dev-developer-traditional.md:57`,
-    `skills/al-dev-develop/SKILL.md:285,322`, `skills/al-dev-fix/SKILL.md:118`
-  - **Issue:** THIN — "Example: Conditional routing in spawning skill" has 2 prose lines
-    before the first code block
-  - **Assessment:** False positive. The section is well-developed: two context-setting prose
-    lines immediately precede extensive code examples, a tier table, concrete haiku/sonnet
-    examples, subsections on mid-task escalation, and an applicable-contexts table. The
-    validator counts only non-code content lines; the section itself covers ~200 lines of
-    material.
-  - **Fix:** None required.
-
 - **File:** `knowledge/handoff-chain-map.md`
-  - **Reference:** `docs/al-dev-plugin-graph.md` only (not referenced by any agent or skill
-    for operational guidance)
-  - **Issue:** THIN — "Identified Handoff Gaps" has 1 content line (a definition paragraph);
-    actual gap content lives in adjacent `## Current Deployment Gaps` section
-  - **Assessment:** Minor structural note. No agent reads this specific section for guidance.
-    The definition paragraph correctly introduces the concept; detailed gaps follow immediately
-    under a peer heading. Orphaned section relative to the operational surface.
-  - **Fix:** Optional — consider either merging the definition into the `## Gap Analysis`
-    intro or promoting `## Current Deployment Gaps` to `### Identified Handoff Gaps`
-    to make the nesting self-consistent. Low priority.
-
-- **File:** `knowledge/investigate-findings-template.md`
-  - **Reference:** `skills/al-dev-investigate/SKILL.md:242`
-  - **Issue:** NO-CODE — "Regression Timeline" and "Example B: Long-standing defect" lack
-    fenced code blocks (validator flags headings containing "Timeline" and "Example" as
-    implying code)
-  - **Assessment:** False positive (×2). Both sections are markdown template sections
-    expressed as bullet-point prose — the appropriate format for investigation findings.
-    The "Regression Timeline" section shows date placeholder bullets; "Example B" shows
-    a narrative scenario. Neither is a code pattern or algorithm; no fenced code block
-    is needed.
-  - **Fix:** None required.
+  - **Section:** "Identified Handoff Gaps" (lines 98–145)
+  - **Issue:** THIN — Thin transition between section headers; "Identified Handoff Gaps" has 1 content line before "Current Deployment Gaps" subsection
+  - **Reference:** No references found in active agents or skills (documentation only)
+  - **Assessment:** Orphaned from operational guidance surface. File is not actively depended upon for skill/agent execution. The structural thinness is minor given lack of usage.
+  - **Fix:** Low priority. Optional cleanup: merge the introductory definition into `## Gap Analysis` or delete the orphaned section header.
 
 - **File:** `knowledge/map-change-rubber-duck-checks.md`
-  - **Reference:** `.claude/knowledge/rubber-duck-orchestration.md:6`,
-    `.claude/skills/plan-health-findings/SKILL.md:28,229,234`
-  - **Issue:** DEAD-REF — two references to `knowledge/file.md` (lines 531–532)
-  - **Assessment:** False positive (×2). Lines 531–532 appear in a documentation block
-    listing knowledge path variation patterns, where `../../knowledge/file.md` and
-    `knowledge/file.md` are placeholder/example filenames (analogous to `foo.md`),
-    not references to a real knowledge file. The validator treats any backtick-quoted
-    path matching `knowledge/*.md` as a live reference.
-  - **Fix:** None required. If the validator noise is distracting, the examples could be
-    renamed to `../../knowledge/example-file.md` to make the placeholder intent clearer.
+  - **Section:** "Path variations to handle during verification" (lines 529–535)
+  - **Issue:** DEAD-REF (FALSE POSITIVE) — Validator flagged references to `knowledge/file.md` at lines 531–532
+  - **Reference:** `.claude/skills/plan-health-findings/SKILL.md` — Maintainer skill references this for verification procedures
+  - **Assessment:** False positive. Lines 531–532 are documentation examples showing path variation **patterns**, not actual file references. Text uses `knowledge/file.md` as a placeholder example path (like `foo.md`), not a real file to import.
+  - **Fix:** None required. Optional: rename placeholder examples to `knowledge/example-file.md` to silence validator.
+
+---
 
 ---
 
@@ -71,22 +80,28 @@ None.
 
 ### Medium Priority
 
-None.
+1. **developer-invocation-patterns.md** — Add 1–2 sentences of introduction before the code examples in the "Example: Conditional routing in spawning skill" section (lines 213–214). Clarify the purpose: when to use conditional routing vs. static routing, and what the routing decision criteria are. This section is referenced by core developer agents and skills, so clarity improves correct implementation.
+
+2. **investigate-findings-template.md** — Add fenced bash code blocks to the "Regression Timeline" and "Example B" sections with concrete `git` commands or expected output. Show examples of:
+   - `git log` with date ranges for recent regressions
+   - `git blame` output format
+   - Searching commit messages for blame-driven hypotheses
+   This template is actively used by `/al-dev-investigate` skill; concrete examples will improve usability.
 
 ### Low Priority
 
-- **`knowledge/handoff-chain-map.md`** — Optional structural cleanup: merge the definition
-  in `### Identified Handoff Gaps` into the `## Gap Analysis` section intro, or align
-  the heading hierarchy so the gap list sits under the `### Identified Handoff Gaps` heading
-  directly. No operational impact.
+- **handoff-chain-map.md** — Optional: merge or reorganize the thin "Identified Handoff Gaps" section header for structural consistency. Not actively referenced by any skill, so low priority.
 
-- **`knowledge/map-change-rubber-duck-checks.md`** — Optional: rename example paths at
-  lines 531–532 from `knowledge/file.md` to `knowledge/example-file.md` to silence the
-  validator without requiring a validator rule change.
+- **map-change-rubber-duck-checks.md** — Optional: rename example paths at lines 531–532 from `knowledge/file.md` to `knowledge/example-file.md` to silence validator. Does not affect correctness.
 
 ---
 
 ## High-Priority Fix Tasks
 
 <!-- auto-generated by /audit-knowledge-quality — consumed by /fix-knowledge-quality -->
+
+```yaml
 tasks: []
+```
+
+*No HIGH-severity issues identified. MEDIUM-severity improvements recommended above.*
