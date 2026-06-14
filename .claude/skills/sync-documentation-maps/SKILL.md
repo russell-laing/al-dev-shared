@@ -50,8 +50,10 @@ completion (roughly 5 minutes), so the user is free to work meanwhile.
 | `--force` | off | Override the cadence guard and dispatch over an uncollected run |
 | `--no-update` | off | Print the four-skill sequence and stop — no dispatch, no checkpoint |
 
-Set booleans from the flags above. If `NO_UPDATE=true`, print the four-skill workflow
-(sync → collect → apply → write) sequence (steps 1–4 from the header) and stop without dispatching.
+Set booleans from the flags: `AUTO_UPDATE` ← `--all`; `SKIP_COMMIT` ←
+`--skip-commit`; `FORCE` ← `--force`; `NO_UPDATE` ← `--no-update`. If
+`NO_UPDATE=true`, print the four-skill workflow (sync → collect → apply → write)
+sequence (steps 1–4 from the header) and stop without dispatching.
 
 ### Cadence guard — no dispatch over an uncollected run
 
