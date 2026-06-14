@@ -1,12 +1,13 @@
 ---
 name: implement-health-plan
 description: >-
-  Execute an accepted health-findings implementation plan and append `fixed`
-  rows to docs/health/dispositions.md (closing the accepted rows). Locates the latest docs/superpowers/plans/ plan containing
-  `closes_rows:`, dispatches superpowers:subagent-driven-development for task
-  execution, verifies each change, appends `fixed` rows to
-  docs/health/dispositions.md, archives consumed artifacts, and optionally
-  triggers downstream regeneration. Triggers on:
+  Closes the health-audit loop: executes an accepted implementation plan,
+  verifies each change, and appends `fixed` rows to docs/health/dispositions.md
+  for every `closes_rows:` entry (the distinguishing ledger close-back).
+  Locates the latest docs/superpowers/plans/ plan containing `closes_rows:`,
+  dispatches superpowers:subagent-driven-development for task execution,
+  archives consumed artifacts, and optionally triggers downstream regeneration.
+  Triggers on:
   "implement health plan", "run the health plan", "execute health findings plan",
   "implement the accepted plan", "close the ledger", "run implement-health-plan".
 argument-hint: "[--plan <path>]"
@@ -99,7 +100,13 @@ If no plan passes the filter, stop with:
 
 ### Resume check
 
-**If the checkpoint file exists,** check `phase` and `status`:
+**If the checkpoint file exists,** first check whether it belongs to the current
+plan. If the checkpoint's `plan_path` differs from the plan selected above
+(`--plan` arg or scan result), the checkpoint belongs to a different plan —
+discard it and write a fresh Phase 0 checkpoint for the current plan. Do not
+apply the table below to a mismatched checkpoint.
+
+When `plan_path` matches, check `phase` and `status`:
 
 | phase | status | Action |
 |---|---|---|
@@ -108,12 +115,6 @@ If no plan passes the filter, stop with:
 | `1` | `complete` | Proceed to Phase 2 / 3 |
 | `3` | `complete` + `result: ledger_closed` | Inform user; ask whether to re-run |
 | any other combination | — | Treat as corrupted; default to Restart |
-
-**Plan-path guard (evaluate after reading the resume table, before deciding Resume vs Restart):** Compare the
-checkpoint's `plan_path` to the plan selected above (`--plan` arg or scan
-result). If they differ, the checkpoint belongs to a different plan — do NOT
-resume it. Discard it and write a fresh Phase 0 checkpoint for the current plan.
-Apply the resume table only when `plan_path` matches.
 
 On Restart, **overwrite** the existing checkpoint with the fresh Phase 0 checkpoint
 below. If the user does not respond, default to Restart.
@@ -143,8 +144,10 @@ executor_revision: <git short-hash of .claude/skills/implement-health-plan/SKILL
 
 **REQUIRED SUB-SKILL:** Invoke `superpowers:subagent-driven-development` for
 same-session execution, or `superpowers:executing-plans` for execution in a
-separate session. Both run one implementation subagent at a time — never
-dispatch two implementation subagents concurrently in one worktree.
+separate session. Both run one implementation subagent at a time. If you are about to dispatch a
+second implementation subagent before the first has committed, stop and report:
+"Sequential-only enforcement: a prior implementation subagent is still in flight.
+Wait for it to complete and commit before dispatching the next task."
 
 **Task ordering rule:** Execute tasks in plan order by default. A task may be
 scheduled out of order only when its write set is disjoint from every other
