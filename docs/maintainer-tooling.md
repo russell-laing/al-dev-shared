@@ -85,6 +85,7 @@ flowchart LR
     stage_decide ~~~ stage_implement
     stage_implement ~~~ stage_derive
 
+    skill_align_harness_repos --> skill_audit_knowledge_quality
     skill_audit_knowledge_quality -- "docs/al-dev-knowledge-quality.md" --> skill_fix_knowledge_quality
     skill_fix_knowledge_quality -- "profile-al-dev-shared/knowledge/" --> skill_align_harness_repos
     skill_implement_health_plan --> skill_align_harness_repos
@@ -157,29 +158,29 @@ flowchart LR
 2. `/plan-health-findings` — Verify and plan accepted health-audit findings (formerly verify-map-suggestions). Repeat as needed.
    - reads: `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`
    - writes: `docs/superpowers/plans/<date>-<topic>.md`
-3. `/revise-health-plan` — Use when a health-loop implementation plan in docs/superpowers/plans/ has a separate review, commentary, or consolidated-findings document critiquing it, and the plan must be reconciled with that review before it is executed — or when some review findings are out of scope and need re-dispositioning to docs/health/dispositions.md instead of becoming plan tasks. Repeat as needed.
+3. `/revise-health-plan` — Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. Repeat as needed.
    - reads: `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md`
    - writes: `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md`
 
 ### Implement steps
 
-1. `/implement-health-plan` — Execute an accepted health-findings implementation plan and append `fixed` rows to docs/health/dispositions.md (closing the accepted rows). Repeat as needed.
+1. `/implement-health-plan` — Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` rows to docs/health/dispositions.md for every `closes_rows:` entry (the distinguishing ledger close-back). Repeat as needed.
    - reads: `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md`
    - writes: `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md`
 
 ### Derive steps
 
-1. `/audit-knowledge-quality` — Audit knowledge files for stub sections and structural issues. Repeat as needed.
-   - reads: `profile-al-dev-shared/knowledge/`
-   - writes: `docs/al-dev-knowledge-quality.md`
-2. `/fix-knowledge-quality` — Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. Repeat as needed.
-   - reads: `docs/al-dev-knowledge-quality.md`
-   - writes: `profile-al-dev-shared/knowledge/`
-3. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
+1. `/projection-sync` — Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. Repeat as needed.
    - reads: `profile-al-dev-shared/agents/`
    - writes: `profile-al-dev-shared/generated/agents/`
-4. `/align-harness-repos` — Validate harness neutrality in the al-dev-shared single shared plugin surface. Repeat as needed.
+2. `/align-harness-repos` — Validate harness neutrality in the al-dev-shared single shared plugin surface. Repeat as needed.
    - reads: `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/`
+3. `/audit-knowledge-quality` — Audit knowledge files for stub sections and structural issues. Repeat as needed.
+   - reads: `profile-al-dev-shared/knowledge/`
+   - writes: `docs/al-dev-knowledge-quality.md`
+4. `/fix-knowledge-quality` — Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). Repeat as needed.
+   - reads: `docs/al-dev-knowledge-quality.md`
+   - writes: `profile-al-dev-shared/knowledge/`
 <!-- END GENERATED: maintainer-user-journey -->
 
 ## Stage Details
@@ -569,11 +570,11 @@ flowchart TD
 | `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
-| `/revise-health-plan` | decide | user | Use when a health-loop implementation plan in docs/superpowers/plans/ has a separate review, commentary, or consolidated-findings document critiquing it, and the plan must be reconciled with that review before it is executed — or when some review findings are out of scope and need re-dispositioning to docs/health/dispositions.md instead of becoming plan tasks. |
-| `/implement-health-plan` | implement | user | Execute an accepted health-findings implementation plan and append `fixed` rows to docs/health/dispositions.md (closing the accepted rows). |
+| `/revise-health-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
+| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` rows to docs/health/dispositions.md for every `closes_rows:` entry (the distinguishing ledger close-back). |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
-| `/fix-knowledge-quality` | derive | user | Reads the HIGH-severity fix-task block produced by /audit-knowledge-quality in docs/al-dev-knowledge-quality.md, presents the tasks, and optionally dispatches one `al-dev-docs-writer` agent per HIGH issue. |
+| `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
 | `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
@@ -591,7 +592,7 @@ flowchart TD
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/revise-health-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `/implement-health-plan` |
 | `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md` | `/projection-sync`, `/align-harness-repos`, `/audit-knowledge-quality` |
-| `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | — |
+| `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | `/audit-knowledge-quality` |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/align-harness-repos` |
 | `/projection-sync` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/align-harness-repos` |
@@ -615,7 +616,7 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-13 |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-14 |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-13 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-13 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-13 |
@@ -624,10 +625,10 @@ only place cross-stage gaps are guaranteed to appear in full.
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-13 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-13 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-13 |
-| Artifact freshness | `docs/health/*-*-findings.md` | never produced |
-| Artifact freshness | `docs/health/*-*-health.md` | never produced |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-13 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-14 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
