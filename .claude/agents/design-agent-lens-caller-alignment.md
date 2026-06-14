@@ -2,7 +2,7 @@
 name: design-agent-lens-caller-alignment
 description: Apply Caller Alignment lens to agent files — evaluates documented Inputs/Outputs against how spawning skills actually invoke each agent by looking up dispatch patterns in the provided caller_map (distributed-surface agents only). Returns a findings block for Align suggestions. Skips tooling-surface agents (.claude/agents/) — their callers live in .claude/skills/ and are out of scope.
 model: haiku
-tools: ["Read", "Grep"]
+tools: ["Read"]
 ---
 
 # Caller Alignment Lens
