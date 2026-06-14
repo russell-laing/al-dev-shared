@@ -94,7 +94,7 @@ Look up the previous findings file (`--offset 1`). If none exists, skip
 carrying forward the date of the **earliest** prior occurrence of that finding. Split the Summary totals:
 new vs recurring. See `report-input-gates.md §1b` for the full procedure.
 
-### Staleness spot-check
+### Staleness spot-check and evidence verification
 
 Apply the staleness spot-check protocol from
 `../../knowledge/health-audit-preconditions.md` (see its
@@ -103,7 +103,12 @@ finding and every top-5 candidate before ranking. Supply `FINDINGS_DATE` from
 the findings-file name; for recurring findings also check with `PRIOR_DATE`
 from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
 before top-5 inclusion; drop non-holding claims under "Stale (dropped)".
-See `report-input-gates.md §1c` for the full procedure.
+
+Then run the **evidence verification** gate on *every* finding (not just High /
+top-5): open each finding's cited `file:line`, confirm the quoted snippet still
+exists and the claimed problem holds, and drop findings whose evidence does not
+verify under a **"Dropped (unverified)"** note. This is the primary
+false-positive filter. See `report-input-gates.md §1c` for both procedures.
 
 ### Disposition suppression
 
@@ -137,8 +142,11 @@ the staleness spot-check rule (Phase 1c), and excluding suppressed
 dispositions (Phase 1d).
 
 Write `docs/health/YYYY-MM-DD-<surface>-health.md` (substitute today's date and
-`plugin`/`tooling` from the findings filename). The dossier must use generic
-vocabulary (no harness-specific tokens). Structure:
+`plugin`/`tooling` from the findings filename). **If a dossier already exists at
+that path** (e.g. a re-run or `--force` sweep on the same day), Read it first to
+satisfy the read-before-write contract, then overwrite it — the newest dossier
+is authoritative; never append. The dossier must use generic vocabulary (no
+harness-specific tokens). Structure:
 
 ```markdown
 # <Surface> Health — YYYY-MM-DD
@@ -156,7 +164,7 @@ dimensions:
 | Low      | <n>    | <n>     | <n>    | <n>   |
 
 New this sweep: <n> · Recurring from prior sweeps: <n> (annotated inline) ·
-Stale (dropped): <n>
+Stale (dropped): <n> · Dropped (unverified): <n>
 
 Top 5 ranked actions:
 1. ...
@@ -213,7 +221,9 @@ Write `.dev/health-loop-state.md` (schema:
 - `note:` recording dispositions is what stops the next sweep from re-ranking
   the same findings as new.
 
-Then tell the user: "Dossier ready. Next in the loop:
+Then tell the user (as plain assistant text — do not wrap this in a bash
+`echo` or heredoc; the backticks and nested punctuation will trip
+unmatched-quote errors): "Dossier ready. Next in the loop:
 `/record-health-dispositions` to triage accept/decline decisions (the pointer
 is saved in `.dev/health-loop-state.md`). After that, `/plan-health-findings`
 plans the accepted items."

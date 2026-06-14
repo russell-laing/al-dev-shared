@@ -43,7 +43,7 @@ If a sweep is interrupted by session limits:
 1. **Check existing lens output:**
 
    ```bash
-   ls -1 .dev/plugin-health-lens-*.json | wc -l
+   find .dev -maxdepth 1 -name 'plugin-health-lens-*.json' | wc -l
    ```
 
 2. **Re-invoke with resume flag:**

@@ -96,7 +96,7 @@ Execute the following state machine in order:
    - If `--resume` is present: scan `.dev/` for completed lens output files:
 
      ```bash
-     ls -1 .dev/*-plugin-health-lens-*.json 2>/dev/null
+     find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' 2>/dev/null
      ```
 
      Parse the `"lens"` field from each `.json` file. Compute
@@ -113,7 +113,12 @@ Execute the following state machine in order:
    - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
      subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
      remain. Pass per-lens context from
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`. As each
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`, and append
+     the **Finding evidence contract** from that file to every lens prompt: each
+     finding must cite `file:line` + a quoted snippet of the offending text + a
+     one-line reason it is a real issue, and the lens must omit any finding it
+     cannot ground in a quoted snippet (no speculative "consider whether…"
+     findings). This is the first-line defence against false positives. As each
      subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
      `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
@@ -130,7 +135,7 @@ For each surface that had lenses run:
 1. **Collect all lens output files from `.dev/`:**
 
    ```bash
-   ls -1 .dev/*-plugin-health-lens-*.json | sort
+   find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' | sort
    ```
 
 2. **Read and assemble findings:**
@@ -187,7 +192,7 @@ Use this explicit mapping:
 4. **Clean up disk files after assembly:**
 
    ```bash
-   rm -f .dev/*-plugin-health-lens-*.json
+   find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' -delete
    ```
 
 5. **Return to caller:**

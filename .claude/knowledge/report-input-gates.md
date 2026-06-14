@@ -62,6 +62,31 @@ and confirming the claim still holds; record the spot-check
 holds, drop the finding from counts and list it under a "Stale (dropped)" note
 instead.
 
+### Evidence verification (every finding)
+
+The `git log` staleness check above is time-boundary heuristics — it only
+catches subjects edited *since* the sweep. It does not catch a finding that was
+wrong the moment it was written. Because the discovery stage now requires every
+finding to carry a `file:line` + quoted snippet (the **Finding evidence
+contract** in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`),
+verify that evidence directly — this is the primary false-positive filter:
+
+For **every** parsed finding, before it enters the dossier:
+
+1. Open the cited `file:line` in the live source.
+2. Confirm the quoted snippet still exists at (or near) that location **and**
+   that the claimed problem actually holds against the current text.
+3. If the quoted evidence is absent, or the claimed condition does not hold,
+   drop the finding from all counts and the top-5, and list it under a
+   **"Dropped (unverified)"** note at the foot of the dossier (parallel to
+   "Stale (dropped)"), with one line per finding: `<object> — <why it did not
+   verify>`.
+
+This reads each finding's subject file once. If per-run cost is a concern,
+verify High and Medium findings in full (snippet + claim) and verify Low
+findings at snippet-existence level only. Record the count of dropped findings
+so the filter is auditable, not silent.
+
 ---
 
 ## 1d — Disposition suppression
