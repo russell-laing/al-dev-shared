@@ -72,9 +72,10 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
 - **workflow_stage:** the `workflow.stage:` frontmatter field value (empty string if absent).
 - **phase_count:** count headings matching `## Phase N` (where N is a digit).
 - **spawned_agents:** extract only well-formed `al-dev-shared:[a-z-]+` references
-  from the body (lowercase agent slug after the namespace prefix). Skip malformed
-  references (e.g. trailing punctuation, uppercase, or empty slug) rather than
-  recording them.
+  from the body (lowercase agent slug after the namespace prefix). A reference is
+  malformed if its slug contains uppercase letters, trailing punctuation, is an
+  empty string, or contains internal whitespace. Skip malformed references rather
+  than recording them.
 
 ### Step 3 — Write JSON and return path
 
