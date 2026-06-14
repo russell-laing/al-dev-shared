@@ -81,8 +81,7 @@ Run the poll-then-read state machine in
 `.claude/skills/sync-documentation-maps/collect-polling-patterns.md`, passing
 `WAIT_MODE` and `RUN_DIR`. It polls on artifact presence when `WAIT_MODE=true`
 (30-minute cap), reads and parses each present `*-audit.json` into `surface`,
-`discrepancies`, and `summary`, records an absent surface as `pending` (and a
-surface still pending on a same-`RUN_ID` re-run as stalled), and stops with the
+`discrepancies`, and `summary`, records an absent surface as `pending` (and a surface still pending on a same-`RUN_ID` re-run as `stalled` — consequence: stop and recommend restarting from `/sync-documentation-maps`; see `collect-polling-patterns.md` §Absence handling), and stops with the
 "Audit results not yet available" message when both artifacts are absent.
 
 ---
