@@ -64,8 +64,7 @@ extract `run_id` → `RUN_ID`, `result_dir` → `RUN_DIR`, `auto_update` →
 `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
 
 **Resume / restart.** Check `status` in the checkpoint and act per the table
-below. Full branch semantics (Resume / Restart / Cancel) are in
-`.claude/skills/sync-documentation-maps/collect-resume-patterns.md`.
+below.
 
 | Checkpoint `status` | Action |
 | --- | --- |
@@ -82,7 +81,7 @@ Run the poll-then-read state machine in
 `WAIT_MODE` and `RUN_DIR`. It polls on artifact presence when `WAIT_MODE=true`
 (30-minute cap), reads and parses each present `*-audit.json` into `surface`,
 `discrepancies`, and `summary`, records an absent surface as `pending` (and a surface still pending on a same-`RUN_ID` re-run as `stalled` — consequence: stop and recommend restarting from `/sync-documentation-maps`; see `collect-polling-patterns.md` §Absence handling), and stops with the
-"Audit results not yet available" message when both artifacts are absent.
+"Audit results not yet available" message when both artifacts are absent. If both artifacts are still absent on a same-`RUN_ID` re-run, this is a stalled run — stop and recommend restarting from `/sync-documentation-maps`.
 
 ---
 
