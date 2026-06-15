@@ -204,6 +204,7 @@ flowchart LR
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_fix --> knowledge_scope_expansion_gate_md
     skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md

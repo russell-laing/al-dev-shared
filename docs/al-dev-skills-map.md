@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-14
+**Last updated:** 2026-06-15
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -253,6 +253,7 @@ flowchart LR
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
     knowledge_intent_preflight_md[intent-preflight]
+    knowledge_scope_expansion_gate_md[scope-expansion-gate]
     artifact_test_plan_md[.dev/test-plan.md]
 
     skill_al_dev_fix -.-> skill_al_dev_develop
@@ -265,6 +266,7 @@ flowchart LR
     skill_al_dev_fix --> knowledge_compile_lint_procedure_md
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
+    skill_al_dev_fix --> knowledge_scope_expansion_gate_md
     skill_al_dev_fix --> artifact_test_plan_md
 
     class skill_al_dev_fix skillNode
@@ -278,6 +280,7 @@ flowchart LR
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_scope_expansion_gate_md knowledgeNode
     class artifact_test_plan_md artifactNode
 ```
 
@@ -470,7 +473,7 @@ flowchart LR
 
 ### /al-dev-develop
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4, 5.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
 ```mermaid
@@ -540,7 +543,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-deve
 
 ### /al-dev-review-develop-preflight
 
-Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3, 4.
+Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
 ```mermaid
@@ -729,7 +732,7 @@ Agents spawned: `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-co
 
 ### /al-dev-commit-preflight
 
-Phases 0, 1, 2, 3 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
+Phases 0, 1, 2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-preflight -->
 ```mermaid
