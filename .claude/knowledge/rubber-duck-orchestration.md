@@ -12,23 +12,34 @@ Before rubber-ducking any suggestion, create one progress todo per suggestion
 named `[Type] [Subject]`. Mark each in-progress when rubber-ducking begins and
 complete when its rubber-duck record is written.
 
-## Independence and parallel exploration
+## Read-only dispatch (default)
 
-Two suggestions are **independent** iff (a) the file sets they would modify are
-disjoint, AND (b) neither suggestion's subject file is read during the other's
-checks. Build a directed edge A→B when B's checks must read a file A produces or
-modifies; process in topological order, parallelising any layer with no incoming
-edges.
+Rubber-ducking and evidence verification are **read-only** — they never modify
+subject files. Because they are read-only, parallel dispatch to isolated
+subagents is safe by default and eliminates the per-finding inline-read cost
+that causes context growth.
 
-When a topological layer contains 3+ independent suggestions, dispatch that layer
-to parallel exploration agents before starting rubber-ducking (in Claude Code,
-invoke `superpowers:dispatching-parallel-agents`); if parallel dispatch is
-unavailable, rubber-duck the layer sequentially. Dispatch one exploration agent
-per suggestion (or per subject file when several findings share one file). Each
-agent reads the affected file(s) in full, runs the U2 artifact checks and the
-type-specific checks, and returns a structured rubber-duck record. Collect all
-records before writing any plan content. When every layer contains ≤2
-suggestions, the sequential inline path is fine.
+**Default model:** dispatch one `health-rubber-duck` agent per finding (batch
+findings that share one subject file into a single agent). Use
+`superpowers:dispatching-parallel-agents`. Each agent reads subject files in
+its own context and returns only a compact rubber-duck record — no file dumps,
+no source echoes. The parent collects records and never reads subject files
+itself during Phase 2.
+
+Sequential inline rubber-ducking is the fallback **only** when
+`superpowers:dispatching-parallel-agents` is genuinely unavailable.
+
+## Independence and modify sets
+
+Independence analysis applies only when the accepted worklist contains a
+**modify** set — findings where the proposed change to one subject file would
+affect whether another finding's claim holds. For read-only verification, every
+finding is independent by definition; no topological ordering is required.
+
+If Phase 2 yields `modify` verdicts whose adjusted scopes share file-set
+dependencies, build a directed edge A→B when B's scope depends on A's
+adjustment; process in topological order, parallelising any layer with no
+incoming edges.
 
 ## Cross-layer verification (conditional)
 

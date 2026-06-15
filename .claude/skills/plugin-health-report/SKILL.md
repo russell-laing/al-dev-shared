@@ -103,10 +103,12 @@ from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
 before top-5 inclusion; drop non-holding claims under "Stale (dropped)".
 
 Then run the **evidence verification** gate on *every* finding (not just High /
-top-5): open each finding's cited `file:line`, confirm the quoted snippet still
-exists and the claimed problem holds, and drop findings whose evidence does not
-verify under a **"Dropped (unverified)"** note. This is the primary
-false-positive filter. See `report-input-gates.md §1c` for both procedures.
+top-5): dispatch `health-rubber-duck` agents in `evidence` mode — one per
+subject file, via `superpowers:dispatching-parallel-agents` — and collect the
+returned `verified | dropped` table. The parent must not open the cited files
+itself. Drop unverified findings under a **"Dropped (unverified)"** note. This
+is the primary false-positive filter. See `report-input-gates.md §1c` for the
+full dispatch procedure.
 
 ### Disposition suppression
 

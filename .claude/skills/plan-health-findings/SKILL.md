@@ -138,21 +138,32 @@ Read the latest dossier(s). Collect every open finding from these sections:
 Skip any section marked `_No issues found._` and any finding already marked
 `← implemented`, `← completed`, or `← already implemented`.
 
-Then consult `docs/health/dispositions.md` (if present), matching by object
-and issue essence:
+Then consult the disposition ledger using the deterministic matcher. Locate the
+findings file corresponding to the dossier (same date and surface, `findings`
+kind — or derive from the dossier path by substituting `health` → `findings`),
+then run:
 
-- Findings marked `accepted` are the primary planning input — keep them.
+```bash
+python3 scripts/health_disposition_store.py match \
+  --findings docs/health/YYYY-MM-DD-<surface>-findings.md
+```
+
+The matcher returns a **high-precision candidate shortlist** classifying each
+finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify`
+candidate against the cited ledger row before acting. Read only the specific
+rows the matcher flags — do not read the full `docs/health/dispositions.md`
+ledger.
+
+- **`keep` with `accepted` status:** the primary planning input — keep it.
   **Capture the `#NNN` ID from the ID column** of each accepted row
   (the machine-readable identifier in the leftmost column). Carry this ID
-  forward to Phase 3 so each plan task can record which ledger rows
-  it closes.
-- Skip findings marked `declined`, `grandfathered`, or `fixed` (note the
-  skip count).
-- Findings with no ledger row are undispositioned: list them and ask the
-  user whether to include them in this plan or record dispositions first
+  forward to Phase 3 so each plan task can record which ledger rows it closes.
+- **`suppress`** (declined/grandfathered match): skip (note the skip count).
+- **`verify`** (fixed match): skip (note the skip count).
+- **No matched row** (`keep` with no ledger entry): undispositioned — list
+  them and ask the user whether to include them or record dispositions first
   via `/record-health-dispositions`.
 - Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
-- Read `docs/health/dispositions.md` for ordinary suppression and planning checks.
 - If a step needs closure chronology, query the history store via `scripts/health_disposition_store.py iter_history_rows`.
 - Verification must confirm both artifacts changed together:
   - one history shard appended under `docs/health/dispositions-history/`
@@ -181,17 +192,24 @@ written."
 ## Phase 1b: Staleness Gate (mandatory)
 
 Run the staleness check per `.claude/knowledge/health-findings-staleness-gate.md`.
-For each finding, resolve its subject to a file path and run:
+Resolve all finding subjects to file paths, then run a **single batched check** —
+one `git log` per distinct path, all in one pass — to produce a compact
+stale/fresh table before Phase 2 begins:
 
 ```bash
-# DOSSIER_DATE from the dossier filename; SUBJECT_PATH per finding
+# DOSSIER_DATE from the dossier filename
+# Run once per distinct SUBJECT_PATH resolved from the finding list
 git log --since="$DOSSIER_DATE 00:00" --oneline -- "$SUBJECT_PATH"
 ```
 
-- **Non-empty output** → label the finding **`⚠ possibly stale`** and record the commit(s).
-- **Empty output** → the subject is unchanged since the audit; rubber-duck normally.
+- **Non-empty output** → label the finding **`⚠ possibly stale`** and note the commit count.
+- **Empty output** → the subject is unchanged since the audit.
 
-If a finding's subject cannot be resolved to a single file, skip the gate for it and rubber-duck normally.
+Run all distinct subject paths in a single pass and collect results as a compact
+table (`STALE | FRESH` per path). Do not run git log inline per finding —
+batch all paths and read back only the summary.
+
+If a finding's subject cannot be resolved to a single file, skip the gate for it and proceed normally.
 
 Report the stale-labelled count before Phase 2. Handle by tier:
 
@@ -210,36 +228,51 @@ See `.claude/knowledge/health-findings-staleness-gate.md` for full tier-handling
 
 ## Phase 2: Rubber Duck
 
-For **every** suggestion, run the checks and record the result. Do not write any
-plan content until all suggestions are rubber-ducked.
+For **every** suggestion, dispatch a `health-rubber-duck` verification agent
+and collect the returned record. Do not write any plan content until all
+records are collected.
 
-> **The rubber duck is a blocker, not a suggestion.** If a check finds a
-> mismatch or gap, resolve it before moving to the next suggestion.
-> See `knowledge/rubber-duck.md` for the underlying protocol.
+> **The rubber duck is a blocker, not a suggestion.** A `skip` verdict from an
+> agent excludes that suggestion from Phase 3 entirely. Record skipped
+> suggestions in a `## Skipped` section at the end of the plan file with the
+> reason noted.
 
-**Before running checks:** read `.claude/knowledge/rubber-duck-orchestration.md`
-(the maintainer-tooling orchestration layer). It covers progress tracking, the
-independence/parallel-exploration rule, and cross-layer (skill↔agent)
-verification. This skill keeps only the check pointer and the record format.
+### Dispatch
 
-### Checks
+Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
+`health-rubber-duck` agent per finding**, batching findings that share the same
+`subject_path` into a single agent call. Pass in each dispatch:
 
-> All per-check procedures (Universal U1–U3 and type-specific: Connect, Extend,
-> Merge, Move, Promote, Trim, Remodel, Split, Inline, Align) are in
-> `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`.
+- `mode: rubber-duck`
+- `findings:` the finding(s) as `Type — Subject — proposed change`
+- `subject_path:` the absolute path(s) to the subject file(s)
+- `findings_date:` the `YYYY-MM-DD` from the dossier filename
 
-### Rubber duck record
+The agent reads subject files in its own context and returns only compact
+rubber-duck records. The parent **must not** read any subject source file itself
+during Phase 2.
 
-After each suggestion, write a record using the format in
-`profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` (Rubber-Duck Record Format section).
+Sequential inline rubber-ducking is the fallback only when
+`superpowers:dispatching-parallel-agents` is genuinely unavailable.
 
-> **Verdict vocabulary:** `proceed` (claim substantiated), `skip` (claim refuted),
-> `modify` (partially substantiated — adjust scope). Maps from duck-check:
-> `ACCEPT` → `proceed`, `REJECT` → `skip`, `DEFER` → `skip`.
+### Cross-layer verification (conditional)
 
-If the verdict is `skip [reason]`, exclude that suggestion from Phase 3 entirely.
-Record skipped suggestions in a `## Skipped` section at the end of the plan file
-with the reason noted.
+When the accepted worklist contains both skill and agent findings, verify the
+two layers together over the returned records and documentation maps (no
+additional source-file reads):
+
+1. Trace each affected skill-to-agent handoff through the live skill callers
+   and agent "Spawned by" references. Record missing, stale, or contradictory
+   caller relationships in the relevant records.
+2. Compare skill complexity with agent model assignments using the current maps.
+3. Identify skill and agent changes that must land together — record each
+   coupled pair as one plan task or as explicit task dependencies.
+
+### Verdict vocabulary
+
+`proceed` (claim substantiated), `skip` (claim refuted), `modify` (partially
+substantiated — adjust scope). Maps from the agent's duck-check verdicts:
+`ACCEPT → proceed`, `REJECT → skip`, `DEFER → skip`.
 
 Every generated plan header must include a `health_filters:` block listing the
 active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality, naming]`).
