@@ -98,6 +98,24 @@ preplanning_skills: [pre-planning skill names — skills shown with dashed arrow
 layer1_diagram_content: [raw text of the Layer 1 Mermaid diagram from docs/al-dev-skills-map.md]
 ```
 
+### Complexity Outliers — Verdict Field
+
+Lines from the Complexity Outliers lens carry an extra `verdict` field between
+severity and the observation:
+
+```text
+verdict=[Atomise|Absorb|None]
+```
+
+- `verdict=Atomise`: skill has two independently-runnable phase groups separated
+  by a USER_GATE or phase boundary; recommend splitting into two skills.
+- `verdict=Absorb`: skill has zero core logic (≤2 phases, no agent dispatch);
+  recommend folding into its caller.
+- `verdict=None`: monitor only; no structural action required.
+
+When parsing Complexity Outliers findings, extract and act on this field before
+writing the dossier section.
+
 ---
 
 ## Quality and Naming Lenses

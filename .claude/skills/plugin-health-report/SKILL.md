@@ -73,12 +73,10 @@ Validate that the findings file surface matches the selected surface and that
 the concrete `dimensions:` list matches the dispatched lenses present in the
 artifact.
 
-**Complexity Outliers exception:** lines from this lens carry an extra
-`verdict=[Atomise|Absorb|None]` field between severity and observation.
-Parse it. `verdict=None` = monitor-only (no implementation action; exclude
-from severity counts, dimension grouping, and top-5). List them in a
-one-line "Monitor-only (excluded from counts)" note under Design
-suggestions. A Complexity line missing the verdict field is a lens
+**Complexity Outliers exception:** These findings carry an extra `verdict=` field.
+See the "Complexity Outliers — Verdict Field" section in
+`profile-al-dev-shared/knowledge/lens-invocation-patterns.md` for the field definition
+and per-verdict action. A Complexity line missing the verdict field is a lens
 regression — count it normally but flag as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
