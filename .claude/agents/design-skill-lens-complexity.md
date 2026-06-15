@@ -42,7 +42,7 @@ skill's entire body could fit as one extra phase in an existing adjacent skill.
 
 **Severity rules:**
 
-- High: skill has 8+ phases with two clearly separable concerns (significant
+- High: skill has 8+ phases with two clearly separable concerns ("clearly separable" = each concern spans ≥2 phases and is independently runnable — see Atomise criteria in the Lens body below) (significant
   cognitive load on every invocation)
 - Medium: skill has 6-7 phases with separable concerns, or zero-agent 2-phase
   skill that overlaps heavily with an adjacent skill

@@ -42,7 +42,7 @@ For each pair sharing the same agent types:
 
 **Severity rules:**
 
-- Medium: pair meets all merge criteria and users would plausibly confuse the two
+- Medium: pair meets all merge criteria and users would plausibly confuse the two (operative test: names differ by ≤1 content token, OR both appear in the same workflow layer with near-identical descriptions)
 - Low: pair is similar but serves clearly distinct purposes that justify two skills
 
 ---

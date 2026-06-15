@@ -38,6 +38,8 @@ whitespace, ordering, and incidental wording — *incidental* meaning
 pronouns, determiners, and synonym choices; as opposed to *structural* elements
 like step counts, context-field names, and output expectations):
 
+Examples — **ignorable**: "Dispatch the agent" vs "Run the agent" (synonym), "Read the file" vs "Read each file" (determiner). **Non-ignorable**: "3 context fields" vs "5 context fields" (step-count change), `REPO_PATH` vs `ROOT_DIR` (context-field name change).
+
 - Same dispatch prompt template (same steps/structure, even if phrased differently)
 - Same context fields passed (same field set, regardless of order)
 - Same output expectation
@@ -66,4 +68,4 @@ If no issues found:
 
 ### Shared Execution Backbone Findings
 
-_No issues found._
+*No issues found.*
