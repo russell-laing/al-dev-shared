@@ -239,6 +239,11 @@ with `--resume`:
 mkdir -p .dev
 ```
 
+Attempt to Read `.dev/preflight-context.md` before writing (the harness
+requires a file path to have been read in the current session before it
+can be written). If the Read returns a "file not found" error, treat that
+as the expected fresh-run state and proceed with the Write immediately.
+
 Populate `requirements`, `scope`, `architect_model`, `user_context`,
 `external_findings_status` (or `null` if Phase 1.5 was skipped),
 `timestamp` (ISO 8601), and `no_crit_swarm`. Set `phase` to `2`.
