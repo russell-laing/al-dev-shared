@@ -4,7 +4,8 @@ description: >-
   Ingest friction logs from ~/friction-log/ (curated session-analysis findings
   plus aggregated tool-error signals) into the self-healing health loop as a
   discover-stage source, then archive the consumed logs. Routes findings by the
-  surface they implicate (plugin-first), writes per-surface
+  surface they implicate; breadcrumb next_command
+    construction orders plugin surface first. Writes per-surface
   YYYY-MM-DD-<surface>-friction-findings.md artifacts consumed by
   /plugin-health-report via --findings, and records local runtime provenance in
   docs/health/friction-ingest-log.md (gitignored). Run when friction logs have

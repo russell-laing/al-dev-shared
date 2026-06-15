@@ -3,6 +3,7 @@ name: implement-health-plan
 description: >-
   Closes the health-audit loop: executes an accepted implementation plan,
   verifies each change, and appends `fixed` rows to docs/health/dispositions.md
+    and its monthly history shards (docs/health/dispositions-history/YYYY/YYYY-MM.md)
   for every `closes_rows:` entry (the distinguishing ledger close-back).
   Locates the latest docs/superpowers/plans/ plan containing `closes_rows:`,
   executes tasks inline (one at a time), archives consumed artifacts, and
