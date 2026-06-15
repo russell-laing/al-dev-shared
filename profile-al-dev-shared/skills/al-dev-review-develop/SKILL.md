@@ -102,13 +102,19 @@ Spawn these three agents with the above prompt adapted to each specialty:
 - `al-dev-shared:al-dev-al-pattern-reviewer` — focus: AL conventions, naming, BC patterns
 - `al-dev-shared:al-dev-performance-reviewer` — focus: N+1 queries, SetLoadFields, resource loops
 
-Collect all three outputs before proceeding to Phase 5.
+Collect all three outputs before proceeding to Phase 5. If any agent fails to
+spawn or returns no output, report this to the user and ask whether to retry the
+failed reviewer or proceed with a partial review. If proceeding partial, carry the
+absent reviewer forward so Phase 5 can mark it explicitly.
 
 ---
 
 ## Phase 5: Write Code-Review Artifact
 
 Synthesize findings from all three reviewers into a single dated code-review file.
+If a reviewer was absent from a partial review (see Phase 4), mark its row in the
+Review Panel Summary table as `— (not run)` rather than omitting it, and note the
+partial-review status near the top of the artifact.
 
 1. **Create the code-review artifact:**
 
