@@ -104,7 +104,10 @@ The user described what they want to do. Recommend the right workflow.
 **Step 1: Read description and classify:**
 
 Use `knowledge/workflow-routing.md` to classify complexity before recommending
-`/al-dev-fix`, `/al-dev-plan`, or `/al-dev-develop`.
+`/al-dev-fix`, `/al-dev-plan`, or `/al-dev-develop`. Quick reference (full
+criteria in that doc): TRIVIAL = single file, obvious fix. SIMPLE = 2-3 files,
+pattern exists. MEDIUM = 4-8 files, some design decisions. COMPLEX = new
+architecture or unclear requirements.
 
 | Situation | Recommended workflow |
 | ----------- | --------------------- |
