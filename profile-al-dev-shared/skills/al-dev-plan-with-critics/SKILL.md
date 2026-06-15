@@ -30,7 +30,7 @@ it as the starting specification rather than generating a competing plan.
    - **Edge-Cases Critic:** Find assumptions, off-by-one patterns, null-reference risks, boundary violations
 3. **Synthesize findings:** Deduplicate, rank by severity, generate auto-fix patches where possible
 4. **Apply auto-fixes:** Edit plan with high-confidence fixes (e.g., add missing var, correct anchor string)
-5. **Generate critique report:** Write findings + recommendations to `.dev/plan-critique-YYYYMMDD.md`
+5. **Generate critique report:** Write findings + recommendations to `.dev/plan-critique-YYYYMMDD.md` (replace `YYYYMMDD` with the current date in compact form, e.g. `20260616`)
 6. **Gate approval:** Present synthesized findings and ask user to approve plan before passing to executing-plans
 
 ## Example Workflow
