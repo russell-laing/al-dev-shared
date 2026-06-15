@@ -231,7 +231,7 @@ Print a final confirmation:
 sync-documentation-maps workflow complete. Run ID: RUN_ID
 ```
 
-## Phase 4b — Preserve the health-loop breadcrumb
+## Phase 5 — Preserve the health-loop breadcrumb
 
 Check whether `.dev/health-loop-state.md` exists:
 
