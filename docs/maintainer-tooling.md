@@ -5,9 +5,17 @@ organizes the maintenance journey into five stages while keeping the
 breadcrumb-controlled health loop distinct from its preparation and follow-up
 work.
 
-Use this page to choose an entry point and understand the handoffs. Open a
-stage page for its workflow, run order, and key artifacts. Exact skill
-frontmatter and generated diagnostics are retained in the appendices.
+**What you'll find here:** This reference helps you navigate a complete plugin health
+lifecycle: from discovering issues through executing fixes and validating changes. Each
+stage is independent and can be run in isolation, but together they form a coherent
+workflow controlled by durable handoff artifacts that survive across sessions.
+
+**How to use this guide:** Start by reading the overview below to understand how stages
+connect. Then refer to individual stage pages (linked in The Five Stages table) for
+detailed workflows, artifact contracts, and command sequences. Use the Quick Reference
+section to find the specific entry point matching your situation. Exact skill frontmatter
+and generated diagnostics are retained in the appendices for contract maintenance and
+troubleshooting.
 
 Content between `BEGIN GENERATED` and `END GENERATED` markers comes from
 `.claude/skills/*/SKILL.md` workflow contracts through
@@ -16,10 +24,24 @@ then regenerate; do not edit marked content directly.
 
 ## Workflow Overview
 
-Map sync is preparatory and Derive is conditional finalization work. The
-durable self-healing loop begins in Discover and closes at the end of Implement;
-when shared source changed, the applicable Derive checks run before that closing
-commit.
+The five stages divide into three roles:
+
+**Preparation (Stage 1: Map sync)** — Refreshes the inventory of skills and agents so that
+later audits have trustworthy context. This stage is independent preparation work that must
+preserve any active health-loop breadcrumb pointer; it's not part of the durable loop itself.
+
+**Core health loop (Stages 2–4: Discover → Decide → Implement)** — The durable self-healing
+cycle. It starts when you run Discover (either by lens audit or by ingesting friction logs),
+converts findings into maintainer decisions, and executes approved changes. Progress is tracked
+across sessions via `.dev/health-loop-state.md` breadcrumb artifacts so the loop can survive
+interruption and resume.
+
+**Finalization (Stage 5: Derive)** — Conditional cleanup work that runs only if the implementation
+changed shared source (agents, knowledge, or skills). Regenerates derived outputs and validates
+that all changes remain harness-neutral across all three harnesses (Claude Code, Copilot, Codex).
+
+When shared source changed during Implement, the applicable Derive checks run before the final
+ledger-close commit, keeping the loop atomic.
 
 <!-- BEGIN GENERATED: maintainer-workflow-overview -->
 ```mermaid
@@ -49,18 +71,31 @@ flowchart TD
 
 | Stage | Purpose | Use it when |
 | --- | --- | --- |
-| [1. Map sync](./maintainer-tooling/map-sync.md) | Refresh the canonical skill and agent maps, then regenerate their derived documentation. | Skills, agents, relationships, or map-backed docs have changed. |
-| [2. Discover](./maintainer-tooling/discover.md) | Produce and verify findings through either a lens audit or friction ingestion. | You need a current ranked health dossier. |
-| [3. Decide](./maintainer-tooling/decide.md) | Record durable decisions and turn accepted findings into a verified plan. | A dossier contains findings that need disposition or planning. |
-| [4. Implement](./maintainer-tooling/implement.md) | Execute the approved plan and close its accepted ledger rows. | A plan contains valid `closes_rows:` identifiers. |
-| [5. Derive](./maintainer-tooling/derive.md) | Regenerate projections and run shared-source quality checks during finalization. | Implementation changed shared agents, knowledge, skills, or generated outputs. |
+| [1. Map sync](./maintainer-tooling/map-sync.md) | Refresh the canonical skill and agent maps, then regenerate their derived documentation. | You've added or removed a skill/agent, renamed one, or changed their relationships. Also use to re-verify map accuracy against the live codebase. This is preparatory work that runs independent of the health loop. |
+| [2. Discover](./maintainer-tooling/discover.md) | Produce and verify findings through either a lens audit or friction ingestion. | You want to identify improvement candidates in the plugin. Run the full audit via `/plugin-health-audit` to spawn all design, quality, and naming lenses, or use `/ingest-friction-log` to fold accumulated session-analysis findings into the discovery process. |
+| [3. Decide](./maintainer-tooling/decide.md) | Record durable decisions and turn accepted findings into a verified plan. | A dossier contains findings that need disposition (accept, decline, grandfather, or mark as already fixed). Disposition decisions are recorded durably in the ledger before planning, so later reverification can reuse them without re-auditing. |
+| [4. Implement](./maintainer-tooling/implement.md) | Execute the approved plan and close its accepted ledger rows. | A verified plan exists with explicit `closes_rows:` identifiers. Run this to execute tasks one-by-one, verify results, and write ledger close-backs that prove the work was completed. The stage is resumable via a progress checkpoint if interrupted. |
+| [5. Derive](./maintainer-tooling/derive.md) | Regenerate projections and run shared-source quality checks during finalization. | Implementation or direct edits changed shared agents (→ regenerate projections), shared knowledge (→ audit quality, fix HIGH items), or any shared skill/agent/knowledge (→ validate harness neutrality). These checks happen automatically during health-plan runs before loop closure. |
 
 ## Breadcrumb Orchestrator
 
-There is no monolithic orchestrator skill. The core loop coordinates fresh
-sessions through one durable pointer, `.dev/health-loop-state.md`. The file
-records which supported lifecycle skill completed, the exact next command, and
-the artifacts that command should adopt.
+There is no monolithic orchestrator skill; instead, the core loop uses a simple durable
+handoff pattern that works across session boundaries. After each lifecycle skill completes,
+it writes a breadcrumb file (`.dev/health-loop-state.md`) that records:
+
+- **Which skill completed** (e.g., `/plugin-health-discover` finished)
+- **The exact next command** to run (e.g., `/plugin-health-report --findings <path>`)
+- **Required input artifacts** that the next skill should consume (file paths, filter metadata)
+
+When you start a new session, the next skill reads this breadcrumb and knows exactly which
+stage you're resuming, which findings, plan, and ledger to load, and what work remains. This
+eliminates the need for a stateful orchestrator—each skill is self-contained, but their
+read/write patterns keep the loop coherent across interruptions.
+
+**Why it matters:** This design lets you pause a health audit mid-loop without losing context.
+If a skill fails or you need to stop for human review, fix the issue (if needed) and simply run
+the next command from the breadcrumb file. Don't restart from an earlier stage or re-run prior
+steps—the loop remembers what happened before and picks up exactly where it left off.
 
 <!-- BEGIN GENERATED: maintainer-breadcrumb-orchestrator -->
 The breadcrumb-controlled core runs from Discover through Implement.
@@ -81,35 +116,48 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 
 ## Quick Reference
 
-| Situation | Run |
-| --- | --- |
-| Added or removed a skill or agent | `/sync-documentation-maps` |
-| Want to audit map accuracy without applying updates | `/sync-documentation-maps --no-update` |
-| Want the main health-audit entry point | `/plugin-health-audit` |
-| Want to fold accumulated friction into the loop | `/ingest-friction-log` |
-| Ready to record decisions from a dossier | `/record-health-dispositions` |
-| Ready to turn accepted rows into a plan | `/plan-health-findings` |
-| Ready to execute a verified plan and close rows | `/implement-health-plan --plan <path>` |
-| Edited shared agent source | `/projection-sync`, then `/align-harness-repos` |
-| Edited shared knowledge | `/audit-knowledge-quality`; fix HIGH items if approved; then validate neutrality |
+| Situation | Run | Why |
+| --- | --- | --- |
+| Added or removed a skill or agent | `/sync-documentation-maps` | Audits the maps, applies changes, and regenerates all documentation and projections that depend on them. Use this when topology changes. |
+| Want to audit map accuracy without applying updates | `/sync-documentation-maps --no-update` | Runs the audit phase only and prints what would change without making modifications. Useful for verification before a full sync. |
+| Want the main health-audit entry point | `/plugin-health-audit` | Starts a full lens-driven discovery: dispatches design, quality, and naming audits, ranks findings, and writes a dossier. Best starting point for a comprehensive health check. |
+| Want to fold accumulated friction into the loop | `/ingest-friction-log` | Converts curated session-analysis findings and tool-error signals from `~/friction-log/` into discoverable findings, then archives the logs. Alternative entry point to `/plugin-health-audit` when you have session-specific issues to fold in. |
+| Ready to record decisions from a dossier | `/record-health-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
+| Ready to turn accepted rows into a plan | `/plan-health-findings` | Verifies accepted findings against the live codebase, then writes an implementation plan with explicit `closes_rows:` identifiers. Each plan task maps to ledger rows it will close. |
+| Ready to execute a verified plan and close rows | `/implement-health-plan --plan <path>` | Executes the plan tasks one-by-one with verification, appends `fixed` ledger rows, and closes the loop with `next_command: none`. Resumable if interrupted. |
+| Edited shared agent source directly (without using a health plan) | `/projection-sync` → then `/align-harness-repos` | Regenerates harness-native projections from your edited agents, then validates that the shared surface remains harness-neutral across all three harnesses. |
+| Edited shared knowledge directly | `/audit-knowledge-quality` → if HIGH findings exist, run `/fix-knowledge-quality` → then `/align-harness-repos` | Audits knowledge for structural issues. If HIGH-severity items are discovered and you approve them, fix them, then validate the shared surface remains harness-neutral. |
 
-If a run appears blocked, inspect the breadcrumb and the current stage's key
-artifacts before starting a new path.
+**If a run appears blocked:**
+
+1. **Check the breadcrumb first** — Read `.dev/health-loop-state.md` to see which stage completed
+   and what the exact next command should be. This file is your diagnostic source of truth.
+2. **Run the next command** — Follow what the breadcrumb says. Don't skip steps or go backward.
+3. **If the command fails** — Inspect the artifacts the command should read (listed in the breadcrumb
+   or the stage's Key Artifacts section). If an artifact is missing or corrupted, you may need
+   to re-run the prior stage or restart the loop entirely.
 
 ## Appendices
 
 ### Appendix A: Health Loop Contracts
 
-The canonical filter contract is
+The canonical filter contract is defined in
 `.claude/knowledge/health-filter-contract.md`.
 
-- `--surface plugin|tooling|both` selects the audited and planned surface.
-- `--dimension design|quality|naming|all` selects concrete finding dimensions.
-- `--resume` is audit-only and must match the stored concrete filters.
-- `/plugin-health-report` preserves upstream filter metadata; it has no public
-  `--dimension` flag.
-- `/ingest-friction-log` is not a lens. Its findings bypass automatic artifact
-  selection and enter report through an explicit `--findings <path>`.
+**Filter flags and defaults:**
+
+When you don't specify a flag, the default is used. Filters are persisted in the breadcrumb so that
+report stages inherit the decisions from discover:
+
+- `--surface plugin|tooling|both` selects the audited and planned surface. **Default:** `both`
+- `--dimension design|quality|naming|all` selects concrete finding dimensions. **Default:** `all`
+  (audits all three dimensions)
+- `--resume` is audit-only; used to continue an interrupted audit without re-running prior lenses.
+  Must match the stored filters from the initial audit command.
+- `/plugin-health-report` preserves upstream filter metadata from discover and does not expose
+  a public `--dimension` flag; filtering is automatically read from the breadcrumb.
+- `/ingest-friction-log` is not a lens and has no dimension filtering. Its findings bypass
+  automatic artifact selection and enter report through an explicit `--findings <path>` parameter.
 
 Breadcrumb enforcement uses two complementary checks:
 
@@ -120,8 +168,8 @@ Breadcrumb enforcement uses two complementary checks:
 
 ### Appendix B: Contracted Skills
 
-This generated inventory is the exact `workflow:` frontmatter view. It is useful
-for contract maintenance, but the stage pages are the primary reading path.
+This generated inventory shows the exact `workflow:` frontmatter for each skill. It is useful
+primarily for contract maintenance; the stage pages are the primary reading path.
 
 <!-- BEGIN GENERATED: maintainer-skills-tables -->
 ### Skills at a glance

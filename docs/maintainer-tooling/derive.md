@@ -2,16 +2,58 @@
 
 [Previous: Implement](./implement.md) | [Back to summary](../maintainer-tooling.md)
 
-Derive refreshes generated outputs and validates canonical shared source during
-finalization. In a health-plan run, these actions occur near the end of
-`/implement-health-plan`, before the ledger-close commit; they are not another
-breadcrumb-controlled handoff. The same commands can also run independently
-after direct shared-source edits.
+Derive refreshes generated outputs and validates canonical shared source during finalization.
+This stage answers: "Did the implementation change shared source? If so, did we regenerate
+everything correctly and ensure it remains harness-neutral?"
 
-The path depends on what changed. Agent edits require projection regeneration;
-knowledge edits require a quality audit and may require approved HIGH-severity
-fixes; every shared skill, agent, or knowledge change requires a neutrality
-check. Generated projections are outputs only and must never be edited by hand.
+**Why this stage exists:** The `al-dev-shared` plugin is consumed by three harnesses: Claude Code,
+Copilot CLI, and Codex. If implementation changed shared agents, knowledge, or skills, we must:
+
+1. **Regenerate derived outputs** — Agent edits require regenerating harness-native projections
+   for all three harnesses.
+2. **Audit quality** — Knowledge edits must pass structural and semantic quality checks. HIGH-severity
+   issues get fixed before final commit.
+3. **Validate neutrality** — All changes must remain harness-agnostic. The validator scans for
+   harness-specific tokens, paths, and references that could break distributable content.
+
+In a health-plan run, these actions occur near the end of `/implement-health-plan`, before the
+ledger-close commit. They are not another breadcrumb-controlled handoff. The same commands can
+also run independently if you edit shared source directly (outside a health plan).
+
+**Key principle:** Generated projections are outputs only and must never be edited by hand.
+If you need to change a projection, edit the canonical source (the shared agent) and regenerate.
+
+## How Derive Works
+
+The stage has three parallel paths:
+
+**Agent source changed:**
+
+1. Run `/projection-sync` to validate the edited agents and regenerate harness-native projections
+   for Claude Code, Copilot, and Codex.
+2. Run `/align-harness-repos` to verify the shared surface remains harness-neutral.
+
+**Knowledge source changed:**
+
+1. Run `/audit-knowledge-quality` to check for structural issues (stub sections, incomplete headers).
+2. If HIGH-severity findings are discovered and approved, run `/fix-knowledge-quality` to fix them.
+3. Re-run `/align-harness-repos` to ensure no harness-specific leakage was introduced by the fixes.
+
+**Any shared source changed (skills, agents, or knowledge):**
+Always run `/align-harness-repos` as a final validation step. This scans for:
+
+- Claude Code-specific tokens or references
+- Copilot-specific tokens or references
+- Codex-specific tokens or references
+- Harness-specific settings paths
+- MCP server references that don't apply universally
+
+The validator ensures the shared surface remains neutral so that all three harnesses can safely
+consume it without compatibility issues.
+
+**During health-plan runs:** If Implement made changes to shared source, these Derive actions
+run automatically before the loop-closure commit. You don't need to run them manually—the
+implementer handles it.
 
 ## Workflow
 

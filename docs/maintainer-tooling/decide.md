@@ -2,14 +2,46 @@
 
 [Previous: Discover](./discover.md) | [Back to summary](../maintainer-tooling.md) | [Next: Implement](./implement.md)
 
-Decide turns a ranked dossier into durable maintainer choices. First record
-accepted, declined, grandfathered, or already-fixed findings in the disposition
-store. Then verify accepted rows against the live repository before writing an
-implementation plan with explicit `closes_rows:` identifiers.
+Decide converts a ranked dossier into durable maintainer choices and an executable plan. This
+stage answers: "Which findings do we accept? Which do we decline? What work will we do?"
 
-Plan revision is an optional side path, not another required stage step. Use it
-only when a review or commentary artifact proves that the plan scope or ledger
-decisions must change before implementation.
+**The process has two parts:**
+
+1. **Record dispositions** — For each finding in the dossier, you decide:
+   - **Accept** — This is real work we'll fix now.
+   - **Decline** — We're not addressing this; it's out of scope, intentional, or already handled
+     elsewhere.
+   - **Grandfather** — This is a pre-existing state we're acknowledging but not fixing now.
+   - **Fixed** — We realized this was already fixed in a prior session (since the last dossier)
+     or by a different maintainer.
+
+   These decisions are recorded in the ledger (`.dev/dispositions.md`). Later audits filter out
+   already-decided findings, so you don't re-triage the same issue twice.
+
+2. **Plan accepted findings** — For findings you've accepted, `/plan-health-findings` verifies
+   each one against the live codebase (using rubber-duck checks), then writes an implementation
+   plan with explicit task steps. Crucially, each plan task names the ledger rows it will close
+   (via `closes_rows:`), creating the linkage that lets Implement prove work was completed.
+
+**Plan revision (optional):** If someone reviews the plan and finds that scope or decisions need
+to change before execution, run `/revise-health-plan` to reconcile the plan and ledger in one
+step. This is a side path, not a required step.
+
+## How Decide Works
+
+Dispositions are the key to this stage. By recording durable decisions, you create a durable
+audit trail: "We looked at this finding, made a decision, and here's what we did." Later audits
+can read this ledger and skip re-triaging findings you've already decided on, making the loop
+more efficient over time.
+
+The plan that emerges from accepted findings is not a generic task list—it's a **verified
+contract**. Each task in the plan explicitly names which ledger rows it will close, creating
+an audit trail. When Implement runs the plan, it appends `fixed` close-back rows for each
+`closes_rows:` identifier, proving that the work was completed and not just attempted.
+
+If a review stage finds issues with the plan (scope creep, wrong decision, etc.), `/revise-health-plan`
+lets you reconcile without re-planning from scratch. It reads the review commentary, reconciles
+the plan and ledger, and prepares for Implement.
 
 ## Workflow
 
@@ -69,3 +101,8 @@ Run `/revise-health-plan` only when a separate review or commentary artifact req
 
 Exact per-skill reads, writes, and `next` declarations are in
 [Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+
+---
+
+**Next:** Once you have an approved plan with `closes_rows:` identifiers, open [Stage 4: Implement](./implement.md)
+to execute the plan tasks, verify results, and close the health loop with ledger close-backs.

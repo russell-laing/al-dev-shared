@@ -2,16 +2,49 @@
 
 [Previous: Decide](./decide.md) | [Back to summary](../maintainer-tooling.md) | [Next: Derive](./derive.md)
 
-Implement executes the verified plan one task at a time, checks each result,
-and writes `fixed` close-back rows for every accepted ledger identifier named
-by `closes_rows:`. This close-back is what distinguishes the health-loop
-executor from a generic plan runner.
+Implement executes the verified plan one task at a time, verifies each result, and closes
+the health loop by writing `fixed` ledger rows that prove work was completed. This stage
+answers: "Let's actually do the work. Did it succeed? Can we prove it?"
 
-The stage is resumable through its progress checkpoint. It closes the core loop
-only when the ledger update and `.dev/health-loop-state.md` with
-`next_command: none` are committed together. When the implemented work changed
-shared source, the applicable Derive actions run during finalization before
-that closing commit.
+**What makes this stage different from a generic plan runner:**
+
+- **Verification:** After each task completes, the implementation is verified (files exist,
+  content is correct, no regressions).
+- **Close-back:** For each task that succeeds, a `fixed` ledger row is appended. This row
+  references the `closes_rows:` identifiers from the plan, proving the work happened.
+- **Resumability:** A progress checkpoint (`.dev/implement-health-plan-progress.md`) tracks
+  completed tasks and their commits. If interrupted, the next run resumes from where you left
+  off without re-doing completed work.
+- **Finalization:** If the implementation changed shared source (agents, knowledge, skills),
+  the Derive stage runs before the final commit, regenerating projections and validating
+  harness neutrality.
+- **Loop closure:** The loop closes only when both the ledger is updated with fixed rows AND
+  `.dev/health-loop-state.md` is committed with `next_command: none`. This ensures the health
+  audit is durably marked as complete.
+
+## How Implement Works
+
+Run `/implement-health-plan --plan <path>` to execute the plan from Decide. The skill will:
+
+1. **Read the plan and ledger** — Understand which tasks to execute and which ledger rows they
+   close.
+2. **Execute tasks one-by-one** — Run each task, verifying that the result matches what was
+   expected. If a task fails, the checkpoint lets you pause, fix, and resume.
+3. **Verify each result** — Confirm files exist, content is correct, no syntax errors or
+   unintended side effects. Verification is not just "did the command run"—it's "did the change
+   actually achieve the goal."
+4. **Append fixed rows** — For each completed task, write a `fixed` ledger row naming the
+   `closes_rows:` identifiers. This proves the work happened and links the fix back to the
+   original finding.
+5. **Run Derive (if needed, automatic)** — If implementation changed shared agents/knowledge/skills,
+   the skill automatically runs `/projection-sync`, `/audit-knowledge-quality`, `/fix-knowledge-quality`
+   (if HIGH items exist), and `/align-harness-repos` to ensure the shared surface is still valid and
+   harness-neutral. You don't need to run these manually—the implementer handles it.
+6. **Commit and close the loop** — Write the final ledger update and set `.dev/health-loop-state.md`
+   to `next_command: none`, marking the loop as complete.
+
+The progress checkpoint survives interruptions, so you can pause mid-execution if needed and
+resume later with `--plan <path>` again.
 
 ## Workflow
 
@@ -63,3 +96,9 @@ flowchart TD
 
 Exact per-skill reads, writes, and `next` declarations are in
 [Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+
+---
+
+**Next:** If implementation changed shared source (agents, knowledge, or skills), the Derive
+stage runs automatically before loop closure. But for reference or manual derive steps, see
+[Stage 5: Derive](./derive.md).

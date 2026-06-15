@@ -2,15 +2,46 @@
 
 [Previous: Map sync](./map-sync.md) | [Back to summary](../maintainer-tooling.md) | [Next: Decide](./decide.md)
 
-Discover is where improvement candidates enter the core health loop. The
-audit-driven path dispatches design, quality, and naming lenses over current
-map context. The friction-driven path converts curated session findings and
-recurring tool-error signals into the same reportable evidence shape.
+Discover is where improvement candidates enter the core health loop. This stage answers:
+"What architectural, quality, or naming issues exist in the plugin right now?"
 
-Both paths converge on `/plugin-health-report`, which verifies evidence,
-applies prior dispositions, ranks the surviving findings, and writes a health
-dossier. Friction findings require an explicit `--findings <path>` because the
-automatic selector intentionally excludes the friction artifact family.
+**Two entry paths:**
+
+- **Audit-driven** — Run `/plugin-health-audit` to dispatch design, quality, and naming lenses
+  across the entire skill and agent surface. This gives you a comprehensive, ranked inventory
+  of issues grouped by type and severity.
+- **Friction-driven** — Run `/ingest-friction-log` to fold accumulated session-analysis findings
+  and tool-error signals from `~/friction-log/` into the discovery process. Use this when you
+  have specific recurring issues or user pain points you want to address alongside general audits.
+
+Both paths converge on `/plugin-health-report`, which verifies the evidence, filters out findings
+that already have durable decisions in the disposition ledger, ranks the surviving findings by
+dimension and severity, and writes a ranked dossier. This dossier becomes the input to the Decide stage.
+
+## How Discover Works
+
+The stage is split into two parallel lanes that merge at reporting:
+
+**Audit-driven lane:** Dispatches design, quality, and naming lenses in parallel across the
+skill and agent surface. Each lens type runs independently—for example, design lenses check
+architecture (scope isolation, complexity outliers), quality lenses check clarity and structure,
+and naming lenses check convention compliance. Raw findings from each lens are collected into
+a single findings file. Then report-time filters suppress findings that already have recorded
+dispositions (accepted, declined, grandfathered, or fixed) from prior audits, so you only see
+new or unresolved issues.
+
+**Friction-driven lane:** Ingests log files from `~/friction-log/` (curated session-analysis
+findings and aggregated tool errors) and converts them into findings files. This lets you
+route real-world pain points from live usage into the same dossier as architecture findings.
+
+**Report phase:** Regardless of entry path, `/plugin-health-report` verifies the evidence,
+applies disposition filters, ranks the surviving findings, and writes a dossier to `docs/health/`.
+The dossier is ranked by dimension (design vs. quality vs. naming) and severity, making it easy
+for the Decide stage to triage.
+
+**Note on breadcrumb and session split:** Discover is intentionally split across two sessions
+(audit in one, report in another) to avoid context compaction. The breadcrumb file preserves
+the findings path and other metadata so report runs in a fresh session with full clarity.
 
 ## Workflow
 
@@ -79,3 +110,8 @@ flowchart TD
 
 Exact per-skill reads, writes, and `next` declarations are in
 [Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+
+---
+
+**Next:** Once you have a ranked dossier of findings, open [Stage 3: Decide](./decide.md)
+to record maintainer decisions (accept, decline, grandfather, fixed) and write an implementation plan.
