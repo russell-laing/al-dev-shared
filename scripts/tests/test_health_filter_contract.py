@@ -90,7 +90,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
                 "| plugin-health-discover | Clarity: missing else branch | declined | 2026-06-07 | note 2 |",
             ]
         )
-        migrated, unresolved = MIGRATION.migrate_ledger_text(
+        migrated, unresolved, rewrites = MIGRATION.migrate_ledger_text(
             legacy,
             override_index={
                 (
@@ -119,6 +119,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             migrated,
         )
         self.assertEqual([], unresolved)
+        self.assertEqual([], rewrites)
 
     def test_migration_falls_back_to_unknown_when_provenance_is_not_provable(self) -> None:
         legacy = "\n".join(
@@ -129,7 +130,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             ]
         )
 
-        migrated, unresolved = MIGRATION.migrate_ledger_text(legacy)
+        migrated, unresolved, rewrites = MIGRATION.migrate_ledger_text(legacy)
 
         self.assertIn(
             "| unknown | unknown | mystery-skill | Unmatched issue | accepted | 2026-06-07 | note |",
@@ -137,6 +138,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
         )
         self.assertEqual(1, len(unresolved))
         self.assertEqual("mystery-skill", unresolved[0].object_name)
+        self.assertEqual([], rewrites)
 
     def test_migration_can_infer_dimension_from_dossier_context(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -155,7 +157,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             )
             findings_index = MIGRATION.build_findings_index(health_dir)
             dossier_index = MIGRATION.build_dossier_index(health_dir)
-            migrated, unresolved = MIGRATION.migrate_ledger_text(
+            migrated, unresolved, rewrites = MIGRATION.migrate_ledger_text(
                 "\n".join(
                     [
                         "| Object | Issue | Disposition | Date | Evidence / note |",
@@ -172,6 +174,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
                 migrated,
             )
             self.assertEqual([], unresolved)
+            self.assertEqual([], rewrites)
 
     def test_cli_write_emits_migration_audit_report(self) -> None:
         with tempfile.TemporaryDirectory() as td:
