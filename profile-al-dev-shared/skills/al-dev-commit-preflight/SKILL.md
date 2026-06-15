@@ -315,7 +315,7 @@ Dispatch the message-drafting agent with the analysis results:
 
 Dispatch per `knowledge/commit-dispatch-template.md`:
 
-- agent: `al-dev-shared:al-dev-commit-message-drafter` (model: haiku)
+- agent: `al-dev-shared:al-dev-commit-group-drafter` (model: haiku)
 - description: "Draft commit messages and propose groups"
 - phase label: `Perform MESSAGE-DRAFTING phase for git commit workflow.`
   followed by a `Phase: message-drafting` line

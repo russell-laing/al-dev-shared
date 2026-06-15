@@ -749,7 +749,7 @@ flowchart LR
     Phase2["Phase 2"]
     skill_al_dev_commit_execute[al-dev-commit-execute]
     agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
-    agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
+    agent_al_dev_commit_group_drafter[al-dev-commit-group-drafter]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_commit_dispatch_template_md[commit-dispatch-template]
     knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
@@ -766,7 +766,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> Phase2
     skill_al_dev_commit_preflight -.-> skill_al_dev_commit_execute
     skill_al_dev_commit_preflight --> agent_al_dev_commit_analyzer
-    skill_al_dev_commit_preflight --> agent_al_dev_commit_message_drafter
+    skill_al_dev_commit_preflight --> agent_al_dev_commit_group_drafter
     skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
@@ -784,7 +784,7 @@ flowchart LR
     class Phase2 phaseNode
     class skill_al_dev_commit_execute skillNode
     class agent_al_dev_commit_analyzer agentNode
-    class agent_al_dev_commit_message_drafter agentNode
+    class agent_al_dev_commit_group_drafter agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
@@ -797,7 +797,7 @@ flowchart LR
     class artifact_file_sizes_json artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-message-drafter`
+Agents spawned: `al-dev-shared:al-dev-commit-analyzer`, `al-dev-shared:al-dev-commit-group-drafter`
 <!-- END GENERATED: skill-drilldown-al-dev-commit-preflight -->
 
 ### /al-dev-explore

@@ -36,10 +36,10 @@ flowchart LR
         agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
         agent_al_dev_commit_analyzer[al-dev-commit-analyzer]
         agent_al_dev_commit_executor[al-dev-commit-executor]
+        agent_al_dev_commit_group_drafter[al-dev-commit-group-drafter]
         agent_al_dev_commit_hook_classifier[al-dev-commit-hook-classifier]
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
         agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
-        agent_al_dev_commit_message_drafter[al-dev-commit-message-drafter]
         agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
         agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
@@ -81,7 +81,7 @@ flowchart LR
     skill_al_dev_commit_execute --> agent_al_dev_commit_lint_fixer
     skill_al_dev_commit_execute --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_commit_preflight --> agent_al_dev_commit_analyzer
-    skill_al_dev_commit_preflight --> agent_al_dev_commit_message_drafter
+    skill_al_dev_commit_preflight --> agent_al_dev_commit_group_drafter
     skill_al_dev_develop --> agent_al_dev_developer_tdd
     skill_al_dev_develop --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_developer_traditional
@@ -120,10 +120,10 @@ flowchart LR
     class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_commit_analyzer agentNode
     class agent_al_dev_commit_executor agentNode
+    class agent_al_dev_commit_group_drafter agentNode
     class agent_al_dev_commit_hook_classifier agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
-    class agent_al_dev_commit_message_drafter agentNode
     class agent_al_dev_commit_ooxml_validator agentNode
     class agent_al_dev_commit_recover_fixer agentNode
     class agent_al_dev_developer_tdd agentNode

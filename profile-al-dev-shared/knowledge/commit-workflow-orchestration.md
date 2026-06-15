@@ -12,7 +12,7 @@ The six agents are dispatched in strict sequential order:
 | Phase | Agent | Role |
 |---|---|---|
 | 1.1 | `al-dev-shared:al-dev-commit-analyzer` | Extract file manifests and deletion list from staged changes |
-| 1.3 | `al-dev-shared:al-dev-commit-message-drafter` | Draft commit messages and propose file groupings |
+| 1.3 | `al-dev-shared:al-dev-commit-group-drafter` | Draft commit messages and propose file groupings |
 | 3.1 | `al-dev-shared:al-dev-commit-lint-fixer` | Run lint preflight and fix trailing whitespace |
 | 3.2 | `al-dev-shared:al-dev-commit-ooxml-validator` | Validate OOXML ZIP integrity for `.docx` files |
 | 4.1 | `al-dev-shared:al-dev-commit-executor` | Execute approved commits via `git` |
@@ -33,7 +33,7 @@ Phase 1.1  al-dev-commit-analyzer
 Phase 1.2  Deletion Audit Gate (USER_GATE — orchestrator only)
   │
   ▼
-Phase 1.3  al-dev-commit-message-drafter
+Phase 1.3  al-dev-commit-group-drafter
   │  Input: MANIFESTS from Phase 1.1
   │  Output: PROPOSED_GROUPS block
   ▼
@@ -113,7 +113,7 @@ orchestrator pastes these verbatim — never summarizes or transforms them:
 
 | Receiving agent | Prior-phase output passed in |
 |---|---|
-| `al-dev-commit-message-drafter` (1.3) | `MANIFESTS` block from Phase 1.1 |
+| `al-dev-commit-group-drafter` (1.3) | `MANIFESTS` block from Phase 1.1 |
 | `al-dev-commit-lint-fixer` (3.1) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-ooxml-validator` (3.2) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-executor` (4.1) | `APPROVED_PLAN` from Phase 2 |

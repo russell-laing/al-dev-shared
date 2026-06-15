@@ -253,7 +253,7 @@ against the live skill body before treating it as work.
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/health/friction-ingest-log.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-16 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -16,10 +16,10 @@
 | al-dev-al-pattern-reviewer | haiku | Read | `/al-dev-review-develop` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
+| al-dev-commit-group-drafter | sonnet | (none) | `/al-dev-commit-preflight` |
 | al-dev-commit-hook-classifier | haiku | Read | `/al-dev-commit-execute` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
-| al-dev-commit-message-drafter | sonnet | (none) | `/al-dev-commit-preflight` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit-execute` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop` |
@@ -88,9 +88,9 @@
 
 ---
 
-### al-dev-commit-message-drafter
+### al-dev-commit-group-drafter
 
-**Description:** Git commit message drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
+**Description:** Git commit group drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
 **Model:** sonnet
 **Tools:** (none)
 **Spawned by:** /al-dev-commit-preflight

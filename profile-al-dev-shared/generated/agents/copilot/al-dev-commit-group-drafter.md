@@ -1,11 +1,11 @@
 ---
-name: "al-dev-commit-message-drafter"
-description: "Git commit message drafter agent. Consumes manifests from al-dev-commit-analyzer, proposes atomic commit groups, and drafts commit messages. Dispatched by /al-dev-commit (message-drafting phase)."
+name: "al-dev-commit-group-drafter"
+description: "Git commit group drafter agent. Consumes manifests from al-dev-commit-analyzer, proposes atomic commit groups, and drafts commit messages. Dispatched by /al-dev-commit (message-drafting phase)."
 tools: []
 ---
 
 
-# Agent: al-dev-commit-message-drafter (Message-Drafting Phase)
+# Agent: al-dev-commit-group-drafter (Message-Drafting Phase)
 
 Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
 manifest analysis and project context.

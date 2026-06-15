@@ -1,7 +1,14 @@
-name = "al-dev-commit-message-drafter"
-description = "Git commit message drafter agent. Consumes manifests from al-dev-commit-analyzer, proposes atomic commit groups, and drafts commit messages. Dispatched by /al-dev-commit (message-drafting phase)."
-developer_instructions = """
-# Agent: al-dev-commit-message-drafter (Message-Drafting Phase)
+---
+name: al-dev-commit-group-drafter
+description: >-
+  Git commit group drafter agent. Consumes manifests from al-dev-commit-analyzer,
+  proposes atomic commit groups, and drafts commit messages. Dispatched by
+  /al-dev-commit (message-drafting phase).
+model: sonnet
+tools: []
+---
+
+# Agent: al-dev-commit-group-drafter (Message-Drafting Phase)
 
 Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
 manifest analysis and project context.
@@ -145,6 +152,3 @@ WARNINGS
 ========
 (Any validation issues or advisory notices)
 ```
-
-Codex capability notes:
-"""
