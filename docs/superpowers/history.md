@@ -187,3 +187,4 @@ Current source of truth: active implementation guidance lives in the current sha
 2026-06-13 | tooling quality fixes (16 closes_rows: #694, #696-#699, #702-#704, #706-#707, #711-#714, #716-#717) | implemented; rows closed: [#694, #696, #697, #698, #699, #702, #703, #704, #706, #707, #711, #712, #713, #714, #716, #717]
 2026-06-13 | caller-alignment surface-scoped grep | implemented; rows closed: [#733]
 2026-06-14 | tooling quality fixes (18 tasks) | implemented; rows closed: [#734, #735, #737, #738, #739, #740, #741, #742, #743, #744, #746, #748, #749, #750, #751, #752, #753, #754, #755, #756, #757, #758, #759, #760, #761, #762, #763, #765]
+2026-06-15 | tooling quality and design fixes (11 tasks) | implemented; rows closed: [#794, #797, #798, #799, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #813, #815, #818, #819, #821, #822, #823, #824, #825, #826]
