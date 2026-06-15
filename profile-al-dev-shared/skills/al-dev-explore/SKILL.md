@@ -193,7 +193,7 @@ Key files:
 
 [Suggest next command if applicable — e.g., "Ready to design
 a solution? Run /plan." or "Start requirements gathering with
-/interview."]
+/interview." Otherwise, state that exploration is complete.]
 ```
 
 ---
