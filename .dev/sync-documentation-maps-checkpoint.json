@@ -1,18 +1,17 @@
 {
   "operation": "sync-documentation-maps",
-  "run_id": "20260615T043701Z",
-  "spawned_at": "2026-06-15T04:37:01Z",
-  "skill_metadata_team_id": "a877c921f3e70f481",
-  "agent_metadata_team_id": "a783a90f905710fde",
-  "skill_discrepancy_team_id": "a0f34dceed619b2aa",
-  "agent_discrepancy_team_id": "aadfe06d3923fa0d5",
+  "run_id": "20260615T123209Z",
+  "spawned_at": "2026-06-16T00:32:09Z",
+  "skill_metadata_team_id": "a56344d8a365155a1",
+  "agent_metadata_team_id": "a84318ed9ad2f5392",
+  "skill_discrepancy_team_id": "a9aa600f9aedeaed3",
+  "agent_discrepancy_team_id": "a85c0eae4bf4300fb",
   "phase": "complete",
   "status": "done",
-  "update_choice": "both",
-  "skill_update_team_id": "af1a7021b8149ec9f",
-  "agent_update_team_id": "a2ba863883e605dd2",
+  "update_choice": "skills",
+  "skill_update_team_id": "a51abf02f4b90b152",
   "auto_update": false,
   "skip_commit": false,
-  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260615T043701Z",
-  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260615T043701Z/manifest.json"
+  "result_dir": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260615T123209Z",
+  "manifest_path": "/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/20260615T123209Z/manifest.json"
 }
