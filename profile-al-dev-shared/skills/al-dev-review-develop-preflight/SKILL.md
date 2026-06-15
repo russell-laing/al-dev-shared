@@ -76,7 +76,7 @@ Combine two sources:
    Filter both commands to: `*.al`, `app.json`, `*.al.json`
    (use case-insensitive matching for `.al` and `.al.json` on case-insensitive filesystems)
 
-Deduplicate the combined list into `CHANGED_FILES`.
+Deduplicate the combined list into `CHANGED_FILES` by full relative path, keeping each unique path exactly once. If a handoff entry is a bare filename that cannot be resolved to a unique relative path, keep it as-is and note it rather than dropping it silently.
 
 If `CHANGED_FILES` is empty after deduplication: stop and tell the user:
 
