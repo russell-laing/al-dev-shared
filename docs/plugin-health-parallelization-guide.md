@@ -1,5 +1,7 @@
 # Plugin-Health Parallelization Guide
 
+**Last updated:** 2026-06-16
+
 > **Status: Aspirational design document.** The `/plugin-health` command described here
 > does not exist as an active skill. The current implementation uses three separate skills:
 > `/plugin-health-audit` (full synchronous sweep), `/plugin-health-discover` (lenses only),
