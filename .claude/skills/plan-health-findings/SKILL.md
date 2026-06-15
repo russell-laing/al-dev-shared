@@ -3,8 +3,9 @@ name: plan-health-findings
 description: >-
   Verify and plan accepted health-audit findings (formerly
   verify-map-suggestions). Reads accepted rows from
-  docs/health/dispositions.md, rubber-ducks each finding against the live
-  codebase before any plan content is written, then produces a verified
+  docs/health/dispositions.md, runs a deterministic disposition matcher in
+  Phase 1 to classify findings before rubber-ducking proceeds, rubber-ducks each
+  finding against the live codebase before any plan content is written, then produces a verified
   implementation plan via the writing-plans sub-skill. Filter the worklist by
   object type with `--skills` or `--agents` to plan only skill-design or
   agent-design findings, and scope it by surface and dimension with `--surface
@@ -157,7 +158,7 @@ ledger.
 - **`keep` with `accepted` status:** the primary planning input — keep it.
   **Capture the `#NNN` ID from the ID column** of each accepted row
   (the machine-readable identifier in the leftmost column). Carry this ID
-  forward to Phase 3 so each plan task can record which ledger rows it closes.
+  forward to Phase 4 so each plan task can record which ledger rows it closes.
 - **`suppress`** (declined/grandfathered match): skip (note the skip count).
 - **`verify`** (fixed match): skip (note the skip count).
 - **No matched row** (`keep` with no ledger entry): undispositioned — list
@@ -189,12 +190,12 @@ written."
 
 ---
 
-## Phase 1b: Staleness Gate (mandatory)
+## Phase 2: Staleness Gate (mandatory)
 
 Run the staleness check per `.claude/knowledge/health-findings-staleness-gate.md`.
 Resolve all finding subjects to file paths, then run a **single batched check** —
 one `git log` per distinct path, all in one pass — to produce a compact
-stale/fresh table before Phase 2 begins:
+stale/fresh table before Phase 3 begins:
 
 ```bash
 # DOSSIER_DATE from the dossier filename
@@ -211,7 +212,7 @@ batch all paths and read back only the summary.
 
 If a finding's subject cannot be resolved to a single file, skip the gate for it and proceed normally.
 
-Report the stale-labelled count before Phase 2. Handle by tier:
+Report the stale-labelled count before Phase 3. Handle by tier:
 
 Define **stale ratio** = (count of findings labelled `⚠ possibly stale`) ÷
 (count of all findings rubber-ducked this run).
@@ -226,14 +227,14 @@ See `.claude/knowledge/health-findings-staleness-gate.md` for full tier-handling
 
 ---
 
-## Phase 2: Rubber Duck
+## Phase 3: Rubber Duck
 
 For **every** suggestion, dispatch a `health-rubber-duck` verification agent
 and collect the returned record. Do not write any plan content until all
 records are collected.
 
 > **The rubber duck is a blocker, not a suggestion.** A `skip` verdict from an
-> agent excludes that suggestion from Phase 3 entirely. Record skipped
+> agent excludes that suggestion from Phase 4 entirely. Record skipped
 > suggestions in a `## Skipped` section at the end of the plan file with the
 > reason noted.
 
@@ -250,7 +251,7 @@ Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
 
 The agent reads subject files in its own context and returns only compact
 rubber-duck records. The parent **must not** read any subject source file itself
-during Phase 2.
+during Phase 3.
 
 Sequential inline rubber-ducking is the fallback only when
 `superpowers:dispatching-parallel-agents` is genuinely unavailable.
@@ -279,9 +280,9 @@ active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality
 
 ### Decision-logic verification
 
-When a plan task changes this skill's **Phase 1–2 decision logic** — filter ordering
-(Argument Routing / Phase 1), classification boundaries (staleness tier table / Phase 1b),
-or verdict-vocabulary mappings (Phase 2) — grep-only structural checks are insufficient. That task's
+When a plan task changes this skill's **Phase 1–3 decision logic** — filter ordering
+(Argument Routing / Phase 1), classification boundaries (staleness tier table / Phase 2),
+or verdict-vocabulary mappings (Phase 3) — grep-only structural checks are insufficient. That task's
 verification MUST include a case-walkthrough (or scenario test) that traces at
 least one concrete input through the changed logic and confirms the expected
 branch or verdict. Keep grep as a structural assertion only, consistent with
@@ -289,7 +290,7 @@ CLAUDE.md's Plan Task Verification Standard.
 
 ---
 
-## Phase 3: Write the Implementation Plan
+## Phase 4: Write the Implementation Plan
 
 After all suggestions are rubber-ducked, invoke:
 
@@ -305,7 +306,7 @@ Pass as context to writing-plans all items listed in
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven / Inline" prompt
   or ask "Which approach?" — the health loop overrides those endings. After writing-plans
-  completes, this skill's Phase 4 routes execution to `/implement-health-plan` so the
+  completes, this skill's Phase 5 routes execution to `/implement-health-plan` so the
   ledger entries are properly closed. Writing-plans' own endings bypass that ledger close-back.
 
 Plan saves to:
@@ -313,19 +314,19 @@ Plan saves to:
 
 ---
 
-## Phase 4: Hand off to implement (overrides the writing-plans Execution Handoff)
+## Phase 5: Hand off to implement (overrides the writing-plans Execution Handoff)
 
 `superpowers:writing-plans` ends with its own **Execution Handoff** offering
 "Subagent-Driven" or "Inline" execution. **Those endings do not apply in the
 health loop** — executing the plan through them skips `/implement-health-plan`
-Phase 3, so the `closes_rows:` rows are never written `fixed` and the loop
-never closes. Phase 3 already instructed `writing-plans` to suppress that
+Phase 4, so the `closes_rows:` rows are never written `fixed` and the loop
+never closes. Phase 4 already instructed `writing-plans` to suppress that
 handoff; this phase is the authoritative ending. If the "Which approach?"
 prompt appeared anyway, do **not** answer it — supersede it by running the
 steps below.
 
 1. **Confirm the plan carries `closes_rows:`** — `grep -c "closes_rows:" <plan-path>`.
-   If the count is 0, the survival caveat in Phase 3 was violated; fix the plan
+   If the count is 0, the survival caveat in Phase 4 was violated; fix the plan
    before handing off.
 
 2. **Write `.dev/health-loop-state.md`** (schema:
