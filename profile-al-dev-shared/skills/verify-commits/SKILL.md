@@ -24,7 +24,7 @@ git commit.
    - whether each approved group still has its own commit subject and file set
 5. If approved groups were combined into one local commit, stop and confirm the
    rewrite is safe before suggesting any reset:
-   - only local, unpublished commits are in scope
+   - only local, unpublished commits are in scope (unpublished = not yet pushed to a remote; check with `git log origin/<branch>..<branch>` if a remote is configured)
    - the affected commits are the recent commits just inspected
    - the user wants history rewritten
    If the user does not confirm (declines the rewrite), stop. Inform them:
