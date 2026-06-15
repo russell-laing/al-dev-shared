@@ -88,7 +88,8 @@ Wait for the user's response. Then set:
   `technical` | `functional` | `user` | `executive`
 - `TEMPLATE_PATH` = `knowledge/doc-templates/[AUDIENCE].md`
 
-Verify the template exists:
+Verify the template exists. Replace `[AUDIENCE]` below with the value chosen
+above (`technical`, `functional`, `user`, or `executive`) before running:
 
 ```bash
 ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/[AUDIENCE].md 2>/dev/null \
