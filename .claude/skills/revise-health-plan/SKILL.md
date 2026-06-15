@@ -92,20 +92,15 @@ standing `declined`/`grandfathered` ledger row. Surface it with `AskUserQuestion
 never default to one branch.
 
 Out-of-scope findings are typically: rubber-duck `skip` rows (refuted /
-already-covered), and tasks the review shows don't resolve their accepted finding.
+already-covered (*the accepted finding is addressed by a different, non-reviewed task already
+in the plan*)), and tasks the review shows don't resolve their accepted finding.
 
 ## Recurring correction patterns
 
 These review findings recur across plans; apply the canonical fix:
 
-| Review finding | Canonical correction |
-|---|---|
-| Commit subjects violate convention | `<emoji> type(scope): subject`, full subject ≤72 chars, subject-only (tool project — no body) |
-| A task edits the **executor** skill (`implement-health-plan/SKILL.md`) | Move it **last**, add a restart boundary: stop + re-invoke before Phase 2/3 close-back |
-| Bare `git status` can't pass in a dirty worktree | Path-scope every check: `git status --short -- <task-paths>`; forbidden scan over added lines only (`git diff --unified=0`) |
-| A grep "passes" on pre-existing text | Bound it (frontmatter-only via `awk`, fixed-string `grep -F`, or a strict measurement that exits non-zero) |
-| A task changes a skill's first description sentence | Regenerate + stage the derived `docs/maintainer-tooling.md` |
-| A task is dropped (re-dispositioned) | Renumber remaining tasks contiguously; update the Goal count and Provenance range |
+See `.claude/knowledge/correction-patterns.md` for the canonical correction-patterns
+table. When classifying review findings, consult this list first.
 
 ## Coverage reconciliation (mandatory)
 
