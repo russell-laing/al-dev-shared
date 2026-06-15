@@ -20,7 +20,7 @@ Claude Code consumes:
 
 - **Shared skills** from `profile-al-dev-shared/skills/`
 - **Generated agent projections** from `profile-al-dev-shared/generated/agents/claude/`
-- **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `bc-code-intel-knowledge/`
+- **Shared knowledge** from `profile-al-dev-shared/knowledge/` and `profile-al-dev-shared/bc-code-intel-knowledge/`
 
 ## Shared Plugin Surface (All Harnesses)
 
@@ -104,7 +104,7 @@ Each agent is a markdown file in `profile-al-dev-shared/agents/<name>.md` with Y
 ---
 name: agent-name
 description: Brief summary of agent role
-model: claude-opus-4-7  # or sonnet-4-6 / haiku-4-5
+model: opus  # or sonnet / haiku
 tools:
 
   - Tool1
@@ -145,15 +145,17 @@ See `docs/development-commands.md` for the full command reference (validation, p
 
 **Maintainer surface:** `docs/maintainer-tooling.md` (five-stage summary with detailed pages under `docs/maintainer-tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/al-dev-skills-map.md` scope note)
 
-**Active skills:** 19 distributed skills covering three main flows:
+**Active skills:** 24 distributed skills covering three main flows:
 
-1. **Ticket/Support flow** (`al-dev-ticket` → `al-dev-support-reply-drafter`)
+1. **Ticket/Support flow** (`al-dev-ticket` → `al-dev-support-reply`)
 2. **Development flow** (`al-dev-investigate` → `al-dev-plan` → `al-dev-develop` → `al-dev-commit`)
 3. **Direct fix flow** (`al-dev-fix` for trivial changes)
 
 **Pre-planning tributaries (optional):** `al-dev-explore`, `al-dev-interview`, `al-dev-perf`
 
 **Post-commit outputs:** `al-dev-release-notes`, `al-dev-handoff`, `al-dev-document`, `commit-recover`
+
+**Sub-skills & utilities:** `al-dev-plan-preflight`, `al-dev-plan-with-critics`, `al-dev-plan-final-review`, `al-dev-commit-preflight`, `al-dev-commit-execute`, `al-dev-review-develop-preflight`, `al-dev-help`, `verify-commits`
 
 ## Diagram Guidance
 
