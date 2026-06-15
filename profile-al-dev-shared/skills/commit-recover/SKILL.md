@@ -92,7 +92,12 @@ If `--auto-fix` was not passed, stop here and prompt the user to re-run with `--
 
 For each incident approved for recovery:
 
-1. Restore the file from `HEAD~1` using `git checkout HEAD~1 -- <file>`
+1. Restore the file from `HEAD~1` using `git checkout HEAD~1 -- <file>`.
+   If the restore fails (file not present in `HEAD~1` — e.g. it was first
+   added in the most recent commit), do not proceed with the remaining
+   sub-steps: escalate to the user with the raw git error, the file path,
+   and a hint to run `git log --all -- <file>` to locate a usable ancestor
+   commit.
 2. Re-apply the original change using the fallback strategy (e.g., `sed` instead of `perl`)
 3. Validate AL syntax
 4. Create a repair commit: `fix(commit-integrity): recover <file> from <pattern>`
