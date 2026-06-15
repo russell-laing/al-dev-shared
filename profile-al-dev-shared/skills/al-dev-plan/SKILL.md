@@ -144,7 +144,8 @@ table (isolated scope, decoupled from base); (3) event-driven (flexible,
 extensible, minimal coupling).
 
 **Spawn count:** Default 2 architects. Use 1 if the scope is clearly
-defined and only one viable approach exists. Use 3 if the scope is
+defined (fits one page, all BC objects named, no architectural
+trade-offs) and only one viable approach exists. Use 3 if the scope is
 highly complex, contested, or spans multiple architectural concerns.
 
 Spawn 2–3 **al-dev-solution-architect** agents with DIFFERENT
