@@ -9,7 +9,8 @@ description: >-
   docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
   be run standalone to refresh findings without re-running the report phase, but it requires the same
-  pre-conditions as a full audit run.
+  pre-conditions as a full audit run. Discovery is via parallel lens dispatch
+  (not direct file scanning).
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
   stage: discover
