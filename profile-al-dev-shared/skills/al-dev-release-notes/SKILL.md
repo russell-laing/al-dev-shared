@@ -22,7 +22,11 @@ From `$ARGUMENTS`, extract:
   if omitted, use the short form of `end_hash`
 
 If `start_hash` or `end_hash` is missing, ask the user before
-continuing.
+continuing:
+
+- If both are missing: ask for both.
+- If only `start_hash` is missing: ask for it (suggest `HEAD~1`).
+- If only `end_hash` is missing: ask for it (suggest `HEAD`).
 
 ---
 
