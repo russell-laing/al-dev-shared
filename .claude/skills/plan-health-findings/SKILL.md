@@ -270,8 +270,10 @@ Pass as context to writing-plans all items listed in
 > of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
 > `closes_rows: [...]` line inside each task's verification block before handoff.
 
-- **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
-  Inline" prompt or ask "Which approach?".
+- **Suppress your Execution Handoff.** Do not present the "Subagent-Driven / Inline" prompt
+  or ask "Which approach?" — the health loop overrides those endings. After writing-plans
+  completes, this skill's Phase 4 routes execution to `/implement-health-plan` so the
+  ledger entries are properly closed. Writing-plans' own endings bypass that ledger close-back.
 
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-plugin-map-<short-label>.md`

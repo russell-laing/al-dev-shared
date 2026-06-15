@@ -208,7 +208,10 @@ Use this explicit mapping:
    - `next_inputs:` all findings file paths written this session (one per surface)
    - `fresh_session_recommended: true`
    - `note:` discover phase is context-heavy; start a fresh session before running
-     the report to avoid compaction.
+     the report to avoid compaction. Phase 0 resumes from the checkpoint on fresh
+     invocation — the pointer in `.dev/health-loop-state.md` carries `next_inputs`
+     so the new session re-enters at the correct step rather than restarting Phase 1
+     from scratch.
 
 7. **Stop — do not auto-invoke `/plugin-health-report`.** Tell the user (as plain
    assistant text, not wrapped in bash/echo): "Findings written to `<path>`. Start a
