@@ -91,6 +91,9 @@ that appears in the audit JSON but has no definition in the section, add a
 discrepancy entry: `type: "unclassifiable_type"`, `agent: <name>`,
 `detail: "type '<value>' has no definition in sync-maps-edit-cases.md Agent surface section"`.
 
+Otherwise (all `type` values found in Step 3 are defined in the section), proceed to
+Step 4 discrepancy comparison without adding any unclassifiable-type entries.
+
 If `caller_check_skipped` is `true` in the metadata JSON, skip `caller_mismatch`
 detection and note it in the summary.
 

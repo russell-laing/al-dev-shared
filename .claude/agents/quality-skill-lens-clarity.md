@@ -48,9 +48,10 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
   conditionals inside fenced code blocks.
 - Bash code blocks that are pseudo-code rather than runnable commands. A binary
   name is **recognised** (do not flag) if it is a standard POSIX/coreutils
-  command (e.g. `ls`, `grep`, `find`, `sed`, `awk`, `cat`, `python3`, `git`,
-  `jq`, `mkdir`, `rm`), a command defined earlier in the same block (e.g. a shell
-  function or variable), or a script under the repo's `scripts/` directory.
+  command (e.g. `git`, `grep`, `sed`, `find`, `python3`, `rg`, `jq`, `awk`,
+  `wc`, `ls`, `cat`, `sort`, `uniq`), a command defined earlier in the same
+  block (e.g. a shell function or variable), or a script under the repo's
+  `scripts/` directory.
   Flag a block only when it uses an **unrecognised** binary outside those
   categories, unexplained `<placeholder>` syntax, or variables defined nowhere.
   (Note: In these instructions, `<placeholder>` is meta-notation indicating a

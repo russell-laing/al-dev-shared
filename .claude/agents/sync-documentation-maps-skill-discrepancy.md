@@ -95,6 +95,9 @@ that appears in the audit JSON but has no definition in the section, add a
 discrepancy entry: `type: "unclassifiable_type"`, `skill: <name>`,
 `detail: "type '<value>' has no definition in sync-maps-edit-cases.md Skill surface section"`.
 
+Otherwise (all `type` values found in Step 3 are defined in the section), proceed to
+Step 4 discrepancy comparison without adding any unclassifiable-type entries.
+
 For each type found, construct a discrepancy entry with `type`, `skill`, and
 `detail` fields. Populate `detail` with context (e.g., for `phase_count_mismatch`,
 record both the map-derived count and the SKILL.md count from `skill-metadata.json`).

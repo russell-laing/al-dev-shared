@@ -52,11 +52,13 @@ agent name from the filename (strip directory path and `.md` extension).
   binary names, unexplained `<placeholder>` syntax, variables defined nowhere.
   (Note: In these instructions, `<placeholder>` is meta-notation indicating a substitution point;
   actual bash blocks with undefined placeholder syntax should be flagged as such.)
-  A bash block is acceptable when every binary it invokes is a recognised tool
-  in this repository's workflows (e.g. `git`, `grep`, `sed`, `find`, `python3`,
-  `rg`) or a script that exists in the repository, every variable is defined in
-  the block or earlier in the same file, and every `<placeholder>` is
-  accompanied by an instruction stating what to substitute.
+  A bash block is acceptable when every binary it invokes is a **recognised tool** —
+  defined as: (a) any tool listed in the `tools:` frontmatter of any active skill or
+  agent in this repo, (b) any POSIX/coreutils standard binary, or (c) any script under
+  `scripts/` in this repo. The recognised set currently includes: `git`, `grep`, `sed`,
+  `find`, `python3`, `rg`, `jq`, `awk`, `wc`, `ls`, `cat`, `sort`, `uniq`.
+  Every variable must be defined in the block or earlier in the same file, and every
+  `<placeholder>` must be accompanied by an instruction stating what to substitute.
 - Steps that reference undefined placeholders or variables
 
 **Severity rules:**

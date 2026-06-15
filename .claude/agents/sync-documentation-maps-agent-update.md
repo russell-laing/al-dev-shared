@@ -41,7 +41,8 @@ Error: .claude/knowledge/sync-map-update-shared.md is absent — cannot proceed
 without the canonical update contract. Halt.
 ```
 
-Write no output files.
+Write no output files. Write the error message to stdout. Return no artifact paths
+to the caller — an absent output signals a halted agent.
 
 Follow the canonical update procedure in
 `.claude/knowledge/sync-map-update-shared.md`, with these surface parameters:
