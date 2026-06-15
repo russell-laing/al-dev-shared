@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Regenerate the marked sections of docs/maintainer-tooling.md from workflow contracts.
+"""Regenerate the maintainer-tooling summary and stage pages from workflow contracts.
 
 Reads `workflow:` frontmatter blocks from .claude/skills/*/SKILL.md (excluding
 archived/) and rewrites only the <!-- BEGIN GENERATED: ... --> regions of
-docs/maintainer-tooling.md.
+docs/maintainer-tooling.md and docs/maintainer-tooling/*.md.
 
 Fail-closed, following scripts/generate-plugin-graph.py: any parse or validation
 error (including a missing marker pair) exits non-zero, names the offending skill
@@ -23,13 +23,47 @@ if str(SCRIPT_DIR) not in sys.path:
 from maintainer_guide_sections import (  # noqa: E402
     build_sections,
     load_contracts,
+    STAGE_DOCS,
+    SUMMARY_DOC,
     validate_contracts,
 )
 from map_doc_sections import replace_marked_sections  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
 SKILLS_DIR = REPO / ".claude" / "skills"
-GUIDE_PATH = REPO / "docs" / "maintainer-tooling.md"
+PAGE_KEYS = {
+    SUMMARY_DOC: (
+        "maintainer-workflow-overview",
+        "maintainer-breadcrumb-orchestrator",
+        "maintainer-skills-tables",
+        "maintainer-gaps",
+    ),
+    STAGE_DOCS["map-sync"]: (
+        "maintainer-stage-map-sync-diagram",
+        "maintainer-stage-map-sync-journey",
+        "maintainer-stage-map-sync-artifacts",
+    ),
+    STAGE_DOCS["discover"]: (
+        "maintainer-stage-discover-diagram",
+        "maintainer-stage-discover-journey",
+        "maintainer-stage-discover-artifacts",
+    ),
+    STAGE_DOCS["decide"]: (
+        "maintainer-stage-decide-diagram",
+        "maintainer-stage-decide-journey",
+        "maintainer-stage-decide-artifacts",
+    ),
+    STAGE_DOCS["implement"]: (
+        "maintainer-stage-implement-diagram",
+        "maintainer-stage-implement-journey",
+        "maintainer-stage-implement-artifacts",
+    ),
+    STAGE_DOCS["derive"]: (
+        "maintainer-stage-derive-diagram",
+        "maintainer-stage-derive-journey",
+        "maintainer-stage-derive-artifacts",
+    ),
+}
 
 
 def _write_text_atomic(path: Path, text: str) -> None:
@@ -57,16 +91,20 @@ def main() -> int:
         active = {contract.skill for contract in contracts} | set(missing)
         validate_contracts(contracts, active)
         sections, warnings = build_sections(contracts, missing, REPO)
-        current = GUIDE_PATH.read_text(encoding="utf-8")
-        updated = replace_marked_sections(current, sections)
-        _write_text_atomic(GUIDE_PATH, updated)
+        for rel_path, keys in PAGE_KEYS.items():
+            page_path = REPO / rel_path
+            current = page_path.read_text(encoding="utf-8")
+            replacements = {key: sections[key] for key in keys}
+            updated = replace_marked_sections(current, replacements)
+            _write_text_atomic(page_path, updated)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"generate-maintainer-guide: {exc}\n")
         return 1
 
     for warning in warnings:
         sys.stderr.write(f"generate-maintainer-guide: warning: {warning}\n")
-    print(f"Wrote {GUIDE_PATH}")
+    for rel_path in PAGE_KEYS:
+        print(f"Wrote {REPO / rel_path}")
     return 0
 
 

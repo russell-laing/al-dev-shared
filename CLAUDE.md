@@ -67,7 +67,8 @@ Repo-local tooling may *inspect* shared source and generated projection outputs 
 
 **Maintainer skill workflow contracts:** `.claude/skills/` files may also contain a
 `workflow:` block — a repo-local frontmatter extension consumed by
-`scripts/generate-maintainer-guide.py` to auto-generate `docs/maintainer-tooling.md`.
+`scripts/generate-maintainer-guide.py` to auto-generate the
+`docs/maintainer-tooling.md` summary and `docs/maintainer-tooling/` stage pages.
 This block is invisible to Claude Code and all distributed harnesses. See
 `.claude/knowledge/skill-workflow-contract.md` for the schema. Skills without a
 `workflow:` block appear in the generator's "Missing contract" gap table; skills that
@@ -142,7 +143,7 @@ See `docs/development-commands.md` for the full command reference (validation, p
 
 **Start here:** `docs/al-dev-skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
-**Maintainer surface:** `docs/maintainer-tooling.md` (lifecycle diagram + skills-at-a-glance for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/al-dev-skills-map.md` scope note)
+**Maintainer surface:** `docs/maintainer-tooling.md` (five-stage summary with detailed pages under `docs/maintainer-tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/al-dev-skills-map.md` scope note)
 
 **Active skills:** 19 distributed skills covering three main flows:
 

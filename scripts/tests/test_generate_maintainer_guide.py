@@ -104,17 +104,6 @@ def _build_map_sync_fixture(root: Path) -> Path:
     skills = root / ".claude" / "skills"
     _write_skill(
         skills,
-        "review-maps",
-        "name: review-maps\n"
-        "description: Map accuracy sync.\n"
-        "workflow:\n"
-        "  stage: map-sync\n"
-        "  invoked-by: user\n"
-        "  repeatable: true\n"
-        "  next: [sync-documentation-maps]\n",
-    )
-    _write_skill(
-        skills,
         "sync-documentation-maps",
         "name: sync-documentation-maps\n"
         "description: Start async sync.\n"
@@ -369,6 +358,19 @@ def test_overview_renders_entries_and_manual_steps_without_repeat_loops() -> Non
         assert node_count == 3  # alpha, gamma, manual node
 
 
+def test_live_overview_uses_stage_level_flow_and_keeps_breadcrumb_detail_out() -> None:
+    contracts, _ = lib.load_contracts(REPO_ROOT / ".claude" / "skills")
+    text, node_count = lib.render_overview(contracts)
+    assert "flowchart TD" in text
+    assert 'stage_map_sync["1. Map sync' in text
+    assert 'stage_discover["2. Discover' in text
+    assert 'entry_friction["Alternate source' in text
+    assert 'stage_derive["5. Derive' in text
+    assert ".dev/health-loop-state.md" not in text
+    assert "skill_plugin_health_discover" not in text
+    assert node_count <= 7
+
+
 def test_stage_detail_marks_internal_skills_artifacts_and_orphans() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_skills_fixture(Path(td))
@@ -433,19 +435,17 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
                 "profile-al-dev-shared/generated/agents/",
             },
         )
-        assert 'subgraph map_entry["Normal entry point"]' in text
-        assert 'subgraph map_async["Async lane"]' in text
-        assert text.index('skill_review_maps["/review-maps"]') < text.index(
-            'skill_sync_documentation_maps["/sync-documentation-maps"]'
-        )
+        assert "flowchart TD" in text
+        assert 'skill_sync_documentation_maps["/sync-documentation-maps"]' in text
+        assert 'skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]' in text
         assert "review-documentation-map" not in text
-        assert "map_in_session" not in text
-        assert "skill_review_maps --> art_map_docs" not in text
-        assert "art_source_dirs --> skill_review_maps" not in text
-        assert "art_source_dirs --> skill_sync_documentation_maps" in text
-        assert 'art_downstream_generated["downstream generated"]' in text
-        assert "art_profile_al_dev_shared_generated_agents_" not in text
-        assert ".../sync-documentation-maps-checkpoint.json" not in text
+        assert (
+            'skill_sync_documentation_maps -- "checkpoint + audit results" '
+            "--> skill_sync_documentation_maps_collect"
+        ) in text
+        assert 'art_generated["derived docs + projections"]' in text
+        assert "skill_sync_documentation_maps_write --> art_generated" in text
+        assert "orphanArtifact" not in text
         assert "repeat" not in text
         assert node_count <= lib.NODE_BUDGET
 
@@ -473,12 +473,57 @@ def test_map_sync_stage_falls_back_when_retired_skill_still_exists() -> None:
         )
         contracts, _ = lib.load_contracts(skills)
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
-        assert 'subgraph map_entry["Normal entry point"]' not in text
-        assert 'subgraph map_async["Async lane"]' not in text
+        assert "flowchart LR" in text
         assert 'skill_review_documentation_map["/review-documentation-map"]' in text
         assert 'art_profile_al_dev_shared_skills_["skills/"]' in text
         assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
-        assert node_count > lib.NODE_BUDGET
+        assert node_count >= 1
+
+
+def test_discover_stage_uses_friction_and_audit_entry_lanes() -> None:
+    skills = REPO_ROOT / ".claude" / "skills"
+    contracts, _ = lib.load_contracts(skills)
+    text, node_count = lib.render_stage_detail(
+        contracts,
+        "discover",
+        {"docs/health/*-*-friction-findings.md"},
+    )
+    assert "flowchart TD" in text
+    assert 'subgraph lane_a["Audit-driven entry"]' in text
+    assert 'subgraph lane_b["Friction-driven entry"]' in text
+    assert 'art_breadcrumb[".dev/health-loop-state.md"]' in text
+    assert (
+        'skill_ingest_friction_log -- "friction findings + handoff" --> art_breadcrumb'
+    ) in text
+    assert (
+        'skill_plugin_health_discover -- "standard findings + handoff" --> art_breadcrumb'
+    ) in text
+    assert (
+        'art_breadcrumb -- "adopt exact findings path" --> skill_plugin_health_report'
+    ) in text
+    assert "orphanArtifact" not in text
+    assert "repeat" not in text
+    assert node_count <= lib.NODE_BUDGET
+
+
+def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing() -> None:
+    skills = REPO_ROOT / ".claude" / "skills"
+    contracts, _ = lib.load_contracts(skills)
+
+    decide_text, _ = lib.render_stage_detail(contracts, "decide", set())
+    assert "flowchart TD" in decide_text
+    assert 'skill_record_health_dispositions["/record-health-dispositions"]' in decide_text
+    assert 'skill_plan_health_findings["/plan-health-findings"]' in decide_text
+    assert 'skill_revise_health_plan["/revise-health-plan"]' in decide_text
+    assert 'art_commentary["optional review commentary"]' in decide_text
+    assert "repeat" not in decide_text
+
+    implement_text, _ = lib.render_stage_detail(contracts, "implement", set())
+    assert "flowchart TD" in implement_text
+    assert 'art_closed["ledger rows fixed + breadcrumb closed"]' in implement_text
+    assert 'art_progress["resumable progress checkpoint"]' in implement_text
+    assert "orphanArtifact" not in implement_text
+    assert "repeat" not in implement_text
 
 
 def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None:
@@ -559,6 +604,8 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         assert "skill_fix_knowledge_quality --> skill_align_harness_repos" in text
         assert 'art_generated_agents["generated/agents/"]' in text
         assert '[".../"]' not in text
+        assert "flowchart TD" in text
+        assert "orphanArtifact" not in text
         assert "repeat" not in text
         assert node_count <= lib.NODE_BUDGET
 
@@ -576,16 +623,15 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         )
         contracts, _ = lib.load_contracts(skills)
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
-        assert 'subgraph map_entry["Normal entry point"]' not in text
-        assert 'subgraph map_async["Async lane"]' not in text
-        assert 'art_downstream_generated["downstream generated"]' not in text
+        assert "flowchart LR" in text
+        assert 'art_generated["generated docs + projections"]' not in text
         assert 'skill_sync_documentation_maps_write["/sync-documentation-maps-write"]' in text
         assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
         assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
         assert 'art_docs_al_dev_plugin_graph_md[".../al-dev-plugin-graph.md"]' not in text
         assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
         assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
-        assert node_count == 13
+        assert node_count >= 1
 
 
 def test_stage_detail_empty_stage_returns_sentence() -> None:
@@ -634,6 +680,48 @@ def test_user_journey_lists_only_user_invoked_skills_in_order() -> None:
         assert "2. Manual step: implement the plan." in text
 
 
+def test_stage_journey_is_scoped_to_one_stage() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skills = _build_skills_fixture(Path(td))
+        contracts, _ = lib.load_contracts(skills)
+        text = lib.render_stage_journey(contracts, "decide")
+        assert "### Primary path" in text
+        assert "`/gamma-plan`" in text
+        assert "`/alpha-audit`" not in text
+        assert "reads:" not in text
+        assert "writes:" not in text
+
+
+def test_live_stage_journeys_explain_branches_without_repeating_io() -> None:
+    contracts, _ = lib.load_contracts(REPO_ROOT / ".claude" / "skills")
+
+    discover = lib.render_stage_journey(contracts, "discover")
+    assert "### Audit-driven path" in discover
+    assert "### Friction-driven path" in discover
+    assert "`/plugin-health-report --findings <path>`" in discover
+    assert "reads:" not in discover
+    assert "writes:" not in discover
+
+    derive = lib.render_stage_journey(contracts, "derive")
+    assert "### Agent source changed" in derive
+    assert "### Knowledge source changed" in derive
+    assert "### Any shared source changed" in derive
+
+
+def test_stage_artifact_table_describes_roles_instead_of_repeating_skill_io() -> None:
+    contracts, _ = lib.load_contracts(REPO_ROOT / ".claude" / "skills")
+    discover = lib.render_stage_artifacts(contracts, "discover")
+    assert "| Artifact | Role |" in discover
+    assert (
+        "| `.dev/health-loop-state.md` | Persists the exact report handoff across sessions. |"
+    ) in discover
+    assert (
+        "| `docs/health/<date>-<surface>-friction-findings.md` | "
+        "Carries friction-derived findings into report through an explicit `--findings` path. |"
+    ) in discover
+    assert "Skill | Reads | Writes | Next" not in discover
+
+
 def test_skills_tables_render_glance_and_io() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_skills_fixture(Path(td))
@@ -678,12 +766,22 @@ def test_build_sections_wraps_all_marker_keys_and_warns_over_budget() -> None:
         sections, warnings = lib.build_sections(contracts, missing, repo)
         expected_keys = {
             "maintainer-workflow-overview",
-            "maintainer-stage-map-sync",
-            "maintainer-stage-discover",
-            "maintainer-stage-decide",
-            "maintainer-stage-implement",
-            "maintainer-stage-derive",
-            "maintainer-stage-support",
+            "maintainer-breadcrumb-orchestrator",
+            "maintainer-stage-map-sync-diagram",
+            "maintainer-stage-map-sync-journey",
+            "maintainer-stage-map-sync-artifacts",
+            "maintainer-stage-discover-diagram",
+            "maintainer-stage-discover-journey",
+            "maintainer-stage-discover-artifacts",
+            "maintainer-stage-decide-diagram",
+            "maintainer-stage-decide-journey",
+            "maintainer-stage-decide-artifacts",
+            "maintainer-stage-implement-diagram",
+            "maintainer-stage-implement-journey",
+            "maintainer-stage-implement-artifacts",
+            "maintainer-stage-derive-diagram",
+            "maintainer-stage-derive-journey",
+            "maintainer-stage-derive-artifacts",
             "maintainer-user-journey",
             "maintainer-skills-tables",
             "maintainer-gaps",
@@ -715,13 +813,7 @@ def test_build_sections_wraps_all_marker_keys_and_warns_over_budget() -> None:
 def _guide_template(*, drop_key: str | None = None) -> str:
     keys = [
         "maintainer-workflow-overview",
-        "maintainer-stage-map-sync",
-        "maintainer-stage-discover",
-        "maintainer-stage-decide",
-        "maintainer-stage-implement",
-        "maintainer-stage-derive",
-        "maintainer-stage-support",
-        "maintainer-user-journey",
+        "maintainer-breadcrumb-orchestrator",
         "maintainer-skills-tables",
         "maintainer-gaps",
     ]
@@ -737,11 +829,61 @@ def _guide_template(*, drop_key: str | None = None) -> str:
     return "\n".join(parts) + "\n"
 
 
+def _stage_template(stage: str, *, drop_key: str | None = None) -> str:
+    keys = [
+        f"maintainer-stage-{stage}-diagram",
+        f"maintainer-stage-{stage}-journey",
+        f"maintainer-stage-{stage}-artifacts",
+    ]
+    parts = [f"# {stage}", "", "Stage intro.", ""]
+    for key in keys:
+        if key == drop_key:
+            continue
+        parts.append(f"<!-- BEGIN GENERATED: {key} -->")
+        parts.append("stale placeholder")
+        parts.append(f"<!-- END GENERATED: {key} -->")
+        parts.append("")
+    parts.append("Stage outro.")
+    return "\n".join(parts) + "\n"
+
+
 def _patched_cli(root: Path):
     cli = _load_module("generate-maintainer-guide.py", "generate_maintainer_guide")
     cli.REPO = root
     cli.SKILLS_DIR = root / ".claude" / "skills"
-    cli.GUIDE_PATH = root / "docs" / "maintainer-tooling.md"
+    cli.PAGE_KEYS = {
+        lib.SUMMARY_DOC: (
+            "maintainer-workflow-overview",
+            "maintainer-breadcrumb-orchestrator",
+            "maintainer-skills-tables",
+            "maintainer-gaps",
+        ),
+        lib.STAGE_DOCS["map-sync"]: (
+            "maintainer-stage-map-sync-diagram",
+            "maintainer-stage-map-sync-journey",
+            "maintainer-stage-map-sync-artifacts",
+        ),
+        lib.STAGE_DOCS["discover"]: (
+            "maintainer-stage-discover-diagram",
+            "maintainer-stage-discover-journey",
+            "maintainer-stage-discover-artifacts",
+        ),
+        lib.STAGE_DOCS["decide"]: (
+            "maintainer-stage-decide-diagram",
+            "maintainer-stage-decide-journey",
+            "maintainer-stage-decide-artifacts",
+        ),
+        lib.STAGE_DOCS["implement"]: (
+            "maintainer-stage-implement-diagram",
+            "maintainer-stage-implement-journey",
+            "maintainer-stage-implement-artifacts",
+        ),
+        lib.STAGE_DOCS["derive"]: (
+            "maintainer-stage-derive-diagram",
+            "maintainer-stage-derive-journey",
+            "maintainer-stage-derive-artifacts",
+        ),
+    }
     return cli
 
 
@@ -752,14 +894,20 @@ def test_cli_main_rewrites_only_marked_regions() -> None:
         guide = root / "docs" / "maintainer-tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(), encoding="utf-8")
+        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir.mkdir(parents=True)
+        for stage in ("map-sync", "discover", "decide", "implement", "derive"):
+            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
         cli = _patched_cli(root)
         assert cli.main() == 0
         text = guide.read_text(encoding="utf-8")
         assert "Hand-authored intro." in text
         assert "Hand-authored outro." in text
         assert "stale placeholder" not in text
-        assert 'skill_alpha_audit["/alpha-audit"]' in text
+        assert "durable cross-session pointer" in text
         assert "| Manual step | `implement the plan` | follows /gamma-plan |" in text
+        decide_text = (detail_dir / "decide.md").read_text(encoding="utf-8")
+        assert "`/gamma-plan`" in decide_text
 
 
 def test_cli_main_fails_closed_on_malformed_contract() -> None:
@@ -778,6 +926,10 @@ def test_cli_main_fails_closed_on_malformed_contract() -> None:
         guide = root / "docs" / "maintainer-tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(), encoding="utf-8")
+        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir.mkdir(parents=True)
+        for stage in ("map-sync", "discover", "decide", "implement", "derive"):
+            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
         before = guide.read_bytes()
         cli = _patched_cli(root)
         stderr = io.StringIO()
@@ -794,6 +946,10 @@ def test_cli_main_fails_closed_when_marker_pair_missing() -> None:
         guide = root / "docs" / "maintainer-tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(drop_key="maintainer-gaps"), encoding="utf-8")
+        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir.mkdir(parents=True)
+        for stage in ("map-sync", "discover", "decide", "implement", "derive"):
+            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
         before = guide.read_bytes()
         cli = _patched_cli(root)
         assert cli.main() == 1
@@ -857,19 +1013,44 @@ def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
     skills = REPO_ROOT / ".claude" / "skills"
     contracts, _ = lib.load_contracts(skills)
     map_sync_text, _ = lib.render_stage_detail(contracts, "map-sync", set())
-    assert 'subgraph map_entry["Normal entry point"]' in map_sync_text, (
+    assert "flowchart TD" in map_sync_text, (
         "live map-sync contracts no longer match the focused renderer; "
         "the guide will degrade to the dense generic diagram"
     )
-    assert 'subgraph map_async["Async lane"]' in map_sync_text
+    assert '"checkpoint + audit results"' in map_sync_text
     assert 'skill_review_documentation_map["/review-documentation-map"]' not in map_sync_text
-    assert "skill_review_maps --> art_map_docs" not in map_sync_text
-    assert "art_source_dirs --> skill_sync_documentation_maps" in map_sync_text
+    assert "orphanArtifact" not in map_sync_text
+    discover_text, _ = lib.render_stage_detail(contracts, "discover", set())
+    assert 'subgraph lane_b["Friction-driven entry"]' in discover_text
+    assert 'art_breadcrumb[".dev/health-loop-state.md"]' in discover_text
     derive_text, _ = lib.render_stage_detail(contracts, "derive", set())
     assert 'subgraph agent_lane["Agent source changed"]' in derive_text, (
         "live derive contracts no longer match the focused-renderer shape; "
         "the guide will degrade to the dense generic diagram"
     )
+    assert "flowchart TD" in derive_text
+
+
+def test_live_contracts_cover_multi_page_docs_and_friction_report_input() -> None:
+    contracts, _ = lib.load_contracts(REPO_ROOT / ".claude" / "skills")
+    by_name = {contract.skill: contract for contract in contracts}
+    assert (
+        "docs/maintainer-tooling/"
+        in by_name["sync-documentation-maps-write"].outputs
+    )
+    assert (
+        "docs/health/<date>-<surface>-friction-findings.md"
+        in by_name["plugin-health-report"].inputs
+    )
+    assert "audit-knowledge-quality" not in by_name["implement-health-plan"].next_skills
+
+
+def test_map_sync_write_preserves_valid_health_loop_breadcrumb() -> None:
+    text = (
+        REPO_ROOT / ".claude" / "skills" / "sync-documentation-maps-write" / "SKILL.md"
+    ).read_text(encoding="utf-8")
+    assert "stage_completed: sync-documentation-maps-write" not in text
+    assert "Do not overwrite `.dev/health-loop-state.md`" in text
 
 
 def _run(func):

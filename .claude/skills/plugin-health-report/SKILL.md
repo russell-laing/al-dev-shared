@@ -14,6 +14,7 @@ workflow:
   repeatable: true
   inputs:
     - docs/health/<date>-<surface>-findings.md
+    - docs/health/<date>-<surface>-friction-findings.md
     - docs/health/dispositions.md
   outputs:
     - docs/health/<date>-<surface>-health.md

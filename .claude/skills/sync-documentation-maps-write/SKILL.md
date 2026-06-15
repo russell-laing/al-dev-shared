@@ -3,7 +3,7 @@ name: sync-documentation-maps-write
 description: >-
   Final regeneration step after /sync-documentation-maps-apply; fourth step of
   the async sync flow. After the maps are applied, regenerates the map
-  diagrams, agent projections, the plugin graph, and the maintainer guide from
+  diagrams, agent projections, the plugin graph, and the maintainer guide pages from
   their canonical sources, then commits the resulting artifacts. A regeneration
   failure does not block the commit; the failed artifact is reported and may be
   left stale.
@@ -20,6 +20,7 @@ workflow:
     - docs/al-dev-workflow-diagrams.md
     - docs/al-dev-plugin-graph.md
     - docs/maintainer-tooling.md
+    - docs/maintainer-tooling/
     - profile-al-dev-shared/generated/agents/
   next: [plugin-health-audit]
 ---
@@ -28,7 +29,7 @@ workflow:
 
 Final regeneration step after `/sync-documentation-maps-apply`; fourth step of
 the async sync flow. Regenerates Mermaid diagrams, harness-native agent
-projections, the plugin dependency graph, and the maintainer guide from the
+projections, the plugin dependency graph, and the maintainer guide pages from the
 updated maps, then commits all changes.
 
 **Four-skill workflow:**
@@ -169,6 +170,7 @@ git -C /Users/russelllaing/al-dev-shared add \
     docs/al-dev-skills-map.md \
     docs/al-dev-agent-map.md \
     docs/maintainer-tooling.md \
+    docs/maintainer-tooling/ \
     docs/al-dev-workflow-diagrams.md \
     docs/al-dev-plugin-graph.md
 git -C /Users/russelllaing/al-dev-shared add \
@@ -229,7 +231,7 @@ Print a final confirmation:
 sync-documentation-maps workflow complete. Run ID: RUN_ID
 ```
 
-## Phase 4b — Update health-loop-state breadcrumb (health-loop runs only)
+## Phase 4b — Preserve the health-loop breadcrumb
 
 Check whether `.dev/health-loop-state.md` exists:
 
@@ -237,25 +239,10 @@ Check whether `.dev/health-loop-state.md` exists:
 ls .dev/health-loop-state.md 2>/dev/null
 ```
 
-If the file **does not exist**, skip this step entirely — this is not a health-loop
-run and no breadcrumb should be fabricated.
+Do not overwrite `.dev/health-loop-state.md`. Map sync is a preparation stage,
+not a lifecycle stage accepted by `scripts/validate_health_loop_state.py`.
 
-If the file **exists**, overwrite it with the following content (substituting
-`<today's ISO date>` with the actual current date at runtime, and choosing the
-appropriate `note` value based on the commit outcome from Phase 3):
-
-```yaml
-stage_completed: sync-documentation-maps-write
-completed_at: <today's ISO date>
-next_command: /plugin-health-audit
-next_inputs: []
-fresh_session_recommended: false
-note: <see wording rule below>
-```
-
-Wording rule for `note:`:
-
-- If `SKIP_COMMIT=false` and the Phase 3 commit **succeeded** →
-  `maps regenerated and committed; run /plugin-health-audit to resume the health loop`
-- If `SKIP_COMMIT=true` **or** the Phase 3 commit **failed** →
-  `maps regenerated (not committed — review/commit pending); run /plugin-health-audit after committing`
+- If the file is absent, finish normally and recommend `/plugin-health-audit`.
+- If the file exists, report its current `next_command` and leave it unchanged.
+  The maintainer can intentionally restart from `/plugin-health-audit` after the
+  map-sync commit, but map sync must not replace an in-flight durable handoff.

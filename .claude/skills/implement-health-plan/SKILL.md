@@ -21,7 +21,7 @@ workflow:
   outputs:
     - docs/health/dispositions.md
     - .dev/implement-health-plan-progress.md
-  next: [projection-sync, align-harness-repos, audit-knowledge-quality]
+  next: [projection-sync, align-harness-repos]
 ---
 
 # Implement Health Plan
@@ -109,7 +109,7 @@ apply the table below to a mismatched checkpoint.
 When `plan_path` matches, check `phase` and `status`:
 
 | phase | status | Action |
-|---|---|---|
+| --- | --- | --- |
 | `0` | `complete` | Proceed to Phase 1 Task 1 |
 | `1` | `in_progress` (non-empty `tasks_completed`) | Offer Resume or Restart |
 | `1` | `complete` | Proceed to Phase 2 / 3 |

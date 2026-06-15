@@ -1,10 +1,10 @@
-"""Workflow-contract parsing and generated sections for docs/maintainer-tooling.md.
+"""Workflow-contract parsing and generated maintainer-tooling documentation.
 
 Library for scripts/generate-maintainer-guide.py. Parses `workflow:` frontmatter
 blocks from .claude/skills/*/SKILL.md (excluding archived/), validates them,
-computes gap signals, and renders the generated sections of
-docs/maintainer-tooling.md. Fail-closed: validation errors raise ValueError
-naming the offending skill and field.
+computes gap signals, and renders the generated summary and stage sections.
+Fail-closed: validation errors raise ValueError naming the offending skill and
+field.
 """
 from __future__ import annotations
 
@@ -25,6 +25,14 @@ STAGE_TITLES = {
     "implement": "Implement",
     "derive": "Derive",
     "support": "Adjacent tooling",
+}
+SUMMARY_DOC = Path("docs/maintainer-tooling.md")
+STAGE_DOCS = {
+    "map-sync": Path("docs/maintainer-tooling/map-sync.md"),
+    "discover": Path("docs/maintainer-tooling/discover.md"),
+    "decide": Path("docs/maintainer-tooling/decide.md"),
+    "implement": Path("docs/maintainer-tooling/implement.md"),
+    "derive": Path("docs/maintainer-tooling/derive.md"),
 }
 NODE_BUDGET = 15
 PLACEHOLDER_RE = re.compile(r"<[^<>]+>|RUN_ID")
@@ -352,9 +360,13 @@ DETAIL_CLASSDEFS = (
     "    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold",
 )
 
+FOCUSED_DETAIL_CLASSDEFS = (
+    "    classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold",
+    "    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold",
+)
+
 
 MAP_SYNC_REQUIRED_SKILLS = {
-    "review-maps",
     "sync-documentation-maps",
     "sync-documentation-maps-collect",
     "sync-documentation-maps-apply",
@@ -362,7 +374,6 @@ MAP_SYNC_REQUIRED_SKILLS = {
 }
 
 MAP_SYNC_REQUIRED_INPUTS = {
-    "review-maps": (),
     "sync-documentation-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
     "sync-documentation-maps-collect": (
         ".dev/sync-documentation-maps-checkpoint.json",
@@ -380,7 +391,6 @@ MAP_SYNC_REQUIRED_INPUTS = {
 }
 
 MAP_SYNC_REQUIRED_OUTPUTS = {
-    "review-maps": (),
     "sync-documentation-maps": (
         ".dev/sync-documentation-maps-checkpoint.json",
         ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
@@ -398,10 +408,48 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
 }
 
 MAP_SYNC_REQUIRED_NEXT = {
-    "review-maps": ("sync-documentation-maps",),
     "sync-documentation-maps": ("sync-documentation-maps-collect",),
     "sync-documentation-maps-collect": ("sync-documentation-maps-apply",),
     "sync-documentation-maps-apply": ("sync-documentation-maps-write",),
+}
+
+DISCOVER_REQUIRED_SKILLS = {
+    "ingest-friction-log",
+    "plugin-health-audit",
+    "plugin-health-discover",
+    "plugin-health-report",
+}
+
+DISCOVER_REQUIRED_INPUTS = {
+    "ingest-friction-log": (
+        "~/friction-log/<session>-findings.md",
+        "~/friction-log/<session>-signals.json",
+    ),
+    "plugin-health-audit": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "plugin-health-discover": (
+        "docs/al-dev-skills-map.md",
+        "docs/al-dev-agent-map.md",
+        "profile-al-dev-shared/knowledge/lens-invocation-patterns.md",
+    ),
+    "plugin-health-report": (
+        "docs/health/<date>-<surface>-findings.md",
+        "docs/health/dispositions.md",
+    ),
+}
+
+DISCOVER_REQUIRED_OUTPUTS = {
+    "ingest-friction-log": (
+        "docs/health/<date>-<surface>-friction-findings.md",
+        "docs/health/friction-ingest-log.md",
+    ),
+    "plugin-health-discover": ("docs/health/<date>-<surface>-findings.md",),
+    "plugin-health-report": ("docs/health/<date>-<surface>-health.md",),
+}
+
+DISCOVER_REQUIRED_NEXT = {
+    "ingest-friction-log": ("plugin-health-report",),
+    "plugin-health-audit": ("plugin-health-discover",),
+    "plugin-health-discover": ("plugin-health-report",),
 }
 
 DERIVE_REQUIRED_SKILLS = {
@@ -463,112 +511,220 @@ def _stage_has_contract_shape(
 
 
 def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
-    """Small journey overview: per-stage user-invoked entry skills plus manual-followup
-    declarers; cross-stage artifacts as edge labels; repeat self-loops; amber manual nodes."""
-    by_name = {c.skill: c for c in contracts}
-    rendered_names = sorted(
-        {c.skill for c in _entry_skills(contracts)}
-        | {
-            c.skill
-            for c in contracts
-            if c.stage in CORE_STAGES and c.manual_followup and is_user_invocable(c)
-        }
-    )
-    rendered = set(rendered_names)
-    closure = _closure_successors(contracts, rendered)
+    """Compact landing-page overview of the five-stage maintenance journey."""
+    names = {contract.skill for contract in contracts}
+    required = {
+        "sync-documentation-maps",
+        "sync-documentation-maps-write",
+        "plugin-health-audit",
+        "plugin-health-discover",
+        "ingest-friction-log",
+        "plugin-health-report",
+        "record-health-dispositions",
+        "plan-health-findings",
+        "implement-health-plan",
+    }
+    if not required <= names:
+        by_name = {c.skill: c for c in contracts}
+        rendered_names = sorted(
+            {c.skill for c in _entry_skills(contracts)}
+            | {
+                c.skill
+                for c in contracts
+                if c.stage in CORE_STAGES and c.manual_followup and is_user_invocable(c)
+            }
+        )
+        rendered = set(rendered_names)
+        closure = _closure_successors(contracts, rendered)
 
-    lines = ["flowchart LR", *OVERVIEW_CLASSDEFS, ""]
-    node_count = 0
-    manual_ids: dict[str, str] = {}
-    present_stage_ids: list[str] = []
-    for stage in CORE_STAGES:
-        stage_skills = [name for name in rendered_names if by_name[name].stage == stage]
-        if not stage_skills:
-            continue
-        stage_id = "stage_" + stage.replace("-", "_")
-        lines.append(f'    subgraph {stage_id}["{STAGE_TITLES[stage]}"]')
-        present_stage_ids.append(stage_id)
-        for name in stage_skills:
-            lines.append(f'        {_node_id("skill", name)}["/{name}"]')
-            node_count += 1
-            contract = by_name[name]
-            if contract.manual_followup:
-                manual_id = _node_id("manual", name)
-                manual_ids[name] = manual_id
-                lines.append(f'        {manual_id}["{contract.manual_followup}"]')
+        lines = ["flowchart LR", *OVERVIEW_CLASSDEFS, ""]
+        node_count = 0
+        manual_ids: dict[str, str] = {}
+        present_stage_ids: list[str] = []
+        for stage in CORE_STAGES:
+            stage_skills = [name for name in rendered_names if by_name[name].stage == stage]
+            if not stage_skills:
+                continue
+            stage_id = "stage_" + stage.replace("-", "_")
+            lines.append(f'    subgraph {stage_id}["{STAGE_TITLES[stage]}"]')
+            present_stage_ids.append(stage_id)
+            for name in stage_skills:
+                lines.append(f'        {_node_id("skill", name)}["/{name}"]')
                 node_count += 1
-        lines.append("    end")
-    for earlier, later in zip(present_stage_ids, present_stage_ids[1:]):
-        lines.append(f"    {earlier} ~~~ {later}")
-    lines.append("")
-    for src in rendered_names:
-        successors, pooled = closure[src]
-        if src in manual_ids:
-            lines.append(f'    {_node_id("skill", src)} --> {manual_ids[src]}')
-        src_id = manual_ids.get(src, _node_id("skill", src))
-        for dst in sorted(successors):
-            labels = sorted(pooled & {normalize_template(t) for t in by_name[dst].inputs})
-            if labels:
-                lines.append(f'    {src_id} -- "{" + ".join(labels)}" --> {_node_id("skill", dst)}')
-            else:
-                lines.append(f'    {src_id} --> {_node_id("skill", dst)}')
-    lines.append("")
-    for name in rendered_names:
-        lines.append(f'    class {_node_id("skill", name)} userSkill')
-    for manual_id in sorted(manual_ids.values()):
-        lines.append(f"    class {manual_id} manualStep")
-    return _mermaid_block(lines), node_count
+                contract = by_name[name]
+                if contract.manual_followup:
+                    manual_id = _node_id("manual", name)
+                    manual_ids[name] = manual_id
+                    lines.append(f'        {manual_id}["{contract.manual_followup}"]')
+                    node_count += 1
+            lines.append("    end")
+        for earlier, later in zip(present_stage_ids, present_stage_ids[1:]):
+            lines.append(f"    {earlier} ~~~ {later}")
+        lines.append("")
+        for src in rendered_names:
+            successors, pooled = closure[src]
+            if src in manual_ids:
+                lines.append(f'    {_node_id("skill", src)} --> {manual_ids[src]}')
+            src_id = manual_ids.get(src, _node_id("skill", src))
+            for dst in sorted(successors):
+                labels = sorted(pooled & {normalize_template(t) for t in by_name[dst].inputs})
+                if labels:
+                    lines.append(f'    {src_id} -- "{" + ".join(labels)}" --> {_node_id("skill", dst)}')
+                else:
+                    lines.append(f'    {src_id} --> {_node_id("skill", dst)}')
+        lines.append("")
+        for name in rendered_names:
+            lines.append(f'    class {_node_id("skill", name)} userSkill')
+        for manual_id in sorted(manual_ids.values()):
+            lines.append(f"    class {manual_id} manualStep")
+        return _mermaid_block(lines), node_count
+
+    lines = [
+        "flowchart TD",
+        '    classDef stage fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold',
+        '    classDef alternate fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold',
+        "",
+        '    stage_map_sync["1. Map sync<br/>refresh maps when stale"]',
+        '    stage_discover["2. Discover<br/>findings become a ranked dossier"]',
+        '    stage_decide["3. Decide<br/>record decisions and write a verified plan"]',
+        '    stage_implement["4. Implement<br/>apply the plan and close ledger rows"]',
+        '    stage_derive["5. Derive<br/>regenerate and validate changed shared source"]',
+        '    entry_friction["Alternate source<br/>ingest friction logs"]',
+        "",
+        "    stage_map_sync --> stage_discover",
+        "    entry_friction --> stage_discover",
+        "    stage_discover --> stage_decide",
+        "    stage_decide --> stage_implement",
+        '    stage_implement -. "when shared source changed" .-> stage_derive',
+        "",
+        "    class stage_map_sync,stage_discover,stage_decide,stage_implement,stage_derive stage",
+        "    class entry_friction alternate",
+    ]
+    return _mermaid_block(lines), 6
 
 
 def render_map_sync_stage_detail(
     stage_contracts: list[WorkflowContract],
     orphans: set[str],
 ) -> tuple[str, int]:
-    """Focused map-sync view: all skills and artifacts in flat layout."""
+    """Focused map-sync view: the maintained four-step async chain."""
     lines = [
-        "flowchart LR",
-        *DETAIL_CLASSDEFS,
+        "flowchart TD",
+        *FOCUSED_DETAIL_CLASSDEFS,
         "",
-        '    skill_review_maps["/review-maps"]',
         '    skill_sync_documentation_maps["/sync-documentation-maps"]',
         '    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]',
         '    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]',
         '    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]',
-        '    art_source_dirs["skills/ + agents/"]',
-        '    art_map_docs["map docs"]',
-        '    art_async_checkpoint["checkpoint + audit artifacts"]',
-        '    art_update_artifacts["update artifacts"]',
-        '    art_downstream_generated["downstream generated"]',
+        '    art_generated["derived docs + projections"]',
         "",
-        "    skill_review_maps --> skill_sync_documentation_maps",
-        "    art_source_dirs --> skill_sync_documentation_maps",
-        "    art_map_docs --> skill_sync_documentation_maps",
-        "    skill_sync_documentation_maps --> art_async_checkpoint",
-        "    skill_sync_documentation_maps --> skill_sync_documentation_maps_collect",
-        "    art_async_checkpoint --> skill_sync_documentation_maps_collect",
-        "    skill_sync_documentation_maps_collect --> art_update_artifacts",
-        "    skill_sync_documentation_maps_collect --> skill_sync_documentation_maps_apply",
-        "    art_update_artifacts --> skill_sync_documentation_maps_apply",
-        "    art_async_checkpoint --> skill_sync_documentation_maps_apply",
-        "    skill_sync_documentation_maps_apply --> art_map_docs",
-        "    skill_sync_documentation_maps_apply --> skill_sync_documentation_maps_write",
-        "    art_map_docs --> skill_sync_documentation_maps_write",
-        "    art_async_checkpoint --> skill_sync_documentation_maps_write",
-        "    skill_sync_documentation_maps_write --> art_downstream_generated",
+        '    skill_sync_documentation_maps -- "checkpoint + audit results" --> skill_sync_documentation_maps_collect',
+        '    skill_sync_documentation_maps_collect -- "validated update artifacts" --> skill_sync_documentation_maps_apply',
+        '    skill_sync_documentation_maps_apply -- "updated map docs" --> skill_sync_documentation_maps_write',
+        "    skill_sync_documentation_maps_write --> art_generated",
         "",
-        "    class skill_review_maps userSkill",
         "    class skill_sync_documentation_maps userSkill",
         "    class skill_sync_documentation_maps_collect userSkill",
         "    class skill_sync_documentation_maps_apply userSkill",
         "    class skill_sync_documentation_maps_write userSkill",
-        "    class art_source_dirs artifact",
-        "    class art_map_docs artifact",
-        "    class art_async_checkpoint artifact",
-        "    class art_update_artifacts artifact",
-        "    class art_downstream_generated orphanArtifact",
+        "    class art_generated artifact",
     ]
-    node_count = 10
+    node_count = 5
     return _mermaid_block(lines), node_count
+
+
+def render_discover_stage_detail(
+    stage_contracts: list[WorkflowContract],
+    orphans: set[str],
+) -> tuple[str, int]:
+    """Focused discover view: audit-driven and friction-driven entries converge on report."""
+    lines = [
+        "flowchart TD",
+        *FOCUSED_DETAIL_CLASSDEFS,
+        "",
+        '    subgraph lane_a["Audit-driven entry"]',
+        '        skill_plugin_health_audit["/plugin-health-audit"]',
+        '        skill_plugin_health_discover["/plugin-health-discover"]',
+        "    end",
+        '    subgraph lane_b["Friction-driven entry"]',
+        '        skill_ingest_friction_log["/ingest-friction-log"]',
+        "    end",
+        '    art_breadcrumb[".dev/health-loop-state.md"]',
+        '    art_dispositions["docs/health/dispositions.md"]',
+        '    skill_plugin_health_report["/plugin-health-report"]',
+        '    art_dossier["docs/health/*-*-health.md"]',
+        "",
+        "    skill_plugin_health_audit --> skill_plugin_health_discover",
+        '    skill_plugin_health_discover -- "standard findings + handoff" --> art_breadcrumb',
+        '    skill_ingest_friction_log -- "friction findings + handoff" --> art_breadcrumb',
+        '    art_breadcrumb -- "adopt exact findings path" --> skill_plugin_health_report',
+        "    art_dispositions --> skill_plugin_health_report",
+        "    skill_plugin_health_report --> art_dossier",
+        "",
+        "    class skill_plugin_health_audit userSkill",
+        "    class skill_plugin_health_discover userSkill",
+        "    class skill_ingest_friction_log userSkill",
+        "    class skill_plugin_health_report userSkill",
+        "    class art_breadcrumb artifact",
+        "    class art_dispositions artifact",
+        "    class art_dossier artifact",
+    ]
+    return _mermaid_block(lines), 7
+
+
+def render_decide_stage_detail() -> tuple[str, int]:
+    """Focused decide view: primary ledger-to-plan path plus optional revision."""
+    lines = [
+        "flowchart TD",
+        *FOCUSED_DETAIL_CLASSDEFS,
+        "",
+        '    art_dossier["ranked health dossier"]',
+        '    skill_record_health_dispositions["/record-health-dispositions"]',
+        '    art_ledger["accepted rows in disposition ledger"]',
+        '    skill_plan_health_findings["/plan-health-findings"]',
+        '    art_plan["verified plan with closes_rows"]',
+        '    art_commentary["optional review commentary"]',
+        '    skill_revise_health_plan["/revise-health-plan"]',
+        "",
+        "    art_dossier --> skill_record_health_dispositions",
+        "    skill_record_health_dispositions --> art_ledger",
+        "    art_ledger --> skill_plan_health_findings",
+        "    skill_plan_health_findings --> art_plan",
+        "    art_commentary -.-> skill_revise_health_plan",
+        "    art_plan -.-> skill_revise_health_plan",
+        '    skill_revise_health_plan -. "reconciled plan + ledger" .-> art_plan',
+        "",
+        "    class skill_record_health_dispositions userSkill",
+        "    class skill_plan_health_findings userSkill",
+        "    class skill_revise_health_plan userSkill",
+        "    class art_dossier,art_ledger,art_plan,art_commentary artifact",
+    ]
+    return _mermaid_block(lines), 7
+
+
+def render_implement_stage_detail() -> tuple[str, int]:
+    """Focused implement view: execute, checkpoint, and close the loop."""
+    lines = [
+        "flowchart TD",
+        *FOCUSED_DETAIL_CLASSDEFS,
+        "",
+        '    art_plan["approved plan with closes_rows"]',
+        '    art_ledger["accepted ledger rows"]',
+        '    skill_implement_health_plan["/implement-health-plan"]',
+        '    art_progress["resumable progress checkpoint"]',
+        '    art_changed["verified source and documentation changes"]',
+        '    art_closed["ledger rows fixed + breadcrumb closed"]',
+        "",
+        "    art_plan --> skill_implement_health_plan",
+        "    art_ledger --> skill_implement_health_plan",
+        "    skill_implement_health_plan --> art_progress",
+        "    skill_implement_health_plan --> art_changed",
+        "    skill_implement_health_plan --> art_closed",
+        "",
+        "    class skill_implement_health_plan userSkill",
+        "    class art_plan,art_ledger,art_progress,art_changed,art_closed artifact",
+    ]
+    return _mermaid_block(lines), 6
 
 
 def render_derive_stage_detail(
@@ -576,14 +732,9 @@ def render_derive_stage_detail(
     orphans: set[str],
 ) -> tuple[str, int]:
     """Focused derive view: independent agent and knowledge flows converge on neutrality."""
-    generated_cls = (
-        "orphanArtifact"
-        if "profile-al-dev-shared/generated/agents/" in orphans
-        else "artifact"
-    )
     lines = [
-        "flowchart LR",
-        *DETAIL_CLASSDEFS,
+        "flowchart TD",
+        *FOCUSED_DETAIL_CLASSDEFS,
         "",
         '    subgraph agent_lane["Agent source changed"]',
         '        art_agent_source["agents/"]',
@@ -615,7 +766,7 @@ def render_derive_stage_detail(
         "    class skill_fix_knowledge_quality userSkill",
         "    class skill_align_harness_repos userSkill",
         "    class art_agent_source artifact",
-        f"    class art_generated_agents {generated_cls}",
+        "    class art_generated_agents artifact",
         "    class art_knowledge_source artifact",
         "    class art_knowledge_quality_report artifact",
         "    class art_shared_surface artifact",
@@ -644,6 +795,14 @@ def render_stage_detail(
         MAP_SYNC_REQUIRED_NEXT,
     ):
         return render_map_sync_stage_detail(stage_contracts, orphans)
+    if stage == "discover" and _stage_has_contract_shape(
+        stage_contracts,
+        DISCOVER_REQUIRED_SKILLS,
+        DISCOVER_REQUIRED_INPUTS,
+        DISCOVER_REQUIRED_OUTPUTS,
+        DISCOVER_REQUIRED_NEXT,
+    ):
+        return render_discover_stage_detail(stage_contracts, orphans)
     if stage == "derive" and _stage_has_contract_shape(
         stage_contracts,
         DERIVE_REQUIRED_SKILLS,
@@ -652,6 +811,16 @@ def render_stage_detail(
         DERIVE_REQUIRED_NEXT,
     ):
         return render_derive_stage_detail(stage_contracts, orphans)
+    if stage == "decide" and {contract.skill for contract in stage_contracts} == {
+        "record-health-dispositions",
+        "plan-health-findings",
+        "revise-health-plan",
+    }:
+        return render_decide_stage_detail()
+    if stage == "implement" and {contract.skill for contract in stage_contracts} == {
+        "implement-health-plan",
+    }:
+        return render_implement_stage_detail()
     stage_names = {c.skill for c in stage_contracts}
     by_name = {c.skill: c for c in stage_contracts}
     artifacts = sorted(
@@ -663,7 +832,8 @@ def render_stage_detail(
     )
     _assert_unique_artifact_ids(artifacts)
 
-    lines = ["flowchart LR", *DETAIL_CLASSDEFS, ""]
+    orientation = "TD" if stage in {"decide", "implement"} else "LR"
+    lines = [f"flowchart {orientation}", *DETAIL_CLASSDEFS, ""]
     node_count = 0
     for contract in stage_contracts:
         lines.append(f'    {_node_id("skill", contract.skill)}["/{contract.skill}"]')
@@ -769,6 +939,97 @@ def render_user_journey(contracts: list[WorkflowContract]) -> str:
     return "\n\n".join(sections)
 
 
+def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
+    stage_user = [c for c in contracts if c.stage == stage and is_user_invocable(c)]
+    if not stage_user:
+        return "No user-invoked skills in this stage declare a `workflow:` contract yet."
+    by_name = {contract.skill: contract for contract in stage_user}
+
+    def command(name: str, suffix: str = "") -> str:
+        contract = by_name[name]
+        return f"`/{name}{suffix}` — {_first_sentence(contract.description)}"
+
+    if stage == "map-sync" and MAP_SYNC_REQUIRED_SKILLS <= set(by_name):
+        return "\n".join(
+            [
+                "### Primary path",
+                "",
+                "1. " + command("sync-documentation-maps"),
+                "2. " + command("sync-documentation-maps-collect"),
+                "3. " + command("sync-documentation-maps-apply"),
+                "4. " + command("sync-documentation-maps-write"),
+            ]
+        )
+    if stage == "discover" and DISCOVER_REQUIRED_SKILLS <= set(by_name):
+        return "\n".join(
+            [
+                "### Audit-driven path",
+                "",
+                "1. " + command("plugin-health-audit"),
+                "2. `/plugin-health-discover` dispatches the lenses and writes standard findings.",
+                "3. `/plugin-health-report --findings <path>` verifies and ranks those findings into a dossier.",
+                "",
+                "### Friction-driven path",
+                "",
+                "1. " + command("ingest-friction-log"),
+                "2. `/plugin-health-report --findings <path>` consumes the explicit friction findings path; automatic findings selection intentionally does not match this artifact family.",
+            ]
+        )
+    if stage == "decide" and {
+        "record-health-dispositions",
+        "plan-health-findings",
+        "revise-health-plan",
+    } <= set(by_name):
+        return "\n".join(
+            [
+                "### Primary path",
+                "",
+                "1. " + command("record-health-dispositions"),
+                "2. " + command("plan-health-findings"),
+                "",
+                "### Optional revision path",
+                "",
+                "Run `/revise-health-plan` only when a separate review or commentary artifact requires the plan and ledger decisions to be reconciled before implementation.",
+            ]
+        )
+    if stage == "implement" and "implement-health-plan" in by_name:
+        return "\n".join(
+            [
+                "### Primary path",
+                "",
+                "1. Run `/implement-health-plan --plan <path>` in the fresh session named by the breadcrumb.",
+                "2. Execute and verify each plan task, preserving the progress checkpoint for recovery.",
+                "3. Append `fixed` ledger rows, archive consumed health artifacts, and commit `next_command: none` with the close-back.",
+            ]
+        )
+    if stage == "derive" and DERIVE_REQUIRED_SKILLS <= set(by_name):
+        return "\n".join(
+            [
+                "### Agent source changed",
+                "",
+                "1. Run `/projection-sync` to validate authored agents and regenerate harness-native projections.",
+                "2. Run `/align-harness-repos` to verify the shared source remains harness-neutral.",
+                "",
+                "### Knowledge source changed",
+                "",
+                "1. Run `/audit-knowledge-quality`.",
+                "2. If HIGH findings exist and are approved, run `/fix-knowledge-quality`.",
+                "3. Re-run the applicable quality and neutrality checks after fixes.",
+                "",
+                "### Any shared source changed",
+                "",
+                "Run `/align-harness-repos` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.",
+            ]
+        )
+
+    lines = ["### Primary path", ""]
+    for step, contract in enumerate(_topo_order(stage_user), start=1):
+        lines.append(f"{step}. `/{contract.skill}` — {_first_sentence(contract.description)}")
+        if contract.manual_followup:
+            lines.append(f"{step + 1}. Manual step: {contract.manual_followup}.")
+    return "\n".join(lines)
+
+
 def _md_cell(text: str) -> str:
     """Escape a pipe so free text is safe inside a GFM table cell."""
     return text.replace("|", "\\|")
@@ -808,6 +1069,154 @@ def render_skills_tables(contracts: list[WorkflowContract]) -> str:
     return "\n".join(glance) + "\n\n" + "\n".join(io)
 
 
+STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
+    "map-sync": (
+        (
+            "docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md",
+            "Canonical inventory maps audited and updated by the stage.",
+        ),
+        (
+            ".dev/sync-documentation-maps-checkpoint.json",
+            "Records the active run, team identifiers, and current async phase.",
+        ),
+        (
+            ".dev/sync-documentation-maps-runs/RUN_ID/",
+            "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
+        ),
+        (
+            "docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/",
+            "Derived documentation regenerated only after the canonical maps are applied.",
+        ),
+        (
+            "profile-al-dev-shared/generated/agents/",
+            "Harness-native projections regenerated from canonical shared agent source.",
+        ),
+    ),
+    "discover": (
+        (
+            "docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md",
+            "Provide current inventory and relationship context to the audit-driven path.",
+        ),
+        (
+            "docs/health/<date>-<surface>-findings.md",
+            "Stores raw lens findings before report-time evidence checks and ranking.",
+        ),
+        (
+            "docs/health/<date>-<surface>-friction-findings.md",
+            "Carries friction-derived findings into report through an explicit `--findings` path.",
+        ),
+        (
+            ".dev/health-loop-state.md",
+            "Persists the exact report handoff across sessions.",
+        ),
+        (
+            "docs/health/dispositions.md",
+            "Lets report suppress or re-verify findings that already have durable decisions.",
+        ),
+        (
+            "docs/health/<date>-<surface>-health.md",
+            "The ranked dossier handed to the Decide stage.",
+        ),
+    ),
+    "decide": (
+        (
+            "docs/health/<date>-<surface>-health.md",
+            "Presents the verified findings that require a maintainer decision.",
+        ),
+        (
+            "docs/health/dispositions.md` and `docs/health/dispositions-history/",
+            "Store the current ledger view and append-only decision history.",
+        ),
+        (
+            "profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md",
+            "Defines the live verification checks used before accepted findings become plan tasks.",
+        ),
+        (
+            "docs/superpowers/plans/<date>-<topic>.md",
+            "Carries the verified implementation tasks and required `closes_rows:` identifiers.",
+        ),
+        (
+            "docs/superpowers/plans/<date>-<topic>-commentary.md",
+            "Optional review evidence used only when the plan must be revised.",
+        ),
+    ),
+    "implement": (
+        (
+            "docs/superpowers/plans/<date>-<topic>.md",
+            "The approved execution contract; each task must name the ledger rows it closes.",
+        ),
+        (
+            ".dev/implement-health-plan-progress.md",
+            "Supports recovery by recording completed tasks and their commits.",
+        ),
+        (
+            "docs/health/dispositions.md` and `docs/health/dispositions-history/",
+            "Receive the fixed close-back that proves accepted work was completed.",
+        ),
+        (
+            ".dev/health-loop-state.md",
+            "Closes the core loop with `next_command: none` in the ledger-close commit.",
+        ),
+        (
+            "docs/health/archived/` and `docs/superpowers/plans/archived/",
+            "Retain consumed findings, dossiers, plans, and review evidence outside live selectors.",
+        ),
+    ),
+    "derive": (
+        (
+            "profile-al-dev-shared/agents/",
+            "Canonical authored agent source.",
+        ),
+        (
+            "profile-al-dev-shared/generated/agents/",
+            "Generated harness-native projections; never edit these files directly.",
+        ),
+        (
+            "profile-al-dev-shared/knowledge/",
+            "Canonical shared guidance audited for structural and semantic quality.",
+        ),
+        (
+            "docs/al-dev-knowledge-quality.md",
+            "Records knowledge findings and the structured HIGH-severity fix task block.",
+        ),
+        (
+            "scripts/validate_harness_neutrality.py",
+            "Checks shared skills, agents, and knowledge for harness-specific leakage.",
+        ),
+    ),
+}
+
+
+def render_stage_artifacts(contracts: list[WorkflowContract], stage: str) -> str:
+    if not any(contract.stage == stage for contract in contracts):
+        return "No key artifacts are declared for this stage."
+    lines = ["| Artifact | Role |", "| --- | --- |"]
+    for artifact, role in STAGE_ARTIFACTS[stage]:
+        lines.append(f"| `{artifact}` | {role} |")
+    return "\n".join(lines)
+
+
+def render_breadcrumb_orchestrator() -> str:
+    return "\n".join(
+        [
+            "The breadcrumb-controlled core runs from Discover through Implement.",
+            "It uses `.dev/health-loop-state.md` as a durable cross-session pointer: each lifecycle skill reads the current pointer before work and writes the next supported command on successful completion.",
+            "Map sync prepares the inputs and Derive performs conditional finalization before the closing commit, but neither is a breadcrumb lifecycle stage.",
+            "",
+            "The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-contract.md`; validation details are in Appendix A.",
+            "",
+            "| Completing skill | Persisted next command | Why it matters |",
+            "| --- | --- | --- |",
+            "| `/ingest-friction-log` | `/plugin-health-report --findings ...` | friction is an alternate discover source, not a lens rerun |",
+            "| `/plugin-health-discover` | `/plugin-health-report --findings ...` | discover is intentionally split across sessions to avoid compaction |",
+            "| `/plugin-health-report` | `/record-health-dispositions` | the dossier becomes durable input for ledger triage |",
+            "| `/record-health-dispositions` | `/plan-health-findings` | only accepted rows move into planning |",
+            "| `/plan-health-findings` | `/implement-health-plan --plan ...` | the handoff preserves `closes_rows:` and bypasses the generic writing-plans ending |",
+            "| `/implement-health-plan` | `none` | loop closure is explicit and machine-checked |",
+        ]
+    )
+
+
 SIGNAL_ORDER = (
     ("orphaned-artifact", "Orphaned artifact"),
     ("sourceless-input", "Sourceless input"),
@@ -842,7 +1251,7 @@ def build_sections(
     missing_contracts: list[str],
     repo: Path,
 ) -> tuple[dict[str, str], list[str]]:
-    """All nine wrapped marker sections plus node-budget warnings (warnings never fail)."""
+    """Wrapped marker sections for the landing page and five stage detail pages."""
     gaps = compute_gaps(contracts, missing_contracts, repo)
     orphans = {item for item, _ in gaps["orphaned-artifact"]}
     sections: dict[str, str] = {}
@@ -855,9 +1264,12 @@ def build_sections(
 
     overview_body, overview_count = render_overview(contracts)
     record("maintainer-workflow-overview", overview_body, overview_count)
-    for stage in STAGES:
+    record("maintainer-breadcrumb-orchestrator", render_breadcrumb_orchestrator())
+    for stage in CORE_STAGES:
         body, count = render_stage_detail(contracts, stage, orphans)
-        record(f"maintainer-stage-{stage}", body, count)
+        record(f"maintainer-stage-{stage}-diagram", body, count)
+        record(f"maintainer-stage-{stage}-journey", render_stage_journey(contracts, stage))
+        record(f"maintainer-stage-{stage}-artifacts", render_stage_artifacts(contracts, stage))
     record("maintainer-user-journey", render_user_journey(contracts))
     record("maintainer-skills-tables", render_skills_tables(contracts))
     record("maintainer-gaps", render_gaps_table(gaps))
