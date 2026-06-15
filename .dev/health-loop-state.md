@@ -1,6 +1,6 @@
 stage_completed: implement-health-plan
-completed_at: 2026-06-15
+completed_at: 2026-06-16
 next_command: none
 next_inputs: []
 fresh_session_recommended: false
-note: loop closed; ledger staleness check passed (0 effective-open rows). 3 tasks committed closing #814, #816, #831, #845. No profile-al-dev-shared/ files changed so /projection-sync and /align-harness-repos are not needed.
+note: Loop closed; ledger staleness check passed. Run /sync-documentation-maps and /align-harness-repos next as downstream regeneration (plugin-shared-surface files changed in all 6 task commits).
