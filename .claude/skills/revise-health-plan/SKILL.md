@@ -28,8 +28,6 @@ workflow:
 
 # Revise Health Plan
 
-## Overview
-
 A review document (consolidated findings, commentary, or a plain critique)
 identifies problems in an already-written health-loop plan. This skill
 reconciles the plan against that review **before** `/implement-health-plan` runs.
@@ -38,8 +36,6 @@ reconciles the plan against that review **before** `/implement-health-plan` runs
 task that earns its closure, or a ledger row that settles it. Mechanical edits
 are the easy part; the discipline is **classifying every finding, surfacing
 judgment forks to the user, and proving full coverage before claiming done.**
-
-## When to Use
 
 - A plan in `docs/superpowers/plans/` has a paired `*-commentary.md`,
   `*-consolidated-findings-*.md`, or other review document.
@@ -50,7 +46,7 @@ judgment forks to the user, and proving full coverage before claiming done.**
 **Not for:** writing a plan from scratch (use `plan-health-findings`); executing
 a plan (use `implement-health-plan`); reviews of non-plan files.
 
-## Process
+## Phase 1 — Read inputs and classify
 
 1. **Read all three inputs in full:** the review document, the target plan, and
    `docs/health/dispositions.md` (header for the column schema + `closes #<ID>`
@@ -67,7 +63,9 @@ a plan (use `implement-health-plan`); reviews of non-plan files.
 8. **Update the loop-state breadcrumb and hand off** to `/implement-health-plan`
    in a fresh session — do not auto-execute.
 
-## Classifying a finding
+## Phase 2 — Classify findings and resolve judgment forks
+
+### Classifying a finding
 
 ```dot
 digraph classify {
@@ -95,14 +93,18 @@ Out-of-scope findings are typically: rubber-duck `skip` rows (refuted /
 already-covered (*the accepted finding is addressed by a different, non-reviewed task already
 in the plan*)), and tasks the review shows don't resolve their accepted finding.
 
-## Recurring correction patterns
+## Phase 3 — Apply corrections and re-dispositions
+
+### Recurring correction patterns
 
 These review findings recur across plans; apply the canonical fix:
 
 See `.claude/knowledge/correction-patterns.md` for the canonical correction-patterns
 table. When classifying review findings, consult this list first.
 
-## Coverage reconciliation (mandatory)
+## Phase 4 — Coverage reconciliation and self-verification
+
+### Coverage reconciliation (mandatory)
 
 The accepted set the plan claims (e.g. Provenance "#595–#644") must equal
 `plan closes_rows ∪ ledger re-dispositions`, with **no ID in both** and **none
@@ -115,7 +117,7 @@ missing**. Compute it explicitly:
 
 State the arithmetic in your summary (e.g. "30 plan rows + 20 ledger rows = 50 = #595–#644").
 
-## Self-verification (mandatory before claiming done)
+### Self-verification (mandatory before claiming done)
 
 ```bash
 PLAN=<plan-path>
@@ -126,7 +128,7 @@ grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/.*"-m "//' | awk '{ if (len
 # no ID appears in BOTH a plan closes_rows and a new ledger re-disposition
 ```
 
-## Common mistakes
+### Common mistakes
 
 | Mistake | Fix |
 |---|---|
@@ -137,14 +139,14 @@ grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/.*"-m "//' | awk '{ if (len
 | Claiming done without coverage/structure checks | Run the two mandatory verification blocks first |
 | Leaving stale Goal/Provenance counts after dropping a task | Update counts and the accepted range |
 
-## Red flags — STOP
+### Red flags — STOP
 
 - "The review said re-author OR re-disposition, I'll just re-author." → **Gate it.**
 - "I applied all the findings." (but the ledger is untouched) → some are out of scope.
 - "The plan looks done." (no coverage arithmetic, no structural greps) → not done.
 - An accepted ID is in neither the plan nor a new ledger row → coverage hole.
 
-## Hand off (do not auto-execute)
+## Phase 5 — Hand off (do not auto-execute)
 
 Write `.dev/health-loop-state.md` pointing `next_command` at
 `/implement-health-plan --plan <plan-path>`, note the revised task/row counts and
