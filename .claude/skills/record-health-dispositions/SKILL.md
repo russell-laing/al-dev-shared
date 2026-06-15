@@ -107,7 +107,9 @@ Batch decisions are fine when the user groups them explicitly; one justification
 per batch suffices (not per row within the batch), but the justification must
 cover all rows in the batch — a justification that applies only to a subset of
 the batch is not accepted. Never invent a decision: every non-skip row needs
-explicit user input. Apply the **contradictory-batch guard** and the
+explicit user input. A batch grouping findings with different root causes or
+contexts is contradictory — reject it and require separate decisions. Apply the
+**contradictory-batch guard** and the
 **re-litigation guard** as defined in
 `.claude/knowledge/health-disposition-rules.md`.
 

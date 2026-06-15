@@ -151,8 +151,12 @@ changed_files:
 ```text
 Projection regeneration is complete.
 
-Changed files:
+Changed files ([N] total):
 - [list from Phase 3]
+
+Change type: [projections-only | mixed (projections + other tracked files)]
+
+Note: progress checkpoint (.dev/projection-sync-progress.md) included in staged set.
 
 Do you want me to stage and commit these changes?
 ```
