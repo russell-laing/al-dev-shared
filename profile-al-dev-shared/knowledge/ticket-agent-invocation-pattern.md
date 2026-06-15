@@ -162,19 +162,6 @@ skill: al-dev-ticket-context-writer
 args: "TICKET_ID=12345"
 ```
 
-The complete agent invocation includes:
-
-```text
-Agent invocation (Skill tool):
-  skill: al-dev-ticket-context-writer
-  args: "TICKET_ID=12345"
-
-This internally dispatches:
-  agent: al-dev-shared:al-dev-ticket-context-writer
-  with environment: FRESHDESK_API_KEY, FRESHDESK_DOMAIN
-  with prompt: "Fetch Freshdesk ticket and write .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md. Phase: fetch. Ticket ID: 12345"
-```
-
 #### Environment Variable Injection
 
 The harness (Claude Code, Copilot CLI, or Codex) resolves `FRESHDESK_API_KEY` and `FRESHDESK_DOMAIN` from the user's environment before spawning the agent. These credentials must be set in the user's global settings, not in project-local configuration:
