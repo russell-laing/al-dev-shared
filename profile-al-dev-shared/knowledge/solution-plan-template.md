@@ -9,6 +9,20 @@ Canonical authoring template for the solution plan written by
 ### Overview
 [1-2 paragraphs: what we're building, why this approach]
 
+### Architecture
+
+#### Component Design
+
+[Describe the major components (codeunits, tables, pages) and how they
+interact. One entry per AL object or logical grouping that carries a
+distinct responsibility.]
+
+#### Data Flow
+
+[Describe the primary data path: from user action through the AL event
+chain to persistence or output. Include field-level notes for critical
+data paths.]
+
 ### Object Design
 
 **Tables / Table Extensions:**
