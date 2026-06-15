@@ -28,6 +28,29 @@ so emitting them only adds noise.
 
 ---
 
+## Response format contract
+
+Append this to every lens prompt alongside the finding evidence contract. It
+keeps each lens return small so a parallel multi-lens sweep does not flood the
+dispatching session's context (the dominant cost is verbose per-lens narration,
+not the findings themselves).
+
+- Your entire reply must be **only** the findings block defined in your Output
+  Format — nothing before or after it. Do not narrate your analysis, do not list
+  the files you read, do not emit an "Analysis Summary" or per-file "OK"
+  verdicts, and do not restate the task.
+- If you find no issues, reply with exactly the lens heading followed by
+  `_No issues found._` and nothing else.
+- **Roll-up cap:** when four or more findings share the same root cause **and**
+  the same fix (for example, the same missing code-block language tag across many
+  files), emit a single rolled-up finding whose location field lists the affected
+  files, rather than one row per file. Distinct root causes always stay separate.
+
+The dispatching skill includes each returned block verbatim in the findings
+file, so a terse, block-only reply is both cheaper and directly usable.
+
+---
+
 ## Design Agent Lenses
 
 Agents: `design-agent-lens-caller-alignment`, `design-agent-lens-model-fit`,
@@ -207,7 +230,12 @@ Steps:
 1. Build the file list for each surface (agents or skills).
 2. Build the per-lens context fields (tool_inventory, model_assignments, etc.)
    from the plugin graph and map files.
-3. Dispatch all lenses in a single parallel block.
-4. Collect all outputs before synthesising findings.
+3. Write the file lists and context blocks **once** to a single run-manifest
+   artifact, and point each lens at that manifest instead of inlining the file
+   list into every dispatch prompt. With 20+ lenses, re-inlining the file list
+   per prompt is a large, avoidable cost in the dispatching session.
+4. Dispatch all lenses in a single parallel block; append the finding evidence
+   contract and the response format contract above to every prompt.
+5. Collect all outputs before synthesising findings.
 
 See `/plugin-health-discover` for the canonical multi-lens dispatch implementation.

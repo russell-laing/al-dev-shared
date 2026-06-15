@@ -26,3 +26,22 @@ Compute derived mappings:
 - `single_use_agents`: agents where `agent_usage_counts == 1`.
 - `already_inline_candidates`: filter of `single_use_agents`.
 - `no_agent_skills`: skills with zero spawned agents.
+
+## Write the run manifest
+
+After computing the mappings, write one manifest artifact at
+`.dev/<date>-plugin-health-discover-context.md` containing:
+
+- `## Agent file list` — the absolute agent paths, one per line.
+- `## Skill file list` — the absolute skill `SKILL.md` paths, one per line.
+- One `##` section per context mapping (`tool_inventory`, `model_assignments`,
+  `caller_map`, `single_use_agents`, `already_inline_candidates`, `phase_counts`,
+  `handoff_chains`, `agent_usage_counts`, `no_agent_skills`, `preplanning_skills`,
+  `layer1_diagram_content`), each rendering the mapping as readable text.
+
+Phase 3 dispatch prompts reference this single file so the file list and context
+are written once, not re-inlined into every per-lens prompt. Each lens reads only
+the sections it needs: agent lenses read the agent list, skill lenses read the
+skill list, and every lens reads the context fields named in its dispatch prompt
+(per the per-lens table in
+`profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).

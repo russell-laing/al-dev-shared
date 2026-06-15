@@ -81,6 +81,13 @@ map-parse steps and the derived dispatch mappings (`tool_inventory`,
 `handoff_chains`, `preplanning_skills`, `agent_usage_counts`, `single_use_agents`,
 `already_inline_candidates`, `no_agent_skills`) that the Phase 3 lenses consume.
 
+After building the mappings, write the two file lists (agents, skills) and all
+context blocks **once** to a single run manifest at
+`.dev/<today>-plugin-health-discover-context.md` (layout in
+`.claude/knowledge/health-discover-aggregation.md`). Phase 3 points each lens at
+this manifest instead of re-inlining the file list into every dispatch prompt,
+which keeps the 20-lens fan-out small and avoids flooding this session's context.
+
 ## Phase 3 — Dispatch
 
 Execute the following state machine in order:
@@ -112,14 +119,24 @@ Execute the following state machine in order:
 
    - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
      subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
-     remain. Pass per-lens context from
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`, and append
-     the **Finding evidence contract** from that file to every lens prompt: each
-     finding must cite `file:line` + a quoted snippet of the offending text + a
-     one-line reason it is a real issue, and the lens must omit any finding it
-     cannot ground in a quoted snippet (no speculative "consider whether…"
-     findings). This is the first-line defence against false positives. As each
-     subagent returns, write its findings block to
+     remain. Keep each dispatch prompt small: point the lens at the Phase 2 run
+     manifest (`.dev/<today>-plugin-health-discover-context.md`) for its file
+     list and required context fields (per the per-lens table in
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
+     inlining the file list into the prompt. Append two contracts from that file
+     to every lens prompt:
+     - the **Finding evidence contract** — each finding must cite `file:line` + a
+       quoted snippet of the offending text + a one-line reason it is a real
+       issue, and the lens must omit any finding it cannot ground in a quoted
+       snippet (no speculative "consider whether…" findings). This is the
+       first-line defence against false positives.
+     - the **Response format contract** — the reply must be the findings block
+       only (no narration, no per-file notes, no "Analysis Summary"), and four or
+       more findings sharing one root cause **and** fix collapse into a single
+       rolled-up finding listing the affected files. This keeps returns terse so a
+       20-lens sweep does not flood this session's context.
+
+     As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
      `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
 
@@ -193,6 +210,7 @@ Use this explicit mapping:
 
    ```bash
    find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' -delete
+   find .dev -maxdepth 1 -name '*-plugin-health-discover-context.md' -delete
    ```
 
 5. **Return to caller:**
