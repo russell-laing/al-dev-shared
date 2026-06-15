@@ -22,8 +22,8 @@
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit-execute` |
 | al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
-| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop` |
-| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop`, `/al-dev-fix` |
+| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate` |
+| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate`, `/al-dev-fix` |
 | al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
@@ -45,7 +45,7 @@
 
 ### al-dev-general-code-reviewer
 
-**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance).
+**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers for security, patterns, and performance).
 **Model:** haiku
 **Tools:** Read
 **Spawned by:** (none found in skill files)
@@ -227,7 +227,7 @@
 **Description:** Implement AL code using test-driven development when a test plan exists.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop
+**Spawned by:** /al-dev-develop-orchestrate
 
 **Inputs:**
 
@@ -254,7 +254,7 @@
 **Description:** Implement AL code following an implementation plan without test-driven development.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop, /al-dev-fix
+**Spawned by:** /al-dev-develop-orchestrate, /al-dev-fix
 
 **Inputs:**
 
@@ -344,7 +344,7 @@
 
 | Output | Description |
 |--------|-------------|
-| AL Expert Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Minor Issues |
+| AL Expert Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Minor Issues |
 
 ---
 
@@ -416,7 +416,7 @@
 
 | Output | Description |
 |--------|-------------|
-| Performance Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Medium / Low |
+| Performance Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
 
@@ -487,7 +487,7 @@
 
 | Output | Description |
 |--------|-------------|
-| Security Review Findings | Text report returned to /al-dev-develop; structured as Critical / High / Medium / Low |
+| Security Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
 

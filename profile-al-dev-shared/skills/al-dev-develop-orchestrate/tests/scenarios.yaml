@@ -1,4 +1,4 @@
-skill: al-dev-develop
+skill: al-dev-develop-orchestrate
 scenarios:
   - id: develop-implement-plan-with-full-panel
     status: golden
@@ -84,7 +84,7 @@ scenarios:
       - al-dev-shared:al-dev-security-reviewer
       - al-dev-shared:al-dev-al-pattern-reviewer
       - al-dev-shared:al-dev-performance-reviewer
-    notes: "Locks autonomous compile prompts to al-dev-develop autonomous behavior instead of ad-hoc fixes."
+    notes: "Locks autonomous compile prompts to al-dev-develop-orchestrate autonomous behavior instead of ad-hoc fixes."
 
   - id: develop-requires-phase4-handoff-before-ready-claim
     status: golden

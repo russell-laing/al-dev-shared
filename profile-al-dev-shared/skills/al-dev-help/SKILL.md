@@ -53,7 +53,7 @@ Available Skills (lazy-loaded, invoked with /):
 |-----------------------|-------------------------------------------------------|
 | /al-dev-interview     | Deep requirements gathering through structured dialog |
 | /al-dev-plan          | Competitive solution design (2-3 architects debate)   |
-| /al-dev-develop       | Parallel implementation + 3-specialist code review    |
+| /al-dev-develop-orchestrate | Parallel implementation + 3-specialist code review    |
 | /al-dev-release-notes | End-user release notes from git diff                  |
 | /al-dev-fix           | Lightweight bug fix without approval gates            |
 | /al-dev-commit        | Atomic commit workflow with gitmoji + CC messages     |
@@ -104,7 +104,7 @@ The user described what they want to do. Recommend the right workflow.
 **Step 1: Read description and classify:**
 
 Use `knowledge/workflow-routing.md` to classify complexity before recommending
-`/al-dev-fix`, `/al-dev-plan`, or `/al-dev-develop`. Quick reference (full
+`/al-dev-fix`, `/al-dev-plan`, or `/al-dev-develop-orchestrate`. Quick reference (full
 criteria in that doc): TRIVIAL = single file, obvious fix. SIMPLE = 2-3 files,
 pattern exists. MEDIUM = 4-8 files, some design decisions. COMPLEX = new
 architecture or unclear requirements.
@@ -114,7 +114,7 @@ architecture or unclear requirements.
 | Bug, error, wrong behaviour | `/al-dev-fix` |
 | Requirements unclear, exploring ideas | `/al-dev-interview` |
 | Need architecture, multiple objects | `/al-dev-plan` |
-| Have a plan, ready to implement | `/al-dev-develop` |
+| Have a plan, ready to implement | `/al-dev-develop-orchestrate` |
 | Feature complete, need docs | `/al-dev-document` |
 | Freshdesk ticket for context | `/al-dev-ticket <id>` first |
 | First time in this project | `/al-dev-init-context` first |
@@ -136,7 +136,7 @@ Apply these refinements:
 - `*-al-dev-interview-requirements.md` exists → skip `/al-dev-interview`,
   suggest `/al-dev-plan`
 - `*-al-dev-plan-solution-plan.md` exists → skip `/al-dev-plan`,
-  suggest `/al-dev-develop`
+  suggest `/al-dev-develop-orchestrate`
 - Else, if no `.dev/` artifact narrows the path, recommend based on the user's
   stated goal: bug/error → `/al-dev-fix`; existing-code question → `/al-dev-explore`;
   design or multi-object feature work → `/al-dev-plan`
@@ -156,7 +156,7 @@ Current state:
 Suggested sequence:
   1. /al-dev-interview "credit limit validation"  -- gather requirements
   2. /al-dev-plan                                 -- design solution
-  3. /al-dev-develop                              -- implement + review
+  3. /al-dev-develop-orchestrate                  -- implement + review
 
 Or skip to /al-dev-plan directly if requirements are already clear.
 ```
@@ -174,7 +174,7 @@ Or skip to /al-dev-plan directly if requirements are already clear.
 | No `.dev/` directory | Run `/al-dev-init-context` to set up project context |
 | `project-context.md` only | Describe your goal and run `/al-dev-help <description>` |
 | `*-al-dev-interview-requirements.md` present | Run `/al-dev-plan` to design the solution |
-| `*-al-dev-plan-solution-plan.md` present | Run `/al-dev-develop` to implement |
+| `*-al-dev-plan-solution-plan.md` present | Run `/al-dev-develop-orchestrate` to implement |
 | `*-al-dev-develop-code-review.md` present | Run `/al-dev-document` for reference documentation |
 
 **Step 3: Output:**
@@ -187,7 +187,7 @@ Current project state:
   .dev/2026-05-19-al-dev-plan-solution-plan.md         ✅ found
   .dev/2026-05-19-al-dev-develop-code-review.md        ❌ not found
 
-Recommendation: Run /al-dev-develop to implement the solution plan.
+Recommendation: Run /al-dev-develop-orchestrate to implement the solution plan.
 
 The plan exists — the next step is parallel implementation
 followed by 3-specialist code review.
@@ -200,7 +200,7 @@ Quick reference:
   /al-dev-fix           -- bug fix, single file, fast iteration
   /al-dev-interview     -- structured requirements gathering
   /al-dev-plan          -- competitive architecture design
-  /al-dev-develop       -- parallel implementation + code review
+  /al-dev-develop-orchestrate -- parallel implementation + code review
   /al-dev-document      -- generate technical documentation
   /al-dev-ticket <id>   -- load Freshdesk ticket context
   /al-dev-init-context  -- initialize project context (one-time)

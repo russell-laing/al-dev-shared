@@ -28,7 +28,7 @@ If no checkpoint or answer is restart: proceed to Phase 1.
 
 ## Phase 1: Locate Develop Handoff
 
-**Goal:** Find the Phase 4 handoff artifact written by `/al-dev-develop`.
+**Goal:** Find the Phase 4 handoff artifact written by `/al-dev-develop-orchestrate`.
 
 1. Search for the handoff artifact:
 
@@ -42,7 +42,7 @@ If no checkpoint or answer is restart: proceed to Phase 1.
    No develop handoff found.
 
    Expected: .dev/*-al-dev-develop-phase4-handoff.md
-   Action required: Run /al-dev-develop first and wait for it to complete Phase 4.
+   Action required: Run /al-dev-develop-orchestrate first and wait for it to complete Phase 4.
    ```
 
 3. If `$ARGUMENTS` contains a path override (e.g. `/al-dev-review-develop-preflight path/to/handoff.md`),

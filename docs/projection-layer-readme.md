@@ -603,13 +603,13 @@ cd .claude/worktrees/feature-xyz
 
 ## Phase 2: Skill Execution in Worktree
 
-While in the worktree, the user invokes `/al-dev-develop`:
+While in the worktree, the user invokes `/al-dev-develop-orchestrate`:
 
 ### Skill Execution Flow
 
 ```mermaid
 graph LR
-    A["User<br/>/al-dev-develop<br/>in worktree"] -->|Claude Code| B["Load Skill<br/>profile-al-dev-shared/<br/>skills/al-dev-develop/SKILL.md"]
+    A["User<br/>/al-dev-develop-orchestrate<br/>in worktree"] -->|Claude Code| B["Load Skill<br/>profile-al-dev-shared/<br/>skills/al-dev-develop-orchestrate/SKILL.md"]
     B -->|Dispatches| C["Agent:<br/>al-dev-developer"]
     C -->|Project lookup| D["Load from<br/>generated/agents/<br/>claude/<br/>al-dev-developer.md"]
     D -->|Tool mapping| E["Claude Code<br/>Native Tools"]
@@ -689,9 +689,9 @@ User: /al-dev-plan "Add new skill for X"
   
 → User approves design
 
-→ User: /al-dev-develop "Implement the skill"
+→ User: /al-dev-develop-orchestrate "Implement the skill"
 
-→ /al-dev-develop skill:
+→ /al-dev-develop-orchestrate skill:
   - Creates worktree: .claude/worktrees/skill-xyz
   - Loads developer agent: al-dev-shared:al-dev-developer
   - Agent uses Bash, Read, Write tools (all Claude Code natives)

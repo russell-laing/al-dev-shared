@@ -1,7 +1,7 @@
 # Compile + Lint Procedure
 
 Standard AL compile and lint-fix pass used by `al-dev-lint`,
-`al-dev-develop`, and `al-dev-fix`.
+`al-dev-develop-orchestrate`, and `al-dev-fix`.
 
 ## Step 0 — Log Freshness Check
 

@@ -15,7 +15,7 @@ flowchart LR
         skill_al_dev_commit[al-dev-commit]
         skill_al_dev_commit_execute[al-dev-commit-execute]
         skill_al_dev_commit_preflight[al-dev-commit-preflight]
-        skill_al_dev_develop[al-dev-develop]
+        skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
         skill_al_dev_fix[al-dev-fix]
         skill_al_dev_handoff[al-dev-handoff]
         skill_al_dev_help[al-dev-help]
@@ -58,10 +58,10 @@ flowchart LR
     skill_al_dev_commit --> skill_al_dev_commit_execute
     skill_al_dev_commit --> skill_al_dev_commit_preflight
     skill_al_dev_commit_preflight --> skill_al_dev_commit_execute
-    skill_al_dev_develop --> skill_al_dev_review_develop
-    skill_al_dev_fix --> skill_al_dev_develop
+    skill_al_dev_develop_orchestrate --> skill_al_dev_review_develop
+    skill_al_dev_fix --> skill_al_dev_develop_orchestrate
     skill_al_dev_fix --> skill_al_dev_plan
-    skill_al_dev_help --> skill_al_dev_develop
+    skill_al_dev_help --> skill_al_dev_develop_orchestrate
     skill_al_dev_help --> skill_al_dev_plan
     skill_al_dev_investigate --> skill_al_dev_handoff
     skill_al_dev_investigate --> skill_al_dev_plan
@@ -69,7 +69,7 @@ flowchart LR
     skill_al_dev_plan_final_review --> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_review_develop --> skill_al_dev_review_develop_preflight
-    skill_al_dev_review_develop_preflight --> skill_al_dev_develop
+    skill_al_dev_review_develop_preflight --> skill_al_dev_develop_orchestrate
     skill_al_dev_review_develop_preflight --> skill_al_dev_review_develop
     skill_al_dev_support_reply --> skill_al_dev_ticket
     skill_al_dev_ticket --> skill_al_dev_interview
@@ -82,8 +82,8 @@ flowchart LR
     skill_al_dev_commit_execute --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_commit_preflight --> agent_al_dev_commit_analyzer
     skill_al_dev_commit_preflight --> agent_al_dev_commit_group_drafter
-    skill_al_dev_develop --> agent_al_dev_developer_tdd
-    skill_al_dev_develop --> agent_al_dev_developer_traditional
+    skill_al_dev_develop_orchestrate --> agent_al_dev_developer_tdd
+    skill_al_dev_develop_orchestrate --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
     skill_al_dev_interview --> agent_al_dev_interview
@@ -101,7 +101,7 @@ flowchart LR
     class skill_al_dev_commit skillNode
     class skill_al_dev_commit_execute skillNode
     class skill_al_dev_commit_preflight skillNode
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_fix skillNode
     class skill_al_dev_handoff skillNode
     class skill_al_dev_help skillNode
@@ -153,7 +153,7 @@ flowchart LR
         skill_al_dev_commit[al-dev-commit]
         skill_al_dev_commit_execute[al-dev-commit-execute]
         skill_al_dev_commit_preflight[al-dev-commit-preflight]
-        skill_al_dev_develop[al-dev-develop]
+        skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
         skill_al_dev_explore[al-dev-explore]
         skill_al_dev_fix[al-dev-fix]
         skill_al_dev_help[al-dev-help]
@@ -235,12 +235,12 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
-    skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
-    skill_al_dev_develop --> knowledge_artifact_contracts_md
-    skill_al_dev_develop --> knowledge_developer_invocation_patterns_md
-    skill_al_dev_develop --> knowledge_intent_preflight_md
-    skill_al_dev_develop --> knowledge_scope_expansion_gate_md
-    skill_al_dev_develop --> knowledge_workflow_resilience_md
+    skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
+    skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
+    skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_develop_orchestrate --> knowledge_intent_preflight_md
+    skill_al_dev_develop_orchestrate --> knowledge_scope_expansion_gate_md
+    skill_al_dev_develop_orchestrate --> knowledge_workflow_resilience_md
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_bash_safe_patterns_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
@@ -313,7 +313,7 @@ flowchart LR
     class skill_al_dev_commit skillNode
     class skill_al_dev_commit_execute skillNode
     class skill_al_dev_commit_preflight skillNode
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_explore skillNode
     class skill_al_dev_fix skillNode
     class skill_al_dev_help skillNode

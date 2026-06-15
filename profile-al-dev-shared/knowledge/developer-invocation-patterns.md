@@ -2,11 +2,11 @@
 
 Reference document for the three contexts in which `al-dev-developer` is spawned.
 
-## Context 1: Full Scope Implementation (al-dev-develop Phase 3)
+## Context 1: Full Scope Implementation (al-dev-develop-orchestrate Phase 3)
 
-**Caller:** `/al-dev-develop` (Phase 3: Developer Dispatch and Implementation)
+**Caller:** `/al-dev-develop-orchestrate` (Phase 3: Developer Dispatch and Implementation)
 
-**Trigger:** User has approved a solution plan and /al-dev-develop is
+**Trigger:** User has approved a solution plan and /al-dev-develop-orchestrate is
 orchestrating parallel developer agents to implement it.
 
 **Developer is responsible for:**
@@ -478,12 +478,12 @@ agent = spawn_developer(
   (sonnet for SIMPLE, opus for COMPLEX). Developer routing is not yet
   conditional — the spawn does not vary model by scope complexity.
 
-- `/al-dev-develop`: Always uses developer; complexity routing not yet wired
+- `/al-dev-develop-orchestrate`: Always uses developer; complexity routing not yet wired
 - `/al-dev-review-develop`: Always uses developer; complexity routing not yet wired
 
 This pattern is reserved for future enhancement. When wired, it will apply to:
 
-- Context 1 (`/al-dev-develop`, Phase 3 dispatch) — model selection for
+- Context 1 (`/al-dev-develop-orchestrate`, Phase 3 dispatch) — model selection for
   developer spawn
 - Context 3 (`/al-dev-review-develop`, Phase 2 dispatch) — model selection
   for developer spawn

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# al-hook-compile.sh — AL compilation hook for al-dev-develop
+# al-hook-compile.sh — AL compilation hook for al-dev-develop-orchestrate
 
 set -e
 

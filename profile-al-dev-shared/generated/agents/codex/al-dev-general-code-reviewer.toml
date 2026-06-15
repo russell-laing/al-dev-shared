@@ -1,5 +1,5 @@
 name = "al-dev-general-code-reviewer"
-description = "General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop (which uses specialist reviewers for security, patterns, and performance)."
+description = "General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers for security, patterns, and performance)."
 developer_instructions = """
 # Agent: al-dev-general-code-reviewer
 
@@ -9,7 +9,7 @@ Specialist agent for comprehensive code review with high signal-to-noise ratio.
 
 Review code changes and surface only genuine issues: bugs, security vulnerabilities, logic errors, and significant inefficiencies. Never comment on style, formatting, or trivial matters.
 
-This agent is available for standalone use as a general code reviewer. It is not integrated into the /al-dev-develop review pipeline, which dispatches specialized reviewers (security, patterns, performance) instead.
+This agent is available for standalone use as a general code reviewer. It is not integrated into the /al-dev-develop-orchestrate review pipeline, which dispatches specialized reviewers (security, patterns, performance) instead.
 
 ## Inputs
 

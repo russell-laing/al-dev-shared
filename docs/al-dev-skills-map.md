@@ -23,14 +23,12 @@ This diagram shows pre-planning tributaries (dashed, optional), the three main e
 flowchart TD
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     skill_al_dev_commit[al-dev-commit]
-    skill_al_dev_develop[al-dev-develop]
     skill_al_dev_document[al-dev-document]
     skill_al_dev_explore[al-dev-explore]
     skill_al_dev_fix[al-dev-fix]
     skill_al_dev_handoff[al-dev-handoff]
     skill_al_dev_interview[al-dev-interview]
     skill_al_dev_investigate[al-dev-investigate]
-    skill_al_dev_lint[al-dev-lint]
     skill_al_dev_perf[al-dev-perf]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_plan_preflight[al-dev-plan-preflight]
@@ -45,28 +43,24 @@ flowchart TD
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
-    skill_al_dev_develop --> skill_al_dev_review_develop
-    skill_al_dev_develop -.-> skill_al_dev_lint
     skill_al_dev_explore -.-> skill_al_dev_plan
     skill_al_dev_fix --> skill_al_dev_commit
     skill_al_dev_interview -.-> skill_al_dev_plan
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_perf -.-> skill_al_dev_plan
-    skill_al_dev_plan --> skill_al_dev_develop
+    skill_al_dev_plan --> skill_al_dev_review_develop
     skill_al_dev_plan_preflight -.-> skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_ticket --> skill_al_dev_support_reply
     skill_commit_recover --> skill_al_dev_commit
 
     class skill_al_dev_commit skillNode
-    class skill_al_dev_develop skillNode
     class skill_al_dev_document skillNode
     class skill_al_dev_explore skillNode
     class skill_al_dev_fix skillNode
     class skill_al_dev_handoff skillNode
     class skill_al_dev_interview skillNode
     class skill_al_dev_investigate skillNode
-    class skill_al_dev_lint skillNode
     class skill_al_dev_perf skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_plan_preflight skillNode
@@ -243,7 +237,7 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_fix[al-dev-fix]
-    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
     skill_al_dev_plan[al-dev-plan]
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
     agent_al_dev_solution_architect[al-dev-solution-architect]
@@ -256,7 +250,7 @@ flowchart LR
     knowledge_scope_expansion_gate_md[scope-expansion-gate]
     artifact_test_plan_md[.dev/test-plan.md]
 
-    skill_al_dev_fix -.-> skill_al_dev_develop
+    skill_al_dev_fix -.-> skill_al_dev_develop_orchestrate
     skill_al_dev_fix -.-> skill_al_dev_plan
     skill_al_dev_fix --> agent_al_dev_developer_traditional
     skill_al_dev_fix --> agent_al_dev_solution_architect
@@ -270,7 +264,7 @@ flowchart LR
     skill_al_dev_fix --> artifact_test_plan_md
 
     class skill_al_dev_fix skillNode
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_plan skillNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_solution_architect agentNode
@@ -289,7 +283,7 @@ Agents spawned: `al-dev-shared:al-dev-developer-traditional`, `al-dev-shared:al-
 
 ### /al-dev-plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop`. Phases: 0, 2, 3, 4, 5.
+**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop-orchestrate`. Phases: 0, 2, 3, 4, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan -->
 ```mermaid
@@ -471,11 +465,11 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-plan-with-critics -->
 
-### /al-dev-develop
+### /al-dev-develop-orchestrate
 
 **Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4.
 
-<!-- BEGIN GENERATED: skill-drilldown-al-dev-develop -->
+<!-- BEGIN GENERATED: skill-drilldown-al-dev-develop-orchestrate -->
 ```mermaid
 flowchart LR
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
@@ -484,7 +478,7 @@ flowchart LR
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
-    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
     Phase0["Phase 0"]
     Phase1["Phase 1"]
     Phase2["Phase 2"]
@@ -502,24 +496,24 @@ flowchart LR
     artifact_progress_md[.dev/progress.md]
     artifact_project_context_md[.dev/project-context.md]
 
-    skill_al_dev_develop --> Phase0
-    skill_al_dev_develop --> Phase1
-    skill_al_dev_develop --> Phase2
-    skill_al_dev_develop --> Phase3
-    skill_al_dev_develop --> Phase4
-    skill_al_dev_develop -.-> skill_al_dev_review_develop
-    skill_al_dev_develop --> agent_al_dev_developer_tdd
-    skill_al_dev_develop --> agent_al_dev_developer_traditional
-    skill_al_dev_develop --> knowledge_al_dev_develop_spawn_prompt_md
-    skill_al_dev_develop --> knowledge_artifact_contracts_md
-    skill_al_dev_develop --> knowledge_developer_invocation_patterns_md
-    skill_al_dev_develop --> knowledge_intent_preflight_md
-    skill_al_dev_develop --> knowledge_scope_expansion_gate_md
-    skill_al_dev_develop --> knowledge_workflow_resilience_md
-    skill_al_dev_develop --> artifact_progress_md
-    skill_al_dev_develop --> artifact_project_context_md
+    skill_al_dev_develop_orchestrate --> Phase0
+    skill_al_dev_develop_orchestrate --> Phase1
+    skill_al_dev_develop_orchestrate --> Phase2
+    skill_al_dev_develop_orchestrate --> Phase3
+    skill_al_dev_develop_orchestrate --> Phase4
+    skill_al_dev_develop_orchestrate -.-> skill_al_dev_review_develop
+    skill_al_dev_develop_orchestrate --> agent_al_dev_developer_tdd
+    skill_al_dev_develop_orchestrate --> agent_al_dev_developer_traditional
+    skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
+    skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
+    skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
+    skill_al_dev_develop_orchestrate --> knowledge_intent_preflight_md
+    skill_al_dev_develop_orchestrate --> knowledge_scope_expansion_gate_md
+    skill_al_dev_develop_orchestrate --> knowledge_workflow_resilience_md
+    skill_al_dev_develop_orchestrate --> artifact_progress_md
+    skill_al_dev_develop_orchestrate --> artifact_project_context_md
 
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class Phase0 phaseNode
     class Phase1 phaseNode
     class Phase2 phaseNode
@@ -539,11 +533,11 @@ flowchart LR
 ```
 
 Agents spawned: `al-dev-shared:al-dev-developer-tdd`, `al-dev-shared:al-dev-developer-traditional`
-<!-- END GENERATED: skill-drilldown-al-dev-develop -->
+<!-- END GENERATED: skill-drilldown-al-dev-develop-orchestrate -->
 
 ### /al-dev-review-develop-preflight
 
-Pre-review qualification workflow dispatched by `/al-dev-develop` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
+Pre-review qualification workflow dispatched by `/al-dev-develop-orchestrate` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop-preflight -->
 ```mermaid
@@ -559,7 +553,7 @@ flowchart LR
     Phase1["Phase 1"]
     Phase2["Phase 2"]
     Phase3["Phase 3"]
-    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
     skill_al_dev_review_develop[al-dev-review-develop]
     artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_progress_md[.dev/progress.md]
@@ -568,7 +562,7 @@ flowchart LR
     skill_al_dev_review_develop_preflight --> Phase1
     skill_al_dev_review_develop_preflight --> Phase2
     skill_al_dev_review_develop_preflight --> Phase3
-    skill_al_dev_review_develop_preflight -.-> skill_al_dev_develop
+    skill_al_dev_review_develop_preflight -.-> skill_al_dev_develop_orchestrate
     skill_al_dev_review_develop_preflight -.-> skill_al_dev_review_develop
     skill_al_dev_review_develop_preflight --> artifact_compile_errors_log
     skill_al_dev_review_develop_preflight --> artifact_progress_md
@@ -578,7 +572,7 @@ flowchart LR
     class Phase1 phaseNode
     class Phase2 phaseNode
     class Phase3 phaseNode
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_review_develop skillNode
     class artifact_compile_errors_log artifactNode
     class artifact_progress_md artifactNode
@@ -1055,7 +1049,7 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_help[al-dev-help]
-    skill_al_dev_develop[al-dev-develop]
+    skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
     skill_al_dev_plan[al-dev-plan]
     knowledge_workflow_routing_md[workflow-routing]
     artifact_2026_05_19_al_dev_develop_code_review_md[.dev/2026-05-19-al-dev-develop-code-review.md]
@@ -1063,7 +1057,7 @@ flowchart LR
     artifact_2026_05_19_al_dev_plan_solution_plan_md[.dev/2026-05-19-al-dev-plan-solution-plan.md]
     artifact_project_context_md[.dev/project-context.md]
 
-    skill_al_dev_help -.-> skill_al_dev_develop
+    skill_al_dev_help -.-> skill_al_dev_develop_orchestrate
     skill_al_dev_help -.-> skill_al_dev_plan
     skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_help --> artifact_2026_05_19_al_dev_develop_code_review_md
@@ -1072,7 +1066,7 @@ flowchart LR
     skill_al_dev_help --> artifact_project_context_md
 
     class skill_al_dev_help skillNode
-    class skill_al_dev_develop skillNode
+    class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_plan skillNode
     class knowledge_workflow_routing_md knowledgeNode
     class artifact_2026_05_19_al_dev_develop_code_review_md artifactNode

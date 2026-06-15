@@ -63,7 +63,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 - Implement the fix yourself
 - Skip all planning (for non-trivial fixes)
-- Run this for new features (use `/al-dev-plan` → `/al-dev-develop` instead)
+- Run this for new features (use `/al-dev-plan` → `/al-dev-develop-orchestrate` instead)
 
 ### ✅ DO
 
@@ -190,8 +190,8 @@ IF complexity == "simple":
   └─ Move to Step 4
 
 IF complexity == "medium" OR complexity == "complex":
-  └─ [ERROR] Non-trivial fixes require the /al-dev-develop workflow
-  └─ Escalate to /al-dev-plan → /al-dev-develop
+  └─ [ERROR] Non-trivial fixes require the /al-dev-develop-orchestrate workflow
+  └─ Escalate to /al-dev-plan → /al-dev-develop-orchestrate
 ```
 
 Architect dispatch for the non-trivial path follows **Pattern 2: Quick
@@ -213,7 +213,7 @@ architect, time-bounded, four-section return.
 
 **❌ Don't use /al-dev-fix for:**
 
-- New features → Use `/al-dev-plan` then `/al-dev-develop`
+- New features → Use `/al-dev-plan` then `/al-dev-develop-orchestrate`
 - Architectural changes → Use `/al-dev-plan` first
 - Multiple related changes → Use `/al-dev-plan` for coordination
 - Anything needing formal approval gates

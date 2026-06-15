@@ -1,5 +1,5 @@
 ---
-name: al-dev-develop
+name: al-dev-develop-orchestrate
 description: >-
   Prepare implementation context, validate scope, partition work across developers,
   and dispatch developers to implement AL code. Consumes a solution plan and orchestrates
@@ -42,7 +42,7 @@ durable outputs, resume read order, handoff artifact, and success evidence.
 
 Do not claim implementation is complete or ready for `/al-dev-review-develop`
 until the success evidence named in `knowledge/artifact-contracts.md` for
-`al-dev-develop` has been produced and read for the current run.
+`al-dev-develop-orchestrate` has been produced and read for the current run.
 
 When shell search or structured-file inspection is required, prefer `rg` and
 `jq` before falling back to broader shell text processing.
@@ -63,7 +63,7 @@ proceed.
 Per the Phase 0 Read Protocol in `knowledge/workflow-resilience.md`.
 
 **Purpose:** Check for existing progress and establish the resume pack that
-`/al-dev-develop` maintains through the run so context compaction and session
+`/al-dev-develop-orchestrate` maintains through the run so context compaction and session
 hand-off do not require a full re-read of the solution plan.
 
 **Resume pack artifacts:**
@@ -203,7 +203,7 @@ developer task must call it. Acceptance criteria alone do not qualify.
    - Verify the procedure exists and signature is correct
    - Consult BC documentation or base app source
    - Confirm exact parameter names and types (including var modifiers)
-   - Rerun /al-dev-develop with --autonomous after verification
+   - Rerun /al-dev-develop-orchestrate with --autonomous after verification
    ```
 
 3. Escalate to user with this report
@@ -474,5 +474,5 @@ This document is created at Phase 4 completion and includes:
    Confirm it reports "Prerequisites: all met" before proceeding.
 
 2. Then dispatch `/al-dev-review-develop` — only after reading the current
-   Phase 4 handoff artifact and confirming it satisfies the `al-dev-develop`
+   Phase 4 handoff artifact and confirming it satisfies the `al-dev-develop-orchestrate`
    success evidence in `knowledge/artifact-contracts.md`.

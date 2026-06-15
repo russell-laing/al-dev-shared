@@ -125,6 +125,7 @@ syntax.
 If the repository has multiple harness-specific instruction files, add the declaration to the file used by the active harness (`AGENTS.md`, `CLAUDE.md`, or `CODEX.md` as applicable).
 
 Checklist:
+
 - Add it once.
 - Keep the value accurate.
 - Place it where maintainers can find it quickly.
@@ -146,27 +147,32 @@ Every project must declare the `project-type` field in its project instructions 
 **Example declarations:**
 
 AL Project:
+
 ```yaml
 project-type: al
 ```
 
 Knowledge Vault:
+
 ```yaml
 project-type: vault
 ```
 
 Tool / Plugin:
+
 ```yaml
 project-type: tool
 ```
 
 **Why this matters:**
-- Determines which skills and agents are active (e.g., `al-dev-develop` only works for AL projects)
+
+- Determines which skills and agents are active (e.g., `al-dev-develop-orchestrate` only works for AL projects)
 - Informs compile/test commands (AL projects run `al-compile`, tool projects run `pytest` or `npm test`)
 - Shapes documentation requirements (AL projects need RTM mapping, vault projects need knowledge audits)
 - Drives commit scope rules (see per-type guidance below)
 
 **Detection (if not explicitly specified):**
+
 1. Check for `app.json` → project-type: `al`
 2. Check for `package.json` or `pyproject.toml` → project-type: `tool`
 3. Check for `knowledge/` or `docs/` directory as primary content only when the repository is documentation-centric, lacks `app.json`, `package.json`, or `pyproject.toml`, and is not primarily a maintainer/plugin/tooling repo → project-type: `vault`

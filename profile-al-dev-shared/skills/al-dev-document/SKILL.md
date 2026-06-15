@@ -394,7 +394,7 @@ Consider including:
 - Implementation is incomplete (document after coding)
 - Quick prototype (not worth documentation overhead)
 
-**Timing:** Usually run after `/al-dev-develop`.
+**Timing:** Usually run after `/al-dev-develop-orchestrate`.
 
 ---
 

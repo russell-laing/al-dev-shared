@@ -243,7 +243,7 @@ against the live skill body before treating it as work.
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-16 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-16 |

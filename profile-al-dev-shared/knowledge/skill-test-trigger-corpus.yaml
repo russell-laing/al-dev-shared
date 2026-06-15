@@ -17,25 +17,25 @@ corpus:
   - prompt: "i want to add jobs integration to sales orders, design it"
     expected: al-dev-plan
 
-  # --- al-dev-develop ----------------------------------------------------
+  # --- al-dev-develop-orchestrate -----------------------------------------
   - prompt: "implement the plan we just wrote"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "build out the codeunits from the solution plan in .dev/"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "write the al code for the plan"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "execute the implementation plan with review"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "scaffold the tables and pages from the design doc"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
 
-  # --- al-dev-develop (--autonomous mode) --------------------------------
+  # --- al-dev-develop-orchestrate (--autonomous mode) --------------------
   - prompt: "implement the plan automatically and keep compiling until it builds"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "autonomous mode: build the feature and self-correct compile errors"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "just keep iterating on the code until al-compile is clean"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
 
   # --- al-dev-fix --------------------------------------------------------
   - prompt: "the customer page is throwing a permission error, fix it"
@@ -67,7 +67,7 @@ corpus:
   - prompt: "commit only the staged docs changes after checking scope"
     expected: al-dev-commit
   - prompt: "implement the approved plan in autonomous mode and keep compiling until it builds"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "review these repeated agent failures and tell me which ones deserve shared-profile rules"
     expected: NONE
 
@@ -97,14 +97,14 @@ corpus:
   - prompt: "here's my spec, implement it now"
     expected: CLARIFY
   # implementation plan + review/audit-only keywords; treat as REVIEW and do
-  # not route to al-dev-develop
+  # not route to al-dev-develop-orchestrate
   - prompt: "review this plan and audit only"
     expected: NONE
 
   - prompt: "fix the bug, but do not say it is done unless you verified it this run"
     expected: al-dev-fix
   - prompt: "implement the approved plan and only call it ready when the handoff artifact exists"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "run lint, but do not claim clean without reading the current compile log"
     expected: al-dev-lint
   - prompt: "commit the staged changes, but only if the current staged-state evidence says they are ready"

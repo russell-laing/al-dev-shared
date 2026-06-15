@@ -56,7 +56,7 @@ corpus:
   - prompt: "design how I'd build a sales-tax exemption feature"
     expected: al-dev-plan
   - prompt: "implement the plan we just wrote"
-    expected: al-dev-develop
+    expected: al-dev-develop-orchestrate
   - prompt: "squash these commits before pushing"
     expected: al-dev-commit
 ```

@@ -74,7 +74,7 @@ skill to agent, agent to knowledge, and skill to skill.
 4. **If a reference is broken:**
    - Mark as **REJECT** with reason "broken reference: REF"
 
-**Example pass:** Agent `al-dev-develop` invokes agent `al-dev-shared:al-dev-review-develop`.
+**Example pass:** Agent `al-dev-develop-orchestrate` invokes agent `al-dev-shared:al-dev-review-develop`.
 Target file exists at `profile-al-dev-shared/agents/al-dev-review-develop.md`.
 
 **Example fail:** Skill reads `../../../nonexistent-knowledge.md`. Target file does
@@ -202,7 +202,7 @@ SPLIT: Separate <artifact> into <artifact-A> and <artifact-B> — distinct conce
 and `al-dev-plan-estimator`. Agent is 350 lines with clean tool clustering.
 Most skills call only the appropriate half. → ACCEPT
 
-**Example fail:** Suggestion to split skill `al-dev-develop` into `code-write` and
+**Example fail:** Suggestion to split skill `al-dev-develop-orchestrate` into `code-write` and
 `code-test`. Both concerns require file context from the same sources. → REJECT
 
 ### Inline Check
@@ -307,7 +307,7 @@ report" pattern. The same workflow appears in three live validation-oriented
 artifacts and would remove 250+ lines of duplicated procedure text. → ACCEPT
 
 **Example fail:** Suggestion to extract "log progress to .dev/progress.md". Grep
-finds this pattern only in skill `al-dev-develop`. Overhead > savings. → REJECT
+finds this pattern only in skill `al-dev-develop-orchestrate`. Overhead > savings. → REJECT
 
 ### Promote Check
 
@@ -471,7 +471,7 @@ This matters because ducks run in different environments and may see different a
 ## Procedure
 1. Gather requirements
 2. Run `/al-dev-plan` to create the solution plan
-3. Dispatch the plan to al-dev-shared:al-dev-develop for implementation
+3. Dispatch the plan to al-dev-shared:al-dev-develop-orchestrate for implementation
 
 # Agent frontmatter with tools list:
 ---
@@ -547,7 +547,7 @@ and treat a suggestion targeting a path under `generated/` as an automatic REJEC
 # SOURCE ARTIFACTS (Edit Here)
 profile-al-dev-shared/agents/al-dev-commit-analyzer.md
 profile-al-dev-shared/agents/al-dev-developer.md
-profile-al-dev-shared/skills/al-dev-develop/SKILL.md
+profile-al-dev-shared/skills/al-dev-develop-orchestrate/SKILL.md
 profile-al-dev-shared/knowledge/artifact-contracts.md
 
 # GENERATED ARTIFACTS (Read-Only)
@@ -577,7 +577,7 @@ REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd
 | Content Type | Source Path (Edit Here) | Generated Paths (Read-Only) |
 | --- | --- | --- |
 | Agent | `profile-al-dev-shared/agents/al-dev-commit-analyzer.md` | `profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md` and similar for copilot/, codex/ |
-| Skill | `profile-al-dev-shared/skills/al-dev-develop/SKILL.md` | No generated copies; distributed as-is |
+| Skill | `profile-al-dev-shared/skills/al-dev-develop-orchestrate/SKILL.md` | No generated copies; distributed as-is |
 | Knowledge | `profile-al-dev-shared/knowledge/artifact-contracts.md` | No generated copies; distributed as-is |
 
 **Example violations to reject:**

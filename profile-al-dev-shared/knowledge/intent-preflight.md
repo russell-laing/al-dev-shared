@@ -34,7 +34,7 @@ Continue only after the user confirms the intended action.
 | Skill | Default Intent |
 |---|---|
 | `al-dev-commit` | `COMMIT` |
-| `al-dev-develop` | `EDIT` |
+| `al-dev-develop-orchestrate` | `EDIT` |
 | `al-dev-fix` | `EDIT` |
 | `al-dev-lint` | `EDIT` |
 | `al-dev-plan-preflight` | `REVIEW` for reusable planning-context assembly; writing the requested `.dev/preflight-context.md` artifact is allowed within that review workflow |

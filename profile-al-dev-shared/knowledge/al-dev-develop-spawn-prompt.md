@@ -1,7 +1,7 @@
-# al-dev-develop Developer Spawn Prompt
+# al-dev-develop-orchestrate Developer Spawn Prompt
 
 This document defines the structured prompt template used to dispatch
-developer agents during `al-dev-develop` Phase 3 (Spawn Developers).
+developer agents during `al-dev-develop-orchestrate` Phase 3 (Spawn Developers).
 The orchestrating skill instantiates this template once per module
 assignment so that every spawned developer receives consistent scope,
 standards, and gate rules.

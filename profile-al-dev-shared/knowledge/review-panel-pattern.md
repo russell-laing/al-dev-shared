@@ -1,7 +1,7 @@
 # Review Panel Pattern
 
 The three-reviewer panel is the standard parallel review composition used by
-`/al-dev-review-develop` after `/al-dev-develop` produces its implementation
+`/al-dev-review-develop` after `/al-dev-develop-orchestrate` produces its implementation
 handoff. Dispatch all three reviewers simultaneously through the active
 harness's parallel agent capability.
 
@@ -20,7 +20,7 @@ Review for query efficiency, N+1 patterns, SetLoadFields usage,
 loop efficiency, record variable scoping.
 
 Each reviewer receives the same preflight `CHANGED_FILES` list and the
-implementation context from the `/al-dev-develop` handoff.
+implementation context from the `/al-dev-develop-orchestrate` handoff.
 
 ## Spawn Instructions
 

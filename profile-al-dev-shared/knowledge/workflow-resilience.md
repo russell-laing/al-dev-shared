@@ -1,7 +1,7 @@
 # Workflow Resilience
 
 Protocols for multi-phase skills (`al-dev-plan`,
-`al-dev-develop`) to survive usage limits and resume cleanly.
+`al-dev-develop-orchestrate`) to survive usage limits and resume cleanly.
 
 ## Progress Checkpointing
 
@@ -32,14 +32,14 @@ The newest checkpoint state is authoritative — overwrite, never append.
 Write the checkpoint before spawning subagents for the next
 phase and again after collecting their output.
 
-For `/al-dev-develop`, also refresh the dated
+For `/al-dev-develop-orchestrate`, also refresh the dated
 `.dev/YYYY-MM-DD-al-dev-develop-progress.md` after each named
 phase so the durable session narrative stays aligned with the
 latest checkpoint.
 
 ### Develop-Specific Resume Pack
 
-For `/al-dev-develop`, maintain these files together:
+For `/al-dev-develop-orchestrate`, maintain these files together:
 
 - `.dev/progress.md` — latest checkpoint
 - `.dev/YYYY-MM-DD-al-dev-develop-progress.md` — dated session
@@ -64,7 +64,7 @@ is missing or contradictory.
 At skill startup, before Phase 1, follow the applicable resume
 path for the current skill.
 
-For `/al-dev-develop`, the Develop-Specific Resume Pack above is
+For `/al-dev-develop-orchestrate`, the Develop-Specific Resume Pack above is
 authoritative:
 
 - Read `.dev/progress.md` if it exists
@@ -86,7 +86,7 @@ if it exists. If the file exists, display its contents and ask:
 - **restart** — start fresh and do not reuse checkpoint artifacts
   from the abandoned run:
   - delete `.dev/progress.md`
-  - for `/al-dev-develop`, either delete the latest dated develop
+  - for `/al-dev-develop-orchestrate`, either delete the latest dated develop
     progress/checklist/scope files from that abandoned run or
     ignore them explicitly for the restarted session and record
     that choice in the new `.dev/progress.md`

@@ -20,7 +20,7 @@ None identified.
 - `agents/al-dev-developer-traditional.md` — Developer agent defers to this for dispatch patterns
 - `agents/al-dev-developer-tdd.md` — Developer agent defers to this for dispatch patterns
 - `skills/al-dev-fix/SKILL.md` — Skill references this for Context 2 spawning guidance
-- `skills/al-dev-develop/SKILL.md` — Skill references this multiple times for dispatcher consistency
+- `skills/al-dev-develop-orchestrate/SKILL.md` — Skill references this multiple times for dispatcher consistency
 
 **Issue:** THIN — Section header "Example: Conditional routing in spawning skill" introduces the concept with 2 content lines before presenting extensive code examples. While the section as a whole is comprehensive, the introductory prose is minimal. The section assumes readers understand when conditional routing applies and why.
 

@@ -16,7 +16,7 @@ Plugin surface.
 | `al-dev-interview` | `requirements.md` | `al-dev-plan` | Optional | Req |
 | `al-dev-explore` | `findings.md` | `al-dev-plan` | Optional | Ctx |
 | `al-dev-perf` | `perf-analysis.md` | `al-dev-plan` | Optional | Perf |
-| `al-dev-plan` | `solution-plan.md` | `al-dev-develop` | **Mandatory** | Sp |
+| `al-dev-plan` | `solution-plan.md` | `al-dev-develop-orchestrate` | **Mandatory** | Sp |
 
 ---
 
@@ -24,8 +24,8 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `al-dev-plan` | `solution-plan.md` | `al-dev-develop` | **Mandatory** | Sp |
-| `al-dev-develop` (P4) | `phase4-handoff.md` | review | **Mandatory** | St |
+| `al-dev-plan` | `solution-plan.md` | `al-dev-develop-orchestrate` | **Mandatory** | Sp |
+| `al-dev-develop-orchestrate` (P4) | `phase4-handoff.md` | review | **Mandatory** | St |
 | `al-dev-lint` | `lint-report.md` | `al-dev-fix` | Optional | Fix |
 | review-develop | `code-review.md` | commit | **Mandatory** | Rev |
 | `al-dev-commit` | Staged diff | verify | **Mandatory** | Msg |
@@ -36,7 +36,7 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `al-dev-develop` (P4) | `phase4-handoff.md` | review | **Mandatory** | Files |
+| `al-dev-develop-orchestrate` (P4) | `phase4-handoff.md` | review | **Mandatory** | Files |
 | (Compile) | `compile-errors.log` | review | **Mandatory** | Sts |
 | `al-dev-review-develop` (P6) | Synthesized | User | **Mandatory** | Out |
 
@@ -129,7 +129,7 @@ These gaps exist in the currently active, deployed skill chains and require imme
 
 #### 4. Post-Development Review Feedback Loop
 
-**Issue:** If `/al-dev-review-develop` discovers blocking issues (compilation errors, architectural violations, out-of-scope changes), there is no documented handoff back to `/al-dev-develop` to signal rework. The artifact flow is one-directional: develop → review → commit.
+**Issue:** If `/al-dev-review-develop` discovers blocking issues (compilation errors, architectural violations, out-of-scope changes), there is no documented handoff back to `/al-dev-develop-orchestrate` to signal rework. The artifact flow is one-directional: develop → review → commit.
 
 **Impact:** Blocking review findings may force manual rework or commitment of flawed code. No automated path exists to re-engage development with reviewer feedback; workflow may stall or fork into ad-hoc repair paths outside the documented chain.
 
@@ -235,7 +235,7 @@ Phase B extends all lifecycle skills with explicit Phase 0 handoff checks:
 | Skill | Check | Artifact | Action |
 |---|---|---|---|
 | `al-dev-plan` | Plan exists | `*-solution-plan.md` | Continue/restart |
-| `al-dev-develop` | Progress + plan | Phase 4 OR plan | Resume |
+| `al-dev-develop-orchestrate` | Progress + plan | Phase 4 OR plan | Resume |
 | `al-dev-review-develop` | Phase 4 | `*-phase4-handoff.md` | Run develop |
 | `al-dev-commit` | Staged state | None | Check diff |
 | `al-dev-fix` | (None) | None | Ad-hoc |

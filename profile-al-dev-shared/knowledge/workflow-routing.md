@@ -137,7 +137,7 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 
 ### 🔴 COMPLEX (Use Full Pipeline - 45-90 min)
 
-**Route:** `al-dev-develop` full workflow
+**Route:** `al-dev-develop-orchestrate` full workflow
 
 **Criteria:**
 
@@ -317,7 +317,7 @@ Then: Synthesize results into solution plan
 User can force a specific path:
 
 - `al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
-- `al-dev-develop` → SIMPLE/MEDIUM path (no requirements phase)
+- `al-dev-develop-orchestrate` → SIMPLE/MEDIUM path (no requirements phase)
 - `al-dev-plan` → MEDIUM path (planning only)
 - COMPLEX path → full pipeline workflow
 

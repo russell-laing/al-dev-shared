@@ -3,7 +3,7 @@ name: al-dev-security-reviewer
 description: >-
   Review AL code for security vulnerabilities, permission issues,
   and data exposure risks. Spawned in parallel by the
-  al-dev-develop skill.
+  al-dev-develop-orchestrate skill.
 model: sonnet
 tools: ["Read"]
 ---
@@ -14,7 +14,7 @@ Review AL code for security vulnerabilities, permission issues, and data exposur
 
 ## Role
 
-Specialist teammate for security, permissions, and data access review. Spawned by the `al-dev-develop` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
+Specialist teammate for security, permissions, and data access review. Spawned by the `al-dev-develop-orchestrate` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
 
 ## Inputs
 
