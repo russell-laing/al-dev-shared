@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-15
+**Last updated:** 2026-06-16
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).

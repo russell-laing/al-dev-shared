@@ -139,7 +139,7 @@ for contract maintenance, but the stage pages are the primary reading path.
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/revise-health-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
-| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` rows to docs/health/dispositions.md for every `closes_rows:` entry (the distinguishing ledger close-back). |
+| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` rows to docs/health/dispositions.md and its monthly history shards (docs/health/dispositions-history/YYYY/YYYY-MM.md) for every `closes_rows:` entry (the distinguishing ledger close-back). |
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
@@ -190,22 +190,22 @@ against the live skill body before treating it as work.
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-15 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-15 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | never produced |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | never produced |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/health/*-*-findings.md` | never produced |
-| Artifact freshness | `docs/health/*-*-friction-findings.md` | never produced |
-| Artifact freshness | `docs/health/*-*-health.md` | never produced |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-15 |
-| Artifact freshness | `docs/health/friction-ingest-log.md` | never produced |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-16 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-16 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-16 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/friction-ingest-log.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | never produced |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
