@@ -405,7 +405,7 @@ For each `#if` directive, read the surrounding block. Verify:
 
 - The condition matches the intended feature flag
 - Every `#if` has a matching `#endif`
-- The `#else` branch, if present, contains the correct fallback
+- The `#else` branch, if present, contains the correct fallback (correct fallback = the code under `#else` restores baseline behavior when the feature flag is disabled)
 
 Flag any inverted condition or unmatched directive as CRITICAL.
 
