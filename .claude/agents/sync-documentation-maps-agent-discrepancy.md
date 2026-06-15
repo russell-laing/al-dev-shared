@@ -9,8 +9,6 @@ model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
 
-# sync-documentation-maps-agent-discrepancy
-
 ## Inputs
 
 | Field | Description |

@@ -11,8 +11,6 @@ model: haiku
 tools: ["Read", "Bash", "Write"]
 ---
 
-# Sync Documentation Maps: Skill Map Update
-
 ## Inputs
 
 | Field | Description |

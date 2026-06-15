@@ -10,8 +10,6 @@ model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
 
-# sync-documentation-maps-skill-metadata
-
 ## Inputs
 
 | Field | Description |
