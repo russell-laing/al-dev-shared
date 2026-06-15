@@ -173,7 +173,7 @@ before any later phase proceeds.)
 2. Forbidden-pattern scan: no `[date]`, bare `YYYY-MM-DD` placeholders,
    `TODO`, `TBD`, `Co-Authored-By` (forbidden in file content AND git trailers,
    per `commit-conventions.md`), or `claude:`/`copilot:` prefixed debug tokens
-   in changed files
+   in changed files (full pattern list: `.claude/knowledge/forbidden-pattern-scan.md`)
 3. Acceptance criteria: each criterion stated in the task spec is met in
    actual file content
 4. On verification failure: re-execute with the specific failure embedded in
@@ -182,7 +182,7 @@ before any later phase proceeds.)
 **Commit discipline:** commit per task. Do NOT squash task commits — the
 per-task commit hashes are needed for Phase 3 ledger close-back.
 
-Update `.dev/implement-health-plan-progress.md` as each task completes:
+Update `.dev/implement-health-plan-progress.md` **after each task's commit lands:**
 
 ```yaml
 phase: 1
@@ -222,8 +222,10 @@ final commit, so earlier task commits escape verification.
 
 ```bash
 git show --stat <task-commit>                 # files changed in that task's commit
-git show <task-commit> -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
 ```
+
+See `.claude/knowledge/forbidden-pattern-scan.md` for the forbidden-pattern list and scan
+command. Run the scan against every changed file in this task's commit.
 
 If a task has no recorded commit hash, or the commit is missing/out of scope,
 fail the gate for that task.
@@ -238,18 +240,11 @@ Scan every changed file for:
 - `Co-Authored-By` — AI attribution forbidden per `commit-conventions.md` (file content AND git trailers)
 - `claude:` or `copilot:` prefixed debug tokens
 
-```bash
-git show <task-commit> -- <changed-files> | grep -E '\[date\]|TODO|TBD|claude:|copilot:'
-grep -rEn '[0-9]{4}-[0-9]{2}-[0-9]{2}' <changed-files>   # bare YYYY-MM-DD placeholders
-grep -rn  'Co-Authored-By'             <changed-files>   # AI attribution (forbidden per commit-conventions.md)
-```
+See `.claude/knowledge/forbidden-pattern-scan.md` for the forbidden-pattern list and scan
+command. Run the scan against every changed file in this task's commit.
 
 Any hit is a blocker. Fix the file and amend or commit a correction before
 continuing.
-
-<!-- Note: the global CLAUDE.md commit practice appends a Co-Authored-By trailer;
-     that practice must be reconciled against commit-conventions.md separately — do not
-     edit CLAUDE.md or commit-conventions.md here. -->
 
 ### Acceptance criteria check
 
