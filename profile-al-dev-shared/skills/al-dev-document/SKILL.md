@@ -59,6 +59,14 @@ Create complete documentation for implemented features:
 
 ### Step 0: Select Audience (< 1 min)
 
+**Context-continuation check:** If the current session opens with a
+continuation summary (the harness prefix "This session is being continued
+from a previous conversation"), read that summary now — before the
+audience prompt and before any `.dev/` file reads. The summary may
+already contain the audience selection, prior scope findings, and RTM
+status; use it as the primary source and load `.dev/` files in Step 1
+only to fill gaps.
+
 Ask the user which audience they are writing for:
 
 ```text
@@ -91,6 +99,11 @@ ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/[AUDIENCE].md 2
 If the echo fires, omit `TEMPLATE_PATH` from the spawn prompt and let the docs-writer use the inline documentation structure defined in Step 2.
 
 ### Step 1: Identify Documentation Scope (1-2 min)
+
+If a continuation summary was read in Step 0, load `.dev/` files only
+to fill gaps the summary does not cover. If the summary provides audience,
+scope, RTM status, and the required plan/requirements artifact paths,
+proceed to Step 2 immediately without re-reading those files.
 
 ```text
 Determine what needs documenting:
