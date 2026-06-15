@@ -77,7 +77,9 @@ At fresh start:
 
 1. Create or overwrite `.dev/progress.md` per
    `knowledge/workflow-resilience.md`
-2. Create the dated progress snapshot for the current run
+2. Create the dated progress snapshot for the current run; after writing
+   both `.dev/progress.md` and the dated snapshot, emit a brief
+   confirmation: "Progress checkpoint written → .dev/progress.md"
 3. Continue building the rest of the resume pack in later phases:
    - Phase 2 writes the checklist artifact
    - Phase 2 writes the scope artifact
@@ -370,7 +372,9 @@ When all developers complete, verify before proceeding:
 5. Escalate to user only for architectural changes or
    requirements ambiguity that block progress
 
-Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
+Write `.dev/progress.md` per `knowledge/workflow-resilience.md`. After
+writing, emit a brief confirmation: "Progress checkpoint written →
+.dev/progress.md"
 
 ### Step 2: Static Validation (Autonomous Mode Only)
 
