@@ -131,7 +131,7 @@ For trivial fixes:
 
 4. Run compile + lint pass per
    `knowledge/compile-lint-procedure.md`.
-   (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
+   (See `../../markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
    If compilation fails, fix only errors caused by the small
    change and re-run compile once.
 
