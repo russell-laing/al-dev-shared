@@ -93,7 +93,7 @@ Example: "Fix typo in error message"
 Example: "Add missing null check"
 Example: "Change >= to > in validation"
 
-NON-TRIVIAL (10% of fixes):
+NON-TRIVIAL (10% of fixes — you don't know exactly where the bug is OR you don't know the exact lines to change):
 - Root cause unclear
 - Multiple files affected
 - BC integration issue
