@@ -76,11 +76,13 @@ The interview agent MUST:
    your next questions.
 
 5. **GATE: The interview agent must explicitly state "INTERVIEW COMPLETE" and
-   confirm questions were asked in all 11 categories listed above. Upon this
-   explicit signal, proceed to Phase 3.**
+   confirm questions were asked across the 11 categories listed above. Full
+   coverage of all 11 is the target; the five mandatory categories below are the
+   minimum bar enforced by the failure-recovery path. Upon this explicit signal,
+   proceed to Phase 3.**
 
    **Completion check:** Verify agent output contains `INTERVIEW COMPLETE` and a
-   category list. Mandatory categories (must be covered): Business logic, BC
+   category list. Mandatory categories (minimum that must be covered): Business logic, BC
    integration, Data model, Error handling, Integration points.
 
    ### Completion failure recovery
