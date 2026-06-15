@@ -5,7 +5,8 @@ description: >-
   frontmatter metadata (name, description, argument-hint, workflow stage, phase count,
   spawned agents). Writes a structured JSON snapshot to the run artifact directory.
   Called by /sync-documentation-maps dispatch phase; its output is consumed by
-  sync-documentation-maps-skill-discrepancy.
+  sync-documentation-maps-skill-discrepancy. spawned_agents entries: only
+  well-formed al-dev-shared: slugs are extracted; malformed ones are silently skipped.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---

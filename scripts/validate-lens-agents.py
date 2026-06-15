@@ -89,8 +89,9 @@ for name in EXPECTED_AGENTS:
 
     content = open(path).read()
 
-    # design-skill-lens-shared-backbone uses sonnet for multi-file synthesis; all others use haiku
-    if name == "design-skill-lens-shared-backbone":
+    # sonnet exceptions: shared-backbone (multi-file synthesis) and handoff-gaps (chain tracing)
+    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps"}
+    if name in SONNET_AGENTS:
         if "model: sonnet" not in content:
             failures.append(_format_failure(
                 path,

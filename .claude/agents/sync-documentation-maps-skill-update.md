@@ -6,7 +6,8 @@ description: >-
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
   staged for /sync-documentation-maps-apply to copy into
   docs/al-dev-skills-map.md. Called by /sync-documentation-maps-collect update
-  dispatch phase.
+  dispatch phase. Halts without writing output if
+  .claude/knowledge/sync-map-update-shared.md is absent.
 model: haiku
 tools: ["Read", "Bash", "Write"]
 ---

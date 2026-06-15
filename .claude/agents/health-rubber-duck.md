@@ -1,6 +1,6 @@
 ---
 name: health-rubber-duck
-description: Verify a single health-audit finding (or a group of findings sharing one subject file) against the live codebase and return only a compact rubber-duck record. Runs the Universal U1–U3 checks plus the type-specific check for the finding's verb, or — in evidence mode — confirms a cited file:line snippet still holds. Reads subject files in its own context so the dispatching skill's context stays small. Returns proceed | modify | skip verdicts; never echoes file contents.
+description: Verify a single health-audit finding (or a group of findings sharing one subject file) against the live codebase and return only a compact rubber-duck record. Runs the Universal U1–U3 checks plus the type-specific check for the finding's verb, or — in evidence mode — confirms a cited file:line snippet still holds. Reads subject files in its own context so the dispatching skill's context stays small. Returns proceed | modify | skip verdicts; never echoes file contents. Includes a generated-path rejection gate (Step 5) that fires before U1–U3 checks.
 model: sonnet
 tools: ["Read", "Bash"]
 ---
