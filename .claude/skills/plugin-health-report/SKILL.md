@@ -82,7 +82,7 @@ regression — count it normally but flag as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 
-## Phase 1b — Filter and verify findings
+## Phase 2 — Filter and verify findings
 
 Full procedures are in `.claude/knowledge/report-input-gates.md`.
 
@@ -91,7 +91,7 @@ Full procedures are in `.claude/knowledge/report-input-gates.md`.
 Look up the previous findings file (`--offset 1`). If none exists, skip
 (every finding is new). For each repeat, annotate with `(open since YYYY-MM-DD)`,
 carrying forward the date of the **earliest** prior occurrence of that finding. Split the Summary totals:
-new vs recurring. See `report-input-gates.md §1b` for the full procedure.
+new vs recurring. See `report-input-gates.md §2` for the full procedure.
 
 ### Staleness spot-check and evidence verification
 
@@ -134,7 +134,7 @@ the cited row and still hand-scan the `keep` set for missed matches. See
   - one history shard appended under `docs/health/dispositions-history/`
   - `docs/health/dispositions.md` regenerated
 
-## Phase 2 — Rank and Write Dossier
+## Phase 3 — Rank and Write Dossier
 
 Order findings High → Medium → Low, grouped by dimension (design before quality
 before naming), then by object (agent before skill). Pick the top 5 ranked actions
@@ -184,7 +184,7 @@ _Not requested in this run._  ← if outside the requested dimensions
 
 ## Naming violations
 
-[actual name/path vs convention-expected — from naming-convention-lens]
+[actual name/path vs convention-expected — from naming-convention-lens output]
 _No issues found._  ← if requested and empty
 _Not requested in this run._  ← if outside the requested dimensions
 
@@ -198,7 +198,7 @@ _Not requested in this run._  ← if outside the requested dimensions
 
 Record any failed lenses at the foot of the Summary section.
 
-## Phase 3 — Present to user
+## Phase 4 — Present to user
 
 Read `.dev/health-loop-state.md` first (schema:
 `.claude/knowledge/health-loop-state-contract.md`). If it exists and its

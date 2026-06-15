@@ -5,12 +5,12 @@
 > append-only source of truth; `docs/health/dispositions.md` is the generated
 > current-state view. Never append rows directly to `docs/health/dispositions.md`.
 
-Operative procedures for the `/plugin-health-report` Phase 1b–1d filter stages.
+Operative procedures for the `/plugin-health-report` Phase 2 filter stages (sub-sections 1c and 1d).
 These rules are canonical; the SKILL.md sub-sections point here.
 
 ---
 
-## 1b — Recurrence annotation
+## 2 — Recurrence annotation
 
 Locate the previous findings file for the same surface:
 
@@ -52,7 +52,7 @@ Resolve the subject to its file path (skill →
 agent → the matching `agents/<name>.md`), then run the protocol's `git log --since`
 check, supplying `FINDINGS_DATE` (from the findings-file name) in place of the
 protocol's generic `DOSSIER_DATE` boundary — and, for recurring findings, again
-with `PRIOR_DATE` from Phase 1b, since a repeat whose subject changed between
+with `PRIOR_DATE` from Phase 2, since a repeat whose subject changed between
 sweeps may be a lens re-issuing a complaint against already-fixed text.
 Label any whose subject changed `⚠ possibly stale`.
 
