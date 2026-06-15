@@ -24,7 +24,7 @@ A markdown findings block:
 | High/Medium/Low | skills/name/SKILL.md:NN | description | fix description |
 ```
 
-Returns `_No issues found._` when no violations are detected. The caller includes
+Returns `*No issues found.*` when no violations are detected. The caller includes
 this block verbatim in the aggregated dossier.
 
 ---
