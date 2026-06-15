@@ -55,7 +55,19 @@ user. Common issues:
 
 - Missing required sections (add them)
 - Duplicate object IDs (reconcile from architect merge)
-- Untraced requirements (add REQ-NNN references to plan)
+- **"No REQ tokens found" in validator output** (the requirements file
+  has no `### REQ-NNN:` headings; traceability cannot be checked):
+  1. Open the requirements file (`$REQ`)
+  2. Scan for numbered items — lines starting with `1.`, `2.`, etc.,
+     or headings using `### 1.` / `### 2.` style
+  3. If numbered items exist: add `### REQ-NNN:` prefixes to each item
+     in sequence, save the file, then re-run the validator
+  4. If the requirements file is absent, empty, or has no numbered
+     items: escalate to the user — the requirements file needs
+     structural repair before traceability can be verified
+- Untraced requirements (REQ-NNN tokens exist in the requirements file
+  but are not referenced in the plan): add `REQ-NNN` mentions to the
+  relevant plan sections
 
 If an issue cannot be auto-fixed, present it to the user (escalate to the
 architects for refinement, or approve with documented risk) before claiming the
