@@ -95,7 +95,13 @@ skip that surface.
 
 ## Phase 3 — Read and Validate Update Artifacts
 
-Check for each expected artifact based on `UPDATE_CHOICE`:
+For each artifact gated by `UPDATE_CHOICE`:
+
+1. Check presence with `ls -la "${RUN_DIR}/updates/<artifact>.md"`
+2. For the **agent** artifact only: also run the catalog count check
+3. Validate each present artifact per `checkpoint-patterns.md`
+
+Artifact gates by `UPDATE_CHOICE`:
 
 - `UPDATE_CHOICE=skills` or `UPDATE_CHOICE=both` → check
   `"${RUN_DIR}/updates/skills-map.md"`

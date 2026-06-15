@@ -71,6 +71,8 @@ or re-run with --force to abandon it and start fresh.
 
 With `FORCE=true`, note the abandoned `run_id` in the new run's progress entry.
 
+If `status` is `done` (or `FORCE=true` was passed), proceed to Phase 1.
+
 ---
 
 ## Phase 1 — Generate Run Context
