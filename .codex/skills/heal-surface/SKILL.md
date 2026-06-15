@@ -29,7 +29,8 @@ Invocation pattern:
 - If the focus matches multiple files, choose the oldest modified match and say that multiple matches existed.
 - If the user provides only the surface selector, choose the oldest modified file on that surface.
 - For `repo-local skill`, resolve only active skills; do not select files under `archived/`.
-- Treat "oldest modified" as the file with the earliest filesystem modification time among regular files on the selected surface.
+- Treat "oldest modified" as the file with the earliest filesystem modification time among regular files on the selected surface, after excluding any `.DS_Store` files from consideration.
+- If the user wants to move a file to the bottom of the candidate list, they can `touch` it to refresh its filesystem modification time.
 - If the selected surface is `generated artifact`, review the generated file only to identify the likely authored source, generator script, or config that should change upstream. Do not recommend hand-editing the generated file.
 - If the selected surface is `script or config`, keep the pass small: prefer guardrails, stale-path cleanup, argument consistency, scope narrowing, or obvious contract fixes over behavior expansion.
 - If the selected surface is `script or config` and the target implies multi-file behavioral refactoring or runtime feature expansion, stop and report that it is outside the tiny self-heal scope.

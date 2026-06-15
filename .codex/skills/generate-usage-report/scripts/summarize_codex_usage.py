@@ -2,6 +2,7 @@
 import argparse
 import json
 import sqlite3
+import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,10 +39,22 @@ def load_history(history_path: Path) -> tuple[int, int, str | None, str | None]:
 
 def load_thread_summary(state_path: Path) -> tuple[int, Counter, Counter, Counter]:
     if not state_path.exists():
-        return 0, Counter(), Counter(), Counter()
+        raise FileNotFoundError(f"Codex state database not found: {state_path}")
 
     connection = sqlite3.connect(state_path)
     try:
+        required_columns = {"source", "model_provider", "cwd", "archived"}
+        table_columns = {
+            row[1]
+            for row in connection.execute("PRAGMA table_info(threads)").fetchall()
+        }
+        missing_columns = sorted(required_columns - table_columns)
+        if missing_columns:
+            missing_list = ", ".join(missing_columns)
+            raise RuntimeError(
+                "Codex state database is missing required threads columns: "
+                f"{missing_list}"
+            )
         rows = connection.execute(
             """
             SELECT source, model_provider, COALESCE(cwd, '')
@@ -68,6 +81,43 @@ def format_ts(ts: int | None) -> str | None:
     if ts is None:
         return None
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
+
+
+def format_source(source: str | None) -> str:
+    if not source:
+        return "unknown"
+
+    stripped = source.strip()
+    if stripped.startswith("{"):
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError:
+            pass
+        else:
+            subagent = parsed.get("subagent", {})
+            if isinstance(subagent, str):
+                return f"subagent:{subagent}"
+            if not isinstance(subagent, dict):
+                return stripped
+
+            thread_spawn = subagent.get("thread_spawn", {})
+            if not isinstance(thread_spawn, dict):
+                return "subagent"
+
+            nickname = thread_spawn.get("agent_nickname")
+            role = thread_spawn.get("agent_role")
+            if nickname and role:
+                return f"subagent:{nickname}/{role}"
+            if nickname:
+                return f"subagent:{nickname}"
+            if role:
+                return f"subagent:{role}"
+            if thread_spawn:
+                return "subagent"
+
+    if len(stripped) <= 80:
+        return stripped
+    return f"{stripped[:77]}..."
 
 
 def top_items(counter: Counter, limit: int = 3) -> list[str]:
@@ -102,7 +152,10 @@ def render_markdown(
     lines.append("### Pattern Hints")
     lines.append("")
     if source_counts:
-        lines.append(f"- Top thread sources: {', '.join(top_items(source_counts))}")
+        normalized_sources = Counter()
+        for source, count in source_counts.items():
+            normalized_sources[format_source(source)] += count
+        lines.append(f"- Top thread sources: {', '.join(top_items(normalized_sources))}")
     if provider_counts:
         lines.append(f"- Top model providers: {', '.join(top_items(provider_counts))}")
     if cwd_counts:
@@ -123,8 +176,12 @@ def main() -> int:
     parser.add_argument("--state", type=Path, required=True, help="Path to Codex state_5.sqlite")
     args = parser.parse_args()
 
-    history_sessions, history_messages, first_seen, last_seen = load_history(args.history)
-    thread_count, source_counts, provider_counts, cwd_counts = load_thread_summary(args.state)
+    try:
+        history_sessions, history_messages, first_seen, last_seen = load_history(args.history)
+        thread_count, source_counts, provider_counts, cwd_counts = load_thread_summary(args.state)
+    except (FileNotFoundError, RuntimeError, sqlite3.Error, json.JSONDecodeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     print(
         render_markdown(

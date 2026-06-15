@@ -3,6 +3,14 @@ import sys
 import json
 import subprocess
 import os
+from pathlib import Path
+
+
+def _is_generated_projection_change(path: str) -> bool:
+    return (
+        "profile-al-dev-shared/generated/agents/" in path
+        and Path(path).name != ".DS_Store"
+    )
 
 try:
     event = json.load(sys.stdin)
@@ -36,7 +44,7 @@ try:
 
     # Detect agent source changes and projection staleness
     agent_changes = [f for f in changed if "profile-al-dev-shared/agents/" in f and f.endswith(".md")]
-    generated_changes = [f for f in changed if "profile-al-dev-shared/generated/agents/" in f]
+    generated_changes = [f for f in changed if _is_generated_projection_change(f)]
 
     # Block if agents changed but projections were not regenerated
     if agent_changes and not generated_changes:
