@@ -67,7 +67,8 @@ user. Common issues:
      structural repair before traceability can be verified
 - Untraced requirements (REQ-NNN tokens exist in the requirements file
   but are not referenced in the plan): add `REQ-NNN` mentions to the
-  relevant plan sections
+  plan tasks whose description, acceptance criteria, or named BC objects
+  overlap with the requirement's subject text
 
 If an issue cannot be auto-fixed, present it to the user (escalate to the
 architects for refinement, or approve with documented risk) before claiming the
