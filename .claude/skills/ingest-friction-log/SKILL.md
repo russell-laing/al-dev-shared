@@ -90,7 +90,7 @@ curated session-analysis reports):
 Hold each result as `(surface, dimension, severity, slug, file_line, snippet, reason, fix)` where:
 
 - `file_line` is the exact `path/to/file:N` cited in the Recommended fix or Evidence
-- `snippet` is a short quoted excerpt from that location (required by the evidence-verification gate — `.claude/knowledge/report-input-gates.md:70-79`)
+- `snippet` is a short quoted excerpt from that location (collected here for downstream evidence verification by `/plugin-health-report`)
 - `reason` is a one-line explanation of why the snippet demonstrates the problem
 - `fix` is the recommended correction
 
@@ -105,7 +105,7 @@ find "$SOURCE" -maxdepth 1 -name '*-signals.json' -print0 \
   | sort | uniq -c | sort -rn | head -30
 ```
 
-Treat any tool-error category recurring across **≥2 distinct sessions** as one
+Treat any tool-error category recurring across **≥2 distinct sessions** (sessions from different calendar days) as one
 systemic finding (e.g. "Write-before-Read across N sessions"). Surface-classify
 it by where the erroring skill/tool lives; assign dimension `quality` and a
 severity reflecting how often it blocked work.
