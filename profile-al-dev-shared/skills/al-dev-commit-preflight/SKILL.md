@@ -429,6 +429,10 @@ mkdir -p .dev
 Write `.dev/commit-preflight.md` with this content (one `GROUP_N` block per
 confirmed commit from Phase 2.2; omit skipped groups entirely):
 
+> **Co-Authored-By prohibition:** Do NOT include a `Co-Authored-By`
+> trailer in any `message:` block. Strip any trailer the drafter agent
+> added before writing.
+
 ```text
 # Approved Commit Plan
 # Written by /al-dev-commit-preflight — consumed by /al-dev-commit-execute
@@ -439,7 +443,7 @@ APPROVED_GROUPS:
       - <file path>
       - <file path>
     message: |
-      <approved message verbatim, including Co-Authored-By trailer if present>
+      <approved message verbatim — do NOT include a Co-Authored-By trailer>
   GROUP_2:
     files:
       - ...
