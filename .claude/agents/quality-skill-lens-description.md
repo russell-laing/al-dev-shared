@@ -13,7 +13,18 @@ tools: ["Read"]
 
 ## Outputs
 
-Returns a findings block. See Output Format.
+A markdown findings block:
+
+```text
+## Description Drift Findings
+
+| Severity | File:Line | Finding | Suggested fix |
+|----------|-----------|---------|---------------|
+| High/Medium/Low | skills/name/SKILL.md:NN | description | fix description |
+```
+
+Returns `_No issues found._` when no violations are detected. The caller includes
+this block verbatim in the aggregated dossier.
 
 ---
 
@@ -24,6 +35,7 @@ skill name from the parent directory name.
 
 **Compare the `description` frontmatter and trigger phrases against the body.
 Check for:**
+
 - Key action verbs in the description ("Spawns", "Writes", "Reads", "Audits")
   that do not appear as actual instructions in the body
 - Trigger phrases describing use cases that are absent from the body steps
@@ -32,6 +44,7 @@ Check for:**
 - Description that promises an output file the body does not produce
 
 **Severity rules:**
+
 - Medium: missing use case, absent promised output, or related skill/agent
   mentioned in description but not used in body
 - Low: minor verb mismatch that does not affect behavior
@@ -43,9 +56,11 @@ Check for:**
 Return exactly this structure (no additional prose before or after the block):
 
 ### Description Drift Findings
+
 - **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Description Drift Findings
+
 _No issues found._

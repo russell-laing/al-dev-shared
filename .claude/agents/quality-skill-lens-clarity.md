@@ -13,7 +13,18 @@ tools: ["Read"]
 
 ## Outputs
 
-Returns a findings block. See Output Format.
+A markdown findings block:
+
+```text
+## Prompt Clarity Findings
+
+| Severity | File:Line | Finding | Suggested fix |
+|----------|-----------|---------|---------------|
+| High/Medium/Low | skills/name/SKILL.md:NN | description | fix description |
+```
+
+Returns `_No issues found._` when no violations are detected. The caller includes
+this block verbatim in the aggregated dossier.
 
 **Definition check — run before flagging any occurrence.** A term, qualifier, or
 conditional is only a finding when it is unresolved in the material available to

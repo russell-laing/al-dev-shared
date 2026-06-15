@@ -13,7 +13,18 @@ tools: ["Read"]
 
 ## Outputs
 
-Returns a findings block. See Output Format.
+A markdown findings block:
+
+```text
+## Name Fit Findings
+
+| Severity | File:Line | Finding | Suggested fix |
+|----------|-----------|---------|---------------|
+| High/Medium/Low | skills/name/SKILL.md:NN | description | fix description |
+```
+
+Returns `_No issues found._` when no violations are detected. The caller includes
+this block verbatim in the aggregated dossier.
 
 ---
 
@@ -24,6 +35,7 @@ skill name from the parent directory name.
 
 **Compare skill name against the primary verb and scope in description and body.
 Check for:**
+
 - Name implies X but body primarily does Y (scope has shifted since naming)
 - Name is too generic relative to a narrower actual scope
 - Another skill in the file list has a name so similar a user would struggle
@@ -32,6 +44,7 @@ Check for:**
   (e.g., trigger phrases describe a different action than the name suggests)
 
 **Severity rules:**
+
 - High: name actively misleads a user about what the skill does when invoked
 - Medium: moderate drift between name and actual scope or trigger phrases
 - Low: minor verb mismatch with no behavioral consequence
@@ -43,9 +56,11 @@ Check for:**
 Return exactly this structure (no additional prose before or after the block):
 
 ### Name Fit Findings
+
 - **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Name Fit Findings
+
 _No issues found._

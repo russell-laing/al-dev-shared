@@ -14,7 +14,18 @@ tools: ["Read"]
 
 ## Outputs
 
-Returns a findings block. See Output Format.
+A markdown findings block:
+
+```text
+## Naming Convention Findings
+
+| Severity | File:Line | Finding | Suggested fix |
+|----------|-----------|---------|---------------|
+| High/Medium/Low | path/to/file.md:NN | description | fix description |
+```
+
+Returns `_No issues found._` when no violations are detected. The caller includes
+this block verbatim in the aggregated dossier.
 
 ---
 
