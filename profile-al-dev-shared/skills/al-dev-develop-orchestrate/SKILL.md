@@ -468,6 +468,14 @@ This document is created at Phase 4 completion and includes:
 - Status: Ready for review team dispatch
 - References to scope document and checklist artifacts
 
+**Announce the transition to the user before dispatching** (so the user does not
+have to type the next skill name manually):
+
+```text
+All developers complete — running /al-dev-review-develop-preflight, then
+dispatching /al-dev-review-develop once prerequisites are confirmed.
+```
+
 **Next step:**
 
 1. Run `/al-dev-review-develop-preflight` and wait for the preflight output.
