@@ -18,7 +18,7 @@ Specialist teammate for AL expertise and pattern adherence. Spawned by the `al-d
 |-------|----------|-------------|
 | AL files to review | **Yes** | Via spawn prompt — list of file paths to read |
 | Spawn prompt | **Yes** | Task context: what was implemented, any open questions |
-| Findings from other reviewers | No | If included in dispatch, review for AL pattern implications |
+| Findings from other reviewers | No | Not passed — all reviewers are dispatched simultaneously, so cross-reviewer findings are unavailable at review time; if included in a future sequential dispatch, review for AL pattern implications |
 
 ## Outputs
 
