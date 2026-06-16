@@ -2,8 +2,7 @@
 name: design-skill-lens-surface-placement
 description: Apply the Surface Placement lens to plugin skills — flags skills that reference internal repo paths, exist to maintain/audit the plugin itself, and spawn no agents, marking them as candidates to Move into the repo-local maintainer surface. Returns a Surface Placement findings block for Move suggestions.
 model: haiku
-tools:
-  - Read
+tools: ["Read"]
 ---
 
 ## Inputs
@@ -27,6 +26,8 @@ dispatch it for files already in the maintainer surface — every signal below
 is trivially true there, and the Move recommendation would point at the
 file's current location. If the file list is from the maintainer surface,
 return the empty findings block (`_No issues found._`) instead of scoring.
+
+Read every file path provided in `file_list` before scoring signals.
 
 For each skill in `file_list`, score these three signals:
 
