@@ -152,6 +152,16 @@ Spawn 2–3 **al-dev-solution-architect** agents with DIFFERENT
 starting approaches to prevent convergence. Assign each
 a distinct approach derived above.
 
+**Progress signal (required):** immediately after dispatching the architect
+agents and before waiting on their results, emit a one-line status message so
+the parallel wait does not read as a stall, e.g.:
+
+```text
+Architects running: <N> agents spawned (<approach labels>) — waiting for results...
+```
+
+Emit the equivalent signal again when the Phase 3 debate round is dispatched.
+
 If `architect_model = sonnet` (set during preflight), include
 `model: sonnet` as a parameter in each Agent tool invocation.
 If `architect_model = opus`, omit the model parameter — the
