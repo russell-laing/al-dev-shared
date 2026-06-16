@@ -3,8 +3,8 @@ name: audit-knowledge-quality
 description: >-
   Audit knowledge files for stub sections and structural issues. Dispatches
   parallel agents for large audit scopes (4+ files). It always writes
-  HIGH-severity fix-guidance blocks to the report and optionally
-  optionally re-presents the HIGH-severity fix guidance interactively when the user opts in after reporting.
+  HIGH-severity fix-guidance blocks to the report and optionally re-presents
+  the HIGH-severity fix guidance interactively when the user opts in after reporting.
 argument-hint: "[--path <directory>] [--verbose]"
 workflow:
   stage: derive
