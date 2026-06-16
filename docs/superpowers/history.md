@@ -192,3 +192,4 @@ Current source of truth: active implementation guidance lives in the current sha
 2026-06-15 | tooling quality backlog closure (3 tasks) | implemented; rows closed: [#814, #816, #831, #845]
 2026-06-16 | plugin map clarity fixes (13 tasks) | implemented; rows closed: [#859, #861, #862, #864, #865, #866, #867, #868, #869, #870, #871, #872, #874]
 2026-06-16 | plugin map clarity renames (5 tasks) | implemented; rows closed: [#863, #858, #860, #877, #875]
+2026-06-17 | plugin friction follow-ups (7 tasks) | implemented; rows closed: [#922, #923, #924, #925, #927, #928, #929]
