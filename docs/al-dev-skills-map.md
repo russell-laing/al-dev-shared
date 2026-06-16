@@ -43,13 +43,13 @@ flowchart TD
     skill_al_dev_commit -.-> skill_al_dev_document
     skill_al_dev_commit -.-> skill_al_dev_handoff
     skill_al_dev_commit -.-> skill_al_dev_release_notes
-    skill_al_dev_explore -.-> skill_al_dev_plan
+    skill_al_dev_explore -.-> |explore-findings.md| skill_al_dev_plan
     skill_al_dev_fix --> skill_al_dev_commit
-    skill_al_dev_interview -.-> skill_al_dev_plan
+    skill_al_dev_interview -.-> |interview-requirements.md| skill_al_dev_plan
     skill_al_dev_investigate --> skill_al_dev_plan
-    skill_al_dev_perf -.-> skill_al_dev_plan
+    skill_al_dev_perf -.-> |perf-analysis.md| skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_review_develop
-    skill_al_dev_plan_preflight -.-> skill_al_dev_plan
+    skill_al_dev_plan_preflight -.-> |preflight-context.md| skill_al_dev_plan
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_ticket --> skill_al_dev_support_reply
     skill_commit_recover --> skill_al_dev_commit

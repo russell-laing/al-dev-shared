@@ -85,18 +85,18 @@ WORKFLOW_ORDER: dict[str, list[str]] = {
     ],
 }
 
-LIFECYCLE_BRANCHES: tuple[tuple[str, str, str], ...] = (
-    ("al-dev-explore", "al-dev-plan", "optional"),
-    ("al-dev-interview", "al-dev-plan", "optional"),
-    ("al-dev-perf", "al-dev-plan", "optional"),
-    ("al-dev-plan-preflight", "al-dev-plan", "optional"),
-    ("al-dev-develop", "al-dev-lint", "optional"),
-    ("al-dev-commit", "al-dev-release-notes", "optional"),
-    ("al-dev-commit", "al-dev-handoff", "optional"),
-    ("al-dev-commit", "al-dev-document", "optional"),
-    ("al-dev-commit", "al-dev-consolidate", "optional"),
-    ("al-dev-commit", "verify-commits", "default"),
-    ("commit-recover", "al-dev-commit", "default"),
+LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
+    ("al-dev-explore", "al-dev-plan", "optional", "explore-findings.md"),
+    ("al-dev-interview", "al-dev-plan", "optional", "interview-requirements.md"),
+    ("al-dev-perf", "al-dev-plan", "optional", "perf-analysis.md"),
+    ("al-dev-plan-preflight", "al-dev-plan", "optional", "preflight-context.md"),
+    ("al-dev-develop", "al-dev-lint", "optional", None),
+    ("al-dev-commit", "al-dev-release-notes", "optional", None),
+    ("al-dev-commit", "al-dev-handoff", "optional", None),
+    ("al-dev-commit", "al-dev-document", "optional", None),
+    ("al-dev-commit", "al-dev-consolidate", "optional", None),
+    ("al-dev-commit", "verify-commits", "default", None),
+    ("commit-recover", "al-dev-commit", "default", None),
 )
 
 SKILL_DRILLDOWN_PREFIX = "skill-drilldown-"
@@ -660,12 +660,16 @@ def render_skill_lifecycle(inv: Inventory) -> str:
         for left, right in zip(visible, visible[1:]):
             edge_lines.append(f"    {_typed_node_id('skill', left)} --> {_typed_node_id('skill', right)}")
 
-    for left, right, style in LIFECYCLE_BRANCHES:
+    for left, right, style, label in LIFECYCLE_BRANCHES:
         if left not in available_skills or right not in available_skills:
             continue
         lifecycle_nodes.update((left, right))
         arrow = "-.->" if style == "optional" else "-->"
-        edge_lines.append(f"    {_typed_node_id('skill', left)} {arrow} {_typed_node_id('skill', right)}")
+        edge = f"    {_typed_node_id('skill', left)} {arrow}"
+        if label:
+            edge += f" |{label}|"
+        edge += f" {_typed_node_id('skill', right)}"
+        edge_lines.append(edge)
 
     if not edge_lines:
         for left, right in skill_skill_edges:
