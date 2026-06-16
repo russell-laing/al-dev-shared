@@ -238,17 +238,23 @@ When docs-writer completes:
 ```
 
 **MANDATORY before presenting to user** — spot-check three sections and output
-this block (do NOT present to user until all three rows are filled in):
+this block (do NOT present to user until all three rows are filled in). When the
+document contains one or more Mermaid/diagram blocks, add one Diagram row per
+diagram as well:
 
 ```text
 VERIFICATION
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
 - Section: <name> | Claim: <field/method/object ID> | Source: <file:line> | Match: yes/no
+- Diagram (one row per diagram present): <diagram title> | Claim: <conditional label / node name / edge / branch> | Source: <file:line> | Match: yes/no
 ```
 
 If any row shows `no`, send the specific mismatch back to docs-writer before
-presenting. Skipping this block is visible to the user — do not omit it.
+presenting. When a Diagram row shows `no`, also scan every other diagram in the
+document for the **same error class** before re-presenting — same error class
+means: a wrong conditional/edge label, a stale node name, or a missing branch.
+Skipping this block is visible to the user — do not omit it.
 
 ### Step 4: Request Refinements (if needed)
 
