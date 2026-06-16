@@ -83,6 +83,22 @@ If an issue cannot be auto-fixed, present it to the user (escalate to the
 architects for refinement, or approve with documented risk) before claiming the
 plan is ready.
 
+## Phase 2.5: Scenario-Coverage Probe
+
+The validator checks structural completeness, not scenario completeness. Before
+the approval gate, confirm the plan's tasks cover the requirement's main
+scenarios:
+
+1. From the requirements file `$REQ` (located in Phase 2), extract the top 2–3
+   trigger scenarios — the numbered items (`1.`, `2.`, …) or `### REQ-NNN:`
+   headings that describe what the user must be able to do.
+2. For each extracted scenario, find a plan task whose title, description, or
+   named BC objects implement it (match on subject text, not exact wording).
+3. If every scenario maps to a named task, note "Scenario coverage: complete"
+   and continue to Phase 3. If any scenario has no task, surface the gap
+   explicitly in the Phase 3 approval summary under a "Scenario coverage gaps"
+   heading **before** the USER_GATE, so the user weighs it before approving.
+
 ## Phase 3: Present to User for Approval
 
 Present your synthesized plan:
