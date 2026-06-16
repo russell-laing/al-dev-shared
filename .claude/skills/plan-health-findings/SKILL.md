@@ -18,7 +18,7 @@ description: >-
   changes", "plan the suggestions", "create a plan for plugin changes",
   "implement the dossier", "act on health findings", "implement agent
   findings", "plan agent changes", "implement the health audit".
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [optional: --agents | --skills] [optional: trim | remodel | split | inline | align | connect | merge | promote | move | extend | all]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [optional: --agents | --skills] [optional: trim|remodel|split|inline|align|connect|merge|promote|move|extend] [or: all]"
 workflow:
   stage: decide
   invoked-by: user
