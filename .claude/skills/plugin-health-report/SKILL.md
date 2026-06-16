@@ -74,6 +74,8 @@ Validate that the findings file surface matches the selected surface and that
 the concrete `dimensions:` list matches the dispatched lenses present in the
 artifact.
 
+Complexity Outliers are findings from the `design-skill-lens-complexity` lens agent.
+
 **Complexity Outliers exception:** These findings carry an extra `verdict=` field.
 See the "Complexity Outliers — Verdict Field" section in
 `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` for the field definition
