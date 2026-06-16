@@ -25,6 +25,7 @@ flowchart LR
         skill_al_dev_plan[al-dev-plan]
         skill_al_dev_plan_final_review[al-dev-plan-final-review]
         skill_al_dev_plan_preflight[al-dev-plan-preflight]
+        skill_al_dev_plan_with_critics[al-dev-plan-with-critics]
         skill_al_dev_release_notes[al-dev-release-notes]
         skill_al_dev_review_develop[al-dev-review-develop]
         skill_al_dev_review_develop_preflight[al-dev-review-develop-preflight]
@@ -67,6 +68,7 @@ flowchart LR
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_plan_preflight
     skill_al_dev_plan_final_review --> skill_al_dev_plan
+    skill_al_dev_plan_final_review --> skill_al_dev_plan_with_critics
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_review_develop --> skill_al_dev_review_develop_preflight
     skill_al_dev_review_develop_preflight --> skill_al_dev_develop_orchestrate
@@ -111,6 +113,7 @@ flowchart LR
     class skill_al_dev_plan skillNode
     class skill_al_dev_plan_final_review skillNode
     class skill_al_dev_plan_preflight skillNode
+    class skill_al_dev_plan_with_critics skillNode
     class skill_al_dev_release_notes skillNode
     class skill_al_dev_review_develop skillNode
     class skill_al_dev_review_develop_preflight skillNode

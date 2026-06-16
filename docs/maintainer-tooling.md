@@ -201,7 +201,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
 | `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
 | `/sync-documentation-maps-write` | `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `docs/maintainer-tooling/`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
-| `/ingest-friction-log` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/friction-ingest-log.md` | `/plugin-health-report` |
+| `/ingest-friction-log` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md` | `/plugin-health-report` |
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
 | `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
@@ -228,7 +228,6 @@ against the live skill body before treating it as work.
 | Orphaned artifact | `.dev/implement-health-plan-progress.md` | produced by /implement-health-plan; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `docs/health/friction-ingest-log.md` | produced by /ingest-friction-log; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /projection-sync, /sync-documentation-maps-write; consumed by no skill |
@@ -239,21 +238,20 @@ against the live skill body before treating it as work.
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-16 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-16 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-17 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-16 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-16 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-17 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-17 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-17 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-17 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-17 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-14 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-13 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/health/friction-ingest-log.md` | latest 2026-06-16 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

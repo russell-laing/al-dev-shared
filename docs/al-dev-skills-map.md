@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-16
+**Last updated:** 2026-06-17
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -366,17 +366,20 @@ flowchart LR
     Phase2["Phase 2"]
     Phase3["Phase 3"]
     skill_al_dev_plan[al-dev-plan]
+    skill_al_dev_plan_with_critics[al-dev-plan-with-critics]
 
     skill_al_dev_plan_final_review --> Phase1
     skill_al_dev_plan_final_review --> Phase2
     skill_al_dev_plan_final_review --> Phase3
     skill_al_dev_plan_final_review -.-> skill_al_dev_plan
+    skill_al_dev_plan_final_review -.-> skill_al_dev_plan_with_critics
 
     class skill_al_dev_plan_final_review skillNode
     class Phase1 phaseNode
     class Phase2 phaseNode
     class Phase3 phaseNode
     class skill_al_dev_plan skillNode
+    class skill_al_dev_plan_with_critics skillNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-plan-final-review -->
 
@@ -726,7 +729,7 @@ Agents spawned: `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-co
 
 ### /al-dev-commit-preflight
 
-Phases 0, 1, 2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
+Phases 0, 1, 2, 3 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-preflight -->
 ```mermaid

@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-15
+**Last updated:** 2026-06-16
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
@@ -16,7 +16,7 @@
 | al-dev-al-pattern-reviewer | haiku | Read | `/al-dev-review-develop` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
-| al-dev-commit-group-drafter | sonnet | (none) | `/al-dev-commit-preflight` |
+| al-dev-commit-group-drafter | haiku | (none) | `/al-dev-commit-preflight` |
 | al-dev-commit-hook-classifier | haiku | Read | `/al-dev-commit-execute` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
@@ -91,7 +91,7 @@
 ### al-dev-commit-group-drafter
 
 **Description:** Git commit group drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
-**Model:** sonnet
+**Model:** haiku
 **Tools:** (none)
 **Spawned by:** /al-dev-commit-preflight
 

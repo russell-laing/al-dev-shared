@@ -151,6 +151,7 @@ flowchart LR
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_plan_preflight
     skill_al_dev_plan_final_review --> skill_al_dev_plan
+    skill_al_dev_plan_final_review --> skill_al_dev_plan_with_critics
     skill_al_dev_review_develop --> skill_al_dev_commit
     skill_al_dev_review_develop --> skill_al_dev_review_develop_preflight
     skill_al_dev_review_develop_preflight --> skill_al_dev_develop_orchestrate
