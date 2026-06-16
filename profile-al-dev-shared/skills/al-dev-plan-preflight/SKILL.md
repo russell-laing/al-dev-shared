@@ -156,14 +156,15 @@ Check whether $ARGUMENTS contains a meaningful feature description.
 1. **Read input from $ARGUMENTS** — Extract the user's feature request and preliminary scope. If missing, gate requires clarification.
 2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` and continue without it. If requirements are unclear/complex, suggest `/interview`.
 3. **Gather symbol evidence** — use the strongest available AL symbol evidence before emitting context: prefer `AL LSP` semantic navigation (go-to-definition, find-references, document symbols, hover/type) when the active harness exposes it; otherwise AL MCP via `al-mcp-server` (`al_search_objects`, `al_get_object_definition`, `al_search_object_members`); otherwise tightly scoped `rg` labeled as `text search`. Include findings and evidence source (`AL LSP`, `AL MCP`, `text search`, or `unverified`) in the `PREFLIGHT_CONTEXT` `user_context`. If no provider/result is available, record general AL knowledge unless a required symbol is `unverified`.
-4. **Load performance and exploration findings** — if available, integrate findings from `/al-dev-explore` or `/al-dev-perf` pre-planning phases:
+4. **Load performance and exploration findings** — if available, integrate findings from `/al-dev-explore`, `/al-dev-perf`, or `/al-dev-investigate` pre-planning phases:
 
    ```bash
    PERF=$(ls .dev/*-al-dev-perf-perf-analysis.md 2>/dev/null | sort | tail -1)
    EXPLORE=$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)
+   INVESTIGATE=$(ls .dev/*-al-dev-investigate-findings.md 2>/dev/null | sort | tail -1)
    ```
 
-   If a perf file is found, read CRITICAL/HIGH findings and record them as **"Performance constraints from prior analysis:"** in `user_context`. If an explore file is found, read the findings and synthesized recommendations and record them as **"Codebase exploration findings from prior investigation:"** in `user_context`. If neither exists, skip silently.
+   If a perf file is found, read CRITICAL/HIGH findings and record them as **"Performance constraints from prior analysis:"** in `user_context`. If an explore file is found, read the findings and synthesized recommendations and record them as **"Codebase exploration findings from prior investigation:"** in `user_context`. If an investigate file is found, read the root-cause findings and record them as **"Root cause investigation findings from prior investigation:"** in `user_context`. If none of the three exist, skip silently.
 
 ## Phase 1.5: Verify External Claims
 
