@@ -208,3 +208,15 @@ Quick reference:
   /al-dev-explore <q>   -- fast codebase exploration
   /al-dev-help          -- this skill
 ```
+
+---
+
+### When a session goes wrong
+
+- **A skill run seems stuck or is heading the wrong way:** stop the current run
+  and re-invoke the skill. Multi-phase skills checkpoint to `.dev/` after each
+  phase and offer a resume option on the next run, so progress is not lost.
+- **A skill name is not recognised:** run `/al-dev-help` with no argument to list
+  the available skills and their entry points rather than guessing a name.
+- **You are unsure which step comes next:** run `/al-dev-help` with no argument
+  (Context Mode) to read the current `.dev/` state and get a recommended next step.
