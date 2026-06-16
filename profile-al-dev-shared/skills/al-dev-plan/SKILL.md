@@ -93,6 +93,10 @@ Offer resume via USER_GATE:
 - **Restart** → delete `.dev/preflight-context.md`, then dispatch
   preflight fresh (Mode C).
 
+> **Tip:** on a fresh invocation you can skip straight to the architect debate
+> with `/al-dev-plan --resume-from=phase2` (Mode A), provided
+> `.dev/preflight-context.md` is current.
+
 **Mode C — no `--resume-from` and no context file:**
 Dispatch `/al-dev-plan-preflight` with the same $ARGUMENTS. That
 skill runs the full context-gathering flow (resume check, complexity
