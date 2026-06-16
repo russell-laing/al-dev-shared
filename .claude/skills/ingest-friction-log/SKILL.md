@@ -23,7 +23,6 @@ workflow:
     - ~/friction-log/<session>-signals.json
   outputs:
     - docs/health/<date>-<surface>-friction-findings.md
-    - docs/health/friction-ingest-log.md
   next:
     - plugin-health-report
 ---
