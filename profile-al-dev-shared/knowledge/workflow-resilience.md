@@ -13,6 +13,16 @@ Ensure `.dev/` exists before writing:
 mkdir -p .dev
 ```
 
+**Write guard (apply to every `.dev/` write):**
+
+- **New file** (path does not yet exist): write directly — no prior Read needed.
+- **Existing file** (path may already exist): before overwriting, run
+  `ls -la <path>`; if it exists, Read it first. Overwriting a file that was not
+  Read in this session fails with "File has not been read yet". This is a
+  *pre-write Read-if-exists* check.
+- **After every write** (*post-write* check): confirm with `ls -la <path>`, and
+  `wc -l <path>` when the content matters, before reporting the step complete.
+
 After each named phase boundary, overwrite
 `.dev/progress.md` with:
 

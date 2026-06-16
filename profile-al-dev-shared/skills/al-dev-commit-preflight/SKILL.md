@@ -426,6 +426,11 @@ Mixed AL/DOCX check completes (or is skipped), persist the approved plan to disk
 mkdir -p .dev
 ```
 
+> **Write guard (pre-write):** if `.dev/commit-preflight.md` already exists from
+> a prior run, Read it before overwriting (an unread existing file fails the
+> write). The post-write existence check is already enforced below. See
+> `knowledge/workflow-resilience.md` Write Protocol.
+
 Write `.dev/commit-preflight.md` with this content (one `GROUP_N` block per
 confirmed commit from Phase 2.2; omit skipped groups entirely):
 

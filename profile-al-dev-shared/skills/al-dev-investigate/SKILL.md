@@ -225,6 +225,11 @@ Read both agents' results and write
 regression timeline values captured in Step 2 when populating
 the findings template.
 
+> **Write guard:** if a findings file already exists at this path from a prior
+> run, Read it before overwriting (an unread existing file fails the write); a
+> brand-new file needs no prior Read. After writing, confirm with `ls -la` and
+> `wc -l`. See `knowledge/workflow-resilience.md` Write Protocol.
+>
 > **Reconciliation Gate (required if Root Cause is labelled
 > "pre-existing" or "environmental"):**
 >
