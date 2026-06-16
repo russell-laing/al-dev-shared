@@ -19,6 +19,7 @@ Validation and user approval gate for the solution plan written by /al-dev-plan.
 | | |
 |---|---|
 | **Required inputs** | `.dev/*-al-dev-plan-solution-plan.md` (written by /al-dev-plan Phase 5) |
+| **Optional inputs** | `.dev/plan-critique-*.md` (written by /al-dev-plan-with-critics, when present) — critic findings to surface at the approval gate |
 | **Durable outputs** | None — user approval is the terminal output |
 | **Resume read order** | Locate latest `.dev/*-al-dev-plan-solution-plan.md` |
 | **Success evidence** | User selects Approve before this skill exits |
@@ -32,6 +33,14 @@ ls -t .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | head -1
 If no solution plan found: stop and report "No solution plan found in .dev/. Run /al-dev-plan first."
 
 Store the path as `PLAN_FILE`.
+
+Also locate the latest critic findings, if present:
+
+```bash
+CRITIQUE=$(ls -t .dev/plan-critique-*.md 2>/dev/null | head -1)
+```
+
+If `$CRITIQUE` is non-empty, read it and carry its findings into the approval summary (Phase 3). If absent, continue silently — critic findings are optional (the plan may not have run /al-dev-plan-with-critics).
 
 ## Phase 2: Validate the Plan
 
@@ -95,6 +104,8 @@ Selected Approach [X] because [key rationale].
 
 Ready to proceed to development?
 ```
+
+- When a plan-critique file was loaded in Phase 1, list its open critic findings under a "Critic findings" heading in the approval summary so the user weighs them before approving.
 
 USER_GATE — ask the user with options:
 
