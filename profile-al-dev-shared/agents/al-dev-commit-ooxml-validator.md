@@ -3,7 +3,7 @@ name: al-dev-commit-ooxml-validator
 description: >-
   OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx,
   .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES.
-  Dispatched sequentially by al-dev-commit (Phase 3.2) after lint preflight.
+  Dispatched in parallel with lint preflight by al-dev-commit (Phase 3.2).
   Read-only: never modifies files.
 model: haiku
 tools: ["Bash"]

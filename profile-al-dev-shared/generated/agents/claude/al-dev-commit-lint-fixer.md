@@ -1,5 +1,5 @@
 ---
-description: "Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by al-dev-commit (Phase 3.1) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files."
+description: "Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched in parallel with OOXML validation by al-dev-commit (Phase 3.1). Applies fixes via Bash only; never uses Write or Edit on source files."
 tools: ["Bash", "Read"]
 ---
 

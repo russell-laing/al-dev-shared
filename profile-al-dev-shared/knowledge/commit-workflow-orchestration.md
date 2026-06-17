@@ -40,13 +40,11 @@ Phase 1.3  al-dev-commit-group-drafter
 Phase 2  Confirmation (USER_GATE — orchestrator only)
   │  Output: approved plan (groups, files, messages)
   ▼
-Phase 3.1  al-dev-commit-lint-fixer
-  │  Input: approved plan from Phase 2
-  │  Output: LINT_FIXES
-  ▼
-Phase 3.2  al-dev-commit-ooxml-validator
-  │  Input: approved plan from Phase 2
-  │  Output: OOXML_FAILURES
+Phase 3  Preflight (parallel dispatch — await both)
+  │
+  ├─ 3.1  al-dev-commit-lint-fixer        Input: approved plan from Phase 2   Output: LINT_FIXES
+  └─ 3.2  al-dev-commit-ooxml-validator   Input: approved plan from Phase 2   Output: OOXML_FAILURES
+  │  (join: both 3.1 and 3.2 complete; disjoint state, no race)
   ▼
 Phase 4.1  al-dev-commit-executor
   │  Input: approved plan from Phase 2
@@ -118,6 +116,11 @@ orchestrator pastes these verbatim — never summarizes or transforms them:
 | `al-dev-commit-ooxml-validator` (3.2) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-executor` (4.1) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-hook-fixer` (4.3) | `.dev/hook-failures.json`, `.dev/commits.json`; `HOOK_FAILURES` inline fallback |
+
+Phases 3.1 and 3.2 are dispatched **in parallel** and joined before Phase 4.1.
+Both receive `APPROVED_PLAN` from Phase 2 and produce independent outputs
+(`LINT_FIXES` / `OOXML_FAILURES`). Parallelism is safe only while the validator
+sources its file list from `APPROVED_PLAN` and never reads the git index.
 
 ## Per-Agent Verification Checklist
 

@@ -27,6 +27,7 @@ passes only `PROJECT_CONTEXT` and `FD_TICKET`.
 | REPO | No | Inferred from the working directory; not passed as a structured input by /al-dev-commit |
 | PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | Freshdesk ticket number |
+| DIFF_MODE | string (optional) | `full` (default) or `summary`. In `summary` mode the analyzer size-gates per-file diffs to minimise token cost; the MANIFESTS schema is identical in both modes. |
 | Staged git index | **Yes** | Read via `git diff --cached` bash commands within the agent — not pre-structured in the dispatch prompt |
 
 ## Outputs
@@ -56,11 +57,40 @@ If the Step 1 output is empty (no staged files match the filter), Steps 2–5 pr
 
 ### Step 2 — Read each staged diff
 
-For every staged file:
+First obtain a cheap per-file size gate (no hunk content):
 
 ```bash
-git diff --cached -- <file>
+git diff --cached --stat
 ```
+
+For every staged file, choose the read command:
+
+- **`DIFF_MODE: full` (default), OR the file's `--stat` change count is small
+  (≤ 200 changed lines):** read the full diff —
+
+  ```bash
+  git diff --cached -- <file>
+  ```
+
+- **`DIFF_MODE: summary` AND the file is large (> 200 changed lines per
+  `--stat`):** read a minimal-context diff to drop surrounding hunk lines —
+
+  ```bash
+  git diff --cached --unified=0 -- <file>
+  ```
+
+  For a large `.al` file whose object declaration line
+  (`table|page|codeunit|report|… <id> "<name>"`) is NOT present in the
+  `--unified=0` output (object id lives on an unchanged line), recover only the
+  header line — never the whole file into context:
+
+  ```bash
+  git show ":<file>" | grep -m1 -E '^(table|tableextension|page|pageextension|codeunit|report|reportextension|query|xmlport|enum|enumextension|permissionset|interface)[[:space:]]+[0-9]+'
+  ```
+
+The `--stat` output is a sizing gate only — object IDs, field names, and
+procedure names are always extracted from the diff/header lines via the patterns
+in `knowledge/commit-analysis-patterns.md`, never from `--stat`.
 
 ### Step 3 — Build change manifest (AL files only)
 

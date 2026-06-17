@@ -56,7 +56,13 @@ Proceed to Phase 3.
 
 ## Phase 3 — Preflight
 
-Run preflight sequentially: lint fixes first, then OOXML validation.
+Run preflight as two **parallel** agent dispatches — 3.1 (`al-dev-commit-lint-fixer`)
+and 3.2 (`al-dev-commit-ooxml-validator`) — then **await both** before Phase 4.1.
+The agents operate on disjoint state (lint-fixer excludes OOXML files and is the
+only Phase-3 agent that stages via `git add`; the validator sources its file list
+from `APPROVED_PLAN` and never reads the git index), so concurrent execution has
+no race. **Do not** add `git diff --cached` reads to the validator — that would
+reintroduce `.git/index` contention with the lint-fixer's `git add`.
 
 ### 3.1 — Dispatch Lint Preflight Agent
 
@@ -113,6 +119,9 @@ Resolve these files (save in Microsoft Word, not via script), re-stage, and re-r
 ```
 
 Stop if any OOXML failures — do not proceed to Phase 4.
+
+**Barrier:** await both 3.1 (`LINT_FIXES`) and 3.2 (`OOXML_FAILURES`) before
+proceeding to Phase 4.1. Both outputs must be in hand; neither depends on the other.
 
 ---
 
