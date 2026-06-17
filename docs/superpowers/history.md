@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-17
+
+### Commit Workflow Performance Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-17-plugin-map-commit-workflow-perf.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-17 | commit-workflow performance optimizations | implemented; rows closed: [#936, #935]
+
 ## 2026-06-14
 
 ### ingest-friction-log New Feature Implementation Plan
