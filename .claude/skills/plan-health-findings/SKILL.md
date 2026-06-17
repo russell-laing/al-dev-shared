@@ -101,6 +101,21 @@ this skill, adopt its `next_inputs` as the dossier/ledger inputs. If it names a
 different loop step, tell the user the pointer expects `<that command>` and ask
 whether to continue here anyway. If the file is absent, proceed normally.
 
+Also read `docs/superpowers/history.md` if it exists. Scan the last five
+lines matching the format `<date> | <topic> | implemented; rows closed: [...]`
+(the tail-appended history entries; not the older `- Summary:` bullet lines).
+For a single-dimension run, warn if any matched line's topic contains both the
+current surface keyword (e.g. `tooling` or `plugin`) and the current dimension
+keyword (e.g. `design` or `quality`). For a `--dimension all` run, warn if the
+topic contains the current surface keyword and any concrete dimension keyword
+(`design`, `quality`, or `naming`). Emit:
+
+> Note: `<surface>/<dimension>` findings were recently implemented on `<date>`
+> (plan: `<topic>`). Verify that `docs/health/dispositions.md` reflects those
+> closures before planning again.
+
+This is an informational check — do not block planning.
+
 ---
 
 ## Phase 1: Extract Findings
