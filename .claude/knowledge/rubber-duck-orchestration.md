@@ -29,6 +29,36 @@ itself during Phase 2.
 Sequential inline rubber-ducking is the fallback **only** when
 `superpowers:dispatching-parallel-agents` is genuinely unavailable.
 
+## Evidence Mode
+
+The `evidence` mode is dispatched by `/plugin-health-report` Phase 2 to verify
+that each finding's cited `file:line` snippet still exists at the named location.
+It is distinct from the rubber-duck mode above — different field set, different
+output contract, different downstream consumer.
+
+**Caller:** `plugin-health-report/SKILL.md` §1c evidence verification
+**Reference:** `.claude/knowledge/report-input-gates.md` §1c
+
+### Dispatch fields
+
+| Field | Value |
+|---|---|
+| `mode` | `evidence` |
+| `findings` | each finding as `object — file:line — "quoted snippet" — claimed problem` |
+| `subject_path` | absolute path to the subject file |
+| `findings_date` | omit — staleness is handled separately by the `git log` spot-check |
+
+Batch findings that share a subject file into a single agent call (same batching
+rule as rubber-duck mode).
+
+### Output contract
+
+Each agent returns a `verified | dropped: <reason>` line per finding. The parent
+(`plugin-health-report`) collects this:
+
+- `verified` → finding enters the dossier normally.
+- `dropped: <reason>` → exclude from all counts; list under "Dropped (unverified)".
+
 ## Independence and modify sets
 
 Independence analysis applies only when the accepted worklist contains a
