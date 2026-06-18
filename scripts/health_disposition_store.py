@@ -151,6 +151,14 @@ _WILDCARD = "unknown"  # legacy rows carry surface/dimension == "unknown"
 _KEBAB_RE = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)+")
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _PREFIX_RE = re.compile(r"^[a-z][a-z0-9 /-]*:\s*")  # leading "Bloat:" / "clarity:" label
+# Leading file:line citation that findings-file observations open with, e.g.
+# `.claude/agents/foo.md:82` or skills/bar/SKILL.md:10-20 — stripped before
+# tokenizing so path components (dir names, extensions) do not flood the token
+# set and dilute the Jaccard overlap against terse ledger paraphrases (#974).
+# Requires a file extension so ordinary "Label:" prefixes are left to _PREFIX_RE.
+_PATH_CITATION_RE = re.compile(
+    r"^`?[a-z0-9_./-]+\.[a-z0-9]+(?::\d+(?:-\d+)?)?`?\s*(?:[—–-]+\s*)?"
+)
 _STOPWORDS = {
     "the", "a", "an", "of", "to", "in", "is", "it", "that", "this",
     "and", "or", "for", "with", "but", "not", "no", "are", "was", "its",
@@ -217,7 +225,9 @@ def _finding_type(text: str) -> str:
 
 
 def _finding_tokens(text: str) -> set[str]:
-    body = _PREFIX_RE.sub("", normalize_finding(text).lower())
+    body = normalize_finding(text).lower()
+    body = _PATH_CITATION_RE.sub("", body)  # drop a leading file:line citation (#974)
+    body = _PREFIX_RE.sub("", body)         # then drop a leading "Bloat:"/"clarity:" label
     return {t for t in _WORD_RE.findall(body) if len(t) >= 3 and t not in _STOPWORDS}
 
 
