@@ -122,6 +122,7 @@ flowchart LR
         artifact_explore_findings_md[.dev/explore-findings.md]
         artifact_file_sizes_json[.dev/file-sizes.json]
         artifact_findings_file_md[.dev/findings-file.md]
+        artifact_format_sweep_progress_md[.dev/format-sweep-progress.md]
         artifact_hook_failures_json[.dev/hook-failures.json]
         artifact_investigate_errors_log[.dev/investigate-errors.log]
         artifact_learnings_md[.dev/learnings.md]
@@ -190,6 +191,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
     skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
@@ -210,6 +212,7 @@ flowchart LR
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
+    skill_al_dev_investigate --> knowledge_workflow_resilience_md
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
@@ -274,6 +277,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> artifact_file_sizes_json
     skill_al_dev_develop_orchestrate --> artifact_progress_md
     skill_al_dev_develop_orchestrate --> artifact_project_context_md
+    skill_al_dev_document --> artifact_format_sweep_progress_md
     skill_al_dev_explore --> artifact_2026_05_19_al_dev_explore_findings_md
     skill_al_dev_explore --> artifact_project_context_md
     skill_al_dev_fix --> artifact_test_plan_md
@@ -414,6 +418,7 @@ flowchart LR
     class artifact_explore_findings_md artifactNode
     class artifact_file_sizes_json artifactNode
     class artifact_findings_file_md artifactNode
+    class artifact_format_sweep_progress_md artifactNode
     class artifact_hook_failures_json artifactNode
     class artifact_investigate_errors_log artifactNode
     class artifact_learnings_md artifactNode

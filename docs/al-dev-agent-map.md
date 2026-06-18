@@ -1,6 +1,6 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-16
+**Last updated:** 2026-06-18
 
 <!-- BEGIN GENERATED: agent-coverage -->
 **Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
@@ -25,7 +25,7 @@
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate`, `/al-dev-fix` |
 | al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
-| al-dev-docs-writer | sonnet | Read, Write | (none found) |
+| al-dev-docs-writer | sonnet | Read, Write, Edit, Bash | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
 | al-dev-general-code-reviewer | haiku | Read | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
@@ -300,7 +300,7 @@
 
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
-**Tools:** Read, Write
+**Tools:** Read, Write, Edit, Bash
 **Spawned by:** (none found)
 
 **Inputs:**

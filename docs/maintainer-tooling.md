@@ -208,7 +208,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/plan-health-findings` | `docs/health/dispositions.md`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/implement-health-plan` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md` | `/plan-health-findings` |
 | `/revise-health-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `/implement-health-plan` |
-| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md` | `/projection-sync`, `/align-harness-repos` |
+| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions.md` | `docs/health/dispositions.md`, `.dev/implement-health-plan-progress.md` | `/projection-sync`, `/align-harness-repos`, `/plugin-health-audit` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | `/audit-knowledge-quality` |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/align-harness-repos` |
@@ -238,16 +238,16 @@ against the live skill body before treating it as work.
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-18 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-17 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-16 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-17 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-17 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-18 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-18 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-16 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-17 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-17 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-17 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-14 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |

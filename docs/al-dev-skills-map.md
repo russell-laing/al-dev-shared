@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-17
+**Last updated:** 2026-06-18
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -200,6 +200,7 @@ flowchart LR
     skill_al_dev_plan[al-dev-plan]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_investigate_findings_template_md[investigate-findings-template]
+    knowledge_workflow_resilience_md[workflow-resilience]
     artifact_YYYY_MM_DD_al_dev_investigate_findings_md[.dev/YYYY-MM-DD-al-dev-investigate-findings.md]
     artifact_investigate_errors_log[.dev/investigate-errors.log]
     artifact_project_context_md[.dev/project-context.md]
@@ -208,6 +209,7 @@ flowchart LR
     skill_al_dev_investigate -.-> skill_al_dev_plan
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
+    skill_al_dev_investigate --> knowledge_workflow_resilience_md
     skill_al_dev_investigate --> artifact_YYYY_MM_DD_al_dev_investigate_findings_md
     skill_al_dev_investigate --> artifact_investigate_errors_log
     skill_al_dev_investigate --> artifact_project_context_md
@@ -217,6 +219,7 @@ flowchart LR
     class skill_al_dev_plan skillNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_investigate_findings_template_md knowledgeNode
+    class knowledge_workflow_resilience_md knowledgeNode
     class artifact_YYYY_MM_DD_al_dev_investigate_findings_md artifactNode
     class artifact_investigate_errors_log artifactNode
     class artifact_project_context_md artifactNode
@@ -364,12 +367,14 @@ flowchart LR
     skill_al_dev_plan_final_review[al-dev-plan-final-review]
     Phase1["Phase 1"]
     Phase2["Phase 2"]
+    Phase2_5["Phase 2.5"]
     Phase3["Phase 3"]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_plan_with_critics[al-dev-plan-with-critics]
 
     skill_al_dev_plan_final_review --> Phase1
     skill_al_dev_plan_final_review --> Phase2
+    skill_al_dev_plan_final_review --> Phase2_5
     skill_al_dev_plan_final_review --> Phase3
     skill_al_dev_plan_final_review -.-> skill_al_dev_plan
     skill_al_dev_plan_final_review -.-> skill_al_dev_plan_with_critics
@@ -377,6 +382,7 @@ flowchart LR
     class skill_al_dev_plan_final_review skillNode
     class Phase1 phaseNode
     class Phase2 phaseNode
+    class Phase2_5 phaseNode
     class Phase3 phaseNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_plan_with_critics skillNode
@@ -753,6 +759,7 @@ flowchart LR
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_compile_output_safeguard_md[compile-output-safeguard]
     knowledge_intent_preflight_md[intent-preflight]
+    knowledge_workflow_resilience_md[workflow-resilience]
     artifact_commit_preflight_md[.dev/commit-preflight.md]
     artifact_compile_baseline_log[.dev/compile-baseline.log]
     artifact_compile_errors_log[.dev/compile-errors.log]
@@ -770,6 +777,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_commit_preflight --> artifact_commit_preflight_md
     skill_al_dev_commit_preflight --> artifact_compile_baseline_log
     skill_al_dev_commit_preflight --> artifact_compile_errors_log
@@ -788,6 +796,7 @@ flowchart LR
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
+    class knowledge_workflow_resilience_md knowledgeNode
     class artifact_commit_preflight_md artifactNode
     class artifact_compile_baseline_log artifactNode
     class artifact_compile_errors_log artifactNode
@@ -917,9 +926,12 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_document[al-dev-document]
+    artifact_format_sweep_progress_md[.dev/format-sweep-progress.md]
 
+    skill_al_dev_document --> artifact_format_sweep_progress_md
 
     class skill_al_dev_document skillNode
+    class artifact_format_sweep_progress_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-document -->
 

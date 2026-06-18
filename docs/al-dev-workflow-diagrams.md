@@ -238,6 +238,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
+    skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
     skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
@@ -258,6 +259,7 @@ flowchart LR
     skill_al_dev_interview --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
+    skill_al_dev_investigate --> knowledge_workflow_resilience_md
     skill_al_dev_lint --> knowledge_al_linting_rules_md
     skill_al_dev_lint --> knowledge_artifact_contracts_md
     skill_al_dev_lint --> knowledge_intent_preflight_md
