@@ -37,6 +37,7 @@ SUCCESSOR: dict[str, str | None] = {
     "plugin-health-report":       "/record-health-dispositions",
     "record-health-dispositions": "/plan-health-findings",
     "plan-health-findings":       "/implement-health-plan",
+    "revise-health-plan":         "/implement-health-plan",
     "implement-health-plan":      None,
 }
 
