@@ -107,7 +107,7 @@ issue, proposed fix. Collect one decision per finding from the user:
 
 - `accepted` — to be implemented; note may name the intended change
 - `declined` — requires a reason (recorded in Evidence / note)
-- `grandfather` (verb) — deliberate or settled; requires a reason (recorded ledger value: `grandfathered`)
+- `grandfather` (as a disposition choice) — deliberate or settled; requires a reason (recorded ledger value: `grandfathered`)
 - `fixed` — requires a commit hash or "verified against live file `<date>`" (recorded ledger value: `fixed`)
 - `skip` — leave undispositioned this round (no row written)
 
