@@ -33,6 +33,11 @@ All relative paths in these instructions are from the repository root:
 `git rev-parse --show-toplevel` to confirm the repo root matches this path;
 if not, substitute the actual repo root in all relative paths below.
 
+If `git rev-parse --show-toplevel` fails or returns a path that is not the
+al-dev-shared repository root, stop and emit the error
+"agent-update: could not resolve repo root — aborting map update" and write no
+output file.
+
 Verify `.claude/knowledge/sync-map-update-shared.md` exists before following it;
 if it is absent, stop and emit:
 
