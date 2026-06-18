@@ -404,6 +404,37 @@ if __name__ == "__main__":
     m.add_argument(
         "--ledger", type=Path, default=Path("docs/health/dispositions.md")
     )
+
+    _HISTORY_DEFAULT = Path("docs/health/dispositions-history")
+
+    ap = sub.add_parser(
+        "append_row",
+        help="Append one disposition row to its month shard (chosen by the row date).",
+    )
+    for field in ("id", "surface", "dimension", "object", "finding", "disposition", "date", "note"):
+        ap.add_argument(f"--{field}", required=True)
+    ap.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
+
+    ih = sub.add_parser(
+        "iter_history_rows",
+        help="Print every history-shard row in chronological order as JSON lines.",
+    )
+    ih.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
+
     args = parser.parse_args()
     if args.command == "match":
         raise SystemExit(_cli_match(args.findings, args.ledger))
+    if args.command == "append_row":
+        row = {
+            f: getattr(args, f)
+            for f in ("id", "surface", "dimension", "object", "finding", "disposition", "date", "note")
+        }
+        shard = append_row(args.history_root, row)
+        print(shard)
+        raise SystemExit(0)
+    if args.command == "iter_history_rows":
+        import json
+
+        for r in iter_history_rows(args.history_root):
+            print(json.dumps(r, ensure_ascii=False))
+        raise SystemExit(0)
