@@ -41,6 +41,21 @@ completion (roughly 5 minutes), so the user is free to work meanwhile.
 
 ---
 
+## Phase-proof requirement
+
+This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
+any phase complete, advancing to the next phase, or updating
+`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
+or file-existence check) binding to that phase's deliverable. A restated
+intention is not proof.
+
+## Dispatch policy
+
+This skill's agent dispatch follows `../../knowledge/dispatch-fallback-contract.md`:
+declare the preferred path (the `Agent` tool), run preflight (tool available,
+arguments valid against the receiving contract), fall back deterministically on
+failure, and log `preferred → outcome → fallback → reason`.
+
 ## Phase 0 — Parse Arguments
 
 | Argument | Default | Behaviour |

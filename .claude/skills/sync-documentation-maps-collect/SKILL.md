@@ -45,6 +45,14 @@ attempt a partial inline update in this skill.
 
 ---
 
+## Phase-proof requirement
+
+This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
+any phase complete, advancing to the next phase, or updating
+`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
+or file-existence check) binding to that phase's deliverable. A restated
+intention is not proof.
+
 ## Phase 1 — Load & Resume
 
 **Parse arguments.** Split `--team-ids` on comma to extract exactly two
@@ -120,6 +128,13 @@ In that case, update the checkpoint `status` to `"complete"` and exit without
 dispatching update teams.
 
 ---
+
+## Delegated scope pack
+
+Mutating delegation in this skill follows `../../knowledge/delegated-scope-pack.md`:
+ship a scope pack (allowed paths, do-not-touch list, expected outputs) in the
+dispatch prompt, and run the post-task `git status --short` diff sanity check
+before accepting the result. Reject and re-dispatch on any out-of-scope change.
 
 ## Phase 4 — User Gate & Dispatch
 

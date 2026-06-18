@@ -40,6 +40,14 @@ canonical for the findings metadata and the loop breadcrumb this skill writes.
 This skill never edits plugin or tooling source files. It writes only under
 `docs/health/` and `.dev/`, and moves files within the source directory.
 
+## Phase-proof requirement
+
+This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
+any phase complete, advancing to the next phase, or updating
+`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
+or file-existence check) binding to that phase's deliverable. A restated
+intention is not proof.
+
 ## Phase 0 — Setup & resume
 
 1. **Parse arguments:**

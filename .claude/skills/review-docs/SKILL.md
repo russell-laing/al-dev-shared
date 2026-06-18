@@ -20,6 +20,14 @@ archived, file paths change.
 
 This skill surfaces that drift and readability issues before they mislead future readers.
 
+## Phase-proof requirement
+
+This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
+any phase complete, advancing to the next phase, or updating
+`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
+or file-existence check) binding to that phase's deliverable. A restated
+intention is not proof.
+
 ## When NOT to Use
 
 - **Auto-generated files** (`al-dev-*-map.md`, `al-dev-workflow-diagrams.md`, `al-dev-plugin-graph.md`) — Phase 1 excludes these automatically

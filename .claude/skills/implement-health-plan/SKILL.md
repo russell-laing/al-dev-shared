@@ -39,6 +39,14 @@ Loop position:
 
 ---
 
+## Phase-proof requirement
+
+This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
+any phase complete, advancing to the next phase, or updating
+`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
+or file-existence check) binding to that phase's deliverable. A restated
+intention is not proof.
+
 ## Inputs / Outputs
 
 **Inputs:**

@@ -59,4 +59,7 @@ echo "pre-commit: ledger check complete"
 echo "pre-commit: validating health-loop state breadcrumb..."
 python3 scripts/validate_health_loop_state.py --staged
 
+echo "pre-commit: validating maintainer-contract coverage..."
+python3 scripts/validate_maintainer_contracts.py
+
 echo "pre-commit: all neutrality checks passed."
