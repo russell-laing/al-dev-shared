@@ -134,7 +134,10 @@ dispatching update teams.
 Mutating delegation in this skill follows `../../knowledge/delegated-scope-pack.md`:
 ship a scope pack (allowed paths, do-not-touch list, expected outputs) in the
 dispatch prompt, and run the post-task `git status --short` diff sanity check
-before accepting the result. Reject and re-dispatch on any out-of-scope change.
+before accepting the result. Reject and re-dispatch on any out-of-scope change,
+up to 2 additional times (counter is per-invocation, not persisted to the phase
+checkpoint). After 2 rejections, escalate to the user with the observed
+out-of-scope changes and ask whether to proceed or pause.
 
 ## Phase 4 — User Gate & Dispatch
 
