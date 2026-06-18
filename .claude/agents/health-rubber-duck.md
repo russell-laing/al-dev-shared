@@ -57,8 +57,9 @@ beyond the short evidence snippet a record needs.
      `REJECT → skip`, `DEFER → skip` (record the deferral reason).
    - **evidence mode:** open the cited `file:line`, confirm the quoted snippet
      still exists at or near that location **and** the claimed problem still
-     holds. Snippet absent or claim no longer true → `dropped` with the reason;
-     otherwise `verified`.
+     holds. Snippet present AND claimed problem still holds → `verified`.
+     Snippet absent OR claim no longer true → `dropped: <reason>`. Partial or
+     ambiguous cases → `dropped: ambiguous claim`.
 
 4. **Staleness (if `findings_date` supplied).** For each distinct `subject_path`,
    run once:
