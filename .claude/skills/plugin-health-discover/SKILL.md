@@ -6,7 +6,9 @@ description: >-
   (surface-scoped — one design lens excluded for the tooling surface
     (design-skill-lens-surface-placement); see Phase 3),
   and writes RAW (unranked) lens findings to
-  docs/health/YYYY-MM-DD-<surface>-findings.md. The ranked dossier is produced
+  docs/health/YYYY-MM-DD-<surface>-findings.md, which also carries a
+  `## Failed lenses` section and a `## Resume information` block tracking
+  completion status. The ranked dossier is produced
   separately by /plugin-health-report. Called by /plugin-health-audit; can also
   be run standalone to refresh findings without re-running the report phase, but it requires the same
   pre-conditions as a full audit run. Discovery is via parallel lens dispatch
@@ -140,18 +142,10 @@ Execute the following state machine in order:
      manifest (`.dev/<today>-plugin-health-discover-context.md`) for its file
      list and required context fields (per the per-lens table in
      `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
-     inlining the file list into the prompt. Append two contracts from that file
-     to every lens prompt:
-     - the **Finding evidence contract** — each finding must cite `file:line` + a
-       quoted snippet of the offending text + a one-line reason it is a real
-       issue, and the lens must omit any finding it cannot ground in a quoted
-       snippet (no speculative "consider whether…" findings). This is the
-       first-line defence against false positives.
-     - the **Response format contract** — the reply must be the findings block
-       only (no narration, no per-file notes, no "Analysis Summary"), and four or
-       more findings sharing one root cause **and** fix collapse into a single
-       rolled-up finding listing the affected files. This keeps returns terse so a
-       20-lens sweep does not flood this session's context.
+     inlining the file list into the prompt. Append the **Finding evidence
+     contract** and the **Response format contract** verbatim from
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` to every lens
+     prompt. Do not paraphrase — copy the canonical text so it cannot drift.
 
      As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
