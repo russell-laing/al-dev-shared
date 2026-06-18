@@ -54,10 +54,10 @@ flowchart TD
     stage_decide["3. Decide<br/>record decisions and write a verified plan"]
     stage_implement["4. Implement<br/>apply the plan and close ledger rows"]
     stage_derive["5. Derive<br/>regenerate and validate changed shared source"]
-    entry_friction["Alternate source<br/>ingest friction logs"]
+    entry_friction["/ingest-friction-log<br/>alternate source"]
 
     stage_map_sync --> stage_discover
-    entry_friction --> stage_discover
+    entry_friction -- "friction-findings" --> stage_discover
     stage_discover --> stage_decide
     stage_decide --> stage_implement
     stage_implement -. "when shared source changed" .-> stage_derive
@@ -237,7 +237,7 @@ against the live skill body before treating it as work.
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-16 |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-18 |
 | Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-17 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-16 |
 | Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-17 |
@@ -246,12 +246,12 @@ against the live skill body before treating it as work.
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-17 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-17 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-17 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-14 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-13 |
-| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-16 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/health/dispositions.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-13 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-18 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |
