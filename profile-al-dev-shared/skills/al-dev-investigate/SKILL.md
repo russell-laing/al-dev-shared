@@ -81,8 +81,8 @@ Read in this order:
    `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)`
    (if it exists) — prior exploration
 
-If a ticket is referenced but `ticket-context.md` is missing,
-suggest `/al-dev-ticket <id>` first.
+If a ticket is referenced but no `.dev/*-al-dev-ticket-ticket-context.md`
+file exists, suggest `/al-dev-ticket <id>` first.
 
 Extract from the user's args or ticket:
 

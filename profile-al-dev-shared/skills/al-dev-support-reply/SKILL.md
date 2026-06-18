@@ -5,7 +5,7 @@ description: >-
   Freshdesk ticket workflow: multi-source research (AL symbols, MS Docs, BC history),
   synthesis of findings, and customer-facing reply drafting. Input: ticket context
   from al-dev-ticket Phase 5 (CONTEXT block, or auto-detected latest). Output: a REPLY
-  metadata block plus the full customer reply written to `.dev/ticket-reply.md`.
+  metadata block plus the full customer reply written to `.dev/YYYY-MM-DD-al-dev-ticket-reply.md`.
 argument-hint: "[context-file-path | blank to auto-detect latest]"
 ---
 
@@ -14,7 +14,7 @@ argument-hint: "[context-file-path | blank to auto-detect latest]"
 Takes a loaded ticket context, runs multi-source BC research, then
 drafts a customer-facing reply. Consumes the CONTEXT block produced
 by `al-dev-ticket` Phase 5 and emits a REPLY block written to
-`.dev/ticket-reply.md`.
+`.dev/YYYY-MM-DD-al-dev-ticket-reply.md`.
 
 ## Usage
 
@@ -106,11 +106,11 @@ Prompt: <assembled prompt above>
 ## Phase 3 — Emit REPLY Block
 
 Parse the drafter agent's returned summary and write the REPLY block
-to `.dev/ticket-reply.md`:
+to `.dev/$(date +%Y-%m-%d)-al-dev-ticket-reply.md`:
 
 ```text
 REPLY
-FILE: .dev/ticket-reply.md
+FILE: .dev/YYYY-MM-DD-al-dev-ticket-reply.md
 QUERY_TYPE: <class>
 BC_VERSION_SCOPE: <scope or "not version-specific">
 SOURCES: MS Docs (<n> pages) | BC History (<n> commits or NONE)
@@ -122,7 +122,7 @@ Present to user:
 
 ```text
 Support research complete →
-.dev/ticket-reply.md
+.dev/YYYY-MM-DD-al-dev-ticket-reply.md
 
 <SUMMARY value>
 <QUERY_TYPE> | <BC_VERSION_SCOPE>
