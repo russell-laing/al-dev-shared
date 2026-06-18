@@ -13,6 +13,12 @@ Cross-repo investigation migration — moves context from this
 session into another repository's session without re-running
 the investigation.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the handoff is complete or ready until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ---
 
 ## When to Use
