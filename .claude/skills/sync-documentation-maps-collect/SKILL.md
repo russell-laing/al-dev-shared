@@ -129,6 +129,13 @@ dispatching update teams.
 
 ---
 
+## Delegated scope pack
+
+Mutating delegation in this skill follows `../../knowledge/delegated-scope-pack.md`:
+ship a scope pack (allowed paths, do-not-touch list, expected outputs) in the
+dispatch prompt, and run the post-task `git status --short` diff sanity check
+before accepting the result. Reject and re-dispatch on any out-of-scope change.
+
 ## Phase 4 — User Gate & Dispatch
 
 **Choose maps to update.** If `AUTO_UPDATE=true` (passed through from
