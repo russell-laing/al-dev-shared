@@ -64,13 +64,16 @@ messages. Would you like me to create it now via
   Skill tool (not a subagent), wait for it to complete, then
   proceed to 0.2 to load the newly created project
   instructions file
-- **init-context fails** — stop with: "Could not create
-  the project instructions file automatically. Please run
-  `/al-dev-init-context` or create it manually, then re-run
-  `/al-dev-commit`."
-- **no** — stop with: "Please create the project
-  instructions file manually or run `/al-dev-init-context`,
-  then re-run `/al-dev-commit`."
+- **init-context fails** — do not hard-stop solely because the companion
+  `al-dev-init-context` capability is unavailable. Warn that no project
+  instructions file could be created, then degrade to a minimal inferred
+  context (naming prefix, conventions, and patterns observed in nearby
+  files) per `knowledge/companion-context-ownership.md`, marking the
+  commit-message context as provisional, and proceed to 0.2.
+- **no** — warn that commit-message quality may be reduced without project
+  instructions, then degrade to the same minimal inferred context per
+  `knowledge/companion-context-ownership.md` and proceed to 0.2 rather than
+  stopping.
 
 ### 0.2 — Load Project Context
 

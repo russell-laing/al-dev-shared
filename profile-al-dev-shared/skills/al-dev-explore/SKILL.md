@@ -51,8 +51,10 @@ Check for `.dev/project-context.md`:
 - If it **exists**: Read the relevant sections (directory structure,
   key objects, architectural patterns). Pass this to the Explore agent
   to narrow the search scope and avoid redundant discovery.
-- If it **does not exist**: Suggest `/al-dev-init-context`
-  and continue without it.
+- If it **does not exist**: suggest `/al-dev-init-context` (a companion-layer
+  capability — see `knowledge/companion-context-ownership.md`) and degrade to a
+  minimal inferred context (prefix, ranges, patterns from nearby files);
+  do not hard-stop.
 
 Optionally load ticket context (if available):
 

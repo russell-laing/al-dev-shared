@@ -117,7 +117,7 @@ modules outside the specified scope.
 1. Read the latest solution plan:
    `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
    | sort | tail -1)`
-2. Read `.dev/project-context.md` if it exists
+2. Read `.dev/project-context.md` if it exists; if absent, degrade to a minimal inferred context per `knowledge/companion-context-ownership.md` (the `al-dev-init-context` producer is a companion-layer capability) — do not block the build
 3. Identify:
    - Objects to create (tables, pages, codeunits, enums)
    - BC integration points
