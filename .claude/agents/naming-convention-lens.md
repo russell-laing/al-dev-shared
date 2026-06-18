@@ -41,11 +41,10 @@ read every file path in the dispatch prompt and derive each tool's name:
 
 - Lens agents (filename matches `*-lens-*`) MUST match
   `{design|quality}-{agent|skill}-lens-{aspect}`. The single allowed exception
-  is `naming-convention-lens`. Any other lens-agent name that deviates is a
-  **High** finding.
-
-Otherwise (the name matches the `{design|quality}-{agent|skill}-lens-{aspect}` pattern),
-do not emit a finding for this check and proceed to the next check.
+  is `naming-convention-lens`. If the name does NOT match
+  `{design|quality}-{agent|skill}-lens-{aspect}` (and is not
+  `naming-convention-lens`), flag as **High**. If it DOES match, proceed to
+  the next check.
 
 - Maintainer skills SHOULD match `{verb}-{object}-{aspect}` with the documented
   verb/object sets. A non-conforming skill name that is not listed in the
