@@ -35,6 +35,14 @@ continuing.
 
 ---
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the commit is complete or the staged set is ready until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
+---
+
 ## Phase A — Analysis and Confirmation
 
 Use the Skill tool to invoke `/al-dev-commit-preflight` with `$ARGUMENTS`.
