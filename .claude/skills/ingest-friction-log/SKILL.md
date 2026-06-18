@@ -10,7 +10,7 @@ description: >-
   /plugin-health-report via --findings, and records local runtime provenance in
   docs/health/friction-ingest-log.md (gitignored). Run when friction logs have
   accumulated
-  and you want them folded into the plugin health audit.
+  and they should be folded into the plugin health audit.
   Triggers on: "ingest friction logs", "ingest the friction log", "process
   friction logs", "fold friction into the health loop", "archive friction logs".
 argument-hint: "[--source <path>] [--surface plugin|tooling|both] [--since YYYY-MM-DD]"
