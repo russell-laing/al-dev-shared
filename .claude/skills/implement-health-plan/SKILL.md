@@ -22,7 +22,7 @@ workflow:
   outputs:
     - docs/health/dispositions.md
     - .dev/implement-health-plan-progress.md
-  next: [projection-sync, align-harness-repos]
+  next: [projection-sync, align-harness-repos, plugin-health-audit]
 ---
 
 # Implement Health Plan
@@ -427,6 +427,7 @@ closed:
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/projection-sync` and
   `/align-harness-repos` next (see Phase 4 "Regenerate derived artifacts").
+  Then run `/plugin-health-audit` to start the next health loop.
 
 ### Ledger-close commit
 
