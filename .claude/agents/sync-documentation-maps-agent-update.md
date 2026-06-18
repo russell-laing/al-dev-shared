@@ -7,7 +7,7 @@ description: >-
   staged for /sync-documentation-maps-apply to copy into
   docs/al-dev-agent-map.md. Called by /sync-documentation-maps-collect update
   dispatch phase.
-model: haiku
+model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
 

@@ -8,7 +8,7 @@ description: >-
   docs/al-dev-skills-map.md. Called by /sync-documentation-maps-collect update
   dispatch phase. Halts without writing output if
   .claude/knowledge/sync-map-update-shared.md is absent.
-model: haiku
+model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
 
