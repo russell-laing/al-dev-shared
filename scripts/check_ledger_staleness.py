@@ -25,6 +25,7 @@ import glob
 import re
 import subprocess
 import sys
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -55,6 +56,7 @@ class Row:
     note: str
     id: str = ""  # stable ID from 8-column ledger; empty for 7-column legacy
     closed_by: int | None = None
+    closed_via: str = ""  # token | objorder | dg-id | dg-obj — closure provenance
     paths: list[str] = field(default_factory=list)
 
 
@@ -235,12 +237,14 @@ def resolve_closures(rows: list[Row]) -> None:
             target = by_id.get(f"#{target_id}") or by_id.get(target_id)
             if target and target.disposition == "accepted" and target.number < r.number:
                 target.closed_by = r.number
+                target.closed_via = "token"
                 explicit_fixed_rows.add(r.number)
         # Fall back to number-based lookup for legacy format
         for m in CLOSES_RE.finditer(r.note):
             target = by_number.get(int(m.group(1)))
             if target and target.disposition == "accepted" and target.number < r.number:
                 target.closed_by = r.number
+                target.closed_via = "token"
                 explicit_fixed_rows.add(r.number)
 
     # Pass 2: object-order matching — each later fixed row closes the earliest
@@ -252,6 +256,7 @@ def resolve_closures(rows: list[Row]) -> None:
         for a in accepted:
             if a.closed_by is None and a.number < r.number and norm_object(a.obj) == norm_object(r.obj):
                 a.closed_by = r.number
+                a.closed_via = "objorder"
                 break
 
     # Pass 3: grandfathered/declined rows also close accepted rows for the same
@@ -265,12 +270,84 @@ def resolve_closures(rows: list[Row]) -> None:
             target = by_id.get(r.id)
             if target and target.disposition == "accepted" and target.closed_by is None and target.number < r.number:
                 target.closed_by = r.number
+                target.closed_via = "dg-id"
                 continue
         # Object-order fallback: close the earliest still-open accepted row for the same object.
         for a in accepted:
             if a.closed_by is None and a.number < r.number and norm_object(a.obj) == norm_object(r.obj):
                 a.closed_by = r.number
+                a.closed_via = "dg-obj"
                 break
+
+
+def _issue_key(r: Row) -> tuple[str, str, str, str]:
+    """The disposition matching key: (surface, dimension, norm-object, norm-finding)."""
+    return (
+        r.surface.strip(),
+        r.dimension.strip(),
+        norm_object(r.obj),
+        re.sub(r"\s+", " ", r.issue.strip()),
+    )
+
+
+def integrity_warnings(rows: list[Row]) -> list[str]:
+    """Flag ledger data-integrity problems that corrupt closure provenance.
+
+    Run after resolve_closures so closed_by/closed_via are populated. Reports:
+    - duplicate IDs naming distinct findings (key forked by editing finding text
+      on a disposition flip — breaks `closes #ID` referential integrity);
+    - accepted rows closed by positional object-order matching on a multi-finding
+      object (attribution unverified — a `closes #ID` token would have been exact);
+    - objects with more than one effective-open accepted row (the next tokenless
+      fix will close one positionally).
+    """
+    warnings: list[str] = []
+
+    # Duplicate IDs across distinct keys.
+    id_keys: dict[str, set[tuple[str, str, str, str]]] = defaultdict(set)
+    for r in rows:
+        if r.id:
+            id_keys[r.id].add(_issue_key(r))
+    for rid, keys in sorted(id_keys.items()):
+        if len(keys) > 1:
+            warnings.append(
+                f"duplicate ID {rid}: names {len(keys)} distinct findings "
+                f"(key forked — finding text likely edited on a disposition flip)"
+            )
+
+    # Positional closures on multi-finding objects.
+    obj_accepted: dict[str, list[Row]] = defaultdict(list)
+    for r in rows:
+        if r.disposition == "accepted":
+            obj_accepted[norm_object(r.obj)].append(r)
+    for r in rows:
+        if (
+            r.disposition == "accepted"
+            and r.closed_by is not None
+            and r.closed_via in ("objorder", "dg-obj")
+            and len(obj_accepted[norm_object(r.obj)]) > 1
+        ):
+            tag = f" (ID {r.id})" if r.id else ""
+            warnings.append(
+                f"row {r.number}{tag} closed by positional match on multi-finding "
+                f"object '{norm_object(r.obj)}' — attribution unverified; the "
+                f"resolving row should carry 'closes #ID'"
+            )
+
+    # Multiple effective-open accepted rows on one object.
+    open_by_obj: dict[str, list[Row]] = defaultdict(list)
+    for r in rows:
+        if r.disposition == "accepted" and r.closed_by is None:
+            open_by_obj[norm_object(r.obj)].append(r)
+    for obj, rs in sorted(open_by_obj.items()):
+        if len(rs) > 1:
+            ids = ", ".join(r.id or str(r.number) for r in rs)
+            warnings.append(
+                f"object '{obj}' has {len(rs)} effective-open accepted rows "
+                f"({ids}) — a tokenless fix will close one positionally; use 'closes #ID'"
+            )
+
+    return warnings
 
 
 def commits_since(date: str, paths: list[str]) -> list[str]:
@@ -350,6 +427,12 @@ def main() -> int:
             print("      → verify whether a commit resolved it; if so, flip/append the row to fixed.")
         else:
             print(line + " | no commits since row date")
+
+    warnings = integrity_warnings(rows)
+    if warnings:
+        print(f"\nledger-check: {len(warnings)} data-integrity warning(s) (informational):")
+        for w in warnings:
+            print(f"  WARN: {w}")
 
     return 1 if (args.strict and stale) else 0
 

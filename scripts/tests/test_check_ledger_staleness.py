@@ -141,6 +141,64 @@ class ResolveClosuresTest(unittest.TestCase):
         self.assertIn("plugin-health-discover", line)
 
 
+class ClosureProvenanceTest(unittest.TestCase):
+    def test_token_closure_records_token_provenance(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", "", id="001"),
+            MODULE.Row(2, "t", "q", "obj", "issue A", "fixed", "2026-06-08", "closes #001", id="002"),
+        ]
+        MODULE.resolve_closures(rows)
+        self.assertEqual(2, rows[0].closed_by)
+        self.assertEqual("token", rows[0].closed_via)
+
+    def test_object_order_closure_records_objorder_provenance(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", ""),
+            MODULE.Row(2, "t", "q", "obj", "issue A", "fixed", "2026-06-08", "no token"),
+        ]
+        MODULE.resolve_closures(rows)
+        self.assertEqual(2, rows[0].closed_by)
+        self.assertEqual("objorder", rows[0].closed_via)
+
+
+class IntegrityWarningsTest(unittest.TestCase):
+    def test_clean_ledger_yields_no_warnings(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", "", id="001"),
+            MODULE.Row(2, "t", "q", "obj", "issue A", "fixed", "2026-06-08", "closes #001", id="002"),
+        ]
+        MODULE.resolve_closures(rows)
+        self.assertEqual([], MODULE.integrity_warnings(rows))
+
+    def test_warns_on_duplicate_id_across_distinct_findings(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", "", id="001"),
+            MODULE.Row(2, "t", "q", "obj", "issue B reworded", "declined", "2026-06-08", "", id="001"),
+        ]
+        MODULE.resolve_closures(rows)
+        warnings = MODULE.integrity_warnings(rows)
+        self.assertTrue(any("001" in w and "distinct" in w for w in warnings), warnings)
+
+    def test_warns_on_positional_closure_on_multi_finding_object(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", "", id="001"),
+            MODULE.Row(2, "t", "q", "obj", "issue B", "accepted", "2026-06-07", "", id="002"),
+            MODULE.Row(3, "t", "q", "obj", "issue B", "fixed", "2026-06-08", "no token", id="003"),
+        ]
+        MODULE.resolve_closures(rows)
+        warnings = MODULE.integrity_warnings(rows)
+        self.assertTrue(any("positional" in w for w in warnings), warnings)
+
+    def test_warns_on_multiple_open_accepted_on_one_object(self) -> None:
+        rows = [
+            MODULE.Row(1, "t", "q", "obj", "issue A", "accepted", "2026-06-07", "", id="001"),
+            MODULE.Row(2, "t", "q", "obj", "issue B", "accepted", "2026-06-07", "", id="002"),
+        ]
+        MODULE.resolve_closures(rows)
+        warnings = MODULE.integrity_warnings(rows)
+        self.assertTrue(any("effective-open" in w and "obj" in w for w in warnings), warnings)
+
+
 def _run_checker(repo_root: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(MODULE_PATH), "--root", str(repo_root)],
