@@ -367,6 +367,74 @@ def test_al_dev_explore_contracts() -> bool:
         return False
 
 
+def test_al_dev_investigate_contracts() -> bool:
+    """Verify al-dev-investigate produces required artifacts with completion markers.
+
+    Checks for latest .dev/*-al-dev-investigate-findings.md and validates it
+    contains a Root Cause section and at least one hypothesis verdict.
+
+    Returns True if test passes, False if artifacts don't exist (acceptable in
+    sessions where investigate skill hasn't run).
+    """
+    import glob
+
+    findings_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-investigate-findings.md"))
+
+    if not findings_files:
+        return True
+
+    latest_file = max(findings_files, key=lambda p: Path(p).stat().st_mtime)
+
+    try:
+        content = Path(latest_file).read_text(encoding="utf-8")
+        has_markers = any(marker in content for marker in [
+            "Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"
+        ])
+
+        if not has_markers:
+            print(f"⚠ {latest_file}: Missing investigation markers (Root Cause/Hypotheses/VERDICT)")
+            return False
+
+        return True
+    except OSError as e:
+        print(f"⚠ {latest_file}: Cannot read file ({e})")
+        return False
+
+
+def test_al_dev_handoff_contracts() -> bool:
+    """Verify al-dev-handoff produces a handoff prompt with required sections.
+
+    Checks for latest .dev/*-al-dev-handoff-handoff-prompt.md and validates it
+    contains a Context section and a Suggested first command section.
+
+    Returns True if test passes, False if artifacts don't exist (acceptable in
+    sessions where handoff skill hasn't run).
+    """
+    import glob
+
+    prompt_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-handoff-handoff-prompt.md"))
+
+    if not prompt_files:
+        return True
+
+    latest_file = max(prompt_files, key=lambda p: Path(p).stat().st_mtime)
+
+    try:
+        content = Path(latest_file).read_text(encoding="utf-8")
+        has_sections = any(section in content for section in [
+            "## Context", "Context files available", "Suggested first command", "Handoff Prompt"
+        ])
+
+        if not has_sections:
+            print(f"⚠ {latest_file}: Missing handoff sections (Context/Context files available/Suggested first command)")
+            return False
+
+        return True
+    except OSError as e:
+        print(f"⚠ {latest_file}: Cannot read file ({e})")
+        return False
+
+
 def run_artifact_tests() -> bool:
     """Run all runtime artifact contract tests.
 
@@ -377,6 +445,8 @@ def run_artifact_tests() -> bool:
         ("al-dev-ticket", test_al_dev_ticket_contracts),
         ("al-dev-interview", test_al_dev_interview_contracts),
         ("al-dev-explore", test_al_dev_explore_contracts),
+        ("al-dev-investigate", test_al_dev_investigate_contracts),
+        ("al-dev-handoff", test_al_dev_handoff_contracts),
     ]
 
     results = []

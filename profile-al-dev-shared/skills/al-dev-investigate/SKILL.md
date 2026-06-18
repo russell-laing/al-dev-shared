@@ -20,6 +20,12 @@ This skill itself is the shared-profile root-cause framework.
 Do not create an ad-hoc implementation hypothesis and jump straight to fixes.
 Use the regression timeline, competing-hypothesis, and evidence gates below before recommending any implementation path.
 
+## Artifact Contract
+
+This skill is governed by `knowledge/artifact-contracts.md`.
+
+Do not claim the investigation is complete or ready for handoff until the success evidence named in `knowledge/artifact-contracts.md` for this skill has been produced and read in the current run.
+
 ---
 
 ## When to Use
@@ -75,8 +81,8 @@ Read in this order:
    `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)`
    (if it exists) — prior exploration
 
-If a ticket is referenced but `ticket-context.md` is missing,
-suggest `/al-dev-ticket <id>` first.
+If a ticket is referenced but no `.dev/*-al-dev-ticket-ticket-context.md`
+file exists, suggest `/al-dev-ticket <id>` first.
 
 Extract from the user's args or ticket:
 

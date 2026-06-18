@@ -9,7 +9,7 @@
 ```
 1. Check if .dev/project-context.md exists
 2. If exists: Read it completely (saves 5-10 minutes of exploration)
-3. If not exists: Suggest `al-dev-init-context` and continue when the task can proceed safely without project context
+3. If not exists: suggest `al-dev-init-context` (a companion-layer capability — see `knowledge/companion-context-ownership.md`) and degrade to a minimal inferred context rather than hard-stopping
 ```
 
 ## Complexity Classification

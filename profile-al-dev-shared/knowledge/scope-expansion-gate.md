@@ -51,3 +51,25 @@ reference to this file) in every developer spawn prompt so the rule propagates
 to subagents. For request-driven fix workflows, an equivalent lightweight scope
 check may be used as long as it stops on out-of-scope changes and gets explicit
 per-item user decisions before those changes are kept.
+
+## Delegated-Task Scope Pack
+
+When an orchestrating skill delegates work to a spawned agent, the scope
+baseline must travel with the task as an explicit scope pack so the agent
+enforces the same gate the orchestrator would. A scope pack is the minimal set
+of fields a delegated agent needs to know what is in scope and to stop on
+anything outside it:
+
+- **In-scope objects/files** — the exact objects, files, or modules the agent
+  owns for this task.
+- **In-scope change description** — what the agent is expected to change, drawn
+  from the approved plan or the agreed fix target.
+- **Out-of-scope rule** — a reference to the "What Counts as Out of Scope" list
+  above and the instruction to stop and surface numbered proposals before
+  editing anything outside the in-scope set.
+- **Halt-and-report contract** — the agent returns a numbered out-of-scope
+  proposal list instead of making the change, and waits for per-item approval.
+
+Every developer spawn prompt MUST include the scope pack. The pack is how the
+Propagation rule reaches subagents: without it, a spawned agent has no scope
+baseline to enforce.

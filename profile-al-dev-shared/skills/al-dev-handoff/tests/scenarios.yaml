@@ -1,0 +1,21 @@
+skill: al-dev-handoff
+scenarios:
+  - id: handoff-cross-repo-trigger
+    status: golden
+    user_prompt: "The root cause is in the other repo at ../MM_Kembla_Price_App — continue this investigation there."
+    expected_artifacts:
+      - ".dev/*-al-dev-handoff-handoff-prompt.md"
+    notes: "Canonical trigger — investigation confirmed the fix lives in a different repository. Should copy source-* context and write a date-prefixed handoff prompt."
+
+  - id: handoff-blocks-claim-without-prompt
+    status: golden
+    user_prompt: "Package this for the other repo, but do not say the handoff is ready until the handoff prompt file exists and is read."
+    expected_artifacts:
+      - ".dev/*-al-dev-handoff-handoff-prompt.md"
+    notes: "Final-gate regression. Per the Artifact Contract, no ready claim before the success-evidence handoff-prompt file is produced and read in the current run."
+
+  - id: handoff-rejects-single-repo-misfire
+    status: golden
+    user_prompt: "The bug is right here in this repo — design the fix."
+    expected_artifacts: []
+    notes: "Misfire guard. A single-repo fix belongs to /al-dev-plan, not cross-repo migration."
