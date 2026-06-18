@@ -3,8 +3,9 @@ name: plugin-health-report
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
   /plugin-health-discover, filters out stale and disposition-suppressed
-  findings, ranks the remainder, writes the dossier, and presents results to
-  the user.
+  findings, runs an evidence-verification gate (dispatching health-rubber-duck
+  in evidence mode to drop unverified findings), ranks the remainder, writes the
+  dossier, and presents results to the user.
   Called by /plugin-health-audit; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
@@ -118,7 +119,10 @@ Apply the staleness spot-check protocol from
 finding and every top-5 candidate before ranking. Supply `FINDINGS_DATE` from
 the findings-file name; for recurring findings also check with `PRIOR_DATE`
 from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
-before top-5 inclusion; drop non-holding claims under "Stale (dropped)".
+before top-5 inclusion; drop non-holding claims under "Stale (dropped)"
+(a claim is non-holding when it no longer matches the live subject file — see
+the "claim no longer holds" criterion in the "## Staleness spot-check protocol"
+section of `../../knowledge/health-audit-preconditions.md`).
 
 Then run the **evidence verification** gate on *every* finding (not just High /
 top-5): dispatch `health-rubber-duck` agents in `evidence` mode — one per
