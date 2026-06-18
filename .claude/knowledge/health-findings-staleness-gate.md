@@ -37,7 +37,10 @@ or handoff finding), skip the gate for it and rubber-duck normally.
 
 ## Stale-tier handling
 
-After labelling, count the stale ratio and handle by tier:
+After labelling, count the stale ratio and handle by tier. The **stale ratio**
+denominator is the count of findings dispatched to Phase 3 rubber-ducking this
+run — i.e. the findings remaining after Phase 1 disposition filtering, excluding
+any `suppress`/`verify`/skipped findings:
 
 | Stale ratio | Action |
 |---|---|

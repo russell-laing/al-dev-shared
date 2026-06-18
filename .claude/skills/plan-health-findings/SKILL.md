@@ -245,7 +245,9 @@ If a finding's subject cannot be resolved to a single file, skip the gate for it
 Report the stale-labelled count before Phase 3. Handle by tier:
 
 Define **stale ratio** = (count of findings labelled `⚠ possibly stale`) ÷
-(count of all findings rubber-ducked this run).
+(count of findings dispatched to Phase 3 rubber-ducking this run — i.e. the
+findings remaining after Phase 1 disposition filtering, excluding any
+`suppress`/`verify`/skipped findings).
 
 | Stale ratio | Action |
 |---|---|
