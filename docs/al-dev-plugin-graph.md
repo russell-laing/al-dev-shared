@@ -80,6 +80,7 @@ flowchart LR
         knowledge_commit_dispatch_template_md[commit-dispatch-template]
         knowledge_commit_hook_recovery_patterns_md[commit-hook-recovery-patterns]
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
+        knowledge_companion_context_ownership_md[companion-context-ownership]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
         knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
@@ -113,6 +114,7 @@ flowchart LR
         artifact_2026_05_19_al_dev_plan_solution_plan_md[.dev/2026-05-19-al-dev-plan-solution-plan.md]
         artifact_2026_06_01_al_dev_ticket_ticket_context_md[.dev/2026-06-01-al-dev-ticket-ticket-context.md]
         artifact_YYYY_MM_DD_al_dev_investigate_findings_md[.dev/YYYY-MM-DD-al-dev-investigate-findings.md]
+        artifact_YYYY_MM_DD_al_dev_ticket_reply_md[.dev/YYYY-MM-DD-al-dev-ticket-reply.md]
         artifact_YYYY_MM_DD_plugin_release_notes_md[.dev/YYYY-MM-DD-plugin-release-notes.md]
         artifact_commit_integrity_log[.dev/commit-integrity.log]
         artifact_commit_preflight_md[.dev/commit-preflight.md]
@@ -137,7 +139,6 @@ flowchart LR
         artifact_source_solution_plan_md[.dev/source-solution-plan.md]
         artifact_source_ticket_context_md[.dev/source-ticket-context.md]
         artifact_test_plan_md[.dev/test-plan.md]
-        artifact_ticket_reply_md[.dev/ticket-reply.md]
     end
 
     skill_al_dev_commit --> skill_al_dev_commit_execute
@@ -183,23 +184,27 @@ flowchart LR
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
     skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_commit_recover --> agent_al_dev_commit_recover_fixer
+    skill_al_dev_commit --> knowledge_artifact_contracts_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_commit_execute --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
+    skill_al_dev_commit_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
+    skill_al_dev_develop_orchestrate --> knowledge_companion_context_ownership_md
     skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
     skill_al_dev_develop_orchestrate --> knowledge_intent_preflight_md
     skill_al_dev_develop_orchestrate --> knowledge_scope_expansion_gate_md
     skill_al_dev_develop_orchestrate --> knowledge_workflow_resilience_md
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_bash_safe_patterns_md
+    skill_al_dev_explore --> knowledge_companion_context_ownership_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
     skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
@@ -208,8 +213,10 @@ flowchart LR
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
     skill_al_dev_fix --> knowledge_scope_expansion_gate_md
+    skill_al_dev_handoff --> knowledge_artifact_contracts_md
     skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
+    skill_al_dev_investigate --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
     skill_al_dev_investigate --> knowledge_workflow_resilience_md
@@ -227,6 +234,7 @@ flowchart LR
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_artifact_contracts_md
+    skill_al_dev_plan_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
@@ -311,7 +319,7 @@ flowchart LR
     skill_al_dev_review_develop_preflight --> artifact_compile_errors_log
     skill_al_dev_review_develop_preflight --> artifact_progress_md
     skill_al_dev_support_reply --> artifact_2026_06_01_al_dev_ticket_ticket_context_md
-    skill_al_dev_support_reply --> artifact_ticket_reply_md
+    skill_al_dev_support_reply --> artifact_YYYY_MM_DD_al_dev_ticket_reply_md
     skill_commit_recover --> artifact_commit_integrity_log
     skill_commit_recover --> artifact_compile_errors_log
     skill_commit_recover --> artifact_learnings_md
@@ -378,6 +386,7 @@ flowchart LR
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_hook_recovery_patterns_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
@@ -409,6 +418,7 @@ flowchart LR
     class artifact_2026_05_19_al_dev_plan_solution_plan_md artifactNode
     class artifact_2026_06_01_al_dev_ticket_ticket_context_md artifactNode
     class artifact_YYYY_MM_DD_al_dev_investigate_findings_md artifactNode
+    class artifact_YYYY_MM_DD_al_dev_ticket_reply_md artifactNode
     class artifact_YYYY_MM_DD_plugin_release_notes_md artifactNode
     class artifact_commit_integrity_log artifactNode
     class artifact_commit_preflight_md artifactNode
@@ -433,7 +443,6 @@ flowchart LR
     class artifact_source_solution_plan_md artifactNode
     class artifact_source_ticket_context_md artifactNode
     class artifact_test_plan_md artifactNode
-    class artifact_ticket_reply_md artifactNode
 ```
 <!-- END GENERATED: plugin-dependency-mermaid -->
 
@@ -503,6 +512,7 @@ flowchart LR
 
 - `agent-tool-projection-policy.md`
 - `anti-patterns.md`
+- `artifact-freshness-gate.md`
 - `background-agent-dispatch.md`
 - `code-review-template.md`
 - `commit-conventions.md`

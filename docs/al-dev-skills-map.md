@@ -88,7 +88,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 1, 1.5, 2.
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 1, 2.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-ticket -->
 ```mermaid
@@ -157,7 +157,7 @@ flowchart LR
     agent_al_dev_support_reply_drafter[al-dev-support-reply-drafter]
     agent_al_dev_support_researcher[al-dev-support-researcher]
     artifact_2026_06_01_al_dev_ticket_ticket_context_md[.dev/2026-06-01-al-dev-ticket-ticket-context.md]
-    artifact_ticket_reply_md[.dev/ticket-reply.md]
+    artifact_YYYY_MM_DD_al_dev_ticket_reply_md[.dev/YYYY-MM-DD-al-dev-ticket-reply.md]
 
     skill_al_dev_support_reply --> Phase0
     skill_al_dev_support_reply --> Phase1
@@ -167,7 +167,7 @@ flowchart LR
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
     skill_al_dev_support_reply --> artifact_2026_06_01_al_dev_ticket_ticket_context_md
-    skill_al_dev_support_reply --> artifact_ticket_reply_md
+    skill_al_dev_support_reply --> artifact_YYYY_MM_DD_al_dev_ticket_reply_md
 
     class skill_al_dev_support_reply skillNode
     class Phase0 phaseNode
@@ -178,7 +178,7 @@ flowchart LR
     class agent_al_dev_support_reply_drafter agentNode
     class agent_al_dev_support_researcher agentNode
     class artifact_2026_06_01_al_dev_ticket_ticket_context_md artifactNode
-    class artifact_ticket_reply_md artifactNode
+    class artifact_YYYY_MM_DD_al_dev_ticket_reply_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:al-dev-support-reply-drafter`, `al-dev-shared:al-dev-support-researcher`
@@ -198,6 +198,7 @@ flowchart LR
     skill_al_dev_investigate[al-dev-investigate]
     skill_al_dev_handoff[al-dev-handoff]
     skill_al_dev_plan[al-dev-plan]
+    knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_investigate_findings_template_md[investigate-findings-template]
     knowledge_workflow_resilience_md[workflow-resilience]
@@ -207,6 +208,7 @@ flowchart LR
 
     skill_al_dev_investigate -.-> skill_al_dev_handoff
     skill_al_dev_investigate -.-> skill_al_dev_plan
+    skill_al_dev_investigate --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
     skill_al_dev_investigate --> knowledge_workflow_resilience_md
@@ -217,6 +219,7 @@ flowchart LR
     class skill_al_dev_investigate skillNode
     class skill_al_dev_handoff skillNode
     class skill_al_dev_plan skillNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_investigate_findings_template_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
@@ -353,7 +356,7 @@ Agents spawned: `al-dev-shared:al-dev-solution-architect`
 
 ### /al-dev-plan-final-review
 
-User approval gate for the solution plan written by `/al-dev-plan`. Runs validation and gates approval before implementation begins. Called by `/al-dev-plan` after Phase 5; can also be run standalone. Phases: 1–3.
+User approval gate for the solution plan written by `/al-dev-plan`. Runs validation and gates approval before implementation begins. Called by `/al-dev-plan` after Phase 5; can also be run standalone. Phases: 0–3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-final-review -->
 ```mermaid
@@ -391,7 +394,7 @@ flowchart LR
 
 ### /al-dev-plan-preflight
 
-Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0, 0.5, 1, 1.5, 1.6, 2.
+Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-plan-preflight -->
 ```mermaid
@@ -410,6 +413,7 @@ flowchart LR
     Phase1_6["Phase 1.6"]
     knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_companion_context_ownership_md[companion-context-ownership]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_preflight_context_schema_md[preflight-context-schema]
     knowledge_workflow_resilience_md[workflow-resilience]
@@ -425,6 +429,7 @@ flowchart LR
     skill_al_dev_plan_preflight --> Phase1_6
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_artifact_contracts_md
+    skill_al_dev_plan_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
@@ -441,6 +446,7 @@ flowchart LR
     class Phase1_6 phaseNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
@@ -498,6 +504,7 @@ flowchart LR
     agent_al_dev_developer_traditional[al-dev-developer-traditional]
     knowledge_al_dev_develop_spawn_prompt_md[al-dev-develop-spawn-prompt]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_companion_context_ownership_md[companion-context-ownership]
     knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_scope_expansion_gate_md[scope-expansion-gate]
@@ -515,6 +522,7 @@ flowchart LR
     skill_al_dev_develop_orchestrate --> agent_al_dev_developer_traditional
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
+    skill_al_dev_develop_orchestrate --> knowledge_companion_context_ownership_md
     skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
     skill_al_dev_develop_orchestrate --> knowledge_intent_preflight_md
     skill_al_dev_develop_orchestrate --> knowledge_scope_expansion_gate_md
@@ -533,6 +541,7 @@ flowchart LR
     class agent_al_dev_developer_traditional agentNode
     class knowledge_al_dev_develop_spawn_prompt_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode
@@ -590,7 +599,7 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4, 5, 6.
+**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0–3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
@@ -659,17 +668,20 @@ flowchart LR
     skill_al_dev_commit[al-dev-commit]
     skill_al_dev_commit_execute[al-dev-commit-execute]
     skill_al_dev_commit_preflight[al-dev-commit-preflight]
+    knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_intent_preflight_md[intent-preflight]
     artifact_commit_preflight_md[.dev/commit-preflight.md]
 
     skill_al_dev_commit -.-> skill_al_dev_commit_execute
     skill_al_dev_commit -.-> skill_al_dev_commit_preflight
+    skill_al_dev_commit --> knowledge_artifact_contracts_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_commit --> artifact_commit_preflight_md
 
     class skill_al_dev_commit skillNode
     class skill_al_dev_commit_execute skillNode
     class skill_al_dev_commit_preflight skillNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class artifact_commit_preflight_md artifactNode
 ```
@@ -677,7 +689,7 @@ flowchart LR
 
 ### /al-dev-commit-execute
 
-Phases 0, 3, 4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
+Phases 0, 1, 2 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-execute -->
 ```mermaid
@@ -756,6 +768,7 @@ flowchart LR
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_commit_dispatch_template_md[commit-dispatch-template]
     knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
+    knowledge_companion_context_ownership_md[companion-context-ownership]
     knowledge_compile_lint_procedure_md[compile-lint-procedure]
     knowledge_compile_output_safeguard_md[compile-output-safeguard]
     knowledge_intent_preflight_md[intent-preflight]
@@ -774,6 +787,7 @@ flowchart LR
     skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
+    skill_al_dev_commit_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
@@ -793,6 +807,7 @@ flowchart LR
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
@@ -820,12 +835,14 @@ flowchart LR
     skill_al_dev_explore[al-dev-explore]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_bash_safe_patterns_md[bash-safe-patterns]
+    knowledge_companion_context_ownership_md[companion-context-ownership]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     artifact_2026_05_19_al_dev_explore_findings_md[.dev/2026-05-19-al-dev-explore-findings.md]
     artifact_project_context_md[.dev/project-context.md]
 
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_bash_safe_patterns_md
+    skill_al_dev_explore --> knowledge_companion_context_ownership_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_explore --> artifact_2026_05_19_al_dev_explore_findings_md
     skill_al_dev_explore --> artifact_project_context_md
@@ -833,6 +850,7 @@ flowchart LR
     class skill_al_dev_explore skillNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_bash_safe_patterns_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class artifact_2026_05_19_al_dev_explore_findings_md artifactNode
     class artifact_project_context_md artifactNode
@@ -937,7 +955,7 @@ flowchart LR
 
 ### /al-dev-release-notes
 
-Phases: 1, 1.5, 2, 3.
+Phases: 0–3.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-release-notes -->
 ```mermaid
@@ -1020,6 +1038,7 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_handoff[al-dev-handoff]
+    knowledge_artifact_contracts_md[artifact-contracts]
     artifact_explore_findings_md[.dev/explore-findings.md]
     artifact_project_context_md[.dev/project-context.md]
     artifact_source_explore_findings_md[.dev/source-explore-findings.md]
@@ -1029,6 +1048,7 @@ flowchart LR
     artifact_source_solution_plan_md[.dev/source-solution-plan.md]
     artifact_source_ticket_context_md[.dev/source-ticket-context.md]
 
+    skill_al_dev_handoff --> knowledge_artifact_contracts_md
     skill_al_dev_handoff --> artifact_explore_findings_md
     skill_al_dev_handoff --> artifact_project_context_md
     skill_al_dev_handoff --> artifact_source_explore_findings_md
@@ -1039,6 +1059,7 @@ flowchart LR
     skill_al_dev_handoff --> artifact_source_ticket_context_md
 
     class skill_al_dev_handoff skillNode
+    class knowledge_artifact_contracts_md knowledgeNode
     class artifact_explore_findings_md artifactNode
     class artifact_project_context_md artifactNode
     class artifact_source_explore_findings_md artifactNode

@@ -159,6 +159,7 @@ flowchart LR
         skill_al_dev_develop_orchestrate[al-dev-develop-orchestrate]
         skill_al_dev_explore[al-dev-explore]
         skill_al_dev_fix[al-dev-fix]
+        skill_al_dev_handoff[al-dev-handoff]
         skill_al_dev_help[al-dev-help]
         skill_al_dev_interview[al-dev-interview]
         skill_al_dev_investigate[al-dev-investigate]
@@ -203,6 +204,7 @@ flowchart LR
         knowledge_commit_dispatch_template_md[commit-dispatch-template]
         knowledge_commit_hook_recovery_patterns_md[commit-hook-recovery-patterns]
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
+        knowledge_companion_context_ownership_md[companion-context-ownership]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
         knowledge_compile_output_safeguard_md[compile-output-safeguard]
         knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
@@ -230,23 +232,27 @@ flowchart LR
         knowledge_workflow_routing_md[workflow-routing]
     end
 
+    skill_al_dev_commit --> knowledge_artifact_contracts_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_commit_execute --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
     skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
+    skill_al_dev_commit_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
     skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
     skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
+    skill_al_dev_develop_orchestrate --> knowledge_companion_context_ownership_md
     skill_al_dev_develop_orchestrate --> knowledge_developer_invocation_patterns_md
     skill_al_dev_develop_orchestrate --> knowledge_intent_preflight_md
     skill_al_dev_develop_orchestrate --> knowledge_scope_expansion_gate_md
     skill_al_dev_develop_orchestrate --> knowledge_workflow_resilience_md
     skill_al_dev_explore --> knowledge_artifact_contracts_md
     skill_al_dev_explore --> knowledge_bash_safe_patterns_md
+    skill_al_dev_explore --> knowledge_companion_context_ownership_md
     skill_al_dev_explore --> knowledge_explore_subagent_pattern_md
     skill_al_dev_fix --> knowledge_al_dev_fix_examples_md
     skill_al_dev_fix --> knowledge_architect_invocation_patterns_md
@@ -255,8 +261,10 @@ flowchart LR
     skill_al_dev_fix --> knowledge_developer_invocation_patterns_md
     skill_al_dev_fix --> knowledge_intent_preflight_md
     skill_al_dev_fix --> knowledge_scope_expansion_gate_md
+    skill_al_dev_handoff --> knowledge_artifact_contracts_md
     skill_al_dev_help --> knowledge_workflow_routing_md
     skill_al_dev_interview --> knowledge_artifact_contracts_md
+    skill_al_dev_investigate --> knowledge_artifact_contracts_md
     skill_al_dev_investigate --> knowledge_explore_subagent_pattern_md
     skill_al_dev_investigate --> knowledge_investigate_findings_template_md
     skill_al_dev_investigate --> knowledge_workflow_resilience_md
@@ -274,6 +282,7 @@ flowchart LR
     skill_al_dev_plan --> knowledge_workflow_resilience_md
     skill_al_dev_plan_preflight --> knowledge_al_dev_plan_phase_routing_md
     skill_al_dev_plan_preflight --> knowledge_artifact_contracts_md
+    skill_al_dev_plan_preflight --> knowledge_companion_context_ownership_md
     skill_al_dev_plan_preflight --> knowledge_intent_preflight_md
     skill_al_dev_plan_preflight --> knowledge_preflight_context_schema_md
     skill_al_dev_plan_preflight --> knowledge_workflow_resilience_md
@@ -321,6 +330,7 @@ flowchart LR
     class skill_al_dev_develop_orchestrate skillNode
     class skill_al_dev_explore skillNode
     class skill_al_dev_fix skillNode
+    class skill_al_dev_handoff skillNode
     class skill_al_dev_help skillNode
     class skill_al_dev_interview skillNode
     class skill_al_dev_investigate skillNode
@@ -361,6 +371,7 @@ flowchart LR
     class knowledge_commit_dispatch_template_md knowledgeNode
     class knowledge_commit_hook_recovery_patterns_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
+    class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
     class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode

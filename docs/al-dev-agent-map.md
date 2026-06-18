@@ -521,7 +521,7 @@
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
 **Tools:** MCP: bc-code-intelligence, MCP: microsoft-docs
-**Spawned by:** /al-dev-support-reply (research phase)
+**Spawned by:** /al-dev-support-reply
 
 **Inputs:**
 
@@ -544,7 +544,7 @@
 **Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
 **Model:** sonnet
 **Tools:** Write
-**Spawned by:** /al-dev-support-reply (reply phase)
+**Spawned by:** /al-dev-support-reply
 
 **Inputs:**
 
@@ -569,7 +569,7 @@
 **Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
 **Model:** haiku
 **Tools:** Bash, Write
-**Spawned by:** /al-dev-ticket (fetch + attachment-download phases in `--mode=context-only` and `--mode=full`)
+**Spawned by:** /al-dev-ticket
 
 **Inputs:**
 
