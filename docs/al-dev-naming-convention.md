@@ -79,3 +79,8 @@ are accepted; lenses should not re-flag them:
   (the `-apply` member was renamed from `-wait` for clarity).
 - `sync-documentation-maps-{agent|skill}-{audit|update}` — sync workflow agent
   family; named for the workflow they serve.
+- `implement-health-plan`, `ingest-friction-log`, `plan-health-findings`,
+  `record-health-dispositions`, `revise-health-plan` — health-loop phase family;
+  each is named for the workflow stage it serves, and a rename has high blast
+  radius across the loop (cross-references in sibling phase skills and the
+  health-loop breadcrumb), so it is not recommended.
