@@ -29,7 +29,9 @@ Returns absolute path only — no other prose.
 ## Instructions
 
 All relative paths in these instructions are from the repository root:
-`/Users/russelllaing/al-dev-shared`. Adjust paths if the working directory differs.
+`/Users/russelllaing/al-dev-shared`. Before proceeding, run
+`git rev-parse --show-toplevel` to confirm the repo root matches this path;
+if not, substitute the actual repo root in all relative paths below.
 
 Verify `.claude/knowledge/sync-map-update-shared.md` exists before following it;
 if it is absent, stop and emit:
