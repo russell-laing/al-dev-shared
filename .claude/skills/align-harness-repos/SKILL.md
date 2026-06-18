@@ -14,6 +14,7 @@ workflow:
     - profile-al-dev-shared/skills/
     - profile-al-dev-shared/agents/
     - profile-al-dev-shared/knowledge/
+  outputs: []   # console-only validator; emits findings to the terminal, no .dev artifact
   next: [audit-knowledge-quality]
 ---
 
@@ -85,8 +86,6 @@ Harness-specific tokens found in shared files:
   knowledge/workflow.md
     - Copilot tool token: "ask_user"
 ```
-
-Also list the seven forbidden classes described in the skill overview.
 
 If `ALIGN_EXIT` is 2 or higher (validator runtime error), stop immediately and
 report:
