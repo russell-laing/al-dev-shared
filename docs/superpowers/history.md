@@ -204,3 +204,4 @@ Current source of truth: active implementation guidance lives in the current sha
 2026-06-17 | plugin friction follow-ups (7 tasks) | implemented; rows closed: [#922, #923, #924, #925, #927, #928, #929]
 2026-06-17 | tooling design model-fit/promote/extend (3 tasks) | implemented; rows closed: [#930, #933, #934]
 2026-06-18 | tooling design handoff diagram fixes (2 tasks) | implemented; rows closed: [#942, #943]
+2026-06-18 | tooling quality fixes (8 tasks) | implemented; rows closed: [#891, #902, #947, #948, #949, #950, #951, #952]
