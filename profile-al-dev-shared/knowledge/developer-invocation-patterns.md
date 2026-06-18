@@ -550,6 +550,9 @@ Implementation Notes:
 - [Code quality standards: labels for errors, symbol preflight, compile
 
   after each file]
+- [Delegated-Task Scope Pack: in-scope objects/files, in-scope change
+  description, out-of-scope rule, and halt-and-report contract — see
+  `knowledge/scope-expansion-gate.md`]
 
 [Append SYMBOL_PREFLIGHT_GATE requirement]
 

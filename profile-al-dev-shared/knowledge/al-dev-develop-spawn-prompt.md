@@ -26,7 +26,10 @@ Each instantiated developer prompt must carry the following elements:
   (SetLoadFields, FieldCaption error handling, dependency injection,
   events for extensibility).
 - **Scope Expansion Gate rules** — the governance checkpoint from
-  `knowledge/scope-expansion-gate.md` that blocks out-of-scope edits.
+  `knowledge/scope-expansion-gate.md` that blocks out-of-scope edits. Carry the
+  Delegated-Task Scope Pack (in-scope objects/files, in-scope change
+  description, out-of-scope rule, halt-and-report contract) defined in that
+  file's "Delegated-Task Scope Pack" section.
 - **Symbol preflight evidence** — verified signatures and field/event
   evidence collected during planning, plus the preflight checklist from
   `knowledge/al-symbol-pre-flight.md`.
