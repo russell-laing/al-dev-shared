@@ -33,8 +33,9 @@ chain analysis.
    chain structure, not merely plausible.
 2. Outputs produced by one skill (listed in body as "writes X.md") that are
    never referenced as inputs by any other skill — orphaned outputs that could
-   be useful if consumed. To decide "never referenced": grep each output's
-   `.dev/` filename in the body text (prose instructions, not comments) across
+   be useful if consumed. To decide "never referenced": grep for the bare output
+   filename (e.g. `explore-findings.md`) in prose body text (prose instructions,
+   not comments) across
    only the other paths in `file_list`; zero matches = orphaned. A match that
    appears only inside a comment does not count as a reference. Do not search
    archived skill directories or let archived consumers suppress an
