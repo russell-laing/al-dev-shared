@@ -1,6 +1,6 @@
 ---
 description: "Generate and maintain AL project documentation — feature docs, API references, and setup guides. Spawned by the al-dev-document skill."
-tools: ["Read", "Write"]
+tools: ["Read", "Write", "Edit", "Bash"]
 ---
 
 
@@ -50,7 +50,36 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 **Diagrams:** Include a Mermaid flowchart for `functional` and `user` audiences when the workflow has 3 or more decision points **or** 3 or more actors. If neither threshold is met, omit the diagram. Always read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram block.
 
+## File Size Handling
+
+Before reading any markdown file:
+
+1. Check the byte count first — e.g. `wc -c <file>`.
+2. If the file is large (over ~50 000 bytes): do **not** attempt a whole-file read.
+   - Locate relevant content by line number first — e.g. `grep -n`.
+   - Read in bounded chunks around those line numbers; never read more than
+     ~300 lines in a single read.
+3. Files in testing/UAT directories often contain embedded base64 images — treat
+   them as potentially oversized until the byte-count check confirms otherwise.
+
 ## Documentation Guidelines
+
+### Safe Editing Practices
+
+When applying a targeted edit to an existing file:
+
+- **Match a unique target.** The search text must identify exactly one location.
+  Confirm uniqueness before editing — e.g. `grep -c "<search text>" <file>`. If
+  the count is greater than 1, extend the search text with 2–3 lines of
+  surrounding context until it matches a single location.
+- **Carry surrounding context.** Include enough neighbouring lines that the
+  location is unambiguous and the replacement preserves the file's structure.
+- **Read before you edit.** Read the target region (or the whole file when it is
+  small) so the edit is applied against current content, not an assumption.
+- **Replace every occurrence only when safe.** Use a replace-all mode only when
+  the replacement text is correct at every matched location.
+- Use the active harness's supported edit primitive; consult that harness's own
+  documentation for its exact edit parameters.
 
 ### Writing Style
 
