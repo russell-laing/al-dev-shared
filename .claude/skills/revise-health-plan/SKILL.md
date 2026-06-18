@@ -110,6 +110,10 @@ These review findings recur across plans; apply the canonical fix:
 See `.claude/knowledge/correction-patterns.md` for the canonical correction-patterns
 table. When classifying review findings, consult this list first.
 
+If a finding matches no entry in `correction-patterns.md`, treat it as
+unclassified and surface it at the Phase 2 user gate for an explicit decision
+rather than silently dropping or auto-classifying it.
+
 ## Phase 4 — Coverage reconciliation and self-verification
 
 ### Coverage reconciliation (mandatory)
