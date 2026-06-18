@@ -117,7 +117,7 @@ These gaps exist in the currently active, deployed skill chains and require imme
 
 **Impact:** Plans built on outdated exploration may miss recent architectural changes, bug fixes, or refactoring. Users may commit decisions based on findings that no longer apply, leading to rework or technical debt.
 
-**Mitigation Status:** None documented. No session-boundary check or freshness validation in consuming skills.
+**Mitigation Status:** Addressed by `knowledge/artifact-freshness-gate.md`, which generalises the compile-log freshness check to explore findings and is required via rule 6 of `artifact-contracts.md`.
 
 #### 3. Investigate Findings Dual Route
 
@@ -141,7 +141,7 @@ These gaps exist in the currently active, deployed skill chains and require imme
 
 **Impact:** Resume logic may act on old lint findings that have already been addressed; users see conflicting guidance when multiple reports exist. Accumulation can create ambiguity about which issues remain unresolved.
 
-**Mitigation Status:** None documented. Lint reports are optional consumption; no cleanup or consolidation step exists.
+**Mitigation Status:** Freshness now governed by `knowledge/artifact-freshness-gate.md` (lint reports are stale once any source file changes after the report); reuse is gated by rule 6 of `artifact-contracts.md`.
 
 ## Future Enhancement Gaps
 

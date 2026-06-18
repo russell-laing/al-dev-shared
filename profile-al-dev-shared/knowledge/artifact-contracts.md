@@ -18,6 +18,7 @@ Use this document when:
 3. If a downstream workflow depends on a handoff artifact, name the exact file pattern it expects.
 4. Final completion, validation, “clean”, or “ready” claims require the success evidence listed for the current skill to exist and be read in the current run.
 5. If the required handoff artifact or success evidence is missing, stop and report the missing file instead of guessing.
+6. Before reusing a durable artifact produced in an earlier run or session as current evidence, apply the freshness gate in `knowledge/artifact-freshness-gate.md`; a stale artifact is not valid success evidence.
 
 ## Contract Matrix
 
