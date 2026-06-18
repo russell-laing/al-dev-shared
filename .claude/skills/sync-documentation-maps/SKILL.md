@@ -72,7 +72,14 @@ sequence (steps 1–4 from the header) and stop without dispatching.
 
 ### Cadence guard — no dispatch over an uncollected run
 
-Check the checkpoint before dispatching. If `status` is not `"done"`, stop unless `FORCE=true`:
+Check the checkpoint before dispatching. This is a literal-string comparison on
+the checkpoint `status` field (the `2>/dev/null` below silently collapses the
+absent-file case, so handle it explicitly):
+
+- file absent or unreadable → no prior run; proceed
+- `status == "done"` → prior run finished; proceed
+- any other value (e.g. `"audit"`, `"collect"`, `"apply"`, null) → a run is
+  in progress; stop unless `FORCE=true`
 
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json 2>/dev/null
@@ -227,7 +234,10 @@ changes are written but not committed (dry-run / review mode).
 
 **`--force`** (optional)
 Override the Phase 0 cadence guard and dispatch even when the prior run's
-checkpoint status is not `done`.
+checkpoint status is not `done`. The guard is a literal-string check on the
+checkpoint `status` field: an absent or unreadable checkpoint and `status ==
+"done"` both proceed without `--force`; any other value (e.g. `"audit"`,
+`"collect"`, `"apply"`, null) blocks dispatch unless `--force` is given.
 
 **`--no-update`** (optional)
 Print the maintained four-skill async sequence — `/sync-documentation-maps` →
