@@ -24,7 +24,7 @@ A markdown findings block:
 | High/Medium/Low | skills/name/SKILL.md:NN | description | fix description |
 ```
 
-Returns `*No issues found.*` when no violations are detected. The caller includes
+Returns `_No issues found._` when no violations are detected. The caller includes
 this block verbatim in the aggregated dossier.
 
 ---
@@ -45,8 +45,8 @@ For each such agent type:
 
 **What constitutes an "identical" pattern:** a structural workflow match, not an
 exact string match. Treat patterns as identical when all three hold (ignoring
-whitespace, ordering, and incidental wording — *incidental* meaning
-pronouns, determiners, and synonym choices; as opposed to *structural* elements
+whitespace, ordering, and incidental wording — _incidental_ meaning
+pronouns, determiners, and synonym choices; as opposed to _structural_ elements
 like step counts, context-field names, and output expectations):
 
 Examples — **ignorable**: "Dispatch the agent" vs "Run the agent" (synonym), "Read the file" vs "Read each file" (determiner). **Non-ignorable**: "3 context fields" vs "5 context fields" (step-count change), `REPO_PATH` vs `ROOT_DIR` (context-field name change).
@@ -79,4 +79,4 @@ If no issues found:
 
 ### Shared Execution Backbone Findings
 
-*No issues found.*
+_No issues found._
