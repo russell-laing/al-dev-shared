@@ -339,3 +339,21 @@ print('PASS')
 
 If `pytest` fails with a libexpat conflict, use this pattern as a fallback
 for Python test verification in al-dev-shared sessions.
+
+## Tool Usage
+
+Use the Agent tool to dispatch audit and health teams. Do not use RemoteTrigger —
+it fails schema validation in this repo's workflows.
+
+## Skill Invocation
+
+Before invoking any health or plan skill, confirm argument names match the
+skill's contract. `tooling` and `plugin` are surface values; `design`, `quality`,
+`naming`, and `all` are dimension values. Passing a surface as `--dimension`
+stalls the run silently.
+
+## Health Ledger
+
+After committing any `fixed` ledger rows, confirm the post-commit hook synced
+those rows to the correct month shard under `docs/health/dispositions-history/`.
+Do not declare the loop closed until shard presence is verified.

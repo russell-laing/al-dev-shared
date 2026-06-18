@@ -27,6 +27,15 @@
             "command": "python3 /Users/russelllaing/al-dev-shared/.claude/hooks/post_edit_markdownlint.py"
           }
         ]
+      },
+      {
+        "matcher": "Bash(git commit.*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/russelllaing/al-dev-shared/scripts/sync_history_shard.py 2>&1 | tail -5"
+          }
+        ]
       }
     ],
     "Stop": [
