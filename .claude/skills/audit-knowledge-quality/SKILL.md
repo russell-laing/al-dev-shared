@@ -156,10 +156,11 @@ After writing the report:
 1. Print: `Knowledge quality report written to docs/al-dev-knowledge-quality.md`
 2. Present the audit summary (findings count by severity and top 3 HIGH issues).
 
-**USER_GATE — fix-guidance presentation.** The written report
-(`docs/al-dev-knowledge-quality.md`) always contains the `## Fix Recommendations`
-and `## High-Priority Fix Tasks` blocks. This gate controls only whether they are
-re-presented interactively. After presenting the audit summary, ask:
+**USER_GATE — fix-guidance presentation.** The `## Fix Recommendations` and
+`## High-Priority Fix Tasks` blocks already exist in the report
+(`docs/al-dev-knowledge-quality.md`): Phase 3 wrote these blocks unconditionally;
+this phase gates only their interactive re-presentation. After presenting the
+audit summary, ask:
 
 > HIGH-severity stub findings were found. Walk through the fix guidance now?
 > (yes / no)
