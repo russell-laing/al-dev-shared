@@ -675,10 +675,56 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
     return findings
 
 
-def _cli_match(findings_path: Path, ledger_path: Path) -> int:
-    rows = materialize_current_view(parse_ledger_file(ledger_path))
+def _event_to_legacy_row(event: dict[str, object]) -> dict[str, str]:
+    """Convert a JSONL event dict to a legacy row dict for match_against_ledger."""
+    return {
+        "id": str(event.get("event_id", "")),
+        "surface": str(event.get("surface", "")),
+        "dimension": str(event.get("dimension", "")),
+        "object": str(event.get("object", "")),
+        "finding": str(event.get("finding", "")),
+        "disposition": str(event.get("disposition", "")),
+        "date": str(event.get("date", "")),
+        "note": str(event.get("evidence", "")),
+    }
+
+
+def _cli_match(
+    findings_path: Path,
+    ledger_path: Path,
+    events_root: Path | None = None,
+) -> int:
+    """Classify findings against the JSONL event store when present, else Markdown ledger.
+
+    When ``events_root`` exists (or the default ``docs/health/dispositions-events/``
+    directory is present), the JSONL event store is used as the authoritative
+    source. The Markdown ``ledger_path`` is used only as a fallback for
+    repositories that do not yet have JSONL events. This prevents a stale or
+    absent Markdown file from silently hiding newer JSONL events.
+    """
+    _DEFAULT_EVENTS_ROOT = Path("docs/health/dispositions-events")
+    resolved_events_root = events_root if events_root is not None else _DEFAULT_EVENTS_ROOT
+
+    if resolved_events_root.exists() and any(resolved_events_root.rglob("*.jsonl")):
+        # Primary path: read from JSONL event store
+        events = list(iter_event_rows(resolved_events_root))
+        current_events = materialize_current_events(events)
+        rows = [_event_to_legacy_row(e) for e in current_events]
+        source_label = f"JSONL ({resolved_events_root})"
+    else:
+        # Fallback: legacy Markdown ledger (historical compatibility only)
+        if not ledger_path.exists():
+            print(
+                f"No JSONL event store found at {resolved_events_root} and "
+                f"no Markdown ledger at {ledger_path}; nothing to match against."
+            )
+            return 1
+        rows = materialize_current_view(parse_ledger_file(ledger_path))
+        source_label = f"Markdown ledger ({ledger_path}) [legacy fallback]"
+
     findings = parse_findings_file(findings_path)
     results = match_against_ledger(findings, rows)
+    print(f"# source: {source_label}")
     counts = {"suppress": 0, "verify": 0, "keep": 0}
     for r in results:
         counts[str(r["classification"])] += 1
@@ -704,6 +750,13 @@ if __name__ == "__main__":
     m.add_argument("--findings", required=True, type=Path)
     m.add_argument(
         "--ledger", type=Path, default=Path("docs/health/dispositions.md")
+    )
+    m.add_argument(
+        "--events-root",
+        type=Path,
+        default=None,
+        help="Override default JSONL events root (docs/health/dispositions-events/). "
+             "When present and non-empty, takes precedence over the Markdown ledger.",
     )
 
     _HISTORY_DEFAULT = Path("docs/health/dispositions-history")
@@ -750,7 +803,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.command == "match":
-        raise SystemExit(_cli_match(args.findings, args.ledger))
+        raise SystemExit(_cli_match(args.findings, args.ledger, args.events_root))
     if args.command == "append_row":
         row = {
             f: getattr(args, f)

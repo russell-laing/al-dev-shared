@@ -134,6 +134,14 @@ full dispatch procedure.
 
 ### Disposition suppression
 
+Run `python3 scripts/health_disposition_store.py match` against the JSONL event
+store and generated views. Read `docs/health/dispositions-index.json` first for
+counts, then read `docs/health/dispositions-open.md` only when open accepted
+events need inspection. New decisions are appended with `append_event` and
+views are regenerated; do not call `append_row`, read
+`docs/health/dispositions.md` for ordinary suppression, or use
+`iter_history_rows` for new closure chronology.
+
 Run the deterministic matcher first to get a candidate shortlist, then confirm:
 
 ```bash
@@ -145,15 +153,8 @@ Apply the four outcomes to the confirmed set:
 declined/grandfathered → suppress; fixed → re-verify (spot-check then drop or
 flag regressed); accepted → keep annotated. The matcher is a high-precision
 candidate list, not an auto-decision — confirm each `suppress`/`verify` against
-the cited row and still hand-scan the `keep` set for missed matches. See
+the cited event and still hand-scan the `keep` set for missed matches. See
 `report-input-gates.md §1d` for the full suppression rules.
-
-- Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
-- Read `docs/health/dispositions.md` for ordinary suppression and planning checks.
-- If a step needs closure chronology, query the history store via `scripts/health_disposition_store.py iter_history_rows`.
-- Verification must confirm both artifacts changed together:
-  - one history shard appended under `docs/health/dispositions-history/`
-  - `docs/health/dispositions.md` regenerated
 
 ## Phase 3 — Rank and Write Dossier
 

@@ -1,9 +1,10 @@
 # Report Input Gates
 
 > See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-history/` is the
-> append-only source of truth; `docs/health/dispositions.md` is the generated
-> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+> authoritative storage layout. `docs/health/dispositions-events/` is the
+> append-only source of truth; `docs/health/dispositions-open.md` and
+> `docs/health/dispositions-index.json` are generated read artifacts.
+> Never append rows directly to `docs/health/dispositions.md`.
 
 Operative procedures for the `/plugin-health-report` Phase 2 filter stages (sub-sections 1c and 1d).
 These rules are canonical; the SKILL.md sub-sections point here.
@@ -98,6 +99,14 @@ Record the count of dropped findings so the filter is auditable, not silent.
 
 ## 1d — Disposition suppression
 
+Run `python3 scripts/health_disposition_store.py match` against the JSONL event
+store and generated views. Read `docs/health/dispositions-index.json` first for
+counts, then read `docs/health/dispositions-open.md` only when open accepted
+events need inspection. New decisions are appended with `append_event` and
+views are regenerated; do not call `append_row`, read
+`docs/health/dispositions.md` for ordinary suppression, or use
+`iter_history_rows` for new closure chronology.
+
 **Run the deterministic matcher first.** Before judging matches by hand, run:
 
 ```bash
@@ -105,18 +114,17 @@ python3 scripts/health_disposition_store.py match \
   --findings docs/health/YYYY-MM-DD-<surface>-findings.md
 ```
 
-It classifies each finding against the current-view ledger as `suppress`
-(matches a declined/grandfathered row), `verify` (matches a fixed row), or
+It classifies each finding against the JSONL event store as `suppress`
+(matches a declined/grandfathered event), `verify` (matches a fixed event), or
 `keep` (no decided match), matching on surface + dimension + object membership +
 finding-type with rephrase-tolerant text overlap. The output is a
 **high-precision candidate shortlist, not an auto-decision**: confirm each
-`suppress`/`verify` candidate against the cited ledger row before acting, and
+`suppress`/`verify` candidate against the cited event before acting, and
 still scan the `keep` set by hand for matches the script missed (it favours
 precision over recall, so heavily-rephrased matches can fall through). Then
 apply the rules below to the confirmed set.
 
-Read `docs/health/dispositions.md` (skip if absent). Match each parsed finding
-against ledger rows by object + issue essence, then apply the
+Match each parsed finding against events by object + issue essence, then apply the
 **disposition suppression rules** from
 `../../knowledge/health-audit-preconditions.md`:
 

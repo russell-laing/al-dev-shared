@@ -5,7 +5,7 @@ scenarios:
     user_prompt: "implement the health plan"
     expected_artifacts:
       - ".dev/implement-health-plan-progress.md"
-    notes: "Primary trigger phrase — should locate the latest plan containing closes_rows: and begin Phase 0."
+    notes: "Primary trigger phrase — should locate the latest plan containing closes_event_ids: and begin Phase 0."
 
   - id: run-the-health-plan
     status: golden

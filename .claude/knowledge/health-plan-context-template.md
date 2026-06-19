@@ -24,15 +24,20 @@ Phase 3 of `plan-health-findings`. Pass all items in this list as context to
   | Extend | New downstream consumer reads the artifact | `grep` (read site) |
   | Trim / Remodel / Align | Field/tool removed or value changed | `grep` (presence/absence) |
 
-- The ledger row IDs captured in Phase 1 for the accepted findings each
-  task implements. Each task's **verification block** must include a
-  `closes_rows:` line in this exact format:
+- The event IDs captured in Phase 1 for the accepted findings each task
+  implements. Each task's **verification block** must include a
+  `closes_event_ids:` block in this exact format:
 
-  ```text
-  closes_rows: ["#NNN", "#MMM", ...]   # IDs from docs/health/dispositions.md
+  ```yaml
+  closes_event_ids:
+    - disp_20260619_000001
+    - disp_20260619_000002
   ```
 
-  Place this line **inside the verification block**, not in the task title or
+  Use `closes_event_ids` from `docs/health/dispositions-open.md` or targeted store
+  queries; do not use Markdown row numbers or legacy IDs.
+
+  Place this block **inside the verification block**, not in the task title or
   header. `implement-health-plan` Phase 3 greps for this token to close the
   ledger entries after implementation.
 

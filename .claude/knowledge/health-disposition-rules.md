@@ -1,9 +1,10 @@
 # Health Disposition Rules
 
 > See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-history/` is the
-> append-only source of truth; `docs/health/dispositions.md` is the generated
-> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+> authoritative storage layout. `docs/health/dispositions-events/` is the
+> append-only source of truth; `docs/health/dispositions-open.md` and
+> `docs/health/dispositions-index.json` are generated read artifacts.
+> Never append rows directly to `docs/health/dispositions.md`.
 
 Shared rules extracted from `/record-health-dispositions` for loop-state adoption,
 batch guards, and re-litigation prevention.
@@ -39,12 +40,12 @@ on that finding only.
 
 ## Closure Write-Back Rule (binding on fix sessions)
 
-Any session that resolves an `accepted` row must close the ledger in the same
+Any session that resolves an `accepted` event must close the ledger in the same
 session. Use `.claude/knowledge/ledger-closure-protocol.md` for the background
 and full rule set.
 
-- Uncommitted accepted row → flip it in place to `fixed`.
-- Committed accepted row → append a later `fixed` row with the resolving commit
-  and `closes #NNN`.
+- Append a `fixed` event via `scripts/health_disposition_store.py append_event`,
+  setting `closes_event_ids` to the accepted `event_id` being resolved.
+- Run `scripts/health_disposition_store.py regenerate` after appending.
 - After the source change, run `python3 scripts/check_ledger_staleness.py` to
-  confirm the row no longer appears as effectively open.
+  confirm the event no longer appears as effectively open.

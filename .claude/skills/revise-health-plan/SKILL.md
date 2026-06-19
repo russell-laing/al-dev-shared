@@ -19,10 +19,10 @@ workflow:
   inputs:
     - docs/superpowers/plans/<date>-<topic>-commentary.md
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions.md
+    - docs/health/dispositions-open.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions.md
+    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
   next: [implement-health-plan]
 ---
 
@@ -57,15 +57,16 @@ intention is not proof.
 ## Phase 1 — Read inputs and classify
 
 1. **Read all three inputs in full:** the review document, the target plan, and
-   `docs/health/dispositions.md` (header for the column schema + `closes #<ID>`
-   convention, and the accepted rows the plan covers).
+   `docs/health/dispositions-open.md` (the accepted events the plan covers and
+   their `event_id` values used in `closes_event_ids:`).
 2. **Classify every finding** (see the decision below) into in-scope vs
    out-of-scope. List them before editing anything.
 3. **Resolve judgment forks at a user gate** — do not pick silently.
 4. **Apply in-scope corrections** to the plan (see Recurring correction patterns).
-5. **Re-disposition out-of-scope findings** to the ledger: append one row per ID,
-   same ID, `declined`/`grandfathered`, with an exact `closes #<ID>` token in the
-   note. Never rewrite the original `accepted` row.
+5. **Re-disposition out-of-scope findings** to the ledger: append a new
+   `declined` or `grandfathered` event whose `closes_event_ids` lists the
+   accepted event IDs it settles. Do not reuse `legacy_id` as the closure key.
+   Never rewrite the original `accepted` event.
 6. **Reconcile coverage** (mandatory — Step gap the baseline misses).
 7. **Self-verify structure** (mandatory greps) before claiming done.
 8. **Update the loop-state breadcrumb and hand off** to `/implement-health-plan`
@@ -123,26 +124,26 @@ rather than silently dropping or auto-classifying it.
 
 ### Coverage reconciliation (mandatory)
 
-The accepted set the plan claims (e.g. Provenance "#595–#644") must equal
-`plan closes_rows ∪ ledger re-dispositions`, with **no ID in both** and **none
-missing**. Compute it explicitly:
+The accepted set the plan claims must equal
+`plan closes_event_ids + re-disposition closes_event_ids = accepted event set`,
+with **no event_id in both** and **none missing**. Compute it explicitly:
 
 ```bash
-# every accepted ID resolved exactly once:
-# (plan closes_rows arrays)  ∪  (new ledger rows with closes #<ID>)  ==  accepted range
+# every accepted event_id resolved exactly once:
+# (plan closes_event_ids lists)  ∪  (new ledger events with closes_event_ids)  ==  accepted event set
 ```
 
-State the arithmetic in your summary (e.g. "30 plan rows + 20 ledger rows = 50 = #595–#644").
+State the arithmetic in your summary (e.g. "30 plan events + 20 re-disposition events = 50 total").
 
 ### Self-verification (mandatory before claiming done)
 
 ```bash
 PLAN=<plan-path>
-grep -c '^### Task ' "$PLAN"                       # task count
-grep -cE '^- `closes_rows:' "$PLAN"                # must equal task count
-grep -E '^- `closes_rows:' "$PLAN" | grep -oE '#[0-9]+' | sort | uniq -d   # expect empty (no dup IDs)
+grep -c '^### Task ' "$PLAN"                           # task count
+grep -cE '^\s+closes_event_ids:' "$PLAN"              # must equal task count
+grep -E '^\s+-\s+disp_' "$PLAN" | sort | uniq -d      # expect empty (no dup event IDs)
 grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/.*"-m "//' | awk '{ if (length>72) print "OVER 72: " $0 }'
-# no ID appears in BOTH a plan closes_rows and a new ledger re-disposition
+# no event_id appears in BOTH a plan closes_event_ids and a new re-disposition closes_event_ids
 ```
 
 ### Common mistakes
@@ -151,7 +152,7 @@ grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/.*"-m "//' | awk '{ if (len
 |---|---|
 | Silently re-authoring a task the review flagged as not-earning-closure | Surface the re-author/re-disposition fork at a user gate |
 | Applying every finding to the plan; never touching the ledger | Out-of-scope findings re-disposition to the ledger, not plan tasks |
-| Appending ledger rows without a `closes #<ID>` token | Each re-disposition reuses the ID and carries a greppable `closes #<ID>` |
+| Appending re-disposition events without `closes_event_ids` | Each re-disposition carries `closes_event_ids` listing the accepted event IDs it settles |
 | Editing the executor task in place | It runs last with a restart boundary |
 | Claiming done without coverage/structure checks | Run the two mandatory verification blocks first |
 | Leaving stale Goal/Provenance counts after dropping a task | Update counts and the accepted range |

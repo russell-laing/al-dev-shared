@@ -2,8 +2,8 @@
 name: plan-health-findings
 description: >-
   Verify and plan accepted health-audit findings (formerly
-  verify-map-suggestions). Reads accepted rows from
-  docs/health/dispositions.md, runs a deterministic disposition matcher in
+  verify-map-suggestions). Reads accepted events from
+  docs/health/dispositions-open.md, runs a deterministic disposition matcher in
   Phase 1 to classify findings before rubber-ducking proceeds, rubber-ducks each
   finding against the live codebase before any plan content is written, then produces a verified
   implementation plan via the writing-plans sub-skill. Filter the worklist by
@@ -24,7 +24,8 @@ workflow:
   invoked-by: user
   repeatable: true
   inputs:
-    - docs/health/dispositions.md
+    - docs/health/dispositions-open.md
+    - docs/health/dispositions-index.json
     - docs/health/<date>-<surface>-health.md
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
   outputs:
@@ -134,8 +135,8 @@ topic contains the current surface keyword and any concrete dimension keyword
 (`design`, `quality`, or `naming`). Emit:
 
 > Note: `<surface>/<dimension>` findings were recently implemented on `<date>`
-> (plan: `<topic>`). Verify that `docs/health/dispositions.md` reflects those
-> closures before planning again.
+> (plan: `<topic>`). Verify that `docs/health/dispositions-open.md` and
+> `docs/health/dispositions-index.json` reflect those closures before planning again.
 
 This is an informational check — do not block planning.
 
@@ -209,23 +210,23 @@ python3 scripts/health_disposition_store.py match \
 The matcher returns a **high-precision candidate shortlist** classifying each
 finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify`
 candidate against the cited ledger row before acting. Read only the specific
-rows the matcher flags — do not read the full `docs/health/dispositions.md`
-ledger.
+events the matcher flags — do not read the full event store or the generated
+dispositions.md view directly.
+
+Read `docs/health/dispositions-index.json` first. If `open_accepted` is zero,
+stop: there are no accepted findings to plan. If it is nonzero, read
+`docs/health/dispositions-open.md` and carry only the relevant `event_id` values
+into plan tasks as `closes_event_ids`.
 
 - **`keep` with `accepted` status:** the primary planning input — keep it.
-  **Capture the `#NNN` ID from the ID column** of each accepted row
-  (the machine-readable identifier in the leftmost column). Carry this ID
-  forward to Phase 4 so each plan task can record which ledger rows it closes.
+  **Capture the `event_id`** from `docs/health/dispositions-open.md` for each
+  accepted event. Carry this `event_id` forward to Phase 4 so each plan task
+  can record which events it closes in `closes_event_ids`.
 - **`suppress`** (declined/grandfathered match): skip (note the skip count).
 - **`verify`** (fixed match): skip (note the skip count).
-- **No matched row** (`keep` with no ledger entry): undispositioned — list
+- **No matched event** (`keep` with no ledger entry): undispositioned — list
   them and ask the user whether to include them or record dispositions first
   via `/record-health-dispositions`.
-- Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
-- If a step needs closure chronology, query the history store via `scripts/health_disposition_store.py iter_history_rows`.
-- Verification must confirm both artifacts changed together:
-  - one history shard appended under `docs/health/dispositions-history/`
-  - `docs/health/dispositions.md` regenerated
 
 Apply filters in this order:
 
@@ -373,9 +374,9 @@ Pass as context to writing-plans all items listed in
 `.claude/knowledge/health-plan-context-template.md`.
 
 > **Survival caveat:** After writing-plans completes, run
-> `grep -c "closes_rows:" <plan-path>` and confirm the count equals the number
+> `grep -c "closes_event_ids:" <plan-path>` and confirm the count equals the number
 > of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
-> `closes_rows: [...]` line inside each task's verification block before handoff.
+> `closes_event_ids:` block inside each task's verification block before handoff.
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven / Inline" prompt
   or ask "Which approach?" — the health loop overrides those endings. After writing-plans
@@ -392,13 +393,13 @@ Plan saves to:
 `superpowers:writing-plans` ends with its own **Execution Handoff** offering
 "Subagent-Driven" or "Inline" execution. **Those endings do not apply in the
 health loop** — executing the plan through them skips `/implement-health-plan`
-Phase 4, so the `closes_rows:` rows are never written `fixed` and the loop
+Phase 4, so the `closes_event_ids:` events are never written `fixed` and the loop
 never closes. Phase 4 already instructed `writing-plans` to suppress that
 handoff; this phase is the authoritative ending. If the "Which approach?"
 prompt appeared anyway, do **not** answer it — supersede it by running the
 steps below.
 
-1. **Confirm the plan carries `closes_rows:`** — `grep -c "closes_rows:" <plan-path>`.
+1. **Confirm the plan carries `closes_event_ids:`** — `grep -c "closes_event_ids:" <plan-path>`.
    If the count is 0, the survival caveat in Phase 4 was violated; fix the plan
    before handing off.
 
@@ -408,14 +409,14 @@ steps below.
    - `stage_completed: plan-health-findings`
    - `completed_at:` today's ISO date
    - `next_command: /implement-health-plan --plan <plan-path>`
-   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions.md`
+   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions-open.md`
    - `fresh_session_recommended: true`
    - `note:` run `/implement-health-plan` to execute AND close the ledger; do
      NOT use the writing-plans Subagent-Driven/Inline options — they skip
      ledger close-back.
 
 3. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
-   `<plan-path>` with `closes_rows:` for ledger close-back. This transition is
+   `<plan-path>` with `closes_event_ids:` for ledger close-back. This transition is
    context-heavy — start a **fresh session** and run
    `/implement-health-plan --plan <plan-path>` to execute the plan and close the
    ledger. (Ignore the writing-plans Subagent-Driven/Inline prompt — it bypasses

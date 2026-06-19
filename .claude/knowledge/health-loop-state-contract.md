@@ -93,7 +93,7 @@ that dispatches sub-agents or re-reads many full files — notably
 `superpowers:writing-plans`. That sub-skill's **Execution Handoff** section
 offers its own two endings ("Subagent-Driven / Inline"). Inside the health
 loop those endings are **wrong**: executing the plan through them skips
-`/implement-health-plan` Phase 3, so the `closes_rows:` ledger rows are never
+`/implement-health-plan` Phase 3, so the `closes_event_ids:` events are never
 written `fixed` and the loop silently never closes. `/plan-health-findings`
 MUST therefore (a) instruct `writing-plans`, in the context it passes, **not**
 to present its Execution Handoff, and (b) as a backstop, if that prompt appears

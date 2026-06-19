@@ -1,9 +1,10 @@
 # Health Audit Preconditions
 
 > See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-history/` is the
-> append-only source of truth; `docs/health/dispositions.md` is the generated
-> current-state view. Never append rows directly to `docs/health/dispositions.md`.
+> authoritative storage layout. `docs/health/dispositions-events/` is the
+> append-only source of truth; `docs/health/dispositions-open.md` and
+> `docs/health/dispositions-index.json` are generated read artifacts.
+> Never append rows directly to `docs/health/dispositions.md`.
 
 Shared precondition and filtering rules for the health-audit loop. Referenced by
 `/plugin-health-discover` (cadence + stale-open guards) and
@@ -13,9 +14,11 @@ Canonical filter vocabulary lives in `health-filter-contract.md`.
 ## Disposition coverage criterion (cadence guard)
 
 A prior dossier counts as **dispositioned** when every *actionable* finding in it
-has a ledger row in `docs/health/dispositions.md` — that is, a row whose
-disposition is `accepted`, `declined`, `grandfathered`, or `fixed`. Non-actionable
-lens lines (fix field states no action required) do not need a row.
+has a disposition event in the JSONL store (`docs/health/dispositions-events/`) —
+that is, an event whose disposition is `accepted`, `declined`, `grandfathered`,
+or `fixed`. Read `docs/health/dispositions-index.json` for a quick count check,
+then `docs/health/dispositions-open.md` for the open accepted list. Non-actionable
+lens lines (fix field states no action required) do not need an event.
 
 - If coverage exists for the prior dossier, proceed.
 - If actionable findings from the prior dossier have no ledger row, they are
@@ -65,9 +68,10 @@ python3 scripts/select_health_artifacts.py \
 ```
 
 **Disposition-coverage test:** If a dossier exists, check whether its actionable
-findings have disposition coverage in `docs/health/dispositions.md` per the
-*Disposition coverage criterion* section above. A single recent row is not enough —
-every actionable finding needs its own ledger row.
+findings have disposition coverage in the JSONL event store per the
+*Disposition coverage criterion* section above. Read
+`docs/health/dispositions-index.json` for a quick count check. A single recent
+event is not enough — every actionable finding needs its own event.
 
 **Warning branch (undispositioned dossier):** If the ledger is absent or coverage
 is incomplete, print this warning as plain assistant text and ask the binary

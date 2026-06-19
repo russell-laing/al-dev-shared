@@ -2,10 +2,9 @@
 name: implement-health-plan
 description: >-
   Closes the health-audit loop: executes an accepted implementation plan,
-  verifies each change, and appends `fixed` rows to docs/health/dispositions.md
-    and its monthly history shards (docs/health/dispositions-history/YYYY/YYYY-MM.md)
-  for every `closes_rows:` entry (the distinguishing ledger close-back).
-  Locates the latest docs/superpowers/plans/ plan containing `closes_rows:`,
+  verifies each change, and appends `fixed` events to the JSONL event store
+  for every `closes_event_ids:` entry (the distinguishing ledger close-back).
+  Locates the latest docs/superpowers/plans/ plan containing `closes_event_ids:`,
   executes tasks inline (one at a time), archives consumed artifacts, and
   optionally triggers downstream regeneration.
   Triggers on:
@@ -18,9 +17,9 @@ workflow:
   repeatable: true
   inputs:
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions.md
+    - docs/health/dispositions-open.md
   outputs:
-    - docs/health/dispositions.md
+    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-health-plan-progress.md
   next: [projection-sync, align-harness-repos, plugin-health-audit]
 ---
@@ -28,13 +27,13 @@ workflow:
 # Implement Health Plan
 
 Closes the self-healing loop by executing an accepted implementation plan
-produced by `/plan-health-findings` and writing `fixed` rows back to the
-disposition ledger for every `closes_rows:` entry in the plan.
+produced by `/plan-health-findings` and appending `fixed` events to the JSONL
+event store for every `closes_event_ids:` entry in the plan.
 
 Loop position:
 
 `/plugin-health-audit` → dossier → `/record-health-dispositions` →
-`/plan-health-findings` → plan → **`/implement-health-plan`** → fixed rows →
+`/plan-health-findings` → plan → **`/implement-health-plan`** → fixed events →
 `/projection-sync` / `/align-harness-repos`
 
 ---
@@ -52,14 +51,16 @@ intention is not proof.
 **Inputs:**
 
 - `docs/superpowers/plans/<date>-*.md` — the accepted plan (must contain
-  `closes_rows:` entries)
-- `docs/health/dispositions.md` — the live disposition ledger
+  `closes_event_ids:` entries)
+- `docs/health/dispositions-open.md` — the live open accepted events
+- `docs/health/dispositions-index.json` — for count verification
 - Live subject files named in the plan tasks (skills, agents, knowledge docs)
 
 **Outputs:**
 
 - Edited subject files (from task execution)
-- `fixed` rows appended to `docs/health/dispositions.md`
+- `fixed` JSONL events appended to `docs/health/dispositions-events/`
+- Regenerated views: `dispositions-open.md`, `dispositions-current.md`, `dispositions-index.json`
 - Archived plan → `docs/superpowers/plans/archived/`
 - Archived dossier + findings → `docs/health/archived/`
 - `.dev/implement-health-plan-progress.md` — progress checkpoint (undated,
@@ -70,8 +71,8 @@ intention is not proof.
 ## Prerequisites
 
 - A plan file exists in `docs/superpowers/plans/` that contains at least one
-  `closes_rows:` entry (produced by `/plan-health-findings`)
-- `docs/health/dispositions.md` exists with the relevant `accepted` rows
+  `closes_event_ids:` entry (produced by `/plan-health-findings`)
+- `docs/health/dispositions-open.md` exists with the relevant `accepted` events
 - The pre-commit gate passes: `python3 scripts/check_ledger_staleness.py`
   exits 0 before this skill begins
 
@@ -90,12 +91,12 @@ whether to continue here anyway. If absent, fall back to the scan below.
 If `--plan <path>` was passed, use that path directly. Otherwise, scan
 `docs/superpowers/plans/` (non-recursively — archived/ is excluded) and select
 the **latest file by date prefix that contains the literal string
-`closes_rows:`**. Do NOT glob all plans blindly; presence of `closes_rows:` is
-the mandatory filter.
+`closes_event_ids:`**. Do NOT glob all plans blindly; presence of
+`closes_event_ids:` is the mandatory filter.
 
 ```bash
-# List candidates containing closes_rows:
-grep -rl "closes_rows:" docs/superpowers/plans/ \
+# List candidates containing closes_event_ids:
+grep -rl "closes_event_ids:" docs/superpowers/plans/ \
   --include="*.md" \
   --exclude-dir=archived \
   | sort | tail -1
@@ -103,7 +104,7 @@ grep -rl "closes_rows:" docs/superpowers/plans/ \
 
 If no plan passes the filter, stop with:
 
-> No plan containing `closes_rows:` found in `docs/superpowers/plans/`. Run
+> No plan containing `closes_event_ids:` found in `docs/superpowers/plans/`. Run
 > `/plan-health-findings` first to produce an accepted plan, or pass
 > `--plan <path>` to target a specific file.
 
@@ -200,7 +201,9 @@ result: tasks_executing
 tasks_completed:
   - task: "Task 1 — <title>"
     commit: <hash>
-    closes_rows: ["#NNN", "#MMM"]
+    closes_event_ids:
+      - disp_20260619_000001
+      - disp_20260619_000002
 ```
 
 **Pre-task commit-hash gate (run before reading the next task spec):** after the
@@ -280,59 +283,42 @@ memory of what was written.
 ## Phase 3: Close the Ledger
 
 This is the core new behavior. For each completed task, resolve its
-`closes_rows:` list.
+`closes_event_ids:` list.
 
-**Tasks without `closes_rows:`:** If a completed task has no `closes_rows:`
-field (or the field is present but empty), skip ledger close-back for that
-task entirely. Record it in the final report as "no ledger rows to close" and
-continue with the next task.
+**Tasks without `closes_event_ids:`:** If a completed task has no
+`closes_event_ids:` field (or the field is present but empty), skip ledger
+close-back for that task entirely. Record it in the final report as "no events
+to close" and continue with the next task.
 
-For each `#NNN` ID in a completed task's `closes_rows:`, work through one
-Resolve → Verify → Append pass before moving to the next ID:
+For each `event_id` listed in a completed task's `closes_event_ids`, append a
+new `fixed` event with `closes_event_ids` containing that `event_id`, then run
+`scripts/health_disposition_store.py regenerate`.
 
-1. **Resolve** — `closes_rows:` lists `#NNN` IDs from the ID column (leftmost)
-   of `docs/health/dispositions.md` — never a file-line number. Locate the row
-   with that ID and extract its ID, Surface, Dimension, Object, and Finding
-   verbatim.
+Work through one Resolve → Verify → Append pass before moving to the next event_id:
+
+1. **Resolve** — `closes_event_ids:` lists `event_id` values from
+   `docs/health/dispositions-open.md`. Locate the event with that `event_id`
+   and extract its surface, dimension, object, and finding verbatim.
 2. **Verify** — read the live subject file named in the task and confirm the
-   change is present. Do not append a row for an unverified change.
-   If verification fails: report the failure, omit the ledger row for that task,
+   change is present. Do not append an event for an unverified change.
+   If verification fails: report the failure, omit the event for that task,
    write `phase: 3` and `status: blocked` to
    `.dev/implement-health-plan-progress.md`, and stop. Do not continue close-back
    and do not write `result: ledger_closed` while any task is unverified. (To drop
-   a task from the closure set, amend or re-disposition its rows first — there is
+   a task from the closure set, amend or re-disposition its events first — there is
    no in-run abandonment path.)
-3. **Append** — add one `fixed` row to **both** of the following locations:
+3. **Append** — call `scripts/health_disposition_store.py append_event` with:
+   - `disposition: fixed`
+   - `date:` today's ISO date (never a placeholder)
+   - `closes_event_ids:` the accepted `event_id` being resolved
+   - `evidence:` `<commit-hash> — <brief evidence>; verified live <date>`
+   Then run `scripts/health_disposition_store.py regenerate` to update
+   `dispositions-open.md`, `dispositions-current.md`, and `dispositions-index.json`.
 
-   - `docs/health/dispositions.md` — the monolithic ledger
-   - `docs/health/dispositions-history/2026/YYYY-MM.md` — the month shard
-     matching today's date (e.g. `2026/2026-06.md`). Create the shard file
-     with the standard header if the month shard does not yet exist.
-
-   Both files use the **eight-column** schema:
-
-   `| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |`
-
-   Copy ID, Surface, Dimension, Object, and Finding verbatim from the
-   accepted row, then set Disposition = `fixed`, Date = today's ISO date
-   (never a placeholder such as a literal `[date]` or a
-   bare `YYYY-MM-DD` string), and Evidence / note =
-   `<commit-hash> — <brief evidence>; verified live <date>; closes #NNN`.
-   Re-read the appended row in both files and confirm all eight cells are
-   populated. Never reorder or rewrite existing rows.
-
-   **Why both files:** `check_ledger_staleness.py` reads exclusively from the
-   history shards when `docs/health/dispositions-history/` exists. Fixed rows
-   written only to the monolithic file are invisible to the checker and will
-   be reported as stale-open indefinitely.
-
-Example:
-
-| #042 | tooling | quality | my-skill | Description too long | fixed | 2026-06-10 | a1b2c3d — trimmed to 150 chars; verified live 2026-06-10; closes #042 |
-
-**Post-loop close gate (scoped to this plan)** — after all `fixed` rows are
-appended, confirm each `#NNN` in the plan's `closes_rows` list now has a `fixed` row
-in the ledger. This scoped check is the closure gate — not a global pass.
+**Post-loop close gate (scoped to this plan)** — after all `fixed` events are
+appended, confirm each `event_id` in the plan's `closes_event_ids` lists no
+longer appears in `docs/health/dispositions-open.md`. This scoped check is the
+closure gate — not a global pass.
 
 The global checker is run for INFORMATION only; an unrelated open backlog does
 NOT block closing this plan:
@@ -341,8 +327,8 @@ NOT block closing this plan:
 python3 scripts/check_ledger_staleness.py --strict || true   # informational; unrelated backlog reported, not blocking
 ```
 
-**Success criteria:** every `closes_rows` ID for this plan has a verified `fixed`
-row. Report the global backlog count separately.
+**Success criteria:** every `closes_event_ids` entry for this plan has a verified `fixed`
+event in the store. Report the global backlog count separately.
 
 Update checkpoint:
 
@@ -456,16 +442,12 @@ closed:
 The per-task implementation commits were already created in Phase 1. Add ONE
 dedicated commit covering:
 
-- The `fixed` rows appended to `docs/health/dispositions.md`
+- The `fixed` events appended to `docs/health/dispositions-events/`
+- The regenerated views (`dispositions-open.md`, `dispositions-current.md`, `dispositions-index.json`)
 - The `.dev/health-loop-state.md` breadcrumb written above
 
 ```bash
-git add docs/health/dispositions.md
-# docs/superpowers/plans/ and docs/health/* are gitignored (see .gitignore); the
-# archived plan and dossier were relocated by `mv` in Phase 4 and are NOT tracked
-# — do NOT `git add` them (the add is a no-op/error). Stage only tracked files.
-git add .dev/health-loop-state.md            # tracked breadcrumb — write it BEFORE this commit (see health-loop-state-contract Persistence semantics)
-git commit -m "chore(health): close ledger rows [N,...] — <plan-topic>"
+git commit -m "chore(health): close disposition events for <plan-topic>"
 ```
 
 ### Final report
@@ -473,12 +455,12 @@ git commit -m "chore(health): close ledger rows [N,...] — <plan-topic>"
 Present:
 
 - Tasks completed (count and titles)
-- Disposition rows closed (row numbers and objects)
+- Disposition events closed (event IDs and objects)
 - Artifacts archived (plan path → archived path)
 - Global backlog count from `check_ledger_staleness.py --strict` (informational)
 
-The loop is closed when all `closes_rows` IDs in the plan have verified `fixed`
-rows in the ledger and the ledger-close commit has landed. Report the global
+The loop is closed when all `closes_event_ids` in the plan have verified `fixed`
+events in the store and the ledger-close commit has landed. Report the global
 backlog count separately.
 
 ---
@@ -487,11 +469,11 @@ backlog count separately.
 
 Conservative failure mode:
 
-- Do not edit `docs/health/dispositions.md` until Phase 2 verification passes
+- Do not append `fixed` events until Phase 2 verification passes
   for the relevant task
 - Do not archive any artifact until the ledger-close commit is staged
-- Do not claim the loop is closed until all plan `closes_rows` IDs have `fixed`
-  rows (run `check_ledger_staleness.py --strict` for informational backlog count)
+- Do not claim the loop is closed until all plan `closes_event_ids` have `fixed`
+  events in the store (run `check_ledger_staleness.py --strict` for informational backlog count)
 - Always update `.dev/implement-health-plan-progress.md` to reflect blocked
   state on failure; do not delete the checkpoint
 
@@ -512,7 +494,9 @@ tasks_total: <N>
 tasks_completed:
   - task: "Task N — <title>"
     commit: <hash>
-    closes_rows: ["#NNN", "#MMM"]
+    closes_event_ids:
+      - disp_20260619_000001
+      - disp_20260619_000002
 stale_open_rows: <count>    # populated in Phase 3
 executor_revision: <git short-hash of implement-health-plan/SKILL.md at run start>
 ```

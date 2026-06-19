@@ -4,9 +4,9 @@ description: >-
   Disposition phase of the health-audit loop. Walks the open findings in the
   latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding
   at a user gate (recorded as `accepted`, `declined`, `grandfathered`, `fixed`, or
-  omitted for `skip`), and appends correctly formatted
-  rows to docs/health/dispositions.md, creating
-  that ledger with a canonical header if it is absent. Run after /plugin-health-audit and
+  omitted for `skip`), and appends JSONL disposition events through
+  scripts/health_disposition_store.py append_event, followed by regenerate to
+  update the generated Markdown views. Run after /plugin-health-audit and
   before /plan-health-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
   dossier", "record health decisions".
@@ -17,18 +17,21 @@ workflow:
   repeatable: true
   inputs:
     - docs/health/<date>-<surface>-health.md
-    - docs/health/dispositions.md
+    - docs/health/dispositions-open.md
   outputs:
-    - docs/health/dispositions.md
+    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
   next: [plan-health-findings]
 ---
 
 # Record Health Dispositions
 
 Closes the gap between `/plugin-health-audit` (which writes dossiers) and
-`/plan-health-findings` (which plans only `accepted` ledger rows). The only
-output of this skill is appended rows in `docs/health/dispositions.md` — it
-never edits plugin source.
+`/plan-health-findings` (which plans only `accepted` ledger rows).
+
+The output is JSONL disposition events appended through
+`scripts/health_disposition_store.py append_event`, followed by
+`scripts/health_disposition_store.py regenerate`. The generated Markdown views
+are read artifacts, not edit targets. This skill never edits plugin source.
 
 Loop position:
 
@@ -63,10 +66,9 @@ valid resume pointer exists, locate the latest dossier per surface with
 If no dossier exists for a requested surface, report "No `<surface>` dossier
 found — run /plugin-health-audit first." and skip that surface.
 
-If `docs/health/dispositions.md` does not exist, create it first with the
-canonical header (title, purpose sentence, four ledger rules, empty table)
-from the live ledger's git history or the rules in
-`.claude/knowledge/health-disposition-rules.md`.
+Read `docs/health/dispositions-index.json` (if present) for a quick count of
+open accepted events. Read `docs/health/dispositions-open.md` to see the
+current open accepted event list.
 
 ## Phase 1 — Collect open findings
 
@@ -88,12 +90,12 @@ closed".)
 With `--top`, restrict the worklist to the dossier's "Top N ranked
 actions" entries.
 
-Then read `docs/health/dispositions.md` and drop from the worklist every
-finding that already matches a ledger row by **surface + dimension + object +
+Then read `docs/health/dispositions-open.md` and drop from the worklist every
+finding that already matches an event by **surface + dimension + object +
 issue essence**
 (not exact wording — lenses rephrase between sweeps).
 
-Declined, grandfathered, and fixed findings are closed: skip them entirely (no row, no re-litigation).
+Declined, grandfathered, and fixed events are closed: skip them entirely (no new event, no re-litigation).
 Keep only undispositioned and accepted findings in this round's worklist.
 
 Report before the gate: "N open findings; M already dispositioned
@@ -127,28 +129,19 @@ For example, a single batch that groups a model-fit finding on
 or context, so one justification cannot cover both. Reject it and take a
 separate decision per finding.
 
-## Phase 3 — Append rows
+## Phase 3 — Append events
 
-Append one row per non-skip decision at the bottom of the table, using the
-eight-column schema (canonical column order):
+- Append one JSONL event per decision with `append_event`.
+- Run `scripts/health_disposition_store.py regenerate`.
+- Read `docs/health/dispositions-index.json` to report total events and open accepted count.
+- Read `docs/health/dispositions-open.md` only when open accepted rows need to be listed.
 
-1. `ID` · 2. `Surface` · 3. `Dimension` · 4. `Object` · 5. `Finding` ·
-6. `Disposition` · 7. `Date` · 8. `Evidence / note`
-
-```markdown
-| <id> | <surface> | <dimension> | <object> | <finding — short, rephrase-tolerant> | <disposition> | <today's date> | <evidence / note> |
-```
-
-- Date is today's real date in ISO format — never a literal placeholder.
-- Append-only: never reorder or rewrite existing rows.
-- For legacy rows whose provenance is not yet proven, `unknown` is permitted
-  until the migration audit is cleaned up.
-- Append new rows with `scripts/health_disposition_store.py append_row`; never hand-edit `docs/health/dispositions.md`.
-- Read `docs/health/dispositions.md` for ordinary suppression and planning checks.
-- If a step needs closure chronology, query the history store via `scripts/health_disposition_store.py iter_history_rows`.
-- Verification must confirm both artifacts changed together:
-  - one history shard appended under `docs/health/dispositions-history/`
-  - `docs/health/dispositions.md` regenerated
+For each non-skip decision, call `scripts/health_disposition_store.py append_event`
+with the required fields: `surface`, `dimension`, `object`, `finding`,
+`disposition`, `date` (today's real ISO date — never a literal placeholder),
+`evidence`, and `source`. The event store auto-allocates an `event_id`; do not
+invent one. After all decisions are appended, run
+`scripts/health_disposition_store.py regenerate` once to update the generated views.
 
 Any session that resolves an `accepted` row must apply the **closure write-back
 rule** in the same session. Full procedure in
@@ -156,9 +149,10 @@ rule** in the same session. Full procedure in
 
 ## Phase 4 — Verify and hand off
 
-1. Run `git diff --stat docs/health/dispositions.md` — confirm the only
-   change is appended rows and the appended row count equals the non-skip
-   decision count.
+1. Run `python3 scripts/health_disposition_store.py regenerate` (if not already
+   done in Phase 3) and confirm the generated views updated. Read
+   `docs/health/dispositions-index.json` to verify the event count increased by
+   the non-skip decision count.
 2. Scan the appended rows for unfinished-work markers (to-do markers,
    unrendered date placeholders).
 3. Summarize: accepted / declined / grandfathered / fixed counts, plus how
@@ -179,7 +173,7 @@ rule** in the same session. Full procedure in
    - `stage_completed: record-health-dispositions`
    - `completed_at:` today's ISO date
    - `next_command: /plan-health-findings`
-   - `next_inputs: docs/health/dispositions.md` plus the dossier path(s)
+   - `next_inputs: docs/health/dispositions-open.md` plus the dossier path(s)
    - `fresh_session_recommended: false`
    - `note:` plan the `accepted` rows. When the backlog guard fired (step 4),
      add `run with --backlog to drain all N open accepted rows, not only this
