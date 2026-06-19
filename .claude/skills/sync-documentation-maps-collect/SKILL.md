@@ -96,6 +96,20 @@ Run the poll-then-read state machine in
 
 ## Phase 3 — Prep Results
 
+#### Phase 3 outcome decision table
+
+| Case | Both-surface state | Action |
+| --- | --- | --- |
+| 1 | both completed, zero discrepancies | report "maps accurate" and stop (checkpoint `status` = `"complete"`) |
+| 2 | completed with discrepancies | display findings and proceed to update dispatch |
+| 3 | pending (audit not yet available) | show the "pending (team still running)" label |
+| 4 | mixed (one completed-with-discrepancies, one pending) | per-surface display: show the completed surface's findings and the pending surface's pending label |
+
+**Precedence:** evaluate Case 1 first (the both-clean short-circuit stops the
+run); otherwise apply per-surface handling — a surface with discrepancies
+follows Case 2, a pending surface follows Case 3, and their combination is
+Case 4.
+
 Merge the parsed findings from both surfaces into a single working set. For
 each surface, compute `name = discrepancy.skill ?? discrepancy.agent`, then
 stable-sort by `name` and discrepancy `type`. Deduplicate on `(name, type)` and
