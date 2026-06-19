@@ -2,8 +2,9 @@
 name: al-dev-support-reply-drafter
 description: >-
   Draft a customer-facing reply from internal BC support research findings.
-  Writes the combined findings + reply file. Dispatched by /al-dev-ticket
-  (--mode=full, reply phase). Pairs with al-dev-support-researcher.
+  Writes the combined findings + reply file.
+  Dispatched by the al-dev-support-reply skill (reply phase).
+  Pairs with al-dev-support-researcher.
 model: sonnet
 tools: ["Write"]
 ---
@@ -36,7 +37,7 @@ Take structured research findings from al-dev-support-researcher and produce a c
 
 **Step 1:** Parse `RESEARCHER_FINDINGS` — extract root cause, evidence, workarounds, recommended resolution, BC_VERSION_SCOPE, SOURCES.
 
-**Tool Contract Note:** `RESEARCHER_FINDINGS` is embedded as a text block in the dispatch prompt (see `/al-dev-ticket` Phase 7). Parse it directly from the prompt; no file I/O needed. Only `Write` tool is required to produce the output file.
+**Tool Contract Note:** `RESEARCHER_FINDINGS` is embedded as a text block in the dispatch prompt (see `/al-dev-support-reply` Phase 2). Parse it directly from the prompt; no file I/O needed. Only `Write` tool is required to produce the output file.
 
 **Step 1.5:** Critical reading of researcher findings
 
@@ -71,6 +72,12 @@ Examples of what to include:
 - "Known-issue #6355973 (available to Microsoft support)"
 - "[Microsoft Q&A: \<topic description\>](\<url\>)"
 - "Power Platform tracker reference: [number]"
+
+**Else (no public source for version scope):** when the researcher findings
+reference no known Microsoft bug and contain no public source establishing the
+affected version range, do not leave `BC_VERSION_SCOPE` blank. Set it to an
+explicit fallback — `version scope undetermined — rely on the customer-reported
+BC version` — so the reply never silently drops the version context.
 
 **Link formatting rule:** All URLs in the draft reply must use labelled markdown references — `[descriptive label](url)` — never bare URLs. If the researcher findings contain a bare URL, wrap it: `[<source name>: <brief topic>](<url>)`. If a URL was marked `[unverified]` by the researcher, append `(link unverified)` after the reference, e.g. `[Microsoft Learn: <topic>](<url>) (link unverified)`.
 
@@ -125,7 +132,7 @@ Write both **Internal Findings** and **Draft Customer Reply** sections to this f
 
 ## Return Block
 
-Return to `/al-dev-ticket` with:
+Return to `/al-dev-support-reply` with:
 
 ```text
 FILE: .dev/YYYY-MM-DD-plugin-support-reply-<slug>.md
