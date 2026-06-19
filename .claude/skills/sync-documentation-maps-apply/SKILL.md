@@ -109,8 +109,12 @@ For each artifact gated by `UPDATE_CHOICE`:
 
 1. Check presence with `ls -la "${RUN_DIR}/updates/<artifact>.md"`
 2. For the **agent** artifact only (additional gate — not a peer step that runs
-   for every artifact): also run the catalog count check, defined authoritatively
-   in the prose paragraph below
+   for every artifact): also run the catalog count check from the **Apply-stage
+   Artifact Validation** matrix in
+   `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Per that
+   matrix, a `CATALOG_ROWS` ≠ `DISK_AGENTS` mismatch makes the agent artifact
+   invalid — report it and **skip that surface**; the other surface validates
+   independently.
 3. Validate each present artifact per `checkpoint-patterns.md`
 
 Artifact gates by `UPDATE_CHOICE`:
@@ -120,12 +124,10 @@ Artifact gates by `UPDATE_CHOICE`:
 - `UPDATE_CHOICE=agents` or `UPDATE_CHOICE=both` → check
   `"${RUN_DIR}/updates/agent-map.md"`
 
-For each expected artifact, run `ls -la` and `wc -l`. For the **agent**
-artifact, also run the **catalog count check** defined in
-`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`
-("Apply-stage Artifact Validation"): confirm the generated agent-catalog rows
-match the live agent files (`CATALOG_ROWS == DISK_AGENTS`). On mismatch, report it
-in the final summary and do not silently proceed.
+For each expected artifact, run `ls -la` and `wc -l`. The agent-artifact catalog
+count check and its skip-that-surface consequence are stated at the Phase 3 gate
+above; the authoritative rules live in the **Apply-stage Artifact Validation**
+matrix referenced there.
 
 Apply the validation rules and all-surfaces-invalid stop rule from the
 "Apply-stage artifact validation" section in
