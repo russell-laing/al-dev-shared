@@ -18,7 +18,7 @@ Run pre-flight lint and trailing whitespace fixes on staged source files before 
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` (inline text block) — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
+| Dispatch prompt | **Yes** | `APPROVED_PLAN` (inline text block), **filtered to the AL + markdown subset** — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields); only AL/markdown files are passed to this agent |
 
 ## Outputs
 

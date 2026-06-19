@@ -112,13 +112,14 @@ orchestrator pastes these verbatim — never summarizes or transforms them:
 | Receiving agent | Prior-phase output passed in |
 |---|---|
 | `al-dev-commit-group-drafter` (1.3) | `MANIFESTS` block from Phase 1.1 |
-| `al-dev-commit-lint-fixer` (3.1) | `APPROVED_PLAN` from Phase 2 |
-| `al-dev-commit-ooxml-validator` (3.2) | `APPROVED_PLAN` from Phase 2 |
+| `al-dev-commit-lint-fixer` (3.1) | `APPROVED_PLAN` filtered to the AL + markdown subset, from Phase 2 |
+| `al-dev-commit-ooxml-validator` (3.2) | `APPROVED_PLAN` filtered to the OOXML/`.docx` subset, from Phase 2 |
 | `al-dev-commit-executor` (4.1) | `APPROVED_PLAN` from Phase 2 |
 | `al-dev-commit-hook-fixer` (4.3) | `.dev/hook-failures.json`, `.dev/commits.json`; `HOOK_FAILURES` inline fallback |
 
 Phases 3.1 and 3.2 are dispatched **in parallel** and joined before Phase 4.1.
-Both receive `APPROVED_PLAN` from Phase 2 and produce independent outputs
+Each receives only its filtered subset of `APPROVED_PLAN` — 3.1 the AL + markdown
+files, 3.2 the OOXML/`.docx` files — and they produce independent outputs
 (`LINT_FIXES` / `OOXML_FAILURES`). Parallelism is safe only while the validator
 sources its file list from `APPROVED_PLAN` and never reads the git index.
 
