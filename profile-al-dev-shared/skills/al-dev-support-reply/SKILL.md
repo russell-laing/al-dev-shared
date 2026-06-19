@@ -130,3 +130,30 @@ Support research complete →
 Findings and draft reply written. Review and copy-paste
 the Draft Customer Reply section into Freshdesk.
 ```
+
+---
+
+## Phase 4 — Gated Post-Back to the Ticket
+
+Phase 3 leaves the drafted reply in `.dev/$(date +%Y-%m-%d)-al-dev-ticket-reply.md`
+with no downstream consumer. Phase 4 closes that loop. Posting a reply publishes
+content to the customer, so this phase never auto-posts — it always gates on the
+user.
+
+1. **Read the reply artifact** written in Phase 3
+   (`.dev/$(date +%Y-%m-%d)-al-dev-ticket-reply.md`) and locate its
+   `Draft Customer Reply` section.
+
+2. **USER_GATE — confirm before posting.** Ask the user to confirm posting the
+   `Draft Customer Reply` back to the ticket. Do not take any external action
+   before an explicit confirmation.
+
+3. **On confirmation**, post the reply:
+   - The default path is manual copy-paste of the `Draft Customer Reply` section
+     into Freshdesk.
+   - If a ticket API is configured, its credentials come from the user's global
+     settings — never from project settings (see global development standards).
+
+4. **On a non-success response or user decline**, report the failure or decline,
+   do NOT mark the reply as posted, and leave the artifact in place so it can be
+   retried.
