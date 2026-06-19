@@ -113,19 +113,12 @@ For trivial fixes:
    - Use Grep/Read to locate the problem
    - Verify you understand the issue
 
-2. Spawn single `al-dev-shared:al-dev-developer-traditional`
-   (trivial fixes have no test plan — see
-   `knowledge/developer-invocation-patterns.md`, Context 2):
-
-   ```text
-   Fix [specific issue] in [file path].
-
-   Issue: [description]
-   Expected fix: [what needs to change]
-
-   Verify the fix compiles.
-   Keep it minimal - only change what's necessary.
-   ```
+2. Spawn single `al-dev-shared:al-dev-developer-traditional` using the
+   Context 2 (Traditional path) spawn block of
+   `knowledge/developer-invocation-patterns.md` — it includes the `Return:`
+   field (files changed + confirmation the fix resolves the issue) that the
+   former inline template omitted. Trivial fixes have no test plan, so the
+   Traditional path applies.
 
 3. Developer implements fix
 
