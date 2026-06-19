@@ -15,13 +15,13 @@ stage answers: "Which findings do we accept? Which do we decline? What work will
    - **Fixed** — We realized this was already fixed in a prior session (since the last dossier)
      or by a different maintainer.
 
-   These decisions are recorded in the ledger (`.dev/dispositions.md`). Later audits filter out
-   already-decided findings, so you don't re-triage the same issue twice.
+   These decisions are recorded as events in the JSONL event store (`docs/health/dispositions-events/`). Later audits filter out
+   already-decided findings using the generated `docs/health/dispositions-open.md` view, so you don't re-triage the same issue twice.
 
 2. **Plan accepted findings** — For findings you've accepted, `/plan-health-findings` verifies
    each one against the live codebase (using rubber-duck checks), then writes an implementation
-   plan with explicit task steps. Crucially, each plan task names the ledger rows it will close
-   (via `closes_rows:`), creating the linkage that lets Implement prove work was completed.
+   plan with explicit task steps. Crucially, each plan task names the event IDs it will close
+   (via `closes_event_ids:`), creating the linkage that lets Implement prove work was completed.
 
 **Plan revision (optional):** If someone reviews the plan and finds that scope or decisions need
 to change before execution, run `/revise-health-plan` to reconcile the plan and ledger in one
@@ -29,15 +29,15 @@ step. This is a side path, not a required step.
 
 ## How Decide Works
 
-Dispositions are the key to this stage. By recording durable decisions, you create a durable
+Dispositions are the key to this stage. By recording durable decisions as JSONL events, you create a durable
 audit trail: "We looked at this finding, made a decision, and here's what we did." Later audits
-can read this ledger and skip re-triaging findings you've already decided on, making the loop
+can read the generated `docs/health/dispositions-open.md` view and skip re-triaging findings you've already decided on, making the loop
 more efficient over time.
 
 The plan that emerges from accepted findings is not a generic task list—it's a **verified
-contract**. Each task in the plan explicitly names which ledger rows it will close, creating
-an audit trail. When Implement runs the plan, it appends `fixed` close-back rows for each
-`closes_rows:` identifier, proving that the work was completed and not just attempted.
+contract**. Each task in the plan explicitly names which event IDs it will close, creating
+an audit trail. When Implement runs the plan, it appends `fixed` events to the JSONL event store for each
+`closes_event_ids:` identifier, proving that the work was completed and not just attempted.
 
 If a review stage finds issues with the plan (scope creep, wrong decision, etc.), `/revise-health-plan`
 lets you reconcile without re-planning from scratch. It reads the review commentary, reconciles
@@ -55,7 +55,7 @@ flowchart TD
     skill_record_health_dispositions["/record-health-dispositions"]
     art_ledger["accepted rows in disposition ledger"]
     skill_plan_health_findings["/plan-health-findings"]
-    art_plan["verified plan with closes_rows"]
+    art_plan["verified plan with closes_event_ids"]
     art_commentary["optional review commentary"]
     skill_revise_health_plan["/revise-health-plan"]
 
@@ -93,9 +93,9 @@ Run `/revise-health-plan` only when a separate review or commentary artifact req
 | Artifact | Role |
 | --- | --- |
 | `docs/health/<date>-<surface>-health.md` | Presents the verified findings that require a maintainer decision. |
-| `docs/health/dispositions.md` and `docs/health/dispositions-history/` | Store the current ledger view and append-only decision history. |
+| `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions-open.md` | Canonical event store for decisions; dispositions-open.md is the generated open-items read view. |
 | `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | Defines the live verification checks used before accepted findings become plan tasks. |
-| `docs/superpowers/plans/<date>-<topic>.md` | Carries the verified implementation tasks and required `closes_rows:` identifiers. |
+| `docs/superpowers/plans/<date>-<topic>.md` | Carries the verified implementation tasks and required `closes_event_ids:` identifiers. |
 | `docs/superpowers/plans/<date>-<topic>-commentary.md` | Optional review evidence used only when the plan must be revised. |
 <!-- END GENERATED: maintainer-stage-decide-artifacts -->
 
@@ -104,5 +104,5 @@ Exact per-skill reads, writes, and `next` declarations are in
 
 ---
 
-**Next:** Once you have an approved plan with `closes_rows:` identifiers, open [Stage 4: Implement](./implement.md)
-to execute the plan tasks, verify results, and close the health loop with ledger close-backs.
+**Next:** Once you have an approved plan with `closes_event_ids:` identifiers, open [Stage 4: Implement](./implement.md)
+to execute the plan tasks, verify results, and close the health loop by appending fixed events to the JSONL event store.

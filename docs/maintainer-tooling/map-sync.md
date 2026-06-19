@@ -68,7 +68,7 @@ flowchart TD
 ### Primary path
 
 1. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents.
-2. `/sync-documentation-maps-collect` — Collect results from /sync-documentation-maps audit agents.
+2. `/sync-documentation-maps-collect` — Collect audit results and dispatch background update agents for the /sync-documentation-maps flow.
 3. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
 4. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
 <!-- END GENERATED: maintainer-stage-map-sync-journey -->

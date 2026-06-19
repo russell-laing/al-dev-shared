@@ -47,61 +47,36 @@ the findings path and other metadata so report runs in a fresh session with full
 
 <!-- BEGIN GENERATED: maintainer-stage-discover-diagram -->
 ```mermaid
-flowchart LR
+flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef internalSkill fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 5,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
-    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    skill_ingest_friction_log["/ingest-friction-log"]
-    skill_plugin_health_audit["/plugin-health-audit"]
-    skill_plugin_health_discover["/plugin-health-discover"]
+    subgraph lane_a["Audit-driven entry"]
+        skill_plugin_health_audit["/plugin-health-audit"]
+        skill_plugin_health_discover["/plugin-health-discover"]
+    end
+    subgraph lane_b["Friction-driven entry"]
+        skill_ingest_friction_log["/ingest-friction-log"]
+    end
+    art_breadcrumb[".dev/health-loop-state.md"]
+    art_dispositions["docs/health/dispositions-open.md"]
     skill_plugin_health_report["/plugin-health-report"]
-    art_docs_al_dev_agent_map_md["docs/al-dev-agent-map.md"]
-    art_docs_al_dev_skills_map_md["docs/al-dev-skills-map.md"]
-    art_docs_health_____findings_md["docs/health/*-*-findings.md"]
-    art_docs_health_____friction_findings_md[".../*-*-friction-findings.md"]
-    art_docs_health_____health_md["docs/health/*-*-health.md"]
-    art_docs_health_dispositions_md["docs/health/dispositions.md"]
-    art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md[".../lens-invocation-patterns.md"]
-    art___friction_log___findings_md["~/friction-log/*-findings.md"]
-    art___friction_log___signals_json["~/friction-log/*-signals.json"]
+    art_dossier["docs/health/*-*-health.md"]
 
-    art___friction_log___findings_md --> skill_ingest_friction_log
-    art___friction_log___signals_json --> skill_ingest_friction_log
-    skill_ingest_friction_log --> art_docs_health_____friction_findings_md
-    skill_ingest_friction_log --> skill_plugin_health_report
-    skill_ingest_friction_log -. "repeat" .-> skill_ingest_friction_log
-    art_docs_al_dev_agent_map_md --> skill_plugin_health_audit
-    art_docs_al_dev_skills_map_md --> skill_plugin_health_audit
     skill_plugin_health_audit --> skill_plugin_health_discover
-    skill_plugin_health_audit -. "repeat" .-> skill_plugin_health_audit
-    art_docs_al_dev_agent_map_md --> skill_plugin_health_discover
-    art_docs_al_dev_skills_map_md --> skill_plugin_health_discover
-    art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md --> skill_plugin_health_discover
-    skill_plugin_health_discover --> art_docs_health_____findings_md
-    skill_plugin_health_discover --> skill_plugin_health_report
-    skill_plugin_health_discover -. "repeat" .-> skill_plugin_health_discover
-    art_docs_health_____findings_md --> skill_plugin_health_report
-    art_docs_health_____friction_findings_md --> skill_plugin_health_report
-    art_docs_health_dispositions_md --> skill_plugin_health_report
-    skill_plugin_health_report --> art_docs_health_____health_md
-    skill_plugin_health_report -. "repeat" .-> skill_plugin_health_report
+    skill_plugin_health_discover -- "standard findings + handoff" --> art_breadcrumb
+    skill_ingest_friction_log -- "friction findings + handoff" --> art_breadcrumb
+    art_breadcrumb -- "adopt exact findings path" --> skill_plugin_health_report
+    art_dispositions --> skill_plugin_health_report
+    skill_plugin_health_report --> art_dossier
 
-    class skill_ingest_friction_log userSkill
     class skill_plugin_health_audit userSkill
     class skill_plugin_health_discover userSkill
+    class skill_ingest_friction_log userSkill
     class skill_plugin_health_report userSkill
-    class art_docs_al_dev_agent_map_md artifact
-    class art_docs_al_dev_skills_map_md artifact
-    class art_docs_health_____findings_md artifact
-    class art_docs_health_____friction_findings_md artifact
-    class art_docs_health_____health_md artifact
-    class art_docs_health_dispositions_md artifact
-    class art_profile_al_dev_shared_knowledge_lens_invocation_patterns_md artifact
-    class art___friction_log___findings_md artifact
-    class art___friction_log___signals_json artifact
+    class art_breadcrumb artifact
+    class art_dispositions artifact
+    class art_dossier artifact
 ```
 <!-- END GENERATED: maintainer-stage-discover-diagram -->
 
@@ -129,7 +104,7 @@ flowchart LR
 | `docs/health/<date>-<surface>-findings.md` | Stores raw lens findings before report-time evidence checks and ranking. |
 | `docs/health/<date>-<surface>-friction-findings.md` | Carries friction-derived findings into report through an explicit `--findings` path. |
 | `.dev/health-loop-state.md` | Persists the exact report handoff across sessions. |
-| `docs/health/dispositions.md` | Lets report suppress or re-verify findings that already have durable decisions. |
+| `docs/health/dispositions-open.md` | Lets report suppress or re-verify findings that already have durable decisions. |
 | `docs/health/<date>-<surface>-health.md` | The ranked dossier handed to the Decide stage. |
 <!-- END GENERATED: maintainer-stage-discover-artifacts -->
 

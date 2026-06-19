@@ -16,7 +16,7 @@ workflow:
   inputs:
     - docs/health/<date>-<surface>-findings.md
     - docs/health/<date>-<surface>-friction-findings.md
-    - docs/health/dispositions.md
+    - docs/health/dispositions-open.md
   outputs:
     - docs/health/<date>-<surface>-health.md
   next: [record-health-dispositions]

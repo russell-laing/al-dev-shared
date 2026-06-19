@@ -520,7 +520,7 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
 
     implement_text, _ = lib.render_stage_detail(contracts, "implement", set())
     assert "flowchart TD" in implement_text
-    assert 'art_closed["ledger rows fixed + breadcrumb closed"]' in implement_text
+    assert 'art_closed["fixed events written + breadcrumb closed"]' in implement_text
     assert 'art_progress["resumable progress checkpoint"]' in implement_text
     assert "orphanArtifact" not in implement_text
     assert "repeat" not in implement_text

@@ -433,14 +433,13 @@ DISCOVER_REQUIRED_INPUTS = {
     ),
     "plugin-health-report": (
         "docs/health/<date>-<surface>-findings.md",
-        "docs/health/dispositions.md",
+        "docs/health/dispositions-open.md",
     ),
 }
 
 DISCOVER_REQUIRED_OUTPUTS = {
     "ingest-friction-log": (
         "docs/health/<date>-<surface>-friction-findings.md",
-        "docs/health/friction-ingest-log.md",
     ),
     "plugin-health-discover": ("docs/health/<date>-<surface>-findings.md",),
     "plugin-health-report": ("docs/health/<date>-<surface>-health.md",),
@@ -587,9 +586,9 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
         '    stage_map_sync["1. Map sync<br/>refresh maps when stale"]',
         '    stage_discover["2. Discover<br/>findings become a ranked dossier"]',
         '    stage_decide["3. Decide<br/>record decisions and write a verified plan"]',
-        '    stage_implement["4. Implement<br/>apply the plan and close ledger rows"]',
+        '    stage_implement["4. Implement<br/>apply the plan and close disposition events"]',
         '    stage_derive["5. Derive<br/>regenerate and validate changed shared source"]',
-        '    entry_friction["/ingest-friction-log<br/>alternate source"]',
+        '    entry_friction["Alternate source<br/>/ingest-friction-log"]',
         "",
         "    stage_map_sync --> stage_discover",
         '    entry_friction -- "friction-findings" --> stage_discover',
@@ -650,7 +649,7 @@ def render_discover_stage_detail(
         '        skill_ingest_friction_log["/ingest-friction-log"]',
         "    end",
         '    art_breadcrumb[".dev/health-loop-state.md"]',
-        '    art_dispositions["docs/health/dispositions.md"]',
+        '    art_dispositions["docs/health/dispositions-open.md"]',
         '    skill_plugin_health_report["/plugin-health-report"]',
         '    art_dossier["docs/health/*-*-health.md"]',
         "",
@@ -682,7 +681,7 @@ def render_decide_stage_detail() -> tuple[str, int]:
         '    skill_record_health_dispositions["/record-health-dispositions"]',
         '    art_ledger["accepted rows in disposition ledger"]',
         '    skill_plan_health_findings["/plan-health-findings"]',
-        '    art_plan["verified plan with closes_rows"]',
+        '    art_plan["verified plan with closes_event_ids"]',
         '    art_commentary["optional review commentary"]',
         '    skill_revise_health_plan["/revise-health-plan"]',
         "",
@@ -708,12 +707,12 @@ def render_implement_stage_detail() -> tuple[str, int]:
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
         "",
-        '    art_plan["approved plan with closes_rows"]',
-        '    art_ledger["accepted ledger rows"]',
+        '    art_plan["approved plan with closes_event_ids"]',
+        '    art_ledger["accepted disposition events"]',
         '    skill_implement_health_plan["/implement-health-plan"]',
         '    art_progress["resumable progress checkpoint"]',
         '    art_changed["verified source and documentation changes"]',
-        '    art_closed["ledger rows fixed + breadcrumb closed"]',
+        '    art_closed["fixed events written + breadcrumb closed"]',
         "",
         "    art_plan --> skill_implement_health_plan",
         "    art_ledger --> skill_implement_health_plan",
@@ -999,7 +998,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                 "",
                 "1. Run `/implement-health-plan --plan <path>` in the fresh session named by the breadcrumb.",
                 "2. Execute and verify each plan task, preserving the progress checkpoint for recovery.",
-                "3. Append `fixed` ledger rows, archive consumed health artifacts, and commit `next_command: none` with the close-back.",
+                "3. Append `fixed` disposition events to the JSONL event store, archive consumed health artifacts, and commit `next_command: none` with the close-back.",
             ]
         )
     if stage == "derive" and DERIVE_REQUIRED_SKILLS <= set(by_name):
@@ -1110,7 +1109,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Persists the exact report handoff across sessions.",
         ),
         (
-            "docs/health/dispositions.md",
+            "docs/health/dispositions-open.md",
             "Lets report suppress or re-verify findings that already have durable decisions.",
         ),
         (
@@ -1124,8 +1123,8 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Presents the verified findings that require a maintainer decision.",
         ),
         (
-            "docs/health/dispositions.md` and `docs/health/dispositions-history/",
-            "Store the current ledger view and append-only decision history.",
+            "docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions-open.md",
+            "Canonical event store for decisions; dispositions-open.md is the generated open-items read view.",
         ),
         (
             "profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md",
@@ -1133,7 +1132,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
         ),
         (
             "docs/superpowers/plans/<date>-<topic>.md",
-            "Carries the verified implementation tasks and required `closes_rows:` identifiers.",
+            "Carries the verified implementation tasks and required `closes_event_ids:` identifiers.",
         ),
         (
             "docs/superpowers/plans/<date>-<topic>-commentary.md",
@@ -1143,15 +1142,15 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     "implement": (
         (
             "docs/superpowers/plans/<date>-<topic>.md",
-            "The approved execution contract; each task must name the ledger rows it closes.",
+            "The approved execution contract; each task must name the event IDs it closes via `closes_event_ids:`.",
         ),
         (
             ".dev/implement-health-plan-progress.md",
             "Supports recovery by recording completed tasks and their commits.",
         ),
         (
-            "docs/health/dispositions.md` and `docs/health/dispositions-history/",
-            "Receive the fixed close-back that proves accepted work was completed.",
+            "docs/health/dispositions-events/YYYY/YYYY-MM.jsonl",
+            "Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store.",
         ),
         (
             ".dev/health-loop-state.md",
@@ -1211,7 +1210,7 @@ def render_breadcrumb_orchestrator() -> str:
             "| `/plugin-health-discover` | `/plugin-health-report --findings ...` | discover is intentionally split across sessions to avoid compaction |",
             "| `/plugin-health-report` | `/record-health-dispositions` | the dossier becomes durable input for ledger triage |",
             "| `/record-health-dispositions` | `/plan-health-findings` | only accepted rows move into planning |",
-            "| `/plan-health-findings` | `/implement-health-plan --plan ...` | the handoff preserves `closes_rows:` and bypasses the generic writing-plans ending |",
+            "| `/plan-health-findings` | `/implement-health-plan --plan ...` | the handoff preserves `closes_event_ids:` and bypasses the generic writing-plans ending |",
             "| `/implement-health-plan` | `none` | loop closure is explicit and machine-checked |",
         ]
     )

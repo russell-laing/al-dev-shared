@@ -3,22 +3,22 @@
 [Previous: Decide](./decide.md) | [Back to summary](../maintainer-tooling.md) | [Next: Derive](./derive.md)
 
 Implement executes the verified plan one task at a time, verifies each result, and closes
-the health loop by writing `fixed` ledger rows that prove work was completed. This stage
+the health loop by appending `fixed` events to the JSONL event store to prove work was completed. This stage
 answers: "Let's actually do the work. Did it succeed? Can we prove it?"
 
 **What makes this stage different from a generic plan runner:**
 
 - **Verification:** After each task completes, the implementation is verified (files exist,
   content is correct, no regressions).
-- **Close-back:** For each task that succeeds, a `fixed` ledger row is appended. This row
-  references the `closes_rows:` identifiers from the plan, proving the work happened.
+- **Close-back:** For each task that succeeds, a `fixed` event is appended to the JSONL event store. This event
+  references the `closes_event_ids:` identifiers from the plan, proving the work happened.
 - **Resumability:** A progress checkpoint (`.dev/implement-health-plan-progress.md`) tracks
   completed tasks and their commits. If interrupted, the next run resumes from where you left
   off without re-doing completed work.
 - **Finalization:** If the implementation changed shared source (agents, knowledge, skills),
   the Derive stage runs before the final commit, regenerating projections and validating
   harness neutrality.
-- **Loop closure:** The loop closes only when both the ledger is updated with fixed rows AND
+- **Loop closure:** The loop closes only when fixed events are appended to the JSONL store AND
   `.dev/health-loop-state.md` is committed with `next_command: none`. This ensures the health
   audit is durably marked as complete.
 
@@ -26,15 +26,15 @@ answers: "Let's actually do the work. Did it succeed? Can we prove it?"
 
 Run `/implement-health-plan --plan <path>` to execute the plan from Decide. The skill will:
 
-1. **Read the plan and ledger** — Understand which tasks to execute and which ledger rows they
+1. **Read the plan and event store** — Understand which tasks to execute and which event IDs they
    close.
 2. **Execute tasks one-by-one** — Run each task, verifying that the result matches what was
    expected. If a task fails, the checkpoint lets you pause, fix, and resume.
 3. **Verify each result** — Confirm files exist, content is correct, no syntax errors or
    unintended side effects. Verification is not just "did the command run"—it's "did the change
    actually achieve the goal."
-4. **Append fixed rows** — For each completed task, write a `fixed` ledger row naming the
-   `closes_rows:` identifiers. This proves the work happened and links the fix back to the
+4. **Append fixed events** — For each completed task, append a `fixed` event to the JSONL event store naming the
+   `closes_event_ids:` identifiers. This proves the work happened and links the fix back to the
    original finding.
 5. **Run Derive (if needed, automatic)** — If implementation changed shared agents/knowledge/skills,
    the skill automatically runs `/projection-sync`, `/audit-knowledge-quality`, `/fix-knowledge-quality`
@@ -54,12 +54,12 @@ flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    art_plan["approved plan with closes_rows"]
-    art_ledger["accepted ledger rows"]
+    art_plan["approved plan with closes_event_ids"]
+    art_ledger["accepted disposition events"]
     skill_implement_health_plan["/implement-health-plan"]
     art_progress["resumable progress checkpoint"]
     art_changed["verified source and documentation changes"]
-    art_closed["ledger rows fixed + breadcrumb closed"]
+    art_closed["fixed events written + breadcrumb closed"]
 
     art_plan --> skill_implement_health_plan
     art_ledger --> skill_implement_health_plan
@@ -79,7 +79,7 @@ flowchart TD
 
 1. Run `/implement-health-plan --plan <path>` in the fresh session named by the breadcrumb.
 2. Execute and verify each plan task, preserving the progress checkpoint for recovery.
-3. Append `fixed` ledger rows, archive consumed health artifacts, and commit `next_command: none` with the close-back.
+3. Append `fixed` disposition events to the JSONL event store, archive consumed health artifacts, and commit `next_command: none` with the close-back.
 <!-- END GENERATED: maintainer-stage-implement-journey -->
 
 ## Key Artifacts
@@ -87,9 +87,9 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-implement-artifacts -->
 | Artifact | Role |
 | --- | --- |
-| `docs/superpowers/plans/<date>-<topic>.md` | The approved execution contract; each task must name the ledger rows it closes. |
+| `docs/superpowers/plans/<date>-<topic>.md` | The approved execution contract; each task must name the event IDs it closes via `closes_event_ids:`. |
 | `.dev/implement-health-plan-progress.md` | Supports recovery by recording completed tasks and their commits. |
-| `docs/health/dispositions.md` and `docs/health/dispositions-history/` | Receive the fixed close-back that proves accepted work was completed. |
+| `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` | Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store. |
 | `.dev/health-loop-state.md` | Closes the core loop with `next_command: none` in the ledger-close commit. |
 | `docs/health/archived/` and `docs/superpowers/plans/archived/` | Retain consumed findings, dossiers, plans, and review evidence outside live selectors. |
 <!-- END GENERATED: maintainer-stage-implement-artifacts -->
