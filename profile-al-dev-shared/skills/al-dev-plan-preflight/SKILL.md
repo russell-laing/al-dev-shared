@@ -135,23 +135,19 @@ Do not surface this decision to the user.
 
 ## Phase 1: Gather Context
 
-**Input Validation Gate (run before any other step):**
-Check whether $ARGUMENTS contains a meaningful feature description.
+**Vagueness gate (run before any other step):**
 
-- If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context — **STOP immediately**. Sufficient context requires: (1) a feature name or description, AND (2) at least one functional requirement, AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting." Ask the user exactly one question:
-  > "What AL feature or fix should I plan? Please describe the requirement or paste a spec."
-- Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** is provided — one that supplies all three elements above.
-- Once a description is given, resume from step 1 with it as the effective $ARGUMENTS.
+Check whether $ARGUMENTS contains a meaningful feature description. Sufficient context requires all three of: (1) a feature name or description, (2) at least one functional requirement, AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting."
 
-**Clarification retry logic:**
+If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context, **STOP immediately**. Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** supplying all three elements is provided. Escalate across attempts:
 
 | Attempt | Action |
 |---------|--------|
-| 1st vague | Ask once. Required context: (1) business goal, (2) key workflows, (3) affected BC objects. |
+| 1st vague | Ask once: "What AL feature or fix should I plan? Please describe the requirement or paste a spec." Required context: (1) business goal, (2) key workflows, (3) affected BC objects. |
 | 2nd vague | Ask with explicit scaffold: "Please provide: (1) the business goal (what problem does this solve?), (2) the key user workflows (who does what?), and (3) the BC objects affected (which tables/pages/events?)." |
 | 3rd vague | Stop and escalate: "I've asked twice for clarification. To proceed I need: (1) business goal — what problem this solves, (2) key workflows — who does what and when, (3) affected BC objects — which tables/pages/events. Please provide all three, or consider running /interview first for guided discovery." |
 
-- Do NOT mark preflight complete if after 2 clarification attempts the description remains too vague (e.g., "make it better", "improve the system").
+Do NOT mark preflight complete if after 2 clarification attempts the description remains too vague (e.g., "make it better", "improve the system"). Once a substantive description is given, resume from step 1 with it as the effective $ARGUMENTS.
 
 1. **Read input from $ARGUMENTS** — Extract the user's feature request and preliminary scope. If missing, gate requires clarification.
 2. **Load requirements and context files** — read `.dev/project-context.md` (object ID ranges, naming conventions, architectural patterns, base app integration points) and any prior interview requirements (`$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`). If project context is missing, suggest `/al-dev-init-context` (a companion-layer capability — see `knowledge/companion-context-ownership.md`) and degrade to a minimal inferred context rather than hard-stopping. If requirements are unclear/complex, suggest `/interview`.
