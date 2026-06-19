@@ -56,6 +56,14 @@ Absorb criteria, regardless of its phase count. A `None`-verdict finding
 carries severity Low as an informational note only — it is not a Low-severity
 defect flag. Never emit a High or Medium finding with verdict `None`.
 
+**Fail-both case** (phase-count threshold met, but both Atomise and Absorb
+fail): when a skill's phase count alone would qualify it as High or Medium yet
+it fails BOTH the Atomise and Absorb criteria, downgrade it to **Low with
+verdict `None`**. Record the raw phase count and the severity-mismatch reason
+(phase count implied High/Medium, but no separable concern qualified) in the
+observation field, so the diagnostic value is preserved without inflating
+severity.
+
 ---
 
 ## Output Format
