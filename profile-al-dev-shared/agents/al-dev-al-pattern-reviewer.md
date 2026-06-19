@@ -4,7 +4,7 @@ description: >-
   Review AL code for adherence to naming conventions, AL patterns,
   and BC design patterns. Spawned in parallel by the
   al-dev-develop-orchestrate skill.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
