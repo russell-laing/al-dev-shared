@@ -5,7 +5,7 @@ description: >-
   issues with high signal-to-noise ratio. Available for standalone use;
   not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers
   for security, patterns, and performance).
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
