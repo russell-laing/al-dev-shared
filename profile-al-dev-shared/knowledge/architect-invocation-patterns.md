@@ -35,17 +35,35 @@ Agent: al-dev-shared:al-dev-solution-architect
 Prompt:
   You are Architect {N} of {TOTAL}. Your assigned approach: {APPROACH_NAME}.
 
+  **Task Complexity Tier:** {COMPLEXITY_TIER}
+
   Feature request:
   {REQUIREMENT_DESCRIPTION}
 
+  Project context:
+  - Object ID range: {OBJECT_ID_RANGE}
+  - Naming prefix: {NAMING_PREFIX}
+  - Key patterns: {KEY_PATTERNS}
+
   Starting approach:
   {APPROACH_DESCRIPTION}
+
+  Design considerations:
+  1. BC base app integration (tables/events to extend)
+  2. Complete object design (tables, pages, codeunits, APIs)
+  3. Data model and validation rules
+  4. Testability (dependency injection, interfaces)
+  5. Performance implications
+  6. Upgrade considerations
 
   Produce three sections in exactly this order:
   1. Design proposal — existing objects to modify, new objects required, data flow
   2. Self-critique — the weakest point of your own design
   3. Falsification — one scenario that would prove your approach wrong
 ```
+
+`{COMPLEXITY_TIER}` is resolved by the calling skill (e.g. al-dev-plan maps it
+from the architect model tier).
 
 Include in prompt: the finalized `.dev/preflight-context.md` inputs consumed by
 `/al-dev-plan` Phase 2 (`requirements`, `scope`, `user_context`, and
