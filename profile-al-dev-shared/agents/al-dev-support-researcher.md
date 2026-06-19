@@ -2,8 +2,9 @@
 name: al-dev-support-researcher
 description: >-
   Research a BC support query using AL symbols, MS Docs, and BC Code History.
-  Produces internal technical findings. Dispatched by /al-dev-ticket
-  (--mode=full, research phase). Pairs with al-dev-support-reply-drafter.
+  Produces internal technical findings.
+  Dispatched by the al-dev-support-reply skill (research phase).
+  Pairs with al-dev-support-reply-drafter.
 model: sonnet
 tools: ["MCP: bc-code-intelligence", "MCP: microsoft-docs"]
 ---
@@ -29,7 +30,7 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured internal findings returned inline to /al-dev-ticket (return block only — no file writes) |
+| Return block | Structured internal findings returned inline to /al-dev-support-reply (return block only — no file writes) |
 
 ## Research Process
 
@@ -71,7 +72,7 @@ Check whether `bc-code-history` appears in your active tool list before using th
 
 ## Return Block
 
-Return to `/al-dev-ticket` with:
+Return to `/al-dev-support-reply` with:
 
 ```text
 RESEARCH_COMPLETE: yes
