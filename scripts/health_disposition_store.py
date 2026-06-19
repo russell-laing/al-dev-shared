@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
+from collections import Counter, defaultdict, OrderedDict
+from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
 from typing import Iterator
+import json
 import re
 
 
@@ -14,6 +17,21 @@ TABLE_HEADER = (
 TABLE_DIVIDER = (
     "|----|---------|-----------|--------|---------|-------------|------|------------------|"
 )
+
+EVENT_REQUIRED_FIELDS = (
+    "event_id",
+    "surface",
+    "dimension",
+    "object",
+    "finding",
+    "disposition",
+    "date",
+    "closes_event_ids",
+    "evidence",
+    "source",
+)
+VALID_DISPOSITIONS = {"accepted", "declined", "fixed", "grandfathered"}
+EVENT_ID_RE = re.compile(r"^disp_(\d{8})_(\d{6})$")
 
 
 def normalize_finding(text: str) -> str:
@@ -26,6 +44,266 @@ def disposition_key(row: dict[str, str]) -> tuple[str, str, str, str]:
         row["dimension"].strip(),
         row["object"].strip(),
         normalize_finding(row["finding"]),
+    )
+
+
+def event_shard_path_for_date(iso_date: str) -> Path:
+    """Return relative JSONL shard path YYYY/YYYY-MM.jsonl for an ISO date."""
+    year, month, _ = iso_date.split("-")
+    return Path(year) / f"{year}-{month}.jsonl"
+
+
+def next_event_id(events: list[dict[str, object]], iso_date: str) -> str:
+    """Allocate the next stable event ID for the given date."""
+    date_token = iso_date.replace("-", "")
+    max_seq = 0
+    for event in events:
+        raw = str(event.get("event_id", ""))
+        match = EVENT_ID_RE.match(raw)
+        if not match or match.group(1) != date_token:
+            continue
+        max_seq = max(max_seq, int(match.group(2)))
+    return f"disp_{date_token}_{max_seq + 1:06d}"
+
+
+def validate_event(event: dict[str, object]) -> list[str]:
+    """Return validation errors for one JSONL disposition event."""
+    errors: list[str] = []
+    for field in EVENT_REQUIRED_FIELDS:
+        if field not in event:
+            errors.append(f"{field} is required")
+    if not str(event.get("event_id", "")).strip():
+        errors.append("event_id is required")
+    if str(event.get("disposition", "")).strip().lower() not in VALID_DISPOSITIONS:
+        errors.append("disposition must be one of accepted, declined, fixed, grandfathered")
+    closes = event.get("closes_event_ids", [])
+    if not isinstance(closes, list) or not all(isinstance(v, str) for v in closes):
+        errors.append("closes_event_ids must be a list of strings")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(event.get("date", ""))):
+        errors.append("date must be YYYY-MM-DD")
+    return errors
+
+
+def parse_event_file(path: Path) -> list[dict[str, object]]:
+    """Parse a JSONL event shard into event dictionaries."""
+    events: list[dict[str, object]] = []
+    if not path.exists():
+        return events
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{path}:{lineno}: invalid JSONL: {exc}") from exc
+        if not isinstance(event, dict):
+            raise ValueError(f"{path}:{lineno}: event must be a JSON object")
+        errors = validate_event(event)
+        if errors:
+            raise ValueError(f"{path}:{lineno}: " + "; ".join(errors))
+        event["disposition"] = str(event["disposition"]).lower()
+        events.append(event)
+    return events
+
+
+def iter_event_rows(events_root: Path) -> Iterator[dict[str, object]]:
+    """Yield JSONL events from all shards in sorted order."""
+    for shard in sorted(events_root.rglob("*.jsonl")):
+        yield from parse_event_file(shard)
+
+
+def append_event(events_root: Path, event: dict[str, object]) -> Path:
+    """Append one event to its JSONL month shard and return the shard path."""
+    errors = validate_event(event)
+    if errors:
+        raise ValueError("; ".join(errors))
+    event_id = str(event["event_id"])
+    existing_ids = {str(existing["event_id"]) for existing in iter_event_rows(events_root) if existing.get("event_id")}
+    if event_id in existing_ids:
+        raise ValueError(f"duplicate event_id: {event_id}")
+    shard = events_root / event_shard_path_for_date(str(event["date"]))
+    shard.parent.mkdir(parents=True, exist_ok=True)
+    with open(shard, "a", encoding="utf-8") as f:
+        f.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
+    return shard
+
+
+def _event_key(event: dict[str, object]) -> tuple[str, str, str, str]:
+    return (
+        str(event["surface"]).strip(),
+        str(event["dimension"]).strip(),
+        str(event["object"]).strip(),
+        normalize_finding(str(event["finding"])),
+    )
+
+
+def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Return current event state, preserving legacy closure semantics during migration."""
+    by_id = {str(event["event_id"]): event for event in events}
+    closed_ids: set[str] = set()
+    for event in events:
+        for closed_id in event.get("closes_event_ids", []):
+            if closed_id not in by_id:
+                raise ValueError(f"unknown closes_event_ids value: {closed_id}")
+            closed_ids.add(str(closed_id))
+
+    open_accepted: list[dict[str, object]] = []
+    by_legacy_id: dict[str, dict[str, object]] = {}
+    for event in events:
+        event_id = str(event["event_id"])
+        if event_id in closed_ids:
+            continue
+        legacy_id = str(event.get("legacy_id", "")).strip()
+        if str(event["disposition"]) == "accepted":
+            open_accepted.append(event)
+            if legacy_id:
+                by_legacy_id[legacy_id] = event
+            continue
+        if str(event["disposition"]) in ("declined", "grandfathered") and legacy_id:
+            target = by_legacy_id.get(legacy_id)
+            if target:
+                closed_ids.add(str(target["event_id"]))
+                open_accepted = [e for e in open_accepted if str(e["event_id"]) != str(target["event_id"])]
+                by_legacy_id.pop(legacy_id, None)
+                continue
+        if str(event["disposition"]) in ("declined", "grandfathered"):
+            for accepted in list(open_accepted):
+                if str(accepted["object"]).strip() == str(event["object"]).strip():
+                    closed_ids.add(str(accepted["event_id"]))
+                    open_accepted.remove(accepted)
+                    break
+
+    latest: OrderedDict[tuple[str, str, str, str], dict[str, object]] = OrderedDict()
+    for event in events:
+        if str(event["event_id"]) not in closed_ids:
+            latest[_event_key(event)] = event
+    return list(latest.values())
+
+
+def _source_hash(events: list[dict[str, object]]) -> str:
+    payload = "\n".join(json.dumps(e, ensure_ascii=False, sort_keys=True) for e in events)
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def build_disposition_index(
+    events: list[dict[str, object]], *, source_hash: str | None = None
+) -> dict[str, object]:
+    current = materialize_current_events(events)
+    by_disposition = Counter(str(e["disposition"]) for e in current)
+    by_surface: dict[str, dict[str, int]] = defaultdict(lambda: {"current_rows": 0, "open_accepted": 0})
+    by_dimension: dict[str, dict[str, int]] = defaultdict(lambda: {"current_rows": 0, "open_accepted": 0})
+    for event in current:
+        surface = str(event["surface"])
+        dimension = str(event["dimension"])
+        by_surface[surface]["current_rows"] += 1
+        by_dimension[dimension]["current_rows"] += 1
+        if event["disposition"] == "accepted":
+            by_surface[surface]["open_accepted"] += 1
+            by_dimension[dimension]["open_accepted"] += 1
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_hash": source_hash or _source_hash(events),
+        "total_events": len(events),
+        "current_rows": len(current),
+        "open_accepted": by_disposition.get("accepted", 0),
+        "integrity_warnings": 0,
+        "by_disposition": dict(sorted(by_disposition.items())),
+        "by_surface": dict(sorted(by_surface.items())),
+        "by_dimension": dict(sorted(by_dimension.items())),
+    }
+
+
+def validate_index_freshness(index: dict[str, object], events: list[dict[str, object]]) -> list[str]:
+    errors: list[str] = []
+    if index.get("source_hash") != _source_hash(events):
+        errors.append("source_hash is stale")
+    if index.get("total_events") != len(events):
+        errors.append("total_events is stale")
+    if index.get("open_accepted") != build_disposition_index(events)["open_accepted"]:
+        errors.append("open_accepted is stale")
+    return errors
+
+
+def _markdown_event_row(event: dict[str, object]) -> str:
+    legacy = str(event.get("legacy_id", ""))
+    legacy_part = f" ({legacy})" if legacy else ""
+    closes = ", ".join(str(v) for v in event.get("closes_event_ids", []))
+    return (
+        f"| {event['event_id']}{legacy_part} | {event['surface']} | {event['dimension']} | "
+        f"{event['object']} | {event['finding']} | {event['disposition']} | "
+        f"{event['date']} | {event['evidence']} | {closes} |"
+    )
+
+
+def _markdown_legacy_row(event: dict[str, object]) -> str:
+    legacy_id = str(event.get("legacy_id", "")).strip() or str(event["event_id"])
+    closes = ", ".join(str(v) for v in event.get("closes_event_ids", []))
+    note = str(event.get("evidence", ""))
+    if closes:
+        note = f"{note}; closes {closes}" if note else f"closes {closes}"
+    return (
+        f"| {legacy_id} | {event['surface']} | {event['dimension']} | "
+        f"{event['object']} | {event['finding']} | {event['disposition']} | "
+        f"{event['date']} | {note} |"
+    )
+
+
+def render_open_view(output: Path, events: list[dict[str, object]]) -> None:
+    """Write the compact open-accepted view Claude should read by default."""
+    current = [
+        event for event in materialize_current_events(events)
+        if event["disposition"] == "accepted"
+    ]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# Open Health Dispositions",
+        "",
+        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "",
+        "| Event ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence | Closes |",
+        "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
+    ]
+    lines.extend(_markdown_event_row(event) for event in current)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def render_current_events_view(output: Path, events: list[dict[str, object]]) -> None:
+    """Write the human current-state view from JSONL events."""
+    current = materialize_current_events(events)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# Health Finding Dispositions",
+        "",
+        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "",
+        "| Event ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence | Closes |",
+        "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
+    ]
+    lines.extend(_markdown_event_row(event) for event in current)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def render_legacy_compatibility_view(output: Path, events: list[dict[str, object]]) -> None:
+    """Write the temporary legacy eight-column Markdown view from JSONL events."""
+    current = materialize_current_events(events)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# Health Finding Dispositions",
+        "",
+        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "",
+        "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Note |",
+        "|----|---------|-----------|--------|---------|-------------|------|------|",
+    ]
+    lines.extend(_markdown_legacy_row(event) for event in current)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def render_index(output: Path, events: list[dict[str, object]]) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(build_disposition_index(events), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
     )
 
 
