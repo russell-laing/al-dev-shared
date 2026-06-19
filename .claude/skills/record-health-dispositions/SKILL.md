@@ -121,6 +121,12 @@ contexts is contradictory — reject it and require separate decisions. Apply th
 **re-litigation guard** as defined in
 `.claude/knowledge/health-disposition-rules.md`.
 
+For example, a single batch that groups a model-fit finding on
+`al-dev-general-code-reviewer` with a glob-mismatch finding on the unrelated
+`al-dev-handoff` skill is contradictory — the two findings share no root cause
+or context, so one justification cannot cover both. Reject it and take a
+separate decision per finding.
+
 ## Phase 3 — Append rows
 
 Append one row per non-skip decision at the bottom of the table, using the
