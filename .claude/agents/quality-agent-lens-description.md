@@ -30,6 +30,8 @@ agent name from the filename (strip directory path and `.md` extension).
   body's top-level instruction steps. **Small-body exception:** when the body has
   fewer than 5 top-level instruction steps, the 20% threshold does not apply —
   treat a verb as disconnected only if it is entirely absent from the body.
+  A top-level instruction step is a numbered item or a `##`/`###` Step/Phase
+  heading in the body (the same unit the small-body exception counts).
 - Description names the spawning skill or workflow but body contradicts it
 - Description promises an output file that the body does not produce
 - Description names the expected caller but the body does not match that caller's
