@@ -95,10 +95,22 @@ Keep the agent list and skill list separate — different lenses target each.
 Before dispatching lenses, extract context from the documentation maps
 (`docs/al-dev-agent-map.md` and `docs/al-dev-skills-map.md`) following the full
 procedure in `.claude/knowledge/health-discover-aggregation.md`. It defines the
-map-parse steps and the derived dispatch mappings (`tool_inventory`,
-`model_assignments`, `caller_map`, `layer1_diagram_content`, `phase_counts`,
-`handoff_chains`, `preplanning_skills`, `agent_usage_counts`, `single_use_agents`,
-`already_inline_candidates`, `no_agent_skills`) that the Phase 3 lenses consume.
+map-parse steps and the derived dispatch mappings that the Phase 3 lenses
+consume. Each mapping is a small projection of the maps:
+
+- `tool_inventory` — declared tools per agent
+- `model_assignments` — model tier per agent
+- `caller_map` — which skills dispatch each agent
+- `layer1_diagram_content` — text of the Layer 1 lifecycle diagram
+- `phase_counts` — phase count per skill
+- `handoff_chains` — `.dev/` artifact producer→consumer chains
+- `preplanning_skills` — the pre-planning tributary skills
+- `agent_usage_counts` — number of skills using each agent
+- `single_use_agents` — agents used by exactly one skill
+- `already_inline_candidates` — single-use agents small enough to inline
+- `no_agent_skills` — skills that spawn no agents
+
+The full shape of each mapping is documented in that aggregation doc.
 
 After building the mappings, write the two file lists (agents, skills) and all
 context blocks **once** to a single run manifest at
@@ -130,11 +142,13 @@ Execute the following state machine in order:
      no script). Log: `"Resuming: X lenses already completed, Y remaining"`.
 
    - If `remaining_lenses` is empty: log all-complete and skip to Phase 4.
-     When Phase 4 runs with no new dispatch (all lenses were already complete
-     in a prior session), it assembles findings from any lens `.json` files
-     already on disk. If none exist on disk either, Phase 4 writes a findings
-     file containing only `## Raw lens output: _No lenses ran this session._`
-     with status `INCOMPLETE`.
+     Phase 4 then resolves exactly one of two explicit cases:
+     - **case (a) — empty + lens `.json` files on disk:** assemble findings from
+       the lens `.json` files already present on disk (a prior session completed
+       them).
+     - **case (b) — empty + no lens `.json` files on disk:** write a findings
+       file containing only `## Raw lens output: _No lenses ran this session._`
+       with status `INCOMPLETE`.
 
    - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
      subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
