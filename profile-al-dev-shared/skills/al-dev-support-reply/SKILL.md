@@ -95,7 +95,7 @@ Dispatch:
 ```text
 Agent tool:
   agent: al-dev-shared:al-dev-support-reply-drafter
-  model: claude-sonnet-4-6
+  model: claude-sonnet-4-6   # intentional pin: takes precedence over the drafter agent's frontmatter model
   description: "Draft customer reply: <60-char query summary>"
 
 Prompt: <assembled prompt above>
