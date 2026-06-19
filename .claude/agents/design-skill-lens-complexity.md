@@ -1,7 +1,7 @@
 ---
 name: design-skill-lens-complexity
 description: Apply the Complexity Outliers lens to plugin skills — evaluates skills ranked by phase count to find high-phase skills with separable concerns (Atomise) and zero-agent 2-phase skills (Absorb). Returns findings.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 

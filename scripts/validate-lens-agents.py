@@ -89,8 +89,8 @@ for name in EXPECTED_AGENTS:
 
     content = open(path).read()
 
-    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), and model-fit (multi-file evaluative analysis)
-    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit"}
+    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), and complexity (multi-file phase-count ranking + Atomise/Absorb synthesis)
+    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit", "design-skill-lens-complexity"}
     if name in SONNET_AGENTS:
         if "model: sonnet" not in content:
             failures.append(_format_failure(
