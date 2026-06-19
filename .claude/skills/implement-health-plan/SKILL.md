@@ -203,6 +203,20 @@ tasks_completed:
     closes_rows: ["#NNN", "#MMM"]
 ```
 
+**Pre-task commit-hash gate (run before reading the next task spec):** after the
+checkpoint write above, read back the last `tasks_completed[].commit` value and
+confirm it resolves:
+
+```bash
+git log --oneline <hash>   # the just-recorded tasks_completed[].commit
+```
+
+If `git log` does not resolve the hash (empty output or non-zero exit), the
+prior task's commit did not land as recorded — **stop and report** (the same
+failure action as the sequential-enforcement rule above); do not start the next
+task. This is a procedural pre-task gate, distinct from the post-hoc Phase 2
+verification sweep.
+
 ### Mid-point consistency check
 
 For plans with more than 5 tasks, pause at the halfway point and verify
