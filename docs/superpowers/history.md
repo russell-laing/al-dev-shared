@@ -206,3 +206,4 @@ Current source of truth: active implementation guidance lives in the current sha
 2026-06-18 | tooling design handoff diagram fixes (2 tasks) | implemented; rows closed: [#942, #943]
 2026-06-18 | tooling quality fixes (8 tasks) | implemented; rows closed: [#891, #902, #947, #948, #949, #950, #951, #952]
 2026-06-19 | tooling map/health fixes (12 tasks) | implemented; rows closed: [#017, #954, #956, #958, #959, #960, #961, #963, #964, #965, #966, #967, #968, #971, #972, #973]
+2026-06-20 | plugin+tooling map/health fixes (29 tasks) | implemented; rows closed: [#995, #996, #977, #978, #979, #987, #983, #980, #981, #991, #984, #985, #989, #993, #994, #998, #999, #1002, #1003, #1004, #1005, #1006, #1007, #1008, #1009, #1010, #881, #889, #892, #915, #932, #937, #1000]
