@@ -60,8 +60,16 @@ If the block is absent: stop and report:
 > Audit file exists but has no structured task block. Re-run `/audit-knowledge-quality`
 > to regenerate with the current format.
 
-If the block is present, continue with the parsing steps below (still within
-Phase 1).
+The `## High-Priority Fix Tasks` block is **valid** when it is that named block
+containing a `tasks:` list with at least one entry, and each entry carries its
+required fields (`file`, `issue_type`, `description`, `suggested_action`). If the
+block is present but malformed — missing the `tasks:` list, empty, or with
+entries missing required fields — treat it as **corrupted** and stop and report
+with the same message as an absent block (re-run `/audit-knowledge-quality` to
+regenerate).
+
+If the block is present and valid, continue with the parsing steps below (still
+within Phase 1).
 
 Parse each task entry:
 
