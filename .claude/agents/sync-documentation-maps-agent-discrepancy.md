@@ -44,7 +44,10 @@ Do not summarise findings — return only the path.
 ```
 
 Valid `type` values: `missing_from_map`, `stale_in_map`, `model_mismatch`,
-`tools_mismatch`, `caller_mismatch`.
+`tools_mismatch`, `caller_mismatch`. `unclassifiable_type` is an additional
+entry type emitted only when a `type` value has no definition in the canonical
+section (see Step 3); it is counted in the `summary` like any other, e.g.
+`"summary": "2 discrepancies found: 1 missing_from_map, 1 unclassifiable_type."`
 
 ---
 
@@ -86,8 +89,11 @@ cannot be relied on.
 If that section is **present but contains definitions for only a subset of the
 valid `type` values**, use the definitions that are present. For any `type` value
 that appears in the audit JSON but has no definition in the section, add a
-discrepancy entry: `type: "unclassifiable_type"`, `agent: <name>`,
+discrepancy entry to the final JSON `discrepancies` array — this is **not** a
+blocking stop; the audit still completes — with `type: "unclassifiable_type"`,
+`agent: <name>`,
 `detail: "type '<value>' has no definition in sync-maps-edit-cases.md Agent surface section"`.
+Count it in the `summary` field alongside the other discrepancy types.
 
 Otherwise (all `type` values found in Step 3 are defined in the section), proceed to
 Step 4 discrepancy comparison without adding any unclassifiable-type entries.
