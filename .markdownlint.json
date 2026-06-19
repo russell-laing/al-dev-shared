@@ -2,5 +2,6 @@
   "default": true,
   "MD013": false,
   "MD004": { "style": "dash" },
-  "MD029": false
+  "MD029": false,
+  "MD049": false
 }

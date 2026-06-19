@@ -1,0 +1,46 @@
+{
+  "by_dimension": {
+    "design": {
+      "current_rows": 72,
+      "open_accepted": 4
+    },
+    "naming": {
+      "current_rows": 5,
+      "open_accepted": 0
+    },
+    "quality": {
+      "current_rows": 472,
+      "open_accepted": 11
+    },
+    "unknown": {
+      "current_rows": 258,
+      "open_accepted": 5
+    }
+  },
+  "by_disposition": {
+    "accepted": 20,
+    "declined": 98,
+    "fixed": 623,
+    "grandfathered": 66
+  },
+  "by_surface": {
+    "plugin": {
+      "current_rows": 182,
+      "open_accepted": 0
+    },
+    "tooling": {
+      "current_rows": 367,
+      "open_accepted": 15
+    },
+    "unknown": {
+      "current_rows": 258,
+      "open_accepted": 5
+    }
+  },
+  "current_rows": 807,
+  "generated_at": "2026-06-19T22:31:09.231039+00:00",
+  "integrity_warnings": 0,
+  "open_accepted": 20,
+  "source_hash": "2de5bd6d57b81905df3d15a198d73601dcf6db2f0471795c0eff09aa4fccb64b",
+  "total_events": 1414
+}

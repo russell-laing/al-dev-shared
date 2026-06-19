@@ -21,3 +21,8 @@ docs/health/*
 !docs/health/dispositions-migration-audit.md
 !docs/health/dispositions-id-migration-audit.md
 !docs/health/dispositions-history/
+!docs/health/dispositions-events/
+!docs/health/dispositions-open.md
+!docs/health/dispositions-current.md
+!docs/health/dispositions-index.json
+!docs/health/dispositions-jsonl-migration-audit.md
