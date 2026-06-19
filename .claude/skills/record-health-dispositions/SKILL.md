@@ -157,7 +157,17 @@ rule** in the same session. Full procedure in
    unrendered date placeholders).
 3. Summarize: accepted / declined / grandfathered / fixed counts, plus how
    many findings remain undispositioned.
-4. If at least one row is `accepted`, write `.dev/health-loop-state.md`
+4. **Backlog guard.** Run
+   `python3 scripts/health_disposition_store.py list-open --status accepted`
+   and note the total count and the oldest `date` among the returned rows. If
+   the count is non-trivial (≥ 10), emit:
+
+   > ⚠ N open `accepted` rows (oldest `<date>`) — including rows from earlier
+   > sweeps the dossier no longer surfaces. Run `/plan-health-findings
+   > --backlog` to drain the full backlog, not just this round's rows.
+
+   This is informational and never blocks.
+5. If at least one row is `accepted`, write `.dev/health-loop-state.md`
    (schema: `.claude/knowledge/health-loop-state-contract.md`):
 
    - `stage_completed: record-health-dispositions`
@@ -165,12 +175,15 @@ rule** in the same session. Full procedure in
    - `next_command: /plan-health-findings`
    - `next_inputs: docs/health/dispositions.md` plus the dossier path(s)
    - `fresh_session_recommended: false`
-   - `note:` plan only the `accepted` rows.
+   - `note:` plan the `accepted` rows. When the backlog guard fired (step 4),
+     add `run with --backlog to drain all N open accepted rows, not only this
+     dossier's`.
 
    Then tell the user: "Recorded N accepted rows. Next in the loop:
-   `/plan-health-findings` (pointer saved in `.dev/health-loop-state.md`)."
-   If no row is `accepted`, do not write the breadcrumb; report that there is
-   nothing to plan.
+   `/plan-health-findings` (pointer saved in `.dev/health-loop-state.md`)" — and
+   when the backlog guard fired, add: "consider `--backlog` to drain the full
+   open backlog." If no row is `accepted`, do not write the breadcrumb; report
+   that there is nothing to plan.
 
 Do not edit any plugin source file from this skill. Committing the ledger
 change is left to the user's normal commit flow.

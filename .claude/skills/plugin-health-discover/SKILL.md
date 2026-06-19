@@ -225,7 +225,16 @@ Use this explicit mapping:
    ```
 
 5. **Return to caller:**
-   Print the findings file path, line count, and resume status.
+   Print the findings file path, line count, and resume status. Then run the
+   **backlog guard**:
+   `python3 scripts/health_disposition_store.py list-open --status accepted`.
+   If the count is non-trivial (≥ 10), also print:
+
+   > ⚠ N open `accepted` rows (oldest `<date>`) carried over from earlier
+   > sweeps. They will not all re-appear in this dossier — run
+   > `/plan-health-findings --backlog` to drain the full backlog.
+
+   This is informational and never blocks the sweep.
 
 6. **Write `.dev/health-loop-state.md`** (schema:
    `.claude/knowledge/health-loop-state-contract.md`):

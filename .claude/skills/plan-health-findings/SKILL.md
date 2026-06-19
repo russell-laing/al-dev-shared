@@ -18,7 +18,7 @@ description: >-
   changes", "plan the suggestions", "create a plan for plugin changes",
   "implement the dossier", "act on health findings", "implement agent
   findings", "plan agent changes", "implement the health audit".
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [optional: --agents | --skills] [optional: trim|remodel|split|inline|align|connect|merge|promote|move|extend] [or: all]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [optional: --agents | --skills] [optional: trim|remodel|split|inline|align|connect|merge|promote|move|extend] [or: all] [optional: --backlog]"
 workflow:
   stage: decide
   invoked-by: user
@@ -80,6 +80,14 @@ filters findings by **verb**, not by source file.
 **Default (no argument):** collect every open finding from the latest
 dossier(s) and rubber-duck them together before writing a single unified plan.
 
+**`--backlog`:** source the worklist from the **open `accepted` ledger
+backlog** instead of the latest dossier — every accepted row still awaiting
+implementation, regardless of which dossier first raised it. This drains rows
+that a later sweep's lenses never re-emitted (and so never re-entered a
+dossier). It composes with `--surface`/`--dimension`/`--skills`/`--agents`:
+those filters narrow the accepted rows returned by `list-open` using the same
+verb/object routing as a dossier run. See the `--backlog` branch in Phase 1.
+
 **`--skills`:** keep only skill-design findings.
 
 - **Verb vocabulary:** Atomise, Absorb, Connect, Merge, Promote, Move, Extend
@@ -134,6 +142,25 @@ This is an informational check — do not block planning.
 ---
 
 ## Phase 1: Extract Findings
+
+**If `--backlog` is set**, skip dossier location, the dossier read, and the
+`match` step below. Instead, draw the worklist straight from the open accepted
+backlog:
+
+```bash
+python3 scripts/health_disposition_store.py list-open --status accepted
+# add --surface <surface> and/or --dimension <dimension> when those filters are active
+```
+
+Each emitted JSON row is already an accepted finding. Use its `object` +
+`finding` as the planning input and its `#NNN` `id` as the close-back ID for
+Phase 4 — no dossier read and no re-matching are needed (the rows are the
+ledger's own decided state). Then apply object-type (`--skills`/`--agents`) and
+`FILTER_TYPE` routing to these rows exactly as for a dossier run, and continue
+to Phase 2. (`list-open` already returns the deduplicated current-view rows, so
+an `accepted` row here has no later `fixed`/`declined` superseding it.) The rest
+of this phase — dossier location, dossier read, and the disposition matcher —
+applies only to a non-`--backlog` run.
 
 Locate the most recent health dossier per surface:
 
@@ -233,6 +260,11 @@ stale/fresh table before Phase 3 begins:
 git log --since="$DOSSIER_DATE 00:00" --oneline -- "$SUBJECT_PATH"
 ```
 
+In `--backlog` mode there is no dossier date: use **each row's own `date`** (the
+acceptance date from the ledger) as that finding's `--since` baseline. Backlog
+rows span many dates, so resolve the baseline per finding rather than once for
+the whole batch.
+
 - **Non-empty output** → label the finding **`⚠ possibly stale`** and note the commit count.
 - **Empty output** → the subject is unchanged since the audit.
 
@@ -284,6 +316,15 @@ Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
 The agent reads subject files in its own context and returns only compact
 rubber-duck records. The parent **must not** read any subject source file itself
 during Phase 3.
+
+In `--backlog` mode, pass each finding's own ledger `date` as `findings_date:`
+(there is no dossier filename). Backlog rows carry only the ledger `finding`
+text and may lack a `file:line` citation — that is expected; they take the
+standard object-based U1–U3 rubber-duck. If a row's `object` no longer resolves
+to a live file (the skill or agent was renamed or removed since acceptance), the
+agent returns `skip`; record it in the `## Skipped` section and surface it to
+the user as a candidate stale-close. **Do not** auto-write a ledger row to close
+it — closing is the user's decision via `/record-health-dispositions`.
 
 Sequential inline rubber-ducking is the fallback only when
 `superpowers:dispatching-parallel-agents` is genuinely unavailable.

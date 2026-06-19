@@ -127,6 +127,29 @@ def iter_history_rows(history_root: Path) -> Iterator[dict[str, str]]:
         yield from parse_ledger_file(shard)
 
 
+def list_open(
+    ledger_path: Path,
+    status: str = "accepted",
+    surface: str | None = None,
+    dimension: str | None = None,
+) -> list[dict[str, str]]:
+    """Rows in the current view whose disposition == status.
+
+    Optionally filtered by surface/dimension. Because the current view is
+    last-writer-wins (``materialize_current_view``), an ``accepted`` row here
+    has no later ``fixed``/``declined``/``grandfathered`` superseding it — so
+    ``status='accepted'`` is exactly the genuinely-open backlog.
+    """
+    target = status.strip().lower()
+    rows = materialize_current_view(parse_ledger_file(ledger_path))
+    out = [r for r in rows if r["disposition"].strip().lower() == target]
+    if surface:
+        out = [r for r in out if r["surface"].strip() == surface]
+    if dimension:
+        out = [r for r in out if r["dimension"].strip() == dimension]
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Suppression matcher
 #
@@ -421,6 +444,15 @@ if __name__ == "__main__":
     )
     ih.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
 
+    lo = sub.add_parser(
+        "list-open",
+        help="Print current-view rows with a given disposition (default accepted) as JSON lines.",
+    )
+    lo.add_argument("--ledger", type=Path, default=Path("docs/health/dispositions.md"))
+    lo.add_argument("--status", default="accepted")
+    lo.add_argument("--surface")
+    lo.add_argument("--dimension")
+
     args = parser.parse_args()
     if args.command == "match":
         raise SystemExit(_cli_match(args.findings, args.ledger))
@@ -436,5 +468,11 @@ if __name__ == "__main__":
         import json
 
         for r in iter_history_rows(args.history_root):
+            print(json.dumps(r, ensure_ascii=False))
+        raise SystemExit(0)
+    if args.command == "list-open":
+        import json
+
+        for r in list_open(args.ledger, args.status, args.surface, args.dimension):
             print(json.dumps(r, ensure_ascii=False))
         raise SystemExit(0)

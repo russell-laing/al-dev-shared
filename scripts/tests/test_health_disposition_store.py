@@ -139,6 +139,62 @@ class RenderCurrentViewTest(unittest.TestCase):
             )
 
 
+class ListOpenTest(unittest.TestCase):
+    LEDGER = (
+        "# Health Finding Dispositions\n\n"
+        "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
+        "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
+        "| #001 | tooling | design | lens-a | Model fit | accepted | 2026-06-05 | queued |\n"
+        "| #002 | plugin | quality | skill-b | Bloat | accepted | 2026-06-06 | queued |\n"
+        "| #003 | tooling | quality | skill-c | Clarity gap | accepted | 2026-06-07 | queued |\n"
+        "| #004 | tooling | quality | skill-c | Clarity gap | fixed | 2026-06-08 | abc closes 3 |\n"
+        "| #005 | plugin | design | skill-d | Merge candidate | declined | 2026-06-09 | out of scope |\n"
+    )
+
+    def _write_ledger(self, d: str) -> Path:
+        ledger = Path(d) / "dispositions.md"
+        ledger.write_text(self.LEDGER, encoding="utf-8")
+        return ledger
+
+    def test_lists_only_accepted_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            ledger = self._write_ledger(d)
+            rows = STORE.list_open(ledger)
+            ids = sorted(r["id"] for r in rows)
+            # #001 and #002 are open; #003 superseded by fixed #004; #005 declined.
+            self.assertEqual(ids, ["#001", "#002"])
+
+    def test_last_writer_wins_excludes_fixed_supersede(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            ledger = self._write_ledger(d)
+            rows = STORE.list_open(ledger)
+            self.assertNotIn("skill-c", {r["object"] for r in rows})
+
+    def test_surface_and_dimension_filters(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            ledger = self._write_ledger(d)
+            self.assertEqual(
+                [r["id"] for r in STORE.list_open(ledger, surface="tooling")],
+                ["#001"],
+            )
+            self.assertEqual(
+                [r["id"] for r in STORE.list_open(ledger, surface="tooling", dimension="design")],
+                ["#001"],
+            )
+            self.assertEqual(
+                STORE.list_open(ledger, surface="tooling", dimension="naming"),
+                [],
+            )
+
+    def test_status_argument_selects_other_dispositions(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            ledger = self._write_ledger(d)
+            self.assertEqual(
+                [r["id"] for r in STORE.list_open(ledger, status="declined")],
+                ["#005"],
+            )
+
+
 MIGRATE_PATH = REPO_ROOT / "scripts" / "migrate_health_disposition_store.py"
 
 
