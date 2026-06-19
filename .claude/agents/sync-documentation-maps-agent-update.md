@@ -35,8 +35,9 @@ if not, substitute the actual repo root in all relative paths below.
 
 If `git rev-parse --show-toplevel` fails or returns a path that is not the
 al-dev-shared repository root, stop and emit the error
-"agent-update: could not resolve repo root — aborting map update" and write no
-output file.
+"agent-update: could not resolve repo root — aborting map update". Write the
+error message to stdout. Write no output files.
+Return no artifact paths to the caller — an absent output signals a halted agent.
 
 Verify `.claude/knowledge/sync-map-update-shared.md` exists before following it;
 if it is absent, stop and emit:
@@ -46,8 +47,8 @@ Error: .claude/knowledge/sync-map-update-shared.md is absent — cannot proceed
 without the canonical update contract. Halt.
 ```
 
-Write no output files. Write the error message to stdout. Return no artifact paths
-to the caller — an absent output signals a halted agent.
+Write no output files. Write the error message to stdout.
+Return no artifact paths to the caller — an absent output signals a halted agent.
 
 Follow the canonical update procedure in
 `.claude/knowledge/sync-map-update-shared.md`, with these surface parameters:
