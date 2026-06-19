@@ -1,82 +1,77 @@
 #!/usr/bin/env python3
-"""Verify that all 'fixed' rows in dispositions.md appear in history shards.
+"""JSONL disposition event store consistency checker.
 
-Usage:
-    python3 scripts/sync_history_shard.py          # report mode; exits 1 if missing
-    python3 scripts/sync_history_shard.py --fix    # append missing rows, then re-verify
+Reads docs/health/dispositions-events/ via health_disposition_store helpers and
+verifies internal consistency. Prints a short summary. Exits 0 when consistent
+so the PostToolUse git-commit hook stays green; exits 1 only on a real
+inconsistency (unparseable events or dangling closes_event_ids references).
+
+This script is intentionally read-only: it never writes to
+docs/health/dispositions-history/ or any other file.
 """
 
 from __future__ import annotations
 
-import argparse
+import importlib.util
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from health_disposition_store import parse_ledger_file, iter_history_rows, append_row
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DISPOSITIONS = REPO_ROOT / "docs/health/dispositions.md"
-HISTORY_ROOT = REPO_ROOT / "docs/health/dispositions-history"
+EVENTS_ROOT = REPO_ROOT / "docs" / "health" / "dispositions-events"
 
 
-def run(dispositions: Path, history_root: Path, fix: bool) -> int:
-    """Verify (and optionally sync) fixed ledger rows into history shards.
+def _load_store():
+    store_path = Path(__file__).resolve().parent / "health_disposition_store.py"
+    spec = importlib.util.spec_from_file_location("health_disposition_store", store_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load health_disposition_store from {store_path}")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    return mod
 
-    Returns 0 when all fixed rows are present (or none exist), 1 otherwise.
-    Tests drive this directly with temporary paths.
-    """
-    if not dispositions.exists():
-        print(f"Shard sync: {dispositions} not found — skipping")
+
+def run(events_root: Path) -> int:
+    """Check JSONL event store consistency. Returns 0 if consistent, 1 if not."""
+    if not events_root.exists():
+        print("JSONL store: no dispositions-events directory found — skipping check")
         return 0
 
-    all_rows = parse_ledger_file(dispositions)
-    fixed_rows = [r for r in all_rows if r["disposition"] == "fixed"]
+    mod = _load_store()
 
-    if not fixed_rows:
-        print("Shard sync: no fixed rows found")
-        return 0
-
-    if not history_root.exists():
-        print(f"Shard sync: history directory {history_root} missing — cannot verify")
+    try:
+        events = list(mod.iter_event_rows(events_root))
+    except (ValueError, OSError) as exc:
+        print(f"JSONL store: parse error: {exc}", file=sys.stderr)
         return 1
 
-    shard_ids = {r["id"] for r in iter_history_rows(history_root)}
-    missing = [r for r in fixed_rows if r["id"] not in shard_ids]
+    # Build event_id set for referential integrity check.
+    known_ids: set[str] = {str(e["event_id"]) for e in events}
+    dangling: list[str] = []
+    for event in events:
+        for ref in event.get("closes_event_ids", []):
+            if str(ref) not in known_ids:
+                dangling.append(
+                    f"event {event['event_id']} closes_event_ids references "
+                    f"unknown event_id {ref!r}"
+                )
 
-    if not missing:
-        print(f"Shard sync: {len(fixed_rows)} fixed rows verified ✓")
-        return 0
+    if dangling:
+        print(
+            f"JSONL store: {len(dangling)} referential integrity error(s):",
+            file=sys.stderr,
+        )
+        for msg in dangling:
+            print(f"  {msg}", file=sys.stderr)
+        return 1
 
-    if fix:
-        for row in missing:
-            append_row(history_root, row)
-        shard_ids_after = {r["id"] for r in iter_history_rows(history_root)}
-        still_missing = [r for r in missing if r["id"] not in shard_ids_after]
-        if still_missing:
-            print(f"Shard sync: --fix applied but {len(still_missing)} rows still missing")
-            for r in still_missing:
-                print(f"  {r['id']} {r['date']} {r['surface']}/{r['dimension']}")
-            return 1
-        print(f"Shard sync: synced {len(missing)} rows, {len(fixed_rows)} total verified ✓")
-        return 0
-
-    print(
-        f"Shard sync: {len(missing)} rows missing from shards"
-        " — run sync_history_shard.py --fix"
-    )
-    for r in missing:
-        print(f"  {r['id']} {r['date']} {r['surface']}/{r['dimension']}")
-    return 1
+    print(f"JSONL store: {len(events)} events verified — consistent")
+    return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Verify history shard sync for fixed ledger rows."
-    )
-    parser.add_argument("--fix", action="store_true", help="Append missing rows to shards.")
-    args = parser.parse_args()
-    return run(DISPOSITIONS, HISTORY_ROOT, args.fix)
+    return run(EVENTS_ROOT)
 
 
 if __name__ == "__main__":

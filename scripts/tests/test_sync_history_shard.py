@@ -1,11 +1,18 @@
-"""Behavioral tests for scripts/sync_history_shard.py.
+"""Behavioral tests for scripts/sync_history_shard.py (read-only JSONL checker).
 
-Loads the script as a module and drives its run() core with temporary paths.
+Verifies:
+- consistent store -> exit 0
+- event with dangling closes_event_ids -> exit 1
+- script never writes to dispositions-history
 """
+
+from __future__ import annotations
 
 import importlib.util
 import os
+import sys
 import tempfile
+import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -14,122 +21,118 @@ SCRIPT = REPO_ROOT / "scripts" / "sync_history_shard.py"
 
 def _load_script():
     spec = importlib.util.spec_from_file_location("sync_history_shard", SCRIPT)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    return mod
 
 
-def _write_dispositions(module, path: Path, rows: list) -> None:
-    # The script puts scripts/ on sys.path when loaded, so the table constants
-    # are importable from the source module here (the script itself does not
-    # re-export them).
-    from health_disposition_store import TABLE_HEADER, TABLE_DIVIDER
-    path.write_text(
-        TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
-        + "\n".join(rows) + "\n",
-        encoding="utf-8",
-    )
+def _write_jsonl(events_dir: Path, lines: list[str]) -> None:
+    events_dir.mkdir(parents=True, exist_ok=True)
+    (events_dir / "2026-06.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def test_report_mode_flags_missing_row():
-    module = _load_script()
-    with tempfile.TemporaryDirectory() as tmp:
-        tmpdir = Path(tmp)
-        dispositions = tmpdir / "dispositions.md"
-        _write_dispositions(module, dispositions, [
-            "| #001 | tooling | quality | my-skill | Some finding | fixed | 2026-06-10 | note |",
-        ])
-        history_root = tmpdir / "history"
-        history_root.mkdir()
-        rc = module.run(dispositions, history_root, fix=False)
-        assert rc == 1, f"Expected exit 1 for missing row, got {rc}"
-    print("PASS test_report_mode_flags_missing_row")
+_ACCEPTED_EVENT = (
+    '{"event_id":"disp_20260619_000001","surface":"tooling","dimension":"quality",'
+    '"object":"obj","finding":"issue","disposition":"accepted","date":"2026-06-19",'
+    '"closes_event_ids":[],"evidence":"queued","source":"test"}'
+)
+_FIXED_EVENT = (
+    '{"event_id":"disp_20260619_000002","surface":"tooling","dimension":"quality",'
+    '"object":"obj","finding":"issue","disposition":"fixed","date":"2026-06-19",'
+    '"closes_event_ids":["disp_20260619_000001"],"evidence":"fixed","source":"test"}'
+)
 
 
-def test_report_mode_passes_when_present():
-    module = _load_script()
-    from health_disposition_store import parse_ledger_file, append_row
-    with tempfile.TemporaryDirectory() as tmp:
-        tmpdir = Path(tmp)
-        dispositions = tmpdir / "dispositions.md"
-        _write_dispositions(module, dispositions, [
-            "| #001 | tooling | quality | my-skill | Some finding | fixed | 2026-06-10 | note |",
-        ])
-        history_root = tmpdir / "history"
-        append_row(history_root, parse_ledger_file(dispositions)[0])
-        rc = module.run(dispositions, history_root, fix=False)
-        assert rc == 0, f"Expected exit 0 when present, got {rc}"
-    print("PASS test_report_mode_passes_when_present")
+class ConsistentStoreTest(unittest.TestCase):
+    def test_consistent_store_exits_zero(self) -> None:
+        mod = _load_script()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            events_dir = root / "2026"
+            _write_jsonl(events_dir, [_ACCEPTED_EVENT, _FIXED_EVENT])
+            rc = mod.run(root)
+        self.assertEqual(0, rc)
+
+    def test_empty_store_dir_exits_zero(self) -> None:
+        """An events_root that exists but has no shards is consistent."""
+        mod = _load_script()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            rc = mod.run(root)
+        self.assertEqual(0, rc)
+
+    def test_absent_store_exits_zero(self) -> None:
+        """No events directory is treated as nothing to check."""
+        mod = _load_script()
+        with tempfile.TemporaryDirectory() as d:
+            rc = mod.run(Path(d) / "nonexistent")
+        self.assertEqual(0, rc)
 
 
-def test_fix_mode_syncs_and_passes():
-    module = _load_script()
-    with tempfile.TemporaryDirectory() as tmp:
-        tmpdir = Path(tmp)
-        dispositions = tmpdir / "dispositions.md"
-        _write_dispositions(module, dispositions, [
-            "| #001 | tooling | quality | my-skill | Some finding | fixed | 2026-06-10 | note |",
-        ])
-        history_root = tmpdir / "history"
-        history_root.mkdir()
-        rc = module.run(dispositions, history_root, fix=True)
-        assert rc == 0, f"Expected exit 0 after --fix, got {rc}"
-        # Second report run now passes — row was synced.
-        rc2 = module.run(dispositions, history_root, fix=False)
-        assert rc2 == 0, f"Expected exit 0 on re-verify, got {rc2}"
-    print("PASS test_fix_mode_syncs_and_passes")
+class DanglingReferenceTest(unittest.TestCase):
+    def test_dangling_closes_event_ids_exits_one(self) -> None:
+        mod = _load_script()
+        dangling = (
+            '{"event_id":"disp_20260619_000002","surface":"tooling","dimension":"quality",'
+            '"object":"obj","finding":"issue","disposition":"fixed","date":"2026-06-19",'
+            '"closes_event_ids":["disp_20260619_NONEXISTENT"],"evidence":"fixed","source":"test"}'
+        )
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            events_dir = root / "2026"
+            _write_jsonl(events_dir, [_ACCEPTED_EVENT, dangling])
+            rc = mod.run(root)
+        self.assertEqual(1, rc)
 
 
-def test_non_fixed_rows_ignored():
-    module = _load_script()
-    with tempfile.TemporaryDirectory() as tmp:
-        tmpdir = Path(tmp)
-        dispositions = tmpdir / "dispositions.md"
-        _write_dispositions(module, dispositions, [
-            "| #001 | tooling | quality | my-skill | Finding | accepted | 2026-06-10 | note |",
-            "| #002 | tooling | quality | my-skill | Finding | declined | 2026-06-10 | note |",
-        ])
-        history_root = tmpdir / "history"  # absent dir is fine: no fixed rows
-        rc = module.run(dispositions, history_root, fix=False)
-        assert rc == 0, f"Expected exit 0 with no fixed rows, got {rc}"
-    print("PASS test_non_fixed_rows_ignored")
+class NoWriteTest(unittest.TestCase):
+    def test_does_not_write_dispositions_history(self) -> None:
+        """run() must never create files under dispositions-history."""
+        mod = _load_script()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            events_dir = root / "2026"
+            _write_jsonl(events_dir, [_ACCEPTED_EVENT, _FIXED_EVENT])
+            history = root / "dispositions-history"
+            mod.run(root)
+            self.assertFalse(
+                history.exists(),
+                f"sync_history_shard.py wrote to {history} — must be read-only",
+            )
 
 
-def test_missing_history_dir_fails():
-    module = _load_script()
-    with tempfile.TemporaryDirectory() as tmp:
-        tmpdir = Path(tmp)
-        dispositions = tmpdir / "dispositions.md"
-        _write_dispositions(module, dispositions, [
-            "| #001 | tooling | quality | my-skill | Some finding | fixed | 2026-06-10 | note |",
-        ])
-        rc = module.run(dispositions, tmpdir / "absent-history", fix=False)
-        assert rc == 1, f"Expected exit 1 when history dir missing, got {rc}"
-    print("PASS test_missing_history_dir_fails")
+class NoImportAppendRowTest(unittest.TestCase):
+    def test_script_does_not_import_append_row(self) -> None:
+        """The rewritten script must not import or call append_row."""
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertNotIn(
+            "append_row",
+            source,
+            "sync_history_shard.py references append_row — it must be read-only",
+        )
 
 
-def test_paths_are_cwd_independent():
-    module = _load_script()
-    expected = (Path(module.__file__).resolve().parent.parent
-                / "docs/health/dispositions.md")
-    with tempfile.TemporaryDirectory() as tmp:
+class PathsAbsoluteTest(unittest.TestCase):
+    def test_events_root_is_absolute(self) -> None:
+        mod = _load_script()
+        self.assertTrue(
+            mod.EVENTS_ROOT.is_absolute(),
+            "EVENTS_ROOT must be an absolute path",
+        )
+
+    def test_events_root_cwd_independent(self) -> None:
+        mod = _load_script()
+        expected = REPO_ROOT / "docs" / "health" / "dispositions-events"
         cwd = os.getcwd()
         try:
-            os.chdir(tmp)  # run from a non-repo directory
-            assert module.DISPOSITIONS.is_absolute(), "DISPOSITIONS must be absolute"
-            assert module.DISPOSITIONS == expected, (
-                f"DISPOSITIONS resolved to {module.DISPOSITIONS}, expected {expected}"
-            )
+            with tempfile.TemporaryDirectory() as tmp:
+                os.chdir(tmp)
+                self.assertEqual(expected, mod.EVENTS_ROOT)
         finally:
             os.chdir(cwd)
-    print("PASS test_paths_are_cwd_independent")
 
 
 if __name__ == "__main__":
-    test_report_mode_flags_missing_row()
-    test_report_mode_passes_when_present()
-    test_fix_mode_syncs_and_passes()
-    test_non_fixed_rows_ignored()
-    test_missing_history_dir_fails()
-    test_paths_are_cwd_independent()
-    print("\nAll tests passed")
+    unittest.main()

@@ -180,6 +180,27 @@ def load_rows_from_store(repo_root: Path) -> list[Row]:
     _sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
 
+    events_root = repo_root / "docs" / "health" / "dispositions-events"
+    if events_root.exists():
+        raw_events = list(mod.iter_event_rows(events_root))
+        current_events = mod.materialize_current_events(raw_events)
+        rows: list[Row] = []
+        for i, event in enumerate(current_events, start=1):
+            rows.append(
+                Row(
+                    number=i,
+                    surface=str(event["surface"]),
+                    dimension=str(event["dimension"]),
+                    obj=str(event["object"]),
+                    issue=str(event["finding"]),
+                    disposition=str(event["disposition"]).lower(),
+                    date=str(event["date"]),
+                    note=str(event["evidence"]),
+                    id=str(event["event_id"]),
+                )
+            )
+        return rows
+
     history_root = repo_root / "docs" / "health" / "dispositions-history"
     if history_root.exists():
         raw = list(mod.iter_history_rows(history_root))
