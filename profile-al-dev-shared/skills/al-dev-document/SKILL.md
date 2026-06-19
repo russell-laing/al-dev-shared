@@ -1,8 +1,11 @@
 ---
 name: al-dev-document
 description: >-
-  Generate comprehensive technical documentation including a requirements
-  traceability matrix (RTM) with inline requirement references.
+  Orchestrate, review, and present comprehensive technical documentation
+  including a requirements traceability matrix (RTM) with inline requirement
+  references. Spawns a docs-writer specialist, reviews its output for technical
+  accuracy and completeness, then presents it — does not write the documentation
+  directly.
 argument-hint: "[feature name or file path to document]"
 ---
 
@@ -106,18 +109,25 @@ to fill gaps the summary does not cover. If the summary provides audience,
 scope, RTM status, and the required plan/requirements artifact paths,
 proceed to Step 2 immediately without re-reading those files.
 
+Resolve the `.dev/` discovery globs **once** into named variables and reuse the
+resolved paths in Step 2 (do not re-run the globs there):
+
+```bash
+REQUIREMENTS_FILE=$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)
+PLAN_FILE=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)
+CODE_REVIEW_FILE=$(ls .dev/*-al-dev-develop-code-review.md 2>/dev/null | sort | tail -1)
+```
+
 ```text
 Determine what needs documenting:
 
 1. Find implemented AL files
-2. Read latest requirements file — note how many REQ: tokens are present:
-   `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)`
-3. Read latest solution plan if available:
-   `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)`
-4. Determine inferred RTM status from .dev/ files present:
-   - only `*-al-dev-interview-requirements.md` → DEFINED
-   - `*-al-dev-plan-solution-plan.md` present → IN-PROGRESS
-   - `*-al-dev-develop-code-review.md` present → IMPLEMENTED
+2. Read `$REQUIREMENTS_FILE` (latest requirements) — note how many REQ: tokens are present
+3. Read `$PLAN_FILE` (latest solution plan) if present
+4. Determine inferred RTM status from the resolved paths:
+   - only `$REQUIREMENTS_FILE` present → DEFINED
+   - `$PLAN_FILE` present → IN-PROGRESS
+   - `$CODE_REVIEW_FILE` present → IMPLEMENTED
 5. Identify target audience (developers, users, admins)
 ```
 
@@ -135,10 +145,10 @@ Audience context:
 - AUDIENCE: [AUDIENCE]
 - TEMPLATE_PATH: [TEMPLATE_PATH]
 
-Context available:
-- Requirements: `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null | sort | tail -1)` (parse REQ: tokens for RTM)
-- Solution plan: `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)`
-- Code review: `$(ls .dev/*-al-dev-develop-code-review.md 2>/dev/null | sort | tail -1)` (if exists)
+Context available (paste the resolved paths from Step 1 — do not re-run the globs):
+- Requirements: [REQUIREMENTS_FILE resolved in Step 1] (parse REQ: tokens for RTM)
+- Solution plan: [PLAN_FILE resolved in Step 1]
+- Code review: [CODE_REVIEW_FILE resolved in Step 1] (if present)
 
 RTM instructions:
 - Parse all REQ: tokens from the latest `*-al-dev-interview-requirements.md`
@@ -228,7 +238,7 @@ When docs-writer completes:
    - User workflows clear?
    - Edge cases noted?
    - RTM table present at end of doc?
-   - All REQ: tokens from the latest `*-al-dev-interview-requirements.md` accounted for in RTM table?
+   - All REQ: tokens from `$REQUIREMENTS_FILE` (resolved in Step 1) accounted for in RTM table?
    - Inline requirement ID references present in narrative sections?
 
 4. Verify clarity:
