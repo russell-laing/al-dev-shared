@@ -1,6 +1,6 @@
 ---
 name: verify-commits
-description: Verify recent commits match planned commit groups; split only when approved groups were combined into one local commit
+description: Verify recent commits match planned commit groups; split only when approved groups were combined into one local commit. Splitting conditionally rewrites local history (git reset --soft + re-commit), gated by user confirmation.
 ---
 
 # Verify Commits
