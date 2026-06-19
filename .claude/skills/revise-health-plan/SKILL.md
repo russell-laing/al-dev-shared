@@ -97,6 +97,11 @@ user owns — especially when re-authoring would collide with a
 standing `declined`/`grandfathered` ledger row. Surface it with `AskUserQuestion`;
 never default to one branch.
 
+**Else (the review clearly favours one branch — no gate):** the `AskUserQuestion`
+gate applies only when both options are genuinely open.
+When the **review clearly favors a clean in-scope fix**, apply it without gating.
+When the **review clearly rules the option out-of-scope**, re-disposition it to the ledger without gating.
+
 Out-of-scope findings are typically: rubber-duck `skip` rows (refuted /
 already-covered (*the accepted finding is addressed by a different, non-reviewed task already
 in the plan*)), and tasks the review shows don't resolve their accepted finding.
