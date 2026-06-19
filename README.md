@@ -137,6 +137,13 @@ copilot plugin list
 codex plugin marketplace add russell-laing/al-dev-shared
 ```
 
+To update the plugin later, refresh the marketplace snapshot and reinstall:
+
+```bash
+codex plugin marketplace upgrade
+codex plugin add al-dev-shared@al-dev-shared
+```
+
 Verify installation by entering the Codex CLI and listing plugins:
 
 ```bash
@@ -218,6 +225,8 @@ Then reload Codex or verify with:
 codex
 /plugins
 ```
+
+To update a local clone, pull the latest changes in `~/al-dev-shared` and restart Codex. The config entry above does not need to change.
 
 ---
 
