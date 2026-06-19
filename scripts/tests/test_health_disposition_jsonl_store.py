@@ -339,5 +339,37 @@ class JsonlRenderTest(unittest.TestCase):
             self.assertEqual("tooling", parsed[0]["surface"])
 
 
+class JsonlCliTest(unittest.TestCase):
+    def test_cli_append_event_and_regenerate(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            events_root = root / "docs" / "health" / "dispositions-events"
+            open_view = root / "docs" / "health" / "dispositions-open.md"
+            current_view = root / "docs" / "health" / "dispositions-current.md"
+            index = root / "docs" / "health" / "dispositions-index.json"
+
+            event = {
+                "event_id": "disp_20260619_000001",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "obj",
+                "finding": "issue",
+                "disposition": "accepted",
+                "date": "2026-06-19",
+                "closes_event_ids": [],
+                "evidence": "queued",
+                "source": "test",
+            }
+            STORE.append_event(events_root, event)
+            events = list(STORE.iter_event_rows(events_root))
+            STORE.render_open_view(open_view, events)
+            STORE.render_current_events_view(current_view, events)
+            STORE.render_index(index, events)
+
+            self.assertTrue(open_view.exists())
+            self.assertTrue(current_view.exists())
+            self.assertTrue(index.exists())
+
+
 if __name__ == "__main__":
     unittest.main()

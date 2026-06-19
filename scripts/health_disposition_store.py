@@ -722,6 +722,23 @@ if __name__ == "__main__":
     )
     ih.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
 
+    _EVENTS_DEFAULT = Path("docs/health/dispositions-events")
+
+    ae = sub.add_parser("append_event", help="Append one JSONL disposition event.")
+    for field in ("surface", "dimension", "object", "finding", "disposition", "date", "evidence", "source"):
+        ae.add_argument(f"--{field}", required=True)
+    ae.add_argument("--event-id", default="", help="Override auto-allocation for migration/recovery only.")
+    ae.add_argument("--legacy-id", default="")
+    ae.add_argument("--closes-event-ids", default="")
+    ae.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
+
+    regen = sub.add_parser("regenerate", help="Regenerate disposition views from JSONL events.")
+    regen.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
+    regen.add_argument("--open-view", type=Path, default=Path("docs/health/dispositions-open.md"))
+    regen.add_argument("--current-view", type=Path, default=Path("docs/health/dispositions-current.md"))
+    regen.add_argument("--index", type=Path, default=Path("docs/health/dispositions-index.json"))
+    regen.add_argument("--compatibility-view", type=Path, default=Path("docs/health/dispositions.md"))
+
     lo = sub.add_parser(
         "list-open",
         help="Print current-view rows with a given disposition (default accepted) as JSON lines.",
@@ -747,6 +764,32 @@ if __name__ == "__main__":
 
         for r in iter_history_rows(args.history_root):
             print(json.dumps(r, ensure_ascii=False))
+        raise SystemExit(0)
+    if args.command == "append_event":
+        event_id = args.event_id or next_event_id(list(iter_event_rows(args.events_root)), args.date)
+        event = {
+            "event_id": event_id,
+            "legacy_id": args.legacy_id,
+            "surface": args.surface,
+            "dimension": args.dimension,
+            "object": args.object,
+            "finding": args.finding,
+            "disposition": args.disposition,
+            "date": args.date,
+            "closes_event_ids": [v.strip() for v in args.closes_event_ids.split(",") if v.strip()],
+            "evidence": args.evidence,
+            "source": args.source,
+        }
+        shard = append_event(args.events_root, event)
+        print(shard)
+        raise SystemExit(0)
+    if args.command == "regenerate":
+        events = list(iter_event_rows(args.events_root))
+        render_open_view(args.open_view, events)
+        render_current_events_view(args.current_view, events)
+        render_index(args.index, events)
+        render_legacy_compatibility_view(args.compatibility_view, events)
+        print(f"regenerated {len(events)} event(s)")
         raise SystemExit(0)
     if args.command == "list-open":
         import json
