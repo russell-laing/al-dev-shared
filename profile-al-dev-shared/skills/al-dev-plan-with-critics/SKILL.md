@@ -4,7 +4,10 @@ description: >-
   Generate a draft implementation plan from a spec, then red-team it with
   six parallel adversarial critics (security, testability, type-safety,
   rollback-safety, API-contracts, edge-cases). Synthesizes findings,
-  applies auto-fixes, and gates user approval before execution.
+  applies auto-fixes, and gates user approval before execution. A provided
+  plan file is accepted as spec input — treated as the starting specification,
+  not a competing plan to review. The flow is sequential: critics run only
+  after the plan is generated; they do not co-author it.
 argument-hint: "<spec-file-or-description>"
 ---
 
