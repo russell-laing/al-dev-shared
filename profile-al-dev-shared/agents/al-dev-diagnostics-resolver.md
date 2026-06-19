@@ -4,7 +4,7 @@ description: >-
   Resolve AL lint warnings and compile errors surfaced by
   al-compile. Groups issues by rule ID, applies auto-fixes for
   scripted rules, and escalates judgment-required rules to the
-  caller. Dispatched by al-dev-lint and al-dev-fix skills.
+  caller. Dispatched by the al-dev-lint skill.
 model: sonnet
 tools: ["Read", "Edit", "Bash"]
 ---

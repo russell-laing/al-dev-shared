@@ -1,6 +1,6 @@
 ---
 name: "al-dev-diagnostics-resolver"
-description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by al-dev-lint and al-dev-fix skills."
+description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by the al-dev-lint skill."
 tools: ["read", "edit", "execute"]
 ---
 
