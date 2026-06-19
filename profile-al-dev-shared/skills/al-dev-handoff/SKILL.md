@@ -69,7 +69,7 @@ Copy these files if they exist:
 | `.dev/project-context.md` | `.dev/source-project-context.md` |
 | `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-solution-plan.md` |
 | `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-requirements.md` |
-| `$(ls .dev/*-al-dev-release-notes-*.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-release-notes.md` |
+| `$(ls .dev/*-plugin-release-notes.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-release-notes.md` |
 
 Rename `project-context.md` → `source-project-context.md` to avoid
 overwriting the target repo's own context document.
@@ -119,7 +119,7 @@ REQUIREMENTS=$(ls .dev/*-al-dev-interview-requirements.md \
   echo "✅ requirements.md → source-requirements.md" || \
   echo "⏭ requirements.md (not found)"
 
-RELEASE_NOTES=$(ls .dev/*-al-dev-release-notes-*.md 2>/dev/null | \
+RELEASE_NOTES=$(ls .dev/*-plugin-release-notes.md 2>/dev/null | \
   sort | tail -1)
 [ -n "$RELEASE_NOTES" ] && \
   cp "$RELEASE_NOTES" "$TARGET/.dev/source-release-notes.md" && \
