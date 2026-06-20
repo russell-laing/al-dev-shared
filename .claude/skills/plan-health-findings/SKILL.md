@@ -401,6 +401,13 @@ Pass as context to writing-plans all items listed in
 > of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
 > `closes_event_ids:` block inside each task's verification block before handoff.
 
+- **Spec-only tasks must not earn closure.** When a rubber-duck `modify` verdict reduces
+  a finding's scope to "write prerequisite documentation only" (the task body explicitly
+  defers the behavior change to a future plan), the task must carry `closes_event_ids: []`
+  with a note that the accepted event stays open for that future plan. Do not assign the
+  accepted `event_id` to a spec-only task — `implement-health-plan` would falsely mark it
+  `fixed` even though the underlying behavior change has not occurred.
+
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven / Inline" prompt
   or ask "Which approach?" — the health loop overrides those endings. After writing-plans
   completes, this skill's Phase 5 routes execution to `/implement-health-plan` so the
@@ -426,7 +433,19 @@ steps below.
    If the count is 0, the survival caveat in Phase 4 was violated; fix the plan
    before handing off.
 
-2. **Coverage reconciliation (mandatory gate).** Every accepted event in
+2. **Commit-subject length check.** Verify all commit subjects are ≤72 characters (`revise-health-plan`
+   catches violations too, but catching them here is cheaper):
+
+   ```bash
+   PLAN=<plan-path>
+   grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/^git commit -m "//; s/"$//' > /tmp/subjects
+   while IFS= read -r s; do n=$(printf '%s' "$s" | wc -m); [ "$n" -gt 72 ] && echo "OVER 72 ($n): $s"; done < /tmp/subjects
+   ```
+
+   Any printed line is a violation. Fix the subject in the plan before handing off.
+   Character count, not bytes — one emoji counts as one character.
+
+3. **Coverage reconciliation (mandatory gate).** Every accepted event in
    `docs/health/dispositions-open.md` must be resolved **exactly once** across
    `(plan-task closes_event_ids)` ∪ `(decline/grandfather ledger tasks)` — none
    missing, none in both. Compute it explicitly and state the arithmetic in the
@@ -436,7 +455,7 @@ steps below.
    handing off. This mirrors `revise-health-plan` Phase 4 so the two skills stay
    in sync.
 
-3. **Write `.dev/health-loop-state.md`** (schema:
+4. **Write `.dev/health-loop-state.md`** (schema:
    `.claude/knowledge/health-loop-state-contract.md`):
 
    - `stage_completed: plan-health-findings`
@@ -448,7 +467,7 @@ steps below.
      NOT use the writing-plans Subagent-Driven/Inline options — they skip
      ledger close-back.
 
-4. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
+5. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
    `<plan-path>` with `closes_event_ids:` for ledger close-back. This transition is
    context-heavy — start a **fresh session** and run
    `/implement-health-plan --plan <plan-path>` to execute the plan and close the

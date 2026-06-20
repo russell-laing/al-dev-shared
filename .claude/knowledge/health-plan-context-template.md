@@ -54,6 +54,13 @@ Phase 3 of `plan-health-findings`. Pass all items in this list as context to
   git commit -m "🐛 fix(tooling): narrow lens description to bash blocks"
   ```
 
+- **Path placeholders in spec content.** When a task writes a spec file to disk
+  that includes file-path examples (e.g., in JSON schemas or workflow sections),
+  use `<date>` as the date placeholder rather than `YYYY-MM-DD`. The plan's own
+  forbidden-pattern scan runs `grep -n 'YYYY-MM-DD'` over the created spec file
+  at step completion — a literal `YYYY-MM-DD` in path examples will cause that
+  scan to fail even though it is intentional documentation.
+
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
   Inline" prompt or ask "Which approach?". Hand control back to the caller
   (`plan-health-findings` Phase 4), which routes execution to
