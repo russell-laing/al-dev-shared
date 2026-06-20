@@ -41,6 +41,19 @@ Phase 3 of `plan-health-findings`. Pass all items in this list as context to
   header. `implement-health-plan` Phase 3 greps for this token to close the
   ledger entries after implementation.
 
+- **Commit-message format.** Every task's `git commit -m` must follow
+  `profile-al-dev-shared/knowledge/commit-conventions.md`:
+  `<emoji> type(scope): subject` — **subject line only** (this is a `tool` repo:
+  no WHY block, no body), with the full subject ≤72 characters. Put event IDs in
+  the task's `closes_event_ids:` verification block, **never** in the commit
+  message (no `[#event_id]` suffix and no `closes_event_ids:` body). Emoji come
+  from the canonical table — `🐛` for `fix`, `🚚` for `move`/rename, `📦` for
+  `chore`. One compliant example:
+
+  ```bash
+  git commit -m "🐛 fix(tooling): narrow lens description to bash blocks"
+  ```
+
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
   Inline" prompt or ask "Which approach?". Hand control back to the caller
   (`plan-health-findings` Phase 4), which routes execution to
