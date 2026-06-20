@@ -10,7 +10,7 @@ description: >-
 argument-hint: "[--autonomous] [module or scope override]"
 ---
 
-# Develop Skill
+# Develop Orchestration Skill
 
 Prepare implementation context, validate scope, partition work across developers,
 and dispatch developers to implement AL code. You do NOT write code yourself.
