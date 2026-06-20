@@ -120,6 +120,12 @@ If a finding matches no entry in `correction-patterns.md`, treat it as
 unclassified and surface it at the Phase 2 user gate for an explicit decision
 rather than silently dropping or auto-classifying it.
 
+Once the user resolves a novel defect class this way, **append it as a new row
+to `.claude/knowledge/correction-patterns.md`** (review finding → canonical
+correction) before claiming done, so the next plan review classifies it
+mechanically instead of re-litigating it at the gate. This is how the loop
+learns — a one-off resolution becomes a repeatable pattern.
+
 ## Phase 4 — Coverage reconciliation and self-verification
 
 ### Coverage reconciliation (mandatory)
@@ -142,9 +148,23 @@ PLAN=<plan-path>
 grep -c '^### Task ' "$PLAN"                           # task count
 grep -cE '^\s+closes_event_ids:' "$PLAN"              # must equal task count
 grep -E '^\s+-\s+disp_' "$PLAN" | sort | uniq -d      # expect empty (no dup event IDs)
-grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/.*"-m "//' | awk '{ if (length>72) print "OVER 72: " $0 }'
+
+# --- commit-format checks (extract the bare subject, count CHARACTERS not bytes) ---
+grep -oE 'git commit -m "[^"]+"' "$PLAN" | sed -E 's/^git commit -m "//; s/"$//' > /tmp/subjects
+# subject >72 chars: wc -m counts characters, so a 4-byte emoji is not double-counted
+while IFS= read -r s; do n=$(printf '%s' "$s" | wc -m); [ "$n" -gt 72 ] && echo "OVER 72 ($n): $s"; done < /tmp/subjects
+# missing emoji: subject starts with an ASCII letter (no emoji prefix)
+grep -nE 'git commit -m "[a-zA-Z]' "$PLAN" && echo "↑ MISSING EMOJI"
+# multi-line body (tool repo = subject only): -m string spanning a newline
+grep -Pzo 'git commit -m "[^"]*\n' "$PLAN" && echo "↑ MULTI-LINE COMMIT BODY"
+# event id smuggled into the commit message instead of closes_event_ids block
+grep -nE 'git commit -m "[^"]*(closes_event_ids|\[#)' "$PLAN" && echo "↑ EVENT ID IN COMMIT MSG"
+
 # no event_id appears in BOTH a plan closes_event_ids and a new re-disposition closes_event_ids
 ```
+
+> Verify the character-count path against a known 72-character emoji subject so
+> the previous byte-counting false positive is actually gone.
 
 ### Common mistakes
 
