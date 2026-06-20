@@ -95,7 +95,7 @@ Verify the template exists. Replace `[AUDIENCE]` below with the value chosen
 above (`technical`, `functional`, `user`, or `executive`) before running:
 
 ```bash
-ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/[AUDIENCE].md 2>/dev/null \
+ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/"<AUDIENCE>".md 2>/dev/null \
   || echo "Template not found — docs-writer will use inline structure from Step 2"
 # Non-zero exit here is expected and normal — do not retry.
 ```
@@ -265,6 +265,8 @@ presenting. When a Diagram row shows `no`, also scan every other diagram in the
 document for the **same error class** before re-presenting — same error class
 means: a wrong conditional/edge label, a stale node name, or a missing branch.
 Skipping this block is visible to the user — do not omit it.
+
+If all verification rows show `yes`, skip refinement and proceed directly to Step 5.
 
 ### Step 4: Request Refinements (if needed)
 
