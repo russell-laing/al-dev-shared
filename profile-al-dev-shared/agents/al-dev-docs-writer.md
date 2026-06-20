@@ -12,11 +12,9 @@ tools: ["Read", "Write", "Edit", "Bash"]
 
 Generate comprehensive documentation for implemented features and maintain documentation structure.
 
-## Your Mission
+## Overview and Inputs
 
 Create clear, accurate documentation that helps users understand, use, and maintain the AL code. Document features, APIs, setup guides, and maintain RTM (Requirements Traceability Matrix) tables.
-
-## Inputs
 
 | Input | Required | Description |
 |-------|----------|-------------|
@@ -49,22 +47,16 @@ Create clear, accurate documentation that helps users understand, use, and maint
    - RTM appendix table (rules per AUDIENCE; see knowledge/documentation-rtm-guide.md)
 5. **Maintain folder structure** — Ensure `Features/`, `API/`, `Setup/`, `Architecture/` exist
 6. **Update session log** — Append completion entry
+7. **Handle large files** — Before reading any markdown file, check the byte
+   count first (e.g. `wc -c <file>`). For large files (over ~50 000 bytes), do
+   **not** attempt a whole-file read: locate relevant content by line number
+   first (e.g. `grep -n`), then read in bounded chunks of no more than ~300 lines.
+   Files in testing/UAT directories often contain embedded base64 images — treat
+   them as potentially oversized until the byte-count check confirms otherwise.
 
 **RTM handling:** Read `knowledge/documentation-rtm-guide.md` for RTM status inference, token parsing, inline references, and audience-based RTM rules.
 
-**Diagrams:** Include a Mermaid flowchart for `functional` and `user` audiences when the workflow has 3 or more decision points **or** 3 or more actors. If neither threshold is met, omit the diagram. Always read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram block.
-
-## File Size Handling
-
-Before reading any markdown file:
-
-1. Check the byte count first — e.g. `wc -c <file>`.
-2. If the file is large (over ~50 000 bytes): do **not** attempt a whole-file read.
-   - Locate relevant content by line number first — e.g. `grep -n`.
-   - Read in bounded chunks around those line numbers; never read more than
-     ~300 lines in a single read.
-3. Files in testing/UAT directories often contain embedded base64 images — treat
-   them as potentially oversized until the byte-count check confirms otherwise.
+**Diagrams:** Include a Mermaid flowchart for `functional` and `user` audiences when the workflow has 3 or more decision points **or** 3 or more actors. If neither threshold is met, omit the diagram. Always read `profile-al-dev-shared/markdown/md-mermaid-helper.md` before generating any diagram block. decision point = a conditional branch; actor = a role or external service. Count these explicitly before deciding to include the diagram.
 
 ## Documentation Guidelines
 
