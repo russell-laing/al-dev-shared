@@ -104,6 +104,14 @@ If [2] (or --auto-fix passed): proceed to Phase 3.
 
 ## Phase 3 — Dispatch fix agents (auto-fix mode)
 
+Before dispatching: confirm the dispatch template file exists.
+
+```bash
+ls .claude/knowledge/fix-knowledge-quality-dispatch.md
+```
+
+If absent, stop and restore it: `git checkout HEAD -- .claude/knowledge/fix-knowledge-quality-dispatch.md`
+
 For each HIGH task, dispatch one `al-dev-shared:al-dev-docs-writer` agent
 (`al-dev-shared:` is the plugin namespace prefix; see CLAUDE.md — Agent File
 Format). Use the dispatch template in
