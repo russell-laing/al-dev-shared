@@ -224,6 +224,9 @@ Both agents run in parallel (single message, two Agent tool calls).
 
 Do not present a fix path until the findings file contains at least one confirmed or best-supported hypothesis and the rejected alternatives are named.
 
+> best-supported = the hypothesis with the most corroborating code-line evidence
+> and the fewest contradictions.
+
 ### Step 5 — Synthesise Findings
 
 Read both agents' results and write
