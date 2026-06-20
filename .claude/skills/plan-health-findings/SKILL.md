@@ -6,7 +6,9 @@ description: >-
   docs/health/dispositions-open.md, runs a deterministic disposition matcher in
   Phase 1 to classify findings before rubber-ducking proceeds, rubber-ducks each
   finding against the live codebase before any plan content is written, then produces a verified
-  implementation plan via the writing-plans sub-skill. Filter the worklist by
+  implementation plan via the writing-plans sub-skill (note: `closes_event_ids`
+  may need manual repair if writing-plans drops the field — see Phase 4 survival
+  caveat). Filter the worklist by
   object type with `--skills` or `--agents` to plan only skill-design or
   agent-design findings, and scope it by surface and dimension with `--surface
   plugin|tooling|both` and `--dimension design|quality|naming|all`. Use when the
@@ -209,9 +211,9 @@ python3 scripts/health_disposition_store.py match \
 
 The matcher returns a **high-precision candidate shortlist** classifying each
 finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify`
-candidate against the cited ledger row before acting. Read only the specific
-events the matcher flags — do not read the full event store or the generated
-dispositions.md view directly.
+candidate against the cited ledger row before acting. Read the specific flagged events from the JSONL event store by event ID
+(e.g., `grep -r '"event_id": "disp_YYYYMMDD_NNNNNN"' docs/health/dispositions-events/`) —
+do not read the full event store or the generated dispositions.md view directly.
 
 Read `docs/health/dispositions-index.json` first. If `open_accepted` is zero,
 stop: there are no accepted findings to plan. If it is nonzero, read
