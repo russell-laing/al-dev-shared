@@ -58,6 +58,8 @@ For **Fixable** failures, apply a scripted fix via Bash **only if all three cond
 1. The fix can be validated immediately — re-running the failing hook command passes
 2. The fix is reversible — `git checkout HEAD -- <file>` restores the original
 3. The fix target is a configuration or formatting issue, not business logic
+   (configuration = paths, env vars, format strings, lint rules; business logic =
+   control flow, data transforms, validation)
 
 If any condition is not met, reclassify the failure as **manual-review** — do not
 apply a scripted fix. Record the root cause and a concrete manual recommendation
