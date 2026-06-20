@@ -86,6 +86,8 @@ For complete structure and template content, read `knowledge/solution-plan-templ
 - **Implementation Tasks section:** Add a `### Implementation Tasks` section listing each logical implementation unit. For each task include:
   - `Files:` — files to create or modify
   - `Gotcha:` — the most likely project-specific pitfall for this task. Consult `knowledge/al-developer-patterns.md` for known AL/BC traps (object name length, var parameter verification, bash regex line-collapse). Write one concrete warning; write `none — [rationale]` if no pitfall applies.
+    concrete = specific to the task, referencing actual code patterns or
+    constraints; generic best-practice warnings do not count.
   - `Validate:` — an exact shell command the developer runs after completing this task to confirm it is done. Prefer `grep`, `wc -l`, or `al-compile` checks. Write `[manual] — [description]` if no shell command suffices.
 
 Target output detail by complexity:
@@ -96,7 +98,7 @@ Target output detail by complexity:
 
 **Critical:** Testability architecture section is mandatory for all solutions. test-engineer will review for completeness.
 
-## Schema Mapping Decisions
+### Schema Mapping Decisions
 
 Document all external field/table references with existence verification in your solution plans.
 
