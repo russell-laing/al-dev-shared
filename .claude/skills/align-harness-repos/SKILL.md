@@ -46,6 +46,7 @@ intention is not proof.
 ```bash
 SCRIPT="/Users/russelllaing/al-dev-shared/scripts/validate_harness_neutrality.py"
 PLUGIN_ROOT="/Users/russelllaing/al-dev-shared/profile-al-dev-shared"
+test -f "$SCRIPT" || { echo "ERROR: Script not found at $SCRIPT — verify the SCRIPT path matches your repository clone location and re-run."; exit 1; }
 ALIGN_OUTPUT=$(python3 "$SCRIPT" "$PLUGIN_ROOT" 2>&1)
 ALIGN_EXIT=$?
 ```
@@ -142,6 +143,7 @@ rather than auto-replacing it.
 After applying all fixes, re-run the validation:
 
 ```bash
+test -f "$SCRIPT" || { echo "ERROR: Script not found at $SCRIPT — verify the SCRIPT path matches your repository clone location and re-run."; exit 1; }
 ALIGN_OUTPUT=$(python3 "$SCRIPT" "$PLUGIN_ROOT" 2>&1)
 ALIGN_EXIT=$?
 ```
