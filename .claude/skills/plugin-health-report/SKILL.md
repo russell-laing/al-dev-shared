@@ -96,7 +96,7 @@ Complexity Outliers are findings from the `design-skill-lens-complexity` lens ag
 See the "Complexity Outliers — Verdict Field" section in
 `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` for the field definition
 and per-verdict action. A Complexity line missing the verdict field is a lens
-regression — count it normally but flag as "verdict missing".
+regression — count it as **Medium** severity and flag as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 
@@ -163,6 +163,11 @@ before naming), then by object (agent before skill). Pick the top 5 ranked actio
 for the summary — excluding `verdict=None` findings (Phase 1), applying
 the staleness spot-check rule (Phase 1c), and excluding suppressed
 dispositions (Phase 1d).
+
+List verdict-missing complexity findings in the **Failed / anomalous lenses**
+note at the foot of the Summary — include the lens name, the finding subject,
+and the label "verdict field absent — lens regression likely." Do not place
+them in the quality findings section.
 
 Write `docs/health/YYYY-MM-DD-<surface>-health.md` (substitute today's date and
 `plugin`/`tooling` from the findings filename). **If a dossier already exists at
