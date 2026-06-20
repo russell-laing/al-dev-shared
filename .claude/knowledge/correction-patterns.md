@@ -16,3 +16,4 @@ review. Referenced by `revise-health-plan` Phase correction-classification.
 | A conditional task branch is only partially implemented (e.g. "use `-compare` if materially different" but only the default branch has steps) | Resolve the fork at plan time (rubber-duck has the live evidence) or surface it at the revise user gate; the chosen branch must have its full steps spelled out — no unimplemented branches left in the task |
 | A task changes a skill's first description sentence | Regenerate + stage the derived `docs/maintainer-tooling.md` |
 | A task is dropped (re-dispositioned) | Renumber remaining tasks contiguously; update the Goal count and Provenance range |
+| Spec content uses `YYYY-MM-DD` as path-pattern placeholders (e.g., in JSON schema examples) — the plan's own forbidden-pattern scan then catches these intentional examples | Replace `YYYY-MM-DD` with `<date>` in the spec content's path-pattern examples |
