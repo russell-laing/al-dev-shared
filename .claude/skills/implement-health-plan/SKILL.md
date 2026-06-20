@@ -3,7 +3,7 @@ name: implement-health-plan
 description: >-
   Closes the health-audit loop: executes an accepted implementation plan,
   verifies each change, and appends `fixed` events to the JSONL event store
-  for every `closes_event_ids:` entry (the distinguishing ledger close-back).
+  for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back).
   Locates the latest docs/superpowers/plans/ plan containing `closes_event_ids:`,
   executes tasks inline (one at a time), archives consumed artifacts, and
   optionally triggers downstream regeneration.
