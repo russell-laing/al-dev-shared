@@ -70,6 +70,9 @@ Current repo-local skills:
 - `.codex/skills/generate-duplicate-text-report/` — scans active repository
   surfaces for exact repeated text blocks and writes durable Markdown reports
   for maintainer review.
+- `.codex/skills/generate-benchmark-report/` — creates benchmark baseline
+  reports from live health artifacts and includes a final live-state validation
+  loop that re-checks counts and patches drift before the report is trusted.
 
 ## Shared Plugin Surface (All Harnesses)
 
