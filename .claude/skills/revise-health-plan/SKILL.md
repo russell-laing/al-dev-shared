@@ -103,6 +103,8 @@ gate applies only when both options are genuinely open.
 When the **review clearly favors a clean in-scope fix**, apply it without gating.
 When the **review clearly rules the option out-of-scope**, re-disposition it to the ledger without gating.
 
+For this rule, **"clearly"** means the review document contains explicit wording — such as "this is in scope", "decline this finding", or "this should be grandfathered" — stated as a direct conclusion. Implicit framing, absence of objection, and hedged phrasing ("might be worth...") do not qualify and always route through the user gate. When the review's explicit wording supports both branches simultaneously, treat it as ambiguous and route through the user gate.
+
 Out-of-scope findings are typically: rubber-duck `skip` rows (refuted /
 already-covered (*the accepted finding is addressed by a different, non-reviewed task already
 in the plan*)), and tasks the review shows don't resolve their accepted finding.
