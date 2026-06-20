@@ -317,12 +317,28 @@ records are collected.
 >   --evidence "declined: rubber-duck refuted — <one-line reason>"
 > ```
 >
-> That task carries a Step 0 committing any pre-existing dirty `docs/health/`
+> That task carries a Step 0 that commits any pre-existing dirty `docs/health/`
 > first (so a later `git add docs/health/` stages only this task's regenerated
-> output), a `regenerate` step, an **inverted** absence check
-> (`if … | grep -q <id>; then echo ERROR; exit 1; fi`), and `closes_event_ids:
-> []` with a note that `implement-health-plan` MUST NOT write `fixed` for these
-> events (they are closed by `append_event`). The **stale-object** skip below
+> output). Author Step 0 in the fail-loud conditional form — commit only when the
+> tree is dirty and let a real commit failure stop the task — never
+> `git add … && git commit … || echo`, whose `|| echo` masks genuine commit errors:
+>
+> ```bash
+> if ! git diff --quiet -- docs/health/ || ! git diff --cached --quiet -- docs/health/; then
+>   git add docs/health/
+>   git commit -m "<emoji> chore(health): sync ledger before declines"
+> fi
+> ```
+>
+> The task also carries a `regenerate` step, a **declined-row presence** check that
+> proves a `declined` event row exists for each ID — not merely the pre-existing
+> `accepted` row that was always there
+> (`grep -rh '"event_id": "<id>"' docs/health/dispositions-events/ | grep -q '"disposition": "declined"'`),
+> an **inverted** open-view absence check
+> (`if grep -q <id> docs/health/dispositions-open.md; then echo ERROR; exit 1; fi`),
+> and `closes_event_ids: []` with a note that `implement-health-plan` MUST NOT
+> write `fixed` for these events (they are closed by `append_event`). The
+> **stale-object** skip below
 > (object no longer resolves) is the one exception — those stay user-decided via
 > `/record-health-dispositions`, not auto-declined.
 
@@ -400,6 +416,24 @@ Pass as context to writing-plans all items listed in
 > `grep -c "closes_event_ids:" <plan-path>` and confirm the count equals the number
 > of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
 > `closes_event_ids:` block inside each task's verification block before handoff.
+
+- **Pre-empt the known correction patterns.** Before finalizing, consult
+  `.claude/knowledge/correction-patterns.md` and author every task so no row applies
+  to it. `revise-health-plan` checks the same list — anything you author cleanly here is
+  one defect the reviewer does not have to send back. The recurring author-side defects
+  this gate exists to prevent:
+  - **Value-sensitive verification.** Every task's verification grep MUST fail on the
+    pre-edit file — assert the new value with a fixed-string `grep -F`, and where the old
+    value is known, assert its absence too. A whole-file presence grep that already matches
+    the untouched file is not acceptance evidence (`/implement-health-plan` would mark the
+    task verified even if the edit was skipped).
+  - **Task-specific commit scopes.** Use `type(<edited-component>)` matching the edited
+    skill/agent/directory name (e.g. `fix(al-dev-investigate)`, `chore(generated-agents)`),
+    never a generic `type(plugin)`. Subject ≤72 characters, subject-only (tool repo).
+  - **Shared-surface validation gate.** When the plan edits `profile-al-dev-shared/` files,
+    add a validation-gate task (after the last source edit and any projection regen, before
+    ledger close-back) chaining the repo's shared-surface validators with `&&`; it closes no
+    events (`closes_event_ids: []`).
 
 - **Spec-only tasks must not earn closure.** When a rubber-duck `modify` verdict reduces
   a finding's scope to "write prerequisite documentation only" (the task body explicitly
