@@ -30,11 +30,11 @@ workflow:
 Lightweight dispatch coordinator. Dispatches parallel background audit agents for
 skills and agents, writes a checkpoint with their agent IDs and artifact paths,
 then returns. The agents run in the background; the harness notifies on
-completion (roughly 5 minutes), so the user is free to work meanwhile.
+completion, so the user is free to work meanwhile.
 
 **Four-skill workflow:**
 
-1. `/sync-documentation-maps` — dispatch audit teams (this skill, ~5 min)
+1. `/sync-documentation-maps` — dispatch audit teams (this skill)
 2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
 3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps
 4. `/sync-documentation-maps-write` — regenerate diagrams/projections/graph, commit

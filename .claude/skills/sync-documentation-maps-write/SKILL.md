@@ -102,8 +102,8 @@ Mermaid diagram regeneration failed (exit <code>).
 
 **Count-consistency gate:** Before committing, run the three-way count check in
 `.claude/knowledge/map-count-consistency-gate.md` (active files on disk vs generated
-Coverage count vs generated catalog rows). On mismatch, stop and follow the bounded
-recovery defined there.
+Coverage count vs generated catalog rows). On mismatch, stop here (do not commit)
+and read the bounded-recovery steps in that doc before retrying.
 
 Once the count check passes, run the three remaining regenerations in sequence. Each follows the same pattern — execute the
 script and capture its exit code; on a non-zero code, report the labelled error

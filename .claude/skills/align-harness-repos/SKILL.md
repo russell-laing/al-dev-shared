@@ -1,11 +1,12 @@
 ---
 name: align-harness-repos
 description: >-
-  Validate harness neutrality in the al-dev-shared single shared plugin surface.
-  Scans for forbidden harness-specific tokens across seven classes (Claude tool
-  tokens, dispatch tokens, and settings paths; Copilot tool tokens and settings
-  paths; Claude MCP tokens; and harness-specific session wording) that could
-  break distributable content. Run after changes to skills, agents, or knowledge.
+  Validate harness neutrality in the al-dev-shared single shared plugin surface
+  by running validate_harness_neutrality.py, which checks for forbidden
+  harness-specific tokens across seven classes (Claude tool tokens, dispatch
+  tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP
+  tokens; and harness-specific session wording) that could break distributable
+  content. Run after changes to skills, agents, or knowledge.
 workflow:
   stage: derive
   invoked-by: user
