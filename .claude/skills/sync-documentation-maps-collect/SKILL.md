@@ -111,7 +111,8 @@ follows Case 2, a pending surface follows Case 3, and their combination is
 Case 4.
 
 Merge the parsed findings from both surfaces into a single working set. For
-each surface, compute `name = discrepancy.skill ?? discrepancy.agent`, then
+each surface, compute the display `name` — use `discrepancy.skill` as the
+display name if non-null, otherwise fall back to `discrepancy.agent` — then
 stable-sort by `name` and discrepancy `type`. Deduplicate on `(name, type)` and
 keep the first item from that stable ordering so duplicate reports collapse
 deterministically.
