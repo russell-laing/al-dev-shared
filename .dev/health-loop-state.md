@@ -1,12 +1,12 @@
-stage_completed: implement-health-plan
+stage_completed: record-health-dispositions
 completed_at: 2026-06-20
-next_command: none
-next_inputs: []
+next_command: /plan-health-findings
+next_inputs:
+
+- docs/health/dispositions-open.md
+- docs/health/2026-06-20-tooling-health.md
 fresh_session_recommended: false
 note: >-
-  Loop closed; ledger staleness check passed (0 effective-open accepted rows).
-  Plan 2026-06-20-plugin-map-tooling-quality-fixes implemented: 15 fixed events
-  (Tasks 1-12), 1 grandfathered (000072), 3 declined (000055/000059/000069). No
-  source under profile-al-dev-shared/ changed (all edits were tooling-surface
-  .claude/, scripts/, docs/), so /projection-sync and /align-harness-repos are
-  NOT required. Run /plugin-health-audit to start the next health loop.
+  4 accepted rows recorded (tooling/design): plan-health-findings Atomise,
+  sync-documentation-maps-write Atomise, design-skill-lens-near-duplicates Remodel,
+  health-rubber-duck Promote. Plan the accepted rows.

@@ -38,6 +38,16 @@ def normalize_finding(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
+def _escape_cell(text: object) -> str:
+    """Escape bare pipe characters in a Markdown table cell value."""
+    return str(text).replace("|", r"\|")
+
+
+def _unescape_cell(text: str) -> str:
+    """Unescape \\| back to | when reading a Markdown table cell."""
+    return text.replace(r"\|", "|")
+
+
 def disposition_key(row: dict[str, str]) -> tuple[str, str, str, str]:
     return (
         row["surface"].strip(),
@@ -230,8 +240,8 @@ def _markdown_event_row(event: dict[str, object]) -> str:
     closes = ", ".join(str(v) for v in event.get("closes_event_ids", []))
     return (
         f"| {event['event_id']}{legacy_part} | {event['surface']} | {event['dimension']} | "
-        f"{event['object']} | {event['finding']} | {event['disposition']} | "
-        f"{event['date']} | {event['evidence']} | {closes} |"
+        f"{event['object']} | {_escape_cell(event['finding'])} | {event['disposition']} | "
+        f"{event['date']} | {_escape_cell(event['evidence'])} | {closes} |"
     )
 
 
@@ -243,8 +253,8 @@ def _markdown_legacy_row(event: dict[str, object]) -> str:
         note = f"{note}; closes {closes}" if note else f"closes {closes}"
     return (
         f"| {legacy_id} | {event['surface']} | {event['dimension']} | "
-        f"{event['object']} | {event['finding']} | {event['disposition']} | "
-        f"{event['date']} | {note} |"
+        f"{event['object']} | {_escape_cell(event['finding'])} | {event['disposition']} | "
+        f"{event['date']} | {_escape_cell(note)} |"
     )
 
 
@@ -322,7 +332,10 @@ def parse_ledger_file(path: Path) -> list[dict[str, str]]:
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.startswith("|"):
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = [
+            _unescape_cell(c.strip())
+            for c in re.split(r"(?<!\\)\|", line.strip().strip("|"))
+        ]
         if not cells or set(cells[0]) <= {"-"}:
             continue
         if cells[0] in ("ID", "Surface", "Object"):
