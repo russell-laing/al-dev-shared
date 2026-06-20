@@ -2,7 +2,7 @@
   "by_dimension": {
     "design": {
       "current_rows": 76,
-      "open_accepted": 4
+      "open_accepted": 2
     },
     "naming": {
       "current_rows": 5,
@@ -18,8 +18,8 @@
     }
   },
   "by_disposition": {
-    "accepted": 4,
-    "declined": 105,
+    "accepted": 2,
+    "declined": 107,
     "fixed": 653,
     "grandfathered": 68
   },
@@ -30,7 +30,7 @@
     },
     "tooling": {
       "current_rows": 390,
-      "open_accepted": 4
+      "open_accepted": 2
     },
     "unknown": {
       "current_rows": 258,
@@ -38,9 +38,9 @@
     }
   },
   "current_rows": 830,
-  "generated_at": "2026-06-20T09:33:32.180438+00:00",
+  "generated_at": "2026-06-20T10:17:08.230727+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 4,
-  "source_hash": "ec560857ff0380c149b8a0584e160c3de0aa8046bc361dcb1fe5237c214363d1",
-  "total_events": 1476
+  "open_accepted": 2,
+  "source_hash": "b012cb6e551acfa2da224abc96ba5667bd6fe502d9c9ff71c6f5806272546a96",
+  "total_events": 1478
 }
