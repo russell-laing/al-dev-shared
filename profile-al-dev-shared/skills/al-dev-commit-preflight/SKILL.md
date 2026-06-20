@@ -7,7 +7,7 @@ description: >-
   /al-dev-commit; can also run standalone when a user wants to plan commits
   without immediately executing them.
   Triggers on: "plan these commits", "draft commit messages", "analyse staged changes".
-argument-hint: "[optional args]"
+argument-hint: "[--ticket-id=<id>]"
 ---
 
 # `/al-dev-commit-preflight` — Commit Analysis and Confirmation
