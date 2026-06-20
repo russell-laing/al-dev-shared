@@ -1,15 +1,17 @@
-stage_completed: implement-health-plan
+stage_completed: record-health-dispositions
 completed_at: 2026-06-21
-next_command: none
-next_inputs: []
+next_command: /plan-health-findings
+next_inputs:
+
+- docs/health/dispositions-open.md
+- docs/health/2026-06-21-plugin-health.md
 fresh_session_recommended: false
 note: >-
-  Loop closed; ledger staleness check passed (scoped close gate green: all 25
-  in-scope plugin/quality events disp_20260621_000001..000025 resolved — 17 fixed,
-  8 declined; none remain open). Global backlog is 1 informational row
-  (disp_20260620_000092, tooling/design, out of scope) — drain with
-  /plan-health-findings --backlog. Source under profile-al-dev-shared/ changed
-  (7 agents + 7 skills); agent projections were regenerated in-repo and are
-  current. Run /projection-sync and /align-harness-repos next to propagate the
-  shared-surface changes to the sibling harness repos (see Phase 4 "Regenerate
-  derived artifacts"). Then run /plugin-health-audit to start the next health loop.
+  Recorded 2 accepted rows (disp_20260621_000052 al-dev-al-pattern-reviewer,
+  disp_20260621_000053 al-dev-general-code-reviewer) — both Model Fit doc-map
+  drift: docs/al-dev-agent-map.md model_assignments rows record haiku while the
+  agent frontmatter (correctly) reads sonnet; align the map rows to sonnet.
+  Grandfathered 3 informational verdict=None complexity notes (al-dev-ticket,
+  al-dev-investigate, al-dev-plan-with-critics). Skipped 4 (al-dev-document
+  Atomise; al-dev-investigate Pre-planning — needs spine-vs-tributary
+  confirmation; both Handoff Chain Gaps Low findings). Plan the accepted rows.

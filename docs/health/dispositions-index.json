@@ -1,8 +1,8 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 76,
-      "open_accepted": 0
+      "current_rows": 81,
+      "open_accepted": 2
     },
     "naming": {
       "current_rows": 5,
@@ -18,14 +18,15 @@
     }
   },
   "by_disposition": {
+    "accepted": 2,
     "declined": 116,
     "fixed": 671,
-    "grandfathered": 68
+    "grandfathered": 71
   },
   "by_surface": {
     "plugin": {
-      "current_rows": 207,
-      "open_accepted": 0
+      "current_rows": 212,
+      "open_accepted": 2
     },
     "tooling": {
       "current_rows": 390,
@@ -36,10 +37,10 @@
       "open_accepted": 0
     }
   },
-  "current_rows": 855,
-  "generated_at": "2026-06-20T23:10:11.160896+00:00",
+  "current_rows": 860,
+  "generated_at": "2026-06-20T23:34:53.916775+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 0,
-  "source_hash": "817fd603f343d906639895b70e128b309b99b939e2021772ad4bfcc2c0cbe414",
-  "total_events": 1530
+  "open_accepted": 2,
+  "source_hash": "e76e147e40e9c42b90442c539c527ff1c7fdbde456103923c08a06e4a7cad07f",
+  "total_events": 1535
 }
