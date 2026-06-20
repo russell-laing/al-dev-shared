@@ -97,6 +97,9 @@ Excluded commits:
 Diagrams included for: [list]
 ```
 
+> ambiguous = the `AMBIGUOUS` field is not `NONE` — i.e. `al-dev-release-notes-writer`
+> flagged a change it could not classify.
+
 If `AMBIGUOUS` is not `NONE`, ask the user to decide on each
 flagged change before considering the notes final:
 
