@@ -81,7 +81,9 @@ user. Common issues:
 
 If an issue cannot be auto-fixed, present it to the user (escalate to the
 architects for refinement, or approve with documented risk) before claiming the
-plan is ready.
+plan is ready. Escalate → re-dispatch the architects with feedback at the
+Phase 3 gate; or approve-with-risk → document the risk in the approval summary
+and continue to Phase 3.
 
 ## Phase 2.5: Scenario-Coverage Probe
 
