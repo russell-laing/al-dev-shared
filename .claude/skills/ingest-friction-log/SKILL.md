@@ -10,7 +10,9 @@ description: >-
   /plugin-health-report via --findings, and records local runtime provenance in
   docs/health/friction-ingest-log.md (gitignored). Run when friction logs have
   accumulated
-  and they should be folded into the plugin health audit.
+  and they should be passed to `/plugin-health-report` — this skill produces
+  intermediate findings files consumed by that report step, not direct audit
+  integration.
   Triggers on: "ingest friction logs", "ingest the friction log", "process
   friction logs", "fold friction into the health loop", "archive friction logs".
 argument-hint: "[--source <path>] [--surface plugin|tooling|both] [--since YYYY-MM-DD]"
@@ -86,7 +88,7 @@ curated session-analysis reports):
    fix:
    - path under `profile-al-dev-shared/` (or a distributed knowledge file) -> `plugin`
    - path under `.claude/` -> `tooling`
-   - a finding citing both surfaces -> emit one finding to each.
+   - a finding citing both surfaces → write two separate finding rows, one per surface, each tagged with its respective `surface:` value.
 
 3. **Dimension classification:**
    - workflow / handoff / routing gaps -> `design`
