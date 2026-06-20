@@ -69,7 +69,10 @@ Categories covered: [list of 7-11 categories from below]
 **Required categories (must be covered in interview questions):**
 
 All 11 categories defined in `knowledge/interview-question-bank.md` must be covered.
-Confirm each is addressed before stating INTERVIEW COMPLETE.
+Confirm each is addressed before stating INTERVIEW COMPLETE. A category is
+addressed when at least one substantive question is asked and answered; before
+stating INTERVIEW COMPLETE, list each category name with its question topic to
+confirm.
 
 Always end your response with the exact phrase `INTERVIEW COMPLETE` followed by
 a bullet list of the question groups covered.
