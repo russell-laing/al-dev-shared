@@ -1,5 +1,5 @@
 ---
-name: sync-documentation-maps-agent-discrepancy
+name: sync-documentation-maps-agent-compare
 description: >-
   Compares agent metadata from agent-metadata.json against docs/al-dev-agent-map.md
   and writes a structured JSON discrepancy report to the run artifact directory.

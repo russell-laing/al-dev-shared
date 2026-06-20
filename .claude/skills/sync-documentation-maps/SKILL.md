@@ -152,9 +152,9 @@ Capture the returned agent IDs as `AGENT_METADATA_TEAM_ID` and `SKILL_METADATA_T
 
 Dispatch in parallel after metadata agents complete:
 
-- `al-dev-shared:sync-documentation-maps-agent-discrepancy` (reads `agent-metadata.json`,
+- `al-dev-shared:sync-documentation-maps-agent-compare` (reads `agent-metadata.json`,
   writes `agent-audit.json`)
-- `al-dev-shared:sync-documentation-maps-skill-discrepancy` (reads `skill-metadata.json`,
+- `al-dev-shared:sync-documentation-maps-skill-compare` (reads `skill-metadata.json`,
   writes `skill-audit.json`)
 
 Pass `run_id` and `result_dir` to both. Wait for both to complete.

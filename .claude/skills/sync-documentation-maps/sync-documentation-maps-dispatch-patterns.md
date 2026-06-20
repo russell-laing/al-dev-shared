@@ -65,8 +65,8 @@ Prompt:
 
 | Surface | `<SUBAGENT_TYPE>` | `<TARGET_DESCRIPTION>` / `<MAP_FILE>` | `<INPUT_FILE>` | `<OUTPUT_FILE>` |
 |---------|-------------------|-----------------------------------------|----------------|-----------------|
-| Skills  | `sync-documentation-maps-skill-discrepancy` | `skills in profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md` | `skill-metadata.json` | `skill-audit.json` |
-| Agents  | `sync-documentation-maps-agent-discrepancy` | `agents in profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md` | `agent-metadata.json` | `agent-audit.json` |
+| Skills  | `sync-documentation-maps-skill-compare` | `skills in profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md` | `skill-metadata.json` | `skill-audit.json` |
+| Agents  | `sync-documentation-maps-agent-compare` | `agents in profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md` | `agent-metadata.json` | `agent-audit.json` |
 
 ---
 

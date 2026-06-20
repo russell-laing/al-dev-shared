@@ -5,7 +5,7 @@ description: >-
   frontmatter metadata (model, tools, description, callers); caller derivation
   is optional and may be skipped on script failure. Writes a structured
   JSON snapshot to the run artifact directory. Called by /sync-documentation-maps
-  dispatch phase; its output is consumed by sync-documentation-maps-agent-discrepancy.
+  dispatch phase; its output is consumed by sync-documentation-maps-agent-compare.
   Empty tool lists ([]) are normalized to the string "(none)" before output.
 model: sonnet
 tools: ["Read", "Bash", "Write"]

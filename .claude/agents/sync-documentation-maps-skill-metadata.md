@@ -5,7 +5,7 @@ description: >-
   frontmatter metadata (name, description, argument-hint, workflow stage, phase count,
   spawned agents). Writes a structured JSON snapshot to the run artifact directory.
   Called by /sync-documentation-maps dispatch phase; its output is consumed by
-  sync-documentation-maps-skill-discrepancy. spawned_agents entries: only
+  sync-documentation-maps-skill-compare. spawned_agents entries: only
   well-formed al-dev-shared: slugs are extracted; malformed ones are silently skipped.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -45,7 +45,7 @@ Do not summarise findings — return only the path.
 
 `phase_count` is the count of `## Phase N` headings in `SKILL.md` (where N is a
 digit). `spawned_agents` is the list of all `al-dev-shared:<agent-name>` references
-in the body. These two fields are required by `sync-documentation-maps-skill-discrepancy`
+in the body. These two fields are required by `sync-documentation-maps-skill-compare`
 to detect `phase_count_mismatch` and `agent_name_mismatch` discrepancy types.
 
 ---

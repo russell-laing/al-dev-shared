@@ -16,9 +16,9 @@ ACTIVE_TOOLING_SKILLS = sorted(
 
 SYNC_MAP_AGENTS = [
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-metadata.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-discrepancy.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-compare.md",
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-metadata.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-discrepancy.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-compare.md",
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-update.md",
     REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-update.md",
 ]
@@ -99,7 +99,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
 
     def test_sync_maps_agent_discrepancy_documents_all_five_types(self) -> None:
         """agent-discrepancy agent must document all five canonical discrepancy types."""
-        text = read(".claude/agents/sync-documentation-maps-agent-discrepancy.md")
+        text = read(".claude/agents/sync-documentation-maps-agent-compare.md")
         for dtype in (
             "missing_from_map",
             "stale_in_map",
@@ -113,7 +113,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
     def test_sync_maps_skill_discrepancy_documents_all_four_types(self) -> None:
         """skill-discrepancy agent must document all four canonical discrepancy types
         including phase_count_mismatch and agent_name_mismatch."""
-        text = read(".claude/agents/sync-documentation-maps-skill-discrepancy.md")
+        text = read(".claude/agents/sync-documentation-maps-skill-compare.md")
         for dtype in (
             "missing_from_map",
             "stale_in_map",

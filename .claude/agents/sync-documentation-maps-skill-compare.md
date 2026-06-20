@@ -1,5 +1,5 @@
 ---
-name: sync-documentation-maps-skill-discrepancy
+name: sync-documentation-maps-skill-compare
 description: >-
   Compares skill metadata from skill-metadata.json against docs/al-dev-skills-map.md
   and writes a structured JSON discrepancy report to the run artifact directory.
