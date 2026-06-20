@@ -146,7 +146,7 @@ while IFS= read -r -d '' f; do
   case "$f" in
     *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
   esac
-# < <(...) feeds NUL-delimited filenames as stdin to the while loop (process substitution — not a subshell).
+# <(...) runs the command in a subshell and exposes its output as a file descriptor; the leading < redirects the while loop's stdin to read from that descriptor.
 done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
 ```
 
