@@ -13,7 +13,7 @@
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-al-pattern-reviewer | haiku | Read | `/al-dev-review-develop` |
+| al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
 | al-dev-commit-group-drafter | haiku | (none) | `/al-dev-commit-preflight` |
@@ -27,10 +27,10 @@
 | al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
 | al-dev-docs-writer | sonnet | Read, Write, Edit, Bash | (none found) |
 | al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
-| al-dev-general-code-reviewer | haiku | Read | (none found) |
+| al-dev-general-code-reviewer | sonnet | Read | (none found) |
 | al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
 | al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-release-notes-writer | sonnet | Bash, Write, Read, MCP: al-mcp-server | `/al-dev-release-notes` |
+| al-dev-release-notes-writer | sonnet | Read, Write, Bash, MCP: al-mcp-server | `/al-dev-release-notes` |
 | al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
 | al-dev-security-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
@@ -46,7 +46,7 @@
 ### al-dev-general-code-reviewer
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers for security, patterns, and performance).
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read
 **Spawned by:** (none found in skill files)
 
@@ -329,7 +329,7 @@
 ### al-dev-al-pattern-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read
 **Spawned by:** /al-dev-review-develop
 

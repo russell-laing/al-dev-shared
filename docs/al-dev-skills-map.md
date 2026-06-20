@@ -153,6 +153,7 @@ flowchart LR
     Phase1["Phase 1"]
     Phase2["Phase 2"]
     Phase3["Phase 3"]
+    Phase4["Phase 4"]
     skill_al_dev_ticket[al-dev-ticket]
     agent_al_dev_support_reply_drafter[al-dev-support-reply-drafter]
     agent_al_dev_support_researcher[al-dev-support-researcher]
@@ -163,6 +164,7 @@ flowchart LR
     skill_al_dev_support_reply --> Phase1
     skill_al_dev_support_reply --> Phase2
     skill_al_dev_support_reply --> Phase3
+    skill_al_dev_support_reply --> Phase4
     skill_al_dev_support_reply -.-> skill_al_dev_ticket
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
@@ -174,6 +176,7 @@ flowchart LR
     class Phase1 phaseNode
     class Phase2 phaseNode
     class Phase3 phaseNode
+    class Phase4 phaseNode
     class skill_al_dev_ticket skillNode
     class agent_al_dev_support_reply_drafter agentNode
     class agent_al_dev_support_researcher agentNode
