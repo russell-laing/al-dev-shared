@@ -302,6 +302,27 @@ records are collected.
 > agent excludes that suggestion from Phase 4 entirely. Record skipped
 > suggestions in a `## Skipped` section at the end of the plan file with the
 > reason noted.
+>
+> **Refuted skips must still close the ledger.** A `skip` because the claim was
+> *refuted* (or is already-covered) leaves the accepted event open unless the
+> plan closes it. In addition to the `## Skipped` prose section, the plan **must
+> include a final ledger-action task** that appends a `declined` disposition for
+> every refuted-skip event:
+>
+> ```bash
+> python3 scripts/health_disposition_store.py append_event \
+>   --event-id <disp_id> --disposition declined \
+>   --evidence "declined: rubber-duck refuted — <one-line reason>"
+> ```
+>
+> That task carries a Step 0 committing any pre-existing dirty `docs/health/`
+> first (so a later `git add docs/health/` stages only this task's regenerated
+> output), a `regenerate` step, an **inverted** absence check
+> (`if … | grep -q <id>; then echo ERROR; exit 1; fi`), and `closes_event_ids:
+> []` with a note that `implement-health-plan` MUST NOT write `fixed` for these
+> events (they are closed by `append_event`). The **stale-object** skip below
+> (object no longer resolves) is the one exception — those stay user-decided via
+> `/record-health-dispositions`, not auto-declined.
 
 ### Dispatch
 
@@ -403,7 +424,17 @@ steps below.
    If the count is 0, the survival caveat in Phase 4 was violated; fix the plan
    before handing off.
 
-2. **Write `.dev/health-loop-state.md`** (schema:
+2. **Coverage reconciliation (mandatory gate).** Every accepted event in
+   `docs/health/dispositions-open.md` must be resolved **exactly once** across
+   `(plan-task closes_event_ids)` ∪ `(decline/grandfather ledger tasks)` — none
+   missing, none in both. Compute it explicitly and state the arithmetic in the
+   handoff summary (e.g. "15 plan events + 1 grandfathered + 3 declined = 19
+   total"). If any accepted event is in neither, the plan has a coverage hole
+   (typically a refuted skip with no decline task — see Phase 3); fix it before
+   handing off. This mirrors `revise-health-plan` Phase 4 so the two skills stay
+   in sync.
+
+3. **Write `.dev/health-loop-state.md`** (schema:
    `.claude/knowledge/health-loop-state-contract.md`):
 
    - `stage_completed: plan-health-findings`
@@ -415,7 +446,7 @@ steps below.
      NOT use the writing-plans Subagent-Driven/Inline options — they skip
      ledger close-back.
 
-3. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
+4. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
    `<plan-path>` with `closes_event_ids:` for ledger close-back. This transition is
    context-heavy — start a **fresh session** and run
    `/implement-health-plan --plan <plan-path>` to execute the plan and close the
