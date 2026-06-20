@@ -1,17 +1,11 @@
-stage_completed: record-health-dispositions
+stage_completed: implement-health-plan
 completed_at: 2026-06-21
-next_command: /plan-health-findings
-next_inputs:
-
-- docs/health/dispositions-open.md
-- docs/health/2026-06-21-plugin-health.md
+next_command: none
+next_inputs: []
 fresh_session_recommended: false
 note: >-
-  Recorded 2 accepted rows (disp_20260621_000052 al-dev-al-pattern-reviewer,
-  disp_20260621_000053 al-dev-general-code-reviewer) — both Model Fit doc-map
-  drift: docs/al-dev-agent-map.md model_assignments rows record haiku while the
-  agent frontmatter (correctly) reads sonnet; align the map rows to sonnet.
-  Grandfathered 3 informational verdict=None complexity notes (al-dev-ticket,
-  al-dev-investigate, al-dev-plan-with-critics). Skipped 4 (al-dev-document
-  Atomise; al-dev-investigate Pre-planning — needs spine-vs-tributary
-  confirmation; both Handoff Chain Gaps Low findings). Plan the accepted rows.
+  Loop closed; ledger staleness check passed (0 open accepted rows).
+  profile-al-dev-shared/agents/al-dev-commit-group-drafter.md was touched
+  to restore tools: [] (required by generate-map-doc-sections.py). Pre-commit
+  hook confirmed projections current; no explicit /projection-sync needed.
+  Run /plugin-health-audit to start the next health loop.
