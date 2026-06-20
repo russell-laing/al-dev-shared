@@ -7,7 +7,8 @@ description: >-
   live agent files), reads updated map content from
   the run directory, and writes both documentation maps to docs/. Each surface
   is validated independently — an invalid or missing artifact for one map does
-  not block writing the other. Run
+  not block writing the other — except when both surfaces fail validation, in
+  which case the skill halts without writing either map. Run
   /sync-documentation-maps-write next to regenerate diagrams and commit.
 argument-hint: "--team-ids <id>[,<id>] [--skip-commit]"
 workflow:
