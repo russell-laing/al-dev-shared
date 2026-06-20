@@ -8,7 +8,13 @@ The current disposition evidence is JSONL-backed. Canonical disposition events l
 
 ## Executive Summary
 
-Initial scaffold created. Later tasks in this implementation plan replace this line with the final score summary after evidence has been extracted.
+The current Claude self-healing loop is strongest at procedure and precision control: recent June 19 runs show a directly reported evidence gate that removed 34 of 74 raw lens findings before implementation consideration, and the current JSONL disposition index and legacy checker both report zero open accepted rows. Best-practice alignment is good because the loop uses evidence verification, human disposition, durable state, close-back checks, and generated JSONL open-row views, but it does not yet measure repeated-run reliability, perturbation robustness, or controlled tool-failure tolerance. Precision is materially visible now; recall remains weakly measured and should not be overclaimed until the benchmark adds fixtures or a fresh adversarial sampling pass.
+
+Top improvement themes:
+
+1. Turn the baseline's extraction fields into a rerunnable JSONL-aware adapter.
+2. Add a small recurrence/fixture suite only for false-positive classes that appear repeatedly in reports.
+3. Add a procedure-integrity checklist to future benchmark reports so clean ledger closure cannot hide skipped evidence or phase-proof steps.
 
 ## Rubric
 
@@ -61,24 +67,82 @@ The June 18 component counts are useful precision and recurrence evidence, but t
 
 ## Scores
 
-Scores are added in Task 3 after the evidence inventory is complete.
+| Dimension | Score | Confidence | Evidence | Main Risk |
+| --- | ---: | --- | --- | --- |
+| Best-practice alignment | 4 | Medium | The loop has evidence verification, human disposition gates, durable loop state, close-back IDs, stale/fixed suppression, JSONL open-row checks, and legacy effective-open closure checks. | Reliability stress testing is not measured yet; rerun consistency and fault tolerance are inferred from artifacts rather than tested. |
+| Precision | 4 | Medium | June 19 dossiers directly report 74 raw lens findings, 40 verified, 29 dropped unverified, 2 stale/fixed dropped, 3 ledger-suppressed, and 0 failed lenses. June 18 artifacts add 31 dropped-unverified component signals but lack explicit raw denominators. | The loop still produces many raw false positives, especially from friction mapping and subjective clarity lenses, and the June 18 denominator is unavailable. |
+| Loop quality | 4 | High | The June 19 plan addressed 46 accepted rows, planned 33, re-dispositioned 13, used `closes_rows`, the JSONL index reports `open_accepted: 0`, and the live loop state ended at `next_command: none` with 0 effective-open accepted rows. | The clean final state depends on correct procedure; the report should still watch for corrupt success where close-back happens without sufficient phase proof. |
+| Recall signal | 2 | Low | Backlog rows, recurrence fields, and friction-ingest mapping issues show recall-relevant signals, but the baseline does not run a fresh adversarial sweep or controlled fixture set. | False negatives cannot be measured rigorously from recent historical artifacts alone. |
 
 ## Precision Notes
 
-Precision notes are added in Task 3 after raw, verified, stale, suppressed, dropped, new, and recurring counts are reconciled.
+Recent reports show strong visibility into false positives:
+
+- June 19 plugin: 45 raw lens findings became 24 verified findings; 20 failed evidence verification and 1 previously-fixed finding was confirmed not regressed.
+- June 19 tooling: 29 raw lens findings became 16 verified findings; 9 failed evidence verification, 1 re-litigated fixed finding was dropped, and 3 were suppressed by the disposition ledger.
+- June 18 plugin friction: the raw/candidate denominator is not available; all 6 findings were dropped because the ingest mapped findings from `profile-claude-al-dev/` to structurally different `profile-al-dev-shared/` files.
+- June 18 tooling quality: the raw/candidate denominator is not available; 11 findings were retained while 25 were dropped unverified.
+
+This is healthy precision behavior at the report gate: many raw findings are noisy, but the loop exposes and removes them before they become implementation work. The main precision risk is upstream cost and reviewer fatigue from raw false positives, not silent acceptance of every lens claim. Precision confidence is medium because two June 18 artifacts provide useful component counts but not comparable raw denominators.
 
 ## Loop Quality Notes
 
-Loop quality notes are added in Task 3 after close-back, JSONL open-row, legacy checker, and loop-state evidence are reconciled.
+The recent loop shows good end-to-end closure:
+
+- Findings were ranked only after evidence verification and disposition suppression.
+- The June 19 implementation plan says 46 accepted rows were addressed, 33 were planned, and 13 were re-dispositioned.
+- Plan tasks carried `closes_rows` identifiers for ledger close-back.
+- `docs/health/dispositions-index.json` reports `open_accepted: 0` and `integrity_warnings: 0`.
+- `python3 scripts/health_disposition_store.py list-open` prints no open accepted events.
+- `.dev/health-loop-state.md` reports `stage_completed: implement-health-plan` and `next_command: none`.
+- `python3 scripts/check_ledger_staleness.py` reports 0 effective-open accepted row(s).
+
+The main procedure-aware risk is corrupt success: a clean final ledger is not enough if a future run skips phase-proof blocks, evidence verification, disposition gates, JSONL view regeneration, or close-back validation. The benchmark should therefore keep procedure-integrity checks alongside outcome checks.
 
 ## Best-Practice Alignment
 
-Best-practice alignment is added in Task 3 after the external rubric anchors are mapped to repo-observable evidence.
+The loop aligns well with the external evaluation ideas selected for this baseline:
+
+- ReliabilityBench-style reliability: partially covered. The artifacts expose failed lenses, recurrence, stale findings, and backlog closure, but they do not measure repeated execution, perturbation robustness, or controlled tool/API failures.
+- Procedure-aware evaluation: strongly covered. The loop records evidence verification, disposition gating, planning handoff, close-back identifiers, generated JSONL open-row views, legacy effective-open checks, and final loop state rather than judging task completion alone.
+- Risk-aware workflow/system scoring: strongly covered for current artifacts. The loop identifies stale claims, suppresses grandfathered or declined findings, drops unverified claims, records implementation decisions, and closes accepted rows.
+
+The benchmark should not call this production-grade reliability testing yet. It is a baseline scorecard over historical artifacts, with a path toward a rerunnable harness.
 
 ## Harness Follow-Up
 
-Harness follow-up fields are added in Task 3 after the baseline report identifies the useful extraction fields.
+The later rerunnable harness should extract these fields:
+
+| Field | Source now | JSONL/current source expectation |
+| --- | --- | --- |
+| `artifact_path` | health dossier path | unchanged |
+| `surface` | dossier metadata or filename | unchanged |
+| `dimensions` | dossier metadata | unchanged |
+| `raw_count` | evidence-verification summary; `not available` when absent | unchanged |
+| `verified_count` | evidence-verification summary or retained section count | unchanged |
+| `dropped_unverified_count` | `Dropped (unverified)` section and summary | unchanged |
+| `stale_dropped_count` | `Stale (dropped)` section and summary | unchanged |
+| `suppressed_count` | `Dispositioned (suppressed)` section and summary | unchanged |
+| `failed_lens_count` | `Failed lenses` section | unchanged |
+| `new_count` | `New this sweep` summary field | unchanged |
+| `new_raw_text` | raw `New this sweep` summary text | unchanged |
+| `recurring_count` | parsed count from `Recurring from prior sweeps` summary field | unchanged |
+| `recurring_raw_text` | raw `Recurring from prior sweeps` summary text | unchanged |
+| `accepted_rows_planned` | implementation plan summary and disposition views | JSONL open/current view adapter |
+| `closed_rows` | `closes_rows`, JSONL close events, and legacy checker | JSONL event close-back adapter |
+| `jsonl_open_accepted_count` | `docs/health/dispositions-index.json` and `health_disposition_store.py list-open` | unchanged |
+| `legacy_effective_open_count` | `check_ledger_staleness.py` | unchanged until legacy checker is retired |
+| `integrity_warning_count` | `docs/health/dispositions-index.json` | unchanged |
+| `loop_stage_completed` | `.dev/health-loop-state.md` | unchanged |
+| `next_command` | `.dev/health-loop-state.md` | unchanged |
+
+First automation should parse and report these fields without changing scores automatically. Human review should keep control of the 1-5 score until the extraction has passed on several runs.
 
 ## Recommendations
 
-Recommendations are added in Task 3 after the scores and follow-up fields are written.
+1. Build a small evidence adapter that reads generated JSONL open/current/index views and reports `jsonl_open_accepted_count`, `closed_rows`, `integrity_warning_count`, and legacy `effective_open_count` side by side.
+2. Add a lightweight parser for dossier summary blocks and dropped-finding sections; use it to regenerate the evidence inventory before each manual score.
+3. Preserve unavailable counts as `not available` rather than deriving primary denominators from retained plus dropped component counts.
+4. Keep recall manual until there is a fixture set or fresh adversarial sweep. The current historical window is not enough to prove false-negative rates.
+5. Add one benchmark checklist item for procedure integrity: evidence gate run, disposition gate run, JSONL views generated, close-back IDs present, loop state closed, JSONL open count zero, and legacy staleness checker clean.
+6. Track false-positive classes by source, especially friction surface-mapping errors and subjective clarity/name-fit findings, before deciding which classes deserve synthetic fixtures.
