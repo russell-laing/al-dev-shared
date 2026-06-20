@@ -87,6 +87,14 @@ excluded by the report phase. (These markers — `← implemented`,
 the parser still accepts for compatibility; treat all three as "skip, already
 closed".)
 
+Examples of marked finding lines in a live dossier (skip these without recording a disposition):
+
+```markdown
+Trim — quality-skill-lens-bloat — Remove the redundant phase summary block ← implemented
+Split — plan-health-findings — Separate Phase 1 filter logic into a sub-skill ← completed
+Inline — design-agent-lens-usage-patterns — Fold into the caller skill body ← already implemented
+```
+
 With `--top`, restrict the worklist to the dossier's "Top N ranked
 actions" entries.
 
