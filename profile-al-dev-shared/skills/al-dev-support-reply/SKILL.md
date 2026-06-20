@@ -153,6 +153,7 @@ user.
      into Freshdesk.
    - If a ticket API is configured, its credentials come from the user's global
      settings — never from project settings (see global development standards).
+   - On successful post: confirm the post timestamp and present a completion summary.
 
 4. **On a non-success response or user decline**, report the failure or decline,
    do NOT mark the reply as posted, and leave the artifact in place so it can be
