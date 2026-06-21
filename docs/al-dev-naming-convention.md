@@ -24,6 +24,18 @@ Examples: `design-agent-lens-tool-hygiene`, `quality-skill-lens-bloat`.
 agents and skills) and intentionally omits the `{dimension}` and `{object}`
 words. It is the only allowed deviation from the pattern.
 
+**Dimension boundary:** semantic name/body drift (a name that implies one verb
+or scope while the body does another) is a **quality** concern checked by the
+`quality-agent-lens-name-fit` and `quality-skill-lens-name-fit` lenses;
+pattern/convention conformance against this document is the **naming** dimension
+checked by `naming-convention-lens`. These two concerns must stay in separate
+lenses — do not merge name-fit checks into the naming-convention lens.
+
+**Split decision gate:** the single cross-object `naming-convention-lens` is
+acceptable only while one shared rule set covers both objects. If future policy
+adds materially different agent vs skill naming rules, replace the singleton with
+object-specific naming lenses rather than growing the singleton.
+
 ### Maintainer skills — ADVISORY
 
 Pattern: `{verb}-{object}-{aspect}`
