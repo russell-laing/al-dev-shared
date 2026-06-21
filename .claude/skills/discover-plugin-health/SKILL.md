@@ -3,8 +3,8 @@ name: discover-plugin-health
 description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
   context from documentation maps, dispatches design, quality, and naming lenses
-  (surface-scoped — one design lens excluded for the tooling surface
-    (design-skill-lens-surface-placement); see Phase 3),
+  (surface-scoped — one design lens is excluded per surface; see Phase 3 for
+    the per-surface exclusion conditions),
   and writes RAW (unranked) lens findings to
   docs/health/YYYY-MM-DD-<surface>-findings.md, which also carries a
   `## Failed lenses` section and a `## Resume information` block tracking
