@@ -104,3 +104,95 @@ The structure lenses use the word "Structural", but their actual checks target f
 ### 2.3 The Naming-Dimension Singleton (Naming-Convention-Lens)
 
 `naming-convention-lens` is intentionally asymmetric. The naming convention says lens agents normally use `{dimension}-{object}-lens-{aspect}` (`docs/al-dev-naming-convention.md:14`) with `dimension` limited to `design` or `quality` and `object` limited to `agent` or `skill` (`docs/al-dev-naming-convention.md:16-17`), but it then declares: "`naming-convention-lens` is a cross-object lens" and "intentionally omits the `{dimension}` and `{object}` words" (`docs/al-dev-naming-convention.md:23-26`). The lens body mirrors that exception by requiring `*-lens-*` files to match the pattern while naming `naming-convention-lens` as "The single allowed exception" (`.claude/agents/naming-convention-lens.md:42`). Verdict: the singleton belongs to the naming dimension and is not misclassified, but the asymmetry is a structural weakness for Section 3 because inventory, row-count, and validator logic cannot infer its dimension/object from the filename prefix the same way they can for the other 21 lenses.
+
+## 3. Surface-Object x Dimension Coverage Matrix
+
+Object-type counts from live filesystem commands: plugin agents **24**, plugin
+skills **24**, tooling agents **29**, tooling skills **16**. The surface
+contract maps `plugin` to `profile-al-dev-shared/` and `tooling` to `.claude/`
+(`.claude/knowledge/health-filter-contract.md:31-35`). The dimension contract
+maps `design`, `quality`, and `naming` to design lenses, quality lenses, and
+the naming-convention lens respectively
+(`.claude/knowledge/health-filter-contract.md:37-42`).
+
+| Object type | design | quality | naming |
+| --- | --- | --- | --- |
+| plugin agents | 5 design-agent lenses | 5 quality-agent lenses | naming-convention-lens |
+| plugin skills | 6 design-skill lenses | 5 quality-skill lenses | naming-convention-lens |
+| tooling agents | 5 design-agent lenses | 5 quality-agent lenses | naming-convention-lens |
+| tooling skills | 5 design-skill lenses (surface-placement excluded) | 5 quality-skill lenses | naming-convention-lens |
+
+### 3.1 Dimension Weight Asymmetry
+
+Design has 11 active lenses before surface filtering: 5 agent lenses and 6 skill
+lenses. Quality has 10 active lenses: 5 agent lenses and 5 skill lenses. Naming
+has one cross-object singleton. This is a real asymmetry, but it is not
+automatically a defect. Section 2 found the naming singleton correctly scoped to
+convention conformance rather than semantic name fit; semantic name/body drift is
+already covered by `quality-agent-lens-name-fit` and
+`quality-skill-lens-name-fit`.
+
+The risk is operational rather than numeric: naming has no object-specific
+redundancy if the singleton misses a convention class, while design and quality
+can still catch adjacent problems through several object-specific lenses.
+Naming is under-resourced only for future naming policy expansion. For the
+current contract, one cross-object lens is acceptable if validation keeps the
+singleton exception explicit and the quality name-fit lenses remain separate.
+
+### 3.2 Formal vs Semantic Coverage Gaps
+
+`design-skill-lens-complexity` still has meaningful signal for tooling skills.
+Its required-context row is
+"| `design-skill-lens-complexity` | `phase_counts`, `no_agent_skills` |"
+(`profile-al-dev-shared/knowledge/lens-invocation-patterns.md:100`). Phase
+counts and no-agent status are surface-neutral enough to evaluate workflow
+shape, even though the remediation may differ for repo-local maintainer skills.
+
+`design-skill-lens-handoff-gaps` still has meaningful signal for tooling
+skills. Its required-context row is
+"| `design-skill-lens-handoff-gaps` | `handoff_chains` |"
+(`profile-al-dev-shared/knowledge/lens-invocation-patterns.md:102`). Tooling
+skills often create or consume `.dev/` handoff artifacts, so handoff-chain
+coverage is not merely a distributed-plugin concern.
+
+`design-skill-lens-shared-backbone` is formally applicable to tooling skills
+but semantically weaker there. Its required-context row is
+"| `design-skill-lens-shared-backbone` | `agent_usage_counts` |"
+(`profile-al-dev-shared/knowledge/lens-invocation-patterns.md:99`). It can
+still find repeated agent-invocation patterns when tooling skills spawn agents,
+but workflow-contracted tooling skills that do not use the distributed plugin
+agent model provide little signal for a shared plugin backbone recommendation.
+
+`design-skill-lens-near-duplicates` is also formally applicable but partly
+weaker for tooling skills. Its required-context row is
+"| `design-skill-lens-near-duplicates` | `agent_usage_counts`, `phase_counts` |"
+(`profile-al-dev-shared/knowledge/lens-invocation-patterns.md:101`). Phase
+counts transfer cleanly, but the `agent_usage_counts` half is less informative
+for tooling skills that are small repo-local workflows or do not call agents.
+
+`design-skill-lens-preplanning` is the clearest semantic coverage gap for
+tooling skills. Its required-context row is
+"| `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |"
+(`profile-al-dev-shared/knowledge/lens-invocation-patterns.md:103`). That
+context is anchored in Layer 1 skill-diagram placement, which is a distributed
+plugin design surface; repo-local tooling skills can be useful without having a
+meaningful Layer 1 position to audit.
+
+### 3.3 Tooling-Skill Design Under-Coverage
+
+The matrix shows tooling skills with 5 design-skill lenses, but effective design
+coverage is thinner than that cell implies. `discover-plugin-health` explicitly
+starts from the full lens set, then excludes
+`design-skill-lens-surface-placement` for `tooling` because it "targets
+distributed skills and produces only non-actionable Move false positives
+against tooling-surface files" (`.claude/skills/discover-plugin-health/SKILL.md:126-130`).
+
+After that formal exclusion, two included lenses have partial semantic signal
+(`design-skill-lens-shared-backbone` and `design-skill-lens-near-duplicates`),
+and one included lens is weak for tooling in most cases
+(`design-skill-lens-preplanning`). The practical result is that tooling skills
+receive strong design coverage for complexity and handoff-chain fit, weaker
+coverage for shared-backbone and duplicate-shape analysis, little meaningful
+coverage from preplanning placement, and no surface-placement coverage by
+design. The matrix is formally accurate, but it overstates effective
+tooling-skill design coverage unless those semantic gaps are considered.
