@@ -152,7 +152,9 @@ Verify minimum line counts:
 - Skills map: must be ≥100 lines
 - Agent map: must be ≥50 lines
 
-If a written file is below its minimum, report a warning and continue.
+If a written file is below its minimum, surface the warning to the user and
+continue with the checkpoint-update step below (the next step) — a low line
+count alone does not block writing the map or updating the checkpoint.
 Do not revert — partial content is better than the stale previous version.
 
 Update the checkpoint `status` to `"awaiting-write"` so `/sync-map-documentation-write`
