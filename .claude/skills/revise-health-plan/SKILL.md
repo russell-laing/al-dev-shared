@@ -95,11 +95,11 @@ digraph classify {
 earn its closure" and presents *both re-author and re-disposition as equally valid
 options* (neither clearly ruled out by the review), that is a scope decision the
 user owns — especially when re-authoring would collide with a
-standing `declined`/`grandfathered` ledger row. Surface it with `AskUserQuestion`;
-never default to one branch.
+standing `declined`/`grandfathered` ledger row. Surface the fork at a user gate —
+present both options and ask the user to choose; never default to one branch.
 
-**Else (the review clearly favours one branch — no gate):** the `AskUserQuestion`
-gate applies only when both options are genuinely open.
+**Else (the review clearly favours one branch — no gate):** the user gate
+applies only when both options are genuinely open.
 When the **review clearly favors a clean in-scope fix**, apply it without gating.
 When the **review clearly rules the option out-of-scope**, re-disposition it to the ledger without gating.
 
