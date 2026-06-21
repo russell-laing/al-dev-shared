@@ -5,8 +5,6 @@ model: sonnet
 tools: ["Read"]
 ---
 
-# Near-Duplicate Shapes Lens
-
 ## Inputs
 
 | Field | Description |
