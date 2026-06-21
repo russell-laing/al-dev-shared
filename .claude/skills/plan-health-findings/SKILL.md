@@ -296,7 +296,7 @@ See `.claude/knowledge/health-findings-staleness-gate.md` for full tier-handling
 
 ## Phase 3: Rubber Duck
 
-For **every** suggestion, dispatch a `health-rubber-duck` verification agent
+For **every** suggestion, dispatch a `verify-health-finding` verification agent
 and collect the returned record. Do not write any plan content until all
 records are collected.
 
@@ -345,7 +345,7 @@ records are collected.
 ### Dispatch
 
 Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
-`health-rubber-duck` agent per finding**, batching findings that share the same
+`verify-health-finding` agent per finding**, batching findings that share the same
 `subject_path` into a single agent call. Pass in each dispatch:
 
 - `mode: rubber-duck`

@@ -73,7 +73,7 @@ contract** in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`),
 verify that evidence directly — this is the primary false-positive filter.
 
 For **every** parsed finding, before it enters the dossier, dispatch a
-`health-rubber-duck` agent in `evidence` mode. Use
+`verify-health-finding` agent in `evidence` mode. Use
 `superpowers:dispatching-parallel-agents`; batch findings that share a subject
 file into a single agent call. Pass:
 

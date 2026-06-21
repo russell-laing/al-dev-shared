@@ -3,7 +3,7 @@ name: plugin-health-report
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
   /plugin-health-discover, filters out stale and disposition-suppressed
-  findings, runs an evidence-verification gate (dispatching health-rubber-duck
+  findings, runs an evidence-verification gate (dispatching verify-health-finding
   in evidence mode to drop unverified findings), ranks the remainder, writes the
   dossier, and presents results to the user.
   Called by /plugin-health-audit; can also be run standalone against an existing
@@ -125,7 +125,7 @@ the "claim no longer holds" criterion in the "## Staleness spot-check protocol"
 section of `../../knowledge/health-audit-preconditions.md`).
 
 Then run the **evidence verification** gate on *every* finding (not just High /
-top-5): dispatch `health-rubber-duck` agents in `evidence` mode — one per
+top-5): dispatch `verify-health-finding` agents in `evidence` mode — one per
 subject file, via `superpowers:dispatching-parallel-agents` — and collect the
 returned `verified | dropped` table. The parent must not open the cited files
 itself. Drop unverified findings under a **"Dropped (unverified)"** note. This

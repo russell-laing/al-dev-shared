@@ -34,7 +34,7 @@ DISPATCHING_SKILLS = {
     "plugin-health-discover", "plugin-health-report", "plan-health-findings",
     "sync-documentation-maps", "audit-knowledge-quality", "fix-knowledge-quality",
 }
-# `plugin-health-report` dispatches `health-rubber-duck` agents in evidence mode
+# `plugin-health-report` dispatches `verify-health-finding` agents in evidence mode
 # via superpowers:dispatching-parallel-agents — a real dispatch lane.
 DELEGATING_EXECUTION_SKILLS = {
     "sync-documentation-maps-collect",

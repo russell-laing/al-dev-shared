@@ -19,7 +19,7 @@ subject files. Because they are read-only, parallel dispatch to isolated
 subagents is safe by default and eliminates the per-finding inline-read cost
 that causes context growth.
 
-**Default model:** dispatch one `health-rubber-duck` agent per finding (batch
+**Default model:** dispatch one `verify-health-finding` agent per finding (batch
 findings that share one subject file into a single agent). Use
 `superpowers:dispatching-parallel-agents`. Each agent reads subject files in
 its own context and returns only a compact rubber-duck record — no file dumps,
