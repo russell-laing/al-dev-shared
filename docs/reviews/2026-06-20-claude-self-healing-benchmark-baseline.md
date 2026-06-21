@@ -146,3 +146,29 @@ First automation should parse and report these fields without changing scores au
 4. Keep recall manual until there is a fixture set or fresh adversarial sweep. The current historical window is not enough to prove false-negative rates.
 5. Add one benchmark checklist item for procedure integrity: evidence gate run, disposition gate run, JSONL views generated, close-back IDs present, loop state closed, JSONL open count zero, and legacy staleness checker clean.
 6. Track false-positive classes by source, especially friction surface-mapping errors and subjective clarity/name-fit findings, before deciding which classes deserve synthetic fixtures.
+
+## Adapter Status & Deferred Work
+
+`scripts/health_benchmark_adapter.py` is the rerunnable extractor for the
+Harness Follow-Up fields. It reads the machine-readable loop surfaces (the JSONL
+disposition index, `list-open`, the legacy staleness checker, the loop-state
+breadcrumb, and the `<!-- benchmark-metrics -->` block now emitted into each
+dossier by `/plugin-health-report`) and reports one JSON record per dossier plus
+a procedure-integrity checklist (Recommendation 5). It reports only — the 1-5
+scores remain human-assigned until the extractor has passed cleanly on several
+runs.
+
+Recommendation 3 is enforced at the source: dossiers written before the
+metrics block existed carry no machine-readable counts, so the adapter surfaces
+their raw/verified/dropped fields as `not available` rather than inferring a
+denominator from `verified + dropped`.
+
+The following remain deferred:
+
+- **Recall (Recommendation 4)** stays manual. There is no fixture set and no
+  fresh adversarial sweep, so false-negative rates must not be claimed from the
+  historical artifact window alone.
+- **False-positive-class tracking (Recommendation 6)** is deferred. Track
+  false-positive classes by source — friction surface-mapping errors and
+  subjective clarity/name-fit findings — manually for now, and revisit synthetic
+  fixtures only once a class recurs across sweeps.

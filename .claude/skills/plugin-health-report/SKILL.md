@@ -194,6 +194,17 @@ dimensions:
 New this sweep: <n> · Recurring from prior sweeps: <n> (annotated inline) ·
 Stale (dropped): <n> · Dropped (unverified): <n>
 
+<!-- benchmark-metrics
+raw_count: <n | not available>
+verified_count: <n>
+dropped_unverified_count: <n>
+stale_dropped_count: <n>
+suppressed_count: <n>
+failed_lens_count: <n>
+new_count: <n>
+recurring_count: <n>
+-->
+
 Top 5 ranked actions:
 1. ...
 
@@ -224,6 +235,17 @@ _Not requested in this run._  ← if outside the requested dimensions
 ```
 
 Record any failed lenses at the foot of the Summary section.
+
+The `<!-- benchmark-metrics -->` block is the canonical, machine-readable source
+for benchmark extraction (`scripts/health_benchmark_adapter.py`); the human-facing
+`New this sweep: …` line stays as-is for readers. Populate it from the Phase 2
+evidence-gate counts: `verified_count` is the count retained after evidence
+verification, `dropped_unverified_count` / `stale_dropped_count` /
+`suppressed_count` / `failed_lens_count` are the corresponding filtered sets, and
+`raw_count` is the pre-gate lens-finding total. All eight fields are mandatory.
+When a count is genuinely unknown (e.g. a friction-ingest dossier with no raw
+candidate denominator), write the literal `not available` — never infer
+`raw_count` from `verified_count + dropped_unverified_count`.
 
 ## Phase 4 — Present to user
 
