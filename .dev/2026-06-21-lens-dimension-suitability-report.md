@@ -108,8 +108,11 @@ The structure lenses use the word "Structural", but their actual checks target f
 ## 3. Surface-Object x Dimension Coverage Matrix
 
 Object-type counts from live filesystem commands: plugin agents **24**, plugin
-skills **24**, tooling agents **29**, tooling skills **16**. The surface
-contract maps `plugin` to `profile-al-dev-shared/` and `tooling` to `.claude/`
+skills **24**, tooling agents **29**, tooling skills **16**. The tooling-skill
+count uses the workflow-contracted filter from `discover-plugin-health`, which
+excludes adjacent `.claude/skills` tools without a `workflow:` block
+(`.claude/skills/discover-plugin-health/SKILL.md:85-88`). The surface contract
+maps `plugin` to `profile-al-dev-shared/` and `tooling` to `.claude/`
 (`.claude/knowledge/health-filter-contract.md:31-35`). The dimension contract
 maps `design`, `quality`, and `naming` to design lenses, quality lenses, and
 the naming-convention lens respectively
