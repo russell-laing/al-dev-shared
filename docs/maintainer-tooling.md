@@ -187,8 +187,8 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
 | `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/revise-health-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
-| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every `closes_event_ids:` entry (the distinguishing ledger close-back). |
-| `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface. |
+| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back). |
+| `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface by running validate_harness_neutrality.py, which checks for forbidden harness-specific tokens across seven classes (Claude tool tokens, dispatch tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP tokens; and harness-specific session wording) that could break distributable content. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
 | `/projection-sync` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
@@ -241,19 +241,19 @@ against the live skill body before treating it as work.
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Missing contract | `verify-files` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-20 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-18 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-18 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-18 |
+| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-21 |
+| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-21 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-21 |
+| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-21 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-21 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-20 |
+| Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-21 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-20 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |

@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-18
+**Last updated:** 2026-06-21
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -88,7 +88,7 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 
 ### /al-dev-ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 1, 2.
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-ticket -->
 ```mermaid
@@ -137,7 +137,7 @@ Agents spawned: `al-dev-shared:al-dev-ticket-context-writer`
 
 ### /al-dev-support-reply
 
-Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0, 1, 2, 3.
+Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0, 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-support-reply -->
 ```mermaid
@@ -602,7 +602,7 @@ flowchart LR
 
 ### /al-dev-review-develop
 
-**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0–3.
+**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4, 5, 6.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-review-develop -->
 ```mermaid
@@ -692,7 +692,7 @@ flowchart LR
 
 ### /al-dev-commit-execute
 
-Phases 0, 1, 2 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
+Phases 0, 3, 4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-execute -->
 ```mermaid
@@ -750,7 +750,7 @@ Agents spawned: `al-dev-shared:al-dev-commit-executor`, `al-dev-shared:al-dev-co
 
 ### /al-dev-commit-preflight
 
-Phases 0, 1, 2, 3 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
+Phases 0, 1, 2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
 
 <!-- BEGIN GENERATED: skill-drilldown-al-dev-commit-preflight -->
 ```mermaid
