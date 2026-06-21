@@ -65,6 +65,7 @@ EXPECTED_AGENTS = [
     "design-skill-lens-near-duplicates",
     "design-skill-lens-handoff-gaps",
     "design-skill-lens-preplanning",
+    "design-skill-lens-surface-placement",
     "naming-convention-lens",
 ]
 
