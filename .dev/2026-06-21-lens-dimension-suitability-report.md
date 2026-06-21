@@ -9,6 +9,7 @@ sources:
 status: draft
 ---
 
+<!-- markdownlint-disable-next-line MD025 -->
 # Lens / Dimension Suitability Report
 
 ## 0. Scope & Method
@@ -27,7 +28,7 @@ Method: this pass is read-only except for this report. It uses live filesystem i
 Total lenses on disk: **22** active non-archived lens agent files.
 
 | Dimension | Object | Count | Lenses |
-|---|---:|---:|---|
+| --- | ---: | ---: | --- |
 | Design | Agent | 5 | `caller-alignment`, `model-fit`, `scope-isolation`, `tool-hygiene`, `usage-patterns` |
 | Design | Skill | 6 | `complexity`, `handoff-gaps`, `near-duplicates`, `preplanning`, `shared-backbone`, `surface-placement` |
 | Quality | Agent | 5 | `bloat`, `clarity`, `description`, `name-fit`, `structure` |
