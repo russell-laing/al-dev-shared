@@ -89,6 +89,9 @@ def _build_fixture_repo(root: Path) -> Path:
     (plugin / "knowledge" / "workflow.md").write_text("workflow\n", encoding="utf-8")
     (repo / "docs" / "al-dev-skills-map.md").write_text(
         "# Skills Map\n\n"
+        "<!-- BEGIN GENERATED: skill-coverage -->\n"
+        "old coverage\n"
+        "<!-- END GENERATED: skill-coverage -->\n\n"
         "<!-- BEGIN GENERATED: skill-lifecycle-mermaid -->\n"
         "old lifecycle\n"
         "<!-- END GENERATED: skill-lifecycle-mermaid -->\n\n"
@@ -106,6 +109,9 @@ def _build_fixture_repo(root: Path) -> Path:
     )
     (repo / "docs" / "al-dev-agent-map.md").write_text(
         "# Agent Map\n\n"
+        "<!-- BEGIN GENERATED: agent-coverage -->\n"
+        "old agent coverage\n"
+        "<!-- END GENERATED: agent-coverage -->\n\n"
         "<!-- BEGIN GENERATED: agent-catalog-table -->\n"
         "old content\n"
         "<!-- END GENERATED: agent-catalog-table -->\n",
