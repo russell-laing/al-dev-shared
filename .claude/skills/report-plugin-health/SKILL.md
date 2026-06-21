@@ -266,7 +266,7 @@ Write `.dev/health-loop-state.md` (schema:
 - `completed_at:` today's ISO date
 - `next_command: /record-plugin-dispositions`
 - `next_inputs:` the dossier path(s) just written, plus
-  `docs/health/dispositions.md`
+  `docs/health/dispositions-index.json` and `docs/health/dispositions-open.md`
 - `fresh_session_recommended: false`
 - `note:` recording dispositions is what stops the next sweep from re-ranking
   the same findings as new.
