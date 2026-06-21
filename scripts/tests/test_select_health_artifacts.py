@@ -13,7 +13,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
 HEALTH_SKILLS = [
-    ".claude/skills/plugin-health-discover/SKILL.md",
     ".claude/skills/plugin-health-report/SKILL.md",
     ".claude/skills/plan-health-findings/SKILL.md",
     ".claude/skills/record-health-dispositions/SKILL.md",

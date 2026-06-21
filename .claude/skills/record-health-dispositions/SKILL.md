@@ -55,7 +55,7 @@ intention is not proof.
 Check `.dev/health-loop-state.md` for resume context; adoption rules are in
 `.claude/knowledge/health-disposition-rules.md` § Loop-State Adoption. If no
 valid resume pointer exists, locate the latest dossier per surface with
-`select_health_artifacts.py --directory docs/health --kind health`.
+`scripts/select_health_artifacts.py --directory docs/health --kind health`.
 
 | Argument | Default | Behaviour |
 |---|---|---|
