@@ -81,6 +81,11 @@ absent-file case, so handle it explicitly):
 - any other value (e.g. `"audit"`, `"collect"`, `"apply"`, null) → a run is
   in progress; stop unless `FORCE=true`
 
+A *present* checkpoint whose `status` is `null` or empty is treated as
+in-progress (the blocking case above) — only an absent or unreadable file
+counts as "no prior run" and proceeds. A null status typically means a run
+wrote the checkpoint but had not yet recorded its stage.
+
 ```bash
 cat /Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json 2>/dev/null
 ```
