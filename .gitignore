@@ -10,7 +10,7 @@ __pycache__/
 .dev/tooling-health-context.json
 # HTML files in this repo are exported copies of markdown, not source artifacts.
 *.html
-.dev/projection-sync-progress.md
+.dev/regenerate-projections-progress.md
 docs/superpowers/plans/
 docs/superpowers/specs/
 !docs/superpowers/

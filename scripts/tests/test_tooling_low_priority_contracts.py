@@ -162,8 +162,8 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
             ".claude/skills/audit-knowledge-quality/SKILL.md": [
                 "offers user-gated fix guidance for HIGH-severity findings"
             ],
-            ".claude/skills/projection-sync/SKILL.md": [
-                "unidirectionally regenerates harness-native projections"
+            ".claude/skills/regenerate-projections/SKILL.md": [
+                "unidirectionally regenerates harness-native agent projections"
             ],
         }
         for path, fragments in expected_fragments.items():

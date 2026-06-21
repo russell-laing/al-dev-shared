@@ -21,7 +21,7 @@ workflow:
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-health-plan-progress.md
-  next: [projection-sync, align-harness-repos, plugin-health-audit]
+  next: [regenerate-projections, align-harness-repos, plugin-health-audit]
 ---
 
 # Implement Health Plan
@@ -34,7 +34,7 @@ Loop position:
 
 `/plugin-health-audit` → dossier → `/record-health-dispositions` →
 `/plan-health-findings` → plan → **`/implement-health-plan`** → fixed events →
-`/projection-sync` / `/align-harness-repos`
+`/regenerate-projections` / `/align-harness-repos`
 
 ---
 
@@ -402,7 +402,7 @@ Run downstream regeneration **only if source files changed** during task
 execution.
 
 - If any `profile-al-dev-shared/agents/*.md` changed → invoke
-  `projection-sync`
+  `regenerate-projections`
 - If any skills, agents, or knowledge files under `profile-al-dev-shared/`
   changed → invoke `align-harness-repos`
 
@@ -433,7 +433,7 @@ closed:
 - `next_inputs: []`
 - `fresh_session_recommended: false`
 - `note:` loop closed; ledger staleness check passed. If source under
-  `profile-al-dev-shared/` changed, run `/projection-sync` and
+  `profile-al-dev-shared/` changed, run `/regenerate-projections` and
   `/align-harness-repos` next (see Phase 4 "Regenerate derived artifacts").
   Then run `/plugin-health-audit` to start the next health loop.
 

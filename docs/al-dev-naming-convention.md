@@ -72,7 +72,6 @@ are accepted; lenses should not re-flag them:
   health-sweep entry-point and workflow-phase family; the `{object}-{aspect}-{verb}`
   ordering predates the `{verb}-{object}-{aspect}` convention and is kept for the
   family's recognisability.
-- `projection-sync` — established verb-object name; regenerates harness projections from canonical source.
 - `align-harness-repos` — validate-with-optional-fix workflow; name retained for recognisability.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
 - `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming

@@ -1,5 +1,5 @@
 ---
-name: projection-sync
+name: regenerate-projections
 description: >-
   Validates shared agent source and unidirectionally regenerates harness-native agent projections
   from the canonical agent source, summarizes changes, and asks before committing.
@@ -36,7 +36,7 @@ intention is not proof.
 
 ### Phase 0: Resume Check
 
-Check `.dev/projection-sync-progress.md`:
+Check `.dev/regenerate-projections-progress.md`:
 
 - **If exists:** Read the `status` field. Recognized values are `complete` and
   `blocked` (the only statuses this workflow writes). If the status value is
@@ -46,7 +46,7 @@ Check `.dev/projection-sync-progress.md`:
   respond, default to `Restart` (regenerate from a clean state).
 - **If not exists:** Proceed to Phase 1
 
-Progress checkpoint file location: `.dev/projection-sync-progress.md`
+Progress checkpoint file location: `.dev/regenerate-projections-progress.md`
 
 ---
 
@@ -164,7 +164,7 @@ Changed files ([N] total):
 
 Change type: [projections-only | mixed (projections + other tracked files)]
 
-Note: progress checkpoint (.dev/projection-sync-progress.md) included in staged set.
+Note: progress checkpoint (.dev/regenerate-projections-progress.md) included in staged set.
 
 Do you want me to stage and commit these changes?
 ```
@@ -197,7 +197,7 @@ Conservative failure mode:
 
 ## Progress Checkpoint Format
 
-Location: `.dev/projection-sync-progress.md`
+Location: `.dev/regenerate-projections-progress.md`
 
 YAML structure:
 
@@ -215,7 +215,7 @@ result: <description>
 This skill runs the orchestration script:
 
 ```bash
-bash .claude/skills/projection-sync/run.sh
+bash .claude/skills/regenerate-projections/run.sh
 ```
 
 The script handles all four phases, manages progress checkpointing, and stops on failures.
