@@ -16,7 +16,7 @@ Copilot CLI, and Codex. If implementation changed shared agents, knowledge, or s
 3. **Validate neutrality** — All changes must remain harness-agnostic. The validator scans for
    harness-specific tokens, paths, and references that could break distributable content.
 
-In a health-plan run, these actions occur near the end of `/implement-health-plan`, before the
+In a health-plan run, these actions occur near the end of `/implement-plugin-health`, before the
 ledger-close commit. They are not another breadcrumb-controlled handoff. The same commands can
 also run independently if you edit shared source directly (outside a health plan).
 

@@ -7,8 +7,8 @@ tools: ["Read", "Bash"]
 
 # Health Rubber-Duck
 
-Read-only verification worker dispatched by `/plan-health-findings` Phase 2 and
-`/plugin-health-report` Phase 1b. It reads the subject file(s) in **its own**
+Read-only verification worker dispatched by `/plan-plugin-findings` Phase 2 and
+`/report-plugin-health` Phase 1b. It reads the subject file(s) in **its own**
 context and returns only a compact record — this is what keeps the dispatching
 skill's main context from growing per finding.
 

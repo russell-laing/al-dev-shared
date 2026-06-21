@@ -3,7 +3,7 @@
 **Last updated:** 2026-05-29
 
 This document defines how maintainer tools and their outputs are named. The
-`naming-convention-lens` agent flags drift against it on every `/plugin-health-audit`
+`naming-convention-lens` agent flags drift against it on every `/audit-plugin-health`
 run; `scripts/tests/test_naming_convention.py` enforces the **lens-agent** rule
 mechanically. Keep this doc and those two checkers in sync.
 
@@ -31,7 +31,7 @@ Pattern: `{verb}-{object}-{aspect}`
 - `verb` is one of `review`, `analyze`, `audit`, `plan`, `sync`, …
 - `object` is one of `skill`, `agent`, `knowledge`, `map`, `plugin`
 
-Examples: `plugin-health-audit`, `review-agent-map`, `verify-map-suggestions`.
+Examples: `audit-plugin-health`, `review-agent-map`, `verify-map-suggestions`.
 
 This rule is advisory: existing names that deviate are grandfathered — see
 [Grandfathered exceptions](#grandfathered-exceptions). New skills SHOULD
@@ -68,13 +68,4 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
-- `plugin-health-audit`, `plugin-health-discover`, `plugin-health-report` —
-  health-sweep entry-point and workflow-phase family; the `{object}-{aspect}-{verb}`
-  ordering predates the `{verb}-{object}-{aspect}` convention and is kept for the
-  family's recognisability.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
-- `implement-health-plan`, `ingest-friction-log`, `plan-health-findings`,
-  `record-health-dispositions`, `revise-health-plan` — health-loop phase family;
-  each is named for the workflow stage it serves, and a rename has high blast
-  radius across the loop (cross-references in sibling phase skills and the
-  health-loop breadcrumb), so it is not recommended.

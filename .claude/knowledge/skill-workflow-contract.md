@@ -48,7 +48,7 @@ Skills with no `workflow:` block appear in the "Missing contract" gap table
 of `docs/maintainer-tooling.md`. If a skill genuinely has no place in the
 self-healing loop, it should remain uncontracted — adding a `workflow:` block
 (even with `stage: support`) would cause it to be included in health audit
-lens runs by `plugin-health-discover`.
+lens runs by `discover-plugin-health`.
 
 ## Generator
 

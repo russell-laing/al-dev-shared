@@ -297,7 +297,7 @@ def _entry_skills(contracts: list[WorkflowContract]) -> list[WorkflowContract]:
 
     Only non-user-invocable same-stage targets (i.e. skill-dispatched steps) are
     suppressed from the overview.  User-invocable same-stage targets remain visible
-    so that chains like record-health-dispositions → plan-health-findings both appear
+    so that chains like record-plugin-dispositions → plan-plugin-findings both appear
     in the decide subgraph.
     """
     by_name = {c.skill: c for c in contracts}
@@ -414,41 +414,41 @@ MAP_SYNC_REQUIRED_NEXT = {
 }
 
 DISCOVER_REQUIRED_SKILLS = {
-    "ingest-friction-log",
-    "plugin-health-audit",
-    "plugin-health-discover",
-    "plugin-health-report",
+    "ingest-plugin-friction",
+    "audit-plugin-health",
+    "discover-plugin-health",
+    "report-plugin-health",
 }
 
 DISCOVER_REQUIRED_INPUTS = {
-    "ingest-friction-log": (
+    "ingest-plugin-friction": (
         "~/friction-log/<session>-findings.md",
         "~/friction-log/<session>-signals.json",
     ),
-    "plugin-health-audit": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
-    "plugin-health-discover": (
+    "audit-plugin-health": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "discover-plugin-health": (
         "docs/al-dev-skills-map.md",
         "docs/al-dev-agent-map.md",
         "profile-al-dev-shared/knowledge/lens-invocation-patterns.md",
     ),
-    "plugin-health-report": (
+    "report-plugin-health": (
         "docs/health/<date>-<surface>-findings.md",
         "docs/health/dispositions-open.md",
     ),
 }
 
 DISCOVER_REQUIRED_OUTPUTS = {
-    "ingest-friction-log": (
+    "ingest-plugin-friction": (
         "docs/health/<date>-<surface>-friction-findings.md",
     ),
-    "plugin-health-discover": ("docs/health/<date>-<surface>-findings.md",),
-    "plugin-health-report": ("docs/health/<date>-<surface>-health.md",),
+    "discover-plugin-health": ("docs/health/<date>-<surface>-findings.md",),
+    "report-plugin-health": ("docs/health/<date>-<surface>-health.md",),
 }
 
 DISCOVER_REQUIRED_NEXT = {
-    "ingest-friction-log": ("plugin-health-report",),
-    "plugin-health-audit": ("plugin-health-discover",),
-    "plugin-health-discover": ("plugin-health-report",),
+    "ingest-plugin-friction": ("report-plugin-health",),
+    "audit-plugin-health": ("discover-plugin-health",),
+    "discover-plugin-health": ("report-plugin-health",),
 }
 
 DERIVE_REQUIRED_SKILLS = {
@@ -515,13 +515,13 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
     required = {
         "sync-map-documentation",
         "sync-map-documentation-write",
-        "plugin-health-audit",
-        "plugin-health-discover",
-        "ingest-friction-log",
-        "plugin-health-report",
-        "record-health-dispositions",
-        "plan-health-findings",
-        "implement-health-plan",
+        "audit-plugin-health",
+        "discover-plugin-health",
+        "ingest-plugin-friction",
+        "report-plugin-health",
+        "record-plugin-dispositions",
+        "plan-plugin-findings",
+        "implement-plugin-health",
     }
     if not required <= names:
         by_name = {c.skill: c for c in contracts}
@@ -588,7 +588,7 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
         '    stage_decide["3. Decide<br/>record decisions and write a verified plan"]',
         '    stage_implement["4. Implement<br/>apply the plan and close disposition events"]',
         '    stage_derive["5. Derive<br/>regenerate and validate changed shared source"]',
-        '    entry_friction["Alternate source<br/>/ingest-friction-log"]',
+        '    entry_friction["Alternate source<br/>/ingest-plugin-friction"]',
         "",
         "    stage_map_sync --> stage_discover",
         '    entry_friction -- "friction-findings" --> stage_discover',
@@ -642,15 +642,15 @@ def render_discover_stage_detail(
         *FOCUSED_DETAIL_CLASSDEFS,
         "",
         '    subgraph lane_a["Audit-driven entry"]',
-        '        skill_plugin_health_audit["/plugin-health-audit"]',
-        '        skill_plugin_health_discover["/plugin-health-discover"]',
+        '        skill_plugin_health_audit["/audit-plugin-health"]',
+        '        skill_plugin_health_discover["/discover-plugin-health"]',
         "    end",
         '    subgraph lane_b["Friction-driven entry"]',
-        '        skill_ingest_friction_log["/ingest-friction-log"]',
+        '        skill_ingest_friction_log["/ingest-plugin-friction"]',
         "    end",
         '    art_breadcrumb[".dev/health-loop-state.md"]',
         '    art_dispositions["docs/health/dispositions-open.md"]',
-        '    skill_plugin_health_report["/plugin-health-report"]',
+        '    skill_plugin_health_report["/report-plugin-health"]',
         '    art_dossier["docs/health/*-*-health.md"]',
         "",
         "    skill_plugin_health_audit --> skill_plugin_health_discover",
@@ -678,12 +678,12 @@ def render_decide_stage_detail() -> tuple[str, int]:
         *FOCUSED_DETAIL_CLASSDEFS,
         "",
         '    art_dossier["ranked health dossier"]',
-        '    skill_record_health_dispositions["/record-health-dispositions"]',
+        '    skill_record_health_dispositions["/record-plugin-dispositions"]',
         '    art_ledger["accepted rows in disposition ledger"]',
-        '    skill_plan_health_findings["/plan-health-findings"]',
+        '    skill_plan_health_findings["/plan-plugin-findings"]',
         '    art_plan["verified plan with closes_event_ids"]',
         '    art_commentary["optional review commentary"]',
-        '    skill_revise_health_plan["/revise-health-plan"]',
+        '    skill_revise_health_plan["/revise-plugin-plan"]',
         "",
         "    art_dossier --> skill_record_health_dispositions",
         "    skill_record_health_dispositions --> art_ledger",
@@ -709,7 +709,7 @@ def render_implement_stage_detail() -> tuple[str, int]:
         "",
         '    art_plan["approved plan with closes_event_ids"]',
         '    art_ledger["accepted disposition events"]',
-        '    skill_implement_health_plan["/implement-health-plan"]',
+        '    skill_implement_health_plan["/implement-plugin-health"]',
         '    art_progress["resumable progress checkpoint"]',
         '    art_changed["verified source and documentation changes"]',
         '    art_closed["fixed events written + breadcrumb closed"]',
@@ -811,13 +811,13 @@ def render_stage_detail(
     ):
         return render_derive_stage_detail(stage_contracts, orphans)
     if stage == "decide" and {contract.skill for contract in stage_contracts} == {
-        "record-health-dispositions",
-        "plan-health-findings",
-        "revise-health-plan",
+        "record-plugin-dispositions",
+        "plan-plugin-findings",
+        "revise-plugin-plan",
     }:
         return render_decide_stage_detail()
     if stage == "implement" and {contract.skill for contract in stage_contracts} == {
-        "implement-health-plan",
+        "implement-plugin-health",
     }:
         return render_implement_stage_detail()
     stage_names = {c.skill for c in stage_contracts}
@@ -964,39 +964,39 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             [
                 "### Audit-driven path",
                 "",
-                "1. " + command("plugin-health-audit"),
-                "2. `/plugin-health-discover` dispatches the lenses and writes standard findings.",
-                "3. `/plugin-health-report --findings <path>` verifies and ranks those findings into a dossier.",
+                "1. " + command("audit-plugin-health"),
+                "2. `/discover-plugin-health` dispatches the lenses and writes standard findings.",
+                "3. `/report-plugin-health --findings <path>` verifies and ranks those findings into a dossier.",
                 "",
                 "### Friction-driven path",
                 "",
-                "1. " + command("ingest-friction-log"),
-                "2. `/plugin-health-report --findings <path>` consumes the explicit friction findings path; automatic findings selection intentionally does not match this artifact family.",
+                "1. " + command("ingest-plugin-friction"),
+                "2. `/report-plugin-health --findings <path>` consumes the explicit friction findings path; automatic findings selection intentionally does not match this artifact family.",
             ]
         )
     if stage == "decide" and {
-        "record-health-dispositions",
-        "plan-health-findings",
-        "revise-health-plan",
+        "record-plugin-dispositions",
+        "plan-plugin-findings",
+        "revise-plugin-plan",
     } <= set(by_name):
         return "\n".join(
             [
                 "### Primary path",
                 "",
-                "1. " + command("record-health-dispositions"),
-                "2. " + command("plan-health-findings"),
+                "1. " + command("record-plugin-dispositions"),
+                "2. " + command("plan-plugin-findings"),
                 "",
                 "### Optional revision path",
                 "",
-                "Run `/revise-health-plan` only when a separate review or commentary artifact requires the plan and ledger decisions to be reconciled before implementation.",
+                "Run `/revise-plugin-plan` only when a separate review or commentary artifact requires the plan and ledger decisions to be reconciled before implementation.",
             ]
         )
-    if stage == "implement" and "implement-health-plan" in by_name:
+    if stage == "implement" and "implement-plugin-health" in by_name:
         return "\n".join(
             [
                 "### Primary path",
                 "",
-                "1. Run `/implement-health-plan --plan <path>` in the fresh session named by the breadcrumb.",
+                "1. Run `/implement-plugin-health --plan <path>` in the fresh session named by the breadcrumb.",
                 "2. Execute and verify each plan task, preserving the progress checkpoint for recovery.",
                 "3. Append `fixed` disposition events to the JSONL event store, archive consumed health artifacts, and commit `next_command: none` with the close-back.",
             ]
@@ -1145,7 +1145,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "The approved execution contract; each task must name the event IDs it closes via `closes_event_ids:`.",
         ),
         (
-            ".dev/implement-health-plan-progress.md",
+            ".dev/implement-plugin-health-progress.md",
             "Supports recovery by recording completed tasks and their commits.",
         ),
         (
@@ -1206,12 +1206,12 @@ def render_breadcrumb_orchestrator() -> str:
             "",
             "| Completing skill | Persisted next command | Why it matters |",
             "| --- | --- | --- |",
-            "| `/ingest-friction-log` | `/plugin-health-report --findings ...` | friction is an alternate discover source, not a lens rerun |",
-            "| `/plugin-health-discover` | `/plugin-health-report --findings ...` | discover is intentionally split across sessions to avoid compaction |",
-            "| `/plugin-health-report` | `/record-health-dispositions` | the dossier becomes durable input for ledger triage |",
-            "| `/record-health-dispositions` | `/plan-health-findings` | only accepted rows move into planning |",
-            "| `/plan-health-findings` | `/implement-health-plan --plan ...` | the handoff preserves `closes_event_ids:` and bypasses the generic writing-plans ending |",
-            "| `/implement-health-plan` | `none` | loop closure is explicit and machine-checked |",
+            "| `/ingest-plugin-friction` | `/report-plugin-health --findings ...` | friction is an alternate discover source, not a lens rerun |",
+            "| `/discover-plugin-health` | `/report-plugin-health --findings ...` | discover is intentionally split across sessions to avoid compaction |",
+            "| `/report-plugin-health` | `/record-plugin-dispositions` | the dossier becomes durable input for ledger triage |",
+            "| `/record-plugin-dispositions` | `/plan-plugin-findings` | only accepted rows move into planning |",
+            "| `/plan-plugin-findings` | `/implement-plugin-health --plan ...` | the handoff preserves `closes_event_ids:` and bypasses the generic writing-plans ending |",
+            "| `/implement-plugin-health` | `none` | loop closure is explicit and machine-checked |",
         ]
     )
 

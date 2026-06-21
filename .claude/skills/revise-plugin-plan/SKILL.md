@@ -1,12 +1,12 @@
 ---
-name: revise-health-plan
+name: revise-plugin-plan
 description: >-
   Reconciles a health-loop implementation plan against a review document and
   re-dispositions out-of-scope findings to the ledger. Use when a plan in
   docs/superpowers/plans/ has a paired review or commentary document critiquing
   it — in-scope findings become plan edits, out-of-scope findings become
   `declined`/`grandfathered` ledger rows. This skill never auto-executes the
-  plan — it reconciles, re-dispositions, and hands off to /implement-health-plan
+  plan — it reconciles, re-dispositions, and hands off to /implement-plugin-health
   in a fresh session. Triggers on:
   "apply the review to the plan", "improve the plan using the findings",
   "reconcile the consolidated findings", "revise the health plan",
@@ -23,14 +23,14 @@ workflow:
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
-  next: [implement-health-plan]
+  next: [implement-plugin-health]
 ---
 
 # Revise Health Plan
 
 A review document (consolidated findings, commentary, or a plain critique)
 identifies problems in an already-written health-loop plan. This skill
-reconciles the plan against that review **before** `/implement-health-plan` runs.
+reconciles the plan against that review **before** `/implement-plugin-health` runs.
 
 **Core principle:** every accepted finding lands in exactly one place — a plan
 task that earns its closure, or a ledger row that settles it. Mechanical edits
@@ -43,8 +43,8 @@ judgment forks to the user, and proving full coverage before claiming done.**
 - Some review findings can't be fixed by editing the plan and need a disposition
   decision instead.
 
-**Not for:** writing a plan from scratch (use `plan-health-findings`); executing
-a plan (use `implement-health-plan`); reviews of non-plan files.
+**Not for:** writing a plan from scratch (use `plan-plugin-findings`); executing
+a plan (use `implement-plugin-health`); reviews of non-plan files.
 
 ## Phase-proof requirement
 
@@ -69,7 +69,7 @@ intention is not proof.
    Never rewrite the original `accepted` event.
 6. **Reconcile coverage** (mandatory — Step gap the baseline misses).
 7. **Self-verify structure** (mandatory greps) before claiming done.
-8. **Update the loop-state breadcrumb and hand off** to `/implement-health-plan`
+8. **Update the loop-state breadcrumb and hand off** to `/implement-plugin-health`
    in a fresh session — do not auto-execute.
 
 ## Phase 2 — Classify findings and resolve judgment forks
@@ -189,6 +189,6 @@ grep -nE 'git commit -m "[^"]*(closes_event_ids|\[#)' "$PLAN" && echo "↑ EVENT
 ## Phase 5 — Hand off (do not auto-execute)
 
 Write `.dev/health-loop-state.md` pointing `next_command` at
-`/implement-health-plan --plan <plan-path>`, note the revised task/row counts and
+`/implement-plugin-health --plan <plan-path>`, note the revised task/row counts and
 any executor-last restart boundary, then stop and tell the user to run it in a
 fresh session.

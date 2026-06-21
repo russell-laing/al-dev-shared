@@ -2,8 +2,8 @@
 """Regression guard for the health-audit loop handoff chain.
 
 Fails (exit 1) unless every loop skill both reads and writes the
-.dev/health-loop-state.md breadcrumb, and plan-health-findings overrides the
-writing-plans Execution Handoff by naming /implement-health-plan after the
+.dev/health-loop-state.md breadcrumb, and plan-plugin-findings overrides the
+writing-plans Execution Handoff by naming /implement-plugin-health after the
 writing-plans invocation. Run from the repo root.
 
 This is a STATIC TEXT guard: it verifies the handoff instructions are present
@@ -18,11 +18,11 @@ STATE = ".dev/health-loop-state.md"
 CONTRACT = pathlib.Path(".claude/knowledge/health-loop-state-contract.md")
 
 LOOP = [
-    "plugin-health-discover",
-    "plugin-health-report",
-    "record-health-dispositions",
-    "plan-health-findings",
-    "implement-health-plan",
+    "discover-plugin-health",
+    "report-plugin-health",
+    "record-plugin-dispositions",
+    "plan-plugin-findings",
+    "implement-plugin-health",
 ]
 
 errors = []
@@ -43,21 +43,21 @@ for name in LOOP:
             f"(found {refs} reference(s), need >= 2)"
         )
 
-phf_path = SKILLS / "plan-health-findings" / "SKILL.md"
+phf_path = SKILLS / "plan-plugin-findings" / "SKILL.md"
 if phf_path.exists():
     phf = phf_path.read_text()
     wp = phf.find("superpowers:writing-plans")
-    ihp = phf.rfind("implement-health-plan")
+    ihp = phf.rfind("implement-plugin-health")
     if wp == -1:
-        errors.append("plan-health-findings: writing-plans invocation not found")
+        errors.append("plan-plugin-findings: writing-plans invocation not found")
     elif ihp == -1 or ihp < wp:
         errors.append(
-            "plan-health-findings: must reference /implement-health-plan AFTER "
+            "plan-plugin-findings: must reference /implement-plugin-health AFTER "
             "the writing-plans invocation (the override handoff)"
         )
     if phf.count("Execution Handoff") < 2:
         errors.append(
-            "plan-health-findings: must reference 'Execution Handoff' at least "
+            "plan-plugin-findings: must reference 'Execution Handoff' at least "
             "twice — once to suppress it in Phase 3, once as the authoritative "
             f"ending in Phase 4 (found {phf.count('Execution Handoff')})"
         )

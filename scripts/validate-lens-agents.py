@@ -69,7 +69,7 @@ EXPECTED_AGENTS = [
 ]
 
 SKILLS_TO_CHECK = [
-    os.path.join(REPO, ".claude/skills/plugin-health-discover/SKILL.md"),
+    os.path.join(REPO, ".claude/skills/discover-plugin-health/SKILL.md"),
 ]
 
 FORBIDDEN_TOOLS = ["Bash", "Write", "Edit"]

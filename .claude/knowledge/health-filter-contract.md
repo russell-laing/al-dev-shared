@@ -22,11 +22,11 @@ Defaults:
 --dimension all
 ```
 
-`--resume` is valid only for `/plugin-health-audit` and
-`/plugin-health-discover`.
+`--resume` is valid only for `/audit-plugin-health` and
+`/discover-plugin-health`.
 
-`/plugin-health-report` preserves and validates the filter metadata written by
-`/plugin-health-discover`; it does not expose a public `--dimension` argument.
+`/report-plugin-health` preserves and validates the filter metadata written by
+`/discover-plugin-health`; it does not expose a public `--dimension` argument.
 
 ## Surface Mapping
 
@@ -43,12 +43,12 @@ Defaults:
 
 ## Friction Source
 
-`/ingest-friction-log` is a discover-stage source that is **not a lens**. Its
+`/ingest-plugin-friction` is a discover-stage source that is **not a lens**. Its
 findings files are named `YYYY-MM-DD-<surface>-friction-findings.md`. The
 `select_health_artifacts.py` selector regex intentionally does **not** match this
 name (the `friction-findings` token fails the `(design|quality|naming)?-?(findings|health)`
 grammar), so friction findings are consumed only via
-`/plugin-health-report --findings <path>`, never by automatic selection.
+`/report-plugin-health --findings <path>`, never by automatic selection.
 
 Friction findings are grouped under pseudo-lens blocks whose heading names the
 dimension in parentheses:
@@ -57,7 +57,7 @@ dimension in parentheses:
 - `### Friction: Instruction Quality (quality) Findings` -> dimension `quality`
 - `### Friction: Naming (naming) Findings` -> dimension `naming`
 
-When `/plugin-health-report` consumes a friction findings file, it maps each
+When `/report-plugin-health` consumes a friction findings file, it maps each
 friction block to the dimension named in its parenthetical suffix for
 `dimensions:` validation and dossier grouping. No dedicated dossier section is
 added; friction findings appear under the existing Design / Quality / Naming
@@ -81,7 +81,7 @@ unsound). This is a known v1 limitation.
 
 ## Findings Metadata
 
-`/plugin-health-discover` findings files should carry provenance metadata near
+`/discover-plugin-health` findings files should carry provenance metadata near
 the top of the file:
 
 ```yaml
@@ -99,7 +99,7 @@ surface. `dimensions` records the concrete dimensions requested for that run.
 
 ## Dossier Metadata
 
-`/plugin-health-report` must preserve upstream provenance and validate that the
+`/report-plugin-health` must preserve upstream provenance and validate that the
 dossier sections match the findings metadata.
 
 If a standard section is outside the requested dimensions, keep the section
@@ -108,7 +108,7 @@ found._`.
 
 ## Plan Provenance
 
-`/plan-health-findings` must write the accepted-filter provenance into the plan
+`/plan-plugin-findings` must write the accepted-filter provenance into the plan
 header:
 
 ```yaml

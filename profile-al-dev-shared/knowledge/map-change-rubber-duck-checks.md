@@ -598,7 +598,7 @@ REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd
 
 ## Rubber-Duck Record Format
 
-After each suggestion is checked in `plan-health-findings` Phase 2, write a record
+After each suggestion is checked in `plan-plugin-findings` Phase 2, write a record
 using this format:
 
 ```text

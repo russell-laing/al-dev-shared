@@ -1,5 +1,5 @@
 ---
-name: plugin-health-discover
+name: discover-plugin-health
 description: >-
   Discovery phase of the plugin health sweep. Builds file lists, aggregates
   context from documentation maps, dispatches design, quality, and naming lenses
@@ -9,7 +9,7 @@ description: >-
   docs/health/YYYY-MM-DD-<surface>-findings.md, which also carries a
   `## Failed lenses` section and a `## Resume information` block tracking
   completion status. The ranked dossier is produced
-  separately by /plugin-health-report. Called by /plugin-health-audit; can also
+  separately by /report-plugin-health. Called by /audit-plugin-health; can also
   be run standalone to refresh findings without re-running the report phase, but it requires the same
   pre-conditions as a full audit run. Discovery is via parallel lens dispatch
   (not direct file scanning).
@@ -24,13 +24,13 @@ workflow:
     - profile-al-dev-shared/knowledge/lens-invocation-patterns.md
   outputs:
     - docs/health/<date>-<surface>-findings.md
-  next: [plugin-health-report]
+  next: [report-plugin-health]
 ---
 
-# Skill: /plugin-health-discover
+# Skill: /discover-plugin-health
 
 Discovery phase of the health sweep. Dispatches lenses and writes findings files
-that `/plugin-health-report` consumes.
+that `/report-plugin-health` consumes.
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for surface values, dimension values, defaults,
@@ -114,7 +114,7 @@ The full shape of each mapping is documented in that aggregation doc.
 
 After building the mappings, write the two file lists (agents, skills) and all
 context blocks **once** to a single run manifest at
-`.dev/<today>-plugin-health-discover-context.md` (layout in
+`.dev/<today>-discover-plugin-health-context.md` (layout in
 `.claude/knowledge/health-discover-aggregation.md`). Phase 3 points each lens at
 this manifest instead of re-inlining the file list into every dispatch prompt,
 which keeps the 20-lens fan-out small and avoids flooding this session's context.
@@ -153,7 +153,7 @@ Execute the following state machine in order:
    - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
      subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
      remain. Keep each dispatch prompt small: point the lens at the Phase 2 run
-     manifest (`.dev/<today>-plugin-health-discover-context.md`) for its file
+     manifest (`.dev/<today>-discover-plugin-health-context.md`) for its file
      list and required context fields (per the per-lens table in
      `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
      inlining the file list into the prompt. Append the **Finding evidence
@@ -235,7 +235,7 @@ Use this explicit mapping:
 
    ```bash
    find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' -delete
-   find .dev -maxdepth 1 -name '*-plugin-health-discover-context.md' -delete
+   find .dev -maxdepth 1 -name '*-discover-plugin-health-context.md' -delete
    ```
 
 5. **Return to caller:**
@@ -246,16 +246,16 @@ Use this explicit mapping:
 
    > ⚠ N open `accepted` rows (oldest `<date>`) carried over from earlier
    > sweeps. They will not all re-appear in this dossier — run
-   > `/plan-health-findings --backlog` to drain the full backlog.
+   > `/plan-plugin-findings --backlog` to drain the full backlog.
 
    This is informational and never blocks the sweep.
 
 6. **Write `.dev/health-loop-state.md`** (schema:
    `.claude/knowledge/health-loop-state-contract.md`):
 
-   - `stage_completed: plugin-health-discover`
+   - `stage_completed: discover-plugin-health`
    - `completed_at:` today's ISO date
-   - `next_command: /plugin-health-report --findings <findings_file_path>`
+   - `next_command: /report-plugin-health --findings <findings_file_path>`
      (list the first findings path; all paths are in `next_inputs`)
    - `next_inputs:` all findings file paths written this session (one per surface)
    - `fresh_session_recommended: true`
@@ -265,8 +265,8 @@ Use this explicit mapping:
      so the new session re-enters at the correct step rather than restarting Phase 1
      from scratch.
 
-7. **Stop — do not auto-invoke `/plugin-health-report`.** Tell the user (as plain
+7. **Stop — do not auto-invoke `/report-plugin-health`.** Tell the user (as plain
    assistant text, not wrapped in bash/echo): "Findings written to `<path>`. Start a
-   **fresh session** and re-run `/plugin-health-audit` (or invoke
-   `/plugin-health-report --findings <path>` directly) to generate the dossier —
+   **fresh session** and re-run `/audit-plugin-health` (or invoke
+   `/report-plugin-health --findings <path>` directly) to generate the dossier —
    the pointer is saved in `.dev/health-loop-state.md`."

@@ -6,7 +6,7 @@
 > `docs/health/dispositions-index.json` are generated read artifacts.
 > Never append rows directly to `docs/health/dispositions.md`.
 
-Shared rules extracted from `/record-health-dispositions` for loop-state adoption,
+Shared rules extracted from `/record-plugin-dispositions` for loop-state adoption,
 batch guards, and re-litigation prevention.
 
 ## Loop-State Adoption

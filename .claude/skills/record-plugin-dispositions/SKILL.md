@@ -1,13 +1,13 @@
 ---
-name: record-health-dispositions
+name: record-plugin-dispositions
 description: >-
   Disposition phase of the health-audit loop. Walks the open findings in the
   latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding
   at a user gate (recorded as `accepted`, `declined`, `grandfathered`, `fixed`, or
   omitted for `skip`), and appends JSONL disposition events through
   scripts/health_disposition_store.py append_event, followed by regenerate to
-  update the generated Markdown views. Run after /plugin-health-audit and
-  before /plan-health-findings. Triggers on: "record dispositions",
+  update the generated Markdown views. Run after /audit-plugin-health and
+  before /plan-plugin-findings. Triggers on: "record dispositions",
   "disposition the findings", "accept decline health findings", "triage the
   dossier", "record health decisions".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--top]"
@@ -20,13 +20,13 @@ workflow:
     - docs/health/dispositions-open.md
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
-  next: [plan-health-findings]
+  next: [plan-plugin-findings]
 ---
 
 # Record Health Dispositions
 
-Closes the gap between `/plugin-health-audit` (which writes dossiers) and
-`/plan-health-findings` (which plans only `accepted` ledger rows).
+Closes the gap between `/audit-plugin-health` (which writes dossiers) and
+`/plan-plugin-findings` (which plans only `accepted` ledger rows).
 
 The output is JSONL disposition events appended through
 `scripts/health_disposition_store.py append_event`, followed by
@@ -35,8 +35,8 @@ are read artifacts, not edit targets. This skill never edits plugin source.
 
 Loop position:
 
-`/plugin-health-audit` → dossier → `/record-health-dispositions` →
-`/plan-health-findings` → plan → execute
+`/audit-plugin-health` → dossier → `/record-plugin-dispositions` →
+`/plan-plugin-findings` → plan → execute
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for surface values, dimension values, ledger schema,
@@ -64,7 +64,7 @@ valid resume pointer exists, locate the latest dossier per surface with
 | `--top` | off | Disposition only the dossier's "Top N ranked actions" entries |
 
 If no dossier exists for a requested surface, report "No `<surface>` dossier
-found — run /plugin-health-audit first." and skip that surface.
+found — run /audit-plugin-health first." and skip that surface.
 
 Read `docs/health/dispositions-index.json` (if present) for a quick count of
 open accepted events. Read `docs/health/dispositions-open.md` to see the
@@ -73,7 +73,7 @@ current open accepted event list.
 ## Phase 1 — Collect open findings
 
 Read each located dossier. Collect findings from exactly these sections
-(the same parse `/plan-health-findings` Phase 1 uses):
+(the same parse `/plan-plugin-findings` Phase 1 uses):
 
 - `## Design suggestions`
 - `## Quality findings`
@@ -91,7 +91,7 @@ Examples of marked finding lines in a live dossier (skip these without recording
 
 ```markdown
 Trim — quality-skill-lens-bloat — Remove the redundant phase summary block ← implemented
-Split — plan-health-findings — Separate Phase 1 filter logic into a sub-skill ← completed
+Split — plan-plugin-findings — Separate Phase 1 filter logic into a sub-skill ← completed
 Inline — design-agent-lens-usage-patterns — Fold into the caller skill body ← already implemented
 ```
 
@@ -171,16 +171,16 @@ rule** in the same session. Full procedure in
    the count is non-trivial (≥ 10), emit:
 
    > ⚠ N open `accepted` rows (oldest `<date>`) — including rows from earlier
-   > sweeps the dossier no longer surfaces. Run `/plan-health-findings
+   > sweeps the dossier no longer surfaces. Run `/plan-plugin-findings
    > --backlog` to drain the full backlog, not just this round's rows.
 
    This is informational and never blocks.
 5. If at least one row is `accepted`, write `.dev/health-loop-state.md`
    (schema: `.claude/knowledge/health-loop-state-contract.md`):
 
-   - `stage_completed: record-health-dispositions`
+   - `stage_completed: record-plugin-dispositions`
    - `completed_at:` today's ISO date
-   - `next_command: /plan-health-findings`
+   - `next_command: /plan-plugin-findings`
    - `next_inputs: docs/health/dispositions-open.md` plus the dossier path(s)
    - `fresh_session_recommended: false`
    - `note:` plan the `accepted` rows. When the backlog guard fired (step 4),
@@ -188,7 +188,7 @@ rule** in the same session. Full procedure in
      dossier's`.
 
    Then tell the user: "Recorded N accepted rows. Next in the loop:
-   `/plan-health-findings` (pointer saved in `.dev/health-loop-state.md`)" — and
+   `/plan-plugin-findings` (pointer saved in `.dev/health-loop-state.md`)" — and
    when the backlog guard fired, add: "consider `--backlog` to drain the full
    open backlog." If no row is `accepted`, do not write the breadcrumb; report
    that there is nothing to plan.

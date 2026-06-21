@@ -1,7 +1,7 @@
 # Forbidden Pattern Scan
 
 Shared forbidden-pattern list and scan procedure referenced by
-`implement-health-plan` Phase 1 (verification checklist) and Phase 2
+`implement-plugin-health` Phase 1 (verification checklist) and Phase 2
 (per-task commit scan).
 
 ## Patterns

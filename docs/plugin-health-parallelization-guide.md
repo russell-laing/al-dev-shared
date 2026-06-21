@@ -4,8 +4,8 @@
 
 > **Status: Aspirational design document.** The `/plugin-health` command described here
 > does not exist as an active skill. The current implementation uses three separate skills:
-> `/plugin-health-audit` (full synchronous sweep), `/plugin-health-discover` (lenses only),
-> and `/plugin-health-report` (ranking only). This document records the intended
+> `/audit-plugin-health` (full synchronous sweep), `/discover-plugin-health` (lenses only),
+> and `/report-plugin-health` (ranking only). This document records the intended
 > async/resumable architecture for reference if those skills are later unified.
 
 ## What Changed

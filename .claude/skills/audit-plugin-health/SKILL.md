@@ -1,9 +1,9 @@
 ---
-name: plugin-health-audit
+name: audit-plugin-health
 description: >-
   Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Dispatches
-  the two-phase internal workflow `/plugin-health-discover` then
-  `/plugin-health-report` across two separate sessions (mandatory fresh-session
+  the two-phase internal workflow `/discover-plugin-health` then
+  `/report-plugin-health` across two separate sessions (mandatory fresh-session
   boundary between discover and report) to dispatch design + quality + naming lenses with a
   per-surface file list, rank findings, and write one dossier per surface to
   docs/health/. Never auto-edits source — all outputs are read-only observations. Supports
@@ -17,24 +17,24 @@ workflow:
   inputs:
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
-  next: [plugin-health-discover]
+  next: [discover-plugin-health]
 ---
 
-# Skill: /plugin-health-audit
+# Skill: /audit-plugin-health
 
 Standing suggestions-only entry point. Detects drift across both plugin surfaces and
 consolidates suggestions into one ranked dossier per surface. Nothing is
-auto-edited — the loop is: `/plugin-health-audit` (detect) → dossier (review) →
-`/record-health-dispositions` (record decisions) →
-`/plan-health-findings` (rubber-duck accepted items) → plan → execute.
+auto-edited — the loop is: `/audit-plugin-health` (detect) → dossier (review) →
+`/record-plugin-dispositions` (record decisions) →
+`/plan-plugin-findings` (rubber-duck accepted items) → plan → execute.
 
 Implemented as a two-phase workflow across two sessions:
 
-- **Session 1 — `/plugin-health-discover`:** builds file lists, aggregates context,
+- **Session 1 — `/discover-plugin-health`:** builds file lists, aggregates context,
   dispatches lenses, writes findings file, then stops and recommends a fresh session.
-- **Session 2 — `/plugin-health-report`:** reads findings file (auto-detected via
+- **Session 2 — `/report-plugin-health`:** reads findings file (auto-detected via
   breadcrumb), ranks, writes dossier, presents. Triggered by re-invoking
-  `/plugin-health-audit` in a fresh session (Phase 0 detects the breadcrumb).
+  `/audit-plugin-health` in a fresh session (Phase 0 detects the breadcrumb).
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for surface values, dimension values, defaults,
@@ -61,7 +61,7 @@ If a sweep is interrupted by session limits:
 2. **Re-invoke with resume flag:**
 
    ```bash
-   /plugin-health-audit --surface <same-surface> --dimension <same-dimension> --resume
+   /audit-plugin-health --surface <same-surface> --dimension <same-dimension> --resume
    ```
 
    The skill detects completed lenses from prior session, skips them, and runs only missing ones.
@@ -73,7 +73,7 @@ If a sweep is interrupted by session limits:
 Read `.dev/health-loop-state.md` if it exists (schema:
 `.claude/knowledge/health-loop-state-contract.md`).
 
-- If `stage_completed = plugin-health-discover`: skip Phase 1. Extract all paths
+- If `stage_completed = discover-plugin-health`: skip Phase 1. Extract all paths
   from `next_inputs` as the findings file path(s) for Phase 2. Jump to Phase 2.
 - If `next_command` names a different, later loop step: warn the user that a prior
   loop is in flight, and ask whether to continue here or follow the pointer.
@@ -81,21 +81,21 @@ Read `.dev/health-loop-state.md` if it exists (schema:
 
 ## Phase 1 — Run discover
 
-Invoke `/plugin-health-discover`, passing through all arguments received:
-`/plugin-health-discover [--surface <value>] [--dimension <value>]`
+Invoke `/discover-plugin-health`, passing through all arguments received:
+`/discover-plugin-health [--surface <value>] [--dimension <value>]`
 
-`/plugin-health-discover` writes one findings file per surface to `docs/health/`.
+`/discover-plugin-health` writes one findings file per surface to `docs/health/`.
 Collect the findings file path(s) it returns.
 
-After `/plugin-health-discover` completes, it writes a fresh-session breadcrumb and
+After `/discover-plugin-health` completes, it writes a fresh-session breadcrumb and
 instructs the user to start a new session. **Stop here — do not proceed to Phase 2
 in the same session.** Phase 2 is reached only when the user re-invokes
-`/plugin-health-audit` in a fresh session and Phase 0 detects the
-`plugin-health-discover` breadcrumb.
+`/audit-plugin-health` in a fresh session and Phase 0 detects the
+`discover-plugin-health` breadcrumb.
 
 ## Phase 2 — Run report
 
 For each findings file path returned by Phase 1, invoke:
-`/plugin-health-report --findings <path>`
+`/report-plugin-health --findings <path>`
 
-`/plugin-health-report` writes the dossier and presents results to the user.
+`/report-plugin-health` writes the dossier and presents results to the user.

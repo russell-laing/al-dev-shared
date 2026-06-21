@@ -43,11 +43,11 @@ class HealthFilterContractFileTest(unittest.TestCase):
     def test_health_skills_reference_contract_and_naming_dimension(self) -> None:
         expected_hint = "[--surface plugin|tooling|both] [--dimension design|quality|naming|all]"
         for path in [
-            ".claude/skills/plugin-health-audit/SKILL.md",
-            ".claude/skills/plugin-health-discover/SKILL.md",
-            ".claude/skills/plugin-health-report/SKILL.md",
-            ".claude/skills/record-health-dispositions/SKILL.md",
-            ".claude/skills/plan-health-findings/SKILL.md",
+            ".claude/skills/audit-plugin-health/SKILL.md",
+            ".claude/skills/discover-plugin-health/SKILL.md",
+            ".claude/skills/report-plugin-health/SKILL.md",
+            ".claude/skills/record-plugin-dispositions/SKILL.md",
+            ".claude/skills/plan-plugin-findings/SKILL.md",
         ]:
             with self.subTest(path=path):
                 text = self.read(path)
@@ -55,17 +55,17 @@ class HealthFilterContractFileTest(unittest.TestCase):
                 self.assertIn("naming", text)
         self.assertIn(
             expected_hint + " [--resume]",
-            self.read(".claude/skills/plugin-health-audit/SKILL.md"),
+            self.read(".claude/skills/audit-plugin-health/SKILL.md"),
         )
 
     def test_plan_writes_health_filters_metadata_block(self) -> None:
-        plan = self.read(".claude/skills/plan-health-findings/SKILL.md")
+        plan = self.read(".claude/skills/plan-plugin-findings/SKILL.md")
         self.assertIn("health_filters:", plan)
         self.assertIn("dimensions:", plan)
         self.assertIn("Apply filters in this order:", plan)
 
     def test_report_preserves_metadata_without_public_dimension_flag(self) -> None:
-        report = self.read(".claude/skills/plugin-health-report/SKILL.md")
+        report = self.read(".claude/skills/report-plugin-health/SKILL.md")
         self.assertIn('argument-hint: "[--findings <path>] [--surface plugin|tooling]"', report)
         self.assertIn("_Not requested in this run._", report)
         self.assertIn("dimensions:", report)
@@ -76,8 +76,8 @@ class HealthFilterContractFileTest(unittest.TestCase):
         commands = self.read("docs/development-commands.md")
         self.assertIn("health-filter-contract.md", maintainer)
         self.assertIn("--resume` is audit-only", maintainer)
-        self.assertIn("/plugin-health-audit --surface tooling --dimension quality", commands)
-        self.assertIn("/plugin-health-audit --surface both --dimension naming", commands)
+        self.assertIn("/audit-plugin-health --surface tooling --dimension quality", commands)
+        self.assertIn("/audit-plugin-health --surface both --dimension naming", commands)
 
 
 class HealthDispositionMigrationTest(unittest.TestCase):
@@ -86,20 +86,20 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             [
                 "| Object | Issue | Disposition | Date | Evidence / note |",
                 "|--------|-------|-------------|------|------------------|",
-                "| plugin-health-discover | Bloat: nested phases | accepted | 2026-06-05 | note |",
-                "| plugin-health-discover | Clarity: missing else branch | declined | 2026-06-07 | note 2 |",
+                "| discover-plugin-health | Bloat: nested phases | accepted | 2026-06-05 | note |",
+                "| discover-plugin-health | Clarity: missing else branch | declined | 2026-06-07 | note 2 |",
             ]
         )
         migrated, unresolved, rewrites = MIGRATION.migrate_ledger_text(
             legacy,
             override_index={
                 (
-                    MIGRATION.normalize_text("plugin-health-discover"),
+                    MIGRATION.normalize_text("discover-plugin-health"),
                     MIGRATION.normalize_text("Bloat: nested phases"),
                     "2026-06-05",
                 ): ("tooling", "quality"),
                 (
-                    MIGRATION.normalize_text("plugin-health-discover"),
+                    MIGRATION.normalize_text("discover-plugin-health"),
                     MIGRATION.normalize_text("Clarity: missing else branch"),
                     "2026-06-07",
                 ): ("tooling", "quality"),
@@ -111,11 +111,11 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             migrated,
         )
         self.assertIn(
-            "| tooling | quality | plugin-health-discover | Bloat: nested phases | accepted | 2026-06-05 | note |",
+            "| tooling | quality | discover-plugin-health | Bloat: nested phases | accepted | 2026-06-05 | note |",
             migrated,
         )
         self.assertIn(
-            "| tooling | quality | plugin-health-discover | Clarity: missing else branch | declined | 2026-06-07 | note 2 |",
+            "| tooling | quality | discover-plugin-health | Clarity: missing else branch | declined | 2026-06-07 | note 2 |",
             migrated,
         )
         self.assertEqual([], unresolved)
@@ -150,7 +150,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
                         "",
                         "## Quality findings",
                         "",
-                        "- **plugin-health-discover** | High | Phase 1 has no else branch | Add explicit proceed branch.",
+                        "- **discover-plugin-health** | High | Phase 1 has no else branch | Add explicit proceed branch.",
                     ]
                 ),
                 encoding="utf-8",
@@ -162,7 +162,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
                     [
                         "| Object | Issue | Disposition | Date | Evidence / note |",
                         "|--------|-------|-------------|------|------------------|",
-                        "| plugin-health-discover | Phase 1 has no else branch | accepted | 2026-06-07 | note |",
+                        "| discover-plugin-health | Phase 1 has no else branch | accepted | 2026-06-07 | note |",
                     ]
                 ),
                 findings_index=findings_index,
@@ -170,7 +170,7 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             )
 
             self.assertIn(
-                "| tooling | quality | plugin-health-discover | Phase 1 has no else branch | accepted | 2026-06-07 | note |",
+                "| tooling | quality | discover-plugin-health | Phase 1 has no else branch | accepted | 2026-06-07 | note |",
                 migrated,
             )
             self.assertEqual([], unresolved)

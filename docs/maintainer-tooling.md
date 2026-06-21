@@ -54,7 +54,7 @@ flowchart TD
     stage_decide["3. Decide<br/>record decisions and write a verified plan"]
     stage_implement["4. Implement<br/>apply the plan and close disposition events"]
     stage_derive["5. Derive<br/>regenerate and validate changed shared source"]
-    entry_friction["Alternate source<br/>/ingest-friction-log"]
+    entry_friction["Alternate source<br/>/ingest-plugin-friction"]
 
     stage_map_sync --> stage_discover
     entry_friction -- "friction-findings" --> stage_discover
@@ -72,7 +72,7 @@ flowchart TD
 | Stage | Purpose | Use it when |
 | --- | --- | --- |
 | [1. Map sync](./maintainer-tooling/map-sync.md) | Refresh the canonical skill and agent maps, then regenerate their derived documentation. | You've added or removed a skill/agent, renamed one, or changed their relationships. Also use to re-verify map accuracy against the live codebase. This is preparatory work that runs independent of the health loop. |
-| [2. Discover](./maintainer-tooling/discover.md) | Produce and verify findings through either a lens audit or friction ingestion. | You want to identify improvement candidates in the plugin. Run the full audit via `/plugin-health-audit` to spawn all design, quality, and naming lenses, or use `/ingest-friction-log` to fold accumulated session-analysis findings into the discovery process. |
+| [2. Discover](./maintainer-tooling/discover.md) | Produce and verify findings through either a lens audit or friction ingestion. | You want to identify improvement candidates in the plugin. Run the full audit via `/audit-plugin-health` to spawn all design, quality, and naming lenses, or use `/ingest-plugin-friction` to fold accumulated session-analysis findings into the discovery process. |
 | [3. Decide](./maintainer-tooling/decide.md) | Record durable decisions and turn accepted findings into a verified plan. | A dossier contains findings that need disposition (accept, decline, grandfather, or mark as already fixed). Disposition decisions are recorded durably in the ledger before planning, so later reverification can reuse them without re-auditing. |
 | [4. Implement](./maintainer-tooling/implement.md) | Execute the approved plan and close its accepted disposition events. | A verified plan exists with explicit `closes_event_ids:` identifiers. Run this to execute tasks one-by-one, verify results, and append fixed events to the JSONL event store to prove the work was completed. The stage is resumable via a progress checkpoint if interrupted. |
 | [5. Derive](./maintainer-tooling/derive.md) | Regenerate projections and run shared-source quality checks during finalization. | Implementation or direct edits changed shared agents (→ regenerate projections), shared knowledge (→ audit quality, fix HIGH items), or any shared skill/agent/knowledge (→ validate harness neutrality). These checks happen automatically during health-plan runs before loop closure. |
@@ -83,8 +83,8 @@ There is no monolithic orchestrator skill; instead, the core loop uses a simple 
 handoff pattern that works across session boundaries. After each lifecycle skill completes,
 it writes a breadcrumb file (`.dev/health-loop-state.md`) that records:
 
-- **Which skill completed** (e.g., `/plugin-health-discover` finished)
-- **The exact next command** to run (e.g., `/plugin-health-report --findings <path>`)
+- **Which skill completed** (e.g., `/discover-plugin-health` finished)
+- **The exact next command** to run (e.g., `/report-plugin-health --findings <path>`)
 - **Required input artifacts** that the next skill should consume (file paths, filter metadata)
 
 When you start a new session, the next skill reads this breadcrumb and knows exactly which
@@ -106,12 +106,12 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 
 | Completing skill | Persisted next command | Why it matters |
 | --- | --- | --- |
-| `/ingest-friction-log` | `/plugin-health-report --findings ...` | friction is an alternate discover source, not a lens rerun |
-| `/plugin-health-discover` | `/plugin-health-report --findings ...` | discover is intentionally split across sessions to avoid compaction |
-| `/plugin-health-report` | `/record-health-dispositions` | the dossier becomes durable input for ledger triage |
-| `/record-health-dispositions` | `/plan-health-findings` | only accepted rows move into planning |
-| `/plan-health-findings` | `/implement-health-plan --plan ...` | the handoff preserves `closes_event_ids:` and bypasses the generic writing-plans ending |
-| `/implement-health-plan` | `none` | loop closure is explicit and machine-checked |
+| `/ingest-plugin-friction` | `/report-plugin-health --findings ...` | friction is an alternate discover source, not a lens rerun |
+| `/discover-plugin-health` | `/report-plugin-health --findings ...` | discover is intentionally split across sessions to avoid compaction |
+| `/report-plugin-health` | `/record-plugin-dispositions` | the dossier becomes durable input for ledger triage |
+| `/record-plugin-dispositions` | `/plan-plugin-findings` | only accepted rows move into planning |
+| `/plan-plugin-findings` | `/implement-plugin-health --plan ...` | the handoff preserves `closes_event_ids:` and bypasses the generic writing-plans ending |
+| `/implement-plugin-health` | `none` | loop closure is explicit and machine-checked |
 <!-- END GENERATED: maintainer-breadcrumb-orchestrator -->
 
 ## Quick Reference
@@ -120,11 +120,11 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 | --- | --- | --- |
 | Added or removed a skill or agent | `/sync-map-documentation` | Audits the maps, applies changes, and regenerates all documentation and projections that depend on them. Use this when topology changes. |
 | Want to audit map accuracy without applying updates | `/sync-map-documentation --no-update` | Runs the audit phase only and prints what would change without making modifications. Useful for verification before a full sync. |
-| Want the main health-audit entry point | `/plugin-health-audit` | Starts a full lens-driven discovery: dispatches design, quality, and naming audits, ranks findings, and writes a dossier. Best starting point for a comprehensive health check. |
-| Want to fold accumulated friction into the loop | `/ingest-friction-log` | Converts curated session-analysis findings and tool-error signals from `~/friction-log/` into discoverable findings, then archives the logs. Alternative entry point to `/plugin-health-audit` when you have session-specific issues to fold in. |
-| Ready to record decisions from a dossier | `/record-health-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
-| Ready to turn accepted events into a plan | `/plan-health-findings` | Verifies accepted findings against the live codebase, then writes an implementation plan with explicit `closes_event_ids:` identifiers. Each plan task maps to the event IDs it will close. |
-| Ready to execute a verified plan and close events | `/implement-health-plan --plan <path>` | Executes the plan tasks one-by-one with verification, appends `fixed` events to the JSONL event store, and closes the loop with `next_command: none`. Resumable if interrupted. |
+| Want the main health-audit entry point | `/audit-plugin-health` | Starts a full lens-driven discovery: dispatches design, quality, and naming audits, ranks findings, and writes a dossier. Best starting point for a comprehensive health check. |
+| Want to fold accumulated friction into the loop | `/ingest-plugin-friction` | Converts curated session-analysis findings and tool-error signals from `~/friction-log/` into discoverable findings, then archives the logs. Alternative entry point to `/audit-plugin-health` when you have session-specific issues to fold in. |
+| Ready to record decisions from a dossier | `/record-plugin-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
+| Ready to turn accepted events into a plan | `/plan-plugin-findings` | Verifies accepted findings against the live codebase, then writes an implementation plan with explicit `closes_event_ids:` identifiers. Each plan task maps to the event IDs it will close. |
+| Ready to execute a verified plan and close events | `/implement-plugin-health --plan <path>` | Executes the plan tasks one-by-one with verification, appends `fixed` events to the JSONL event store, and closes the loop with `next_command: none`. Resumable if interrupted. |
 | Edited shared agent source directly (without using a health plan) | `/regenerate-agent-projections` → then `/validate-plugin-neutrality` | Regenerates harness-native projections from your edited agents, then validates that the shared surface remains harness-neutral across all three harnesses. |
 | Edited shared knowledge directly | `/audit-knowledge-quality` → if HIGH findings exist, run `/fix-knowledge-quality` → then `/validate-plugin-neutrality` | Audits knowledge for structural issues. If HIGH-severity items are discovered and you approve them, fix them, then validate the shared surface remains harness-neutral. |
 
@@ -154,9 +154,9 @@ report stages inherit the decisions from discover:
   (audits all three dimensions)
 - `--resume` is audit-only; used to continue an interrupted audit without re-running prior lenses.
   Must match the stored filters from the initial audit command.
-- `/plugin-health-report` preserves upstream filter metadata from discover and does not expose
+- `/report-plugin-health` preserves upstream filter metadata from discover and does not expose
   a public `--dimension` flag; filtering is automatically read from the breadcrumb.
-- `/ingest-friction-log` is not a lens and has no dimension filtering. Its findings bypass
+- `/ingest-plugin-friction` is not a lens and has no dimension filtering. Its findings bypass
   automatic artifact selection and enter report through an explicit `--findings <path>` parameter.
 
 Breadcrumb enforcement uses two complementary checks:
@@ -180,14 +180,14 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/sync-map-documentation-apply` | map-sync | user | Applies validated update artifacts to docs/. |
 | `/sync-map-documentation-collect` | map-sync | user | Collect audit results and dispatch background update agents for the /sync-map-documentation flow. |
 | `/sync-map-documentation-write` | map-sync | user | Final regeneration step after /sync-map-documentation-apply; fourth step of the async sync flow. |
-| `/ingest-friction-log` | discover | user | Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. |
-| `/plugin-health-audit` | discover | user | Standing suggestions-only entry point for the al-dev-shared plugin surfaces. |
-| `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
-| `/plugin-health-report` | discover | both | Report phase of the plugin health sweep. |
-| `/plan-health-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
-| `/record-health-dispositions` | decide | user | Disposition phase of the health-audit loop. |
-| `/revise-health-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
-| `/implement-health-plan` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back). |
+| `/audit-plugin-health` | discover | user | Standing suggestions-only entry point for the al-dev-shared plugin surfaces. |
+| `/discover-plugin-health` | discover | both | Discovery phase of the plugin health sweep. |
+| `/ingest-plugin-friction` | discover | user | Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. |
+| `/report-plugin-health` | discover | both | Report phase of the plugin health sweep. |
+| `/plan-plugin-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
+| `/record-plugin-dispositions` | decide | user | Disposition phase of the health-audit loop. |
+| `/revise-plugin-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
+| `/implement-plugin-health` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back). |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
 | `/regenerate-agent-projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
@@ -200,15 +200,15 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/sync-map-documentation` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json` | `/sync-map-documentation-collect` |
 | `/sync-map-documentation-apply` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-map-documentation-write` |
 | `/sync-map-documentation-collect` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md` | `/sync-map-documentation-apply` |
-| `/sync-map-documentation-write` | `.dev/sync-map-documentation-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `docs/maintainer-tooling/`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
-| `/ingest-friction-log` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md` | `/plugin-health-report` |
-| `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
-| `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
-| `/plugin-health-report` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions-open.md` | `docs/health/<date>-<surface>-health.md` | `/record-health-dispositions` |
-| `/plan-health-findings` | `docs/health/dispositions-open.md`, `docs/health/dispositions-index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/implement-health-plan` |
-| `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/plan-health-findings` |
-| `/revise-health-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/implement-health-plan` |
-| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-health-plan-progress.md` | `/regenerate-agent-projections`, `/validate-plugin-neutrality`, `/plugin-health-audit` |
+| `/sync-map-documentation-write` | `.dev/sync-map-documentation-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `docs/maintainer-tooling/`, `profile-al-dev-shared/generated/agents/` | `/audit-plugin-health` |
+| `/audit-plugin-health` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/discover-plugin-health` |
+| `/discover-plugin-health` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/report-plugin-health` |
+| `/ingest-plugin-friction` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md` | `/report-plugin-health` |
+| `/report-plugin-health` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions-open.md` | `docs/health/<date>-<surface>-health.md` | `/record-plugin-dispositions` |
+| `/plan-plugin-findings` | `docs/health/dispositions-open.md`, `docs/health/dispositions-index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/implement-plugin-health` |
+| `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/plan-plugin-findings` |
+| `/revise-plugin-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/implement-plugin-health` |
+| `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md` | `/regenerate-agent-projections`, `/validate-plugin-neutrality`, `/audit-plugin-health` |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/validate-plugin-neutrality` |
 | `/regenerate-agent-projections` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/validate-plugin-neutrality` |
@@ -225,23 +225,23 @@ against the live skill body before treating it as work.
 <!-- BEGIN GENERATED: maintainer-gaps -->
 | Signal | Item | Detail |
 | --- | --- | --- |
-| Orphaned artifact | `.dev/implement-health-plan-progress.md` | produced by /implement-health-plan; consumed by no skill |
+| Orphaned artifact | `.dev/implement-plugin-health-progress.md` | produced by /implement-plugin-health; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-map-documentation-write; consumed by no skill |
-| Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-health-plan, /record-health-dispositions, /revise-health-plan; consumed by no skill |
+| Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-plugin-health, /record-plugin-dispositions, /revise-plugin-plan; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-map-documentation-write; consumed by no skill |
-| Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-health-findings; produced by no skill |
-| Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-health-plan, /plan-health-findings, /plugin-health-report, /record-health-dispositions, /revise-health-plan; produced by no skill |
-| Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-health-plan; produced by no skill |
-| Sourceless input | `~/friction-log/*-findings.md` | consumed by /ingest-friction-log; produced by no skill |
-| Sourceless input | `~/friction-log/*-signals.json` | consumed by /ingest-friction-log; produced by no skill |
+| Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-plugin-findings; produced by no skill |
+| Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-plugin-health, /plan-plugin-findings, /record-plugin-dispositions, /report-plugin-health, /revise-plugin-plan; produced by no skill |
+| Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-plugin-plan; produced by no skill |
+| Sourceless input | `~/friction-log/*-findings.md` | consumed by /ingest-plugin-friction; produced by no skill |
+| Sourceless input | `~/friction-log/*-signals.json` | consumed by /ingest-plugin-friction; produced by no skill |
 | Manual step | none | — |
 | Missing contract | `al-dev-consolidate` | active skill with no workflow contract |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Missing contract | `verify-files` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-21 |
+| Artifact freshness | `.dev/implement-plugin-health-progress.md` | never produced |
 | Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | never produced |
 | Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | never produced |
 | Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | never produced |

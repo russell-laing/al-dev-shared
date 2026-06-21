@@ -444,7 +444,7 @@ def list_open(
 # ---------------------------------------------------------------------------
 # Suppression matcher
 #
-# A deterministic *candidate* matcher for /plugin-health-report Phase 1d. It
+# A deterministic *candidate* matcher for /report-plugin-health Phase 1d. It
 # classifies each new finding against the current-view ledger so the report
 # stops eyeballing the whole ledger by hand. Output is advisory: the model
 # confirms `suppress`/`verify` candidates before acting (see

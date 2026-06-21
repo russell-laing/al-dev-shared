@@ -1,7 +1,7 @@
 # Health Plan Context Template
 
 This document defines the context block passed to `superpowers:writing-plans` in
-Phase 3 of `plan-health-findings`. Pass all items in this list as context to
+Phase 3 of `plan-plugin-findings`. Pass all items in this list as context to
 `writing-plans` when invoking it.
 
 ## Context items to pass
@@ -38,7 +38,7 @@ Phase 3 of `plan-health-findings`. Pass all items in this list as context to
   queries; do not use Markdown row numbers or legacy IDs.
 
   Place this block **inside the verification block**, not in the task title or
-  header. `implement-health-plan` Phase 3 greps for this token to close the
+  header. `implement-plugin-health` Phase 3 greps for this token to close the
   ledger entries after implementation.
 
 - **Commit-message format.** Every task's `git commit -m` must follow
@@ -63,5 +63,5 @@ Phase 3 of `plan-health-findings`. Pass all items in this list as context to
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven /
   Inline" prompt or ask "Which approach?". Hand control back to the caller
-  (`plan-health-findings` Phase 4), which routes execution to
-  `/implement-health-plan`.
+  (`plan-plugin-findings` Phase 4), which routes execution to
+  `/implement-plugin-health`.

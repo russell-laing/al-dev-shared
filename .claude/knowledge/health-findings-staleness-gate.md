@@ -1,7 +1,7 @@
 # Health Findings Staleness Gate
 
 This document defines the staleness-gate logic applied in Phase 1b of
-`plan-health-findings`. A dossier is a point-in-time snapshot; findings are
+`plan-plugin-findings`. A dossier is a point-in-time snapshot; findings are
 routinely implemented piecemeal between the audit and the planning step, so any
 finding whose subject file changed *after* the dossier was generated is likely
 already addressed (or has drifted out from under the finding text).
@@ -44,6 +44,6 @@ any `suppress`/`verify`/skipped findings:
 
 | Stale ratio | Action |
 |---|---|
-| 100% (all findings) | Advise re-running `/plugin-health-audit`; do not proceed |
+| 100% (all findings) | Advise re-running `/audit-plugin-health`; do not proceed |
 | ≥80% | Report ratio; offer (a) re-run audit or (b) proceed with heightened scrutiny; only proceed if user chooses (b) |
 | <80% | Proceed; mark stale findings `⚠ possibly stale` in the worklist |

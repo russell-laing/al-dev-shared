@@ -1,5 +1,5 @@
 ---
-name: implement-health-plan
+name: implement-plugin-health
 description: >-
   Closes the health-audit loop: executes an accepted implementation plan,
   verifies each change, and appends `fixed` events to the JSONL event store
@@ -9,7 +9,7 @@ description: >-
   optionally triggers downstream regeneration.
   Triggers on:
   "implement health plan", "run the health plan", "execute health findings plan",
-  "implement the accepted plan", "close the ledger", "run implement-health-plan".
+  "implement the accepted plan", "close the ledger", "run implement-plugin-health".
 argument-hint: "[--plan <path>]"
 workflow:
   stage: implement
@@ -20,20 +20,20 @@ workflow:
     - docs/health/dispositions-open.md
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
-    - .dev/implement-health-plan-progress.md
-  next: [regenerate-agent-projections, validate-plugin-neutrality, plugin-health-audit]
+    - .dev/implement-plugin-health-progress.md
+  next: [regenerate-agent-projections, validate-plugin-neutrality, audit-plugin-health]
 ---
 
 # Implement Health Plan
 
 Closes the self-healing loop by executing an accepted implementation plan
-produced by `/plan-health-findings` and appending `fixed` events to the JSONL
+produced by `/plan-plugin-findings` and appending `fixed` events to the JSONL
 event store for every `closes_event_ids:` entry in the plan.
 
 Loop position:
 
-`/plugin-health-audit` → dossier → `/record-health-dispositions` →
-`/plan-health-findings` → plan → **`/implement-health-plan`** → fixed events →
+`/audit-plugin-health` → dossier → `/record-plugin-dispositions` →
+`/plan-plugin-findings` → plan → **`/implement-plugin-health`** → fixed events →
 `/regenerate-agent-projections` / `/validate-plugin-neutrality`
 
 ---
@@ -63,7 +63,7 @@ intention is not proof.
 - Regenerated views: `dispositions-open.md`, `dispositions-current.md`, `dispositions-index.json`
 - Archived plan → `docs/superpowers/plans/archived/`
 - Archived dossier + findings → `docs/health/archived/`
-- `.dev/implement-health-plan-progress.md` — progress checkpoint (undated,
+- `.dev/implement-plugin-health-progress.md` — progress checkpoint (undated,
   fixed path)
 
 ---
@@ -71,7 +71,7 @@ intention is not proof.
 ## Prerequisites
 
 - A plan file exists in `docs/superpowers/plans/` that contains at least one
-  `closes_event_ids:` entry (produced by `/plan-health-findings`)
+  `closes_event_ids:` entry (produced by `/plan-plugin-findings`)
 - `docs/health/dispositions-open.md` exists with the relevant `accepted` events
 - The pre-commit gate passes: `python3 scripts/check_ledger_staleness.py`
   exits 0 before this skill begins
@@ -105,7 +105,7 @@ grep -rl "closes_event_ids:" docs/superpowers/plans/ \
 If no plan passes the filter, stop with:
 
 > No plan containing `closes_event_ids:` found in `docs/superpowers/plans/`. Run
-> `/plan-health-findings` first to produce an accepted plan, or pass
+> `/plan-plugin-findings` first to produce an accepted plan, or pass
 > `--plan <path>` to target a specific file.
 
 ### Resume check
@@ -145,7 +145,7 @@ result: plan_located
 plan_path: <path>
 tasks_total: <N>
 tasks_completed: []
-executor_revision: <git short-hash of .claude/skills/implement-health-plan/SKILL.md at run start>
+executor_revision: <git short-hash of .claude/skills/implement-plugin-health/SKILL.md at run start>
 ```
 
 ---
@@ -192,7 +192,7 @@ before any later phase proceeds.)
 **Commit discipline:** commit per task. Do NOT squash task commits — the
 per-task commit hashes are needed for Phase 3 ledger close-back.
 
-Update `.dev/implement-health-plan-progress.md` **after each task's commit lands:**
+Update `.dev/implement-plugin-health-progress.md` **after each task's commit lands:**
 
 ```yaml
 phase: 1
@@ -303,7 +303,7 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    change is present. Do not append an event for an unverified change.
    If verification fails: report the failure, omit the event for that task,
    write `phase: 3` and `status: blocked` to
-   `.dev/implement-health-plan-progress.md`, and stop. Do not continue close-back
+   `.dev/implement-plugin-health-progress.md`, and stop. Do not continue close-back
    and do not write `result: ledger_closed` while any task is unverified. (To drop
    a task from the closure set, amend or re-disposition its events first — there is
    no in-run abandonment path.)
@@ -408,7 +408,7 @@ execution.
 
 Check by inspecting the task commits. `<first-task-commit>` is the `commit`
 value of the first entry in `tasks_completed` from the checkpoint file
-(`.dev/implement-health-plan-progress.md`):
+(`.dev/implement-plugin-health-progress.md`):
 
 ```bash
 git diff <first-task-commit>~1 HEAD --name-only \
@@ -427,7 +427,7 @@ If no `profile-al-dev-shared/` files changed, skip this phase entirely.
 (schema: `.claude/knowledge/health-loop-state-contract.md`) to mark the loop
 closed:
 
-- `stage_completed: implement-health-plan`
+- `stage_completed: implement-plugin-health`
 - `completed_at:` today's ISO date
 - `next_command: none`
 - `next_inputs: []`
@@ -435,7 +435,7 @@ closed:
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/regenerate-agent-projections` and
   `/validate-plugin-neutrality` next (see Phase 4 "Regenerate derived artifacts").
-  Then run `/plugin-health-audit` to start the next health loop.
+  Then run `/audit-plugin-health` to start the next health loop.
 
 ### Ledger-close commit
 
@@ -474,14 +474,14 @@ Conservative failure mode:
 - Do not archive any artifact until the ledger-close commit is staged
 - Do not claim the loop is closed until all plan `closes_event_ids` have `fixed`
   events in the store (run `check_ledger_staleness.py --strict` for informational backlog count)
-- Always update `.dev/implement-health-plan-progress.md` to reflect blocked
+- Always update `.dev/implement-plugin-health-progress.md` to reflect blocked
   state on failure; do not delete the checkpoint
 
 ---
 
 ## Progress Checkpoint Format
 
-Location: `.dev/implement-health-plan-progress.md`
+Location: `.dev/implement-plugin-health-progress.md`
 
 YAML structure:
 
@@ -498,5 +498,5 @@ tasks_completed:
       - disp_20260619_000001
       - disp_20260619_000002
 stale_open_rows: <count>    # populated in Phase 3
-executor_revision: <git short-hash of implement-health-plan/SKILL.md at run start>
+executor_revision: <git short-hash of implement-plugin-health/SKILL.md at run start>
 ```

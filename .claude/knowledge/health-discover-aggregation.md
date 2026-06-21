@@ -1,6 +1,6 @@
 # Health Discover — Pre-dispatch Aggregation
 
-The context-extraction procedure run by `/plugin-health-discover` Phase 2 before
+The context-extraction procedure run by `/discover-plugin-health` Phase 2 before
 lenses are dispatched. Lenses in Phase 3 consume the mappings built here.
 
 ## Read and parse `docs/al-dev-agent-map.md`
@@ -30,7 +30,7 @@ Compute derived mappings:
 ## Write the run manifest
 
 After computing the mappings, write one manifest artifact at
-`.dev/<date>-plugin-health-discover-context.md` containing:
+`.dev/<date>-discover-plugin-health-context.md` containing:
 
 - `## Agent file list` — the absolute agent paths, one per line.
 - `## Skill file list` — the absolute skill `SKILL.md` paths, one per line.

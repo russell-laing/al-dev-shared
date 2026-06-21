@@ -9,7 +9,7 @@ optionally disambiguated by a `closes row N` token in the fixed row's note
 This script computes the *effective-open* accepted rows (accepted rows not
 superseded by a later fixed row) and flags rows whose object has commits
 after the row date — usually a fix that landed without the closure
-write-back required by /record-health-dispositions.
+write-back required by /record-plugin-dispositions.
 
 Modes:
   (default)   list effective-open rows and stale-open warnings; exit 0
@@ -426,7 +426,7 @@ def main() -> int:
                       f"({r.obj}) but {LEDGER} is not staged.")
         if warned:
             print("  If this commit resolves the finding, flip/append its row to "
-                  "fixed (closure write-back rule in /record-health-dispositions).")
+                  "fixed (closure write-back rule in /record-plugin-dispositions).")
         return 0
 
     stale = 0

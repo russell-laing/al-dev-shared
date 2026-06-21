@@ -32,13 +32,13 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 # Lifecycle successor map from health-loop-state-contract.md § Lifecycle.
 # Maps stage_completed → expected next_command prefix (None means "none").
 SUCCESSOR: dict[str, str | None] = {
-    "ingest-friction-log":        "/plugin-health-report",
-    "plugin-health-discover":     "/plugin-health-report",
-    "plugin-health-report":       "/record-health-dispositions",
-    "record-health-dispositions": "/plan-health-findings",
-    "plan-health-findings":       "/implement-health-plan",
-    "revise-health-plan":         "/implement-health-plan",
-    "implement-health-plan":      None,
+    "ingest-plugin-friction":        "/report-plugin-health",
+    "discover-plugin-health":     "/report-plugin-health",
+    "report-plugin-health":       "/record-plugin-dispositions",
+    "record-plugin-dispositions": "/plan-plugin-findings",
+    "plan-plugin-findings":       "/implement-plugin-health",
+    "revise-plugin-plan":         "/implement-plugin-health",
+    "implement-plugin-health":      None,
 }
 
 _VALID_NC_TOKENS: frozenset[str] = frozenset(

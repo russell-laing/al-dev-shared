@@ -18,13 +18,13 @@ stage answers: "Which findings do we accept? Which do we decline? What work will
    These decisions are recorded as events in the JSONL event store (`docs/health/dispositions-events/`). Later audits filter out
    already-decided findings using the generated `docs/health/dispositions-open.md` view, so you don't re-triage the same issue twice.
 
-2. **Plan accepted findings** — For findings you've accepted, `/plan-health-findings` verifies
+2. **Plan accepted findings** — For findings you've accepted, `/plan-plugin-findings` verifies
    each one against the live codebase (using rubber-duck checks), then writes an implementation
    plan with explicit task steps. Crucially, each plan task names the event IDs it will close
    (via `closes_event_ids:`), creating the linkage that lets Implement prove work was completed.
 
 **Plan revision (optional):** If someone reviews the plan and finds that scope or decisions need
-to change before execution, run `/revise-health-plan` to reconcile the plan and ledger in one
+to change before execution, run `/revise-plugin-plan` to reconcile the plan and ledger in one
 step. This is a side path, not a required step.
 
 ## How Decide Works
@@ -39,7 +39,7 @@ contract**. Each task in the plan explicitly names which event IDs it will close
 an audit trail. When Implement runs the plan, it appends `fixed` events to the JSONL event store for each
 `closes_event_ids:` identifier, proving that the work was completed and not just attempted.
 
-If a review stage finds issues with the plan (scope creep, wrong decision, etc.), `/revise-health-plan`
+If a review stage finds issues with the plan (scope creep, wrong decision, etc.), `/revise-plugin-plan`
 lets you reconcile without re-planning from scratch. It reads the review commentary, reconciles
 the plan and ledger, and prepares for Implement.
 
@@ -52,12 +52,12 @@ flowchart TD
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
     art_dossier["ranked health dossier"]
-    skill_record_health_dispositions["/record-health-dispositions"]
+    skill_record_health_dispositions["/record-plugin-dispositions"]
     art_ledger["accepted rows in disposition ledger"]
-    skill_plan_health_findings["/plan-health-findings"]
+    skill_plan_health_findings["/plan-plugin-findings"]
     art_plan["verified plan with closes_event_ids"]
     art_commentary["optional review commentary"]
-    skill_revise_health_plan["/revise-health-plan"]
+    skill_revise_health_plan["/revise-plugin-plan"]
 
     art_dossier --> skill_record_health_dispositions
     skill_record_health_dispositions --> art_ledger
@@ -79,12 +79,12 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-decide-journey -->
 ### Primary path
 
-1. `/record-health-dispositions` — Disposition phase of the health-audit loop.
-2. `/plan-health-findings` — Verify and plan accepted health-audit findings (formerly verify-map-suggestions).
+1. `/record-plugin-dispositions` — Disposition phase of the health-audit loop.
+2. `/plan-plugin-findings` — Verify and plan accepted health-audit findings (formerly verify-map-suggestions).
 
 ### Optional revision path
 
-Run `/revise-health-plan` only when a separate review or commentary artifact requires the plan and ledger decisions to be reconciled before implementation.
+Run `/revise-plugin-plan` only when a separate review or commentary artifact requires the plan and ledger decisions to be reconciled before implementation.
 <!-- END GENERATED: maintainer-stage-decide-journey -->
 
 ## Key Artifacts

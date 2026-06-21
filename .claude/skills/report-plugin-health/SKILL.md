@@ -1,12 +1,12 @@
 ---
-name: plugin-health-report
+name: report-plugin-health
 description: >-
   Report phase of the plugin health sweep. Reads a findings file written by
-  /plugin-health-discover, filters out stale and disposition-suppressed
+  /discover-plugin-health, filters out stale and disposition-suppressed
   findings, runs an evidence-verification gate (dispatching verify-health-finding
   in evidence mode to drop unverified findings), ranks the remainder, writes the
   dossier, and presents results to the user.
-  Called by /plugin-health-audit; can also be run standalone against an existing
+  Called by /audit-plugin-health; can also be run standalone against an existing
   findings file to re-rank or reformat without re-dispatching lenses.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
 workflow:
@@ -19,16 +19,16 @@ workflow:
     - docs/health/dispositions-open.md
   outputs:
     - docs/health/<date>-<surface>-health.md
-  next: [record-health-dispositions]
+  next: [record-plugin-dispositions]
 ---
 
-# Skill: /plugin-health-report
+# Skill: /report-plugin-health
 
 Report phase of the health sweep. Reads a findings file and writes the dossier.
 
 Read `.claude/knowledge/health-filter-contract.md` first and treat it as the
 canonical source of truth for filter metadata, dimension values, dossier
-wording, and legacy `unknown` handling. `/plugin-health-report` preserves and
+wording, and legacy `unknown` handling. `/report-plugin-health` preserves and
 validates upstream dimension metadata; it does not expose a public
 `--dimension` argument.
 
@@ -67,7 +67,7 @@ python3 scripts/select_health_artifacts.py \
 ```
 
 If a requested surface returns no path, report: "No `<surface>` findings file
-found. Run /plugin-health-audit for that surface first." Skip only that surface.
+found. Run /audit-plugin-health for that surface first." Skip only that surface.
 If neither requested surface returns a path, stop.
 
 ## Phase 1 — Parse findings
@@ -251,7 +251,7 @@ candidate denominator), write the literal `not available` — never infer
 
 Read `.dev/health-loop-state.md` first (schema:
 `.claude/knowledge/health-loop-state-contract.md`). If it exists and its
-`next_command` names a *later* loop step (e.g. `/implement-health-plan`), warn
+`next_command` names a *later* loop step (e.g. `/implement-plugin-health`), warn
 the user that a prior loop is still in flight and unclosed before presenting a
 fresh dossier.
 
@@ -262,9 +262,9 @@ List any failed lenses.
 Write `.dev/health-loop-state.md` (schema:
 `.claude/knowledge/health-loop-state-contract.md`):
 
-- `stage_completed: plugin-health-report`
+- `stage_completed: report-plugin-health`
 - `completed_at:` today's ISO date
-- `next_command: /record-health-dispositions`
+- `next_command: /record-plugin-dispositions`
 - `next_inputs:` the dossier path(s) just written, plus
   `docs/health/dispositions.md`
 - `fresh_session_recommended: false`
@@ -274,7 +274,7 @@ Write `.dev/health-loop-state.md` (schema:
 Then tell the user (as plain assistant text — do not wrap this in a bash
 `echo` or heredoc; the backticks and nested punctuation will trip
 unmatched-quote errors): "Dossier ready. Next in the loop:
-`/record-health-dispositions` to triage accept/decline decisions (the pointer
-is saved in `.dev/health-loop-state.md`). After that, `/plan-health-findings`
+`/record-plugin-dispositions` to triage accept/decline decisions (the pointer
+is saved in `.dev/health-loop-state.md`). After that, `/plan-plugin-findings`
 plans the accepted items."
 Do not edit any source file.

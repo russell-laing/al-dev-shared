@@ -12,7 +12,7 @@ answers: "Let's actually do the work. Did it succeed? Can we prove it?"
   content is correct, no regressions).
 - **Close-back:** For each task that succeeds, a `fixed` event is appended to the JSONL event store. This event
   references the `closes_event_ids:` identifiers from the plan, proving the work happened.
-- **Resumability:** A progress checkpoint (`.dev/implement-health-plan-progress.md`) tracks
+- **Resumability:** A progress checkpoint (`.dev/implement-plugin-health-progress.md`) tracks
   completed tasks and their commits. If interrupted, the next run resumes from where you left
   off without re-doing completed work.
 - **Finalization:** If the implementation changed shared source (agents, knowledge, skills),
@@ -24,7 +24,7 @@ answers: "Let's actually do the work. Did it succeed? Can we prove it?"
 
 ## How Implement Works
 
-Run `/implement-health-plan --plan <path>` to execute the plan from Decide. The skill will:
+Run `/implement-plugin-health --plan <path>` to execute the plan from Decide. The skill will:
 
 1. **Read the plan and event store** — Understand which tasks to execute and which event IDs they
    close.
@@ -56,7 +56,7 @@ flowchart TD
 
     art_plan["approved plan with closes_event_ids"]
     art_ledger["accepted disposition events"]
-    skill_implement_health_plan["/implement-health-plan"]
+    skill_implement_health_plan["/implement-plugin-health"]
     art_progress["resumable progress checkpoint"]
     art_changed["verified source and documentation changes"]
     art_closed["fixed events written + breadcrumb closed"]
@@ -77,7 +77,7 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-implement-journey -->
 ### Primary path
 
-1. Run `/implement-health-plan --plan <path>` in the fresh session named by the breadcrumb.
+1. Run `/implement-plugin-health --plan <path>` in the fresh session named by the breadcrumb.
 2. Execute and verify each plan task, preserving the progress checkpoint for recovery.
 3. Append `fixed` disposition events to the JSONL event store, archive consumed health artifacts, and commit `next_command: none` with the close-back.
 <!-- END GENERATED: maintainer-stage-implement-journey -->
@@ -88,7 +88,7 @@ flowchart TD
 | Artifact | Role |
 | --- | --- |
 | `docs/superpowers/plans/<date>-<topic>.md` | The approved execution contract; each task must name the event IDs it closes via `closes_event_ids:`. |
-| `.dev/implement-health-plan-progress.md` | Supports recovery by recording completed tasks and their commits. |
+| `.dev/implement-plugin-health-progress.md` | Supports recovery by recording completed tasks and their commits. |
 | `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` | Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store. |
 | `.dev/health-loop-state.md` | Closes the core loop with `next_command: none` in the ledger-close commit. |
 | `docs/health/archived/` and `docs/superpowers/plans/archived/` | Retain consumed findings, dossiers, plans, and review evidence outside live selectors. |

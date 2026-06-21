@@ -22,7 +22,7 @@ workflow:
     - docs/maintainer-tooling.md
     - docs/maintainer-tooling/
     - profile-al-dev-shared/generated/agents/
-  next: [plugin-health-audit]
+  next: [audit-plugin-health]
 ---
 
 # Sync Documentation Maps — Write (Regenerate and Commit)
@@ -156,7 +156,7 @@ Sync finalized.
     Dependency graph: refreshed     (or "refresh failed — see above")
     Maintainer guide: regenerated   (or "regeneration failed — see above")
 
-  Next: run /plugin-health-audit to find improvements against the updated maps.
+  Next: run /audit-plugin-health to find improvements against the updated maps.
 ```
 
 ---
@@ -250,7 +250,7 @@ ls .dev/health-loop-state.md 2>/dev/null
 Do not overwrite `.dev/health-loop-state.md`. Map sync is a preparation stage,
 not a lifecycle stage accepted by `scripts/validate_health_loop_state.py`.
 
-- If the file is absent, finish normally and recommend `/plugin-health-audit`.
+- If the file is absent, finish normally and recommend `/audit-plugin-health`.
 - If the file exists, report its current `next_command` and leave it unchanged.
-  The maintainer can intentionally restart from `/plugin-health-audit` after the
+  The maintainer can intentionally restart from `/audit-plugin-health` after the
   map-sync commit, but map sync must not replace an in-flight durable handoff.

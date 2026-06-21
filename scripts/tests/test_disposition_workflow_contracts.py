@@ -10,10 +10,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 FILES = [
-    ".claude/skills/record-health-dispositions/SKILL.md",
-    ".claude/skills/plan-health-findings/SKILL.md",
-    ".claude/skills/revise-health-plan/SKILL.md",
-    ".claude/skills/implement-health-plan/SKILL.md",
+    ".claude/skills/record-plugin-dispositions/SKILL.md",
+    ".claude/skills/plan-plugin-findings/SKILL.md",
+    ".claude/skills/revise-plugin-plan/SKILL.md",
+    ".claude/skills/implement-plugin-health/SKILL.md",
     ".claude/knowledge/health-disposition-storage-contract.md",
     ".claude/knowledge/ledger-closure-protocol.md",
     ".claude/knowledge/health-plan-context-template.md",

@@ -1,5 +1,5 @@
 ---
-name: ingest-friction-log
+name: ingest-plugin-friction
 description: >-
   Ingest friction logs from ~/friction-log/ (curated session-analysis findings
   plus aggregated tool-error signals) into the self-healing health loop as a
@@ -7,10 +7,10 @@ description: >-
   surface they implicate; breadcrumb next_command
     construction orders plugin surface first. Writes per-surface
   YYYY-MM-DD-<surface>-friction-findings.md artifacts consumed by
-  /plugin-health-report via --findings, and records local runtime provenance in
+  /report-plugin-health via --findings, and records local runtime provenance in
   docs/health/friction-ingest-log.md (gitignored). Run when friction logs have
   accumulated
-  and they should be passed to `/plugin-health-report` — this skill produces
+  and they should be passed to `/report-plugin-health` — this skill produces
   intermediate findings files consumed by that report step, not direct audit
   integration.
   Triggers on: "ingest friction logs", "ingest the friction log", "process
@@ -26,13 +26,13 @@ workflow:
   outputs:
     - docs/health/<date>-<surface>-friction-findings.md
   next:
-    - plugin-health-report
+    - report-plugin-health
 ---
 
-# Skill: /ingest-friction-log
+# Skill: /ingest-plugin-friction
 
 Discover-stage source for the self-healing loop. Reads friction logs produced by
-the session analyst, turns them into findings files that `/plugin-health-report`
+the session analyst, turns them into findings files that `/report-plugin-health`
 consumes, and archives the consumed logs.
 
 Read `.claude/knowledge/health-filter-contract.md` (especially "## Friction
@@ -100,7 +100,7 @@ curated session-analysis reports):
 Hold each result as `(surface, dimension, severity, slug, file_line, snippet, reason, fix)` where:
 
 - `file_line` is the exact `path/to/file:N` cited in the Recommended fix or Evidence
-- `snippet` is a short quoted excerpt from that location (collected here for downstream evidence verification by `/plugin-health-report`)
+- `snippet` is a short quoted excerpt from that location (collected here for downstream evidence verification by `/report-plugin-health`)
 - `reason` is a one-line explanation of why the snippet demonstrates the problem
 - `fix` is the recommended correction
 
@@ -126,7 +126,7 @@ severity reflecting how often it blocked work.
    `docs/health/<today>-<surface>-friction-findings.md`. If the file already
    exists for today, Read it first (read-before-write), then overwrite.
 
-   Template (consumed by `/plugin-health-report --findings <path>`; block
+   Template (consumed by `/report-plugin-health --findings <path>`; block
    headings and the `dimensions:` list MUST follow
    `.claude/knowledge/health-filter-contract.md` "## Friction Source"):
 
@@ -157,7 +157,7 @@ severity reflecting how often it blocked work.
    ```markdown
    # Friction Ingest Log
 
-   Local runtime provenance for /ingest-friction-log (gitignored — not a durable
+   Local runtime provenance for /ingest-plugin-friction (gitignored — not a durable
    cross-session record). One row per ingested log; an archived log is never
    re-ingested.
 
@@ -173,9 +173,9 @@ severity reflecting how often it blocked work.
 
 3. **Breadcrumb.** Write `.dev/health-loop-state.md` (schema:
    `.claude/knowledge/health-loop-state-contract.md`):
-   - `stage_completed: ingest-friction-log`
+   - `stage_completed: ingest-plugin-friction`
    - `completed_at:` today's ISO date
-   - `next_command: /plugin-health-report --findings docs/health/<today>-plugin-friction-findings.md`
+   - `next_command: /report-plugin-health --findings docs/health/<today>-plugin-friction-findings.md`
      (lead with the plugin path; if only tooling findings exist, use that path)
    - `next_inputs:` every friction findings file written this run
    - `fresh_session_recommended: false`
@@ -201,9 +201,9 @@ severity reflecting how often it blocked work.
 
 3. **Hand off** (plain assistant text — do not echo through bash):
    "Friction ingested. Next in the loop:
-   `/plugin-health-report --findings docs/health/<today>-plugin-friction-findings.md`.
+   `/report-plugin-health --findings docs/health/<today>-plugin-friction-findings.md`.
    The report will rank these and drop any already-fixed friction under
    'Dropped (unverified)'."
 
-Do not edit any source file. Do not run `/plugin-health-report` yourself — the
+Do not edit any source file. Do not run `/report-plugin-health` yourself — the
 user (or the loop) invokes it next.

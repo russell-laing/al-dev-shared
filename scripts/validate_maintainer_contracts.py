@@ -19,27 +19,27 @@ SCOPE_PACK_DOC = "delegated-scope-pack.md"
 
 # Authoritative scope sets. Update deliberately when a skill changes shape.
 MULTI_PHASE_SKILLS = {
-    "plugin-health-audit", "plugin-health-discover", "plugin-health-report",
-    "plan-health-findings", "record-health-dispositions", "implement-health-plan",
-    "revise-health-plan", "sync-map-documentation", "sync-map-documentation-collect",
+    "audit-plugin-health", "discover-plugin-health", "report-plugin-health",
+    "plan-plugin-findings", "record-plugin-dispositions", "implement-plugin-health",
+    "revise-plugin-plan", "sync-map-documentation", "sync-map-documentation-collect",
     "sync-map-documentation-apply", "sync-map-documentation-write",
-    "audit-knowledge-quality", "fix-knowledge-quality", "ingest-friction-log",
+    "audit-knowledge-quality", "fix-knowledge-quality", "ingest-plugin-friction",
     "al-dev-consolidate", "review-docs", "validate-plugin-neutrality", "regenerate-agent-projections",
 }
 # 18 of the 19 live phase-bearing skills. `verify-files` is excluded as a pure
-# read-only verifier (no mutating phase deliverable). `plugin-health-audit` is
+# read-only verifier (no mutating phase deliverable). `audit-plugin-health` is
 # included: it advances discover→report across a session boundary and writes the
 # health-loop breadcrumb, the exact phantom-phase-progress surface this contract guards.
 DISPATCHING_SKILLS = {
-    "plugin-health-discover", "plugin-health-report", "plan-health-findings",
+    "discover-plugin-health", "report-plugin-health", "plan-plugin-findings",
     "sync-map-documentation", "audit-knowledge-quality", "fix-knowledge-quality",
 }
-# `plugin-health-report` dispatches `verify-health-finding` agents in evidence mode
+# `report-plugin-health` dispatches `verify-health-finding` agents in evidence mode
 # via superpowers:dispatching-parallel-agents — a real dispatch lane.
 DELEGATING_EXECUTION_SKILLS = {
     "sync-map-documentation-collect",
 }
-# `implement-health-plan` is intentionally absent: it executes inline, one task at
+# `implement-plugin-health` is intentionally absent: it executes inline, one task at
 # a time, and explicitly rejects subagent dispatch — wiring a delegated-scope-pack
 # contract into it would contradict its own execution mode.
 

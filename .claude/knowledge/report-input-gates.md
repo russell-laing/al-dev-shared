@@ -6,7 +6,7 @@
 > `docs/health/dispositions-index.json` are generated read artifacts.
 > Never append rows directly to `docs/health/dispositions.md`.
 
-Operative procedures for the `/plugin-health-report` Phase 2 filter stages (sub-sections 1c and 1d).
+Operative procedures for the `/report-plugin-health` Phase 2 filter stages (sub-sections 1c and 1d).
 These rules are canonical; the SKILL.md sub-sections point here.
 
 ---

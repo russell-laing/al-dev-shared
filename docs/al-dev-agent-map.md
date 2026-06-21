@@ -618,7 +618,7 @@
 > **Findings live in the health dossier, not in this map.** This map is
 > documentation only — it describes the current agent roster. To find
 > improvement suggestions (Trim, Remodel, Split, Inline, Align), run
-> `/plugin-health-audit` and read the ranked dossier in `docs/health/`, then
+> `/audit-plugin-health` and read the ranked dossier in `docs/health/`, then
 > `/al-dev-map-suggestions-verify` to turn accepted findings into a plan.
 >
 > History: in-map suggestions through 2026-06-01 were retired when findings

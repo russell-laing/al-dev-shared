@@ -32,8 +32,8 @@ class MigrationTest(unittest.TestCase):
             (history / "2026-06.md").write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
                 "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
-                "| #976 | tooling | quality | validate_health_loop_state.py | Enum omits revise-health-plan | accepted | 2026-06-19 | queued |\n"
-                "| #977 | tooling | quality | validate_health_loop_state.py | Enum omits revise-health-plan | fixed | 2026-06-19 | 8f3c205 closes #976 |\n",
+                "| #976 | tooling | quality | validate_health_loop_state.py | Enum omits revise-plugin-plan | accepted | 2026-06-19 | queued |\n"
+                "| #977 | tooling | quality | validate_health_loop_state.py | Enum omits revise-plugin-plan | fixed | 2026-06-19 | 8f3c205 closes #976 |\n",
                 encoding="utf-8",
             )
 

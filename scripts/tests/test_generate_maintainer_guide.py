@@ -512,9 +512,9 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
 
     decide_text, _ = lib.render_stage_detail(contracts, "decide", set())
     assert "flowchart TD" in decide_text
-    assert 'skill_record_health_dispositions["/record-health-dispositions"]' in decide_text
-    assert 'skill_plan_health_findings["/plan-health-findings"]' in decide_text
-    assert 'skill_revise_health_plan["/revise-health-plan"]' in decide_text
+    assert 'skill_record_health_dispositions["/record-plugin-dispositions"]' in decide_text
+    assert 'skill_plan_health_findings["/plan-plugin-findings"]' in decide_text
+    assert 'skill_revise_health_plan["/revise-plugin-plan"]' in decide_text
     assert 'art_commentary["optional review commentary"]' in decide_text
     assert "repeat" not in decide_text
 
@@ -698,7 +698,7 @@ def test_live_stage_journeys_explain_branches_without_repeating_io() -> None:
     discover = lib.render_stage_journey(contracts, "discover")
     assert "### Audit-driven path" in discover
     assert "### Friction-driven path" in discover
-    assert "`/plugin-health-report --findings <path>`" in discover
+    assert "`/report-plugin-health --findings <path>`" in discover
     assert "reads:" not in discover
     assert "writes:" not in discover
 
@@ -1040,9 +1040,9 @@ def test_live_contracts_cover_multi_page_docs_and_friction_report_input() -> Non
     )
     assert (
         "docs/health/<date>-<surface>-friction-findings.md"
-        in by_name["plugin-health-report"].inputs
+        in by_name["report-plugin-health"].inputs
     )
-    assert "audit-knowledge-quality" not in by_name["implement-health-plan"].next_skills
+    assert "audit-knowledge-quality" not in by_name["implement-plugin-health"].next_skills
 
 
 def test_map_sync_write_preserves_valid_health_loop_breadcrumb() -> None:

@@ -129,20 +129,20 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
         # a "Filter and verify" phase ahead of it; the merge invariant is
         # unchanged. The negative guards catch a re-split where writing would
         # become its own phase after rank.
-        text = read(".claude/skills/plugin-health-report/SKILL.md")
+        text = read(".claude/skills/report-plugin-health/SKILL.md")
         self.assertIn("## Phase 3 — Rank and Write Dossier", text)
         self.assertNotIn("## Phase 4 — Write dossier", text)
         self.assertNotIn("## Phase 4 — Write Dossier", text)
 
     def test_plugin_health_excludes_archived_tooling_skills(self) -> None:
-        discover = read(".claude/skills/plugin-health-discover/SKILL.md")
+        discover = read(".claude/skills/discover-plugin-health/SKILL.md")
         handoff_lens = read(".claude/agents/design-skill-lens-handoff-gaps.md")
 
         self.assertIn('! -path "*/archived/*"', discover)
         self.assertIn("only the other paths in `file_list`", handoff_lens)
 
     def test_plugin_health_cadence_guard_has_explicit_happy_path(self) -> None:
-        discover = read(".claude/skills/plugin-health-discover/SKILL.md")
+        discover = read(".claude/skills/discover-plugin-health/SKILL.md")
 
         self.assertIn(
             "Disposition coverage exists and is dated on or after the dossier",

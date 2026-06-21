@@ -7,14 +7,14 @@ Discover is where improvement candidates enter the core health loop. This stage 
 
 **Two entry paths:**
 
-- **Audit-driven** — Run `/plugin-health-audit` to dispatch design, quality, and naming lenses
+- **Audit-driven** — Run `/audit-plugin-health` to dispatch design, quality, and naming lenses
   across the entire skill and agent surface. This gives you a comprehensive, ranked inventory
   of issues grouped by type and severity.
-- **Friction-driven** — Run `/ingest-friction-log` to fold accumulated session-analysis findings
+- **Friction-driven** — Run `/ingest-plugin-friction` to fold accumulated session-analysis findings
   and tool-error signals from `~/friction-log/` into the discovery process. Use this when you
   have specific recurring issues or user pain points you want to address alongside general audits.
 
-Both paths converge on `/plugin-health-report`, which verifies the evidence, filters out findings
+Both paths converge on `/report-plugin-health`, which verifies the evidence, filters out findings
 that already have durable decisions in the disposition ledger, ranks the surviving findings by
 dimension and severity, and writes a ranked dossier. This dossier becomes the input to the Decide stage.
 
@@ -34,7 +34,7 @@ new or unresolved issues.
 findings and aggregated tool errors) and converts them into findings files. This lets you
 route real-world pain points from live usage into the same dossier as architecture findings.
 
-**Report phase:** Regardless of entry path, `/plugin-health-report` verifies the evidence,
+**Report phase:** Regardless of entry path, `/report-plugin-health` verifies the evidence,
 applies disposition filters, ranks the surviving findings, and writes a dossier to `docs/health/`.
 The dossier is ranked by dimension (design vs. quality vs. naming) and severity, making it easy
 for the Decide stage to triage.
@@ -52,15 +52,15 @@ flowchart TD
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
     subgraph lane_a["Audit-driven entry"]
-        skill_plugin_health_audit["/plugin-health-audit"]
-        skill_plugin_health_discover["/plugin-health-discover"]
+        skill_plugin_health_audit["/audit-plugin-health"]
+        skill_plugin_health_discover["/discover-plugin-health"]
     end
     subgraph lane_b["Friction-driven entry"]
-        skill_ingest_friction_log["/ingest-friction-log"]
+        skill_ingest_friction_log["/ingest-plugin-friction"]
     end
     art_breadcrumb[".dev/health-loop-state.md"]
     art_dispositions["docs/health/dispositions-open.md"]
-    skill_plugin_health_report["/plugin-health-report"]
+    skill_plugin_health_report["/report-plugin-health"]
     art_dossier["docs/health/*-*-health.md"]
 
     skill_plugin_health_audit --> skill_plugin_health_discover
@@ -85,14 +85,14 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-discover-journey -->
 ### Audit-driven path
 
-1. `/plugin-health-audit` — Standing suggestions-only entry point for the al-dev-shared plugin surfaces.
-2. `/plugin-health-discover` dispatches the lenses and writes standard findings.
-3. `/plugin-health-report --findings <path>` verifies and ranks those findings into a dossier.
+1. `/audit-plugin-health` — Standing suggestions-only entry point for the al-dev-shared plugin surfaces.
+2. `/discover-plugin-health` dispatches the lenses and writes standard findings.
+3. `/report-plugin-health --findings <path>` verifies and ranks those findings into a dossier.
 
 ### Friction-driven path
 
-1. `/ingest-friction-log` — Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs.
-2. `/plugin-health-report --findings <path>` consumes the explicit friction findings path; automatic findings selection intentionally does not match this artifact family.
+1. `/ingest-plugin-friction` — Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs.
+2. `/report-plugin-health --findings <path>` consumes the explicit friction findings path; automatic findings selection intentionally does not match this artifact family.
 <!-- END GENERATED: maintainer-stage-discover-journey -->
 
 ## Key Artifacts

@@ -1176,7 +1176,7 @@ flowchart LR
 > **Findings live in the health dossier, not in this map.** This map is
 > documentation only — it describes the current skill structure. To find
 > improvement suggestions (Atomise, Absorb, Connect, Merge, Promote, Move,
-> Extend), run `/plugin-health-audit` and read the ranked dossier in
+> Extend), run `/audit-plugin-health` and read the ranked dossier in
 > `docs/health/`, then `/al-dev-map-suggestions-verify` to turn accepted
 > findings into a plan.
 >

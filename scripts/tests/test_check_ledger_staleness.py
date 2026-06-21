@@ -66,7 +66,7 @@ class ResolveClosuresTest(unittest.TestCase):
                 [
                     "| Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |",
                     "|---------|-----------|--------|---------|-------------|------|------------------|",
-                    "| tooling | quality | plugin-health-discover | Bloat: nested phases | accepted | 2026-06-07 | note |",
+                    "| tooling | quality | discover-plugin-health | Bloat: nested phases | accepted | 2026-06-07 | note |",
                 ]
             )
         )
@@ -74,7 +74,7 @@ class ResolveClosuresTest(unittest.TestCase):
         self.assertEqual(1, len(rows))
         self.assertEqual("tooling", rows[0].surface)
         self.assertEqual("quality", rows[0].dimension)
-        self.assertEqual("plugin-health-discover", rows[0].obj)
+        self.assertEqual("discover-plugin-health", rows[0].obj)
         self.assertEqual("Bloat: nested phases", rows[0].issue)
 
     def test_parse_ledger_text_reads_legacy_rows_as_unknown_surface_dimension(self) -> None:
@@ -83,7 +83,7 @@ class ResolveClosuresTest(unittest.TestCase):
                 [
                     "| Object | Issue | Disposition | Date | Evidence / note |",
                     "|--------|-------|-------------|------|------------------|",
-                    "| plugin-health-discover | Bloat: nested phases | accepted | 2026-06-07 | note |",
+                    "| discover-plugin-health | Bloat: nested phases | accepted | 2026-06-07 | note |",
                 ]
             )
         )
@@ -91,19 +91,19 @@ class ResolveClosuresTest(unittest.TestCase):
         self.assertEqual(1, len(rows))
         self.assertEqual("unknown", rows[0].surface)
         self.assertEqual("unknown", rows[0].dimension)
-        self.assertEqual("plugin-health-discover", rows[0].obj)
+        self.assertEqual("discover-plugin-health", rows[0].obj)
 
     def test_legacy_closes_row_token_resolves_accepted_in_seven_column_table(self) -> None:
         """Legacy 7-column table with 'closes row N' token should resolve via CLOSES_RE."""
         rows = [
             MODULE.Row(
-                1, "tooling", "quality", "plugin-health-discover", "Bloat: nested phases", "accepted", "2026-06-07", ""
+                1, "tooling", "quality", "discover-plugin-health", "Bloat: nested phases", "accepted", "2026-06-07", ""
             ),
             MODULE.Row(
                 2,
                 "tooling",
                 "quality",
-                "plugin-health-discover",
+                "discover-plugin-health",
                 "Bloat: nested phases",
                 "fixed",
                 "2026-06-07",
@@ -123,7 +123,7 @@ class ResolveClosuresTest(unittest.TestCase):
             1,
             "tooling",
             "quality",
-            "plugin-health-discover",
+            "discover-plugin-health",
             "Bloat: nested phases",
             "accepted",
             "2026-06-07",
@@ -138,7 +138,7 @@ class ResolveClosuresTest(unittest.TestCase):
         line += f" | {row.obj} | accepted {row.date}"
 
         self.assertIn("(ID 001)", line)
-        self.assertIn("plugin-health-discover", line)
+        self.assertIn("discover-plugin-health", line)
 
 
 class ClosureProvenanceTest(unittest.TestCase):
@@ -217,9 +217,9 @@ class ShardedStoreCheckerTest(unittest.TestCase):
             (history / "2026-06.md").write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
                 "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
-                "| #595 | tooling | quality | record-health-dispositions"
+                "| #595 | tooling | quality | record-plugin-dispositions"
                 " | Schema count mismatch | accepted | 2026-06-12 | queued |\n"
-                "| #596 | tooling | quality | record-health-dispositions"
+                "| #596 | tooling | quality | record-plugin-dispositions"
                 " | Schema count mismatch | fixed | 2026-06-13 | abc1234 closes #595 |\n",
                 encoding="utf-8",
             )

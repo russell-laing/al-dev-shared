@@ -1,6 +1,6 @@
 # Map Suggestion Templates
 
-Suggestion format templates used by `/plan-health-findings` when
+Suggestion format templates used by `/plan-plugin-findings` when
 writing map observations and verification outputs. Reference this file instead
 of embedding templates inline in the skill body.
 

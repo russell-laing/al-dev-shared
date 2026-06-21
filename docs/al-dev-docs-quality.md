@@ -78,9 +78,9 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 
 | Type | Finding | Detail |
 |------|---------|--------|
-| ✅ `/plugin-health-audit` | skill exists | Current active skill |
-| ✅ `/plugin-health-discover` | skill exists | Current active skill |
-| ✅ `/plugin-health-report` | skill exists | Current active skill |
+| ✅ `/audit-plugin-health` | skill exists | Current active skill |
+| ✅ `/discover-plugin-health` | skill exists | Current active skill |
+| ✅ `/report-plugin-health` | skill exists | Current active skill |
 | 🟡 `/plugin-health` references | skill does NOT exist | Lines 20, 36, 42, 53 reference `/plugin-health`, but only the three separate skills exist. Document header correctly identifies this as "aspirational design" — this is intentional. |
 | ✅ path references | `.dev/plugin-health-runs/` | Synthetic example paths, acceptable for design documentation |
 

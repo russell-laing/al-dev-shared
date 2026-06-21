@@ -7,8 +7,8 @@
 > Never append rows directly to `docs/health/dispositions.md`.
 
 Shared precondition and filtering rules for the health-audit loop. Referenced by
-`/plugin-health-discover` (cadence + stale-open guards) and
-`/plugin-health-report` (staleness spot-check + disposition suppression).
+`/discover-plugin-health` (cadence + stale-open guards) and
+`/report-plugin-health` (staleness spot-check + disposition suppression).
 Canonical filter vocabulary lives in `health-filter-contract.md`.
 
 ## Disposition coverage criterion (cadence guard)
@@ -22,7 +22,7 @@ lens lines (fix field states no action required) do not need an event.
 
 - If coverage exists for the prior dossier, proceed.
 - If actionable findings from the prior dossier have no ledger row, they are
-  undispositioned: stop and route the user to `/record-health-dispositions`.
+  undispositioned: stop and route the user to `/record-plugin-dispositions`.
 
 ## Stale-open accepted rows
 
@@ -47,9 +47,9 @@ counts as "after" (e.g. for a `2026-06-10` dossier, a commit at
 `2026-06-10 08:29` is in scope). Non-empty output → read the subject file from
 start to finish and re-check the claim; expect it may already be implemented.
 
-## Phase 0 orchestration contract (for `/plugin-health-discover`)
+## Phase 0 orchestration contract (for `/discover-plugin-health`)
 
-This section defines the complete pre-run orchestration that `/plugin-health-discover`
+This section defines the complete pre-run orchestration that `/discover-plugin-health`
 executes in Phase 0 before dispatching any lenses.
 
 **Inputs:** `--surface` (plugin | tooling | both), `--dimension`, `--resume` flag.
@@ -83,7 +83,7 @@ prompt `Proceed with the sweep anyway? (yes / no)` and wait for the reply:
 ```text
 The latest <surface> dossier (<date>) has no recorded dispositions.
 A new sweep will largely re-discover its open findings. Record
-accept/decline/fixed rows via /record-health-dispositions first, or
+accept/decline/fixed rows via /record-plugin-dispositions first, or
 confirm to sweep anyway.
 
 Proceed with the sweep anyway? (yes / no)
@@ -95,7 +95,7 @@ Proceed with the sweep anyway? (yes / no)
   to the stale-open check.
 - User replies `yes` (override) → proceed to Phase 1.
 - User declines, or gives no clear confirmation → stop. Report "Sweep not
-  dispatched — record dispositions via `/record-health-dispositions` and re-run."
+  dispatched — record dispositions via `/record-plugin-dispositions` and re-run."
   Do not dispatch any lens.
 
 **Stale-open reporting:** After passing (or skipping) the disposition-coverage test,

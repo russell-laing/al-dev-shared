@@ -14,7 +14,7 @@ from scripts.validate_health_loop_state import validate_text, SUCCESSOR  # noqa:
 # ---------------------------------------------------------------------------
 
 VALID_BREADCRUMB = """\
-stage_completed: implement-health-plan
+stage_completed: implement-plugin-health
 completed_at: 2026-06-14
 next_command: none
 next_inputs: []
@@ -23,9 +23,9 @@ note: loop closed; no further steps required
 """
 
 VALID_MID_LOOP = """\
-stage_completed: plan-health-findings
+stage_completed: plan-plugin-findings
 completed_at: 2026-06-14
-next_command: /implement-health-plan --plan .dev/my-plan.md
+next_command: /implement-plugin-health --plan .dev/my-plan.md
 next_inputs:
 - .dev/my-plan.md
 fresh_session_recommended: true
@@ -134,7 +134,7 @@ def test_unknown_next_command():
 
 
 def test_next_command_no_slash():
-    errors = validate_text(_replace(VALID_BREADCRUMB, "next_command", "record-health-dispositions"))
+    errors = validate_text(_replace(VALID_BREADCRUMB, "next_command", "record-plugin-dispositions"))
     assert any("not a known loop command" in e for e in errors)
 
 
@@ -143,8 +143,8 @@ def test_next_command_no_slash():
 # ---------------------------------------------------------------------------
 
 def test_lifecycle_wrong_successor():
-    # implement-health-plan must write next_command=none, not plan-health-findings
-    text = _replace(VALID_BREADCRUMB, "next_command", "/plan-health-findings")
+    # implement-plugin-health must write next_command=none, not plan-plugin-findings
+    text = _replace(VALID_BREADCRUMB, "next_command", "/plan-plugin-findings")
     errors = validate_text(text)
     assert any("requires next_command" in e for e in errors)
 
@@ -189,7 +189,7 @@ def test_lifecycle_unknown_stage():
 
 def test_closed_loop_with_nonempty_inputs():
     text = (
-        "stage_completed: implement-health-plan\n"
+        "stage_completed: implement-plugin-health\n"
         "completed_at: 2026-06-14\n"
         "next_command: none\n"
         "next_inputs:\n"

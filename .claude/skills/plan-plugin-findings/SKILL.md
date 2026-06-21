@@ -1,5 +1,5 @@
 ---
-name: plan-health-findings
+name: plan-plugin-findings
 description: >-
   Verify and plan accepted health-audit findings (formerly
   verify-map-suggestions). Reads accepted events from
@@ -13,7 +13,7 @@ description: >-
   agent-design findings, and scope it by surface and dimension with `--surface
   plugin|tooling|both` and `--dimension design|quality|naming|all`. Use when the
   latest health dossier in docs/health/ has
-  accepted findings that need implementing. Run /plugin-health-audit first if
+  accepted findings that need implementing. Run /audit-plugin-health first if
   the plugin or tooling surface has changed since the dossier was last
   generated. Triggers on:
   "plan health findings", "implement health findings", "plan architectural
@@ -32,7 +32,7 @@ workflow:
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
-  next: [implement-health-plan]
+  next: [implement-plugin-health]
 ---
 
 # Plan Health Findings
@@ -68,7 +68,7 @@ failure, and log `preferred → outcome → fallback → reason`.
 
 - At least one health dossier (`docs/health/YYYY-MM-DD-<surface>-health.md`)
   exists with open findings
-- Run `/plugin-health-audit` first if the plugin or tooling surface has
+- Run `/audit-plugin-health` first if the plugin or tooling surface has
   changed since the dossier was generated — stale findings produce wrong plans
 - At least one dossier section (Design suggestions, Quality findings, or
   Naming violations) has an open finding
@@ -181,11 +181,11 @@ python3 scripts/select_health_artifacts.py \
 Branch on the two `select_health_artifacts.py` results:
 
 - **Exactly one surface returns no path:** report `No <surface> health dossier
-  found. Run /plugin-health-audit for that surface first.`, skip only that
+  found. Run /audit-plugin-health for that surface first.`, skip only that
   surface (do not substitute the other surface's dossier or a legacy `both`
   artifact), and continue with the surface that did return a path.
 - **Neither surface returns a path:** stop with `No health dossier found for
-  either surface; run /plugin-health-audit first.` Write no plan.
+  either surface; run /audit-plugin-health first.` Write no plan.
 - **Both surfaces return a path:** proceed with both.
 
 Read the latest dossier(s). Collect every open finding from these sections:
@@ -228,7 +228,7 @@ into plan tasks as `closes_event_ids`.
 - **`verify`** (fixed match): skip (note the skip count).
 - **No matched event** (`keep` with no ledger entry): undispositioned — list
   them and ask the user whether to include them or record dispositions first
-  via `/record-health-dispositions`.
+  via `/record-plugin-dispositions`.
 
 Apply filters in this order:
 
@@ -286,7 +286,7 @@ findings remaining after Phase 1 disposition filtering, excluding any
 
 | Stale ratio | Action |
 |---|---|
-| 100% (all findings) | Advise re-running `/plugin-health-audit`; do not proceed |
+| 100% (all findings) | Advise re-running `/audit-plugin-health`; do not proceed |
 | ≥80% | Report ratio; offer (a) re-run audit or (b) proceed with heightened scrutiny; only proceed if user chooses (b) |
 | <80% | Proceed; mark stale findings `⚠ possibly stale` in the worklist |
 
@@ -336,11 +336,11 @@ records are collected.
 > (`grep -rh '"event_id": "<id>"' docs/health/dispositions-events/ | grep -q '"disposition": "declined"'`),
 > an **inverted** open-view absence check
 > (`if grep -q <id> docs/health/dispositions-open.md; then echo ERROR; exit 1; fi`),
-> and `closes_event_ids: []` with a note that `implement-health-plan` MUST NOT
+> and `closes_event_ids: []` with a note that `implement-plugin-health` MUST NOT
 > write `fixed` for these events (they are closed by `append_event`). The
 > **stale-object** skip below
 > (object no longer resolves) is the one exception — those stay user-decided via
-> `/record-health-dispositions`, not auto-declined.
+> `/record-plugin-dispositions`, not auto-declined.
 
 ### Dispatch
 
@@ -364,7 +364,7 @@ standard object-based U1–U3 rubber-duck. If a row's `object` no longer resolve
 to a live file (the skill or agent was renamed or removed since acceptance), the
 agent returns `skip`; record it in the `## Skipped` section and surface it to
 the user as a candidate stale-close. **Do not** auto-write a ledger row to close
-it — closing is the user's decision via `/record-health-dispositions`.
+it — closing is the user's decision via `/record-plugin-dispositions`.
 
 Sequential inline rubber-ducking is the fallback only when
 `superpowers:dispatching-parallel-agents` is genuinely unavailable.
@@ -420,13 +420,13 @@ Pass as context to writing-plans all items listed in
 
 - **Pre-empt the known correction patterns.** Before finalizing, consult
   `.claude/knowledge/correction-patterns.md` and author every task so no row applies
-  to it. `revise-health-plan` checks the same list — anything you author cleanly here is
+  to it. `revise-plugin-plan` checks the same list — anything you author cleanly here is
   one defect the reviewer does not have to send back. The recurring author-side defects
   this gate exists to prevent:
   - **Value-sensitive verification.** Every task's verification grep MUST fail on the
     pre-edit file — assert the new value with a fixed-string `grep -F`, and where the old
     value is known, assert its absence too. A whole-file presence grep that already matches
-    the untouched file is not acceptance evidence (`/implement-health-plan` would mark the
+    the untouched file is not acceptance evidence (`/implement-plugin-health` would mark the
     task verified even if the edit was skipped).
   - **Task-specific commit scopes.** Use `type(<edited-component>)` matching the edited
     skill/agent/directory name (e.g. `fix(al-dev-investigate)`, `chore(generated-agents)`),
@@ -440,12 +440,12 @@ Pass as context to writing-plans all items listed in
   a finding's scope to "write prerequisite documentation only" (the task body explicitly
   defers the behavior change to a future plan), the task must carry `closes_event_ids: []`
   with a note that the accepted event stays open for that future plan. Do not assign the
-  accepted `event_id` to a spec-only task — `implement-health-plan` would falsely mark it
+  accepted `event_id` to a spec-only task — `implement-plugin-health` would falsely mark it
   `fixed` even though the underlying behavior change has not occurred.
 
 - **Suppress your Execution Handoff.** Do not present the "Subagent-Driven / Inline" prompt
   or ask "Which approach?" — the health loop overrides those endings. After writing-plans
-  completes, this skill's Phase 5 routes execution to `/implement-health-plan` so the
+  completes, this skill's Phase 5 routes execution to `/implement-plugin-health` so the
   ledger entries are properly closed. Writing-plans' own endings bypass that ledger close-back.
 
 Plan saves to:
@@ -457,7 +457,7 @@ Plan saves to:
 
 `superpowers:writing-plans` ends with its own **Execution Handoff** offering
 "Subagent-Driven" or "Inline" execution. **Those endings do not apply in the
-health loop** — executing the plan through them skips `/implement-health-plan`
+health loop** — executing the plan through them skips `/implement-plugin-health`
 Phase 4, so the `closes_event_ids:` events are never written `fixed` and the loop
 never closes. Phase 4 already instructed `writing-plans` to suppress that
 handoff; this phase is the authoritative ending. If the "Which approach?"
@@ -468,7 +468,7 @@ steps below.
    If the count is 0, the survival caveat in Phase 4 was violated; fix the plan
    before handing off.
 
-2. **Commit-subject length check.** Verify all commit subjects are ≤72 characters (`revise-health-plan`
+2. **Commit-subject length check.** Verify all commit subjects are ≤72 characters (`revise-plugin-plan`
    catches violations too, but catching them here is cheaper):
 
    ```bash
@@ -487,25 +487,25 @@ steps below.
    handoff summary (e.g. "15 plan events + 1 grandfathered + 3 declined = 19
    total"). If any accepted event is in neither, the plan has a coverage hole
    (typically a refuted skip with no decline task — see Phase 3); fix it before
-   handing off. This mirrors `revise-health-plan` Phase 4 so the two skills stay
+   handing off. This mirrors `revise-plugin-plan` Phase 4 so the two skills stay
    in sync.
 
 4. **Write `.dev/health-loop-state.md`** (schema:
    `.claude/knowledge/health-loop-state-contract.md`):
 
-   - `stage_completed: plan-health-findings`
+   - `stage_completed: plan-plugin-findings`
    - `completed_at:` today's ISO date
-   - `next_command: /implement-health-plan --plan <plan-path>`
+   - `next_command: /implement-plugin-health --plan <plan-path>`
    - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions-open.md`
    - `fresh_session_recommended: true`
-   - `note:` run `/implement-health-plan` to execute AND close the ledger; do
+   - `note:` run `/implement-plugin-health` to execute AND close the ledger; do
      NOT use the writing-plans Subagent-Driven/Inline options — they skip
      ledger close-back.
 
 5. **Stop and hand off (do not auto-execute).** Tell the user: "Plan written to
    `<plan-path>` with `closes_event_ids:` for ledger close-back. This transition is
    context-heavy — start a **fresh session** and run
-   `/implement-health-plan --plan <plan-path>` to execute the plan and close the
+   `/implement-plugin-health --plan <plan-path>` to execute the plan and close the
    ledger. (Ignore the writing-plans Subagent-Driven/Inline prompt — it bypasses
    ledger close-back.) The pointer is saved in `.dev/health-loop-state.md`."
    Do not invoke `superpowers:subagent-driven-development` or

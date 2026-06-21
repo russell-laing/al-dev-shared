@@ -179,7 +179,7 @@ Convention doc:
 ```
 
 > **Caller contract:** `naming-convention-lens` has exactly one dispatcher
-> (`plugin-health-discover`) and one downstream consumer (`plugin-health-report`).
+> (`discover-plugin-health`) and one downstream consumer (`report-plugin-health`).
 > Changes to this lens's input contract or output format affect only those two
 > skills — no other callers exist in the tooling surface.
 
@@ -187,7 +187,7 @@ Convention doc:
 
 ## Background
 
-`/plugin-health-audit` Phase 2.1 historically passed all 10 context structures to
+`/audit-plugin-health` Phase 2.1 historically passed all 10 context structures to
 every design and quality lens. This created maintenance burden: callers that
 needed 2 fields received 8 inert ones. This file canonicalizes the minimum
 required context per lens class so dispatchers pass lean, correct prompts.
@@ -238,4 +238,4 @@ Steps:
    contract and the response format contract above to every prompt.
 5. Collect all outputs before synthesising findings.
 
-See `/plugin-health-discover` for the canonical multi-lens dispatch implementation.
+See `/discover-plugin-health` for the canonical multi-lens dispatch implementation.

@@ -1,4 +1,4 @@
-skill: revise-health-plan
+skill: revise-plugin-plan
 scenarios:
   - id: revise-from-consolidated-findings
     status: golden
@@ -21,20 +21,20 @@ scenarios:
       - ".dev/health-loop-state.md"
     notes: "Trigger emphasising the 'before execution' timing; confirms routing when the user frames it as a pre-implement reconciliation."
 
-  - id: no-trigger-plan-health-findings
+  - id: no-trigger-plan-plugin-findings
     status: golden
     user_prompt: "plan the accepted health findings from the latest dossier and create an implementation plan"
     expected_artifacts: []
-    notes: "Should route to plan-health-findings, not this skill. There is no existing plan + review pair here — the user wants a NEW plan built from a dossier."
+    notes: "Should route to plan-plugin-findings, not this skill. There is no existing plan + review pair here — the user wants a NEW plan built from a dossier."
 
-  - id: no-trigger-implement-health-plan
+  - id: no-trigger-implement-plugin-health
     status: golden
     user_prompt: "implement the health plan and close the disposition ledger"
     expected_artifacts: []
-    notes: "Should route to implement-health-plan, not this skill. This skill revises a plan; it does not execute one or write fixed rows."
+    notes: "Should route to implement-plugin-health, not this skill. This skill revises a plan; it does not execute one or write fixed rows."
 
   - id: no-trigger-record-dispositions
     status: golden
     user_prompt: "record dispositions for the findings in the latest dossier"
     expected_artifacts: []
-    notes: "Should route to record-health-dispositions, not this skill. Dispositioning raw dossier findings (no plan or review doc involved) is the record step, not a plan revision."
+    notes: "Should route to record-plugin-dispositions, not this skill. Dispositioning raw dossier findings (no plan or review doc involved) is the record step, not a plan revision."

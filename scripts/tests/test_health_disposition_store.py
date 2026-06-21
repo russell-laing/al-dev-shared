@@ -31,7 +31,7 @@ class MaterializeViewTest(unittest.TestCase):
                 "id": "#001",
                 "surface": "tooling",
                 "dimension": "quality",
-                "object": "record-health-dispositions",
+                "object": "record-plugin-dispositions",
                 "finding": "Schema count mismatch",
                 "disposition": "accepted",
                 "date": "2026-06-11",
@@ -41,7 +41,7 @@ class MaterializeViewTest(unittest.TestCase):
                 "id": "#002",
                 "surface": "tooling",
                 "dimension": "quality",
-                "object": "record-health-dispositions",
+                "object": "record-plugin-dispositions",
                 "finding": "Schema count mismatch",
                 "disposition": "fixed",
                 "date": "2026-06-12",
@@ -59,7 +59,7 @@ class MaterializeViewTest(unittest.TestCase):
         row = {
             "surface": "tooling",
             "dimension": "quality",
-            "object": "record-health-dispositions",
+            "object": "record-plugin-dispositions",
             "finding": "Schema count mismatch",
         }
 
@@ -76,7 +76,7 @@ class ParseLedgerTest(unittest.TestCase):
             ledger.write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
                 "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
-                "| #595 | tooling | quality | record-health-dispositions"
+                "| #595 | tooling | quality | record-plugin-dispositions"
                 " | Schema count mismatch | accepted | 2026-06-12 | queued |\n",
                 encoding="utf-8",
             )
@@ -96,7 +96,7 @@ class AppendRowTest(unittest.TestCase):
                 "id": "#596",
                 "surface": "tooling",
                 "dimension": "quality",
-                "object": "record-health-dispositions",
+                "object": "record-plugin-dispositions",
                 "finding": "Terminology drift",
                 "disposition": "accepted",
                 "date": "2026-06-12",
@@ -108,7 +108,7 @@ class AppendRowTest(unittest.TestCase):
             text = shard.read_text(encoding="utf-8")
             self.assertEqual(shard.name, "2026-06.md")
             self.assertIn(
-                "| #596 | tooling | quality | record-health-dispositions |", text
+                "| #596 | tooling | quality | record-plugin-dispositions |", text
             )
 
 
@@ -121,7 +121,7 @@ class RenderCurrentViewTest(unittest.TestCase):
                     "id": "#595",
                     "surface": "tooling",
                     "dimension": "quality",
-                    "object": "record-health-dispositions",
+                    "object": "record-plugin-dispositions",
                     "finding": "Schema count mismatch",
                     "disposition": "accepted",
                     "date": "2026-06-12",
@@ -135,7 +135,7 @@ class RenderCurrentViewTest(unittest.TestCase):
             self.assertTrue(text.startswith("# Health Finding Dispositions"))
             self.assertIn("generated current-state view", text)
             self.assertIn(
-                "| #595 | tooling | quality | record-health-dispositions |", text
+                "| #595 | tooling | quality | record-plugin-dispositions |", text
             )
 
 
@@ -216,9 +216,9 @@ class MigrateStoreTest(unittest.TestCase):
                 "# Health Finding Dispositions\n\n"
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
                 "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
-                "| #595 | tooling | quality | record-health-dispositions"
+                "| #595 | tooling | quality | record-plugin-dispositions"
                 " | Schema count mismatch | accepted | 2026-06-12 | queued |\n"
-                "| #596 | tooling | quality | record-health-dispositions"
+                "| #596 | tooling | quality | record-plugin-dispositions"
                 " | Schema count mismatch | fixed | 2026-06-13 | abc1234 closes row 1 |\n",
                 encoding="utf-8",
             )

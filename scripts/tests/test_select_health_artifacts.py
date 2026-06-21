@@ -13,9 +13,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
 HEALTH_SKILLS = [
-    ".claude/skills/plugin-health-report/SKILL.md",
-    ".claude/skills/plan-health-findings/SKILL.md",
-    ".claude/skills/record-health-dispositions/SKILL.md",
+    ".claude/skills/report-plugin-health/SKILL.md",
+    ".claude/skills/plan-plugin-findings/SKILL.md",
+    ".claude/skills/record-plugin-dispositions/SKILL.md",
 ]
 
 
@@ -161,15 +161,15 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
                 self.assertNotRegex(text, r"ls -t [^\n]*docs/health")
 
     def test_report_uses_previous_same_surface_findings_for_recurrence(self) -> None:
-        report = self.read(".claude/skills/plugin-health-report/SKILL.md")
+        report = self.read(".claude/skills/report-plugin-health/SKILL.md")
 
         self.assertIn("--kind findings", report)
         self.assertIn("--offset 1", report)
 
     def test_multi_surface_consumers_select_plugin_and_tooling_explicitly(self) -> None:
         for path in [
-            ".claude/skills/plugin-health-report/SKILL.md",
-            ".claude/skills/plan-health-findings/SKILL.md",
+            ".claude/skills/report-plugin-health/SKILL.md",
+            ".claude/skills/plan-plugin-findings/SKILL.md",
         ]:
             with self.subTest(path=path):
                 text = self.read(path)
@@ -192,12 +192,12 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
             / "analyze-architectural-design"
             / "SKILL.md"
         )
-        report = self.read(".claude/skills/plugin-health-report/SKILL.md")
+        report = self.read(".claude/skills/report-plugin-health/SKILL.md")
 
         self.assertFalse(active_path.exists())
         self.assertTrue(archived_path.is_file())
         self.assertNotIn(
-            "next: [analyze-architectural-design, record-health-dispositions]",
+            "next: [analyze-architectural-design, record-plugin-dispositions]",
             report,
         )
 

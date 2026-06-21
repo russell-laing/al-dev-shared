@@ -1,6 +1,6 @@
-skill: ingest-friction-log
+skill: ingest-plugin-friction
 scenarios:
-  - id: ingest-friction-log-primary
+  - id: ingest-plugin-friction-primary
     status: golden
     user_prompt: "ingest the friction logs"
     expected_artifacts:
@@ -21,14 +21,14 @@ scenarios:
       - "docs/health/friction-ingest-log.md"
     notes: "Trigger phrase referencing loop integration."
 
-  - id: no-trigger-plugin-health-audit
+  - id: no-trigger-audit-plugin-health
     status: golden
     user_prompt: "run a plugin health audit"
     expected_artifacts: []
-    notes: "Should route to plugin-health-audit, not this skill. This skill ingests friction logs; it does not dispatch lenses."
+    notes: "Should route to audit-plugin-health, not this skill. This skill ingests friction logs; it does not dispatch lenses."
 
   - id: no-trigger-record-dispositions
     status: golden
     user_prompt: "record dispositions for the latest dossier"
     expected_artifacts: []
-    notes: "Should route to record-health-dispositions. Ingestion is upstream of dispositioning."
+    notes: "Should route to record-plugin-dispositions. Ingestion is upstream of dispositioning."

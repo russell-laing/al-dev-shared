@@ -9,9 +9,9 @@ disk, not only in conversation context.
 
 ## Loop order
 
-`/plugin-health-audit` → `/plugin-health-discover` → [fresh session] →
-`/plugin-health-report` → dossier → `/record-health-dispositions` →
-`/plan-health-findings` → plan → `/implement-health-plan` → ledger closed
+`/audit-plugin-health` → `/discover-plugin-health` → [fresh session] →
+`/report-plugin-health` → dossier → `/record-plugin-dispositions` →
+`/plan-plugin-findings` → plan → `/implement-plugin-health` → ledger closed
 
 ## File location
 
@@ -27,7 +27,7 @@ breadcrumb write is **committed**. Therefore:
 
 - A loop skill MUST write the breadcrumb **before** creating its final commit
   and include it in that commit. For the loop-closing skill
-  (`/implement-health-plan`), that is the ledger-close commit.
+  (`/implement-plugin-health`), that is the ledger-close commit.
 - A breadcrumb write left uncommitted after the final commit is
   local-working-tree-only: it is lost if the worktree is removed, and the
   committed copy reflects the prior loop step. Treat that as a defect, not a
@@ -58,12 +58,12 @@ the table below).
 
 | Skill | Reads | Writes `next_command` |
 | --- | --- | --- |
-| `/ingest-friction-log` | loop breadcrumb (warn if later step in flight) | `/plugin-health-report` |
-| `/plugin-health-discover` | breadcrumb (written by discover on completion) | `/plugin-health-report --findings <path>` |
-| `/plugin-health-report` | breadcrumb (warn if a loop is already in flight) | `/record-health-dispositions` |
-| `/record-health-dispositions` | breadcrumb | `/plan-health-findings` |
-| `/plan-health-findings` | breadcrumb | `/implement-health-plan --plan <path>` |
-| `/implement-health-plan` | breadcrumb | `none` (loop closed) |
+| `/ingest-plugin-friction` | loop breadcrumb (warn if later step in flight) | `/report-plugin-health` |
+| `/discover-plugin-health` | breadcrumb (written by discover on completion) | `/report-plugin-health --findings <path>` |
+| `/report-plugin-health` | breadcrumb (warn if a loop is already in flight) | `/record-plugin-dispositions` |
+| `/record-plugin-dispositions` | breadcrumb | `/plan-plugin-findings` |
+| `/plan-plugin-findings` | breadcrumb | `/implement-plugin-health --plan <path>` |
+| `/implement-plugin-health` | breadcrumb | `none` (loop closed) |
 
 ## Phase-0 read rule (every loop skill)
 
@@ -84,21 +84,21 @@ On successful completion, overwrite `.dev/health-loop-state.md` with the schema
 above, filling `next_command` per the lifecycle table. Set
 `fresh_session_recommended: true` at heavy transitions (any handoff into a skill
 that dispatches sub-agents or re-reads many full files — notably
-`plugin-health-discover → plugin-health-report` and
-`plan-health-findings → implement-health-plan`).
+`discover-plugin-health → report-plugin-health` and
+`plan-plugin-findings → implement-plugin-health`).
 
-## writing-plans override rule (binding on plan-health-findings)
+## writing-plans override rule (binding on plan-plugin-findings)
 
-`/plan-health-findings` delegates plan authoring to
+`/plan-plugin-findings` delegates plan authoring to
 `superpowers:writing-plans`. That sub-skill's **Execution Handoff** section
 offers its own two endings ("Subagent-Driven / Inline"). Inside the health
 loop those endings are **wrong**: executing the plan through them skips
-`/implement-health-plan` Phase 3, so the `closes_event_ids:` events are never
-written `fixed` and the loop silently never closes. `/plan-health-findings`
+`/implement-plugin-health` Phase 3, so the `closes_event_ids:` events are never
+written `fixed` and the loop silently never closes. `/plan-plugin-findings`
 MUST therefore (a) instruct `writing-plans`, in the context it passes, **not**
 to present its Execution Handoff, and (b) as a backstop, if that prompt appears
 anyway, supersede it rather than answer it — routing the user to
-`/implement-health-plan` via its own closing phase.
+`/implement-plugin-health` via its own closing phase.
 
 ## Stop-and-handoff rule
 

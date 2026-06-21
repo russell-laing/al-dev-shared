@@ -1,7 +1,7 @@
 # Rubber-Duck Orchestration
 
 How to orchestrate the rubber-duck verification pass across many findings.
-Referenced by `/plan-health-findings` Phase 2. The per-check registry (Universal
+Referenced by `/plan-plugin-findings` Phase 2. The per-check registry (Universal
 U1–U3 and type-specific checks) lives in
 `../../profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`; this doc
 owns the run flow only.
@@ -31,12 +31,12 @@ Sequential inline rubber-ducking is the fallback **only** when
 
 ## Evidence Mode
 
-The `evidence` mode is dispatched by `/plugin-health-report` Phase 2 to verify
+The `evidence` mode is dispatched by `/report-plugin-health` Phase 2 to verify
 that each finding's cited `file:line` snippet still exists at the named location.
 It is distinct from the rubber-duck mode above — different field set, different
 output contract, different downstream consumer.
 
-**Caller:** `plugin-health-report/SKILL.md` §1c evidence verification
+**Caller:** `report-plugin-health/SKILL.md` §1c evidence verification
 **Reference:** `.claude/knowledge/report-input-gates.md` §1c
 
 ### Dispatch fields
@@ -54,7 +54,7 @@ rule as rubber-duck mode).
 ### Output contract
 
 Each agent returns a `verified | dropped: <reason>` line per finding. The parent
-(`plugin-health-report`) collects this:
+(`report-plugin-health`) collects this:
 
 - `verified` → finding enters the dossier normally.
 - `dropped: <reason>` → exclude from all counts; list under "Dropped (unverified)".
