@@ -298,7 +298,9 @@ See `.claude/knowledge/health-findings-staleness-gate.md` for full tier-handling
 
 For **every** suggestion, dispatch a `verify-health-finding` verification agent
 and collect the returned record. Do not write any plan content until all
-records are collected.
+records are collected. If any dispatched agent fails or returns no usable
+record, stop Phase 3 and do not proceed to Phase 4 — report which findings are
+missing records and resolve them (re-dispatch or escalate) before continuing.
 
 > **The rubber duck is a blocker, not a suggestion.** A `skip` verdict from an
 > agent excludes that suggestion from Phase 4 entirely. Record skipped
