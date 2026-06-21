@@ -90,7 +90,8 @@ already_inline_candidates: [single-use agents that could be inlined]
 
 Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 `design-skill-lens-near-duplicates`, `design-skill-lens-handoff-gaps`,
-`design-skill-lens-preplanning`, `design-skill-lens-surface-placement`
+`design-skill-lens-preplanning`, `design-skill-lens-surface-placement`,
+`design-skill-lens-maintainer-handoff`
 
 ### Required context fields per lens (skill lenses)
 
@@ -102,24 +103,28 @@ Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 | `design-skill-lens-handoff-gaps` | `handoff_chains` |
 | `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
 | `design-skill-lens-surface-placement` | `no_agent_skills` |
+| `design-skill-lens-maintainer-handoff` | _(none — traces maintainer chains from the skill bodies in `file_list`)_ |
 
 ### Effective signal for tooling skills
 
-The design-skill lens count overstates *effective* design coverage for
-maintainer (tooling-surface) skills. Several lenses are formally dispatched but
-carry reduced semantic signal there:
+The cross-surface design-skill lens count overstates *effective* design coverage
+for maintainer (tooling-surface) skills. Several cross-surface lenses are
+formally dispatched but carry reduced semantic signal there; the
+tooling-specific `design-skill-lens-maintainer-handoff` is added to compensate:
 
 | Lens | Tooling-skill signal |
 |------|----------------------|
+| `design-skill-lens-maintainer-handoff` | Full — tooling-specific; traces `docs/health/` maintainer chains directly from skill bodies |
 | `design-skill-lens-complexity` | Full — phase counts and no-agent status are surface-neutral |
-| `design-skill-lens-handoff-gaps` | Full — tooling skills create and consume handoff artifacts |
 | `design-skill-lens-shared-backbone` | Partial — only when the skill spawns agents |
 | `design-skill-lens-near-duplicates` | Partial — phase-shape signal transfers, agent-usage signal does not |
+| `design-skill-lens-handoff-gaps` | Weak — its `handoff_chains` context is built from the distributed skills map, which excludes maintainer chains |
 | `design-skill-lens-preplanning` | Weak — anchored in workflow-diagram placement, which maintainer skills rarely have |
 | `design-skill-lens-surface-placement` | Excluded by dispatch for the tooling surface |
 
-Treat the formal design-lens count for tooling skills as an upper bound, not the
-effective coverage.
+The tooling surface now has a dedicated design lens (`maintainer-handoff`) in
+place of the excluded `surface-placement`, mirroring how the plugin surface uses
+`surface-placement` in place of the excluded `maintainer-handoff`.
 
 ### Dispatch template (skill lenses)
 

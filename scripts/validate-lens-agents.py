@@ -66,6 +66,7 @@ EXPECTED_AGENTS = [
     "design-skill-lens-handoff-gaps",
     "design-skill-lens-preplanning",
     "design-skill-lens-surface-placement",
+    "design-skill-lens-maintainer-handoff",
     "naming-convention-lens",
 ]
 
@@ -90,8 +91,8 @@ for name in EXPECTED_AGENTS:
 
     content = open(path).read()
 
-    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), complexity (multi-file phase-count ranking + Atomise/Absorb synthesis), near-duplicates (multi-file comparative synthesis with multi-criterion judgement)
-    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit", "design-skill-lens-complexity", "design-skill-lens-near-duplicates"}
+    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), complexity (multi-file phase-count ranking + Atomise/Absorb synthesis), near-duplicates (multi-file comparative synthesis with multi-criterion judgement), maintainer-handoff (multi-file maintainer chain tracing from skill bodies)
+    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit", "design-skill-lens-complexity", "design-skill-lens-near-duplicates", "design-skill-lens-maintainer-handoff"}
     if name in SONNET_AGENTS:
         if "model: sonnet" not in content:
             failures.append(_format_failure(

@@ -123,14 +123,20 @@ which keeps the 20-lens fan-out small and avoids flooding this session's context
 
 Execute the following state machine in order:
 
-1. **Build `ALL_LENSES` (surface-scoped):** Start with the full lens set.
-   For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
-   targets distributed skills and produces only non-actionable Move false
-   positives against tooling-surface files. For surface `plugin`, use all
-   lenses unchanged. Beyond this formal exclusion, several included design-skill
-   lenses carry reduced semantic signal for tooling skills — see the
-   effective-coverage note in
-   `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
+1. **Build `ALL_LENSES` (surface-scoped):** Start with the full lens set, then
+   apply the two mirror-image surface bindings:
+   - For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
+     targets distributed skills and produces only non-actionable Move false
+     positives against tooling-surface files.
+   - For surface `plugin`, exclude `design-skill-lens-maintainer-handoff` — it
+     traces `docs/health/` maintainer chains that exist only on the tooling
+     surface, so it produces no actionable findings against distributed skills.
+
+   Net effect: `surface-placement` runs for `plugin` only, and
+   `maintainer-handoff` runs for `tooling` only; every other lens runs for both.
+   Beyond these formal bindings, several remaining design-skill lenses carry
+   reduced semantic signal for tooling skills — see the effective-coverage note
+   in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
