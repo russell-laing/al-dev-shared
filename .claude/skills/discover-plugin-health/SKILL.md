@@ -150,11 +150,15 @@ Execute the following state machine in order:
        file containing only `## Raw lens output: _No lenses ran this session._`
        with status `INCOMPLETE`.
 
-   - Otherwise: dispatch all remaining lenses simultaneously (parallel, isolated
-     subagents). Use `superpowers:dispatching-parallel-agents` when 3+ lenses
-     remain. Keep each dispatch prompt small: point the lens at the Phase 2 run
-     manifest (`.dev/<today>-discover-plugin-health-context.md`) for its file
-     list and required context fields (per the per-lens table in
+   - Otherwise: first confirm the Phase 2 run manifest exists
+     (`ls -la .dev/<today>-discover-plugin-health-context.md`); if it is absent,
+     halt with an error naming the missing manifest instead of dispatching
+     lenses against a nonexistent path. Then dispatch all remaining lenses
+     simultaneously (parallel, isolated subagents). Use
+     `superpowers:dispatching-parallel-agents` when 3+ lenses remain. Keep each
+     dispatch prompt small: point the lens at the Phase 2 run manifest
+     (`.dev/<today>-discover-plugin-health-context.md`) for its file list and
+     required context fields (per the per-lens table in
      `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
      inlining the file list into the prompt. Append the **Finding evidence
      contract** and the **Response format contract** verbatim from
