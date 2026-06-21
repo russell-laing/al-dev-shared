@@ -199,3 +199,272 @@ coverage for shared-backbone and duplicate-shape analysis, little meaningful
 coverage from preplanning placement, and no surface-placement coverage by
 design. The matrix is formally accurate, but it overstates effective
 tooling-skill design coverage unless those semantic gaps are considered.
+
+## 4. Recommendations
+
+> Read-only report - these are proposals, not applied changes. Feed accepted
+> items into `/plan-plugin-findings` or a follow-up plan.
+
+### R1 - Sync or document the validator registry gap (priority: High)
+
+- **Change:** Add `design-skill-lens-surface-placement` to `EXPECTED_AGENTS` at `scripts/validate-lens-agents.py:47`, or document why the validator intentionally excludes a dispatched active lens.
+- **Why:** Section 1 found 22 active lens files, but the validator registry has 21 entries and omits a lens that `discover-plugin-health` dispatches for plugin surface.
+- **Tradeoff:** Adding it tightens validation but may require updating the validator's expected success message and any tests that assume 21 registered lenses.
+- **Risk if unchanged:** The validator can continue passing while one active dispatched lens is outside registry enforcement.
+
+### R2 - Keep the name-fit versus naming split explicit (priority: Low)
+
+- **Change:** Add a short boundary note near `docs/al-dev-naming-convention.md:23` or the name-fit lens descriptions that semantic name/body drift belongs to name-fit while pattern conformance belongs to naming.
+- **Why:** Section 2.1 found the split sound, with name-fit checking semantic behavior and `naming-convention-lens` checking documented naming rules.
+- **Tradeoff:** Extra documentation adds a small amount of maintenance overhead when the naming policy changes.
+- **Risk if unchanged:** Future cleanup work may incorrectly merge semantic name-fit checks into the naming-convention lens.
+
+### R3 - Keep structure lenses under quality and document the boundary (priority: Low)
+
+- **Change:** Add a one-sentence boundary note at `.claude/agents/quality-agent-lens-structure.md:31` and `.claude/agents/quality-skill-lens-structure.md:31` that structural conventions are file-quality checks, not design placement checks.
+- **Why:** Section 2.2 found the structure lenses correctly placed under quality because they check frontmatter, tool canonicality, output paths, and header conventions.
+- **Tradeoff:** The lens prompts become slightly longer for a distinction that is already inferable from their checklists.
+- **Risk if unchanged:** Future audits may relabel structure as design based on wording instead of actual checks.
+
+### R4 - Decide whether the naming singleton should split if policy expands (priority: Med)
+
+- **Change:** Add a decision gate near `docs/al-dev-naming-convention.md:23` requiring object-specific naming lenses if future policy adds materially different agent and skill naming rules.
+- **Why:** Sections 2.3 and 3.1 found the singleton acceptable now but structurally asymmetric if naming policy grows beyond one cross-object rule set.
+- **Tradeoff:** A decision gate avoids premature lens proliferation but leaves current coverage centralized in one lens.
+- **Risk if unchanged:** Expanded naming rules could accumulate in a singleton lens with no object-specific redundancy.
+
+### R5 - Add or scope a tooling-skill design lens (priority: Med)
+
+- **Change:** Add a follow-up tooling-skill-specific design lens, or narrow the semantic scope documented around `.claude/skills/discover-plugin-health/SKILL.md:126` and `profile-al-dev-shared/knowledge/lens-invocation-patterns.md:99`.
+- **Why:** Section 3.3 found tooling skills have no surface-placement coverage by design, weak preplanning signal, and only partial shared-backbone or near-duplicate signal.
+- **Tradeoff:** A new lens improves tooling-skill coverage but increases dispatch fan-out and review volume.
+- **Risk if unchanged:** The matrix will continue to overstate effective tooling-skill design coverage.
+
+## Appendix A - Evidence Commands
+
+### Inventory and Counts
+
+```bash
+find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archive/*' | sort
+```
+
+Value produced: 22 active non-archived lens agent paths, matching the Section 1 inventory list.
+
+```bash
+find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archive/*' | wc -l
+```
+
+Value produced: `22`.
+
+```bash
+find .claude/agents -maxdepth 1 -name 'design-agent-lens-*.md' | wc -l
+```
+
+Value produced: `5`.
+
+```bash
+find .claude/agents -maxdepth 1 -name 'design-skill-lens-*.md' | wc -l
+```
+
+Value produced: `6`.
+
+```bash
+find .claude/agents -maxdepth 1 -name 'quality-agent-lens-*.md' | wc -l
+```
+
+Value produced: `5`.
+
+```bash
+find .claude/agents -maxdepth 1 -name 'quality-skill-lens-*.md' | wc -l
+```
+
+Value produced: `5`.
+
+```bash
+find profile-al-dev-shared/agents -maxdepth 1 -name '*.md' | wc -l
+```
+
+Value produced: `24`.
+
+```bash
+find profile-al-dev-shared/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' | wc -l
+```
+
+Value produced: `24`.
+
+```bash
+find .claude/agents -maxdepth 1 -name '*.md' | wc -l
+```
+
+Value produced: `29`.
+
+```bash
+find .claude/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' -exec grep -l '^workflow:' {} \; | wc -l
+```
+
+Value produced: `16`.
+
+### Registry Checks
+
+```bash
+grep -nE '"(design|quality)-.*-lens-|"naming-convention-lens"' scripts/validate-lens-agents.py
+```
+
+Value produced: 23 matching lines because the broad grep includes `STRUCTURE_LENS` and `SONNET_AGENTS` references as well as the registry block.
+
+```bash
+grep -cE '"(design|quality)-.*-lens-|"naming-convention-lens"' scripts/validate-lens-agents.py
+```
+
+Value produced: `23`.
+
+```bash
+python3 -c "import ast, pathlib; tree=ast.parse(pathlib.Path('scripts/validate-lens-agents.py').read_text()); vals=[]; [vals := ast.literal_eval(node.value) for node in tree.body if isinstance(node, ast.Assign) and any(getattr(t, 'id', None)=='EXPECTED_AGENTS' for t in node.targets)]; print(len(vals)); print('design-skill-lens-surface-placement' in vals)"
+```
+
+Value produced:
+
+```text
+21
+False
+```
+
+```bash
+grep -n "design-skill-lens-surface-placement" scripts/validate-lens-agents.py
+```
+
+Value produced: no output, exit code 1.
+
+### Source Spot Checks
+
+```bash
+nl -ba scripts/validate-lens-agents.py | sed -n '47,70p'
+```
+
+Value produced: `EXPECTED_AGENTS` spans lines 47-69 and lists 21 names.
+
+```bash
+nl -ba docs/al-dev-naming-convention.md | sed -n '11,28p'
+```
+
+Value produced: lens naming pattern plus the `naming-convention-lens` exception at lines 23-25.
+
+```bash
+nl -ba .claude/agents/quality-agent-lens-structure.md | sed -n '1,45p'
+```
+
+Value produced: frontmatter and structural convention checks, including filename, frontmatter, tool, Inputs/Outputs, and heading checks.
+
+```bash
+nl -ba .claude/agents/quality-skill-lens-name-fit.md | sed -n '1,48p'
+```
+
+Value produced: the skill name-fit lens checks semantic name, description, body, and trigger alignment.
+
+```bash
+nl -ba .claude/agents/naming-convention-lens.md | sed -n '1,58p'
+```
+
+Value produced: the naming-convention lens reads the convention doc and enforces the single lens-agent exception.
+
+```bash
+nl -ba .claude/skills/discover-plugin-health/SKILL.md | sed -n '120,135p'
+```
+
+Value produced: dispatch excludes `design-skill-lens-surface-placement` only for tooling surface at lines 126-130.
+
+```bash
+nl -ba profile-al-dev-shared/knowledge/lens-invocation-patterns.md | sed -n '96,105p'
+```
+
+Value produced: design-skill required context fields for shared-backbone, complexity, near-duplicates, handoff-gaps, preplanning, and surface-placement.
+
+### Final Self-Review Commands
+
+```bash
+REPO=$(git rev-parse --show-toplevel)
+```
+
+Value produced: `/Users/russelllaing/al-dev-shared/.worktrees/lens-dimension-suitability-report`.
+
+```bash
+RPT="$REPO/.dev/2026-06-21-lens-dimension-suitability-report.md"
+```
+
+Value produced: report path variable set.
+
+```bash
+grep -nE 'TO''DO|TB''D|Y{4}-MM-DD|\[d''ate\]|fi''ll in|<''[a-z ]+>' "$RPT" && echo "FAIL: placeholders" || echo "OK: no placeholders"
+```
+
+Value produced after final run: `OK: no placeholders`.
+
+```bash
+grep -cE '^### R[0-9]+' "$RPT"
+```
+
+Value produced after final run: `5`.
+
+```bash
+grep -c '\*\*Change:\*\*' "$RPT"
+```
+
+Value produced after final run: `5`.
+
+```bash
+grep -c '\*\*Why:\*\*' "$RPT"
+```
+
+Value produced after final run: `5`.
+
+```bash
+grep -c '\*\*Tradeoff:\*\*' "$RPT"
+```
+
+Value produced after final run: `5`.
+
+```bash
+grep -c '\*\*Risk if unchanged:\*\*' "$RPT"
+```
+
+Value produced after final run: `5`.
+
+```bash
+python3 "$REPO/scripts/validate-lens-agents.py" 2>&1 | tail -1
+```
+
+Value produced after final run: `PASS - 21 agents valid, 1 dispatch skill(s) checked.`
+
+```bash
+grep -n 'surface-placement' "$REPO/scripts/validate-lens-agents.py" || echo "still ABSENT - recommendation R-registry stands"
+```
+
+Value produced after final run: `still ABSENT - recommendation R-registry stands`.
+
+```bash
+markdownlint "$RPT"
+```
+
+Value produced after final run: no output, exit code 0.
+
+```bash
+ls -la "$RPT"
+```
+
+Value produced after final run: file present at `/Users/russelllaing/al-dev-shared/.worktrees/lens-dimension-suitability-report/.dev/2026-06-21-lens-dimension-suitability-report.md`.
+
+```bash
+wc -l "$RPT"
+```
+
+Value produced after final run: `470` lines.
+
+```bash
+git -C "$REPO" status --short .dev/2026-06-21-lens-dimension-suitability-report.md
+```
+
+Value produced after final run:
+
+```text
+ M .dev/2026-06-21-lens-dimension-suitability-report.md
+```
