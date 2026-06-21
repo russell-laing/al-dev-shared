@@ -367,39 +367,39 @@ FOCUSED_DETAIL_CLASSDEFS = (
 
 
 MAP_SYNC_REQUIRED_SKILLS = {
-    "sync-documentation-maps",
-    "sync-documentation-maps-collect",
-    "sync-documentation-maps-apply",
-    "sync-documentation-maps-write",
+    "sync-map-documentation",
+    "sync-map-documentation-collect",
+    "sync-map-documentation-apply",
+    "sync-map-documentation-write",
 }
 
 MAP_SYNC_REQUIRED_INPUTS = {
-    "sync-documentation-maps": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
-    "sync-documentation-maps-collect": (
-        ".dev/sync-documentation-maps-checkpoint.json",
-        ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
+    "sync-map-documentation": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-map-documentation-collect": (
+        ".dev/sync-map-documentation-checkpoint.json",
+        ".dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json",
     ),
-    "sync-documentation-maps-apply": (
-        ".dev/sync-documentation-maps-checkpoint.json",
-        ".dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md",
+    "sync-map-documentation-apply": (
+        ".dev/sync-map-documentation-checkpoint.json",
+        ".dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md",
     ),
-    "sync-documentation-maps-write": (
-        ".dev/sync-documentation-maps-checkpoint.json",
+    "sync-map-documentation-write": (
+        ".dev/sync-map-documentation-checkpoint.json",
         "docs/al-dev-skills-map.md",
         "docs/al-dev-agent-map.md",
     ),
 }
 
 MAP_SYNC_REQUIRED_OUTPUTS = {
-    "sync-documentation-maps": (
-        ".dev/sync-documentation-maps-checkpoint.json",
-        ".dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json",
+    "sync-map-documentation": (
+        ".dev/sync-map-documentation-checkpoint.json",
+        ".dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json",
     ),
-    "sync-documentation-maps-collect": (
-        ".dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md",
+    "sync-map-documentation-collect": (
+        ".dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md",
     ),
-    "sync-documentation-maps-apply": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
-    "sync-documentation-maps-write": (
+    "sync-map-documentation-apply": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-map-documentation-write": (
         "docs/al-dev-workflow-diagrams.md",
         "docs/al-dev-plugin-graph.md",
         "docs/maintainer-tooling.md",
@@ -408,9 +408,9 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
 }
 
 MAP_SYNC_REQUIRED_NEXT = {
-    "sync-documentation-maps": ("sync-documentation-maps-collect",),
-    "sync-documentation-maps-collect": ("sync-documentation-maps-apply",),
-    "sync-documentation-maps-apply": ("sync-documentation-maps-write",),
+    "sync-map-documentation": ("sync-map-documentation-collect",),
+    "sync-map-documentation-collect": ("sync-map-documentation-apply",),
+    "sync-map-documentation-apply": ("sync-map-documentation-write",),
 }
 
 DISCOVER_REQUIRED_SKILLS = {
@@ -513,8 +513,8 @@ def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
     """Compact landing-page overview of the five-stage maintenance journey."""
     names = {contract.skill for contract in contracts}
     required = {
-        "sync-documentation-maps",
-        "sync-documentation-maps-write",
+        "sync-map-documentation",
+        "sync-map-documentation-write",
         "plugin-health-audit",
         "plugin-health-discover",
         "ingest-friction-log",
@@ -611,10 +611,10 @@ def render_map_sync_stage_detail(
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
         "",
-        '    skill_sync_documentation_maps["/sync-documentation-maps"]',
-        '    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]',
-        '    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]',
-        '    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]',
+        '    skill_sync_documentation_maps["/sync-map-documentation"]',
+        '    skill_sync_documentation_maps_collect["/sync-map-documentation-collect"]',
+        '    skill_sync_documentation_maps_apply["/sync-map-documentation-apply"]',
+        '    skill_sync_documentation_maps_write["/sync-map-documentation-write"]',
         '    art_generated["derived docs + projections"]',
         "",
         '    skill_sync_documentation_maps -- "checkpoint + audit results" --> skill_sync_documentation_maps_collect',
@@ -953,10 +953,10 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             [
                 "### Primary path",
                 "",
-                "1. " + command("sync-documentation-maps"),
-                "2. " + command("sync-documentation-maps-collect"),
-                "3. " + command("sync-documentation-maps-apply"),
-                "4. " + command("sync-documentation-maps-write"),
+                "1. " + command("sync-map-documentation"),
+                "2. " + command("sync-map-documentation-collect"),
+                "3. " + command("sync-map-documentation-apply"),
+                "4. " + command("sync-map-documentation-write"),
             ]
         )
     if stage == "discover" and DISCOVER_REQUIRED_SKILLS <= set(by_name):
@@ -1075,11 +1075,11 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Canonical inventory maps audited and updated by the stage.",
         ),
         (
-            ".dev/sync-documentation-maps-checkpoint.json",
+            ".dev/sync-map-documentation-checkpoint.json",
             "Records the active run, team identifiers, and current async phase.",
         ),
         (
-            ".dev/sync-documentation-maps-runs/RUN_ID/",
+            ".dev/sync-map-documentation-runs/RUN_ID/",
             "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
         ),
         (

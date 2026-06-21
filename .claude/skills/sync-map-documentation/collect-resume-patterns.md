@@ -1,19 +1,19 @@
 # Collect Resume Patterns
 
 Reference for the Resume / Restart / Cancel decision gate in
-`/sync-documentation-maps-collect` Phase 1.
+`/sync-map-documentation-collect` Phase 1.
 
 ## Status-Keyed Decision Gate
 
 The checkpoint file at
-`.dev/sync-documentation-maps-checkpoint.json` contains a `status` field that
+`.dev/sync-map-documentation-checkpoint.json` contains a `status` field that
 controls whether the collect step runs fresh or enters the resume gate.
 
 | Checkpoint `status` | Action |
 | --- | --- |
 | unset or `"audit"` | Proceed normally with fresh Phase 1 |
 | `"dispatched"` / `"complete"` / `"skipped"` | USER\_GATE: Resume / Restart / Cancel (see below) |
-| file absent | Stop — advise running `/sync-documentation-maps` first |
+| file absent | Stop — advise running `/sync-map-documentation` first |
 
 There is no `phase: collect` field. The gate keys solely on `status`.
 
@@ -41,7 +41,7 @@ Discard the prior update fields and re-run this collect step from a clean
 state. **Do not clear `run_id` or `result_dir` from the checkpoint** — removing
 those fields would break the downstream `-apply` and `-write` steps which need
 them to locate artifacts. Restart does **not** re-dispatch the audit agents;
-re-running the audits is `/sync-documentation-maps`'s job, not this skill's.
+re-running the audits is `/sync-map-documentation`'s job, not this skill's.
 
 ### Cancel
 

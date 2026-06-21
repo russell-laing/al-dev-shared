@@ -1,14 +1,14 @@
 # Sync Documentation Maps — Edit Cases
 
 Reference document for discrepancy-fix logic used by the
-sync-documentation-maps audit and update agents. Four sections cover two
+sync-map-documentation audit and update agents. Four sections cover two
 surfaces × two roles (audit / update).
 
 ---
 
 ## Agent surface — discrepancy types (audit)
 
-Used by `sync-documentation-maps-agent-compare` Step 3.
+Used by `sync-map-documentation-agent-compare` Step 3.
 
 - **`missing_from_map`** — an active agent has no entry in the Layer 1 Catalog
   table OR no `### <agent-name>` section in Layer 2. Flag if either layer is
@@ -81,7 +81,7 @@ from `scripts/derive-agent-callers.py`.
 
 ## Skill surface — discrepancy types (audit)
 
-Used by `sync-documentation-maps-skill-compare` Step 3.
+Used by `sync-map-documentation-skill-compare` Step 3.
 
 - **`missing_from_map`** — an active skill has no `### /skill-name` section in
   Layer 2 of `docs/al-dev-skills-map.md`.

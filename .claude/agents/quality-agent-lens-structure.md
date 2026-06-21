@@ -40,7 +40,7 @@ agent name from the filename (strip directory path and `.md` extension).
     matches the distributed `al-dev-<name>` prefix convention.
   - For files under `.claude/agents/` (maintainer tooling): filename matches a
     maintainer pattern (`{design|quality}-{agent|skill}-lens-{aspect}`,
-    `sync-documentation-maps-*`, or `naming-convention-lens`). Do **not** apply
+    `sync-map-documentation-*`, or `naming-convention-lens`). Do **not** apply
     the `al-dev-` rule here — see `docs/al-dev-naming-convention.md`.
 - `description` field is present in YAML frontmatter and is a single sentence
 - `model` field is present in YAML frontmatter. The short model aliases

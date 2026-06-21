@@ -1,10 +1,10 @@
 ---
-name: sync-documentation-maps-agent-compare
+name: sync-map-documentation-agent-compare
 description: >-
   Compares agent metadata from agent-metadata.json against docs/al-dev-agent-map.md
   and writes a structured JSON discrepancy report to the run artifact directory.
-  Called by /sync-documentation-maps dispatch phase after
-  sync-documentation-maps-agent-metadata completes.
+  Called by /sync-map-documentation dispatch phase after
+  sync-map-documentation-agent-metadata completes.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
@@ -14,10 +14,10 @@ tools: ["Read", "Bash", "Write"]
 | Field | Description |
 |---|---|
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
-| result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
+| result_dir | Absolute path to `.dev/sync-map-documentation-runs/<run_id>/` |
 
 **Precondition:** `<result_dir>/audit/agent-metadata.json` must exist (written by
-`sync-documentation-maps-agent-metadata`).
+`sync-map-documentation-agent-metadata`).
 
 ## Outputs
 
@@ -104,5 +104,5 @@ detection and note it in the summary.
 ### Step 4 — Write JSON report and return path
 
 For path setup, JSON construction, and artifact verification, follow
-`.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
+`.claude/skills/sync-map-documentation/sync-agent-patterns.md`.
 Write to `<result_dir>/audit/agent-audit.json`. Return only the absolute path.

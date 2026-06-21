@@ -1,4 +1,4 @@
-"""Tests for sync-documentation-maps-apply validation contract.
+"""Tests for sync-map-documentation-apply validation contract.
 
 Asserts that the documented apply-stage artifact-validation rules are present
 and correct in checkpoint-patterns.md and SKILL.md, and that Phase 1 / Phase 3
@@ -17,14 +17,14 @@ CHECKPOINT_PATTERNS = (
     REPO_ROOT
     / ".claude"
     / "skills"
-    / "sync-documentation-maps"
+    / "sync-map-documentation"
     / "checkpoint-patterns.md"
 )
 APPLY_SKILL = (
     REPO_ROOT
     / ".claude"
     / "skills"
-    / "sync-documentation-maps-apply"
+    / "sync-map-documentation-apply"
     / "SKILL.md"
 )
 

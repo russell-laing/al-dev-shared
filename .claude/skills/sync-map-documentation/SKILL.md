@@ -1,12 +1,12 @@
 ---
-name: sync-documentation-maps
+name: sync-map-documentation
 description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
   or to verify accuracy after adding/removing skills or agents. Dispatches
   parallel background audit agents and writes a checkpoint; the harness notifies
   on completion. Runs a Phase 0 cadence guard that refuses to dispatch over an
   unfinished prior run unless `--force` is given. Collect results with
-  /sync-documentation-maps-collect. A `--no-update` preview mode prints the
+  /sync-map-documentation-collect. A `--no-update` preview mode prints the
   four-skill sync sequence and stops without dispatching agents or writing a
   checkpoint.
   Triggers: "sync documentation maps", "review maps", "update maps", "sync maps",
@@ -20,9 +20,9 @@ workflow:
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
   outputs:
-    - .dev/sync-documentation-maps-checkpoint.json
-    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json
-  next: [sync-documentation-maps-collect]
+    - .dev/sync-map-documentation-checkpoint.json
+    - .dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json
+  next: [sync-map-documentation-collect]
 ---
 
 # Sync Documentation Maps
@@ -34,10 +34,10 @@ completion, so the user is free to work meanwhile.
 
 **Four-skill workflow:**
 
-1. `/sync-documentation-maps` — dispatch audit teams (this skill)
-2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps
-4. `/sync-documentation-maps-write` — regenerate diagrams/projections/graph, commit
+1. `/sync-map-documentation` — dispatch audit teams (this skill)
+2. `/sync-map-documentation-collect --team-ids <ids>` — collect results, spawn updates
+3. `/sync-map-documentation-apply --team-ids <ids>` — validate artifacts, write maps
+4. `/sync-map-documentation-write` — regenerate diagrams/projections/graph, commit
 
 ---
 
@@ -82,12 +82,12 @@ absent-file case, so handle it explicitly):
   in progress; stop unless `FORCE=true`
 
 ```bash
-cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json 2>/dev/null
+cat /Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json 2>/dev/null
 ```
 
 ```text
 Prior sync run <run_id> is incomplete (status: <status>).
-Collect it first (/sync-documentation-maps-collect, then -apply, -write),
+Collect it first (/sync-map-documentation-collect, then -apply, -write),
 or re-run with --force to abandon it and start fresh.
 ```
 
@@ -107,7 +107,7 @@ Create a timestamped run directory to hold all artifacts for this operation:
 ```bash
 RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)
 SPAWNED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-RUN_DIR="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-runs/${RUN_ID}"
+RUN_DIR="/Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-runs/${RUN_ID}"
 mkdir -p "${RUN_DIR}/audit"
 mkdir -p "${RUN_DIR}/updates"
 ls -la "${RUN_DIR}/"
@@ -137,17 +137,17 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 Dispatch in parallel:
 
-- `al-dev-shared:sync-documentation-maps-agent-metadata` (writes `agent-metadata.json`)
-- `al-dev-shared:sync-documentation-maps-skill-metadata` (writes `skill-metadata.json`)
+- `al-dev-shared:sync-map-documentation-agent-metadata` (writes `agent-metadata.json`)
+- `al-dev-shared:sync-map-documentation-skill-metadata` (writes `skill-metadata.json`)
 
 Pass `run_id` and `result_dir` to both. Wait for both to complete.
 
-Verify `.claude/skills/sync-documentation-maps/sync-documentation-maps-dispatch-patterns.md`
+Verify `.claude/skills/sync-map-documentation/sync-map-documentation-dispatch-patterns.md`
 exists before dispatching; if it is absent, stop and report the missing canonical
 dispatch template rather than improvising agent IDs/parameters.
 
 For the canonical dispatch template and surface parameterization table, follow
-`.claude/skills/sync-documentation-maps/sync-documentation-maps-dispatch-patterns.md`.
+`.claude/skills/sync-map-documentation/sync-map-documentation-dispatch-patterns.md`.
 
 Capture the returned agent IDs as `AGENT_METADATA_TEAM_ID` and `SKILL_METADATA_TEAM_ID`.
 
@@ -155,29 +155,29 @@ Capture the returned agent IDs as `AGENT_METADATA_TEAM_ID` and `SKILL_METADATA_T
 
 Dispatch in parallel after metadata agents complete:
 
-- `al-dev-shared:sync-documentation-maps-agent-compare` (reads `agent-metadata.json`,
+- `al-dev-shared:sync-map-documentation-agent-compare` (reads `agent-metadata.json`,
   writes `agent-audit.json`)
-- `al-dev-shared:sync-documentation-maps-skill-compare` (reads `skill-metadata.json`,
+- `al-dev-shared:sync-map-documentation-skill-compare` (reads `skill-metadata.json`,
   writes `skill-audit.json`)
 
 Pass `run_id` and `result_dir` to both. Wait for both to complete.
 
 Capture the returned agent IDs as `AGENT_DISCREPANCY_TEAM_ID` and `SKILL_DISCREPANCY_TEAM_ID`.
 These are informational handles for the checkpoint — the authoritative handoff is the
-audit JSON each agent writes to `${RUN_DIR}/audit/`, which `/sync-documentation-maps-collect`
+audit JSON each agent writes to `${RUN_DIR}/audit/`, which `/sync-map-documentation-collect`
 reads directly. They are **not** polled with `TaskGet`.
 
 ---
 
 ## Phase 4 — Write Checkpoint
 
-Write these fields to `.dev/sync-documentation-maps-checkpoint.json` (merge pattern in
+Write these fields to `.dev/sync-map-documentation-checkpoint.json` (merge pattern in
 `checkpoint-patterns.md`; root checkpoint may exist from a prior run) and identically to
 `${RUN_DIR}/manifest.json` (always new — create directly with Write):
 
 | Field | Value |
 |---|---|
-| `operation` | `"sync-documentation-maps"` |
+| `operation` | `"sync-map-documentation"` |
 | `run_id` | `RUN_ID` |
 | `spawned_at` | `"${SPAWNED_AT}"` |
 | `skill_metadata_team_id` | `SKILL_METADATA_TEAM_ID` |
@@ -194,7 +194,7 @@ Write these fields to `.dev/sync-documentation-maps-checkpoint.json` (merge patt
 Verify both files exist:
 
 ```bash
-ls -la .dev/sync-documentation-maps-checkpoint.json && ls -la "${RUN_DIR}/manifest.json"
+ls -la .dev/sync-map-documentation-checkpoint.json && ls -la "${RUN_DIR}/manifest.json"
 ```
 
 Append the dispatch progress entry to `.dev/progress.md`.
@@ -214,10 +214,10 @@ Audit teams dispatched.
   Skill discrepancy team ID:   SKILL_DISCREPANCY_TEAM_ID
   Agent discrepancy team ID:   AGENT_DISCREPANCY_TEAM_ID
   Run directory:               RUN_DIR
-  Checkpoint:                  .dev/sync-documentation-maps-checkpoint.json
+  Checkpoint:                  .dev/sync-map-documentation-checkpoint.json
 
 Next step (collect results when the agents finish):
-  /sync-documentation-maps-collect --team-ids SKILL_DISCREPANCY_TEAM_ID,AGENT_DISCREPANCY_TEAM_ID
+  /sync-map-documentation-collect --team-ids SKILL_DISCREPANCY_TEAM_ID,AGENT_DISCREPANCY_TEAM_ID
 ```
 
 Return without blocking. The audit agents run in the background; the harness
@@ -243,8 +243,8 @@ checkpoint `status` field: an absent or unreadable checkpoint and `status ==
 `"collect"`, `"apply"`, null) blocks dispatch unless `--force` is given.
 
 **`--no-update`** (optional)
-Print the maintained four-skill async sequence — `/sync-documentation-maps` →
-`/sync-documentation-maps-collect` → `/sync-documentation-maps-apply` →
-`/sync-documentation-maps-write` — and stop; no agents are dispatched
+Print the maintained four-skill async sequence — `/sync-map-documentation` →
+`/sync-map-documentation-collect` → `/sync-map-documentation-apply` →
+`/sync-map-documentation-write` — and stop; no agents are dispatched
 and no checkpoint is written. Use when you want to review the steps without starting
 a sync run.

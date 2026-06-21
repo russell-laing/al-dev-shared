@@ -118,8 +118,8 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 
 | Situation | Run | Why |
 | --- | --- | --- |
-| Added or removed a skill or agent | `/sync-documentation-maps` | Audits the maps, applies changes, and regenerates all documentation and projections that depend on them. Use this when topology changes. |
-| Want to audit map accuracy without applying updates | `/sync-documentation-maps --no-update` | Runs the audit phase only and prints what would change without making modifications. Useful for verification before a full sync. |
+| Added or removed a skill or agent | `/sync-map-documentation` | Audits the maps, applies changes, and regenerates all documentation and projections that depend on them. Use this when topology changes. |
+| Want to audit map accuracy without applying updates | `/sync-map-documentation --no-update` | Runs the audit phase only and prints what would change without making modifications. Useful for verification before a full sync. |
 | Want the main health-audit entry point | `/plugin-health-audit` | Starts a full lens-driven discovery: dispatches design, quality, and naming audits, ranks findings, and writes a dossier. Best starting point for a comprehensive health check. |
 | Want to fold accumulated friction into the loop | `/ingest-friction-log` | Converts curated session-analysis findings and tool-error signals from `~/friction-log/` into discoverable findings, then archives the logs. Alternative entry point to `/plugin-health-audit` when you have session-specific issues to fold in. |
 | Ready to record decisions from a dossier | `/record-health-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
@@ -176,10 +176,10 @@ primarily for contract maintenance; the stage pages are the primary reading path
 
 | Skill | Stage | Invoked by | Role |
 | --- | --- | --- | --- |
-| `/sync-documentation-maps` | map-sync | both | Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. |
-| `/sync-documentation-maps-apply` | map-sync | user | Applies validated update artifacts to docs/. |
-| `/sync-documentation-maps-collect` | map-sync | user | Collect audit results and dispatch background update agents for the /sync-documentation-maps flow. |
-| `/sync-documentation-maps-write` | map-sync | user | Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow. |
+| `/sync-map-documentation` | map-sync | both | Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents. |
+| `/sync-map-documentation-apply` | map-sync | user | Applies validated update artifacts to docs/. |
+| `/sync-map-documentation-collect` | map-sync | user | Collect audit results and dispatch background update agents for the /sync-map-documentation flow. |
+| `/sync-map-documentation-write` | map-sync | user | Final regeneration step after /sync-map-documentation-apply; fourth step of the async sync flow. |
 | `/ingest-friction-log` | discover | user | Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. |
 | `/plugin-health-audit` | discover | user | Standing suggestions-only entry point for the al-dev-shared plugin surfaces. |
 | `/plugin-health-discover` | discover | both | Discovery phase of the plugin health sweep. |
@@ -197,10 +197,10 @@ primarily for contract maintenance; the stage pages are the primary reading path
 
 | Skill | Reads | Writes | Next |
 | --- | --- | --- | --- |
-| `/sync-documentation-maps` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `/sync-documentation-maps-collect` |
-| `/sync-documentation-maps-apply` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-documentation-maps-write` |
-| `/sync-documentation-maps-collect` | `.dev/sync-documentation-maps-checkpoint.json`, `.dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md` | `/sync-documentation-maps-apply` |
-| `/sync-documentation-maps-write` | `.dev/sync-documentation-maps-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `docs/maintainer-tooling/`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
+| `/sync-map-documentation` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json` | `/sync-map-documentation-collect` |
+| `/sync-map-documentation-apply` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `/sync-map-documentation-write` |
+| `/sync-map-documentation-collect` | `.dev/sync-map-documentation-checkpoint.json`, `.dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json` | `.dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md` | `/sync-map-documentation-apply` |
+| `/sync-map-documentation-write` | `.dev/sync-map-documentation-checkpoint.json`, `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, `docs/maintainer-tooling/`, `profile-al-dev-shared/generated/agents/` | `/plugin-health-audit` |
 | `/ingest-friction-log` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json` | `docs/health/<date>-<surface>-friction-findings.md` | `/plugin-health-report` |
 | `/plugin-health-audit` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md` | — | `/plugin-health-discover` |
 | `/plugin-health-discover` | `docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` | `docs/health/<date>-<surface>-findings.md` | `/plugin-health-report` |
@@ -226,12 +226,12 @@ against the live skill body before treating it as work.
 | Signal | Item | Detail |
 | --- | --- | --- |
 | Orphaned artifact | `.dev/implement-health-plan-progress.md` | produced by /implement-health-plan; consumed by no skill |
-| Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-documentation-maps-write; consumed by no skill |
+| Orphaned artifact | `docs/al-dev-plugin-graph.md` | produced by /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `docs/al-dev-workflow-diagrams.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-health-plan, /record-health-dispositions, /revise-health-plan; consumed by no skill |
-| Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-documentation-maps-write; consumed by no skill |
+| Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-map-documentation-write; consumed by no skill |
 | Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-health-findings; produced by no skill |
 | Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-health-plan, /plan-health-findings, /plugin-health-report, /record-health-dispositions, /revise-health-plan; produced by no skill |
 | Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-health-plan; produced by no skill |
@@ -242,9 +242,9 @@ against the live skill body before treating it as work.
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Missing contract | `verify-files` | active skill with no workflow contract |
 | Artifact freshness | `.dev/implement-health-plan-progress.md` | latest 2026-06-21 |
-| Artifact freshness | `.dev/sync-documentation-maps-checkpoint.json` | latest 2026-06-21 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/audit/*-audit.json` | latest 2026-06-21 |
-| Artifact freshness | `.dev/sync-documentation-maps-runs/*/updates/*-map.md` | latest 2026-06-21 |
+| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | never produced |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | never produced |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | never produced |
 | Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-21 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-21 |

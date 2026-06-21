@@ -104,8 +104,8 @@ def _build_map_sync_fixture(root: Path) -> Path:
     skills = root / ".claude" / "skills"
     _write_skill(
         skills,
-        "sync-documentation-maps",
-        "name: sync-documentation-maps\n"
+        "sync-map-documentation",
+        "name: sync-map-documentation\n"
         "description: Start async sync.\n"
         "workflow:\n"
         "  stage: map-sync\n"
@@ -115,54 +115,54 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "    - docs/al-dev-skills-map.md\n"
         "    - docs/al-dev-agent-map.md\n"
         "  outputs:\n"
-        "    - .dev/sync-documentation-maps-checkpoint.json\n"
-        "    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json\n"
-        "  next: [sync-documentation-maps-collect]\n",
+        "    - .dev/sync-map-documentation-checkpoint.json\n"
+        "    - .dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json\n"
+        "  next: [sync-map-documentation-collect]\n",
     )
     _write_skill(
         skills,
-        "sync-documentation-maps-collect",
-        "name: sync-documentation-maps-collect\n"
+        "sync-map-documentation-collect",
+        "name: sync-map-documentation-collect\n"
         "description: Collect async audits.\n"
         "workflow:\n"
         "  stage: map-sync\n"
         "  invoked-by: user\n"
         "  repeatable: false\n"
         "  inputs:\n"
-        "    - .dev/sync-documentation-maps-checkpoint.json\n"
-        "    - .dev/sync-documentation-maps-runs/RUN_ID/audit/<surface>-audit.json\n"
+        "    - .dev/sync-map-documentation-checkpoint.json\n"
+        "    - .dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json\n"
         "  outputs:\n"
-        "    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md\n"
-        "  next: [sync-documentation-maps-apply]\n",
+        "    - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md\n"
+        "  next: [sync-map-documentation-apply]\n",
     )
     _write_skill(
         skills,
-        "sync-documentation-maps-apply",
-        "name: sync-documentation-maps-apply\n"
+        "sync-map-documentation-apply",
+        "name: sync-map-documentation-apply\n"
         "description: Apply async updates.\n"
         "workflow:\n"
         "  stage: map-sync\n"
         "  invoked-by: user\n"
         "  repeatable: false\n"
         "  inputs:\n"
-        "    - .dev/sync-documentation-maps-checkpoint.json\n"
-        "    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md\n"
+        "    - .dev/sync-map-documentation-checkpoint.json\n"
+        "    - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md\n"
         "  outputs:\n"
         "    - docs/al-dev-skills-map.md\n"
         "    - docs/al-dev-agent-map.md\n"
-        "  next: [sync-documentation-maps-write]\n",
+        "  next: [sync-map-documentation-write]\n",
     )
     _write_skill(
         skills,
-        "sync-documentation-maps-write",
-        "name: sync-documentation-maps-write\n"
+        "sync-map-documentation-write",
+        "name: sync-map-documentation-write\n"
         "description: Final regeneration step.\n"
         "workflow:\n"
         "  stage: map-sync\n"
         "  invoked-by: user\n"
         "  repeatable: false\n"
         "  inputs:\n"
-        "    - .dev/sync-documentation-maps-checkpoint.json\n"
+        "    - .dev/sync-map-documentation-checkpoint.json\n"
         "    - docs/al-dev-skills-map.md\n"
         "    - docs/al-dev-agent-map.md\n"
         "  outputs:\n"
@@ -436,8 +436,8 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
             },
         )
         assert "flowchart TD" in text
-        assert 'skill_sync_documentation_maps["/sync-documentation-maps"]' in text
-        assert 'skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]' in text
+        assert 'skill_sync_documentation_maps["/sync-map-documentation"]' in text
+        assert 'skill_sync_documentation_maps_collect["/sync-map-documentation-collect"]' in text
         assert "review-documentation-map" not in text
         assert (
             'skill_sync_documentation_maps -- "checkpoint + audit results" '
@@ -476,7 +476,7 @@ def test_map_sync_stage_falls_back_when_retired_skill_still_exists() -> None:
         assert "flowchart LR" in text
         assert 'skill_review_documentation_map["/review-documentation-map"]' in text
         assert 'art_profile_al_dev_shared_skills_["skills/"]' in text
-        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
+        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
         assert node_count >= 1
 
 
@@ -613,7 +613,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
 def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = _build_map_sync_fixture(Path(td))
-        write_skill = skills / "sync-documentation-maps-write" / "SKILL.md"
+        write_skill = skills / "sync-map-documentation-write" / "SKILL.md"
         write_skill.write_text(
             write_skill.read_text(encoding="utf-8").replace(
                 "    - docs/al-dev-plugin-graph.md\n",
@@ -625,9 +625,9 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
         assert "flowchart LR" in text
         assert 'art_generated["generated docs + projections"]' not in text
-        assert 'skill_sync_documentation_maps_write["/sync-documentation-maps-write"]' in text
+        assert 'skill_sync_documentation_maps_write["/sync-map-documentation-write"]' in text
         assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
-        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-documentation-maps-checkpoint.json"]' in text
+        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
         assert 'art_docs_al_dev_plugin_graph_md[".../al-dev-plugin-graph.md"]' not in text
         assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
         assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
@@ -1036,7 +1036,7 @@ def test_live_contracts_cover_multi_page_docs_and_friction_report_input() -> Non
     by_name = {contract.skill: contract for contract in contracts}
     assert (
         "docs/maintainer-tooling/"
-        in by_name["sync-documentation-maps-write"].outputs
+        in by_name["sync-map-documentation-write"].outputs
     )
     assert (
         "docs/health/<date>-<surface>-friction-findings.md"
@@ -1047,9 +1047,9 @@ def test_live_contracts_cover_multi_page_docs_and_friction_report_input() -> Non
 
 def test_map_sync_write_preserves_valid_health_loop_breadcrumb() -> None:
     text = (
-        REPO_ROOT / ".claude" / "skills" / "sync-documentation-maps-write" / "SKILL.md"
+        REPO_ROOT / ".claude" / "skills" / "sync-map-documentation-write" / "SKILL.md"
     ).read_text(encoding="utf-8")
-    assert "stage_completed: sync-documentation-maps-write" not in text
+    assert "stage_completed: sync-map-documentation-write" not in text
     assert "Do not overwrite `.dev/health-loop-state.md`" in text
 
 

@@ -1,7 +1,7 @@
 # Shared procedure: documentation-map update agents
 
-Canonical 5-step update procedure shared by `sync-documentation-maps-agent-update`
-and `sync-documentation-maps-skill-update`. Each agent references this doc and
+Canonical 5-step update procedure shared by `sync-map-documentation-agent-update`
+and `sync-map-documentation-skill-update`. Each agent references this doc and
 supplies the surface-specific parameters listed below; do not duplicate the steps
 in the agent bodies.
 
@@ -19,7 +19,7 @@ Parameters supplied by the caller agent:
 
 ## Step 1 — Read audit findings
 
-For artifact verification, follow `.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
+For artifact verification, follow `.claude/skills/sync-map-documentation/sync-agent-patterns.md`.
 
 Read the surface audit JSON from the run artifact directory. Stop if absent
 (see patterns doc).
@@ -51,7 +51,7 @@ write step regenerates it).
 ## Step 5 — Write updated map and return path
 
 For path setup and write verification, follow
-`.claude/skills/sync-documentation-maps/sync-agent-patterns.md`.
+`.claude/skills/sync-map-documentation/sync-agent-patterns.md`.
 This surface requires the minimum line count specified in the parameter table
 above.
 

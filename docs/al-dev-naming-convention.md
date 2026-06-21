@@ -73,10 +73,6 @@ are accepted; lenses should not re-flag them:
   ordering predates the `{verb}-{object}-{aspect}` convention and is kept for the
   family's recognisability.
 - `al-dev-consolidate` — user-facing artifact-consolidation workflow.
-- `sync-documentation-maps`, `-collect`, `-write` — workflow-phase family naming
-  (the `-apply` member was renamed from `-wait` for clarity).
-- `sync-documentation-maps-{agent|skill}-{audit|update}` — sync workflow agent
-  family; named for the workflow they serve.
 - `implement-health-plan`, `ingest-friction-log`, `plan-health-findings`,
   `record-health-dispositions`, `revise-health-plan` — health-loop phase family;
   each is named for the workflow stage it serves, and a rename has high blast

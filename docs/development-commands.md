@@ -65,7 +65,7 @@ python3 scripts/generate-plugin-graph.py
 python3 scripts/generate-maintainer-guide.py
 ```
 
-**Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-documentation-maps`) for interactive updates.
+**Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-map-documentation`) for interactive updates.
 Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artifacts, not maintained repo outputs; do not edit or commit them.
 
 ## Health Disposition Store
@@ -102,10 +102,10 @@ When skills or agents change, synchronize the documentation:
 
 ```bash
 # Keep the maps accurate (maintained entry point):
-/sync-documentation-maps  # Async step 1: dispatch audits for both maps
-/sync-documentation-maps-collect --team-ids <skill-id>,<agent-id>  # Step 2: collect audits and stage updates
-/sync-documentation-maps-apply --team-ids <id>[,<id>]  # Step 3: validate and write map docs
-/sync-documentation-maps-write  # Step 4: regenerate downstream docs/projections and commit
+/sync-map-documentation  # Async step 1: dispatch audits for both maps
+/sync-map-documentation-collect --team-ids <skill-id>,<agent-id>  # Step 2: collect audits and stage updates
+/sync-map-documentation-apply --team-ids <id>[,<id>]  # Step 3: validate and write map docs
+/sync-map-documentation-write  # Step 4: regenerate downstream docs/projections and commit
 
 # Find improvements (one entry, all dimensions → one dossier):
 /plugin-health-audit --surface both --dimension all
@@ -117,7 +117,7 @@ When skills or agents change, synchronize the documentation:
 For audit-only map checks (no updates):
 
 ```bash
-/sync-documentation-maps --no-update   # Print the maintained async sequence without dispatching or modifying docs
+/sync-map-documentation --no-update   # Print the maintained async sequence without dispatching or modifying docs
 ```
 
 These skills write to:

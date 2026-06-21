@@ -1,7 +1,7 @@
 # Map Count-Consistency Gate
 
 Three-way count check run after `generate-map-doc-sections.py` succeeds in
-`/sync-documentation-maps-write` Phase 1. All three values must agree before
+`/sync-map-documentation-write` Phase 1. All three values must agree before
 anything is committed.
 
 ## Gate Command
@@ -40,7 +40,7 @@ Choose the recovery path by the mismatch cause:
   re-run this count check once.
 - **Any other case** — the mismatch persists after that refresh, more than one
   value disagrees, or the run state is no longer trustworthy. Abandon the old
-  run with `/sync-documentation-maps --force` and start fresh rather than
+  run with `/sync-map-documentation --force` and start fresh rather than
   committing mixed-state artifacts.
 
 Once the count check passes — either it agreed on the first run, or the

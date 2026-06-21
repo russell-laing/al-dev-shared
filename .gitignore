@@ -5,7 +5,7 @@ __pycache__/
 .superpowers/
 .dev/skill-test-runs/
 .dev/skill-test-plan.json
-.dev/sync-documentation-maps-runs/
+.dev/sync-map-documentation-runs/
 .dev/plugin-health-discover-lens-prompts.json
 .dev/tooling-health-context.json
 # HTML files in this repo are exported copies of markdown, not source artifacts.

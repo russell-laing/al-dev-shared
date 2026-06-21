@@ -27,7 +27,7 @@ treated the same way.
 - Keep live resumable workflow state files tracked when current skills depend on
   them as stable paths, for example:
   - `.dev/progress.md`
-  - `.dev/sync-documentation-maps-checkpoint.json`
+  - `.dev/sync-map-documentation-checkpoint.json`
   - `.dev/plugin-health-team-checkpoint.json`
 - Do not keep historical reports, one-off analyses, completed run manifests, or
   dated scratch notes tracked once their provenance has been summarized in a

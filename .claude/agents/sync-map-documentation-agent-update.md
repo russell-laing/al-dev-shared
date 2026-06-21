@@ -1,11 +1,11 @@
 ---
-name: sync-documentation-maps-agent-update
+name: sync-map-documentation-agent-update
 description: >-
   Reads agent audit findings from the run artifact directory and writes the
   updated map to `<result_dir>/updates/agent-map.md` by following the shared
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
-  staged for /sync-documentation-maps-apply to copy into
-  docs/al-dev-agent-map.md. Called by /sync-documentation-maps-collect update
+  staged for /sync-map-documentation-apply to copy into
+  docs/al-dev-agent-map.md. Called by /sync-map-documentation-collect update
   dispatch phase.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -16,7 +16,7 @@ tools: ["Read", "Bash", "Write"]
 | Field | Description |
 |---|---|
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
-| result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
+| result_dir | Absolute path to `.dev/sync-map-documentation-runs/<run_id>/` |
 
 ## Outputs
 

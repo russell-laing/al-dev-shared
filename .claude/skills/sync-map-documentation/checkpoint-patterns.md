@@ -6,13 +6,13 @@ Multi-phase async workflows (e.g., audit + update + finalize) use a shared check
 
 ### Checkpoint File Location
 
-`.dev/<workflow>-checkpoint.json` (e.g., `.dev/sync-documentation-maps-checkpoint.json`)
+`.dev/<workflow>-checkpoint.json` (e.g., `.dev/sync-map-documentation-checkpoint.json`)
 
 ### Checkpoint Structure
 
 ```json
 {
-  "operation": "sync-documentation-maps",
+  "operation": "sync-map-documentation",
   "run_id": "timestamp-id",
   "spawned_at": "iso-timestamp",
   "skill_metadata_team_id": "team-id",
@@ -37,8 +37,8 @@ and `skill_discrepancy_team_id` and `agent_discrepancy_team_id` for the discrepa
 detection step (Step 3.2). The `collect` step consumes the discrepancy team IDs
 (`skill_discrepancy_team_id`, `agent_discrepancy_team_id`) when reading audit results.
 
-`sync-documentation-maps` writes the initial fields. `sync-documentation-maps-collect`
-adds update fields. `sync-documentation-maps-write` marks completion. Preserve
+`sync-map-documentation` writes the initial fields. `sync-map-documentation-collect`
+adds update fields. `sync-map-documentation-write` marks completion. Preserve
 unknown fields when updating either checkpoint file.
 
 The `*_team_id` fields hold the **background-agent IDs** returned when each audit or
@@ -70,7 +70,7 @@ they execute server-side and cannot write to the local `${RUN_DIR}`.
 
 ```bash
 # Read checkpoint
-checkpoint_file="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json"
+checkpoint_file="/Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json"
 checkpoint=$(cat "$checkpoint_file" 2>/dev/null || echo '{}')
 
 # Extract fields
@@ -108,28 +108,28 @@ ls -la "$checkpoint_file" >/dev/null || exit 1
 - **Dispatch**: `phase="audit"`, `status="dispatched"`
 - **Collect updates selected**: `phase="update"`, `status="dispatched"`
 - **Collect no updates needed**: `status="complete"` or `status="skipped"` depending on outcome
-- **Apply complete**: `status="awaiting-write"` (gates `/sync-documentation-maps-write`)
+- **Apply complete**: `status="awaiting-write"` (gates `/sync-map-documentation-write`)
 - **Finalize**: `phase="complete"`, `status="done"`
 
 ### Side Effects
 
-This contract is currently specific to the three-skill `sync-documentation-maps`
+This contract is currently specific to the three-skill `sync-map-documentation`
 workflow:
 
-- `sync-documentation-maps`
-- `sync-documentation-maps-collect`
-- `sync-documentation-maps-apply` then `sync-documentation-maps-write`
+- `sync-map-documentation`
+- `sync-map-documentation-collect`
+- `sync-map-documentation-apply` then `sync-map-documentation-write`
 
 The workflow writes and updates these repo-local state files:
 
-- `.dev/sync-documentation-maps-checkpoint.json` - root checkpoint read by each
+- `.dev/sync-map-documentation-checkpoint.json` - root checkpoint read by each
   phase.
 - `${RUN_DIR}/manifest.json` - run-local copy of the same checkpoint state.
 - `.dev/progress.md` - dispatch and completion records appended by
-  `sync-documentation-maps` and the `wait`+`write` finalization pair.
+  `sync-map-documentation` and the `wait`+`write` finalization pair.
 
 The run directory is
-`.dev/sync-documentation-maps-runs/${RUN_ID}`. The dispatcher creates
+`.dev/sync-map-documentation-runs/${RUN_ID}`. The dispatcher creates
 `${RUN_DIR}/audit` and `${RUN_DIR}/updates`; audit teams write
 `${RUN_DIR}/audit/skill-audit.json` and `${RUN_DIR}/audit/agent-audit.json`,
 and update teams write `${RUN_DIR}/updates/skills-map.md` and
@@ -141,7 +141,7 @@ document their own schemas instead of sharing this exact field set by default.
 
 ## Apply-stage Artifact Validation
 
-`/sync-documentation-maps-apply` validates each expected update artifact before
+`/sync-map-documentation-apply` validates each expected update artifact before
 writing to `docs/`. Validation is **per-surface-independent**: an invalid or
 missing artifact for one map surface must not block writing the other.
 

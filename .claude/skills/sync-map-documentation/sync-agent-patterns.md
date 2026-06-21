@@ -1,6 +1,6 @@
 # Sync-Documentation-Maps Agent Patterns
 
-Shared boilerplate for the four `sync-documentation-maps-*` audit/update agents.
+Shared boilerplate for the four `sync-map-documentation-*` audit/update agents.
 Referenced from each agent body so the path-setup, JSON-construction, and
 verification logic stay in one place.
 

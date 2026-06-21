@@ -1,6 +1,6 @@
 # Collect Phase — Artifact Polling and Read
 
-Canonical poll-then-read state machine for `/sync-documentation-maps-collect`
+Canonical poll-then-read state machine for `/sync-map-documentation-collect`
 Phase 2. The audit agents run as background agents and write their results to
 `${RUN_DIR}/audit/`. This doc owns the branching so the skill body stays short.
 Background-agent IDs are **not** pollable with `TaskGet`; the artifact files are
@@ -42,7 +42,7 @@ For each present file, read and parse the JSON. Extract `surface`,
 - **Same surface still `pending` on a later collect re-run for the same
   `RUN_ID`** → treat it as stalled, not "still pending". Report the missing
   artifact path, note that the current run did not complete its audit write, and
-  tell the user to restart from `/sync-documentation-maps` instead of looping on
+  tell the user to restart from `/sync-map-documentation` instead of looping on
   collect.
 - **Both files absent** → stop with:
 

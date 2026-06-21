@@ -1,7 +1,7 @@
 # Sync-Documentation-Maps Audit-Agent Dispatch Patterns
 
 Canonical dispatch template for the four audit agents used in
-`/sync-documentation-maps` Phase 3. Reference this doc when adding new callers
+`/sync-map-documentation` Phase 3. Reference this doc when adding new callers
 so the template does not drift. Mirrors `collect-dispatch-patterns.md` for
 the update-agent side.
 
@@ -33,8 +33,8 @@ Prompt:
 
 | Surface | `<SUBAGENT_TYPE>` | `<TARGET_DESCRIPTION>` | `<OUTPUT_FILE>` |
 |---------|-------------------|------------------------|-----------------|
-| Skills  | `sync-documentation-maps-skill-metadata` | `skills in profile-al-dev-shared/skills/` | `skill-metadata.json` |
-| Agents  | `sync-documentation-maps-agent-metadata` | `agents in profile-al-dev-shared/agents/` | `agent-metadata.json` |
+| Skills  | `sync-map-documentation-skill-metadata` | `skills in profile-al-dev-shared/skills/` | `skill-metadata.json` |
+| Agents  | `sync-map-documentation-agent-metadata` | `agents in profile-al-dev-shared/agents/` | `agent-metadata.json` |
 
 **Wait for both metadata agents to complete before proceeding to Step 3.2.**
 
@@ -65,8 +65,8 @@ Prompt:
 
 | Surface | `<SUBAGENT_TYPE>` | `<TARGET_DESCRIPTION>` / `<MAP_FILE>` | `<INPUT_FILE>` | `<OUTPUT_FILE>` |
 |---------|-------------------|-----------------------------------------|----------------|-----------------|
-| Skills  | `sync-documentation-maps-skill-compare` | `skills in profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md` | `skill-metadata.json` | `skill-audit.json` |
-| Agents  | `sync-documentation-maps-agent-compare` | `agents in profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md` | `agent-metadata.json` | `agent-audit.json` |
+| Skills  | `sync-map-documentation-skill-compare` | `skills in profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md` | `skill-metadata.json` | `skill-audit.json` |
+| Agents  | `sync-map-documentation-agent-compare` | `agents in profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md` | `agent-metadata.json` | `agent-audit.json` |
 
 ---
 
@@ -76,5 +76,5 @@ Capture the returned background agent IDs as `SKILL_DISCREPANCY_TEAM_ID` and
 `AGENT_DISCREPANCY_TEAM_ID` (plus the metadata IDs from Step 3.1).
 These IDs are informational checkpoint fields — the authoritative handoff is the
 audit JSON each agent writes to `${RUN_DIR}/audit/`, which
-`/sync-documentation-maps-collect` reads directly. Do **not** poll these IDs
+`/sync-map-documentation-collect` reads directly. Do **not** poll these IDs
 with `TaskGet`.

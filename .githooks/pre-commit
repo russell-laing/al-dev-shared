@@ -46,7 +46,7 @@ staged_maps=$(git diff --cached --name-only \
   | grep -E 'docs/al-dev-(skills|agent)-map\.md' || true)
 if [ -n "$stale_files" ] && [ -z "$staged_maps" ]; then
   echo "WARN: skill/agent files staged but doc maps not updated." >&2
-  echo "  Run /sync-documentation-maps after this commit." >&2
+  echo "  Run /sync-map-documentation after this commit." >&2
   echo "  Staged: $stale_files" >&2
 fi
 echo "pre-commit: doc-map check complete"

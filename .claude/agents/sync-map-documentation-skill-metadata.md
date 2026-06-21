@@ -1,11 +1,11 @@
 ---
-name: sync-documentation-maps-skill-metadata
+name: sync-map-documentation-skill-metadata
 description: >-
   Builds the active skill list from profile-al-dev-shared/skills/ and extracts
   frontmatter metadata (name, description, argument-hint, workflow stage, phase count,
   spawned agents). Writes a structured JSON snapshot to the run artifact directory.
-  Called by /sync-documentation-maps dispatch phase; its output is consumed by
-  sync-documentation-maps-skill-compare. spawned_agents entries: only
+  Called by /sync-map-documentation dispatch phase; its output is consumed by
+  sync-map-documentation-skill-compare. spawned_agents entries: only
   well-formed al-dev-shared: slugs are extracted; malformed ones are silently skipped.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -16,7 +16,7 @@ tools: ["Read", "Bash", "Write"]
 | Field | Description |
 |---|---|
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
-| result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
+| result_dir | Absolute path to `.dev/sync-map-documentation-runs/<run_id>/` |
 
 ## Outputs
 
@@ -45,7 +45,7 @@ Do not summarise findings — return only the path.
 
 `phase_count` is the count of `## Phase N` headings in `SKILL.md` (where N is a
 digit). `spawned_agents` is the list of all `al-dev-shared:<agent-name>` references
-in the body. These two fields are required by `sync-documentation-maps-skill-compare`
+in the body. These two fields are required by `sync-map-documentation-skill-compare`
 to detect `phase_count_mismatch` and `agent_name_mismatch` discrepancy types.
 
 ---

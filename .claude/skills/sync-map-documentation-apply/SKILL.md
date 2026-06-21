@@ -1,5 +1,5 @@
 ---
-name: sync-documentation-maps-apply
+name: sync-map-documentation-apply
 description: >-
   Applies validated update artifacts to docs/. Third step of the async sync
   flow. Validates update-agent artifacts (including a mandatory agent-artifact
@@ -9,19 +9,19 @@ description: >-
   is validated independently — an invalid or missing artifact for one map does
   not block writing the other — except when both surfaces fail validation, in
   which case the skill halts without writing either map. Run
-  /sync-documentation-maps-write next to regenerate diagrams and commit.
+  /sync-map-documentation-write next to regenerate diagrams and commit.
 argument-hint: "--team-ids <id>[,<id>] [--skip-commit]"
 workflow:
   stage: map-sync
   invoked-by: user
   repeatable: false
   inputs:
-    - .dev/sync-documentation-maps-checkpoint.json
-    - .dev/sync-documentation-maps-runs/RUN_ID/updates/<surface>-map.md
+    - .dev/sync-map-documentation-checkpoint.json
+    - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md
   outputs:
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
-  next: [sync-documentation-maps-write]
+  next: [sync-map-documentation-write]
 ---
 
 # Sync Documentation Maps — Apply (Validate & Write to docs/)
@@ -32,10 +32,10 @@ maps to disk.
 
 **Four-skill workflow:**
 
-1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
-2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps (this skill)
-4. `/sync-documentation-maps-write` — regenerate diagrams, projections, and commit
+1. `/sync-map-documentation` — dispatch audit teams (~5 min, then exit)
+2. `/sync-map-documentation-collect --team-ids <ids>` — collect results, spawn updates
+3. `/sync-map-documentation-apply --team-ids <ids>` — validate artifacts, write maps (this skill)
+4. `/sync-map-documentation-write` — regenerate diagrams, projections, and commit
 
 **Working directory assumption:** All relative paths are resolved from
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
@@ -64,14 +64,14 @@ present but is an empty string; or splitting its value on comma yields zero
 non-empty segments. Print a clear usage hint:
 
 ```text
-Usage: /sync-documentation-maps-apply --team-ids <id>[,<id>] [--skip-commit]
+Usage: /sync-map-documentation-apply --team-ids <id>[,<id>] [--skip-commit]
 ```
 
 ---
 
 ## Phase 1 — Load Checkpoint
 
-Follow the read pattern in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`.
+Follow the read pattern in `.claude/skills/sync-map-documentation/checkpoint-patterns.md`.
 Extract these fields:
 
 | Field | Variable |
@@ -81,10 +81,10 @@ Extract these fields:
 | `update_choice` | `UPDATE_CHOICE` |
 | `skip_commit` | `SKIP_COMMIT_FROM_CHECKPOINT` |
 
-Checkpoint absent → stop: "Checkpoint not found. Run /sync-documentation-maps
-and /sync-documentation-maps-collect first to generate it."
+Checkpoint absent → stop: "Checkpoint not found. Run /sync-map-documentation
+and /sync-map-documentation-collect first to generate it."
 `phase` ≠ `"update"` → stop: "Checkpoint phase is `<phase>` — expected
-`update`. Re-run /sync-documentation-maps-collect to advance the workflow."
+`update`. Re-run /sync-map-documentation-collect to advance the workflow."
 If `SKIP_COMMIT` was not set via `--skip-commit`, use
 `SKIP_COMMIT_FROM_CHECKPOINT`.
 
@@ -110,7 +110,7 @@ For each artifact gated by `UPDATE_CHOICE`:
 
 1. Check presence with `ls -la "${RUN_DIR}/updates/<artifact>.md"`
 2. Run the catalog count check from the **Apply-stage Artifact Validation** matrix
-   in `.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. A
+   in `.claude/skills/sync-map-documentation/checkpoint-patterns.md`. A
    `CATALOG_ROWS` ≠ `DISK_AGENTS` mismatch makes the agent artifact invalid — skip
    that surface.
 3. Validate each present artifact per `checkpoint-patterns.md`
@@ -155,11 +155,11 @@ Verify minimum line counts:
 If a written file is below its minimum, report a warning and continue.
 Do not revert — partial content is better than the stale previous version.
 
-Update the checkpoint `status` to `"awaiting-write"` so `/sync-documentation-maps-write`
+Update the checkpoint `status` to `"awaiting-write"` so `/sync-map-documentation-write`
 knows the maps are ready:
 
 ```bash
-CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json"
+CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json"
 jq '.status = "awaiting-write"' \
     "$CHECKPOINT_FILE" \
     > /tmp/sdm-checkpoint-tmp.json && \
@@ -168,7 +168,7 @@ jq '.status = "awaiting-write"' \
 
 ---
 
-Maps written to `docs/`. Run `/sync-documentation-maps-write` to regenerate
+Maps written to `docs/`. Run `/sync-map-documentation-write` to regenerate
 diagrams, projections, and commit.
 
 ---
@@ -176,10 +176,10 @@ diagrams, projections, and commit.
 ## Arguments
 
 **`--team-ids <id>[,<id>]`** (required)
-The update team IDs returned by `/sync-documentation-maps-collect`,
+The update team IDs returned by `/sync-map-documentation-collect`,
 comma-separated. One ID if only one surface was updated; two IDs if both.
 
 **`--skip-commit`** (optional)
-Passed through to `/sync-documentation-maps-write`. Write maps to docs/ but
+Passed through to `/sync-map-documentation-write`. Write maps to docs/ but
 do not commit. Useful for review before committing.
 Overrides the `skip_commit` value from the checkpoint if explicitly supplied.

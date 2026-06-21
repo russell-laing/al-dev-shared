@@ -21,8 +21,8 @@ SCOPE_PACK_DOC = "delegated-scope-pack.md"
 MULTI_PHASE_SKILLS = {
     "plugin-health-audit", "plugin-health-discover", "plugin-health-report",
     "plan-health-findings", "record-health-dispositions", "implement-health-plan",
-    "revise-health-plan", "sync-documentation-maps", "sync-documentation-maps-collect",
-    "sync-documentation-maps-apply", "sync-documentation-maps-write",
+    "revise-health-plan", "sync-map-documentation", "sync-map-documentation-collect",
+    "sync-map-documentation-apply", "sync-map-documentation-write",
     "audit-knowledge-quality", "fix-knowledge-quality", "ingest-friction-log",
     "al-dev-consolidate", "review-docs", "validate-plugin-neutrality", "regenerate-agent-projections",
 }
@@ -32,12 +32,12 @@ MULTI_PHASE_SKILLS = {
 # health-loop breadcrumb, the exact phantom-phase-progress surface this contract guards.
 DISPATCHING_SKILLS = {
     "plugin-health-discover", "plugin-health-report", "plan-health-findings",
-    "sync-documentation-maps", "audit-knowledge-quality", "fix-knowledge-quality",
+    "sync-map-documentation", "audit-knowledge-quality", "fix-knowledge-quality",
 }
 # `plugin-health-report` dispatches `verify-health-finding` agents in evidence mode
 # via superpowers:dispatching-parallel-agents — a real dispatch lane.
 DELEGATING_EXECUTION_SKILLS = {
-    "sync-documentation-maps-collect",
+    "sync-map-documentation-collect",
 }
 # `implement-health-plan` is intentionally absent: it executes inline, one task at
 # a time, and explicitly rejects subagent dispatch — wiring a delegated-scope-pack

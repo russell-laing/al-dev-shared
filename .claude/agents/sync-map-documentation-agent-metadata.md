@@ -1,11 +1,11 @@
 ---
-name: sync-documentation-maps-agent-metadata
+name: sync-map-documentation-agent-metadata
 description: >-
   Builds the active agent list from profile-al-dev-shared/agents/ and extracts
   frontmatter metadata (model, tools, description, callers); caller derivation
   is optional and may be skipped on script failure. Writes a structured
-  JSON snapshot to the run artifact directory. Called by /sync-documentation-maps
-  dispatch phase; its output is consumed by sync-documentation-maps-agent-compare.
+  JSON snapshot to the run artifact directory. Called by /sync-map-documentation
+  dispatch phase; its output is consumed by sync-map-documentation-agent-compare.
   Empty tool lists ([]) are normalized to the string "(none)" before output.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -16,7 +16,7 @@ tools: ["Read", "Bash", "Write"]
 | Field | Description |
 |---|---|
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
-| result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
+| result_dir | Absolute path to `.dev/sync-map-documentation-runs/<run_id>/` |
 
 ## Outputs
 

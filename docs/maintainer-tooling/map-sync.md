@@ -32,7 +32,7 @@ Think of it as four sequential phases:
 4. **Write** — Regenerates all derived outputs (diagrams, projections, documentation pages).
 
 You can pause between phases to review intermediate results, or run the full sequence in one go.
-The checkpoint file `.dev/sync-documentation-maps-checkpoint.json` tracks where you are in the
+The checkpoint file `.dev/sync-map-documentation-checkpoint.json` tracks where you are in the
 workflow, so you can interrupt and resume without losing state.
 
 ## Workflow
@@ -43,10 +43,10 @@ flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
 
-    skill_sync_documentation_maps["/sync-documentation-maps"]
-    skill_sync_documentation_maps_collect["/sync-documentation-maps-collect"]
-    skill_sync_documentation_maps_apply["/sync-documentation-maps-apply"]
-    skill_sync_documentation_maps_write["/sync-documentation-maps-write"]
+    skill_sync_documentation_maps["/sync-map-documentation"]
+    skill_sync_documentation_maps_collect["/sync-map-documentation-collect"]
+    skill_sync_documentation_maps_apply["/sync-map-documentation-apply"]
+    skill_sync_documentation_maps_write["/sync-map-documentation-write"]
     art_generated["derived docs + projections"]
 
     skill_sync_documentation_maps -- "checkpoint + audit results" --> skill_sync_documentation_maps_collect
@@ -67,10 +67,10 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-map-sync-journey -->
 ### Primary path
 
-1. `/sync-documentation-maps` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents.
-2. `/sync-documentation-maps-collect` — Collect audit results and dispatch background update agents for the /sync-documentation-maps flow.
-3. `/sync-documentation-maps-apply` — Applies validated update artifacts to docs/.
-4. `/sync-documentation-maps-write` — Final regeneration step after /sync-documentation-maps-apply; fourth step of the async sync flow.
+1. `/sync-map-documentation` — Use when plugin documentation maps are out of sync with the current codebase, or to verify accuracy after adding/removing skills or agents.
+2. `/sync-map-documentation-collect` — Collect audit results and dispatch background update agents for the /sync-map-documentation flow.
+3. `/sync-map-documentation-apply` — Applies validated update artifacts to docs/.
+4. `/sync-map-documentation-write` — Final regeneration step after /sync-map-documentation-apply; fourth step of the async sync flow.
 <!-- END GENERATED: maintainer-stage-map-sync-journey -->
 
 ## Key Artifacts
@@ -79,8 +79,8 @@ flowchart TD
 | Artifact | Role |
 | --- | --- |
 | `docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md` | Canonical inventory maps audited and updated by the stage. |
-| `.dev/sync-documentation-maps-checkpoint.json` | Records the active run, team identifiers, and current async phase. |
-| `.dev/sync-documentation-maps-runs/RUN_ID/` | Keeps raw audit results and validated update artifacts separate from the canonical maps. |
+| `.dev/sync-map-documentation-checkpoint.json` | Records the active run, team identifiers, and current async phase. |
+| `.dev/sync-map-documentation-runs/RUN_ID/` | Keeps raw audit results and validated update artifacts separate from the canonical maps. |
 | `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/` | Derived documentation regenerated only after the canonical maps are applied. |
 | `profile-al-dev-shared/generated/agents/` | Harness-native projections regenerated from canonical shared agent source. |
 <!-- END GENERATED: maintainer-stage-map-sync-artifacts -->

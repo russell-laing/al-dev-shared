@@ -1,7 +1,7 @@
 ---
-name: sync-documentation-maps-write
+name: sync-map-documentation-write
 description: >-
-  Final regeneration step after /sync-documentation-maps-apply; fourth step of
+  Final regeneration step after /sync-map-documentation-apply; fourth step of
   the async sync flow. After the maps are applied, regenerates the map
   diagrams, agent projections, the plugin graph, and the maintainer guide pages from
   their canonical sources, then commits the resulting artifacts. A regeneration
@@ -13,7 +13,7 @@ workflow:
   invoked-by: user
   repeatable: false
   inputs:
-    - .dev/sync-documentation-maps-checkpoint.json
+    - .dev/sync-map-documentation-checkpoint.json
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
   outputs:
@@ -27,17 +27,17 @@ workflow:
 
 # Sync Documentation Maps — Write (Regenerate and Commit)
 
-Final regeneration step after `/sync-documentation-maps-apply`; fourth step of
+Final regeneration step after `/sync-map-documentation-apply`; fourth step of
 the async sync flow. Regenerates Mermaid diagrams, harness-native agent
 projections, the plugin dependency graph, and the maintainer guide pages from the
 updated maps, then commits all changes.
 
 **Four-skill workflow:**
 
-1. `/sync-documentation-maps` — dispatch audit teams (~5 min, then exit)
-2. `/sync-documentation-maps-collect --team-ids <ids>` — collect results, spawn updates
-3. `/sync-documentation-maps-apply --team-ids <ids>` — validate artifacts, write maps
-4. `/sync-documentation-maps-write` — regenerate diagrams, projections, and commit (this skill)
+1. `/sync-map-documentation` — dispatch audit teams (~5 min, then exit)
+2. `/sync-map-documentation-collect --team-ids <ids>` — collect results, spawn updates
+3. `/sync-map-documentation-apply --team-ids <ids>` — validate artifacts, write maps
+4. `/sync-map-documentation-write` — regenerate diagrams, projections, and commit (this skill)
 
 **Working directory assumption:** All relative paths are resolved from
 `/Users/russelllaing/al-dev-shared`. Use absolute paths in Bash commands.
@@ -54,13 +54,13 @@ intention is not proof.
 
 ## Phase 0 — Verify Maps Are Written
 
-Read `.dev/sync-documentation-maps-checkpoint.json`. Confirm `status` **is**
-`"awaiting-write"` (the state `/sync-documentation-maps-apply` leaves on success).
+Read `.dev/sync-map-documentation-checkpoint.json`. Confirm `status` **is**
+`"awaiting-write"` (the state `/sync-map-documentation-apply` leaves on success).
 If it is anything else, the maps are not yet written — stop and instruct the user
-to run `/sync-documentation-maps-apply` first.
+to run `/sync-map-documentation-apply` first.
 
 ```bash
-cat /Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json
+cat /Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json
 ```
 
 Extract `run_id` → `RUN_ID`, `result_dir` → `RUN_DIR`, and `skip_commit` →
@@ -69,7 +69,7 @@ Extract `run_id` → `RUN_ID`, `result_dir` → `RUN_DIR`, and `skip_commit` →
 If `status` is not `"awaiting-write"`, stop with:
 
 ```text
-Maps not yet written. Run /sync-documentation-maps-apply first to validate
+Maps not yet written. Run /sync-map-documentation-apply first to validate
 artifacts and write the maps to docs/, then re-run this step.
 ```
 
@@ -129,7 +129,7 @@ If any fail, report:
 
 ```text
 One or more artifact updates failed. Maps have been written; derived artifacts
-may be stale. Check the errors above and re-run /sync-documentation-maps
+may be stale. Check the errors above and re-run /sync-map-documentation
 to regenerate missing artifacts.
 ```
 
@@ -199,20 +199,20 @@ If the commit exits non-zero, report the error and advise the user to inspect
 Set `phase` to `"complete"` and `status` to `"done"` in both checkpoint files.
 These are two distinct fields, not duplicates: `phase` records the furthest
 workflow position reached, while `status` records the run's lifecycle state that
-downstream skills (the `/sync-documentation-maps` Phase 0 cadence guard,
+downstream skills (the `/sync-map-documentation` Phase 0 cadence guard,
 `-collect`, and `-apply`) read. Do not collapse them into one field.
 
 ```bash
-# Update .dev/sync-documentation-maps-checkpoint.json
+# Update .dev/sync-map-documentation-checkpoint.json
 # Update ${RUN_DIR}/manifest.json
 ```
 
 Use the merge pattern in
-`.claude/skills/sync-documentation-maps/checkpoint-patterns.md`. Update only the
+`.claude/skills/sync-map-documentation/checkpoint-patterns.md`. Update only the
 two fields; preserve all pre-existing fields:
 
 ```bash
-CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-documentation-maps-checkpoint.json"
+CHECKPOINT_FILE="/Users/russelllaing/al-dev-shared/.dev/sync-map-documentation-checkpoint.json"
 jq '.phase = "complete" | .status = "done"' \
     "$CHECKPOINT_FILE" \
     > /tmp/sdm-checkpoint-tmp.json && \
@@ -227,7 +227,7 @@ jq '.phase = "complete" | .status = "done"' \
 Append a completion record to `.dev/progress.md`:
 
 ```text
-[<current-date>] sync-documentation-maps-write complete — RUN_ID maps written
+[<current-date>] sync-map-documentation-write complete — RUN_ID maps written
 and committed.
 ```
 
@@ -236,7 +236,7 @@ and committed.
 Print a final confirmation:
 
 ```text
-sync-documentation-maps workflow complete. Run ID: RUN_ID
+sync-map-documentation workflow complete. Run ID: RUN_ID
 ```
 
 ## Phase 5 — Preserve the health-loop breadcrumb

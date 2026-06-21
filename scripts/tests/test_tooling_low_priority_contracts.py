@@ -15,12 +15,12 @@ ACTIVE_TOOLING_SKILLS = sorted(
 )
 
 SYNC_MAP_AGENTS = [
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-metadata.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-compare.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-metadata.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-compare.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-agent-update.md",
-    REPO_ROOT / ".claude" / "agents" / "sync-documentation-maps-skill-update.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-agent-metadata.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-agent-compare.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-skill-metadata.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-skill-compare.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-agent-update.md",
+    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-skill-update.md",
 ]
 
 ARCHIVED_AUDIT_AGENTS = [
@@ -92,14 +92,14 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
         """skill-metadata agent must document phase_count and spawned_agents fields
         so discrepancy agent can detect phase_count_mismatch and agent_name_mismatch."""
         text = read(
-            ".claude/agents/sync-documentation-maps-skill-metadata.md"
+            ".claude/agents/sync-map-documentation-skill-metadata.md"
         )
         self.assertIn("phase_count", text)
         self.assertIn("spawned_agents", text)
 
     def test_sync_maps_agent_discrepancy_documents_all_five_types(self) -> None:
         """agent-discrepancy agent must document all five canonical discrepancy types."""
-        text = read(".claude/agents/sync-documentation-maps-agent-compare.md")
+        text = read(".claude/agents/sync-map-documentation-agent-compare.md")
         for dtype in (
             "missing_from_map",
             "stale_in_map",
@@ -113,7 +113,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
     def test_sync_maps_skill_discrepancy_documents_all_four_types(self) -> None:
         """skill-discrepancy agent must document all four canonical discrepancy types
         including phase_count_mismatch and agent_name_mismatch."""
-        text = read(".claude/agents/sync-documentation-maps-skill-compare.md")
+        text = read(".claude/agents/sync-map-documentation-skill-compare.md")
         for dtype in (
             "missing_from_map",
             "stale_in_map",
@@ -151,7 +151,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
         self.assertIn("proceed to the stale-open check", discover)
 
     def test_sync_maps_cadence_guard_keeps_only_operational_rule(self) -> None:
-        sync_maps = read(".claude/skills/sync-documentation-maps/SKILL.md")
+        sync_maps = read(".claude/skills/sync-map-documentation/SKILL.md")
 
         self.assertNotIn(
             "Abandoned runs spawn audit agents whose results are never read",
