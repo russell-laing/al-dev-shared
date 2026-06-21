@@ -1,43 +1,28 @@
-phase: 3
-status: complete
-result: ledger_closed
-stale_open_rows: 0
-plan_path: docs/superpowers/plans/2026-06-21-plugin-map-tooling-quality-fixes.md
-tasks_total: 7
+phase: 1
+status: in_progress
+result: tasks_executing
+plan_path: docs/superpowers/plans/2026-06-21-plugin-map-tooling-contract-tests.md
+tasks_total: 6
 tasks_completed:
 
-- task: "Task 1 — Anchor closes_event_ids placement in plan-health-findings"
-    commit: 12fa977
+- task: "Task 1 — Fix stale plan-health-findings rename tests"
+    commit: 458a455
     closes_event_ids:
-  - disp_20260621_000059
-- task: "Task 2 — Genericise user-gate wording in revise-health-plan"
-    commit: 3651fc2
+  - disp_20260621_000073
+- task: "Task 2 — Fix stale handoff-chain-map row assertion"
+    commit: 9e3df80
     closes_event_ids:
-  - disp_20260621_000060
-- task: "Task 3 — Restate halt-when-both-fail in sync-documentation-maps-apply"
-    commit: 07e7a65
+  - disp_20260621_000074
+- task: "Task 3 — Fix HEALTH_SKILLS contract — scripts/ prefix and discover membership"
+    commit: ea618f7
     closes_event_ids:
-  - disp_20260621_000062
-- task: "Task 4 — Define abandoned run_id note in sync-documentation-maps"
-    commit: 7dbe93e
+  - disp_20260621_000075
+- task: "Task 4 — Add skill-coverage marker to map_doc_sections test fixture"
+    commit: e515620
     closes_event_ids:
-  - disp_20260621_000064
-- task: "Task 5 — Rename agent health-rubber-duck to verify-health-finding"
-    commit: 9a42078
+  - disp_20260621_000076
+- task: "Task 5 — Guard stop_projection_check.py body under __main__"
+    commit: faf0594
     closes_event_ids:
-  - disp_20260621_000065
-- task: "Task 6 — Rename skill projection-sync to regenerate-projections"
-    commit: baffa6d
-    closes_event_ids:
-  - disp_20260621_000061
-- task: "Task 7 — Decline refuted finding disp_20260621_000063"
-    commit: b0bf912
-    closes_event_ids: []
+  - disp_20260621_000077
 executor_revision: baffa6d
-note: >-
-  All 7 tasks committed. Task 7 declined disp_20260621_000063 via the store
-  (new declined event disp_20260621_000066 closes it; plan's literal --event-id
-  reuse was incompatible with the store's unique-id rule, so closes_event_ids
-  was used instead). Next: Phase 2 verification, then Phase 3 ledger close-back
-  for the 6 fixed events (disp_20260621_000059/000060/000061/000062/000064/000065),
-  Phase 4 archival, Phase 5 commit + breadcrumb.
