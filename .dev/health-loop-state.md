@@ -1,18 +1,17 @@
 stage_completed: revise-plugin-plan
 completed_at: 2026-06-21
 next_command: /implement-plugin-health
-next_inputs:
-
-- docs/superpowers/plans/2026-06-21-strict-skill-naming-renames.md
+next_inputs: []
 fresh_session_recommended: true
 note: >-
-  Reconciled the strict-naming rename plan against its commentary review. All 7
-  commentary findings were in-scope plan-text fixes (verified true against live
-  files); 0 out-of-scope, 0 ledger re-dispositions, 0 user-gate forks. The plan
-  carries NO closes_event_ids (authored via writing-plans, not
-  plan-plugin-findings), so /implement-plugin-health will skip it — execute via
-  superpowers:subagent-driven-development or executing-plans instead, per the
-  plan header. New names CONFIRMED 2026-06-21 (regenerate-agent-projections,
-  validate-plugin-neutrality) — do not re-litigate. User will execute in a NEW
-  session. Tasks 1-2 are detailed; Tasks 3-4 (families) are OUTLINE behind a
-  checkpoint after Task 2.
+  PLAN ALREADY IMPLEMENTED 2026-06-21 — do NOT re-execute. The strict-naming
+  rename plan (docs/superpowers/plans/2026-06-21-strict-skill-naming-renames.md,
+  untracked) was executed via subagent-driven-development across commits
+  9c845b6, 1fd6f66, 1b76f79, 015b6f5, d5a49cf: all four rename groups landed,
+  old skill dirs are gone, new dirs exist, and only legitimate historical
+  references remain (a comment, immutable disposition-event test fixtures,
+  archived paths). The plan carried NO closes_event_ids, so there is no ledger
+  to close — next_command=/implement-plugin-health is the schema-required
+  successor for the revise-plugin-plan stage but is a no-op here. Nothing to do:
+  run /audit-plugin-health in a fresh session to start the next health loop,
+  which regenerates this breadcrumb.
