@@ -5,8 +5,9 @@ description: >-
   frontmatter metadata (name, description, argument-hint, workflow stage, phase count,
   spawned agents). Writes a structured JSON snapshot to the run artifact directory.
   Called by /sync-map-documentation dispatch phase; its output is consumed by
-  sync-map-documentation-skill-compare. spawned_agents entries: only
-  well-formed al-dev-shared: slugs are extracted; malformed ones are silently skipped.
+  sync-map-documentation-skill-compare. spawned_agents is derived by
+  scripts/derive-skill-spawned-agents.py — the same edge parser the map
+  generator uses — so it can never disagree with the generated drilldowns.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
@@ -44,8 +45,9 @@ Do not summarise findings — return only the path.
 ```
 
 `phase_count` is the count of `## Phase N` headings in `SKILL.md` (where N is a
-digit). `spawned_agents` is the list of all `al-dev-shared:<agent-name>` references
-in the body. These two fields are required by `sync-map-documentation-skill-compare`
+digit). `spawned_agents` is the per-skill list emitted by
+`scripts/derive-skill-spawned-agents.py` (canonical `al-dev-shared:<agent-name>`
+form). These two fields are required by `sync-map-documentation-skill-compare`
 to detect `phase_count_mismatch` and `agent_name_mismatch` discrepancy types.
 
 ---
@@ -70,15 +72,21 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
 - **argument_hint:** the `argument-hint:` frontmatter field value (empty string if absent).
 - **workflow_stage:** the `workflow.stage:` frontmatter field value (empty string if absent).
 - **phase_count:** count headings matching `## Phase N` (where N is a digit).
-- **spawned_agents:** extract only well-formed `al-dev-shared:[a-z-]+` references
-  from the body (lowercase agent slug after the namespace prefix). A reference is
-  malformed if its slug contains uppercase letters, trailing punctuation, is an
-  empty string, or contains internal whitespace. Skip malformed references rather
-  than recording them.
+- **spawned_agents:** do **not** hand-extract these from the body. Run
+  `python3 scripts/derive-skill-spawned-agents.py` once (it prints a JSON object
+  mapping every skill name to its sorted `al-dev-shared:<agent-name>` list) and
+  use this skill's entry verbatim. This script reuses the map generator's edge
+  parser, so it catches both canonical `al-dev-shared:` references and bare
+  references on spawn-hint lines (e.g. `Spawn **al-dev-solution-architect**`) —
+  matching the generated drilldowns exactly and avoiding the
+  `agent_name_mismatch` false positives that canonical-only matching produced.
+  If the script exits non-zero, fall back to extracting well-formed
+  `al-dev-shared:[a-z-]+` references from the body and note the fallback.
 
 ### Step 3 — Write JSON and return path
 
-Skills have no equivalent of `derive-agent-callers.py` for skill-to-skill references.
+`derive-skill-spawned-agents.py` covers skill→agent edges (see Step 2), but there
+is no equivalent deriver for skill-to-skill *caller* references.
 Set `callers: {}` always — omit the callers derivation step.
 
 Ensure `<result_dir>/audit/` exists (`mkdir -p`). Write `skill-metadata.json`.
