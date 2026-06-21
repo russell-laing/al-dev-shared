@@ -126,7 +126,10 @@ Once the user resolves a novel defect class this way, **append it as a new row
 to `.claude/knowledge/correction-patterns.md`** (review finding → canonical
 correction) before claiming done, so the next plan review classifies it
 mechanically instead of re-litigating it at the gate. This is how the loop
-learns — a one-off resolution becomes a repeatable pattern.
+learns — a one-off resolution becomes a repeatable pattern. If the user
+declines to formalize the pattern at the gate, proceed without appending the
+row, but note in the run summary that a pattern candidate was raised and not
+recorded, so it is not silently lost.
 
 ## Phase 4 — Coverage reconciliation and self-verification
 
