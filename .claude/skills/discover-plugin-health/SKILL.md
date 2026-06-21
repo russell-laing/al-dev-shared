@@ -235,7 +235,10 @@ Use this explicit mapping:
 - `naming` → `naming-convention-lens`
 - `all` → union of the three concrete dimensions
 
-4. **Clean up disk files after assembly:**
+4. **Clean up disk files after assembly** — run only after the assembled
+   findings file has been written in the previous step; if a cleanup command
+   fails, skipping it is acceptable (leftover `.dev/` scratch files are
+   harmless and never block the run):
 
    ```bash
    find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' -delete
