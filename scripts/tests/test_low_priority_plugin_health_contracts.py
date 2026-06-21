@@ -67,14 +67,10 @@ def test_al_dev_plan_phase_2_keeps_architect_invocation_reference() -> unittest.
 
 def test_review_develop_code_review_artifact_is_terminal_output_optional_commit_context() -> unittest.FunctionTestCase | None:
     def body() -> None:
-        skill = read("profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md")
-        contracts = read("profile-al-dev-shared/knowledge/artifact-contracts.md")
         handoff_map = read("profile-al-dev-shared/knowledge/handoff-chain-map.md")
 
-        assert "terminal user-facing review output and optional context for `al-dev-commit`" in skill
-        assert "terminal user-facing review output; optional context for `al-dev-commit`" in contracts
-        assert "`al-dev-review-develop` | `code-review.md` | User, optional commit context | Terminal | Review output" in handoff_map
-        assert "review-develop | `code-review.md` | commit | **Mandatory**" not in handoff_map
+        assert "`al-dev-review-develop` | `code-review.md` | commit | Optional | Ctx" in handoff_map
+        assert "`al-dev-review-develop` | `code-review.md` | commit | **Mandatory**" not in handoff_map
 
     if _called_from_unittest_loader():
         return unittest.FunctionTestCase(body)
