@@ -24,11 +24,7 @@ read into LLM context. Working memory holds only bash command outputs
 
 ## Phase-proof requirement
 
-This skill follows `../../knowledge/phase-proof-contract.md`: before reporting
-any phase complete, advancing to the next phase, or updating
-`.dev/health-loop-state.md`, emit a phase-proof block (observed command output
-or file-existence check) binding to that phase's deliverable. A restated
-intention is not proof.
+This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-proof block at each phase boundary before reporting completion or updating `.dev/health-loop-state.md`.
 
 ## Phase 0 — Resume Check
 
