@@ -124,10 +124,15 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
                 self.assertIn(dtype, text)
 
     def test_plugin_health_report_merges_rank_and_write_phase(self) -> None:
+        # Ranking and writing the dossier must stay in one merged phase. The
+        # phase number moved from 2 to 3 in 7ec3e89 (#839,#847), which inserted
+        # a "Filter and verify" phase ahead of it; the merge invariant is
+        # unchanged. The negative guards catch a re-split where writing would
+        # become its own phase after rank.
         text = read(".claude/skills/plugin-health-report/SKILL.md")
-        self.assertIn("## Phase 2 — Rank and Write Dossier", text)
-        self.assertNotIn("## Phase 3 - Write dossier", text)
-        self.assertNotIn("## Phase 3 - Write Dossier", text)
+        self.assertIn("## Phase 3 — Rank and Write Dossier", text)
+        self.assertNotIn("## Phase 4 — Write dossier", text)
+        self.assertNotIn("## Phase 4 — Write Dossier", text)
 
     def test_plugin_health_excludes_archived_tooling_skills(self) -> None:
         discover = read(".claude/skills/plugin-health-discover/SKILL.md")
@@ -160,7 +165,8 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
                 "single shared plugin surface"
             ],
             ".claude/skills/audit-knowledge-quality/SKILL.md": [
-                "offers user-gated fix guidance for HIGH-severity findings"
+                "the HIGH-severity fix guidance interactively "
+                "when the user opts in"
             ],
             ".claude/skills/regenerate-projections/SKILL.md": [
                 "unidirectionally regenerates harness-native agent projections"
