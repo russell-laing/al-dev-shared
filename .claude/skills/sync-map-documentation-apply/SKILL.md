@@ -10,7 +10,7 @@ description: >-
   not block writing the other — except when both surfaces fail validation, in
   which case the skill halts without writing either map. Run
   /sync-map-documentation-write next to regenerate diagrams and commit.
-argument-hint: "--team-ids <id>[,<id>] [--skip-commit]"
+argument-hint: "--team-ids <update-team-id>[,<update-team-id>] [--skip-commit]"
 workflow:
   stage: map-sync
   invoked-by: user
