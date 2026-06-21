@@ -30,6 +30,10 @@ this block verbatim in the aggregated dossier.
 
 ## Lens: Structural Conventions
 
+*These are file-**quality** checks (frontmatter, tool canonicality, output paths,
+header numbering), not design or placement decisions — those belong to the
+`design-*-lens-*` agents.*
+
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
