@@ -1,4 +1,4 @@
-# Sync Documentation Maps — Edit Cases
+# Sync Map Documentation — Edit Cases
 
 Reference document for discrepancy-fix logic used by the
 sync-map-documentation audit and update agents. Four sections cover two

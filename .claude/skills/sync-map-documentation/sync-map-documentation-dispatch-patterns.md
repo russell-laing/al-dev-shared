@@ -1,4 +1,4 @@
-# Sync-Documentation-Maps Audit-Agent Dispatch Patterns
+# Sync Map Documentation — Audit-Agent Dispatch Patterns
 
 Canonical dispatch template for the four audit agents used in
 `/sync-map-documentation` Phase 3. Reference this doc when adding new callers

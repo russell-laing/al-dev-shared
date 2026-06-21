@@ -25,7 +25,7 @@ workflow:
   next: [sync-map-documentation-collect]
 ---
 
-# Sync Documentation Maps
+# Sync Map Documentation
 
 Lightweight dispatch coordinator. Dispatches parallel background audit agents for
 skills and agents, writes a checkpoint with their agent IDs and artifact paths,

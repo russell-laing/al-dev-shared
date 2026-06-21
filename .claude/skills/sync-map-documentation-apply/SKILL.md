@@ -24,7 +24,7 @@ workflow:
   next: [sync-map-documentation-write]
 ---
 
-# Sync Documentation Maps — Apply (Validate & Write to docs/)
+# Sync Map Documentation — Apply (Validate & Write to docs/)
 
 Third step of the async sync flow. Reads updated map artifacts written
 by the background update agents, validates them, and writes the canonical docs/

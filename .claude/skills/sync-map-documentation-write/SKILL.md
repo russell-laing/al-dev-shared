@@ -25,7 +25,7 @@ workflow:
   next: [audit-plugin-health]
 ---
 
-# Sync Documentation Maps — Write (Regenerate and Commit)
+# Sync Map Documentation — Write (Regenerate and Commit)
 
 Final regeneration step after `/sync-map-documentation-apply`; fourth step of
 the async sync flow. Regenerates Mermaid diagrams, harness-native agent

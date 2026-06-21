@@ -22,7 +22,7 @@ workflow:
   next: [sync-map-documentation-apply]
 ---
 
-# Sync Documentation Maps — Collect
+# Sync Map Documentation — Collect
 
 Second step of the four-skill async sync workflow. Reads audit artifacts
 written by the remote audit teams, presents findings to the user, and
