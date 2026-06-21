@@ -91,7 +91,10 @@ Collect it first (/sync-documentation-maps-collect, then -apply, -write),
 or re-run with --force to abandon it and start fresh.
 ```
 
-With `FORCE=true`, note the abandoned `run_id` in the new run's progress entry.
+With `FORCE=true`, note the abandoned `run_id` in the new run's progress entry:
+append a line to `.dev/progress.md` of the form
+`abandoned <old RUN_ID>; superseded by <new RUN_ID>; reason: <prior status / why>`.
+This note is recorded only in `.dev/progress.md`, not in the checkpoint JSON.
 
 If `status` is `done` (or `FORCE=true` was passed), proceed to Phase 1.
 
