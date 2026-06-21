@@ -103,6 +103,24 @@ Agents: `design-skill-lens-shared-backbone`, `design-skill-lens-complexity`,
 | `design-skill-lens-preplanning` | `preplanning_skills`, `layer1_diagram_content` |
 | `design-skill-lens-surface-placement` | `no_agent_skills` |
 
+### Effective signal for tooling skills
+
+The design-skill lens count overstates *effective* design coverage for
+maintainer (tooling-surface) skills. Several lenses are formally dispatched but
+carry reduced semantic signal there:
+
+| Lens | Tooling-skill signal |
+|------|----------------------|
+| `design-skill-lens-complexity` | Full — phase counts and no-agent status are surface-neutral |
+| `design-skill-lens-handoff-gaps` | Full — tooling skills create and consume handoff artifacts |
+| `design-skill-lens-shared-backbone` | Partial — only when the skill spawns agents |
+| `design-skill-lens-near-duplicates` | Partial — phase-shape signal transfers, agent-usage signal does not |
+| `design-skill-lens-preplanning` | Weak — anchored in workflow-diagram placement, which maintainer skills rarely have |
+| `design-skill-lens-surface-placement` | Excluded by dispatch for the tooling surface |
+
+Treat the formal design-lens count for tooling skills as an upper bound, not the
+effective coverage.
+
 ### Dispatch template (skill lenses)
 
 ```text

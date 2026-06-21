@@ -127,7 +127,10 @@ Execute the following state machine in order:
    For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
    targets distributed skills and produces only non-actionable Move false
    positives against tooling-surface files. For surface `plugin`, use all
-   lenses unchanged.
+   lenses unchanged. Beyond this formal exclusion, several included design-skill
+   lenses carry reduced semantic signal for tooling skills — see the
+   effective-coverage note in
+   `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
