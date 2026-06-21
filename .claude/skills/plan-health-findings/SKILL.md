@@ -415,7 +415,8 @@ Pass as context to writing-plans all items listed in
 > **Survival caveat:** After writing-plans completes, run
 > `grep -c "closes_event_ids:" <plan-path>` and confirm the count equals the number
 > of plan tasks. A count of 0 means the sub-skill dropped the field — fix manually by adding a
-> `closes_event_ids:` block inside each task's verification block before handoff.
+> `closes_event_ids:` block as the final item inside each task's verification block
+> (after the verification steps — not in the task title or header) before handoff.
 
 - **Pre-empt the known correction patterns.** Before finalizing, consult
   `.claude/knowledge/correction-patterns.md` and author every task so no row applies
