@@ -245,13 +245,13 @@ tooling-skill design coverage unless those semantic gaps are considered.
 ### Inventory and Counts
 
 ```bash
-find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archive/*' | sort
+find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archived/*' | sort
 ```
 
 Value produced: 22 active non-archived lens agent paths, matching the Section 1 inventory list.
 
 ```bash
-find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archive/*' | wc -l
+find .claude/agents -maxdepth 1 -name '*lens*.md' ! -path '*/archived/*' | wc -l
 ```
 
 Value produced: `22`.
