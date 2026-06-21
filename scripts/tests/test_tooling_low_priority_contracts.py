@@ -168,7 +168,7 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
                 "the HIGH-severity fix guidance interactively "
                 "when the user opts in"
             ],
-            ".claude/skills/regenerate-projections/SKILL.md": [
+            ".claude/skills/regenerate-agent-projections/SKILL.md": [
                 "unidirectionally regenerates harness-native agent projections"
             ],
         }

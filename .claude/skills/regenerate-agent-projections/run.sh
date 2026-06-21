@@ -28,7 +28,7 @@ set -e
 
 # Projection Sync — Phase 0–4 orchestrator
 
-PROGRESS_FILE=".dev/regenerate-projections-progress.md"
+PROGRESS_FILE=".dev/regenerate-agent-projections-progress.md"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
@@ -101,7 +101,7 @@ if [ $current_phase -le 1 ]; then
     echo "✗ Validation failed with exit code $validator_exit"
     write_progress 1 blocked findings_reported
     echo ""
-    echo "Review the findings above. Run /regenerate-projections again when ready to retry."
+    echo "Review the findings above. Run /regenerate-agent-projections again when ready to retry."
     exit 1
   fi
   current_phase=2
@@ -186,7 +186,7 @@ if [ $current_phase -le 4 ]; then
   else
     write_progress 4 complete user_declined_commit
     echo ""
-    echo "Changes left uncommitted. You can run /regenerate-projections again to commit later."
+    echo "Changes left uncommitted. You can run /regenerate-agent-projections again to commit later."
     exit 0
   fi
 fi

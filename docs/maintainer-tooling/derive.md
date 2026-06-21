@@ -65,7 +65,7 @@ flowchart TD
 
     subgraph agent_lane["Agent source changed"]
         art_agent_source["agents/"]
-        skill_regenerate_projections["/regenerate-projections"]
+        skill_regenerate_agent_projections["/regenerate-agent-projections"]
         art_generated_agents["generated/agents/"]
     end
     subgraph knowledge_lane["Knowledge source changed"]
@@ -77,9 +77,9 @@ flowchart TD
     art_shared_surface["shared authored surface"]
     skill_align_harness_repos["/align-harness-repos"]
 
-    art_agent_source --> skill_regenerate_projections
-    skill_regenerate_projections --> art_generated_agents
-    skill_regenerate_projections --> skill_align_harness_repos
+    art_agent_source --> skill_regenerate_agent_projections
+    skill_regenerate_agent_projections --> art_generated_agents
+    skill_regenerate_agent_projections --> skill_align_harness_repos
     art_knowledge_source --> skill_audit_knowledge_quality
     skill_audit_knowledge_quality --> art_knowledge_quality_report
     art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality
@@ -88,7 +88,7 @@ flowchart TD
     skill_fix_knowledge_quality --> skill_align_harness_repos
     art_shared_surface --> skill_align_harness_repos
 
-    class skill_regenerate_projections userSkill
+    class skill_regenerate_agent_projections userSkill
     class skill_audit_knowledge_quality userSkill
     class skill_fix_knowledge_quality userSkill
     class skill_align_harness_repos userSkill
@@ -105,7 +105,7 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-derive-journey -->
 ### Agent source changed
 
-1. Run `/regenerate-projections` to validate authored agents and regenerate harness-native projections.
+1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.
 2. Run `/align-harness-repos` to verify the shared source remains harness-neutral.
 
 ### Knowledge source changed

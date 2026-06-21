@@ -452,14 +452,14 @@ DISCOVER_REQUIRED_NEXT = {
 }
 
 DERIVE_REQUIRED_SKILLS = {
-    "regenerate-projections",
+    "regenerate-agent-projections",
     "audit-knowledge-quality",
     "fix-knowledge-quality",
     "align-harness-repos",
 }
 
 DERIVE_REQUIRED_INPUTS = {
-    "regenerate-projections": ("profile-al-dev-shared/agents/",),
+    "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
     "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
     "align-harness-repos": (
@@ -470,13 +470,13 @@ DERIVE_REQUIRED_INPUTS = {
 }
 
 DERIVE_REQUIRED_OUTPUTS = {
-    "regenerate-projections": ("profile-al-dev-shared/generated/agents/",),
+    "regenerate-agent-projections": ("profile-al-dev-shared/generated/agents/",),
     "audit-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
     "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
 }
 
 DERIVE_REQUIRED_NEXT = {
-    "regenerate-projections": ("align-harness-repos",),
+    "regenerate-agent-projections": ("align-harness-repos",),
     "audit-knowledge-quality": ("fix-knowledge-quality",),
     "fix-knowledge-quality": ("align-harness-repos",),
 }
@@ -737,7 +737,7 @@ def render_derive_stage_detail(
         "",
         '    subgraph agent_lane["Agent source changed"]',
         '        art_agent_source["agents/"]',
-        '        skill_regenerate_projections["/regenerate-projections"]',
+        '        skill_regenerate_agent_projections["/regenerate-agent-projections"]',
         '        art_generated_agents["generated/agents/"]',
         "    end",
         '    subgraph knowledge_lane["Knowledge source changed"]',
@@ -749,9 +749,9 @@ def render_derive_stage_detail(
         '    art_shared_surface["shared authored surface"]',
         '    skill_align_harness_repos["/align-harness-repos"]',
         "",
-        "    art_agent_source --> skill_regenerate_projections",
-        "    skill_regenerate_projections --> art_generated_agents",
-        "    skill_regenerate_projections --> skill_align_harness_repos",
+        "    art_agent_source --> skill_regenerate_agent_projections",
+        "    skill_regenerate_agent_projections --> art_generated_agents",
+        "    skill_regenerate_agent_projections --> skill_align_harness_repos",
         "    art_knowledge_source --> skill_audit_knowledge_quality",
         "    skill_audit_knowledge_quality --> art_knowledge_quality_report",
         '    art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality',
@@ -760,7 +760,7 @@ def render_derive_stage_detail(
         "    skill_fix_knowledge_quality --> skill_align_harness_repos",
         "    art_shared_surface --> skill_align_harness_repos",
         "",
-        "    class skill_regenerate_projections userSkill",
+        "    class skill_regenerate_agent_projections userSkill",
         "    class skill_audit_knowledge_quality userSkill",
         "    class skill_fix_knowledge_quality userSkill",
         "    class skill_align_harness_repos userSkill",
@@ -1006,7 +1006,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             [
                 "### Agent source changed",
                 "",
-                "1. Run `/regenerate-projections` to validate authored agents and regenerate harness-native projections.",
+                "1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.",
                 "2. Run `/align-harness-repos` to verify the shared source remains harness-neutral.",
                 "",
                 "### Knowledge source changed",

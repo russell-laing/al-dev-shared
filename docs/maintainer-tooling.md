@@ -191,7 +191,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/align-harness-repos` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface by running validate_harness_neutrality.py, which checks for forbidden harness-specific tokens across seven classes (Claude tool tokens, dispatch tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP tokens; and harness-specific session wording) that could break distributable content. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
-| `/regenerate-projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
+| `/regenerate-agent-projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 
 ### Inputs and outputs
 
@@ -208,11 +208,11 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/plan-health-findings` | `docs/health/dispositions-open.md`, `docs/health/dispositions-index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | `docs/superpowers/plans/<date>-<topic>.md` | `/implement-health-plan` |
 | `/record-health-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/plan-health-findings` |
 | `/revise-health-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/implement-health-plan` |
-| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-health-plan-progress.md` | `/regenerate-projections`, `/align-harness-repos`, `/plugin-health-audit` |
+| `/implement-health-plan` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-health-plan-progress.md` | `/regenerate-agent-projections`, `/align-harness-repos`, `/plugin-health-audit` |
 | `/align-harness-repos` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | `/audit-knowledge-quality` |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/` | `docs/al-dev-knowledge-quality.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` | `/align-harness-repos` |
-| `/regenerate-projections` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/align-harness-repos` |
+| `/regenerate-agent-projections` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/align-harness-repos` |
 <!-- END GENERATED: maintainer-skills-tables -->
 
 ### Appendix C: Generated Diagnostics
@@ -231,7 +231,7 @@ against the live skill body before treating it as work.
 | Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-health-plan, /record-health-dispositions, /revise-health-plan; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-documentation-maps-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-documentation-maps-write; consumed by no skill |
-| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-projections, /sync-documentation-maps-write; consumed by no skill |
+| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-documentation-maps-write; consumed by no skill |
 | Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-health-findings; produced by no skill |
 | Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-health-plan, /plan-health-findings, /plugin-health-report, /record-health-dispositions, /revise-health-plan; produced by no skill |
 | Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-health-plan; produced by no skill |
@@ -251,8 +251,8 @@ against the live skill body before treating it as work.
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-21 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-21 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-21 |
-| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-21 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
 | Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-21 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
 | Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-21 |
