@@ -136,6 +136,7 @@ Apply the validation rules and all-surfaces-invalid stop rule from the
 
 Each surface is validated independently — a valid artifact for one surface
 is written to `docs/` even when the other surface's artifact is invalid.
+When **both** surfaces fail validation, the skill halts without writing either map.
 
 ---
 
