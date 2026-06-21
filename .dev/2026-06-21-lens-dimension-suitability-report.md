@@ -356,6 +356,18 @@ nl -ba .claude/agents/quality-agent-lens-structure.md | sed -n '1,45p'
 Value produced: frontmatter and structural convention checks, including filename, frontmatter, tool, Inputs/Outputs, and heading checks.
 
 ```bash
+nl -ba .claude/agents/design-agent-lens-tool-hygiene.md | sed -n '1,50p'
+```
+
+Value produced: a direct design-agent lens spot check showing tool-hygiene inputs, design concern, red flags, and severity rules.
+
+```bash
+nl -ba .claude/agents/design-skill-lens-surface-placement.md | sed -n '1,45p'
+```
+
+Value produced: a direct design-skill lens spot check showing surface-placement scope, maintainer-surface guard, and Move scoring signals.
+
+```bash
 nl -ba .claude/agents/quality-skill-lens-name-fit.md | sed -n '1,48p'
 ```
 
@@ -457,14 +469,10 @@ Value produced after final run: file present at `/Users/russelllaing/al-dev-shar
 wc -l "$RPT"
 ```
 
-Value produced after final run: `470` lines.
+Value produced after final run: `478` lines.
 
 ```bash
 git -C "$REPO" status --short .dev/2026-06-21-lens-dimension-suitability-report.md
 ```
 
-Value produced after final run:
-
-```text
- M .dev/2026-06-21-lens-dimension-suitability-report.md
-```
+Value produced after final committed run: no output, meaning the report path was clean.
