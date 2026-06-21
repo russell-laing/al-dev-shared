@@ -102,20 +102,21 @@ def test_low_priority_skill_descriptions_match_current_behavior() -> unittest.Fu
 def test_repo_local_map_suggestions_skill_uses_maintainer_name() -> unittest.FunctionTestCase | None:
     def body() -> None:
         old_path = REPO_ROOT / ".claude/skills/al-dev-map-suggestions-verify/SKILL.md"
-        new_path = REPO_ROOT / ".claude/skills/verify-map-suggestions/SKILL.md"
+        stale_path = REPO_ROOT / ".claude/skills/verify-map-suggestions/SKILL.md"
+        new_path = REPO_ROOT / ".claude/skills/plan-health-findings/SKILL.md"
         assert not old_path.exists(), "repo-local maintainer skill still uses al-dev-* name"
+        assert not stale_path.exists(), "stale verify-map-suggestions skill still present; should be plan-health-findings"
         assert new_path.is_file(), "renamed repo-local maintainer skill is missing"
         text = new_path.read_text(encoding="utf-8")
-        assert "name: verify-map-suggestions" in text
-        assert "/verify-map-suggestions" in text
-        assert "/al-dev-map-suggestions-verify" not in text
+        assert "name: plan-health-findings" in text
+        assert "/verify-map-suggestions" not in text
 
     if _called_from_unittest_loader():
         return unittest.FunctionTestCase(body)
     body()
 
 
-def test_repo_local_workflows_reference_verify_map_suggestions() -> unittest.FunctionTestCase | None:
+def test_repo_local_workflows_reference_plan_health_findings() -> unittest.FunctionTestCase | None:
     def body() -> None:
         for path in [
             ".claude/skills/plugin-health-report/SKILL.md",
@@ -123,7 +124,7 @@ def test_repo_local_workflows_reference_verify_map_suggestions() -> unittest.Fun
             "docs/al-dev-naming-convention.md",
         ]:
             text = read(path)
-            assert "verify-map-suggestions" in text, f"{path} lacks renamed maintainer command"
+            assert "plan-health-findings" in text, f"{path} lacks renamed maintainer command"
 
     if _called_from_unittest_loader():
         return unittest.FunctionTestCase(body)
