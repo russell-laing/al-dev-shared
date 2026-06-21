@@ -455,14 +455,14 @@ DERIVE_REQUIRED_SKILLS = {
     "regenerate-agent-projections",
     "audit-knowledge-quality",
     "fix-knowledge-quality",
-    "align-harness-repos",
+    "validate-plugin-neutrality",
 }
 
 DERIVE_REQUIRED_INPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
     "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
-    "align-harness-repos": (
+    "validate-plugin-neutrality": (
         "profile-al-dev-shared/skills/",
         "profile-al-dev-shared/agents/",
         "profile-al-dev-shared/knowledge/",
@@ -476,9 +476,9 @@ DERIVE_REQUIRED_OUTPUTS = {
 }
 
 DERIVE_REQUIRED_NEXT = {
-    "regenerate-agent-projections": ("align-harness-repos",),
+    "regenerate-agent-projections": ("validate-plugin-neutrality",),
     "audit-knowledge-quality": ("fix-knowledge-quality",),
-    "fix-knowledge-quality": ("align-harness-repos",),
+    "fix-knowledge-quality": ("validate-plugin-neutrality",),
 }
 
 
@@ -747,7 +747,7 @@ def render_derive_stage_detail(
         '        skill_fix_knowledge_quality["/fix-knowledge-quality"]',
         "    end",
         '    art_shared_surface["shared authored surface"]',
-        '    skill_align_harness_repos["/align-harness-repos"]',
+        '    skill_align_harness_repos["/validate-plugin-neutrality"]',
         "",
         "    art_agent_source --> skill_regenerate_agent_projections",
         "    skill_regenerate_agent_projections --> art_generated_agents",
@@ -1007,7 +1007,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                 "### Agent source changed",
                 "",
                 "1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.",
-                "2. Run `/align-harness-repos` to verify the shared source remains harness-neutral.",
+                "2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.",
                 "",
                 "### Knowledge source changed",
                 "",
@@ -1017,7 +1017,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                 "",
                 "### Any shared source changed",
                 "",
-                "Run `/align-harness-repos` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.",
+                "Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.",
             ]
         )
 

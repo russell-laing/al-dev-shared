@@ -159,7 +159,7 @@ SHELLISH_HINTS = (
 IGNORED_EXTERNAL_SKILL_REFS = frozenset(
     {
         "al-dev-init-context",
-        "align-harness-repos",
+        "validate-plugin-neutrality",
         "analyze-agent-design",
         "analyze-skill-design",
         "audit-knowledge-quality",

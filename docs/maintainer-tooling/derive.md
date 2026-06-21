@@ -29,18 +29,18 @@ The stage has three parallel paths:
 
 **Agent source changed:**
 
-1. Run `/regenerate-projections` to validate the edited agents and regenerate harness-native projections
+1. Run `/regenerate-agent-projections` to validate the edited agents and regenerate harness-native projections
    for Claude Code, Copilot, and Codex.
-2. Run `/align-harness-repos` to verify the shared surface remains harness-neutral.
+2. Run `/validate-plugin-neutrality` to verify the shared surface remains harness-neutral.
 
 **Knowledge source changed:**
 
 1. Run `/audit-knowledge-quality` to check for structural issues (stub sections, incomplete headers).
 2. If HIGH-severity findings are discovered and approved, run `/fix-knowledge-quality` to fix them.
-3. Re-run `/align-harness-repos` to ensure no harness-specific leakage was introduced by the fixes.
+3. Re-run `/validate-plugin-neutrality` to ensure no harness-specific leakage was introduced by the fixes.
 
 **Any shared source changed (skills, agents, or knowledge):**
-Always run `/align-harness-repos` as a final validation step. This scans for:
+Always run `/validate-plugin-neutrality` as a final validation step. This scans for:
 
 - Claude Code-specific tokens or references
 - Copilot-specific tokens or references
@@ -75,7 +75,7 @@ flowchart TD
         skill_fix_knowledge_quality["/fix-knowledge-quality"]
     end
     art_shared_surface["shared authored surface"]
-    skill_align_harness_repos["/align-harness-repos"]
+    skill_align_harness_repos["/validate-plugin-neutrality"]
 
     art_agent_source --> skill_regenerate_agent_projections
     skill_regenerate_agent_projections --> art_generated_agents
@@ -106,7 +106,7 @@ flowchart TD
 ### Agent source changed
 
 1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.
-2. Run `/align-harness-repos` to verify the shared source remains harness-neutral.
+2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.
 
 ### Knowledge source changed
 
@@ -116,7 +116,7 @@ flowchart TD
 
 ### Any shared source changed
 
-Run `/align-harness-repos` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.
+Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.
 <!-- END GENERATED: maintainer-stage-derive-journey -->
 
 ## Key Artifacts

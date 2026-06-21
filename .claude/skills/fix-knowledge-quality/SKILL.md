@@ -17,7 +17,7 @@ workflow:
     - docs/al-dev-knowledge-quality.md
   outputs:
     - profile-al-dev-shared/knowledge/
-  next: [align-harness-repos]
+  next: [validate-plugin-neutrality]
 ---
 
 # Fix Knowledge Quality
@@ -123,7 +123,7 @@ Wait for all agents to complete. Present each agent's summary.
 ## Phase 4 — Validate neutrality, then post-fix options
 
 **Mandatory neutrality gate.** If any file edited in this run is under
-`profile-al-dev-shared/`, automatically invoke `/align-harness-repos` (or run
+`profile-al-dev-shared/`, automatically invoke `/validate-plugin-neutrality` (or run
 `scripts/validate_harness_neutrality.py` directly) before offering any further choice.
 If it reports forbidden harness tokens, surface them and stop — the fixes are not
 complete until neutrality passes. If no shared file was edited, note "no shared-surface

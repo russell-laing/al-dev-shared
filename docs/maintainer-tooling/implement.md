@@ -37,8 +37,8 @@ Run `/implement-health-plan --plan <path>` to execute the plan from Decide. The 
    `closes_event_ids:` identifiers. This proves the work happened and links the fix back to the
    original finding.
 5. **Run Derive (if needed, automatic)** — If implementation changed shared agents/knowledge/skills,
-   the skill automatically runs `/regenerate-projections`, `/audit-knowledge-quality`, `/fix-knowledge-quality`
-   (if HIGH items exist), and `/align-harness-repos` to ensure the shared surface is still valid and
+   the skill automatically runs `/regenerate-agent-projections`, `/audit-knowledge-quality`, `/fix-knowledge-quality`
+   (if HIGH items exist), and `/validate-plugin-neutrality` to ensure the shared surface is still valid and
    harness-neutral. You don't need to run these manually—the implementer handles it.
 6. **Commit and close the loop** — Write the final ledger update and set `.dev/health-loop-state.md`
    to `next_command: none`, marking the loop as complete.

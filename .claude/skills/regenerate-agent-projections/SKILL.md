@@ -13,7 +13,7 @@ workflow:
     - profile-al-dev-shared/agents/
   outputs:
     - profile-al-dev-shared/generated/agents/
-  next: [align-harness-repos]
+  next: [validate-plugin-neutrality]
 ---
 
 # Projection Sync Skill

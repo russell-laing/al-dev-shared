@@ -21,7 +21,7 @@ workflow:
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-health-plan-progress.md
-  next: [regenerate-agent-projections, align-harness-repos, plugin-health-audit]
+  next: [regenerate-agent-projections, validate-plugin-neutrality, plugin-health-audit]
 ---
 
 # Implement Health Plan
@@ -34,7 +34,7 @@ Loop position:
 
 `/plugin-health-audit` → dossier → `/record-health-dispositions` →
 `/plan-health-findings` → plan → **`/implement-health-plan`** → fixed events →
-`/regenerate-agent-projections` / `/align-harness-repos`
+`/regenerate-agent-projections` / `/validate-plugin-neutrality`
 
 ---
 
@@ -404,7 +404,7 @@ execution.
 - If any `profile-al-dev-shared/agents/*.md` changed → invoke
   `regenerate-agent-projections`
 - If any skills, agents, or knowledge files under `profile-al-dev-shared/`
-  changed → invoke `align-harness-repos`
+  changed → invoke `validate-plugin-neutrality`
 
 Check by inspecting the task commits. `<first-task-commit>` is the `commit`
 value of the first entry in `tasks_completed` from the checkpoint file
@@ -434,7 +434,7 @@ closed:
 - `fresh_session_recommended: false`
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/regenerate-agent-projections` and
-  `/align-harness-repos` next (see Phase 4 "Regenerate derived artifacts").
+  `/validate-plugin-neutrality` next (see Phase 4 "Regenerate derived artifacts").
   Then run `/plugin-health-audit` to start the next health loop.
 
 ### Ledger-close commit

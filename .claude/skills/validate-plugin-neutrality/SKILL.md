@@ -1,5 +1,5 @@
 ---
-name: align-harness-repos
+name: validate-plugin-neutrality
 description: >-
   Validate harness neutrality in the al-dev-shared single shared plugin surface
   by running validate_harness_neutrality.py, which checks for forbidden
@@ -19,7 +19,7 @@ workflow:
   next: [audit-knowledge-quality]
 ---
 
-# Skill: /align-harness-repos
+# Skill: /validate-plugin-neutrality
 
 Validate that the shared plugin surface (`profile-al-dev-shared/`) contains no
 harness-specific tokens or leakage. This ensures the authored content remains
@@ -153,6 +153,6 @@ If exit 0, report: "✓ All harness-neutrality issues resolved."
 If exit 1, present remaining findings and note which require manual review.
 
 **Knowledge-quality loop:** This is the final step of the
-`/audit-knowledge-quality` → `/fix-knowledge-quality` → `/align-harness-repos`
+`/audit-knowledge-quality` → `/fix-knowledge-quality` → `/validate-plugin-neutrality`
 loop. On exit 0, re-run `/audit-knowledge-quality` to confirm the fixes are
 clean.

@@ -542,7 +542,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "    - profile-al-dev-shared/agents/\n"
             "  outputs:\n"
             "    - profile-al-dev-shared/generated/agents/\n"
-            "  next: [align-harness-repos]\n",
+            "  next: [validate-plugin-neutrality]\n",
         )
         _write_skill(
             skills,
@@ -572,12 +572,12 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "    - docs/al-dev-knowledge-quality.md\n"
             "  outputs:\n"
             "    - profile-al-dev-shared/knowledge/\n"
-            "  next: [align-harness-repos]\n",
+            "  next: [validate-plugin-neutrality]\n",
         )
         _write_skill(
             skills,
-            "align-harness-repos",
-            "name: align-harness-repos\n"
+            "validate-plugin-neutrality",
+            "name: validate-plugin-neutrality\n"
             "description: Validate neutrality.\n"
             "workflow:\n"
             "  stage: derive\n"
@@ -599,7 +599,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         assert 'skill_regenerate_agent_projections["/regenerate-agent-projections"]' in text
         assert 'skill_audit_knowledge_quality["/audit-knowledge-quality"]' in text
         assert 'skill_fix_knowledge_quality["/fix-knowledge-quality"]' in text
-        assert 'skill_align_harness_repos["/align-harness-repos"]' in text
+        assert 'skill_align_harness_repos["/validate-plugin-neutrality"]' in text
         assert 'art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality' in text
         assert "skill_fix_knowledge_quality --> skill_align_harness_repos" in text
         assert 'art_generated_agents["generated/agents/"]' in text
