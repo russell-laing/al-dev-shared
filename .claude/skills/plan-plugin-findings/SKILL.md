@@ -388,7 +388,12 @@ additional source-file reads):
 
 `proceed` (claim substantiated), `skip` (claim refuted), `modify` (partially
 substantiated — adjust scope). Maps from the agent's duck-check verdicts:
-`ACCEPT → proceed`, `REJECT → skip`, `DEFER → skip`.
+`ACCEPT → proceed`, `REJECT → skip`, `DEFER → skip`. A `skip` (from either
+`REJECT` or `DEFER`) writes no Phase 4 task, so the accepted event stays open
+by default; if the skip is because the claim was *refuted*, close it via the
+refuted-skip ledger-action requirement above (append a `declined` disposition)
+— this is distinct from the Phase 4 "spec-only tasks must not earn closure"
+rule, which governs `modify` verdicts reduced to documentation-only tasks.
 
 Every generated plan header must include a `health_filters:` block listing the
 active surfaces and dimensions (e.g. `surfaces: [plugin]`, `dimensions: [quality, naming]`).
