@@ -1,6 +1,6 @@
 ---
 name: health-rubber-duck
-description: Verify a single health-audit finding (or a group of findings sharing one subject file) against the live codebase and return only a compact rubber-duck record. Runs the Universal U1–U3 checks plus the type-specific check for the finding's verb, or — in evidence mode — confirms a cited file:line snippet still holds. Reads subject files in its own context so the dispatching skill's context stays small. Returns proceed | modify | skip verdicts; never echoes file contents. Includes a generated-path rejection gate (Step 5) that fires before U1–U3 checks.
+description: Verify a single health-audit finding (or a group of findings sharing one subject file) against the live codebase and return only a compact rubber-duck record. Runs the Universal U1–U3 checks plus the type-specific check for the finding's verb, or — in evidence mode — confirms a cited file:line snippet still holds (running markdownlint deterministically for lint-class claims such as MD040 rather than eyeballing). Reads subject files in its own context so the dispatching skill's context stays small. Returns proceed | modify | skip verdicts; never echoes file contents. Includes a generated-path rejection gate (Step 5) that fires before U1–U3 checks.
 model: sonnet
 tools: ["Read", "Bash"]
 ---
@@ -60,6 +60,24 @@ beyond the short evidence snippet a record needs.
      holds. Snippet present AND claimed problem still holds → `verified`.
      Snippet absent OR claim no longer true → `dropped: <reason>`. Partial or
      ambiguous cases → `dropped: ambiguous claim`.
+   - **evidence mode — deterministic lint cross-check (mandatory, takes priority).**
+     When a finding's claimed problem is a deterministic markdownlint rule —
+     missing code-block language tag (MD040), trailing spaces (MD009), duplicate
+     heading (MD024), first-line heading (MD041), and the like — you MUST NOT
+     decide by eyeballing fences or counting lines (an LLM does this unreliably).
+     Run the linter and decide from its output:
+
+     ```bash
+     ROOT=$(git rev-parse --show-toplevel)
+     markdownlint --config "$ROOT/.markdownlint.json" "<subject_path>"
+     ```
+
+     The verdict for a lint-class finding is then purely: linter reports the
+     matching rule at (or within a line or two of) the cited line → `verified`;
+     linter reports no such violation → `dropped: markdownlint reports no <rule>
+     at <file:line>`. Use this in place of the snippet-eyeballing check above for
+     any lint-class claim. (If `markdownlint` is unavailable on PATH, fall back to
+     the snippet check and append `— linter unavailable, verified by inspection`.)
 
 4. **Staleness (if `findings_date` supplied).** For each distinct `subject_path`,
    run once:

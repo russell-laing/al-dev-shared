@@ -1,6 +1,6 @@
 ---
 name: quality-agent-lens-structure
-description: Apply Structural Conventions lens to agent files — checks frontmatter completeness, tool canonicality, Inputs/Outputs tables, header numbering, and code block language tags. Returns a findings block.
+description: Apply Structural Conventions lens to agent files — checks frontmatter completeness, tool canonicality, Inputs/Outputs tables, and header numbering. Returns a findings block.
 model: haiku
 tools: ["Read"]
 ---
@@ -59,7 +59,6 @@ agent name from the filename (strip directory path and `.md` extension).
   their absence
 - Phase/step headers are numbered consistently — not mixing "Phase N" and "Step N"
   in the same file
-- Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
 
 **Not a structural requirement — do not flag:** the presence, absence, or style
 of a top-level `# <name>` heading. Lens agents conventionally begin directly with
@@ -67,6 +66,13 @@ of a top-level `# <name>` heading. Lens agents conventionally begin directly wit
 freely. Do not raise a finding for a missing top-level heading or for
 heading-style variance between sibling agents — there is no convention requiring
 either.
+
+**Not a structural requirement — do not flag:** missing code-block language tags
+(markdownlint rule MD040). This is a deterministic, line-exact lint check that an
+LLM scanning fences performs unreliably, and it is already enforced by the
+`.claude/hooks/post_edit_markdownlint.py` post-edit hook and the commit preflight.
+Do not raise MD040 findings here — they are redundant and historically dominated
+by false positives.
 
 ---
 
@@ -76,7 +82,7 @@ either.
 - Medium: missing Inputs/Outputs sections, non-canonical tool names, filename not
   matching the convention **for its surface** (see surface-aware check above), or
   skill-only fields in frontmatter
-- Low: numbering inconsistency or missing code block language tags
+- Low: numbering inconsistency
 
 ---
 

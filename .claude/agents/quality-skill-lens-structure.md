@@ -1,6 +1,6 @@
 ---
 name: quality-skill-lens-structure
-description: Apply Structural Conventions lens to SKILL.md files — checks frontmatter fields, argument-hint presence, output file naming, header numbering, and code block language tags. Returns a findings block.
+description: Apply Structural Conventions lens to SKILL.md files — checks frontmatter fields, argument-hint presence, output file naming, and header numbering. Returns a findings block.
 model: haiku
 tools: ["Read"]
 ---
@@ -46,13 +46,19 @@ skill name from the parent directory name.
 - Output files named in prose step instructions — exclude frontmatter `outputs:`
   fields and code-block examples — follow the `.dev/YYYY-MM-DD-<skill>-*.md`
   naming convention (or `docs/` for persistent report-style outputs)
-- Every code block has a language tag (`bash`, `markdown`, `python`, etc.)
+
+**Not a structural requirement — do not flag:** missing code-block language tags
+(markdownlint rule MD040). This is a deterministic, line-exact lint check that an
+LLM scanning fences performs unreliably, and it is already enforced by the
+`.claude/hooks/post_edit_markdownlint.py` post-edit hook and the commit preflight.
+Do not raise MD040 findings here — they are redundant and historically dominated
+by false positives.
 
 **Severity rules:**
 
 - Medium: missing or inconsistent frontmatter fields, `argument-hint` absent
   when body uses optional argument, output file naming doesn't follow convention
-- Low: numbering inconsistency or missing code block language tags
+- Low: numbering inconsistency
 
 ---
 

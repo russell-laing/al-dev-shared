@@ -83,8 +83,13 @@ file into a single agent call. Pass:
 - `findings_date:` omit (staleness is handled separately in the §1c staleness check above)
 
 Each agent confirms whether the quoted snippet exists at (or near) that location
-and whether the claimed problem still holds. The parent collects the returned
-`verified | dropped` table — it must **not** open the cited files itself.
+and whether the claimed problem still holds. For **lint-class claims** (e.g. a
+missing code-block language tag / MD040), the agent runs `markdownlint`
+deterministically and decides from its output rather than eyeballing — an LLM
+scanning fences by line number is unreliable (a 2026-06-21 sweep saw 45/45 such
+findings false, 8 wrongly "verified" by eyeballing before this cross-check was
+added). The parent collects the returned `verified | dropped` table — it must
+**not** open the cited files itself.
 
 Apply the results:
 
