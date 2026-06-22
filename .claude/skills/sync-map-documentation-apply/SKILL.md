@@ -8,7 +8,7 @@ description: >-
   the run directory, and writes both documentation maps to docs/. Each surface
   is validated independently — an invalid or missing artifact for one map does
   not block writing the other — except when both surfaces fail validation, in
-  which case the skill halts without writing either map. Run
+  which case the skill reports the validation failure and stops without writing either map. Run
   /sync-map-documentation-write next to regenerate diagrams and commit.
 argument-hint: "--team-ids <update-team-id>[,<update-team-id>] [--skip-commit]"
 workflow:
@@ -123,7 +123,7 @@ Apply the validation rules and all-surfaces-invalid stop rule from the
 
 Each surface is validated independently — a valid artifact for one surface
 is written to `docs/` even when the other surface's artifact is invalid.
-When **both** surfaces fail validation, the skill halts without writing either map.
+When **both** surfaces fail validation, stop: "Validation failed for both surfaces. Stopping without writing either map."
 
 ---
 
