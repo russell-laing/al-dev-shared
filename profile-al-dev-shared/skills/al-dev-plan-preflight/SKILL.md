@@ -79,8 +79,27 @@ Decide the mode from `$ARGUMENTS` and the presence of
 
 **Shared load step (Mode A, and Mode B → Resume):** read
 `.dev/preflight-context.md`, load the context fields (see schema below)
-into the working state, emit the `PREFLIGHT_CONTEXT` block, and honour
+into the working state, re-verify any stale code-level claims (see next
+paragraph), emit the `PREFLIGHT_CONTEXT` block, and honour
 `no_crit_swarm` if set.
+
+**Stale-claim re-verification (resume only):** a stored context file may
+predate fixes that have since landed, so before emitting `PREFLIGHT_CONTEXT`
+do a lightweight freshness check of the claims carried in
+`external_findings_status`. This is a freshness check, not a re-run of
+Phase 1.5:
+
+- For each ✅ Verified or ⚠️ Partially verified claim whose evidence cites a
+  concrete `file:line` (file-path evidence per Phase 1.5 step 1), confirm the
+  file still exists and the described content is still present at that
+  location. If the file is gone or the content no longer matches, downgrade
+  that claim to `⚠️ Needs re-verification` in `external_findings_status`.
+- Symbol/API claims (evidence source `AL LSP` or `AL MCP`) are out of scope
+  for this lightweight check — they need a semantic provider; leave their
+  stored status unchanged.
+- If any claim is downgraded, do not re-run Phase 1.5's decision threshold —
+  forward the annotated block so architects treat `⚠️ Needs re-verification`
+  claims as hypotheses, not requirements.
 
 ### PREFLIGHT_CONTEXT schema
 
