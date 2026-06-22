@@ -45,7 +45,7 @@ until the success evidence named in `knowledge/artifact-contracts.md` for
 `al-dev-develop-orchestrate` has been produced and read for the current run.
 
 When shell search or structured-file inspection is required, prefer `rg` and
-`jq` before falling back to broader shell text processing.
+`jq` before falling back to standard shell tools (`grep`, `awk`, `sed`, `cut`).
 
 ## Scope Expansion Gate
 
