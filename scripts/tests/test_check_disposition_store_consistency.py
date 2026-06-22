@@ -1,4 +1,4 @@
-"""Behavioral tests for scripts/sync_history_shard.py (read-only JSONL checker).
+"""Behavioral tests for scripts/check_disposition_store_consistency.py (read-only).
 
 Verifies:
 - consistent store -> exit 0
@@ -16,11 +16,11 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SCRIPT = REPO_ROOT / "scripts" / "sync_history_shard.py"
+SCRIPT = REPO_ROOT / "scripts" / "check_disposition_store_consistency.py"
 
 
 def _load_script():
-    spec = importlib.util.spec_from_file_location("sync_history_shard", SCRIPT)
+    spec = importlib.util.spec_from_file_location("check_disposition_store_consistency", SCRIPT)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = mod
@@ -99,7 +99,7 @@ class NoWriteTest(unittest.TestCase):
             mod.run(root)
             self.assertFalse(
                 history.exists(),
-                f"sync_history_shard.py wrote to {history} — must be read-only",
+                f"check_disposition_store_consistency.py wrote to {history} — must be read-only",
             )
 
 
@@ -110,7 +110,7 @@ class NoImportAppendRowTest(unittest.TestCase):
         self.assertNotIn(
             "append_row",
             source,
-            "sync_history_shard.py references append_row — it must be read-only",
+            "check_disposition_store_consistency.py references append_row — it must be read-only",
         )
 
 

@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/russelllaing/al-dev-shared/scripts/sync_history_shard.py 2>&1 | tail -5"
+            "command": "python3 /Users/russelllaing/al-dev-shared/scripts/check_disposition_store_consistency.py 2>&1 | tail -5"
           }
         ]
       }
