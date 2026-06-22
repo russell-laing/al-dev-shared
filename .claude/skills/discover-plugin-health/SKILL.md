@@ -56,11 +56,20 @@ failure, and log `preferred → outcome → fallback → reason`.
 
 **`--since` semantics:** when present, `git diff --name-only <ref>` is used to build
 the changed-files set (working-tree-vs-`<ref>` — captures committed, staged, and
-unstaged changes in a single pass). If only *committed* changes since `<ref>` are
-wanted, use the two-dot form `<ref>..HEAD` manually. The changed-files set is used
-to narrow file lists for **scopable lenses only** (see Phase 1 scopability table);
-non-scopable lenses always receive the full corpus. The Phase 2 run manifest is
-always built from the **full** corpus so cross-file mappings stay correct.
+unstaged changes in a single pass). To restrict to *committed-only* changes,
+pass the two-dot form as the `--since` value, e.g. `--since HEAD~3..HEAD`. The
+changed-files set is used to narrow file lists for **scopable lenses only** (see
+Phase 1 scopability table); non-scopable lenses always receive the full corpus. The
+Phase 2 run manifest is always built from the **full** corpus so cross-file
+mappings stay correct.
+
+Bind the `--since` value to `SINCE_REF` immediately after parsing:
+
+```bash
+SINCE_REF="<value passed to --since>"   # e.g. HEAD~1, HEAD~3..HEAD, abc1234
+```
+
+This variable is used in the Phase 1 normalization snippet below.
 
 Surface → directory mapping:
 
@@ -135,7 +144,8 @@ path to absolute by prepending `$REPO/`:
 
 ```bash
 REPO=$(git rev-parse --show-toplevel)
-# Build changed-files set as absolute paths
+# SINCE_REF was bound in Phase 0 arg parsing (see above).
+# Build changed-files set as absolute paths.
 CHANGED=$(git diff --name-only "$SINCE_REF" | sed "s|^|$REPO/|")
 ```
 
@@ -182,6 +192,27 @@ context blocks **once** to a single run manifest at
 `.claude/knowledge/health-discover-aggregation.md`). Phase 3 points each lens at
 this manifest instead of re-inlining the file list into every dispatch prompt,
 which keeps the 20-lens fan-out small and avoids flooding this session's context.
+
+**`--since` scoped lists (mandatory when `--since` is active):** When `--since`
+is active, append a clearly-labelled section to the manifest immediately after the
+full corpus lists:
+
+```markdown
+## --since scoped file lists
+<!-- These lists contain only files changed since SINCE_REF.
+     Phase 3 scopable lenses use these lists instead of the full corpus. -->
+
+### --since scoped agents
+<one absolute path per line — empty section if no agent files changed>
+
+### --since scoped skills
+<one absolute path per line — empty section if no skill files changed>
+```
+
+These scoped lists are derived by intersecting the full corpus lists against
+`$CHANGED` (see Phase 1 normalization). The full corpus sections remain untouched.
+When `--since` is absent, omit the `## --since scoped file lists` section
+entirely.
 
 ## Phase 3 — Dispatch
 
@@ -230,13 +261,31 @@ Execute the following state machine in order:
      simultaneously (parallel, isolated subagents). Use
      `superpowers:dispatching-parallel-agents` when 3+ lenses remain. Keep each
      dispatch prompt small: point the lens at the Phase 2 run manifest
-     (`.dev/<today>-discover-plugin-health-context.md`) for its file list and
-     required context fields (per the per-lens table in
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
-     inlining the file list into the prompt. Append the **Finding evidence
-     contract** and the **Response format contract** verbatim from
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` to every lens
-     prompt. Do not paraphrase — copy the canonical text so it cannot drift.
+     (`.dev/<today>-discover-plugin-health-context.md`) for its context fields (per
+     the per-lens table in
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
+
+     **File list selection per lens (load-bearing when `--since` is active):**
+     For each lens in `remaining_lenses`, choose the file list to supply in the
+     dispatch prompt as follows:
+
+     - **Scopable lens** (see Phase 1 scopability table) **and `--since` active:**
+       supply the `--since` scoped list from the `## --since scoped file lists`
+       section of the run manifest. If the scoped list for that lens's object type
+       (agents or skills) is **empty**, **skip** dispatching that lens and log
+       `<lens-name>: skipped (no changed files in scope)`. Do not dispatch against
+       an empty list.
+     - **Non-scopable lens** (`near-duplicates`, `shared-backbone`, `handoff-gaps`,
+       `preplanning`) **or `--since` absent:** supply the full corpus list from the
+       run manifest.
+
+     This ensures scopable lenses see only the narrowed set while non-scopable
+     lenses always run against the full corpus — satisfying acceptance test A.V.1.
+
+     Append the **Finding evidence contract** and the **Response format contract**
+     verbatim from `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`
+     to every lens prompt. Do not paraphrase — copy the canonical text so it cannot
+     drift.
 
      As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
@@ -298,6 +347,7 @@ For each surface that had lenses run:
    - Total lenses in scope: N
    - Completed this session: M
    - Completed in prior sessions: P (from --resume)
+   - Skipped (no changed files in scope): S (0 if --since not active)
    - Status: [COMPLETE / INCOMPLETE — call with --resume to finish]
    ```
 
