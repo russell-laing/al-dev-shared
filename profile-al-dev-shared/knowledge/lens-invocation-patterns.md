@@ -1,11 +1,41 @@
 # Lens Invocation Patterns
 
 Canonical context requirements for design lens agents. Use this reference when
-building dispatch prompts in skills that invoke design lenses. Quality lenses and
-the naming-convention lens need only a file list.
+building dispatch prompts in skills that invoke design lenses. Quality lenses
+need only a file list.
 
 See also: `knowledge/architect-invocation-patterns.md` (parallel pattern for
 `al-dev-solution-architect`).
+
+## Deterministic lenses (static runner — not dispatched as agents)
+
+Four lenses are fully/mostly deterministic and are produced by a single static
+runner, `scripts/health_static_lenses.py`, instead of LLM agents. They are
+**not** dispatched and need no context fields or dispatch prompt:
+
+- `naming-convention-lens` — filename and documented-output-path patterns, with
+  the grandfather list read from the convention doc's exceptions section.
+- `quality-agent-lens-structure` — frontmatter field presence, tool canonicality
+  (canonical set read from the projection policy), Inputs/Outputs sections,
+  header numbering, skill-only-field rejection.
+- `quality-skill-lens-structure` — frontmatter `name`/`description`, the
+  conditional `argument-hint` rule, header numbering.
+- `design-agent-lens-tool-hygiene` — declared `tools` vs body usage.
+
+The runner writes the same per-lens findings artifacts the LLM lenses wrote, so
+downstream assembly is unchanged. Two deliberate scope reductions keep the
+deterministic checks false-positive-free:
+
+- **Tool-hygiene** flags only high-confidence cases: a write/edit capability on a
+  read-only agent, and a declared MCP capability whose specific name never
+  appears in the body. The ambiguous negative-context case (e.g. "Do not use" a
+  named capability) and generic read/search-capability "zero literal mention"
+  are **not** flagged — those capabilities are routinely exercised through
+  synonym verbs rather than the literal capability word.
+- **argument-hint** (in the skill structure check) is conditional and keyed on
+  concrete patterns only: a literal `If an argument was passed` mention, or a
+  `[arg]`-style token outside frontmatter and fenced code blocks. Fuzzier "the
+  prose implies an argument" inference is **not** flagged.
 
 ---
 
@@ -54,14 +84,15 @@ file, so a terse, block-only reply is both cheaper and directly usable.
 ## Design Agent Lenses
 
 Agents: `design-agent-lens-caller-alignment`, `design-agent-lens-model-fit`,
-`design-agent-lens-scope-isolation`, `design-agent-lens-tool-hygiene`,
-`design-agent-lens-usage-patterns`
+`design-agent-lens-scope-isolation`, `design-agent-lens-usage-patterns`
+
+(`design-agent-lens-tool-hygiene` is now a deterministic static-runner check —
+see the Deterministic lenses section above.)
 
 ### Required context fields per lens (agent lenses)
 
 | Lens | Required context fields |
 |------|------------------------|
-| `design-agent-lens-tool-hygiene` | `tool_inventory` |
 | `design-agent-lens-model-fit` | `model_assignments` |
 | `design-agent-lens-scope-isolation` | *(none — file list only)* |
 | `design-agent-lens-caller-alignment` | `caller_map` |
@@ -164,9 +195,16 @@ writing the dossier section.
 
 ---
 
-## Quality and Naming Lenses
+## Quality Lenses
 
-Agents: `quality-agent-lens-*`, `quality-skill-lens-*`, `naming-convention-lens`
+Agents: `quality-agent-lens-clarity`, `quality-agent-lens-description`,
+`quality-agent-lens-bloat`, `quality-agent-lens-name-fit`,
+`quality-skill-lens-clarity`, `quality-skill-lens-description`,
+`quality-skill-lens-bloat`, `quality-skill-lens-name-fit`
+
+(The two structural-conventions lenses and `naming-convention-lens` are now
+deterministic static-runner checks — see the Deterministic lenses section
+above.)
 
 These lenses derive all findings from the file list alone. No context structures
 are required.
@@ -189,22 +227,11 @@ File list:
 [one absolute path per line]
 ```
 
-### Dispatch template (naming-convention-lens)
-
-```text
-Analyze the following files. Apply your lens to every file and return a findings block.
-
-File list:
-[one absolute path per line]
-
-Convention doc:
-[absolute path to docs/al-dev-naming-convention.md in the repo under audit]
-```
-
-> **Caller contract:** `naming-convention-lens` has exactly one dispatcher
-> (`discover-plugin-health`) and one downstream consumer (`report-plugin-health`).
-> Changes to this lens's input contract or output format affect only those two
-> skills — no other callers exist in the tooling surface.
+> **Caller contract:** the naming check is now produced by the
+> `scripts/health_static_lenses.py` runner (a Phase 2.5 step of
+> `discover-plugin-health`), not a dispatched agent. Its single downstream
+> consumer is `report-plugin-health`, which reads the assembled findings file.
+> Changes to the naming check's output format affect only those two skills.
 
 ---
 

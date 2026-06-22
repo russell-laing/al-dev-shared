@@ -214,12 +214,58 @@ These scoped lists are derived by intersecting the full corpus lists against
 When `--since` is absent, omit the `## --since scoped file lists` section
 entirely.
 
+## Phase 2.5 — Deterministic static lenses (per surface, before dispatch)
+
+Four lenses are fully/mostly deterministic and are produced by a single Python
+pass instead of LLM agents: `naming-convention-lens`,
+`quality-agent-lens-structure`, `quality-skill-lens-structure`, and
+`design-agent-lens-tool-hygiene`. They write the **same** per-lens
+`.dev/<today>-plugin-health-lens-<lens-name>.json` artifacts the LLM lenses
+write (schema `{lens, findings, suggestion_count, completed_at}`), so Phase 4
+assembly and `--resume` treat them identically to agent findings.
+
+For each requested surface, run the static runner **once for that surface**,
+immediately before that surface's Phase 3 dispatch:
+
+```bash
+python3 scripts/health_static_lenses.py \
+  --surface <plugin|tooling> \
+  --dimension <design|quality|naming|all> \
+  --date <today> \
+  [--since "$SINCE_REF"]
+```
+
+**Load-bearing ordering and serialization:**
+
+- The lens-output filename carries **no surface token**, so the script must be
+  invoked with a **single** `--surface`, **never `both`**. Discover already
+  processes surfaces one at a time (Phase 1→4 for `plugin` completes — including
+  the Phase 4 `.dev/` cleanup — before `tooling` starts), so calling the script
+  once per surface inside that per-surface loop keeps the surface-less JSON
+  filenames from colliding.
+- Phase 2.5 runs **before** Phase 3 step 2's empty-`remaining_lenses`
+  short-circuit. This matters most for `--dimension naming`: after conversion the
+  only naming lens is the (removed) `naming-convention-lens`, so
+  `remaining_lenses` is empty and **zero LLM lenses dispatch** — the script having
+  already written its naming JSON in Phase 2.5 is what makes a `--dimension
+  naming` run produce findings, assembled by Phase 4 case (a).
+- Phase 2.5 **always re-runs on `--resume`** (it is cheap and idempotent —
+  re-running overwrites its own JSON). Phase 4 cleanup deletes the `.dev/` lens
+  JSONs at the end of a completed run, so a fresh resume after interruption must
+  re-emit them. The script honors `--since` for all four checks (they are all
+  classified scopable; see the Phase 1 scopability table), using the same
+  absolute-vs-repo-relative path normalization as Phase 1.
+
 ## Phase 3 — Dispatch
 
 Execute the following state machine in order:
 
-1. **Build `ALL_LENSES` (surface-scoped):** Start with the full lens set, then
-   apply the two mirror-image surface bindings:
+1. **Build `ALL_LENSES` (surface-scoped):** Start with the full LLM lens set
+   (the 19 lens agents on disk in `.claude/agents/` — the four deterministic
+   lenses `naming-convention-lens`, `quality-agent-lens-structure`,
+   `quality-skill-lens-structure`, and `design-agent-lens-tool-hygiene` are
+   **not** in this set; they are produced by the Phase 2.5 static runner and are
+   never dispatched as agents). Then apply the two mirror-image surface bindings:
    - For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
      targets distributed skills and produces only non-actionable Move false
      positives against tooling-surface files.
@@ -228,10 +274,18 @@ Execute the following state machine in order:
      surface, so it produces no actionable findings against distributed skills.
 
    Net effect: `surface-placement` runs for `plugin` only, and
-   `maintainer-handoff` runs for `tooling` only; every other lens runs for both.
-   Beyond these formal bindings, several remaining design-skill lenses carry
-   reduced semantic signal for tooling skills — see the effective-coverage note
-   in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
+   `maintainer-handoff` runs for `tooling` only; every other LLM lens runs for
+   both. Beyond these formal bindings, several remaining design-skill lenses
+   carry reduced semantic signal for tooling skills — see the effective-coverage
+   note in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
+
+   **Dispatch vs. on-disk counts (reconciled — not a typo for each other):** 19
+   LLM lens agents exist on disk; one design lens is excluded per surface (the
+   two mirror-image bindings above), so **18 LLM lenses dispatch per surface**.
+   The four deterministic lenses run as the Phase 2.5 script (zero LLM dispatch)
+   and write their `.json` outputs alongside the agent outputs, so a full sweep
+   still assembles all dimensions. The on-disk 19 is the count
+   `scripts/validate-lens-agents.py` asserts.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
