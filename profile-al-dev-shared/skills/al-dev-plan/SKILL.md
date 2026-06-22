@@ -168,6 +168,30 @@ Architects running: <N> agents spawned (<approach labels>) — waiting for resul
 
 Emit the equivalent signal again when the Phase 3 debate round is dispatched.
 
+### Retry Protocol
+
+If an architect spawn fails (tool error, transient API failure, or no usable
+output), do not blindly re-dispatch the original prompt — a peer architect may
+already have changed the shared design state on disk:
+
+1. **Read completed outputs first.** Before retrying a failed architect, read
+   every architect output that has already completed this round. If a completed
+   architect changed the scope (e.g. reported a cited bug already fixed, or
+   narrowed the object set), revise the retry prompt to match the current state
+   rather than re-sending the stale original.
+2. **Cap retries at 2.** Retry a failed architect at most twice. After 2 failed
+   attempts, stop and surface to the user: `Architect N failed (2 attempts).
+   Options: proceed with the architects that succeeded / retry / abandon.`
+   Proceeding with fewer architects follows the existing reduced-spawn path (see
+   **Spawn count** above) — Phase 3 synthesises whichever architects returned
+   all three required sections.
+3. **Transient API errors (529).** On the first `529` (or equivalent
+   overloaded/transient) error from an architect, retry once. On a second
+   consecutive `529` for the same architect, do not auto-retry a third time —
+   stop and surface: `Architect N unavailable (2 transient failures). Options:
+   proceed with one architect / retry / abandon.` Wait for the user's choice
+   before continuing.
+
 If `architect_model = sonnet` (set during preflight), include
 `model: sonnet` as a parameter in each Agent tool invocation.
 If `architect_model = opus`, omit the model parameter — the
