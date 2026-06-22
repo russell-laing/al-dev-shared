@@ -69,7 +69,7 @@ Examples of what to include:
 - "[Microsoft Q&A: \<topic description\>](\<url\>)"
 - "Power Platform tracker reference: [number]"
 
-**Else (no public source for version scope):** when the researcher findings
+**If no official Microsoft source exists in the researcher findings for version scope:** when the researcher findings
 reference no known Microsoft bug and contain no public source establishing the
 affected version range, do not leave `BC_VERSION_SCOPE` blank. Set it to an
 explicit fallback — `version scope undetermined — rely on the customer-reported
