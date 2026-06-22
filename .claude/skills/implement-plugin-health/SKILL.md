@@ -318,6 +318,34 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    the duplicate-id guard rejects reuse. Then run
    `scripts/health_disposition_store.py regenerate` to update
    `dispositions-open.md`, `dispositions-current.md`, and `dispositions-index.json`.
+4. **Sync the history shard** — `append_event`/`regenerate` write only the JSONL
+   store and its generated views; they do **not** touch the markdown month shard
+   under `docs/health/dispositions-history/`. That shard is a separate append-only
+   log read by the report phase (`iter_history_rows`, for closure chronology and
+   recurrence counts), so a `fixed` event that never reaches the shard leaves the
+   next sweep's recurrence accounting wrong. There is **no** post-commit hook and
+   no auto-sync — append the matching shard row by hand with `append_row`, reusing
+   the same verbatim key fields just supplied to `append_event`:
+
+   ```bash
+   YEAR=$(date +%Y); MONTH=$(date +%Y-%m)
+   # The fixed event's auto-allocated id is the last event in this month's JSONL:
+   FIXED_ID=$(grep -o '"event_id": "[^"]*"' \
+     "docs/health/dispositions-events/${YEAR}/${MONTH}.jsonl" \
+     | tail -1 | sed 's/.*"event_id": "\(.*\)"/\1/')
+
+   python3 scripts/health_disposition_store.py append_row \
+     --id "$FIXED_ID" \
+     --surface <surface> --dimension <dimension> \
+     --object "<object, verbatim>" --finding "<finding, verbatim>" \
+     --disposition fixed --date <today's ISO date> \
+     --note "<commit-hash> — <brief evidence>; verified live <date>"
+   ```
+
+   Repeat per closed `event_id`. (A `health_disposition_store.py sync_shard
+   --event-id` convenience that reads the stored event and writes the shard row —
+   removing this hand-transcription — is a tracked follow-up; until it lands, the
+   `append_row` step above is the supported path.)
 
 **Post-loop close gate (scoped to this plan)** — after all `fixed` events are
 appended, confirm each `event_id` in the plan's `closes_event_ids` lists no
@@ -451,11 +479,23 @@ The per-task implementation commits were already created in Phase 1. Add ONE
 dedicated commit covering:
 
 - The `fixed` events appended to `docs/health/dispositions-events/`
-- The regenerated views (`dispositions-open.md`, `dispositions-current.md`, `dispositions-index.json`)
+- The synced history shard under `docs/health/dispositions-history/` (the
+  `append_row` rows from Phase 3 step 4)
+- The regenerated views — `dispositions-current.md`, `dispositions-index.json`,
+  and `dispositions.md` (the compatibility view). `dispositions-open.md` may show
+  **no diff** when the close empties the open view, and that is expected — stage
+  it if changed, do not force it.
 - The `.dev/health-loop-state.md` breadcrumb written above
 
+Stage these paths explicitly (the archived dossier/findings are gitignored, so
+there is no deletion to stage):
+
 ```bash
-git commit -m "chore(health): close disposition events for <plan-topic>"
+git add docs/health/dispositions-events/ docs/health/dispositions-history/ \
+        docs/health/dispositions-current.md docs/health/dispositions-index.json \
+        docs/health/dispositions.md docs/superpowers/history.md \
+        .dev/health-loop-state.md
+git commit -m "📦 chore(health): close disposition events for <plan-topic>"
 ```
 
 ### Final report
