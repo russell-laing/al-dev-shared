@@ -41,7 +41,7 @@ Generate release notes from the git diff between two commits. Audience: business
 ## Phase 2: Write Notes
 
 1. Research AL objects using AL MCP Server (get object definitions, understand context)
-2. Identify diagrams — If changes include architecture or data model updates, reference relevant diagrams. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.
+2. Identify diagrams — If changes include architecture or data model updates, read `md-mermaid-helper.md` (using the auto-detect pattern in `## Handling Diagrams & Env Vars`) and include a flowchart or sequence diagram only if it genuinely aids understanding. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.
 3. Write release notes sections: Summary, New Features, Bug Fixes, Improvements, Breaking Changes, Performance, etc.
 4. Follow template structure from `knowledge/release-notes-template.md`
 
@@ -49,14 +49,6 @@ Generate release notes from the git diff between two commits. Audience: business
 
 1. Write to `.dev/$(date +%Y-%m-%d)-plugin-release-notes.md`
 2. Return structured output block with metadata
-
-## Mermaid Diagrams
-
-If changes include architecture or data model updates:
-
-- Read `profile-al-dev-shared/markdown/md-mermaid-helper.md` for diagram rules
-- Include flowchart (flowchart TD) or sequence diagram (sequenceDiagram)
-- Only include if it genuinely aids understanding
 
 ## Handling Diagrams & Env Vars
 
