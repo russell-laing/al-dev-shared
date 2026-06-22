@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-22
+
+### Tooling Ledger-Arg Clarity Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-22-plugin-map-tooling-ledger-arg-clarity.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-22 | tooling-ledger-arg-clarity | implemented; rows closed: [disp_20260622_000015, disp_20260622_000016, disp_20260622_000017, disp_20260622_000018]
+
 ## 2026-06-17
 
 ### Commit Workflow Performance Implementation Plan
