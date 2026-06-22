@@ -30,7 +30,7 @@ Validation and user approval gate for the solution plan written by /al-dev-plan.
 ls -t .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | head -1
 ```
 
-If no solution plan found: stop and report "No solution plan found in .dev/. Run /al-dev-plan first."
+If no solution plan found: stop and report "No solution plan found in .dev/. Run /al-dev-plan first, then re-run /al-dev-plan-final-review."
 
 Store the path as `PLAN_FILE`.
 
