@@ -303,12 +303,20 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    and do not write `result: ledger_closed` while any task is unverified. (To drop
    a task from the closure set, amend or re-disposition its events first — there is
    no in-run abandonment path.)
-3. **Append** — call `scripts/health_disposition_store.py append_event` with:
-   - `disposition: fixed`
-   - `date:` today's ISO date (never a placeholder)
-   - `closes_event_ids:` the accepted `event_id` being resolved
-   - `evidence:` `<commit-hash> — <brief evidence>; verified live <date>`
-   Then run `scripts/health_disposition_store.py regenerate` to update
+3. **Append** — call `scripts/health_disposition_store.py append_event` with the
+   **full required argument set** (`append_event` makes all eight mandatory; see
+   the argparse in `scripts/health_disposition_store.py`). The four key fields are
+   copied **verbatim** from the accepted event located in step 1:
+   - `--surface` / `--dimension` / `--object` / `--finding` — copied verbatim from
+     the accepted event being closed (so the new event supersedes it by key match)
+   - `--disposition fixed`
+   - `--date` today's ISO date (never a placeholder)
+   - `--source` the plan path that resolved the finding
+   - `--evidence "<commit-hash> — <brief evidence>; verified live <date>"`
+   - `--closes-event-ids` the accepted `event_id` being resolved
+   Do **not** pass `--event-id`: the new `fixed` event auto-allocates a fresh id and
+   the duplicate-id guard rejects reuse. Then run
+   `scripts/health_disposition_store.py regenerate` to update
    `dispositions-open.md`, `dispositions-current.md`, and `dispositions-index.json`.
 
 **Post-loop close gate (scoped to this plan)** — after all `fixed` events are

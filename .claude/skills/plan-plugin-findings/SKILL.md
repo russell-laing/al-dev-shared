@@ -311,9 +311,22 @@ missing records and resolve them (re-dispatch or escalate) before continuing.
 >
 > ```bash
 > python3 scripts/health_disposition_store.py append_event \
->   --event-id <disp_id> --disposition declined \
->   --evidence "declined: rubber-duck refuted — <one-line reason>"
+>   --surface <surface> --dimension <dimension> \
+>   --object "<object copied verbatim from the accepted event>" \
+>   --finding "<finding copied verbatim from the accepted event>" \
+>   --disposition declined --date <date> \
+>   --evidence "declined: rubber-duck refuted — <one-line reason>" \
+>   --closes-event-ids <accepted_event_id> \
+>   --source plan-plugin-findings
 > ```
+>
+> The four key fields (`--surface --dimension --object --finding`) are copied
+> verbatim from the accepted event so the new `declined` event supersedes it by
+> object/key match, and `--closes-event-ids` lists the accepted event's id so the
+> closure is recorded explicitly — the live storage contract requires every
+> superseding event to set it, and omitting it raises an ambiguous-closure
+> integrity warning. Do **not** pass `--event-id` — the declined event
+> auto-allocates a fresh id; reusing the accepted id trips the duplicate-id guard.
 >
 > That task carries a Step 0 that commits any pre-existing dirty `docs/health/`
 > first (so a later `git add docs/health/` stages only this task's regenerated
