@@ -226,3 +226,4 @@ Current source of truth: active implementation guidance lives in the current sha
 2026-06-22 | plugin-map-tooling-quality-clarity (6 tasks) | implemented; fixed: [disp_20260622_000001, disp_20260622_000002, disp_20260622_000003, disp_20260622_000004, disp_20260622_000007]; declined: [disp_20260622_000005, disp_20260622_000006]
 2026-06-22 | plugin quality clarity fixes | implemented; rows closed: [disp_20260622_000023, disp_20260622_000024, disp_20260622_000025, disp_20260622_000026, disp_20260622_000027, disp_20260622_000028]
 2026-06-22 | plugin retry & resume-verification | implemented; rows closed: [disp_20260622_000035, disp_20260622_000036, disp_20260622_000037]
+2026-06-23 | tooling-halt-clarity (1 task) | implemented; rows closed: [disp_20260623_000001]
