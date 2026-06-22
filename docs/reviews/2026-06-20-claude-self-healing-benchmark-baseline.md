@@ -167,13 +167,16 @@ First automation should parse and report these fields without changing scores au
 
 Live repo check on June 22, 2026:
 
-- Recommendation 1 is partially implemented. `scripts/health_benchmark_adapter.py`
-  exists and runs, but the benchmark-report workflow does not yet invoke it
-  directly.
-- Recommendation 2 is partially implemented. Dossiers now emit the machine-readable
-  `<!-- benchmark-metrics -->` block, and the adapter parses it, but there is
-  still no benchmark-specific fixture/test surface for fuller evidence-inventory
-  regeneration.
+- Recommendation 1 is implemented. There is no automated benchmark-report
+  workflow (the scorecard is authored by hand), so the adapter invocation is now
+  documented as the mandatory first step of the Benchmark Refresh Procedure below
+  and is regression-guarded by the `build_report` smoke test in
+  `scripts/tests/test_health_benchmark_adapter.py`.
+- Recommendation 2 is implemented. The adapter's extraction contract now has a
+  fixture/test surface: `scripts/tests/test_health_benchmark_adapter.py` with
+  three fixtures under `scripts/tests/fixtures/benchmark/` covering the full
+  metrics block, a partial block (missing field and `not available` literal), and
+  a no-block dossier.
 - Recommendation 3 is implemented. The dossier-writing contract and the adapter
   both preserve literal `not available` values instead of inferring missing
   denominators.
@@ -185,6 +188,14 @@ Live repo check on June 22, 2026:
 - Recommendation 6 is not yet implemented as a dedicated mechanism. The report
   still names the important false-positive classes, but the repo does not yet
   contain a standalone tracker or benchmark-specific fixture coverage for them.
+
+The earlier follow-up plan
+`docs/superpowers/plans/2026-06-20-claude-self-healing-benchmark-evals-memory-handoff.md`
+is **superseded**: its parser/eval/fixture role is now covered by
+`scripts/health_benchmark_adapter.py` and
+`scripts/tests/test_health_benchmark_adapter.py`, so the prose-scraping
+`scripts/benchmark_self_healing.py` it proposed is not built (one benchmark
+parser is kept). Its memory-boundary guidance remains valid reference.
 
 ## Adapter Status & Deferred Work
 
@@ -211,3 +222,24 @@ The following remain deferred:
   false-positive classes by source — friction surface-mapping errors and
   subjective clarity/name-fit findings — manually for now, and revisit synthetic
   fixtures only once a class recurs across sweeps.
+
+## Benchmark Refresh Procedure
+
+Before any future manual scoring run, regenerate the evidence fields from live
+surfaces first (Recommendation 1). Run:
+
+```bash
+python3 scripts/health_benchmark_adapter.py --surface both --limit 1 --format markdown
+```
+
+Do not assign or revise the 1-5 scores until every `procedure_integrity`
+checklist item reads ✅ and the footer shows `list-open accepted: 0`. A ❌ on any
+checklist item means the loop state is not closed (open accepted rows, missing
+JSONL views, stale ledger, or absent close-back IDs) and the scorecard must not
+report a clean closure.
+
+The adapter's extraction contract — metrics-block parsing, the `not available`
+fallback for missing blocks/fields (Recommendation 3), and the
+procedure-integrity checklist shape — is regression-guarded by
+`scripts/tests/test_health_benchmark_adapter.py`, so the adapter cannot silently
+rot between refreshes.
