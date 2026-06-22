@@ -1,10 +1,12 @@
-stage_completed: implement-plugin-health
+stage_completed: record-plugin-dispositions
 completed_at: 2026-06-23
-next_command: none
-next_inputs: []
+next_command: /plan-plugin-findings
+next_inputs:
+
+- docs/health/dispositions-open.md
+- docs/health/2026-06-23-tooling-health.md
 fresh_session_recommended: false
 note: >-
-  Loop closed; ledger staleness check passed (0 effective-open accepted rows).
-  No profile-al-dev-shared/ files changed — skip regenerate-agent-projections
-  and validate-plugin-neutrality. Run /audit-plugin-health to start the next
-  health loop.
+  Plan the 11 accepted rows. Backlog guard fired (11 open accepted rows, oldest
+  2026-06-23): run with --backlog to drain all 11 open accepted rows, not only
+  this dossier's.
