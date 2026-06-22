@@ -354,6 +354,10 @@ is needed in this skill.
 
 ### Archive the plan
 
+> **Note:** `docs/superpowers/plans/` is gitignored, so the plan and archive are
+> untracked files — use plain `mv`, **not** `git mv` (which fails with
+> `fatal: not under version control`).
+
 ```bash
 mv <plan-path> docs/superpowers/plans/archived/
 ```
