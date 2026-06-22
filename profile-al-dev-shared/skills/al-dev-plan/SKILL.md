@@ -145,7 +145,9 @@ meaningfully different starting approaches and the spawn-count guidance.
 Default fallback if nothing more specific fits — use these debate angles in
 order: (1) table extension (conservative, builds on base app); (2) separate
 table (isolated scope, decoupled from base); (3) event-driven (flexible,
-extensible, minimal coupling).
+extensible, minimal coupling). If none of these three angles fits the actual
+problem domain, derive three domain-appropriate contrasting angles from the
+requirements directly (e.g. scope isolation, coupling strategy, data-ownership model).
 
 **Spawn count:** Default 2 architects. Use 1 if the scope is clearly
 defined (fits one page, all BC objects named, no architectural
