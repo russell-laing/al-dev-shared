@@ -1,13 +1,12 @@
 ---
 name: generate-benchmark-report
-description: Use when creating a benchmark baseline report from live health artifacts, JSONL disposition views, and loop-state evidence, especially when the report must include a final live-state validation loop before it is trusted.
+description: Use when creating a benchmark baseline report from live health artifacts, JSONL disposition views, and loop-state evidence, especially when the result must separate measured token efficiency from historical inference before it is trusted.
 ---
 
 # Generate Benchmark Report
 
-Create an evidence-backed benchmark report under `docs/reviews/` from live
-repository artifacts, then re-check live state before claiming the report is
-ready.
+Create an evidence-backed benchmark report under `docs/reviews/`, then re-check
+live state before claiming it is ready.
 
 ## When to Use
 
@@ -19,6 +18,8 @@ Use this skill when the user asks to:
   into a durable review report
 - include a final live-state validation pass so drift is caught before the
   report is trusted
+- analyze token efficiency and record the findings with clear measured versus
+  inferred boundaries
 
 Do not use this for:
 
@@ -29,13 +30,9 @@ Do not use this for:
 
 ## Output Convention
 
-Write the final report to:
-
-- `docs/reviews/YYYY-MM-DD-<topic>-benchmark-baseline.md`
-
-Keep the filename aligned to the benchmark target, for example:
-
-- `docs/reviews/2026-06-20-claude-self-healing-benchmark-baseline.md`
+Write the final report to
+`docs/reviews/YYYY-MM-DD-<topic>-benchmark-baseline.md`, for example
+`docs/reviews/2026-06-20-claude-self-healing-benchmark-baseline.md`.
 
 ## Required Inputs
 
@@ -47,9 +44,11 @@ Read the benchmark request and identify:
   `docs/reviews/`, and `.dev/`
 - the canonical disposition source; prefer JSONL event-backed views when both
   JSONL and legacy Markdown artifacts exist
+- any direct token-usage or prompt-size evidence, and which claims will be
+  measured versus inferred
 
-If the user already supplied an approved design or implementation plan, follow
-that structure exactly unless live validation proves it drifted.
+Follow any approved design or implementation plan unless live validation proves
+it drifted.
 
 ## Workflow
 
@@ -72,14 +71,13 @@ Before writing the report:
    python3 scripts/check_ledger_staleness.py
    ```
 
-3. If JSONL `open_accepted`, JSONL `integrity_warnings`, `list-open`, or the
-   legacy effective-open checker are nonzero, treat that as live evidence that
-   must flow into the report. Do not write a zero-open claim from stale memory.
+3. Treat nonzero JSONL or legacy checker values as live evidence. Do not write
+   a zero-open claim from stale memory.
 
 ### Phase 2: Extract evidence
 
 Read the named source artifacts directly and preserve exact counts where they
-exist. Typical benchmark evidence includes:
+exist. Typical evidence includes:
 
 - raw-to-verified finding summaries
 - new versus recurring findings
@@ -88,9 +86,17 @@ exist. Typical benchmark evidence includes:
 - accepted/planned/re-dispositioned backlog counts
 - `closes_rows` or equivalent close-back identifiers
 - loop-state stage and `next_command`
+- token counts, context-size reductions, prompt-size deltas, or explicit
+  statements that token data is not available
 
 If a denominator or count is unavailable, record `not available` instead of
 inferring it.
+
+For token efficiency:
+
+- prefer measured values from live artifacts, scripts, logs, or source files
+- if only proxies exist, label them as inference and explain the proxy
+- if no defensible token signal exists, say `not available`
 
 ### Phase 3: Write the report
 
@@ -104,28 +110,29 @@ Use this structure unless an approved plan says otherwise:
 6. `## Scores`
 7. `## Precision Notes`
 8. `## Loop Quality Notes`
-9. `## Best-Practice Alignment`
-10. `## Harness Follow-Up`
-11. `## Recommendations`
+9. `## Token Efficiency Findings`
+10. `## Best-Practice Alignment`
+11. `## Harness Follow-Up`
+12. `## Recommendations`
 
-Keep benchmark claims:
+Keep claims:
 
 - evidence-backed
 - explicit about confidence
 - clear about what is historical inference versus live current state
+- explicit about what token-efficiency claims are measured versus inferred
 - conservative about recall and reliability unless controlled fixtures or fresh
   adversarial runs exist
 
 ### Phase 4: Live-State Validation Loop
 
-This means: after drafting the report, re-run the live repo checks that support
-the report's strongest claims, compare them to the written text, and patch the
-report if live state drifted while you were writing it.
+After drafting, re-run the live repo checks behind the strongest claims,
+compare them to the text, and patch drift.
 
 Run:
 
 ```bash
-rg -n "^## (Scope|Executive Summary|Rubric|Evidence Inventory|Scores|Precision Notes|Loop Quality Notes|Best-Practice Alignment|Harness Follow-Up|Recommendations)$" [report-path]
+rg -n "^## (Scope|Executive Summary|Rubric|Evidence Inventory|Scores|Precision Notes|Loop Quality Notes|Token Efficiency Findings|Best-Practice Alignment|Harness Follow-Up|Recommendations)$" [report-path]
 rg -n "Initial scaffold created|Evidence inventory is added|Scores are added|Precision notes are added|Loop quality notes are added|Best-practice alignment is added|Harness follow-up fields are added|Recommendations are added|[T]ODO|[T]BD|\\.\\.\\." [report-path]
 find docs/health -maxdepth 3 -type f -print | sort > /tmp/post-benchmark-health-files.txt
 comm -13 /tmp/pre-benchmark-health-files.txt /tmp/post-benchmark-health-files.txt
@@ -141,8 +148,10 @@ Interpretation:
 - if heading or placeholder checks fail, fix the report structure
 - if `comm` prints new `docs/health` files, stop and determine whether the
   benchmark work created them
-- if live JSONL or legacy checker values changed, update the report so the
-  summary, scores, and recommendations match the live counts
+- if live JSONL or legacy checker values changed, update the report so key
+  claims match the live counts
+- if token-efficiency findings rely on historical or indirect evidence, keep
+  that label explicit after the re-check
 - if the live state still supports the report, leave the text unchanged and
   record that validation produced no diff
 
@@ -155,12 +164,9 @@ npx --yes markdownlint-cli2 [report-path]
 git status --short --ignored=matching docs/health .dev/health-loop-state.md [report-path]
 ```
 
-Confirm:
-
-- markdown is structurally valid
-- no scaffold placeholders remain
-- no tracked health artifacts were created
-- only the intended report file changed among tracked relevant files
+Confirm markdown is valid, placeholders are gone, no tracked health artifacts
+were created, and only the intended report file changed among tracked relevant
+files.
 
 ## Guardrails
 
@@ -168,6 +174,8 @@ Confirm:
   legacy Markdown ledger files as compatibility evidence only.
 - Do not trust same-day report counts without re-reading the live files.
 - Do not infer missing denominators from retained plus dropped counts.
+- Do not claim token savings unless the report names the measured source or the
+  inference method.
 - Do not overclaim recall from historical artifacts alone.
 - Do not call the benchmark a rerunnable harness if the output is still a human
   scorecard.
@@ -182,5 +190,7 @@ Before claiming the report is ready:
 1. Re-open the finished report and confirm the final headings are present.
 2. Re-run the live-state validation loop.
 3. Run markdownlint on the report.
-4. Confirm the working tree is clean or that only the intended report file is
+4. Confirm the token-efficiency section uses measured, inferred, or `not
+   available` language consistently.
+5. Confirm the working tree is clean or that only the intended report file is
    modified.

@@ -2,10 +2,10 @@ skill: generate-benchmark-report
 scenarios:
   - id: claude-self-healing-baseline
     status: golden
-    user_prompt: "Generate a Claude self-healing benchmark baseline report from recent docs/health artifacts and include a final live-state validation loop before calling it ready."
+    user_prompt: "Generate a Claude self-healing benchmark baseline report from recent docs/health artifacts, include token-efficiency findings, and include a final live-state validation loop before calling it ready."
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
-    notes: "Must treat JSONL disposition views as canonical, preserve unavailable counts as not available, and re-check live state after drafting."
+    notes: "Must treat JSONL disposition views as canonical, preserve unavailable counts as not available, separate measured versus inferred token-efficiency claims, and re-check live state after drafting."
 
   - id: patch-benchmark-after-live-drift
     status: golden
@@ -13,3 +13,10 @@ scenarios:
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
     notes: "Must explain the live-state validation loop and patch the report instead of leaving stale zero-open claims."
+
+  - id: token-efficiency-without-measured-data
+    status: golden
+    user_prompt: "Create a benchmark baseline from historical health artifacts and discuss token efficiency, but do not invent token counts that are not present in the source evidence."
+    expected_artifacts:
+      - "docs/reviews/*-benchmark-baseline.md"
+    notes: "Must record token efficiency as measured, inferred, or not available, and must not turn proxy evidence into fake exact token savings."

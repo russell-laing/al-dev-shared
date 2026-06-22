@@ -4,6 +4,8 @@
 
 This baseline scores the recent Claude Code self-healing loop using historical artifacts from June 18-20, 2026. It includes both plugin-surface and tooling-surface health runs because both exercise the same Claude health loop. It does not run a fresh health sweep, does not create synthetic fixtures, and does not score the full May or early-June history.
 
+The scorecard remains historical, but its live-state claims were revalidated on June 22, 2026 against the current JSONL disposition views, the legacy staleness checker, and the current loop-state breadcrumb.
+
 The current disposition evidence is JSONL-backed. Canonical disposition events live under `docs/health/dispositions-events/`, and the generated JSONL views `docs/health/dispositions-open.md`, `docs/health/dispositions-current.md`, and `docs/health/dispositions-index.json` are the current baseline for open/current counts. `docs/health/dispositions.md` is treated as a temporary generated legacy compatibility view, not as the source of truth.
 
 ## Executive Summary
@@ -12,9 +14,9 @@ The current Claude self-healing loop is strongest at procedure and precision con
 
 Top improvement themes:
 
-1. Turn the baseline's extraction fields into a rerunnable JSONL-aware adapter.
+1. Use the existing JSONL-aware adapter on future benchmark refreshes so the evidence inventory can be regenerated consistently before scoring.
 2. Add a small recurrence/fixture suite only for false-positive classes that appear repeatedly in reports.
-3. Add a procedure-integrity checklist to future benchmark reports so clean ledger closure cannot hide skipped evidence or phase-proof steps.
+3. Keep a procedure-integrity checklist in future benchmark refreshes so clean ledger closure cannot hide skipped evidence or phase-proof steps.
 
 ## Rubric
 
@@ -39,7 +41,7 @@ External anchors:
 | `docs/health/2026-06-18-plugin-health.md` | Friction-ingest mapping check | Raw/candidate count not available, 0 verified findings, 6 dropped unverified because the ingest mapped profile-claude-al-dev findings to structurally different shared-profile files, 0 new, 0 recurring. |
 | `docs/health/archived/2026-06-18-tooling-health.md` | Recent tooling quality check | Raw/candidate count not available, 11 retained findings, 25 dropped unverified, 11 new, 0 recurring, no failed lenses. |
 | `docs/superpowers/plans/archived/2026-06-19-plugin-map-health-fixes.md` | Implementation and close-back evidence | 46 accepted rows addressed, 33 planned, 13 re-dispositioned, close-back via `closes_rows`. |
-| `.dev/health-loop-state.md` | Durable loop pointer | Loop closed at `implement-health-plan`, `next_command: none`, and notes 0 effective-open accepted rows. |
+| `.dev/health-loop-state.md` | Durable loop pointer | Current live breadcrumb shows `stage_completed: implement-plugin-health`, `completed_at: 2026-06-22`, `next_command: none`, and a note that the ledger staleness check passed with 0 open rows. |
 | `docs/health/dispositions-index.json` | Generated JSONL disposition index | `open_accepted` is 0 and `integrity_warnings` is 0. |
 | `docs/health/dispositions-open.md` | Generated JSONL open-row view | Contains no open accepted events according to `health_disposition_store.py list-open`. |
 | `scripts/check_ledger_staleness.py` output | Legacy effective-open closure check | Reports 0 effective-open accepted row(s). |
@@ -71,7 +73,7 @@ The June 18 component counts are useful precision and recurrence evidence, but t
 | --- | ---: | --- | --- | --- |
 | Best-practice alignment | 4 | Medium | The loop has evidence verification, human disposition gates, durable loop state, close-back IDs, stale/fixed suppression, JSONL open-row checks, and legacy effective-open closure checks. | Reliability stress testing is not measured yet; rerun consistency and fault tolerance are inferred from artifacts rather than tested. |
 | Precision | 4 | Medium | June 19 dossiers directly report 74 raw lens findings, 40 verified, 29 dropped unverified, 2 stale/fixed dropped, 3 ledger-suppressed, and 0 failed lenses. June 18 artifacts add 31 dropped-unverified component signals but lack explicit raw denominators. | The loop still produces many raw false positives, especially from friction mapping and subjective clarity lenses, and the June 18 denominator is unavailable. |
-| Loop quality | 4 | High | The June 19 plan addressed 46 accepted rows, planned 33, re-dispositioned 13, used `closes_rows`, the JSONL index reports `open_accepted: 0`, and the live loop state ended at `next_command: none` with 0 effective-open accepted rows. | The clean final state depends on correct procedure; the report should still watch for corrupt success where close-back happens without sufficient phase proof. |
+| Loop quality | 4 | High | The June 19 plan addressed 46 accepted rows, planned 33, re-dispositioned 13, used `closes_rows`, the JSONL index reports `open_accepted: 0`, and the current live loop state is still closed at `next_command: none` with 0 effective-open accepted rows. | The clean final state depends on correct procedure; the report should still watch for corrupt success where close-back happens without sufficient phase proof. |
 | Recall signal | 2 | Low | Backlog rows, recurrence fields, and friction-ingest mapping issues show recall-relevant signals, but the baseline does not run a fresh adversarial sweep or controlled fixture set. | False negatives cannot be measured rigorously from recent historical artifacts alone. |
 
 ## Precision Notes
@@ -94,10 +96,24 @@ The recent loop shows good end-to-end closure:
 - Plan tasks carried `closes_rows` identifiers for ledger close-back.
 - `docs/health/dispositions-index.json` reports `open_accepted: 0` and `integrity_warnings: 0`.
 - `python3 scripts/health_disposition_store.py list-open` prints no open accepted events.
-- `.dev/health-loop-state.md` reports `stage_completed: implement-health-plan` and `next_command: none`.
+- `.dev/health-loop-state.md` now reports `stage_completed: implement-plugin-health`, `completed_at: 2026-06-22`, and `next_command: none`.
 - `python3 scripts/check_ledger_staleness.py` reports 0 effective-open accepted row(s).
 
 The main procedure-aware risk is corrupt success: a clean final ledger is not enough if a future run skips phase-proof blocks, evidence verification, disposition gates, JSONL view regeneration, or close-back validation. The benchmark should therefore keep procedure-integrity checks alongside outcome checks.
+
+## Token Efficiency Findings
+
+Measured token-efficiency data is not available for the June 18-20, 2026
+historical artifact window. The reviewed dossiers, implementation plan, loop
+state, JSONL disposition views, and legacy staleness checker expose precision
+and closure quality, but they do not record prompt-token counts, completion
+token counts, context-window utilization, or per-phase token deltas.
+
+The only defensible token-related inference is indirect: strong evidence
+verification and disposition suppression reduced the number of findings that
+reached planning or implementation, which likely reduced downstream token spend.
+That remains an inference, not a measured efficiency claim, and it should not be
+scored as a token-saving result until future runs capture direct usage data.
 
 ## Best-Practice Alignment
 
@@ -140,12 +156,35 @@ First automation should parse and report these fields without changing scores au
 
 ## Recommendations
 
-1. Build a small evidence adapter that reads generated JSONL open/current/index views and reports `jsonl_open_accepted_count`, `closed_rows`, `integrity_warning_count`, and legacy `effective_open_count` side by side.
-2. Add a lightweight parser for dossier summary blocks and dropped-finding sections; use it to regenerate the evidence inventory before each manual score.
+1. Run the evidence adapter before future benchmark refreshes so `jsonl_open_accepted_count`, `closed_rows`, `integrity_warning_count`, and legacy `effective_open_count` are regenerated from live surfaces before manual scoring.
+2. Extend the adapter or a companion parser to cover dossier summary blocks and dropped-finding sections more fully, then use that output to regenerate the evidence inventory before each manual score.
 3. Preserve unavailable counts as `not available` rather than deriving primary denominators from retained plus dropped component counts.
 4. Keep recall manual until there is a fixture set or fresh adversarial sweep. The current historical window is not enough to prove false-negative rates.
-5. Add one benchmark checklist item for procedure integrity: evidence gate run, disposition gate run, JSONL views generated, close-back IDs present, loop state closed, JSONL open count zero, and legacy staleness checker clean.
+5. Keep one benchmark checklist item for procedure integrity: evidence gate run, disposition gate run, JSONL views generated, close-back IDs present, loop state closed, JSONL open count zero, and legacy staleness checker clean.
 6. Track false-positive classes by source, especially friction surface-mapping errors and subjective clarity/name-fit findings, before deciding which classes deserve synthetic fixtures.
+
+## Implementation Status
+
+Live repo check on June 22, 2026:
+
+- Recommendation 1 is partially implemented. `scripts/health_benchmark_adapter.py`
+  exists and runs, but the benchmark-report workflow does not yet invoke it
+  directly.
+- Recommendation 2 is partially implemented. Dossiers now emit the machine-readable
+  `<!-- benchmark-metrics -->` block, and the adapter parses it, but there is
+  still no benchmark-specific fixture/test surface for fuller evidence-inventory
+  regeneration.
+- Recommendation 3 is implemented. The dossier-writing contract and the adapter
+  both preserve literal `not available` values instead of inferring missing
+  denominators.
+- Recommendation 4 is implemented as a guardrail. Recall remains manual, and
+  there is still no benchmark fixture set or fresh adversarial sweep in the repo.
+- Recommendation 5 is implemented. The adapter emits a concrete
+  `procedure_integrity` checklist covering JSONL views, loop closure, close-back
+  IDs, and staleness/index cleanliness.
+- Recommendation 6 is not yet implemented as a dedicated mechanism. The report
+  still names the important false-positive classes, but the repo does not yet
+  contain a standalone tracker or benchmark-specific fixture coverage for them.
 
 ## Adapter Status & Deferred Work
 
