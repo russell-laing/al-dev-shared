@@ -29,10 +29,15 @@ Do not do fuzzy synonym matching in the storage layer.
 **The key must stay stable across a row's lifetime.** A later row supersedes an
 earlier one in the materialized current view only when all four key fields are
 identical (last-writer-wins). When you flip a disposition (e.g. `accepted` →
-`fixed`/`declined`/`grandfathered`), keep the `finding` text byte-identical and
-reuse the same `ID`; change only the `disposition`, `date`, and `note`. Editing
-the `finding` text forks the key, so both rows survive sharing one `ID` — the
-duplicate-ID / ambiguous-closure class that `check_ledger_staleness.py`
+`fixed`/`declined`/`grandfathered`), append a **new** event through `append_event`
+whose four key fields (`surface` + `dimension` + `object` + `finding`) are
+byte-identical to the accepted event; the new event gets a **fresh auto-allocated
+`event_id`** and lists the accepted event's id in `closes_event_ids`. Do **not**
+reuse the accepted event's id — `append_event`'s duplicate-id guard rejects any
+reused id, and `--event-id` exists only for migration/recovery. Closure is
+therefore by **object/key match plus `closes_event_ids`, never by id reuse**.
+Editing the `finding` text forks the key, so both rows survive under separate ids
+— the duplicate-key / ambiguous-closure class that `check_ledger_staleness.py`
 `integrity_warnings()` flags. See `ledger-closure-protocol.md` for the full
 write-back procedure.
 
