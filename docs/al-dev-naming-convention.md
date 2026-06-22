@@ -80,4 +80,4 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
-- `al-dev-consolidate` — user-facing artifact-consolidation workflow.
+(none currently)
