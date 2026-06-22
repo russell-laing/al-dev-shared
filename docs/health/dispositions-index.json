@@ -9,7 +9,7 @@
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 550,
+      "current_rows": 556,
       "open_accepted": 0
     },
     "unknown": {
@@ -19,12 +19,12 @@
   },
   "by_disposition": {
     "declined": 119,
-    "fixed": 704,
+    "fixed": 710,
     "grandfathered": 71
   },
   "by_surface": {
     "plugin": {
-      "current_rows": 212,
+      "current_rows": 218,
       "open_accepted": 0
     },
     "tooling": {
@@ -36,10 +36,10 @@
       "open_accepted": 0
     }
   },
-  "current_rows": 894,
-  "generated_at": "2026-06-22T00:53:18.437760+00:00",
+  "current_rows": 900,
+  "generated_at": "2026-06-22T02:21:51.735708+00:00",
   "integrity_warnings": 0,
   "open_accepted": 0,
-  "source_hash": "2a69b3fd626bcff4ee604a3a2d58750001f6462ff610a5f9370c58d2e570c4a0",
-  "total_events": 1605
+  "source_hash": "9ad7eae9a168e11ad2d92fb53f1bdaebb8bbc9d1fd9fc5d4063bb70a60a3a80c",
+  "total_events": 1617
 }
