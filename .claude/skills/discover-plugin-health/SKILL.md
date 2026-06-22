@@ -13,7 +13,7 @@ description: >-
   be run standalone to refresh findings without re-running the report phase, but it requires the same
   pre-conditions as a full audit run. Discovery is via parallel lens dispatch
   (not direct file scanning).
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume] [--since <ref>]"
 workflow:
   stage: discover
   invoked-by: both
@@ -52,6 +52,15 @@ failure, and log `preferred → outcome → fallback → reason`.
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
 - `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
 - `--resume` ∈ present | absent (default absent)
+- `--since <ref>` ∈ any git ref (commit SHA, branch, tag, or `HEAD~N`); absent by default
+
+**`--since` semantics:** when present, `git diff --name-only <ref>` is used to build
+the changed-files set (working-tree-vs-`<ref>` — captures committed, staged, and
+unstaged changes in a single pass). If only *committed* changes since `<ref>` are
+wanted, use the two-dot form `<ref>..HEAD` manually. The changed-files set is used
+to narrow file lists for **scopable lenses only** (see Phase 1 scopability table);
+non-scopable lenses always receive the full corpus. The Phase 2 run manifest is
+always built from the **full** corpus so cross-file mappings stay correct.
 
 Surface → directory mapping:
 
@@ -85,6 +94,65 @@ find "$REPO/.claude/skills" -name "SKILL.md" ! -path "*/archived/*" \
 ```
 
 Keep the agent list and skill list separate — different lenses target each.
+
+### Lens scopability classification
+
+When `--since` is present, only **scopable** lenses have their file list narrowed
+to changed files. **Non-scopable** lenses always receive the full corpus (they
+compare across files and would produce wrong results on a partial list).
+
+| Scopable — narrow to changed files | Non-scopable — always full corpus |
+|------------------------------------|-----------------------------------|
+| All `quality-agent-lens-*` | `design-skill-lens-near-duplicates` |
+| All `quality-skill-lens-*` | `design-skill-lens-shared-backbone` |
+| `design-agent-lens-scope-isolation` | `design-skill-lens-handoff-gaps` |
+| `design-agent-lens-model-fit` | `design-skill-lens-preplanning` |
+| `design-agent-lens-caller-alignment` | |
+| `design-agent-lens-usage-patterns` | |
+| `design-agent-lens-tool-hygiene` | |
+| `design-skill-lens-complexity` | |
+| `design-skill-lens-surface-placement` | |
+| `design-skill-lens-maintainer-handoff` | |
+| `naming-convention-lens` | |
+
+Rationale: scopable lenses make per-file or per-object judgements; the mapping
+context in the run manifest (Phase 2) encodes cross-file facts, so per-object
+findings remain correct even on a narrowed list. Non-scopable lenses compare
+*across* the corpus (duplicate shapes, shared backbone, handoff chains, preplanning
+diagram placement) and cannot produce correct results against a partial file list.
+
+### `--since` path normalization (load-bearing)
+
+`git diff --name-only <ref>` emits **repo-root-relative** paths (e.g.
+`profile-al-dev-shared/agents/foo.md`), while the glob commands above produce
+**absolute** paths (e.g. `/Users/dev/repo/profile-al-dev-shared/agents/foo.md`).
+A naive set intersection of the two yields the **empty set**, which silently
+reads as "nothing to check → no findings" — a correctness bug that masquerades as
+a clean pass.
+
+**Required normalization:** before intersecting, resolve each `git diff` output
+path to absolute by prepending `$REPO/`:
+
+```bash
+REPO=$(git rev-parse --show-toplevel)
+# Build changed-files set as absolute paths
+CHANGED=$(git diff --name-only "$SINCE_REF" | sed "s|^|$REPO/|")
+```
+
+Then intersect the globbed absolute list against the absolute `$CHANGED` set.
+Both sides are now absolute — the intersection is correct.
+
+### `--since` empty-intersection skip behavior
+
+After narrowing a scopable lens's file list:
+
+- **Non-empty result:** dispatch the lens against the narrowed list as normal.
+- **Empty result** (no changed files in scope for that lens's object type): **skip
+  dispatching that lens** and log a skip note instead of dispatching against an
+  empty list. A no-file dispatch wastes a call and can emit a spurious "no findings"
+  block. Log format: `<lens-name>: skipped (no changed files in scope)`.
+
+Non-scopable lenses are **never** skipped — they always run against the full corpus.
 
 ## Phase 2 — Pre-dispatch aggregation
 
