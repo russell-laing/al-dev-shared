@@ -12,10 +12,12 @@ Converted lenses (each emits one ``.dev/<date>-plugin-health-lens-<name>.json``)
   that doc's ``## Grandfathered exceptions`` section.
 - ``quality-agent-lens-structure`` (quality, agents) — frontmatter field presence,
   tool canonicality (canonical set read from the projection policy, not a marker),
-  Inputs/Outputs sections, header numbering, skill-only-field rejection.
+  empty ``tools: []`` rejection, Inputs/Outputs sections, header numbering,
+  skill-only-field rejection.
 - ``quality-skill-lens-structure`` (quality, skills) — frontmatter ``name``/
-  ``description``, the conditional ``argument-hint`` rule, output-file naming,
-  header numbering.
+  ``description``, the conditional ``argument-hint`` rule (missing hint when an
+  argument is referenced) and the empty-string ``argument-hint`` rule, header
+  numbering.
 - ``design-agent-lens-tool-hygiene`` (design, agents) — declared ``tools`` vs body
   usage verbs.
 
@@ -178,14 +180,6 @@ def changed_paths(since_ref: str) -> set[Path]:
     return {(repo_root / line.strip()).resolve() for line in out if line.strip()}
 
 
-def _line_of(text: str, needle: str) -> int:
-    """1-based line number of the first line containing ``needle`` (or 1)."""
-    for i, line in enumerate(text.splitlines(), start=1):
-        if needle in line:
-            return i
-    return 1
-
-
 # ---------------------------------------------------------------------------
 # Findings rendering
 # ---------------------------------------------------------------------------
@@ -313,8 +307,21 @@ def check_agent_structure(agent_paths: list[Path], surface: str) -> list[str]:
                 "add a single-sentence `description:` field",
             ))
 
-        # Medium: non-canonical tool names.
+        # Medium: empty `tools: []` array — present but non-canonical. The
+        # canonical form is either a populated list or omitting the field; an
+        # empty array is neither (raw skill-structure lens flagged this).
         declared = fm.get("tools")
+        if isinstance(declared, list) and not declared:
+            rows.append(_row(
+                name, "Medium",
+                f"`{path.name}:1` declares an empty `tools: []` array, which is "
+                "not canonical — the canonical form is either a list with tool "
+                "names or omitting the field for zero-tool agents",
+                "omit the `tools` field, or document explicitly in the agent "
+                "instructions why no tools are needed",
+            ))
+
+        # Medium: non-canonical tool names.
         if isinstance(declared, list):
             for tool in declared:
                 if tool not in tools_canonical:
@@ -410,6 +417,18 @@ def check_skill_structure(skill_paths: list[Path]) -> list[str]:
                 f"`{skill_name}/SKILL.md:1` body references an optional argument "
                 "but frontmatter has no `argument-hint`",
                 "add an `argument-hint:` field describing the optional argument",
+            ))
+
+        # Low: empty-string argument-hint — present but valueless. The canonical
+        # form omits the field entirely for skills that take no arguments (raw
+        # skill-structure lens flagged this on the empty-string skills).
+        if "argument-hint" in fm and fm.get("argument-hint") == "":
+            rows.append(_row(
+                skill_name, "Low",
+                f"`{skill_name}/SKILL.md:1` `argument-hint: \"\"` is an empty "
+                "string field; the canonical form omits the field entirely for "
+                "skills that take no arguments",
+                "remove the `argument-hint:` line entirely",
             ))
 
         # Low: numbering inconsistency.

@@ -23,7 +23,7 @@ runner, `scripts/health_static_lenses.py`, instead of LLM agents. They are
 - `design-agent-lens-tool-hygiene` — declared `tools` vs body usage.
 
 The runner writes the same per-lens findings artifacts the LLM lenses wrote, so
-downstream assembly is unchanged. Two deliberate scope reductions keep the
+downstream assembly is unchanged. Three deliberate scope reductions keep the
 deterministic checks false-positive-free:
 
 - **Tool-hygiene** flags only high-confidence cases: a write/edit capability on a
@@ -35,7 +35,14 @@ deterministic checks false-positive-free:
 - **argument-hint** (in the skill structure check) is conditional and keyed on
   concrete patterns only: a literal `If an argument was passed` mention, or a
   `[arg]`-style token outside frontmatter and fenced code blocks. Fuzzier "the
-  prose implies an argument" inference is **not** flagged.
+  prose implies an argument" inference is **not** flagged. (An empty-string
+  `argument-hint: ""` is a separate, unconditional finding and is still flagged.)
+- **Output-file naming** (a check the prior skill structure lens carried) is
+  **not** flagged deterministically. A regex over conventional, non-dated `.dev/`
+  handoff filenames over-fires, and no reliable pattern distinguishes a
+  legitimate established handoff file from a genuinely mis-named output; the raw
+  lens flagged none of these, so the check is kept out to preserve the
+  false-positive-free mandate.
 
 ---
 

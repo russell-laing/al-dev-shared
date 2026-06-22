@@ -88,6 +88,32 @@ def test_agent_structure_fires_on_noncanonical_tool():
         assert any("non-canonical tool `Frobnicate`" in r for r in rows), rows
 
 
+def test_agent_structure_fires_on_empty_tools_array():
+    """An empty `tools: []` array is present (so the missing-tools High check
+    stays silent) but non-canonical, and must be flagged Medium."""
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        bad = _write(
+            root, "al-dev-thing.md",
+            "---\nname: al-dev-thing\ndescription: x\nmodel: haiku\n"
+            "tools: []\n---\n## Inputs\n\nfoo\n\n## Outputs\n\nbar\n",
+        )
+        rows = M.check_agent_structure([bad], "plugin")
+        assert any("empty `tools: []`" in r and "Medium" in r for r in rows), rows
+        # The missing-tools High finding must NOT fire (the field is present).
+        assert not any("missing `tools`" in r for r in rows), rows
+
+
+def test_agent_structure_silent_on_populated_tools():
+    """A populated tools list (canonical entries) must NOT trigger the empty-array
+    finding."""
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        good = _write(root, "al-dev-thing.md", _GOOD_AGENT)
+        rows = M.check_agent_structure([good], "plugin")
+        assert not any("empty `tools: []`" in r for r in rows), rows
+
+
 def test_agent_structure_silent_on_good_agent():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
@@ -119,6 +145,47 @@ def test_skill_structure_fires_on_name_mismatch():
         )
         rows = M.check_skill_structure([bad])
         assert any("does not match parent directory" in r for r in rows), rows
+
+
+def test_skill_structure_fires_on_empty_argument_hint():
+    """An empty-string `argument-hint: ""` must be flagged Low, independent of
+    whether the body references an argument."""
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        bad = _write(
+            root, "myskill/SKILL.md",
+            '---\nname: myskill\ndescription: x\nargument-hint: ""\n---\n'
+            "# Skill\n\nbody with no argument reference\n",
+        )
+        rows = M.check_skill_structure([bad])
+        assert any("empty " in r and "Low" in r and "argument-hint" in r
+                   for r in rows), rows
+
+
+def test_skill_structure_silent_on_absent_argument_hint():
+    """No argument-hint field at all (and no argument reference) must NOT trigger
+    the empty-string finding."""
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        skill = _write(
+            root, "myskill/SKILL.md",
+            "---\nname: myskill\ndescription: x\n---\n# Skill\n\nbody\n",
+        )
+        rows = M.check_skill_structure([skill])
+        assert not any("empty " in r and "argument-hint" in r for r in rows), rows
+
+
+def test_skill_structure_silent_on_nonempty_argument_hint():
+    """A populated argument-hint must NOT trigger the empty-string finding."""
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        skill = _write(
+            root, "myskill/SKILL.md",
+            '---\nname: myskill\ndescription: x\nargument-hint: "[--flag]"\n---\n'
+            "# Skill\n\nbody\n",
+        )
+        rows = M.check_skill_structure([skill])
+        assert not any("empty " in r and "argument-hint" in r for r in rows), rows
 
 
 def test_skill_structure_silent_on_good_skill():
