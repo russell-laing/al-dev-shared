@@ -13,7 +13,7 @@ description: >-
   be run standalone to refresh findings without re-running the report phase, but it requires the same
   pre-conditions as a full audit run. Discovery is via parallel lens dispatch
   (not direct file scanning).
-argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
+argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume] [--since <ref>]"
 workflow:
   stage: discover
   invoked-by: both
@@ -52,6 +52,24 @@ failure, and log `preferred → outcome → fallback → reason`.
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
 - `--dimension` ∈ `design` | `quality` | `naming` | `all` (default `all`)
 - `--resume` ∈ present | absent (default absent)
+- `--since <ref>` ∈ any git ref (commit SHA, branch, tag, or `HEAD~N`); absent by default
+
+**`--since` semantics:** when present, `git diff --name-only <ref>` is used to build
+the changed-files set (working-tree-vs-`<ref>` — captures committed, staged, and
+unstaged changes in a single pass). To restrict to *committed-only* changes,
+pass the two-dot form as the `--since` value, e.g. `--since HEAD~3..HEAD`. The
+changed-files set is used to narrow file lists for **scopable lenses only** (see
+Phase 1 scopability table); non-scopable lenses always receive the full corpus. The
+Phase 2 run manifest is always built from the **full** corpus so cross-file
+mappings stay correct.
+
+Bind the `--since` value to `SINCE_REF` immediately after parsing:
+
+```bash
+SINCE_REF="<value passed to --since>"   # e.g. HEAD~1, HEAD~3..HEAD, abc1234
+```
+
+This variable is used in the Phase 1 normalization snippet below.
 
 Surface → directory mapping:
 
@@ -86,6 +104,66 @@ find "$REPO/.claude/skills" -name "SKILL.md" ! -path "*/archived/*" \
 
 Keep the agent list and skill list separate — different lenses target each.
 
+### Lens scopability classification
+
+When `--since` is present, only **scopable** lenses have their file list narrowed
+to changed files. **Non-scopable** lenses always receive the full corpus (they
+compare across files and would produce wrong results on a partial list).
+
+| Scopable — narrow to changed files | Non-scopable — always full corpus |
+|------------------------------------|-----------------------------------|
+| All `quality-agent-lens-*` | `design-skill-lens-near-duplicates` |
+| All `quality-skill-lens-*` | `design-skill-lens-shared-backbone` |
+| `design-agent-lens-scope-isolation` | `design-skill-lens-handoff-gaps` |
+| `design-agent-lens-model-fit` | `design-skill-lens-preplanning` |
+| `design-agent-lens-caller-alignment` | |
+| `design-agent-lens-usage-patterns` | |
+| `design-agent-lens-tool-hygiene` | |
+| `design-skill-lens-complexity` | |
+| `design-skill-lens-surface-placement` | |
+| `design-skill-lens-maintainer-handoff` | |
+| `naming-convention-lens` | |
+
+Rationale: scopable lenses make per-file or per-object judgements; the mapping
+context in the run manifest (Phase 2) encodes cross-file facts, so per-object
+findings remain correct even on a narrowed list. Non-scopable lenses compare
+*across* the corpus (duplicate shapes, shared backbone, handoff chains, preplanning
+diagram placement) and cannot produce correct results against a partial file list.
+
+### `--since` path normalization (load-bearing)
+
+`git diff --name-only <ref>` emits **repo-root-relative** paths (e.g.
+`profile-al-dev-shared/agents/foo.md`), while the glob commands above produce
+**absolute** paths (e.g. `/Users/dev/repo/profile-al-dev-shared/agents/foo.md`).
+A naive set intersection of the two yields the **empty set**, which silently
+reads as "nothing to check → no findings" — a correctness bug that masquerades as
+a clean pass.
+
+**Required normalization:** before intersecting, resolve each `git diff` output
+path to absolute by prepending `$REPO/`:
+
+```bash
+REPO=$(git rev-parse --show-toplevel)
+# SINCE_REF was bound in Phase 0 arg parsing (see above).
+# Build changed-files set as absolute paths.
+CHANGED=$(git diff --name-only "$SINCE_REF" | sed "s|^|$REPO/|")
+```
+
+Then intersect the globbed absolute list against the absolute `$CHANGED` set.
+Both sides are now absolute — the intersection is correct.
+
+### `--since` empty-intersection skip behavior
+
+After narrowing a scopable lens's file list:
+
+- **Non-empty result:** dispatch the lens against the narrowed list as normal.
+- **Empty result** (no changed files in scope for that lens's object type): **skip
+  dispatching that lens** and log a skip note instead of dispatching against an
+  empty list. A no-file dispatch wastes a call and can emit a spurious "no findings"
+  block. Log format: `<lens-name>: skipped (no changed files in scope)`.
+
+Non-scopable lenses are **never** skipped — they always run against the full corpus.
+
 ## Phase 2 — Pre-dispatch aggregation
 
 Before dispatching lenses, extract context from the documentation maps
@@ -115,12 +193,79 @@ context blocks **once** to a single run manifest at
 this manifest instead of re-inlining the file list into every dispatch prompt,
 which keeps the 20-lens fan-out small and avoids flooding this session's context.
 
+**`--since` scoped lists (mandatory when `--since` is active):** When `--since`
+is active, append a clearly-labelled section to the manifest immediately after the
+full corpus lists:
+
+```markdown
+## --since scoped file lists
+<!-- These lists contain only files changed since SINCE_REF.
+     Phase 3 scopable lenses use these lists instead of the full corpus. -->
+
+### --since scoped agents
+<one absolute path per line — empty section if no agent files changed>
+
+### --since scoped skills
+<one absolute path per line — empty section if no skill files changed>
+```
+
+These scoped lists are derived by intersecting the full corpus lists against
+`$CHANGED` (see Phase 1 normalization). The full corpus sections remain untouched.
+When `--since` is absent, omit the `## --since scoped file lists` section
+entirely.
+
+## Phase 2.5 — Deterministic static lenses (per surface, before dispatch)
+
+Four lenses are fully/mostly deterministic and are produced by a single Python
+pass instead of LLM agents: `naming-convention-lens`,
+`quality-agent-lens-structure`, `quality-skill-lens-structure`, and
+`design-agent-lens-tool-hygiene`. They write the **same** per-lens
+`.dev/<today>-plugin-health-lens-<lens-name>.json` artifacts the LLM lenses
+write (schema `{lens, findings, suggestion_count, completed_at}`), so Phase 4
+assembly and `--resume` treat them identically to agent findings.
+
+For each requested surface, run the static runner **once for that surface**,
+immediately before that surface's Phase 3 dispatch:
+
+```bash
+python3 scripts/health_static_lenses.py \
+  --surface <plugin|tooling> \
+  --dimension <design|quality|naming|all> \
+  --date <today> \
+  [--since "$SINCE_REF"]
+```
+
+**Load-bearing ordering and serialization:**
+
+- The lens-output filename carries **no surface token**, so the script must be
+  invoked with a **single** `--surface`, **never `both`**. Discover already
+  processes surfaces one at a time (Phase 1→4 for `plugin` completes — including
+  the Phase 4 `.dev/` cleanup — before `tooling` starts), so calling the script
+  once per surface inside that per-surface loop keeps the surface-less JSON
+  filenames from colliding.
+- Phase 2.5 runs **before** Phase 3 step 2's empty-`remaining_lenses`
+  short-circuit. This matters most for `--dimension naming`: after conversion the
+  only naming lens is the (removed) `naming-convention-lens`, so
+  `remaining_lenses` is empty and **zero LLM lenses dispatch** — the script having
+  already written its naming JSON in Phase 2.5 is what makes a `--dimension
+  naming` run produce findings, assembled by Phase 4 case (a).
+- Phase 2.5 **always re-runs on `--resume`** (it is cheap and idempotent —
+  re-running overwrites its own JSON). Phase 4 cleanup deletes the `.dev/` lens
+  JSONs at the end of a completed run, so a fresh resume after interruption must
+  re-emit them. The script honors `--since` for all four checks (they are all
+  classified scopable; see the Phase 1 scopability table), using the same
+  absolute-vs-repo-relative path normalization as Phase 1.
+
 ## Phase 3 — Dispatch
 
 Execute the following state machine in order:
 
-1. **Build `ALL_LENSES` (surface-scoped):** Start with the full lens set, then
-   apply the two mirror-image surface bindings:
+1. **Build `ALL_LENSES` (surface-scoped):** Start with the full LLM lens set
+   (the 19 lens agents on disk in `.claude/agents/` — the four deterministic
+   lenses `naming-convention-lens`, `quality-agent-lens-structure`,
+   `quality-skill-lens-structure`, and `design-agent-lens-tool-hygiene` are
+   **not** in this set; they are produced by the Phase 2.5 static runner and are
+   never dispatched as agents). Then apply the two mirror-image surface bindings:
    - For surface `tooling`, exclude `design-skill-lens-surface-placement` — it
      targets distributed skills and produces only non-actionable Move false
      positives against tooling-surface files.
@@ -129,10 +274,18 @@ Execute the following state machine in order:
      surface, so it produces no actionable findings against distributed skills.
 
    Net effect: `surface-placement` runs for `plugin` only, and
-   `maintainer-handoff` runs for `tooling` only; every other lens runs for both.
-   Beyond these formal bindings, several remaining design-skill lenses carry
-   reduced semantic signal for tooling skills — see the effective-coverage note
-   in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
+   `maintainer-handoff` runs for `tooling` only; every other LLM lens runs for
+   both. Beyond these formal bindings, several remaining design-skill lenses
+   carry reduced semantic signal for tooling skills — see the effective-coverage
+   note in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
+
+   **Dispatch vs. on-disk counts (reconciled — not a typo for each other):** 19
+   LLM lens agents exist on disk; one design lens is excluded per surface (the
+   two mirror-image bindings above), so **18 LLM lenses dispatch per surface**.
+   The four deterministic lenses run as the Phase 2.5 script (zero LLM dispatch)
+   and write their `.json` outputs alongside the agent outputs, so a full sweep
+   still assembles all dimensions. The on-disk 19 is the count
+   `scripts/validate-lens-agents.py` asserts.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
@@ -162,13 +315,31 @@ Execute the following state machine in order:
      simultaneously (parallel, isolated subagents). Use
      `superpowers:dispatching-parallel-agents` when 3+ lenses remain. Keep each
      dispatch prompt small: point the lens at the Phase 2 run manifest
-     (`.dev/<today>-discover-plugin-health-context.md`) for its file list and
-     required context fields (per the per-lens table in
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`) instead of
-     inlining the file list into the prompt. Append the **Finding evidence
-     contract** and the **Response format contract** verbatim from
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md` to every lens
-     prompt. Do not paraphrase — copy the canonical text so it cannot drift.
+     (`.dev/<today>-discover-plugin-health-context.md`) for its context fields (per
+     the per-lens table in
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
+
+     **File list selection per lens (load-bearing when `--since` is active):**
+     For each lens in `remaining_lenses`, choose the file list to supply in the
+     dispatch prompt as follows:
+
+     - **Scopable lens** (see Phase 1 scopability table) **and `--since` active:**
+       supply the `--since` scoped list from the `## --since scoped file lists`
+       section of the run manifest. If the scoped list for that lens's object type
+       (agents or skills) is **empty**, **skip** dispatching that lens and log
+       `<lens-name>: skipped (no changed files in scope)`. Do not dispatch against
+       an empty list.
+     - **Non-scopable lens** (`near-duplicates`, `shared-backbone`, `handoff-gaps`,
+       `preplanning`) **or `--since` absent:** supply the full corpus list from the
+       run manifest.
+
+     This ensures scopable lenses see only the narrowed set while non-scopable
+     lenses always run against the full corpus — satisfying acceptance test A.V.1.
+
+     Append the **Finding evidence contract** and the **Response format contract**
+     verbatim from `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`
+     to every lens prompt. Do not paraphrase — copy the canonical text so it cannot
+     drift.
 
      As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
@@ -230,6 +401,7 @@ For each surface that had lenses run:
    - Total lenses in scope: N
    - Completed this session: M
    - Completed in prior sessions: P (from --resume)
+   - Skipped (no changed files in scope): S (0 if --since not active)
    - Status: [COMPLETE / INCOMPLETE — call with --resume to finish]
    ```
 

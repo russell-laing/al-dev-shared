@@ -3,7 +3,6 @@ import os
 import re
 import sys
 from pathlib import Path
-import yaml
 
 
 def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
@@ -18,45 +17,26 @@ def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
 REPO = str(Path(__file__).resolve().parents[1])
 AGENTS_DIR = os.path.join(REPO, ".claude/agents")
 
-POLICY_PATH = os.path.join(REPO, "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md")
-STRUCTURE_LENS = os.path.join(AGENTS_DIR, "quality-agent-lens-structure.md")
+# Deterministic static-lens runner that replaces the four converted LLM lenses
+# (naming-convention-lens, quality-agent-lens-structure,
+# quality-skill-lens-structure, design-agent-lens-tool-hygiene). It reads the
+# canonical tool set directly from the projection policy, so the prior
+# canonical-tools marker-sync check has been retired.
+STATIC_LENS_SCRIPT = os.path.join(REPO, "scripts/health_static_lenses.py")
 
 
-def _canonical_tools_from_lens(path: str):
-    """Extract the backtick-quoted tokens between the canonical-tools markers."""
-    text = open(path).read()
-    block = re.search(
-        r"<!-- canonical-tools:start -->(.*?)<!-- canonical-tools:end -->",
-        text,
-        re.DOTALL,
-    )
-    if not block:
-        return None
-    return set(re.findall(r"`([^`]+)`", block.group(1)))
-
-
-def _policy_source_tokens(path: str):
-    """Return the projection_rules.claude capability keys from the policy."""
-    m = re.match(r"^---\n(.*?)\n---", open(path).read(), re.DOTALL)
-    if not m:
-        raise ValueError(f"No YAML frontmatter found in {path}")
-    data = yaml.safe_load(m.group(1))
-    return set(data["projection_rules"]["claude"].keys())
-
-
+# The 19 LLM lens agents still dispatched on disk. The four deterministic
+# lenses converted to scripts/health_static_lenses.py are intentionally absent.
 EXPECTED_AGENTS = [
     "quality-agent-lens-clarity",
-    "quality-agent-lens-structure",
     "quality-agent-lens-description",
     "quality-agent-lens-bloat",
     "quality-agent-lens-name-fit",
-    "design-agent-lens-tool-hygiene",
     "design-agent-lens-model-fit",
     "design-agent-lens-scope-isolation",
     "design-agent-lens-caller-alignment",
     "design-agent-lens-usage-patterns",
     "quality-skill-lens-clarity",
-    "quality-skill-lens-structure",
     "quality-skill-lens-description",
     "quality-skill-lens-bloat",
     "quality-skill-lens-name-fit",
@@ -67,7 +47,6 @@ EXPECTED_AGENTS = [
     "design-skill-lens-preplanning",
     "design-skill-lens-surface-placement",
     "design-skill-lens-maintainer-handoff",
-    "naming-convention-lens",
 ]
 
 SKILLS_TO_CHECK = [
@@ -166,25 +145,22 @@ for skill_path in SKILLS_TO_CHECK:
             f"add explicit parallel dispatch phrasing to Phase 2 in {skill_path}",
         ))
 
-lens_tokens = _canonical_tools_from_lens(STRUCTURE_LENS)
-policy_tokens = _policy_source_tokens(POLICY_PATH)
-if lens_tokens is None:
+# The deterministic static-lens runner must exist and be executable — it now
+# carries the four converted lenses (incl. the structure lens's canonical-tool
+# check, which it reads directly from the projection policy).
+if not os.path.exists(STATIC_LENS_SCRIPT):
     failures.append(_format_failure(
-        STRUCTURE_LENS,
-        "lens-canonical-markers",
-        "could not find <!-- canonical-tools:start/end --> markers",
-        "wrap the canonical tool list in canonical-tools:start/end HTML comments",
+        STATIC_LENS_SCRIPT,
+        "static-lens-script-exists",
+        "deterministic static-lens runner not found",
+        "create scripts/health_static_lenses.py (the four converted lenses)",
     ))
-elif lens_tokens != policy_tokens:
-    missing = policy_tokens - lens_tokens
-    extra = lens_tokens - policy_tokens
+elif not os.access(STATIC_LENS_SCRIPT, os.X_OK):
     failures.append(_format_failure(
-        STRUCTURE_LENS,
-        "lens-policy-sync",
-        f"canonical tool list diverges from projection policy "
-        f"(missing from lens: {sorted(missing)}; extra in lens: {sorted(extra)})",
-        "reconcile the structure lens canonical-tools list with "
-        "projection_rules.claude keys in agent-tool-projection-policy.md",
+        STATIC_LENS_SCRIPT,
+        "static-lens-script-executable",
+        "deterministic static-lens runner is not executable",
+        "chmod +x scripts/health_static_lenses.py",
     ))
 
 if failures:
@@ -192,4 +168,7 @@ if failures:
     print("\n\n".join(failures))
     sys.exit(1)
 else:
-    print(f"PASS — {len(EXPECTED_AGENTS)} agents valid, {len(SKILLS_TO_CHECK)} dispatch skill(s) checked.")
+    print(
+        f"PASS — {len(EXPECTED_AGENTS)} LLM lens agents valid, "
+        f"{len(SKILLS_TO_CHECK)} dispatch skill(s) checked, static-lens runner present."
+    )
