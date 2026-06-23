@@ -63,6 +63,32 @@ speculative "consider whether…" or "it may be worth…" observations rather th
 emitting them. Unverifiable findings are downstream-dropped at the report stage,
 so emitting them only adds noise.
 
+**Per-lens precision metric:** Each lens reply **should** include `verified_count`
+and `raw_count` at the bottom of its findings block:
+
+    verified_count: N  <!-- findings with file:line citations that resolve -->
+    raw_count: N       <!-- total findings drafted before self-review -->
+
+The report phase reads these fields to track per-lens precision (verified/raw)
+across sweeps. A lens that consistently produces a low ratio is a candidate for
+prompt refinement. If a lens does not emit these fields, the assembler uses
+`suggestion_count` as a proxy and sets `verified_count = suggestion_count` (no
+precision signal).
+
+**Structured snippet field:** When a finding cites a code or text snippet,
+include a structured `snippet:` block immediately after the `file:line` citation:
+
+    snippet:
+      file: path/to/subject.md
+      line: 42
+      text: "exact text from the file at that line"
+
+The `text` field must be copied verbatim from the cited file and line — do not
+paraphrase. The discover phase pre-checks that `text` matches the cited
+`file:line` before writing the finding to the findings JSON; a non-matching
+snippet causes the finding to be dropped at discover time rather than surviving
+to the evidence gate.
+
 ---
 
 ## Response format contract
