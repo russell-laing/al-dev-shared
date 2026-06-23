@@ -45,3 +45,29 @@ the sections it needs: agent lenses read the agent list, skill lenses read the
 skill list, and every lens reads the context fields named in its dispatch prompt
 (per the per-lens table in
 `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
+
+## Dimension-Aware Context Scope
+
+When `--dimension` is set to `quality` or `naming`, skip the design-only
+context mappings listed below — they are only consumed by design lenses and
+extracting them on a quality- or naming-only run is wasted work.
+
+| Dimension | Context mappings required |
+|-----------|--------------------------|
+| `naming`  | None — file list only. Skip all 11 derived mappings. |
+| `quality` | tool_inventory, model_assignments, caller_map, agent_usage_counts, single_use_agents, already_inline_candidates, no_agent_skills |
+| `design`  | All 11 mappings (full procedure above) |
+| `all`     | All 11 mappings |
+
+**Design-only mappings** (omit when `--dimension quality` or `--dimension naming`):
+
+- `layer1_diagram_content`
+- `phase_counts`
+- `handoff_chains`
+- `preplanning_skills`
+
+When `--dimension quality`, build only the 7 quality-relevant mappings; when
+`--dimension naming`, build no derived context at all (the static naming-convention
+lens runs directly from the file list). The `discover-plugin-health` Phase 2 call
+to this procedure should pass the active `--dimension` value so this scope can
+be applied.
