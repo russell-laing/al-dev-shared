@@ -5,7 +5,9 @@ description: >-
   by /audit-knowledge-quality, presents the HIGH-only task list, and
   conditionally dispatches one `al-dev-docs-writer` agent per issue when the
   user approves (or when --auto-fix is passed). Scope: HIGH severity only;
-  execution is user-gated. Run /audit-knowledge-quality first if no audit file
+  execution is user-gated. A mandatory neutrality gate validates any
+  shared-surface edits and blocks completion if forbidden harness tokens are
+  found. Run /audit-knowledge-quality first if no audit file
   exists. Triggers on: "fix knowledge quality", "fix knowledge issues",
   "implement knowledge fixes", "address high knowledge findings".
 argument-hint: "[--auto-fix]"
