@@ -3,7 +3,8 @@ name: implement-plugin-health
 description: >-
   Closes the health-audit loop: executes an accepted implementation plan,
   verifies each change, and appends `fixed` events to the JSONL event store
-  for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped.
+  for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped. If a task's verification fails, close-back is blocked for that
+  task and a `blocked` state is recorded in the run checkpoint.
   Locates the latest docs/superpowers/plans/ plan containing `closes_event_ids:`,
   executes tasks inline (one at a time), archives consumed artifacts, and
   optionally triggers downstream regeneration.
