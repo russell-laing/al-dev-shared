@@ -60,7 +60,7 @@ import argparse
 import json
 import re
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -540,7 +540,7 @@ def write_lens_json(out_dir: Path, date: str, lens: str, findings: str, count: i
         "lens": lens,
         "findings": findings,
         "suggestion_count": count,
-        "completed_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": datetime.now().astimezone().isoformat(),
     }
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
