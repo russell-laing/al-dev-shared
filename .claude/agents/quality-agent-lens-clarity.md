@@ -58,7 +58,12 @@ agent name from the filename (strip directory path and `.md` extension).
   reader could plausibly act two different ways from it and those two readings
   lead to different observable actions; record the ambiguous sentence verbatim
 - Vague qualifiers with no operative definition: "as needed", "appropriate", "reasonable", "if necessary"
-- `if X` branches with no `else` / `otherwise` clause (incomplete conditional)
+- `if X` branches with no `else` / `otherwise` clause (incomplete conditional) —
+  **except** when the fall-through is unambiguous. Fall-through is unambiguous
+  when: (a) the `if`-clause is the final step in a numbered procedure and no
+  further action is implied beyond the clause's own instruction, or (b) the
+  `if`-clause is a guard ("if X, stop" / "if X, skip this step") whose omitted
+  else-branch is the continuation of the enclosing procedure.
 - Bash code blocks that are pseudo-code rather than runnable commands: unrecognised
   binary names, unexplained `<placeholder>` syntax, variables defined nowhere.
   (Note: In these instructions, `<placeholder>` is meta-notation indicating a substitution point;

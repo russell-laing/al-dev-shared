@@ -55,8 +55,13 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
 - Vague qualifiers with no operative definition: "as needed", "appropriate", "reasonable", "if necessary"
 - Incomplete prose conditionals: a prose sentence stating a condition and its
   outcome (`if X, do Y` / `when X, Y`) with no `else` / `otherwise` outcome
-  for the unmet case. Applies to prose sentences only — do not analyze
-  conditionals inside fenced code blocks.
+  for the unmet case — **except** when the fall-through is unambiguous.
+  Fall-through is unambiguous when: (a) the `if`-clause is the final step in a
+  numbered procedure and no further action is implied beyond the clause's own
+  instruction, or (b) the `if`-clause is a guard ("if X, stop" / "if X, skip
+  this step") whose omitted else-branch is the continuation of the enclosing
+  procedure. Applies to prose sentences only — do not analyze conditionals
+  inside fenced code blocks.
 - Bash code blocks that are pseudo-code rather than runnable commands. A binary
   name is **recognised** (do not flag) if it is a standard POSIX/coreutils
   command (e.g. `git`, `grep`, `sed`, `find`, `python3`, `rg`, `jq`, `awk`,
