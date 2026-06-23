@@ -207,7 +207,7 @@ checkpoint write above, read back the last `tasks_completed[].commit` value and
 confirm it resolves:
 
 ```bash
-git log --oneline <hash>   # the just-recorded tasks_completed[].commit
+git log --oneline -1 <hash>   # the just-recorded tasks_completed[].commit
 ```
 
 If `git log` does not resolve the hash (empty output or non-zero exit), the
