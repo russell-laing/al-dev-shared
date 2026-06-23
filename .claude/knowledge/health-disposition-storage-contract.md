@@ -8,6 +8,11 @@ Keep the human-facing ledger small without losing append-only provenance.
 
 - `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl`
   - append-only event log; one JSON object per disposition event
+  - **Year-partitioned:** the top level contains `YYYY/` subdirectories, not JSONL files
+    directly. Format-reference lookups must use
+    `find docs/health/dispositions-events/ -name "*.jsonl"` (or
+    `ls docs/health/dispositions-events/YYYY/` once the year is known);
+    `ls docs/health/dispositions-events/ | tail -1` returns a year directory, not a JSONL file.
 - `docs/health/dispositions-open.md`
   - generated small read for open accepted events; Claude reads this by default
 - `docs/health/dispositions-current.md`
