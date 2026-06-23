@@ -59,4 +59,4 @@ If the block has no findings, emit it with a single `_No issues found._` line:
 
 ### Surface Placement Findings
 
-*No issues found.*
+_No issues found._
