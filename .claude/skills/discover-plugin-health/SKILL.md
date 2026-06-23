@@ -8,8 +8,10 @@ description: >-
   and writes RAW (unranked) lens findings to
   docs/health/YYYY-MM-DD-<surface>-findings.md, which also carries a
   `## Failed lenses` section and a `## Resume information` block tracking
-  completion status. The ranked dossier is produced
-  separately by /report-plugin-health. Called by /audit-plugin-health; can also
+  completion status. Before lens dispatch, a deterministic static-lens phase
+  (Phase 2.5) runs the non-LLM lenses via scripts/health_static_lenses.py,
+  emitting the same findings JSON as the dispatched lenses. The ranked dossier
+  is produced separately by /report-plugin-health. Called by /audit-plugin-health; can also
   be run standalone to refresh findings without re-running the report phase, but it requires the same
   pre-conditions as a full audit run. Discovery is via parallel lens dispatch
   (not direct file scanning).
