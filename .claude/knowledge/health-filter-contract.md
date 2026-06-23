@@ -41,6 +41,29 @@ Defaults:
 - `naming` -> naming-convention lens only
 - `all` -> union of the three concrete dimensions
 
+## Per-Dimension Lens Roster
+
+Ground-truth counts for the missing-lens completeness check in
+`discover-plugin-health` Phase 3. The `remaining_lenses` set must empty
+to zero by the end of a successful sweep; this table is the baseline for
+each dimension-scoped run.
+
+| Dimension | LLM lens agents | Static lenses | Total expected |
+|-----------|-----------------|---------------|----------------|
+| design    | 10 per surface (11 total − 1 surface exclusion) | 1 (tool-hygiene) | 11 per surface |
+| quality   | 8 | 2 (agent-structure, skill-structure) | 10 |
+| naming    | 0 | 1 (naming-convention-lens) | 1 |
+| all       | 18 per surface (19 total − 1 surface exclusion) | 4 | 22 per surface |
+
+**Per-surface LLM exclusions (reduce 19 → 18):**
+
+- `plugin` surface: `design-skill-lens-maintainer-handoff` excluded
+- `tooling` surface: `design-skill-lens-surface-placement` excluded
+
+**Static lenses** are run by `scripts/health_static_lenses.py` — they write
+`.dev/<date>-plugin-health-lens-<name>.json` artifacts identical to LLM agent output
+and are treated as completed lenses by the `remaining_lenses` check.
+
 ## Friction Source
 
 `/ingest-plugin-friction` is a discover-stage source that is **not a lens**. Its
