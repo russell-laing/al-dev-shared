@@ -799,6 +799,13 @@ if __name__ == "__main__":
         ap.add_argument(f"--{field}", required=True)
     ap.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
 
+    p_sync = sub.add_parser("sync_shard", help="Sync one or more JSONL events to the Markdown history shard")
+    p_sync_group = p_sync.add_mutually_exclusive_group(required=True)
+    p_sync_group.add_argument("--event-id", help="Sync the single event matching this ID")
+    p_sync_group.add_argument("--since", metavar="YYYY-MM-DD", help="Sync all events on or after this date")
+    p_sync.add_argument("--events-root", type=Path, default=Path("docs/health/dispositions-events"))
+    p_sync.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
+
     ih = sub.add_parser(
         "iter_history_rows",
         help="Print every history-shard row in chronological order as JSON lines.",
@@ -879,4 +886,28 @@ if __name__ == "__main__":
 
         for r in list_open(args.ledger, args.status, args.surface, args.dimension):
             print(json.dumps(r, ensure_ascii=False))
+        raise SystemExit(0)
+    elif args.command == "sync_shard":
+        events = []
+        for ev in iter_event_rows(args.events_root):
+            if args.event_id and ev.get("event_id") == args.event_id:
+                events.append(ev)
+            elif args.since and ev.get("date", "") >= args.since:
+                events.append(ev)
+        if not events:
+            print("sync_shard: no matching events found", file=sys.stderr)
+            sys.exit(1)
+        for ev in events:
+            row = {
+                "id": ev.get("legacy_id") or ev["event_id"],
+                "surface": ev["surface"],
+                "dimension": ev["dimension"],
+                "object": ev["object"],
+                "finding": ev["finding"],
+                "disposition": ev["disposition"],
+                "date": ev["date"],
+                "note": ev.get("evidence", ""),
+            }
+            append_row(args.history_root, row)
+            print(f"sync_shard: wrote shard row for {ev['event_id']}")
         raise SystemExit(0)
