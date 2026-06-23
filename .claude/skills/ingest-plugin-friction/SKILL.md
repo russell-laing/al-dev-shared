@@ -9,10 +9,9 @@ description: >-
   YYYY-MM-DD-<surface>-friction-findings.md artifacts consumed by
   /report-plugin-health via --findings, and records local runtime provenance in
   docs/health/friction-ingest-log.md (gitignored). Run when friction logs have
-  accumulated
-  and they should be passed to `/report-plugin-health` — this skill produces
-  intermediate findings files consumed by that report step, not direct audit
-  integration.
+  accumulated. This skill writes intermediate findings files that
+  `/report-plugin-health` consumes via --findings; it is not itself an audit
+  step.
   Triggers on: "ingest friction logs", "ingest the friction log", "process
   friction logs", "fold friction into the health loop", "archive friction logs".
 argument-hint: "[--source <path>] [--surface plugin|tooling|both] [--since YYYY-MM-DD]"
