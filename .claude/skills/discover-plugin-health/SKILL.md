@@ -256,6 +256,12 @@ python3 scripts/health_static_lenses.py \
   classified scopable; see the Phase 1 scopability table), using the same
   absolute-vs-repo-relative path normalization as Phase 1.
 
+**Corpus asymmetry:** The static runner examines all non-archived skills regardless
+of `workflow:` block. LLM lenses examine only workflow:-contracted skills. A
+structural finding on a non-contracted skill (one without a `workflow:` block in its
+frontmatter) is valid but should be tagged `[non-contracted]` in the findings file and
+verified for relevance before planning, since no LLM lens reviewed that skill's logic.
+
 ## Phase 3 — Dispatch
 
 Execute the following state machine in order:

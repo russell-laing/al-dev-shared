@@ -150,7 +150,14 @@ def agent_files(surface_root: Path) -> list[Path]:
 
 
 def skill_files(surface_root: Path) -> list[Path]:
-    """SKILL.md files for a surface (exclude archived)."""
+    """SKILL.md files for a surface (exclude archived).
+
+    # Note: globs all non-archived SKILL.md files, including skills that lack a
+    # workflow: frontmatter block. LLM lens agents only examine workflow:-contracted
+    # skills. This asymmetry is intentional — see discover-plugin-health Phase 2.5.
+    # A finding for a non-contracted skill is valid but may need manual relevance
+    # verification before acting.
+    """
     root = surface_root / "skills"
     if not root.is_dir():
         return []
