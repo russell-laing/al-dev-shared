@@ -10,7 +10,7 @@ description: >-
   Triggers on:
   "implement health plan", "run the health plan", "execute health findings plan",
   "implement the accepted plan", "close the ledger", "run implement-plugin-health".
-argument-hint: "[--plan <path>]"
+argument-hint: "[--plan <path>] [--compact-every <N>]"
 workflow:
   stage: implement
   invoked-by: user
@@ -154,9 +154,15 @@ benefit. Execute each task directly using Read/Edit/Bash, then commit before mov
 to the next.
 
 **Plan-size guidance:** Plans with more than ~10 tasks risk context compaction in a
-single session. If the plan exceeds 10 tasks, note it to the user before starting.
-If compaction occurs mid-run, start a fresh session and re-invoke — Phase 0 resumes
-from the checkpoint.
+single session. If the plan exceeds 10 tasks, note it to the user before starting
+and recommend passing `--compact-every 3` on Sonnet or Haiku. If compaction occurs
+mid-run, start a fresh session and re-invoke — Phase 0 resumes from the checkpoint.
+
+**`--compact-every <N>` flag:** Inserts voluntary compaction pause points every N
+tasks. After each Nth task's checkpoint is written and the pre-task gate passes,
+stop and prompt the user to run `/compact` before continuing (see "Compact pause"
+below). Recommended cadence: `--compact-every 3` on Sonnet or Haiku; not needed on
+Opus for plans ≤10 tasks.
 
 **Sequential enforcement:** Execute one task at a time. If you are about to begin a
 second task before the first has committed, stop and report: "Sequential-only
@@ -215,6 +221,17 @@ prior task's commit did not land as recorded — **stop and report** (the same
 failure action as the sequential-enforcement rule above); do not start the next
 task. This is a procedural pre-task gate, distinct from the post-hoc Phase 2
 verification sweep.
+
+**Compact pause (if `--compact-every N` is set):** After the checkpoint write and
+pre-task gate above both pass, check whether `tasks_completed` count is a non-zero
+multiple of N. If so, pause before reading the next task spec and prompt:
+
+> "Compact pause: [count] tasks complete. Run `/compact` in your shell, then reply
+> 'continue' to proceed to Task [next]."
+
+Wait for the user to reply before reading the next task spec. `/compact` trims the
+conversation context in-place — continue in the same session without re-invoking.
+The checkpoint on disk is the resume anchor if the session is interrupted instead.
 
 ### Mid-point consistency check
 
