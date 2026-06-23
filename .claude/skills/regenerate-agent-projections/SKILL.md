@@ -4,7 +4,6 @@ description: >-
   Validates shared agent source and unidirectionally regenerates harness-native agent projections
   from the canonical agent source, summarizes changes, and asks before committing.
   Use after editing profile-al-dev-shared/agents/*.md files.
-argument-hint: ""
 workflow:
   stage: derive
   invoked-by: user
