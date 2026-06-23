@@ -2,7 +2,7 @@
   "by_dimension": {
     "design": {
       "current_rows": 85,
-      "open_accepted": 4
+      "open_accepted": 0
     },
     "naming": {
       "current_rows": 5,
@@ -10,7 +10,7 @@
     },
     "quality": {
       "current_rows": 567,
-      "open_accepted": 7
+      "open_accepted": 0
     },
     "unknown": {
       "current_rows": 258,
@@ -18,9 +18,8 @@
     }
   },
   "by_disposition": {
-    "accepted": 11,
     "declined": 119,
-    "fixed": 714,
+    "fixed": 725,
     "grandfathered": 71
   },
   "by_surface": {
@@ -30,7 +29,7 @@
     },
     "tooling": {
       "current_rows": 436,
-      "open_accepted": 11
+      "open_accepted": 0
     },
     "unknown": {
       "current_rows": 258,
@@ -38,9 +37,9 @@
     }
   },
   "current_rows": 915,
-  "generated_at": "2026-06-22T21:17:19.097723+00:00",
+  "generated_at": "2026-06-23T02:03:37.111440+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 11,
-  "source_hash": "cd60329919f48ad70ea132e1190b22de2d8a2849b37e03b4ac944491845e5061",
-  "total_events": 1636
+  "open_accepted": 0,
+  "source_hash": "14cff8fddb0d73a3e37a10c93d4cbe4b471fab6778f50371f61db065dd628bbe",
+  "total_events": 1647
 }
