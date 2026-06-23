@@ -55,4 +55,6 @@ Return exactly this structure (no additional prose before or after the block):
 
 If no issues found:
 
+### Near-Duplicate Shapes Findings
+
 _No issues found._
