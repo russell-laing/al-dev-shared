@@ -347,6 +347,26 @@ Execute the following state machine in order:
      to every lens prompt. Do not paraphrase — copy the canonical text so it cannot
      drift.
 
+     **Snippet existence gate (pre-write):** Before writing a finding to the lens JSON,
+     check whether any `snippet:` block in that finding resolves to the cited file:line.
+     For each finding that includes a `snippet:` field:
+
+     1. Extract `snippet.file` and `snippet.text`.
+     2. If `snippet.file` exists on disk, run:
+
+            grep -qF "<snippet.text>" "<snippet.file>"
+
+     3. If the grep fails (snippet text not found in the cited file), mark the finding
+        `[unverified-snippet]` and do **not** write it to the findings JSON. Log it to the
+        `## Failed lenses` section as:
+        `- <lens-name>/<object>: snippet not found in <snippet.file>`
+     4. If `snippet.file` does not exist on disk, skip the gate for that finding
+        (file-missing is caught by the report-phase evidence gate).
+
+     This gate only fires when the lens emits a structured `snippet:` field per
+     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`. Findings without
+     a `snippet:` field pass through unaffected.
+
      As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
      `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
