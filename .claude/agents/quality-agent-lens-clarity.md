@@ -98,3 +98,10 @@ If no issues found:
 ### Prompt Clarity Findings
 
 _No issues found._
+
+**Non-conforming reply guard:** If your reply would contain both a populated
+findings table **and** a trailing line reading `_No issues found._`, that is a
+non-conforming reply — produce one verdict, not both. If you drafted findings but
+grew uncertain, keep the findings table at LOW confidence rather than retracting
+it. Contradictory verdicts (table + retraction in the same reply) will be treated
+as a format error by the assembler and the lens will be re-dispatched.
