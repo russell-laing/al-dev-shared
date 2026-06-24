@@ -113,6 +113,22 @@ find "$SOURCE" -maxdepth 1 -name '*-signals.json' -print0 \
   | sort | uniq -c | sort -rn | head -30
 ```
 
+**Zero-result disambiguation (required).** An empty tally is ambiguous: it can
+mean "no errors this period" OR "the `error`/`toolUseResult` key shape changed and
+the pattern missed." When the tally above returns nothing, run a fallback
+key-listing probe to confirm which case it is:
+
+```bash
+find "$SOURCE" -maxdepth 1 -name '*-signals.json' -print0 \
+  | xargs -0 -I{} sh -c 'jq -r "[paths(scalars)][] | join(\".\")" "{}" 2>/dev/null' \
+  | grep -iE 'error|toolUseResult' | sort -u | head -20
+```
+
+- Probe lists error-shaped keys → the tally pattern missed them; widen the pattern
+  and re-aggregate before concluding.
+- Probe lists nothing → the signal files genuinely carry no error entries; record
+  "0 systemic signal findings" with confidence.
+
 Treat any tool-error category recurring across **≥2 distinct sessions** (sessions from different calendar days) as one
 systemic finding (e.g. "Write-before-Read across N sessions"). Surface-classify
 it by where the erroring skill/tool lives; assign dimension `quality` and a
