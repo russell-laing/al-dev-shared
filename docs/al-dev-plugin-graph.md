@@ -48,7 +48,7 @@ flowchart LR
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
         agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
         agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
-        agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
+        agent_al_dev_commit_recover[al-dev-commit-recover]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_diagnostics_resolver[al-dev-diagnostics-resolver]
@@ -128,7 +128,7 @@ flowchart LR
         artifact_hook_failures_json[.dev/hook-failures.json]
         artifact_investigate_errors_log[.dev/investigate-errors.log]
         artifact_learnings_md[.dev/learnings.md]
-        artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
+        artifact_plan_critique_YYYY_MM_DD_md[.dev/plan-critique-YYYY-MM-DD.md]
         artifact_preflight_context_md[.dev/preflight-context.md]
         artifact_progress_md[.dev/progress.md]
         artifact_project_context_md[.dev/project-context.md]
@@ -143,6 +143,7 @@ flowchart LR
 
     skill_al_dev_commit --> skill_al_dev_commit_execute
     skill_al_dev_commit --> skill_al_dev_commit_preflight
+    skill_al_dev_commit_execute --> skill_al_dev_commit
     skill_al_dev_commit_preflight --> skill_al_dev_commit_execute
     skill_al_dev_develop_orchestrate --> skill_al_dev_review_develop
     skill_al_dev_fix --> skill_al_dev_develop_orchestrate
@@ -183,7 +184,7 @@ flowchart LR
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
     skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
-    skill_commit_recover --> agent_al_dev_commit_recover_fixer
+    skill_commit_recover --> agent_al_dev_commit_recover
     skill_al_dev_commit --> knowledge_artifact_contracts_md
     skill_al_dev_commit --> knowledge_intent_preflight_md
     skill_al_dev_commit_execute --> knowledge_commit_dispatch_template_md
@@ -312,7 +313,7 @@ flowchart LR
     skill_al_dev_plan_preflight --> artifact_preflight_context_md
     skill_al_dev_plan_preflight --> artifact_progress_md
     skill_al_dev_plan_preflight --> artifact_project_context_md
-    skill_al_dev_plan_with_critics --> artifact_plan_critique_YYYYMMDD_md
+    skill_al_dev_plan_with_critics --> artifact_plan_critique_YYYY_MM_DD_md
     skill_al_dev_release_notes --> artifact_YYYY_MM_DD_plugin_release_notes_md
     skill_al_dev_release_notes --> artifact_project_context_md
     skill_al_dev_review_develop --> artifact_progress_md
@@ -356,7 +357,7 @@ flowchart LR
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_ooxml_validator agentNode
-    class agent_al_dev_commit_recover_fixer agentNode
+    class agent_al_dev_commit_recover agentNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_diagnostics_resolver agentNode
@@ -432,7 +433,7 @@ flowchart LR
     class artifact_hook_failures_json artifactNode
     class artifact_investigate_errors_log artifactNode
     class artifact_learnings_md artifactNode
-    class artifact_plan_critique_YYYYMMDD_md artifactNode
+    class artifact_plan_critique_YYYY_MM_DD_md artifactNode
     class artifact_preflight_context_md artifactNode
     class artifact_progress_md artifactNode
     class artifact_project_context_md artifactNode

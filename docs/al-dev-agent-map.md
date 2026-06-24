@@ -21,7 +21,7 @@
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
 | al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit-execute` |
-| al-dev-commit-recover-fixer | sonnet | Write, Bash | `/commit-recover` |
+| al-dev-commit-recover | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate`, `/al-dev-fix` |
 | al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
@@ -589,7 +589,7 @@
 
 ---
 
-### al-dev-commit-recover-fixer
+### al-dev-commit-recover
 
 **Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
 **Model:** sonnet

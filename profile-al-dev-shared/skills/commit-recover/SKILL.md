@@ -50,7 +50,7 @@ For each unresolved incident, dispatch the fixer subagent:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:al-dev-commit-recover-fixer
+  agent: al-dev-shared:al-dev-commit-recover
   description: "Analyze incident: [file path]"
 
 Prompt:

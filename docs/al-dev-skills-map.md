@@ -102,6 +102,11 @@ flowchart LR
     skill_al_dev_ticket[al-dev-ticket]
     Phase0["Phase 0"]
     Phase0_5["Phase 0.5"]
+    Phase1["Phase 1"]
+    Phase1_5["Phase 1.5"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
     Phase5["Phase 5"]
     skill_al_dev_interview[al-dev-interview]
     skill_al_dev_plan[al-dev-plan]
@@ -112,6 +117,11 @@ flowchart LR
 
     skill_al_dev_ticket --> Phase0
     skill_al_dev_ticket --> Phase0_5
+    skill_al_dev_ticket --> Phase1
+    skill_al_dev_ticket --> Phase1_5
+    skill_al_dev_ticket --> Phase2
+    skill_al_dev_ticket --> Phase3
+    skill_al_dev_ticket --> Phase4
     skill_al_dev_ticket --> Phase5
     skill_al_dev_ticket -.-> skill_al_dev_interview
     skill_al_dev_ticket -.-> skill_al_dev_plan
@@ -123,6 +133,11 @@ flowchart LR
     class skill_al_dev_ticket skillNode
     class Phase0 phaseNode
     class Phase0_5 phaseNode
+    class Phase1 phaseNode
+    class Phase1_5 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
     class Phase5 phaseNode
     class skill_al_dev_interview skillNode
     class skill_al_dev_plan skillNode
@@ -474,12 +489,12 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_plan_with_critics[al-dev-plan-with-critics]
-    artifact_plan_critique_YYYYMMDD_md[.dev/plan-critique-YYYYMMDD.md]
+    artifact_plan_critique_YYYY_MM_DD_md[.dev/plan-critique-YYYY-MM-DD.md]
 
-    skill_al_dev_plan_with_critics --> artifact_plan_critique_YYYYMMDD_md
+    skill_al_dev_plan_with_critics --> artifact_plan_critique_YYYY_MM_DD_md
 
     class skill_al_dev_plan_with_critics skillNode
-    class artifact_plan_critique_YYYYMMDD_md artifactNode
+    class artifact_plan_critique_YYYY_MM_DD_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-al-dev-plan-with-critics -->
 
@@ -707,6 +722,7 @@ flowchart LR
     Phase0["Phase 0"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
+    skill_al_dev_commit[al-dev-commit]
     agent_al_dev_commit_executor[al-dev-commit-executor]
     agent_al_dev_commit_hook_classifier[al-dev-commit-hook-classifier]
     agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
@@ -720,6 +736,7 @@ flowchart LR
     skill_al_dev_commit_execute --> Phase0
     skill_al_dev_commit_execute --> Phase3
     skill_al_dev_commit_execute --> Phase4
+    skill_al_dev_commit_execute -.-> skill_al_dev_commit
     skill_al_dev_commit_execute --> agent_al_dev_commit_executor
     skill_al_dev_commit_execute --> agent_al_dev_commit_hook_classifier
     skill_al_dev_commit_execute --> agent_al_dev_commit_hook_fixer
@@ -734,6 +751,7 @@ flowchart LR
     class Phase0 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
+    class skill_al_dev_commit skillNode
     class agent_al_dev_commit_executor agentNode
     class agent_al_dev_commit_hook_classifier agentNode
     class agent_al_dev_commit_hook_fixer agentNode
@@ -1129,24 +1147,24 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_commit_recover[commit-recover]
-    agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
+    agent_al_dev_commit_recover[al-dev-commit-recover]
     artifact_commit_integrity_log[.dev/commit-integrity.log]
     artifact_compile_errors_log[.dev/compile-errors.log]
     artifact_learnings_md[.dev/learnings.md]
 
-    skill_commit_recover --> agent_al_dev_commit_recover_fixer
+    skill_commit_recover --> agent_al_dev_commit_recover
     skill_commit_recover --> artifact_commit_integrity_log
     skill_commit_recover --> artifact_compile_errors_log
     skill_commit_recover --> artifact_learnings_md
 
     class skill_commit_recover skillNode
-    class agent_al_dev_commit_recover_fixer agentNode
+    class agent_al_dev_commit_recover agentNode
     class artifact_commit_integrity_log artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_learnings_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:al-dev-commit-recover-fixer`
+Agents spawned: `al-dev-shared:al-dev-commit-recover`
 <!-- END GENERATED: skill-drilldown-commit-recover -->
 
 ### /verify-commits
