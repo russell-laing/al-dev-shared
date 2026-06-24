@@ -3,10 +3,9 @@ name: al-dev-commit-execute
 description: >-
   Run lint preflight, OOXML validation, and git commits for an approved commit
   plan. Reads .dev/commit-preflight.md written by /al-dev-commit-preflight.
-  Phases 3–4 of the commit workflow. Called by /al-dev-commit; can also run
+  Phases 3–4 of the commit workflow; dispatches al-dev-commit-executor to perform the commits. Called by /al-dev-commit; can also run
   standalone when an approved plan already exists in .dev/commit-preflight.md.
   Triggers on: "execute the commits", "run the commit plan", "commit now".
-argument-hint: ""
 ---
 
 # `/al-dev-commit-execute` — Commit Execution
