@@ -425,8 +425,8 @@ def main() -> int:
                 print(f"WARN: staged change touches open accepted ledger row {r.number} "
                       f"({r.obj}) but {LEDGER} is not staged.")
         if warned:
-            print("  If this commit resolves the finding, flip/append its row to "
-                  "fixed (closure write-back rule in /record-plugin-dispositions).")
+            print("  INFO: ledger row still open; /implement-plugin-health defers "
+                  "close-back to its final phase.")
         return 0
 
     stale = 0
