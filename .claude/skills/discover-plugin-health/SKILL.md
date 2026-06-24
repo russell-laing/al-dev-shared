@@ -328,10 +328,15 @@ Execute the following state machine in order:
    - Otherwise: first confirm the Phase 2 run manifest exists
      (`ls -la .dev/<today>-discover-plugin-health-context.md`); if it is absent,
      halt with an error naming the missing manifest instead of dispatching
-     lenses against a nonexistent path. Then dispatch all remaining lenses
-     simultaneously (parallel, isolated subagents). Use
-     `superpowers:dispatching-parallel-agents` when 3+ lenses remain. Keep each
-     dispatch prompt small: point the lens at the Phase 2 run manifest
+     lenses against a nonexistent path. Then dispatch the remaining lenses in
+     **bounded waves of at most 5 concurrent subagents** — never all ~18 at once,
+     which overruns the session's parallel-dispatch limit (two lenses were lost to
+     this in production). Dispatch a wave, wait for every lens in it to return and
+     write its `.json`, then start the next wave. Use
+     `superpowers:dispatching-parallel-agents` for each wave of 3+ lenses. Because
+     each lens writes its own `.dev/<today>-plugin-health-lens-<lens>.json` as it
+     returns, an interrupted run resumes cleanly via `--resume` (Phase 3 step 2 set
+     difference). Keep each dispatch prompt small: point the lens at the Phase 2 run manifest
      (`.dev/<today>-discover-plugin-health-context.md`) for its context fields (per
      the per-lens table in
      `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`).
