@@ -240,21 +240,21 @@ against the live skill body before treating it as work.
 | Manual step | none | — |
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Missing contract | `verify-files` | active skill with no workflow contract |
-| Artifact freshness | `.dev/implement-plugin-health-progress.md` | latest 2026-06-24 |
-| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | latest 2026-06-21 |
-| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-06-21 |
-| Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | latest 2026-06-21 |
-| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-21 |
+| Artifact freshness | `.dev/implement-plugin-health-progress.md` | latest 2026-06-25 |
+| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | latest 2026-06-25 |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-06-25 |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | latest 2026-06-25 |
+| Artifact freshness | `docs/al-dev-agent-map.md` | latest 2026-06-25 |
 | Artifact freshness | `docs/al-dev-knowledge-quality.md` | latest 2026-06-18 |
-| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-21 |
-| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-21 |
-| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-21 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-23 |
-| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-23 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-24 |
-| Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-24 |
+| Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-25 |
+| Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-25 |
+| Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-25 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-24 |
+| Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-24 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-25 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-24 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-22 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-21
+**Last updated:** 2026-06-25
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -214,6 +214,7 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_al_dev_investigate[al-dev-investigate]
+    skill_al_dev_fix[al-dev-fix]
     skill_al_dev_handoff[al-dev-handoff]
     skill_al_dev_plan[al-dev-plan]
     knowledge_artifact_contracts_md[artifact-contracts]
@@ -224,6 +225,7 @@ flowchart LR
     artifact_investigate_errors_log[.dev/investigate-errors.log]
     artifact_project_context_md[.dev/project-context.md]
 
+    skill_al_dev_investigate -.-> skill_al_dev_fix
     skill_al_dev_investigate -.-> skill_al_dev_handoff
     skill_al_dev_investigate -.-> skill_al_dev_plan
     skill_al_dev_investigate --> knowledge_artifact_contracts_md
@@ -235,6 +237,7 @@ flowchart LR
     skill_al_dev_investigate --> artifact_project_context_md
 
     class skill_al_dev_investigate skillNode
+    class skill_al_dev_fix skillNode
     class skill_al_dev_handoff skillNode
     class skill_al_dev_plan skillNode
     class knowledge_artifact_contracts_md knowledgeNode

@@ -150,6 +150,7 @@ flowchart LR
     skill_al_dev_fix --> skill_al_dev_plan
     skill_al_dev_help --> skill_al_dev_develop_orchestrate
     skill_al_dev_help --> skill_al_dev_plan
+    skill_al_dev_investigate --> skill_al_dev_fix
     skill_al_dev_investigate --> skill_al_dev_handoff
     skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_plan_preflight
