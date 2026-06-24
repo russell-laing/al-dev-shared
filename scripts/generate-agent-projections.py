@@ -190,7 +190,24 @@ def write_projection_set(output_root: Path, agent: dict, policy: dict) -> None:
 def write_all_projections(output_root: Path, agents: list[dict], policy: dict) -> None:
     output_root.mkdir(parents=True, exist_ok=True)
     (output_root / "README.md").write_text(render_generated_agents_readme(), encoding="utf-8")
-    for agent in sorted(agents, key=lambda item: item["name"]):
+
+    # Compute desired filenames per harness before writing
+    desired_claude = {f'{a["name"]}.md' for a in agents}
+    desired_copilot = {f'{a["name"]}.md' for a in agents}
+    desired_codex = {f'{a["name"]}.toml' for a in agents}
+
+    # Remove orphaned projection files (agent renamed or deleted since last run)
+    for fname in (output_root / "claude").glob("*.md"):
+        if fname.name not in desired_claude:
+            fname.unlink()
+    for fname in (output_root / "copilot").glob("*.md"):
+        if fname.name not in desired_copilot:
+            fname.unlink()
+    for fname in (output_root / "codex").glob("*.toml"):
+        if fname.name not in desired_codex:
+            fname.unlink()
+
+    for agent in agents:
         write_projection_set(output_root, agent, policy)
 
 
