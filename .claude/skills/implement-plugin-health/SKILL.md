@@ -336,34 +336,17 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    the duplicate-id guard rejects reuse. Then run
    `scripts/health_disposition_store.py regenerate` to update
    `dispositions-open.md`, `dispositions-current.md`, and `dispositions-index.json`.
-4. **Sync the history shard** — `append_event`/`regenerate` write only the JSONL
-   store and its generated views; they do **not** touch the markdown month shard
-   under `docs/health/dispositions-history/`. That shard is a separate append-only
-   log read by the report phase (`iter_history_rows`, for closure chronology and
-   recurrence counts), so a `fixed` event that never reaches the shard leaves the
-   next sweep's recurrence accounting wrong. There is **no** post-commit hook and
-   no auto-sync — append the matching shard row by hand with `append_row`, reusing
-   the same verbatim key fields just supplied to `append_event`:
+4. **Sync the history shard** — after `append_event`/`regenerate`, run
+   `sync_shard --since` to copy all events from today's date into the
+   markdown month shard under `docs/health/dispositions-history/`:
 
    ```bash
-   YEAR=$(date +%Y); MONTH=$(date +%Y-%m)
-   # The fixed event's auto-allocated id is the last event in this month's JSONL:
-   FIXED_ID=$(grep -o '"event_id": "[^"]*"' \
-     "docs/health/dispositions-events/${YEAR}/${MONTH}.jsonl" \
-     | tail -1 | sed 's/.*"event_id": "\(.*\)"/\1/')
-
-   python3 scripts/health_disposition_store.py append_row \
-     --id "$FIXED_ID" \
-     --surface <surface> --dimension <dimension> \
-     --object "<object, verbatim>" --finding "<finding, verbatim>" \
-     --disposition fixed --date <today's ISO date> \
-     --note "<commit-hash> — <brief evidence>; verified live <date>"
+   python3 scripts/health_disposition_store.py sync_shard --since <today's ISO date>
    ```
 
-   Repeat per closed `event_id`. (A `health_disposition_store.py sync_shard
-   --event-id` convenience that reads the stored event and writes the shard row —
-   removing this hand-transcription — is a tracked follow-up; until it lands, the
-   `append_row` step above is the supported path.)
+   The shard is an append-only log read by the report phase (`iter_history_rows`,
+   for closure chronology and recurrence counts); events not synced here leave
+   recurrence accounting wrong in the next sweep.
 
 **Post-loop close gate (scoped to this plan)** — after all `fixed` events are
 appended, confirm each `event_id` in the plan's `closes_event_ids` lists no

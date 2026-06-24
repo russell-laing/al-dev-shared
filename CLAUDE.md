@@ -355,8 +355,12 @@ stalls the run silently.
 ## Health Ledger
 
 After appending any `fixed` ledger events, sync them to the correct month shard
-under `docs/health/dispositions-history/` — there is **no** post-commit hook and
-no auto-sync, so run `scripts/health_disposition_store.py append_row` per closed
-event (the `/implement-plugin-health` Phase 3 "Sync the history shard" step does
-exactly this). Do not declare the loop closed until shard presence is verified
+under `docs/health/dispositions-history/` using `sync_shard --since`:
+
+```bash
+python3 scripts/health_disposition_store.py sync_shard --since <today's ISO date>
+```
+
+(The `/implement-plugin-health` Phase 3 "Sync the history shard" step does exactly
+this.) Do not declare the loop closed until shard presence is verified
 (`grep <fixed-event-id> docs/health/dispositions-history/<year>/<month>.md`).
