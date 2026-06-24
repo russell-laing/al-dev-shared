@@ -4,7 +4,7 @@ description: >-
   Fetch and contextualise a Freshdesk ticket, optionally research
   and draft a support reply. Use --mode=context-only to load ticket
   context only (default behavior), or --mode=full to include
-  research and reply drafting.
+  research and reply drafting; Phase 5 branches on the selected mode.
 argument-hint: "[ticket-id or search-term] [--mode=context-only|full]"
 ---
 
@@ -103,7 +103,7 @@ This is optional; missing interview requirements do not block reply composition.
 
 ---
 
-## Step 1 — Resolve the Ticket Number or Search Intent
+## Phase 1 — Resolve the Ticket Number or Search Intent
 
 Check the arguments provided (text after `/al-dev-ticket`):
 
@@ -114,9 +114,9 @@ ID and ignore the remaining text; otherwise treat the entire input as
 search terms.
 
 - **Numeric argument** (e.g. `1234` or `FD-1234`): extract the
-  number and proceed to Step 2.
+  number and proceed to Phase 2.
 - **`search <terms>` or non-numeric text**: this is a keyword
-  search — skip to **Step 1.5 — Search Tickets** (the section immediately following this one).
+  search — skip to **Phase 1.5 — Search Tickets** (the section immediately following this one).
 - **No argument**: run `git branch --show-current`, extract from
   pattern `FD([0-9]+)`. If found, confirm:
   _"Found FD ticket #XXXX from branch — loading."_
@@ -125,7 +125,7 @@ search terms.
 
 ---
 
-## Step 1.5 — Search Tickets (Keyword Search)
+## Phase 1.5 — Search Tickets (Keyword Search)
 
 URL-encode the search terms and query the search endpoint:
 
@@ -153,12 +153,12 @@ SEARCH RESULTS: "[query]"
 ```
 
 Ask the user which ticket to load. If they choose one, proceed
-from Step 2 with that ticket ID. Otherwise exit — do not
+from Phase 2 with that ticket ID. Otherwise exit — do not
 dispatch the agent.
 
 ---
 
-## Step 2 — Verify Environment Variables
+## Phase 2 — Verify Environment Variables
 
 ```bash
 echo "API_KEY=${FRESHDESK_API_KEY:+set}" && \
@@ -183,7 +183,7 @@ See your harness profile's Freshdesk setup guide for details.
 
 ---
 
-## Step 3 — Dispatch al-dev-ticket-context-writer (fetch phase)
+## Phase 3 — Dispatch al-dev-ticket-context-writer (fetch phase)
 
 ```text
 DATE=$(date +%Y-%m-%d)
@@ -199,7 +199,7 @@ Prompt:
    Phase: fetch
    Ticket ID: [TICKET_ID]
 
-   Environment: Credentials have been verified in Step 2.
+   Environment: Credentials have been verified in Phase 2.
    Use FRESHDESK_API_KEY and FRESHDESK_DOMAIN directly in
    curl commands.
 
@@ -216,11 +216,11 @@ Prompt:
 
 ---
 
-## Step 4 — Present Result and Handle Attachments
+## Phase 4 — Present Result and Handle Attachments
 
 Parse the agent output. If it starts with `ERROR:`:
 
-- `bad_credentials`: repeat the Step 2 credential error message.
+- `bad_credentials`: repeat the Phase 2 credential error message.
 - `ticket_not_found`: tell the user _"Ticket #[ID] not found."_
   and stop.
 
@@ -263,9 +263,9 @@ Prompt:
    Phase: download-attachments
    Ticket ID: [TICKET_ID]
    Attachments:
-   [paste the attachment list lines from Step 3 output]
+   [paste the attachment list lines from Phase 3 output]
 
-   Environment: Credentials verified in Step 2. Use
+   Environment: Credentials verified in Phase 2. Use
    FRESHDESK_API_KEY and FRESHDESK_DOMAIN directly in curl.
 
    Return:
@@ -306,7 +306,7 @@ Branch on `MODE` as parsed in Phase 0.5:
 mode ∈ {context-only, full}
 
 if mode == "context-only":
-  └─ Ticket context already written by Step 3 to
+  └─ Ticket context already written by Phase 3 to
      .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md
   └─ Exit workflow (no further phases)
 
