@@ -272,6 +272,7 @@ Hypotheses tested: 4
 Fix required in: [repo name]
 
 Next:
+  Trivial, single-file fix → /al-dev-fix [fix description] (loads these findings)
   Fix is in this repo → /al-dev-plan [fix description]
   Fix is in another repo → /al-dev-handoff [path to target repo]
   More data needed → [specific check]

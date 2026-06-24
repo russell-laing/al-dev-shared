@@ -79,6 +79,15 @@ When shell search or structured-file inspection is required, prefer `rg` and
 
 ### Step 1: Quick Analysis (1-2 min)
 
+**Context load (if present):** Before classifying, glob for the latest
+investigation findings and read them when present — they often name the exact
+file and confirmed root cause:
+
+`$(ls .dev/*-al-dev-investigate-findings.md 2>/dev/null | sort | tail -1)`
+
+If a findings file exists, read it and use its confirmed root cause to scope the
+fix. This is the handoff from `/al-dev-investigate`.
+
 ```text
 Read user's fix request and classify complexity:
 
