@@ -362,6 +362,8 @@ or an unresolved scope-incomplete state. Resolve all open states first.
 
 When all developers complete, verify before proceeding:
 
+### Step 1: Verify Developer Outputs
+
 1. Check file ownership — confirm no two developers wrote
    the same file (if there's overlap, assign one owner to
    reconcile and re-implement)
@@ -382,7 +384,7 @@ If `AUTONOMOUS_MODE=true`, run these checks on all newly
 created AL files before the review team is spawned. Fix CRITICAL issues by
 dispatching a developer before proceeding.
 
-### Check 1: Object Name Length
+#### Check 1: Object Name Length
 
 ```bash
 rg -rn -e \
@@ -395,7 +397,7 @@ the name itself, excluding any surrounding whitespace. Count only the name
 token's characters (not the leading whitespace or numeric ID). Flag any name
 token exceeding 30 characters as a CRITICAL issue.
 
-### Check 2: Compile Guard Logic
+#### Check 2: Compile Guard Logic
 
 ```bash
 rg -rn -e '#if|#else|#endif' --glob="*.al" .
@@ -409,7 +411,7 @@ For each `#if` directive, read the surrounding block. Verify:
 
 Flag any inverted condition or unmatched directive as CRITICAL.
 
-### Check 3: Label and Message Consistency
+#### Check 3: Label and Message Consistency
 
 ```bash
 rg -rn -m 50 -e 'label|Error\(|Message\(|FieldCaption' --glob="*.al" .
@@ -418,7 +420,7 @@ rg -rn -m 50 -e 'label|Error\(|Message\(|FieldCaption' --glob="*.al" .
 Cross-reference against the solution plan's feature descriptions.
 Flag any label using different terminology than the plan as a HIGH issue.
 
-### Static Validation Report
+#### Static Validation Report
 
 Write to:
 `.dev/$(date +%Y-%m-%d)-al-dev-autonomous-static-validation.md`
