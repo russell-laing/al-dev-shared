@@ -3,7 +3,7 @@ name: al-dev-plan-preflight
 description: >-
   Gather and verify context before architect debate. Executes phases 0–1.6 of planning:
   resume check, complexity triage, context gathering, claims verification, and target
-  confirmation. Outputs PREFLIGHT_CONTEXT block for consumption by al-dev-plan or other
+  confirmation. Outputs PREFLIGHT_CONTEXT block (written to .dev/preflight-context.md) for consumption by al-dev-plan or other
   workflows. Can be invoked standalone or chained by skills that need reusable context assembly.
 argument-hint: "[--resume | requirements file path]"
 ---
@@ -156,7 +156,7 @@ Do not surface this decision to the user.
 
 **Vagueness gate (run before any other step):**
 
-Check whether $ARGUMENTS contains a meaningful feature description. Sufficient context requires all three of: (1) a feature name or description, (2) at least one functional requirement, AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting."
+Check whether $ARGUMENTS contains a meaningful feature description. Sufficient context requires all three of: (1) a feature name or description, (2) at least one functional requirement (a descriptive sentence stating what the feature should do — a single sentence suffices), AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting."
 
 If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context, **STOP immediately**. Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** supplying all three elements is provided. Escalate across attempts:
 
