@@ -6,7 +6,7 @@ description: Show contextual guidance and recommend workflows.
 # Command: /al-dev-help
 
 Contextual guidance for the AL development profile.
-Two modes: **situation-aware recommendation** and **capability reference**.
+Three modes: **Situation** (situation-aware recommendation), **Reference** (capability listing), and **Context** (assess current state and recommend next step).
 
 ---
 
