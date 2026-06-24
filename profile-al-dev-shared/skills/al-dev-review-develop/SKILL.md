@@ -4,7 +4,6 @@ description: >-
   Dispatches the three-reviewer panel and synthesizes findings. Run
   /al-dev-review-develop-preflight first to locate the develop handoff,
   identify changed files, and verify compile status.
-argument-hint: ""
 ---
 
 # Review-Develop Skill
