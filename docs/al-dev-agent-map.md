@@ -43,6 +43,13 @@
 
 ## Layer 2: Per-Agent Profiles
 
+> **Maintainer note:** The per-agent profile blocks below are hand-authored and
+> live outside the `<!-- BEGIN/END GENERATED -->` markers.
+> `scripts/generate-map-doc-sections.py` refreshes only the coverage count and the
+> catalog table above — it does **not** update these blocks. When an agent is
+> renamed, added, or removed, hand-edit the matching `### <agent-name>` block here
+> in the same change.
+
 ### al-dev-general-code-reviewer
 
 **Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers for security, patterns, and performance).
