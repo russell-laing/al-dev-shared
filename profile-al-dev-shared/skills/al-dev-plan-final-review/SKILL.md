@@ -3,11 +3,10 @@ name: al-dev-plan-final-review
 description: >-
   Validates and presents an al-dev-plan solution plan for user approval before
   implementation begins. Runs validate-plan.py against the latest solution plan,
-  presents results, and gates approval. Called by /al-dev-plan after Phase 5;
+  presents results, surfaces optional critic findings (plan-critique-*.md) when present, and gates approval. Called by /al-dev-plan after Phase 5;
   can also be run standalone to re-validate an existing plan.
   Triggers on: "validate the plan", "approve the plan", "review the solution
   plan", "plan final review".
-argument-hint: ""
 ---
 
 # AL Dev Plan — Final Review
