@@ -168,10 +168,19 @@ Non-scopable lenses are **never** skipped — they always run against the full c
 
 ## Phase 2 — Pre-dispatch aggregation
 
-Before dispatching lenses, extract context from the documentation maps
-(`docs/al-dev-agent-map.md` and `docs/al-dev-skills-map.md`) following the full
-procedure in `.claude/knowledge/health-discover-aggregation.md`. It defines the
-map-parse steps and the derived dispatch mappings that the Phase 3 lenses
+**Dispatch the map parse to a subagent — do not read the maps inline.** The two
+documentation maps total ~1800 lines; reading them into the orchestrating session
+front-loads context and risks compaction before the 18-lens fan-out. Instead,
+dispatch one subagent (Agent tool) whose task is to read `docs/al-dev-agent-map.md`
+and `docs/al-dev-skills-map.md` in ITS OWN context, build the derived dispatch
+mappings, and write the run manifest (per the layout below). Pass it the full
+procedure in `.claude/knowledge/health-discover-aggregation.md`. The subagent
+returns only a terse confirmation (manifest path + line count); the maps never
+enter this session. If the Agent tool is unavailable, fall back to reading the
+maps inline per `../../knowledge/dispatch-fallback-contract.md` and log
+`preferred → outcome → fallback → reason`.
+
+The subagent extracts the derived dispatch mappings that the Phase 3 lenses
 consume. Each mapping is a small projection of the maps:
 
 - `tool_inventory` — declared tools per agent
