@@ -39,7 +39,9 @@ find src/ -iname "*.codeunit.al" 2>/dev/null
 - **"scan all"** or no args: find all codeunit files in `src/`
 
 Load `.dev/project-context.md` to prioritise objects noted as
-high-volume or batch-processing.
+high-volume (tables over ~1000 rows; see the Notes section) or batch-processing
+(codeunits classified by the Step 1a entry-point heuristic — names containing
+Batch/Process/Import/Post/Transfer/Run).
 
 ### Step 1a — Identify Entry-Point Metadata
 
