@@ -1,11 +1,11 @@
 ---
-name: "al-dev-commit-recover-fixer"
-description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/$(date +%Y-%m-%d)-plugin-recover-report.md. Dispatched by /commit-recover Step 2 with one fixer spawned per corruption incident found in .dev/commit-integrity.log."
+name: "al-dev-commit-recover"
+description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/$(date +%Y-%m-%d)-plugin-recover-report.md. Dispatched by /commit-recover Phase 2 with one recovery agent spawned per corruption incident found in .dev/commit-integrity.log."
 tools: ["edit", "execute"]
 ---
 
 
-# Agent: al-dev-commit-recover-fixer
+# Agent: al-dev-commit-recover
 
 Recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
 

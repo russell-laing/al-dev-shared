@@ -42,7 +42,7 @@ flowchart LR
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
         agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
         agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
-        agent_al_dev_commit_recover_fixer[al-dev-commit-recover-fixer]
+        agent_al_dev_commit_recover[al-dev-commit-recover]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
         agent_al_dev_diagnostics_resolver[al-dev-diagnostics-resolver]
@@ -58,6 +58,7 @@ flowchart LR
 
     skill_al_dev_commit --> skill_al_dev_commit_execute
     skill_al_dev_commit --> skill_al_dev_commit_preflight
+    skill_al_dev_commit_execute --> skill_al_dev_commit
     skill_al_dev_commit_preflight --> skill_al_dev_commit_execute
     skill_al_dev_develop_orchestrate --> skill_al_dev_review_develop
     skill_al_dev_fix --> skill_al_dev_develop_orchestrate
@@ -98,7 +99,7 @@ flowchart LR
     skill_al_dev_support_reply --> agent_al_dev_support_reply_drafter
     skill_al_dev_support_reply --> agent_al_dev_support_researcher
     skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
-    skill_commit_recover --> agent_al_dev_commit_recover_fixer
+    skill_commit_recover --> agent_al_dev_commit_recover
 
     class skill_al_dev_commit skillNode
     class skill_al_dev_commit_execute skillNode
@@ -128,7 +129,7 @@ flowchart LR
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
     class agent_al_dev_commit_ooxml_validator agentNode
-    class agent_al_dev_commit_recover_fixer agentNode
+    class agent_al_dev_commit_recover agentNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
     class agent_al_dev_diagnostics_resolver agentNode
