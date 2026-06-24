@@ -218,7 +218,7 @@ Design considerations:
 5. Performance implications
 6. Upgrade considerations
 
-Your assigned approach: [specific approach for this architect]
+Your assigned approach: [specific approach for this architect — one of the 2–3 distinct approaches derived in Phase 2 above, assigned per architect at dispatch]
 ```
 
 ### Architect Output Contract
