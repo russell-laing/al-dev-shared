@@ -1,16 +1,16 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 86,
-      "open_accepted": 0
+      "current_rows": 99,
+      "open_accepted": 13
     },
     "naming": {
       "current_rows": 5,
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 605,
-      "open_accepted": 0
+      "current_rows": 610,
+      "open_accepted": 5
     },
     "unknown": {
       "current_rows": 258,
@@ -18,28 +18,29 @@
     }
   },
   "by_disposition": {
+    "accepted": 18,
     "declined": 126,
     "fixed": 757,
     "grandfathered": 71
   },
   "by_surface": {
     "plugin": {
-      "current_rows": 241,
-      "open_accepted": 0
+      "current_rows": 250,
+      "open_accepted": 9
     },
     "tooling": {
-      "current_rows": 455,
-      "open_accepted": 0
+      "current_rows": 464,
+      "open_accepted": 9
     },
     "unknown": {
       "current_rows": 258,
       "open_accepted": 0
     }
   },
-  "current_rows": 954,
-  "generated_at": "2026-06-24T06:03:30.817477+00:00",
+  "current_rows": 972,
+  "generated_at": "2026-06-24T11:06:21.018757+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 0,
-  "source_hash": "ba78b629977718e7e7e7378b0f4151846c2a5efdb03de3b2b6af4e6f17973335",
-  "total_events": 1725
+  "open_accepted": 18,
+  "source_hash": "2f77409dada8b15984e4209b8670f4e1dbd10de2b770b0a3cab37d3dcfd18673",
+  "total_events": 1743
 }
