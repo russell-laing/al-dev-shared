@@ -363,25 +363,21 @@ Execute the following state machine in order:
      to every lens prompt. Do not paraphrase — copy the canonical text so it cannot
      drift.
 
-     **Snippet existence gate (pre-write):** Before writing a finding to the lens JSON,
-     check whether any `snippet:` block in that finding resolves to the cited file:line.
-     For each finding that includes a `snippet:` field:
+     **Snippet self-verification (in-lens, confirm-only at orchestrator):** Each
+     lens already reads its subject files in its own context, so snippet
+     verification belongs there — not in costly orchestrator re-`grep` round-trips.
+     Add this instruction to every lens dispatch prompt:
 
-     1. Extract `snippet.file` and `snippet.text`.
-     2. If `snippet.file` exists on disk, run:
+     > Before emitting any finding with a `snippet:` block, confirm the
+     > `snippet.text` appears verbatim at the cited `snippet.file:line` in the file
+     > you already read. If it does not, drop the `snippet:` field (or the finding)
+     > — do not emit an unverified snippet.
 
-            grep -qF "<snippet.text>" "<snippet.file>"
-
-     3. If the grep fails (snippet text not found in the cited file), mark the finding
-        `[unverified-snippet]` and do **not** write it to the findings JSON. Log it to the
-        `## Failed lenses` section as:
-        `- <lens-name>/<object>: snippet not found in <snippet.file>`
-     4. If `snippet.file` does not exist on disk, skip the gate for that finding
-        (file-missing is caught by the report-phase evidence gate).
-
-     This gate only fires when the lens emits a structured `snippet:` field per
-     `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`. Findings without
-     a `snippet:` field pass through unaffected.
+     The orchestrator does **not** re-`grep` each snippet. It trusts the lens
+     self-verification and lets the report-phase evidence gate
+     (`verify-health-finding` in evidence mode) act as the backstop for any snippet
+     that slips through. This removes one grep round-trip per snippet finding from
+     the orchestrating session.
 
      As each subagent returns, write its findings block to
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
