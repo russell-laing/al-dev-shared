@@ -445,7 +445,7 @@ def main() -> int:
             print(line + " | STALE-OPEN: object changed since row date:")
             for c in commits[:5]:
                 print(f"      {c}")
-            print("      → verify whether a commit resolved it; if so, flip/append the row to fixed.")
+            print("      → INFO: verify whether a commit resolved it; /implement-plugin-health defers close-back.")
         else:
             print(line + " | no commits since row date")
 
