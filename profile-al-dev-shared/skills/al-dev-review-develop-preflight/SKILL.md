@@ -30,6 +30,11 @@ If no checkpoint or answer is restart: proceed to Phase 1.
 
 **Goal:** Find the Phase 4 handoff artifact written by `/al-dev-develop-orchestrate`.
 
+> `$ARGUMENTS` below is the optional text passed after the skill invocation (the
+> `argument-hint` path to a develop handoff); it is empty when the skill is
+> invoked with no argument. This is a documentation note — do not add a parse
+> step.
+
 1. Search for the handoff artifact:
 
    ```bash
