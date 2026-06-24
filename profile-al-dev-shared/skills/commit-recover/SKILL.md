@@ -34,6 +34,16 @@ Analyze specific file only.
 
 Read `.dev/commit-integrity.log` and collect all entries marked as "CORRUPTION" or "SYNTAX_ERROR". Skip entries whose status is already RESTORED and verified (the restored file passes an AL syntax check — no errors in `.dev/compile-errors.log`).
 
+**Integrity log format.** `.dev/commit-integrity.log` is written by the
+commit-integrity pre-commit hook — one line per incident. Each entry carries a
+timestamp, the affected file path, a status label, and baseline/current line
+counts (see the example in Step 3). Status labels are uppercase and matched
+exactly: `CORRUPTION`, `SYNTAX_ERROR`, or `RESTORED`. The file may be absent when
+no integrity incident has occurred — in that case report "no incidents" and stop.
+`.dev/compile-errors.log` (referenced above for the verified-restore check) is
+the AL compiler error log written by `/al-dev-lint`; an empty or absent file
+means no compile errors.
+
 ### Step 2: Analyze each incident with a fixer subagent
 
 For each unresolved incident, dispatch the fixer subagent:
