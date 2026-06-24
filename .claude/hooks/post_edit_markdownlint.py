@@ -12,9 +12,10 @@ try:
     if not file_path or not file_path.endswith(".md"):
         sys.exit(0)
 
-    # Skip markdownlint --fix for .dev/ progress checkpoints (structured YAML that
-    # markdownlint --fix corrupts by dedenting list items and inserting blank lines)
-    if "/.dev/" in file_path and file_path.endswith("-progress.md"):
+    # Skip markdownlint --fix for ALL .dev/*.md files (progress checkpoints AND
+    # health-loop-state.md carry structured YAML that markdownlint --fix corrupts
+    # by dedenting list items and inserting blank lines)
+    if "/.dev/" in file_path:
         sys.exit(0)
 
     abs_path = os.path.abspath(file_path)
