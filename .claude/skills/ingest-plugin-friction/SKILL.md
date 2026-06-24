@@ -53,9 +53,12 @@ This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-pr
    - `--since <YYYY-MM-DD>` — optional; ignore logs whose filename date is older.
 
 2. **Read the loop breadcrumb.** If `.dev/health-loop-state.md` exists, read it
-   (schema: `.claude/knowledge/health-loop-state-contract.md`). If its
-   `next_command` names a *later* loop step (report/dispositions/plan/implement),
-   warn the user that a prior loop is still in flight before ingesting.
+   **with the harness Read tool — not shell `cat`/`head`.** A shell read does not
+   register the file with the harness, and Phase 3 writes the same path back; an
+   unregistered prior read can block that write-back. (schema:
+   `.claude/knowledge/health-loop-state-contract.md`.) If its `next_command` names
+   a *later* loop step (report/dispositions/plan/implement), warn the user that a
+   prior loop is still in flight before ingesting.
 
 3. **List un-archived friction logs** (use `find`, never bare globs — zsh errors
    on an empty glob):
