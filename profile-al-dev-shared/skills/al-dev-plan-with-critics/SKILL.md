@@ -1,7 +1,7 @@
 ---
 name: al-dev-plan-with-critics
 description: >-
-  Generate a draft implementation plan from a spec, then red-team it with
+  Generate a draft implementation plan from a spec via superpowers:writing-plans, then red-team it with
   six parallel adversarial critics (security, testability, type-safety,
   rollback-safety, API-contracts, edge-cases). Synthesizes findings,
   applies auto-fixes, and gates user approval before execution. A provided
@@ -33,7 +33,7 @@ it as the starting specification rather than generating a competing plan.
    - **Edge-Cases Critic:** Find assumptions, off-by-one patterns, null-reference risks, boundary violations
 3. **Synthesize findings:** Deduplicate, rank by severity, generate auto-fix patches where possible
 4. **Apply auto-fixes:** Edit plan with high-confidence fixes (e.g., add missing var, correct anchor string)
-5. **Generate critique report:** Write findings + recommendations to `.dev/plan-critique-YYYYMMDD.md` (replace `YYYYMMDD` with the current date in compact form, e.g. `20260616`)
+5. **Generate critique report:** Write findings + recommendations to `.dev/plan-critique-YYYY-MM-DD.md` (replace `YYYY-MM-DD` with the current date in ISO form, e.g. `2026-06-24`)
 6. **Gate approval:** Present synthesized findings and ask user to approve plan before passing to executing-plans
 
 ## Example Workflow
