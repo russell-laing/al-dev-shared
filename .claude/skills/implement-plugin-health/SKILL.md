@@ -270,6 +270,23 @@ command. Run the scan against every changed file in this task's commit.
 If a task has no recorded commit hash, or the commit is missing/out of scope,
 fail the gate for that task.
 
+**Working-tree-clean gate (post-task).** After resolving a task's commit, confirm
+the task left no uncommitted residue in its own paths:
+
+```bash
+git status --short -- <task-paths>
+```
+
+Expected: empty. A non-empty result means the task under-committed (a changed file
+escaped its `git add`) — fail the gate for that task and re-commit the residue
+before close-back.
+
+**Rename-task handling.** When a task renames a file with `git mv old new`, `git
+mv` already stages **both** the deletion of `old` and the addition of `new`. Never
+pass the pre-rename path to a later `git add` — `git add old` after `git mv` errors
+with `pathspec 'old' did not match any files` and aborts the task. Stage only the
+new path (already staged by `git mv`) and verify with `git status --short -- new`.
+
 ### Forbidden-pattern scan
 
 Scan every changed file for:
@@ -472,7 +489,10 @@ closed:
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/regenerate-agent-projections` and
   `/validate-plugin-neutrality` next (see Phase 4 "Regenerate derived artifacts").
-  Then run `/audit-plugin-health` to start the next health loop.
+  If any task changed a skill or agent that the documentation maps describe, a
+  `/sync-map-documentation` refresh is **owed** — record it here so the deferred
+  map update is not lost. Then run `/audit-plugin-health` to start the next health
+  loop.
 
 ### Ledger-close commit
 
