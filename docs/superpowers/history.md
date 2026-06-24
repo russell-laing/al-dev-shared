@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-24
+
+### Tooling Quality & Design Fixes Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-24-plugin-map-tooling-quality-design-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-24 | tooling-quality-design-fixes | implemented; rows closed: [disp_20260624_000069, disp_20260624_000070, disp_20260624_000071, disp_20260624_000072, disp_20260624_000073]
+
 ## 2026-06-22
 
 ### Tooling Ledger-Arg Clarity Implementation Plan
