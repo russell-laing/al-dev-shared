@@ -3,7 +3,7 @@ name: al-dev-plan-final-review
 description: >-
   Validates and presents an al-dev-plan solution plan for user approval before
   implementation begins. Runs validate-plan.py against the latest solution plan,
-  presents results, surfaces optional critic findings (plan-critique-*.md) when present, and gates approval. Called by /al-dev-plan after Phase 5;
+  presents results, validates structural completeness and scenario coverage, surfaces optional critic findings (plan-critique-*.md) when present, and gates approval. Called by /al-dev-plan after Phase 5;
   can also be run standalone to re-validate an existing plan.
   Triggers on: "validate the plan", "approve the plan", "review the solution
   plan", "plan final review".
@@ -62,7 +62,14 @@ Fix any issues the validator reports before presenting to the
 user. Common issues:
 
 - Missing required sections (add them)
-- Duplicate object IDs (reconcile from architect merge)
+- Duplicate object IDs (reconcile from architect merge):
+  1. Identify which architect introduced each duplicate by reviewing the
+     plan's architect sections or commit history.
+  2. Verify the duplicates serve different purposes (different tables,
+     different code paths, different business logic).
+  3. Rename the duplicate **object ID field** with an architect-sequence
+     suffix (e.g. `OBJ-001-A`, `OBJ-001-B`) — the object name itself is
+     unchanged.
 - **"No REQ tokens found" in validator output** (the requirements file
   has no `### REQ-NNN:` headings; traceability cannot be checked):
   1. Open the requirements file (`$REQ`)
