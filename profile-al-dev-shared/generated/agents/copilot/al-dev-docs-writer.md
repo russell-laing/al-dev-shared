@@ -9,9 +9,11 @@ tools: ["read", "edit", "edit", "execute"]
 
 Generate comprehensive documentation for implemented features and maintain documentation structure.
 
-## Overview and Inputs
+## Overview
 
 Create clear, accurate documentation that helps users understand, use, and maintain the AL code. Document features, APIs, setup guides, and maintain RTM (Requirements Traceability Matrix) tables.
+
+## Inputs
 
 | Input | Required | Description |
 |-------|----------|-------------|
