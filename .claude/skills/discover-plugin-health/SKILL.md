@@ -501,50 +501,46 @@ For each surface that had lenses run:
    find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' | sort
    ```
 
-2. **Read and assemble findings:**
-   - For each `.json` file, load and extract `"findings"` field
-   - Parse any "Failed lenses" entries (returned by failed lens agents)
-   - Build findings markdown blocks in order
+2. **Assemble the findings file deterministically.** Do **not** read the lens
+   JSONs back into this session and re-emit them. Run the assembler, which reads
+   `.dev/<today>-plugin-health-lens-*.json`, orders the blocks canonically, and
+   writes the findings file with frontmatter, a `<!-- lens: <name> -->` marker per
+   block, the `## Failed lenses` section, and the `## Resume information` block:
 
-3. **Write findings file:**
-   `docs/health/YYYY-MM-DD-<surface>-findings.md` (substitute today's date and
-   `plugin`/`tooling`)
-
-   Structure:
-
-   ```markdown
-   ---
-   surface: tooling
-   dimensions:
-     - quality
-   source_contract: .claude/knowledge/health-filter-contract.md
-   resume_mode: false
-   ---
-
-   # <Surface> Findings — YYYY-MM-DD
-
-   ## Raw lens output
-
-   ### <Lens Name> Findings
-   [findings block from .dev/ file]
-
-   ---
-
-   ### <Lens Name> Findings
-   [next block]
-
-   ---
-
-   ## Failed lenses
-   [one line per failed lens, or "None" if all returned results]
-   
-   ## Resume information
-   - Total lenses in scope: N
-   - Completed this session: M
-   - Completed in prior sessions: P (from --resume)
-   - Skipped (no changed files in scope): S (0 if --since not active)
-   - Status: [COMPLETE / INCOMPLETE — call with --resume to finish]
+   ```bash
+   python3 scripts/assemble_health_findings.py assemble \
+     --lens-dir .dev \
+     --date <today> \
+     --surface <plugin|tooling> \
+     --dimensions <comma-separated concrete dimensions for this run> \
+     --failed-lenses <comma-separated failed lens names, or none> \
+     --total-lenses <N> \
+     --completed-session <M> \
+     --completed-prior <P> \
+     --skipped <S> \
+     --out docs/health/<today>-<surface>-findings.md
    ```
+
+   Pass the `--failed-lenses` and the four count values from the Phase 3 missing-lens
+   check and the `--resume` set difference. The assembler computes `Status:
+   COMPLETE` iff `completed-session + completed-prior + skipped >= total-lenses`.
+
+3. **Confirm the file was written** (the assembler prints its path on success):
+
+   ```bash
+   ls -la docs/health/<today>-<surface>-findings.md && wc -l docs/health/<today>-<surface>-findings.md
+   ```
+
+If `scripts/assemble_health_findings.py` is missing or errors, fall back to the
+manual assembly per `../../knowledge/dispatch-fallback-contract.md` — read each
+`.dev/<today>-plugin-health-lens-*.json` **whose lens name belongs to this run's
+`--dimensions`** (ignore same-date JSONs from other dimensions, e.g. a stale
+design lens left by an interrupted run), concatenate the `findings` fields in the
+canonical order with a `<!-- lens: <name> -->` marker and a `---` between blocks,
+**uniquifying any duplicate `###` heading by appending an object-type suffix
+(`(agents)`/`(skills)`) so the file passes markdownlint MD024**, and write the
+same frontmatter + Failed-lenses + Resume-information structure — and log
+`preferred → outcome → fallback → reason`.
 
 Use this explicit mapping:
 
