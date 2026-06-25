@@ -16,9 +16,10 @@ Copilot CLI, and Codex. If implementation changed shared agents, knowledge, or s
 3. **Validate neutrality** — All changes must remain harness-agnostic. The validator scans for
    harness-specific tokens, paths, and references that could break distributable content.
 
-In a health-plan run, these actions occur near the end of `/implement-plugin-health`, before the
-ledger-close commit. They are not another breadcrumb-controlled handoff. The same commands can
-also run independently if you edit shared source directly (outside a health plan).
+In a health-plan run, `/implement-plugin-health` invokes the supported projection and neutrality
+checks near the end of the run, before the ledger-close commit. Derive is not another
+breadcrumb-controlled handoff, and its commands can also run independently if you edit shared
+source directly outside a health plan.
 
 **Key principle:** Generated projections are outputs only and must never be edited by hand.
 If you need to change a projection, edit the canonical source (the shared agent) and regenerate.
@@ -51,9 +52,9 @@ Always run `/validate-plugin-neutrality` as a final validation step. This scans 
 The validator ensures the shared surface remains neutral so that all three harnesses can safely
 consume it without compatibility issues.
 
-**During health-plan runs:** If Implement made changes to shared source, these Derive actions
-run automatically before the loop-closure commit. You don't need to run them manually—the
-implementer handles it.
+**During health-plan runs:** If Implement changed shared source, the implementer handles the
+supported projection and neutrality checks before the loop-closure commit. Run the knowledge
+quality path directly when the task is specifically to audit or repair shared knowledge.
 
 ## Workflow
 
@@ -62,6 +63,7 @@ implementer handles it.
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
 
     subgraph agent_lane["Agent source changed"]
         art_agent_source["agents/"]
@@ -93,7 +95,7 @@ flowchart TD
     class skill_fix_knowledge_quality userSkill
     class skill_align_harness_repos userSkill
     class art_agent_source artifact
-    class art_generated_agents artifact
+    class art_generated_agents orphanArtifact
     class art_knowledge_source artifact
     class art_knowledge_quality_report artifact
     class art_shared_surface artifact
@@ -116,7 +118,7 @@ flowchart TD
 
 ### Any shared source changed
 
-Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.
+Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.
 <!-- END GENERATED: maintainer-stage-derive-journey -->
 
 ## Key Artifacts

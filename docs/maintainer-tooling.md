@@ -17,6 +17,11 @@ section to find the specific entry point matching your situation. Exact skill fr
 and generated diagnostics are retained in the appendices for contract maintenance and
 troubleshooting.
 
+Diagram legend: blue nodes are skills, violet nodes are artifacts, amber nodes are alternate
+or manual paths, and dashed red-outlined violet nodes are orphan artifacts. In collapsed stage
+diagrams, a dashed red artifact node means at least one underlying output is produced by a
+workflow contract but not consumed by another workflow contract.
+
 Content between `BEGIN GENERATED` and `END GENERATED` markers comes from
 `.claude/skills/*/SKILL.md` workflow contracts through
 `scripts/generate-maintainer-guide.py`. Update the source contract or generator,
@@ -36,12 +41,12 @@ converts findings into maintainer decisions, and executes approved changes. Prog
 across sessions via `.dev/health-loop-state.md` breadcrumb artifacts so the loop can survive
 interruption and resume.
 
-**Finalization (Stage 5: Derive)** — Conditional cleanup work that runs only if the implementation
-changed shared source (agents, knowledge, or skills). Regenerates derived outputs and validates
-that all changes remain harness-neutral across all three harnesses (Claude Code, Copilot, Codex).
+**Finalization (Stage 5: Derive)** — Conditional cleanup work for shared-source changes.
+Agent edits regenerate derived projections; shared source changes run neutrality validation; and
+knowledge edits can be audited and fixed through the knowledge-quality path.
 
-When shared source changed during Implement, the applicable Derive checks run before the final
-ledger-close commit, keeping the loop atomic.
+When Implement changes shared source, its supported projection and neutrality checks run before
+the final ledger-close commit, keeping the loop atomic.
 
 <!-- BEGIN GENERATED: maintainer-workflow-overview -->
 ```mermaid
@@ -75,7 +80,7 @@ flowchart TD
 | [2. Discover](./maintainer-tooling/discover.md) | Produce and verify findings through either a lens audit or friction ingestion. | You want to identify improvement candidates in the plugin. Run the full audit via `/audit-plugin-health` to spawn all design, quality, and naming lenses, or use `/ingest-plugin-friction` to fold accumulated session-analysis findings into the discovery process. |
 | [3. Decide](./maintainer-tooling/decide.md) | Record durable decisions and turn accepted findings into a verified plan. | A dossier contains findings that need disposition (accept, decline, grandfather, or mark as already fixed). Disposition decisions are recorded durably in the ledger before planning, so later reverification can reuse them without re-auditing. |
 | [4. Implement](./maintainer-tooling/implement.md) | Execute the approved plan and close its accepted disposition events. | A verified plan exists with explicit `closes_event_ids:` identifiers. Run this to execute tasks one-by-one, verify results, and append fixed events to the JSONL event store to prove the work was completed. The stage is resumable via a progress checkpoint if interrupted. |
-| [5. Derive](./maintainer-tooling/derive.md) | Regenerate projections and run shared-source quality checks during finalization. | Implementation or direct edits changed shared agents (→ regenerate projections), shared knowledge (→ audit quality, fix HIGH items), or any shared skill/agent/knowledge (→ validate harness neutrality). These checks happen automatically during health-plan runs before loop closure. |
+| [5. Derive](./maintainer-tooling/derive.md) | Regenerate projections and run shared-source quality checks during finalization. | Implementation or direct edits changed shared agents (→ regenerate projections), shared knowledge (→ audit quality, fix HIGH items), or any shared skill/agent/knowledge (→ validate harness neutrality). Implement runs its supported projection and neutrality checks before loop closure; the same Derive commands can also be run directly. |
 
 ## Breadcrumb Orchestrator
 
@@ -119,7 +124,7 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 | Situation | Run | Why |
 | --- | --- | --- |
 | Added or removed a skill or agent | `/sync-map-documentation` | Audits the maps, applies changes, and regenerates all documentation and projections that depend on them. Use this when topology changes. |
-| Want to audit map accuracy without applying updates | `/sync-map-documentation --no-update` | Runs the audit phase only and prints what would change without making modifications. Useful for verification before a full sync. |
+| Want to preview the map-sync sequence without changing files | `/sync-map-documentation --no-update` | Prints the four-command sync sequence and stops before dispatching agents, writing a checkpoint, or modifying files. |
 | Want the main health-audit entry point | `/audit-plugin-health` | Starts a full lens-driven discovery: dispatches design, quality, and naming audits, ranks findings, and writes a dossier. Best starting point for a comprehensive health check. |
 | Want to fold accumulated friction into the loop | `/ingest-plugin-friction` | Converts curated session-analysis findings and tool-error signals from `~/friction-log/` into discoverable findings, then archives the logs. Alternative entry point to `/audit-plugin-health` when you have session-specific issues to fold in. |
 | Ready to record decisions from a dossier | `/record-plugin-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
@@ -184,7 +189,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/discover-plugin-health` | discover | both | Discovery phase of the plugin health sweep. |
 | `/ingest-plugin-friction` | discover | user | Ingest friction logs from ~/friction-log/ (curated session-analysis findings plus aggregated tool-error signals) into the self-healing health loop as a discover-stage source, then archive the consumed logs. |
 | `/report-plugin-health` | discover | both | Report phase of the plugin health sweep. |
-| `/plan-plugin-findings` | decide | user | Verify and plan accepted health-audit findings (formerly verify-map-suggestions). |
+| `/plan-plugin-findings` | decide | user | Verify and plan accepted health-audit findings. |
 | `/record-plugin-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/revise-plugin-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
 | `/implement-plugin-health` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped. |
@@ -222,6 +227,11 @@ outputs, local provenance logs, generated documentation, and externally
 produced inputs can legitimately appear orphaned or sourceless. Verify a signal
 against the live skill body before treating it as work.
 
+Orphaned artifacts are also shown in stage diagrams as dashed red-outlined violet
+artifact nodes. If a diagram collapses several outputs into one readable node,
+the node uses the orphan style when any output in that group has the orphaned
+artifact signal.
+
 <!-- BEGIN GENERATED: maintainer-gaps -->
 | Signal | Item | Detail |
 | --- | --- | --- |
@@ -249,12 +259,12 @@ against the live skill body before treating it as work.
 | Artifact freshness | `docs/al-dev-plugin-graph.md` | latest 2026-06-25 |
 | Artifact freshness | `docs/al-dev-skills-map.md` | latest 2026-06-25 |
 | Artifact freshness | `docs/al-dev-workflow-diagrams.md` | latest 2026-06-25 |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-24 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-06-25 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | latest 2026-06-24 |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-18 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-06-25 |
 | Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-06-25 |
 | Artifact freshness | `docs/maintainer-tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-22 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-25 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

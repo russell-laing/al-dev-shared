@@ -1,8 +1,7 @@
 ---
 name: plan-plugin-findings
 description: >-
-  Verify and plan accepted health-audit findings (formerly
-  verify-map-suggestions). Reads accepted events from
+  Verify and plan accepted health-audit findings. Reads accepted events from
   docs/health/dispositions-open.md, runs a deterministic disposition matcher in
   Phase 1 to classify findings before rubber-ducking proceeds, rubber-ducks each
   finding against the live codebase before any plan content is written, then produces a verified
@@ -281,7 +280,7 @@ findings remaining after Phase 1 disposition filtering, excluding any
 `suppress`/`verify`/skipped findings).
 
 | Stale ratio | Action |
-|---|---|
+| --- | --- |
 | 100% (all findings) | Advise re-running `/audit-plugin-health`; do not proceed |
 | ≥80% | Report ratio; offer (a) re-run audit or (b) proceed with heightened scrutiny; only proceed if user chooses (b) |
 | <80% | Proceed; mark stale findings `⚠ possibly stale` in the worklist |

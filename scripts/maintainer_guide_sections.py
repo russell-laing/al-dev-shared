@@ -363,6 +363,7 @@ DETAIL_CLASSDEFS = (
 FOCUSED_DETAIL_CLASSDEFS = (
     "    classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold",
     "    classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold",
+    "    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold",
 )
 
 
@@ -607,6 +608,14 @@ def render_map_sync_stage_detail(
     orphans: set[str],
 ) -> tuple[str, int]:
     """Focused map-sync view: the maintained four-step async chain."""
+    generated_class = _focused_artifact_class(
+        orphans,
+        "docs/al-dev-workflow-diagrams.md",
+        "docs/al-dev-plugin-graph.md",
+        "docs/maintainer-tooling.md",
+        "docs/maintainer-tooling/",
+        "profile-al-dev-shared/generated/agents/",
+    )
     lines = [
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
@@ -626,10 +635,18 @@ def render_map_sync_stage_detail(
         "    class skill_sync_documentation_maps_collect userSkill",
         "    class skill_sync_documentation_maps_apply userSkill",
         "    class skill_sync_documentation_maps_write userSkill",
-        "    class art_generated artifact",
+        f"    class art_generated {generated_class}",
     ]
     node_count = 5
     return _mermaid_block(lines), node_count
+
+
+def _focused_artifact_class(orphans: set[str], *templates: str) -> str:
+    return (
+        "orphanArtifact"
+        if any(normalize_template(template) in orphans for template in templates)
+        else "artifact"
+    )
 
 
 def render_discover_stage_detail(
@@ -637,6 +654,9 @@ def render_discover_stage_detail(
     orphans: set[str],
 ) -> tuple[str, int]:
     """Focused discover view: audit-driven and friction-driven entries converge on report."""
+    breadcrumb_class = _focused_artifact_class(orphans, ".dev/health-loop-state.md")
+    dispositions_class = _focused_artifact_class(orphans, "docs/health/dispositions-open.md")
+    dossier_class = _focused_artifact_class(orphans, "docs/health/<date>-<surface>-health.md")
     lines = [
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
@@ -651,7 +671,7 @@ def render_discover_stage_detail(
         '    art_breadcrumb[".dev/health-loop-state.md"]',
         '    art_dispositions["docs/health/dispositions-open.md"]',
         '    skill_plugin_health_report["/report-plugin-health"]',
-        '    art_dossier["docs/health/*-*-health.md"]',
+        '    art_dossier["ranked health dossier"]',
         "",
         "    skill_plugin_health_audit --> skill_plugin_health_discover",
         '    skill_plugin_health_discover -- "standard findings + handoff" --> art_breadcrumb',
@@ -664,15 +684,24 @@ def render_discover_stage_detail(
         "    class skill_plugin_health_discover userSkill",
         "    class skill_ingest_friction_log userSkill",
         "    class skill_plugin_health_report userSkill",
-        "    class art_breadcrumb artifact",
-        "    class art_dispositions artifact",
-        "    class art_dossier artifact",
+        f"    class art_breadcrumb {breadcrumb_class}",
+        f"    class art_dispositions {dispositions_class}",
+        f"    class art_dossier {dossier_class}",
     ]
     return _mermaid_block(lines), 7
 
 
-def render_decide_stage_detail() -> tuple[str, int]:
+def render_decide_stage_detail(orphans: set[str]) -> tuple[str, int]:
     """Focused decide view: primary ledger-to-plan path plus optional revision."""
+    ledger_class = _focused_artifact_class(
+        orphans,
+        "docs/health/dispositions-events/<year>/<year>-<month>.jsonl",
+    )
+    plan_class = _focused_artifact_class(orphans, "docs/superpowers/plans/<date>-<topic>.md")
+    commentary_class = _focused_artifact_class(
+        orphans,
+        "docs/superpowers/plans/<date>-<topic>-commentary.md",
+    )
     lines = [
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
@@ -696,13 +725,22 @@ def render_decide_stage_detail() -> tuple[str, int]:
         "    class skill_record_health_dispositions userSkill",
         "    class skill_plan_health_findings userSkill",
         "    class skill_revise_health_plan userSkill",
-        "    class art_dossier,art_ledger,art_plan,art_commentary artifact",
+        "    class art_dossier artifact",
+        f"    class art_ledger {ledger_class}",
+        f"    class art_plan {plan_class}",
+        f"    class art_commentary {commentary_class}",
     ]
     return _mermaid_block(lines), 7
 
 
-def render_implement_stage_detail() -> tuple[str, int]:
+def render_implement_stage_detail(orphans: set[str]) -> tuple[str, int]:
     """Focused implement view: execute, checkpoint, and close the loop."""
+    progress_class = _focused_artifact_class(orphans, ".dev/implement-plugin-health-progress.md")
+    closed_class = _focused_artifact_class(
+        orphans,
+        "docs/health/dispositions-events/<year>/<year>-<month>.jsonl",
+        ".dev/health-loop-state.md",
+    )
     lines = [
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
@@ -721,7 +759,9 @@ def render_implement_stage_detail() -> tuple[str, int]:
         "    skill_implement_health_plan --> art_closed",
         "",
         "    class skill_implement_health_plan userSkill",
-        "    class art_plan,art_ledger,art_progress,art_changed,art_closed artifact",
+        "    class art_plan,art_ledger,art_changed artifact",
+        f"    class art_progress {progress_class}",
+        f"    class art_closed {closed_class}",
     ]
     return _mermaid_block(lines), 6
 
@@ -731,6 +771,12 @@ def render_derive_stage_detail(
     orphans: set[str],
 ) -> tuple[str, int]:
     """Focused derive view: independent agent and knowledge flows converge on neutrality."""
+    generated_agents_class = _focused_artifact_class(
+        orphans,
+        "profile-al-dev-shared/generated/agents/",
+    )
+    knowledge_quality_class = _focused_artifact_class(orphans, "docs/al-dev-knowledge-quality.md")
+    knowledge_source_class = _focused_artifact_class(orphans, "profile-al-dev-shared/knowledge/")
     lines = [
         "flowchart TD",
         *FOCUSED_DETAIL_CLASSDEFS,
@@ -765,9 +811,9 @@ def render_derive_stage_detail(
         "    class skill_fix_knowledge_quality userSkill",
         "    class skill_align_harness_repos userSkill",
         "    class art_agent_source artifact",
-        "    class art_generated_agents artifact",
-        "    class art_knowledge_source artifact",
-        "    class art_knowledge_quality_report artifact",
+        f"    class art_generated_agents {generated_agents_class}",
+        f"    class art_knowledge_source {knowledge_source_class}",
+        f"    class art_knowledge_quality_report {knowledge_quality_class}",
         "    class art_shared_surface artifact",
     ]
     node_count = 9
@@ -815,11 +861,11 @@ def render_stage_detail(
         "plan-plugin-findings",
         "revise-plugin-plan",
     }:
-        return render_decide_stage_detail()
+        return render_decide_stage_detail(orphans)
     if stage == "implement" and {contract.skill for contract in stage_contracts} == {
         "implement-plugin-health",
     }:
-        return render_implement_stage_detail()
+        return render_implement_stage_detail(orphans)
     stage_names = {c.skill for c in stage_contracts}
     by_name = {c.skill: c for c in stage_contracts}
     artifacts = sorted(
@@ -1017,7 +1063,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                 "",
                 "### Any shared source changed",
                 "",
-                "Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, the applicable Derive actions occur during Implement finalization before loop closure; they are not another breadcrumb-controlled step.",
+                "Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.",
             ]
         )
 

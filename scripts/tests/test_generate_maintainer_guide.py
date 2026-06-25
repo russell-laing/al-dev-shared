@@ -445,7 +445,7 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
         ) in text
         assert 'art_generated["derived docs + projections"]' in text
         assert "skill_sync_documentation_maps_write --> art_generated" in text
-        assert "orphanArtifact" not in text
+        assert "class art_generated orphanArtifact" in text
         assert "repeat" not in text
         assert node_count <= lib.NODE_BUDGET
 
@@ -476,7 +476,7 @@ def test_map_sync_stage_falls_back_when_retired_skill_still_exists() -> None:
         assert "flowchart LR" in text
         assert 'skill_review_documentation_map["/review-documentation-map"]' in text
         assert 'art_profile_al_dev_shared_skills_["skills/"]' in text
-        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
+        assert 'art__dev_sync_map_documentation_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
         assert node_count >= 1
 
 
@@ -486,7 +486,7 @@ def test_discover_stage_uses_friction_and_audit_entry_lanes() -> None:
     text, node_count = lib.render_stage_detail(
         contracts,
         "discover",
-        {"docs/health/*-*-friction-findings.md"},
+        {"docs/health/*-*-health.md"},
     )
     assert "flowchart TD" in text
     assert 'subgraph lane_a["Audit-driven entry"]' in text
@@ -501,7 +501,11 @@ def test_discover_stage_uses_friction_and_audit_entry_lanes() -> None:
     assert (
         'art_breadcrumb -- "adopt exact findings path" --> skill_plugin_health_report'
     ) in text
-    assert "orphanArtifact" not in text
+    assert 'art_dossier["ranked health dossier"]' in text
+    assert 'art_dossier["docs/health/*-*-health.md"]' not in text
+    assert "class art_breadcrumb artifact" in text
+    assert "class art_dispositions artifact" in text
+    assert "class art_dossier orphanArtifact" in text
     assert "repeat" not in text
     assert node_count <= lib.NODE_BUDGET
 
@@ -510,20 +514,40 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
     skills = REPO_ROOT / ".claude" / "skills"
     contracts, _ = lib.load_contracts(skills)
 
-    decide_text, _ = lib.render_stage_detail(contracts, "decide", set())
+    decide_text, _ = lib.render_stage_detail(
+        contracts,
+        "decide",
+        {"docs/health/dispositions-events/*/*-*.jsonl"},
+    )
     assert "flowchart TD" in decide_text
     assert 'skill_record_health_dispositions["/record-plugin-dispositions"]' in decide_text
     assert 'skill_plan_health_findings["/plan-plugin-findings"]' in decide_text
     assert 'skill_revise_health_plan["/revise-plugin-plan"]' in decide_text
     assert 'art_commentary["optional review commentary"]' in decide_text
+    assert "class art_ledger orphanArtifact" in decide_text
     assert "repeat" not in decide_text
 
-    implement_text, _ = lib.render_stage_detail(contracts, "implement", set())
+    decide_journey = lib.render_stage_journey(contracts, "decide")
+    assert "formerly verify-map-suggestions" not in decide_journey
+
+    implement_text, _ = lib.render_stage_detail(
+        contracts,
+        "implement",
+        {
+            ".dev/implement-plugin-health-progress.md",
+            "docs/health/dispositions-events/*/*-*.jsonl",
+        },
+    )
     assert "flowchart TD" in implement_text
     assert 'art_closed["fixed events written + breadcrumb closed"]' in implement_text
     assert 'art_progress["resumable progress checkpoint"]' in implement_text
-    assert "orphanArtifact" not in implement_text
+    assert "class art_progress orphanArtifact" in implement_text
+    assert "class art_closed orphanArtifact" in implement_text
     assert "repeat" not in implement_text
+
+    derive_journey = lib.render_stage_journey(contracts, "derive")
+    assert "Implement handles its supported projection and neutrality checks" in derive_journey
+    assert "the applicable Derive actions occur during Implement finalization" not in derive_journey
 
 
 def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None:
@@ -605,7 +629,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         assert 'art_generated_agents["generated/agents/"]' in text
         assert '[".../"]' not in text
         assert "flowchart TD" in text
-        assert "orphanArtifact" not in text
+        assert "class art_generated_agents orphanArtifact" in text
         assert "repeat" not in text
         assert node_count <= lib.NODE_BUDGET
 
@@ -625,9 +649,9 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
         assert "flowchart LR" in text
         assert 'art_generated["generated docs + projections"]' not in text
-        assert 'skill_sync_documentation_maps_write["/sync-map-documentation-write"]' in text
+        assert 'skill_sync_map_documentation_write["/sync-map-documentation-write"]' in text
         assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
-        assert 'art__dev_sync_documentation_maps_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
+        assert 'art__dev_sync_map_documentation_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
         assert 'art_docs_al_dev_plugin_graph_md[".../al-dev-plugin-graph.md"]' not in text
         assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
         assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
@@ -1019,7 +1043,7 @@ def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
     )
     assert '"checkpoint + audit results"' in map_sync_text
     assert 'skill_review_documentation_map["/review-documentation-map"]' not in map_sync_text
-    assert "orphanArtifact" not in map_sync_text
+    assert "orphanArtifact" in map_sync_text
     discover_text, _ = lib.render_stage_detail(contracts, "discover", set())
     assert 'subgraph lane_b["Friction-driven entry"]' in discover_text
     assert 'art_breadcrumb[".dev/health-loop-state.md"]' in discover_text

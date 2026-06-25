@@ -31,9 +31,10 @@ Think of it as four sequential phases:
 3. **Apply** — Writes validated changes to the canonical maps in `docs/`.
 4. **Write** — Regenerates all derived outputs (diagrams, projections, documentation pages).
 
-You can pause between phases to review intermediate results, or run the full sequence in one go.
-The checkpoint file `.dev/sync-map-documentation-checkpoint.json` tracks where you are in the
-workflow, so you can interrupt and resume without losing state.
+You can pause between phases to review intermediate results, then continue through the next
+handoff when the prior phase is ready. The checkpoint file
+`.dev/sync-map-documentation-checkpoint.json` tracks where you are in the workflow, so you can
+interrupt and resume without losing state.
 
 ## Workflow
 
@@ -42,6 +43,7 @@ workflow, so you can interrupt and resume without losing state.
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
 
     skill_sync_documentation_maps["/sync-map-documentation"]
     skill_sync_documentation_maps_collect["/sync-map-documentation-collect"]
@@ -58,7 +60,7 @@ flowchart TD
     class skill_sync_documentation_maps_collect userSkill
     class skill_sync_documentation_maps_apply userSkill
     class skill_sync_documentation_maps_write userSkill
-    class art_generated artifact
+    class art_generated orphanArtifact
 ```
 <!-- END GENERATED: maintainer-stage-map-sync-diagram -->
 

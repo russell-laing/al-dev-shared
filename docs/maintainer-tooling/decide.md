@@ -50,6 +50,7 @@ the plan and ledger, and prepares for Implement.
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
 
     art_dossier["ranked health dossier"]
     skill_record_health_dispositions["/record-plugin-dispositions"]
@@ -70,7 +71,10 @@ flowchart TD
     class skill_record_health_dispositions userSkill
     class skill_plan_health_findings userSkill
     class skill_revise_health_plan userSkill
-    class art_dossier,art_ledger,art_plan,art_commentary artifact
+    class art_dossier artifact
+    class art_ledger orphanArtifact
+    class art_plan artifact
+    class art_commentary artifact
 ```
 <!-- END GENERATED: maintainer-stage-decide-diagram -->
 
@@ -80,7 +84,7 @@ flowchart TD
 ### Primary path
 
 1. `/record-plugin-dispositions` — Disposition phase of the health-audit loop.
-2. `/plan-plugin-findings` — Verify and plan accepted health-audit findings (formerly verify-map-suggestions).
+2. `/plan-plugin-findings` — Verify and plan accepted health-audit findings.
 
 ### Optional revision path
 

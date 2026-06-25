@@ -36,10 +36,12 @@ Run `/implement-plugin-health --plan <path>` to execute the plan from Decide. Th
 4. **Append fixed events** — For each completed task, append a `fixed` event to the JSONL event store naming the
    `closes_event_ids:` identifiers. This proves the work happened and links the fix back to the
    original finding.
-5. **Run Derive (if needed, automatic)** — If implementation changed shared agents/knowledge/skills,
-   the skill automatically runs `/regenerate-agent-projections`, `/audit-knowledge-quality`, `/fix-knowledge-quality`
-   (if HIGH items exist), and `/validate-plugin-neutrality` to ensure the shared surface is still valid and
-   harness-neutral. You don't need to run these manually—the implementer handles it.
+5. **Run supported Derive checks (if needed)** — If implementation changed shared
+   agents, the skill invokes `/regenerate-agent-projections`. If any
+   `profile-al-dev-shared/` source changed, it invokes `/validate-plugin-neutrality`.
+   Knowledge quality audit/fix commands remain part of Derive for direct knowledge
+   maintenance and are not part of the automatic close-back path unless separately
+   invoked.
 6. **Commit and close the loop** — Write the final ledger update and set `.dev/health-loop-state.md`
    to `next_command: none`, marking the loop as complete.
 
@@ -53,6 +55,7 @@ resume later with `--plan <path>` again.
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
 
     art_plan["approved plan with closes_event_ids"]
     art_ledger["accepted disposition events"]
@@ -68,7 +71,9 @@ flowchart TD
     skill_implement_health_plan --> art_closed
 
     class skill_implement_health_plan userSkill
-    class art_plan,art_ledger,art_progress,art_changed,art_closed artifact
+    class art_plan,art_ledger,art_changed artifact
+    class art_progress orphanArtifact
+    class art_closed orphanArtifact
 ```
 <!-- END GENERATED: maintainer-stage-implement-diagram -->
 
@@ -99,6 +104,6 @@ Exact per-skill reads, writes, and `next` declarations are in
 
 ---
 
-**Next:** If implementation changed shared source (agents, knowledge, or skills), the Derive
-stage runs automatically before loop closure. But for reference or manual derive steps, see
+**Next:** If implementation changed shared source, `/implement-plugin-health` runs its supported
+projection and neutrality checks before loop closure. For direct or manual Derive steps, see
 [Stage 5: Derive](./derive.md).

@@ -50,6 +50,7 @@ the findings path and other metadata so report runs in a fresh session with full
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
 
     subgraph lane_a["Audit-driven entry"]
         skill_plugin_health_audit["/audit-plugin-health"]
@@ -61,7 +62,7 @@ flowchart TD
     art_breadcrumb[".dev/health-loop-state.md"]
     art_dispositions["docs/health/dispositions-open.md"]
     skill_plugin_health_report["/report-plugin-health"]
-    art_dossier["docs/health/*-*-health.md"]
+    art_dossier["ranked health dossier"]
 
     skill_plugin_health_audit --> skill_plugin_health_discover
     skill_plugin_health_discover -- "standard findings + handoff" --> art_breadcrumb
