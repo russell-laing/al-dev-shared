@@ -45,7 +45,7 @@ Create scripts that automate AL development tasks, generate reports, validate co
 
 Reference `knowledge/script-engineer-conventions.md` for:
 
-- **Async-first design** — Use asyncio + aiofiles for I/O in Python when 2 or more concurrent I/O operations are needed. For simple sequential scripts (single read → transform → write), use synchronous I/O — asyncio adds complexity with no benefit there.
+- **Async-first design** — Use asyncio + aiofiles for I/O in Python when 2 or more I/O operations must run in parallel (concurrent = parallel execution, e.g. `asyncio.gather`). For simple sequential scripts (single read → transform → write), use synchronous I/O — asyncio adds complexity with no benefit there.
 - **Protocol-based integration** — Implement protocols, don't inherit
 - **Strict typing** — All functions need explicit return types
 - **Toolkit reference** — Dynamic discovery of al-analysis-toolkit; skip if not found
