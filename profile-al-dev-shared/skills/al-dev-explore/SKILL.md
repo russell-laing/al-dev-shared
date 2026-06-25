@@ -61,6 +61,7 @@ Optionally load ticket context (if available):
 - If `.dev/*-al-dev-ticket-ticket-context.md` exists (from
   `/al-dev-ticket`), read the latest:
   `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)`
+  If no context file is found, continue without loading prior context.
 
 Classify the user's question type to guide the agent:
 
