@@ -36,6 +36,47 @@ OBJECT_LENSES = {
 
 _NO_ISSUES = ("_No issues found._", "*No issues found.*")
 
+
+def _is_passing_bullet(line: str) -> bool:
+    """True for a per-file "OK" row a reader may emit despite the Output Format
+    contract, e.g. `- **al-dev-foo** | Low | No issues found.`
+
+    Precise by design: only a bullet whose *entire* pipe-delimited field equals
+    "no issues found" is treated as a passing row. A real finding that merely
+    mentions the phrase inside a longer observation is never matched.
+    """
+    s = line.strip()
+    if not s.startswith("- **"):
+        return False
+    fields = [f.strip().rstrip(".").lower() for f in s.split("|")]
+    return any(f == "no issues found" for f in fields)
+
+
+def _strip_passing_bullets(block: str) -> str:
+    """Drop per-file passing bullets from a lens block (deterministic backstop
+    for the terse-return contract). Block-level `_No issues found._` sentinels and
+    real findings are preserved. If stripping removes every finding bullet and no
+    sentinel remains, a single `_No issues found._` line is inserted after the
+    heading so downstream assembly still sees a well-formed clean lens.
+    """
+    kept = [ln for ln in block.splitlines() if not _is_passing_bullet(ln)]
+    result = "\n".join(kept)
+    has_finding = any(ln.strip().startswith("- **") for ln in kept)
+    has_sentinel = any(tok in result for tok in _NO_ISSUES)
+    if has_finding or has_sentinel:
+        return result
+    out = []
+    inserted = False
+    for ln in kept:
+        out.append(ln)
+        if not inserted and ln.strip().startswith("### "):
+            out.append("")
+            out.append("_No issues found._")
+            inserted = True
+    if not inserted:
+        out.append("_No issues found._")
+    return "\n".join(out)
+
 _LENS_HEADINGS = {
     "bloat": "Bloat Findings",
     "clarity": "Prompt Clarity Findings",
@@ -61,7 +102,7 @@ def split_combined(text, date, out_dir, completed_at=None):
         lens = m.group(1)
         start = m.end()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        block = text[start:end].strip()
+        block = _strip_passing_bullets(text[start:end].strip())
         payload = {
             "lens": lens,
             "findings": block,

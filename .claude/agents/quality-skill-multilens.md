@@ -23,6 +23,9 @@ Four findings blocks in one return, each preceded by its own lens marker
 Read every file path in the dispatch prompt **once**. Hold all files in context,
 then apply each of the four lenses below in turn to every file. Derive the skill
 name from each file's parent directory name. Do not re-read files between lenses.
+For each lens, collect only the skills that violate it; skills that pass are
+omitted from that lens's block entirely (see Output Format) — do not write a row
+for them.
 
 ## Lens 1: Bloat
 
@@ -144,43 +147,49 @@ Check for:**
 
 ## Output Format
 
-Return exactly four blocks, in this order, each finding as a bullet line (never a
-table). Emit nothing before the first marker or after the last block:
+Your entire reply is exactly four blocks, in the order below, and nothing else.
+The reply must **begin** with the first `<!-- lens: … -->` marker — no preamble,
+no plan, no "Now I'll analyze…"/"Now I'll apply…" sentence, no closing summary.
+
+**Each block lists ONLY the skills that violate that lens.** A skill that passes
+a lens does not appear in that lens's block at all — there is no per-skill "OK",
+"pass", or "No issues found" row. If no skill violates a lens, the whole block is
+its marker, its heading, and the single line `_No issues found._`.
+
+Each finding is one bullet line (never a table):
+
+`- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]`
+
+Worked example over a 24-file corpus where bloat has two violations, clarity has
+one, and description and name-fit have none. Note that only the 3 skills with
+findings appear — the other 21 are omitted, not listed as passing:
 
 <!-- lens: quality-skill-lens-bloat -->
 
 ### Bloat Findings
 
-- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
+- **al-dev-commit-preflight** | High | <observation> | <fix>
+- **al-dev-plan** | Medium | <observation> | <fix>
 
 <!-- lens: quality-skill-lens-clarity -->
 
 ### Prompt Clarity Findings
 
-- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
+- **al-dev-fix** | High | <observation> | <fix>
 
 <!-- lens: quality-skill-lens-description -->
 
 ### Description Drift Findings
 
-- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
+_No issues found._
 
 <!-- lens: quality-skill-lens-name-fit -->
 
 ### Name Fit Findings
 
-- **[skill-name]** | [High|Medium|Low] | [observation] | [fix]
+_No issues found._
 
-For any lens with no findings, emit its marker and heading followed by
-`_No issues found._` and nothing else for that block.
-
-**Emit a bullet only for an actual finding.** Never emit a per-file "OK" or
-"No issues found" bullet for a file that has no issue. If a lens finds nothing
-across *all* files, that whole block is exactly its marker, heading, and the
-single line `_No issues found._` — not one bullet per file. A block that lists
-every file with `… | No issues found.` is wrong: it inflates the return and
-defeats the single-pass cost saving.
-
-Do not write any preamble, plan, or analysis narration before the first marker
-(no "Now I'll analyze…", no file-by-file status). Your entire reply is the four
-blocks and nothing else.
+Reproduce that shape exactly: passing skills are absent, and a clean lens is a
+single `_No issues found._` line. A block that lists every skill with
+`… | No issues found.` is wrong — it inflates the return and defeats the
+single-pass cost saving.

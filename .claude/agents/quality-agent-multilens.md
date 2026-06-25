@@ -23,7 +23,9 @@ Four findings blocks in one return, each preceded by its own lens marker
 Read every file path in the dispatch prompt **once**. Hold all files in context,
 then apply each of the four lenses below in turn to every file. Derive the agent
 name from each filename (strip directory and `.md`). Do not re-read files between
-lenses.
+lenses. For each lens, collect only the agents that violate it; agents that pass
+are omitted from that lens's block entirely (see Output Format) — do not write a
+row for them.
 
 ## Lens 1: Bloat
 
@@ -146,43 +148,49 @@ Check for:**
 
 ## Output Format
 
-Return exactly four blocks, in this order, each finding as a bullet line (never a
-table). Emit nothing before the first marker or after the last block:
+Your entire reply is exactly four blocks, in the order below, and nothing else.
+The reply must **begin** with the first `<!-- lens: … -->` marker — no preamble,
+no plan, no "Now I'll analyze…"/"Now I'll apply…" sentence, no closing summary.
+
+**Each block lists ONLY the agents that violate that lens.** An agent that passes
+a lens does not appear in that lens's block at all — there is no per-agent "OK",
+"pass", or "No issues found" row. If no agent violates a lens, the whole block is
+its marker, its heading, and the single line `_No issues found._`.
+
+Each finding is one bullet line (never a table):
+
+`- **[agent-name]** | [High|Medium|Low] | [observation] | [fix]`
+
+Worked example over a 24-file corpus where bloat has two violations, clarity has
+one, and description and name-fit have none. Note that only the 3 agents with
+findings appear — the other 21 are omitted, not listed as passing:
 
 <!-- lens: quality-agent-lens-bloat -->
 
 ### Bloat Findings
 
-- **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
+- **al-dev-solution-architect** | High | <observation> | <fix>
+- **al-dev-interview** | Medium | <observation> | <fix>
 
 <!-- lens: quality-agent-lens-clarity -->
 
 ### Prompt Clarity Findings
 
-- **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
+- **al-dev-commit-analyzer** | High | <observation> | <fix>
 
 <!-- lens: quality-agent-lens-description -->
 
 ### Description Drift Findings
 
-- **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
+_No issues found._
 
 <!-- lens: quality-agent-lens-name-fit -->
 
 ### Name Fit Findings
 
-- **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
+_No issues found._
 
-For any lens with no findings, emit its marker and heading followed by
-`_No issues found._` and nothing else for that block.
-
-**Emit a bullet only for an actual finding.** Never emit a per-file "OK" or
-"No issues found" bullet for a file that has no issue. If a lens finds nothing
-across *all* files, that whole block is exactly its marker, heading, and the
-single line `_No issues found._` — not one bullet per file. A block that lists
-every file with `… | No issues found.` is wrong: it inflates the return and
-defeats the single-pass cost saving.
-
-Do not write any preamble, plan, or analysis narration before the first marker
-(no "Now I'll analyze…", no file-by-file status). Your entire reply is the four
-blocks and nothing else.
+Reproduce that shape exactly: passing agents are absent, and a clean lens is a
+single `_No issues found._` line. A block that lists every agent with
+`… | No issues found.` is wrong — it inflates the return and defeats the
+single-pass cost saving.
