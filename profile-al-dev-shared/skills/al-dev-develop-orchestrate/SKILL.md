@@ -103,7 +103,7 @@ If resuming:
 Check `$ARGUMENTS` for `--autonomous`. Set `AUTONOMOUS_MODE=true` if found;
 otherwise `AUTONOMOUS_MODE=false`. This value applies for the entire run:
 
-- After Step 3 below, run signature verification (inlined below)
+- After reading the solution plan (Phase 1.1), run signature verification (inlined below)
 - After Phase 4 (Verify on Completion), run static validation (inlined in Phase 4)
 - Signature verification and static validation gates must pass before proceeding to review dispatch
 
@@ -112,7 +112,7 @@ If `$ARGUMENTS` is provided, treat it as a scope override
 Apply that scope when partitioning work in Phase 2 — skip
 modules outside the specified scope.
 
-### Step 1: Read Solution Plan
+### Phase 1.1: Read Solution Plan
 
 1. Read the latest solution plan:
    `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \
@@ -125,7 +125,7 @@ modules outside the specified scope.
    - Testability requirements
    - Object ID ranges
 
-### Step 2: Signature Verification (Autonomous Mode Only)
+### Phase 1.2: Signature Verification (Autonomous Mode Only)
 
 If `AUTONOMOUS_MODE=true`, before dispatching any developer,
 verify every external procedure signature using the strongest available AL symbol evidence.
@@ -251,7 +251,7 @@ Partition boundaries:
 For small solutions (1-3 objects), skip partitioning and
 spawn a single developer.
 
-### Step 1: Extract Implementation Checklist
+### Phase 2.1: Extract Implementation Checklist
 
 Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-checklist.md`
 from the approved solution plan.
@@ -268,7 +268,7 @@ Required sections:
 Developers and reviewers must reference this checklist instead
 of repeatedly re-reading the full solution plan.
 
-### Step 2: Write Scope Boundary Document
+### Phase 2.2: Write Scope Boundary Document
 
 Write `.dev/$(date +%Y-%m-%d)-al-dev-develop-scope.md` with:
 
@@ -358,7 +358,7 @@ or an unresolved scope-incomplete state. Resolve all open states first.
 
 When all developers complete, verify before proceeding:
 
-### Step 1: Verify Developer Outputs
+### Phase 4.1: Verify Developer Outputs
 
 1. Check file ownership — confirm no two developers wrote
    the same file (if there's overlap, assign one owner to
@@ -374,7 +374,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`. After
 writing, emit a brief confirmation: "Progress checkpoint written →
 .dev/progress.md"
 
-### Step 2: Static Validation (Autonomous Mode Only)
+### Phase 4.2: Static Validation (Autonomous Mode Only)
 
 If `AUTONOMOUS_MODE=true`, run these checks on all newly
 created AL files before the review team is spawned. Fix CRITICAL issues by
