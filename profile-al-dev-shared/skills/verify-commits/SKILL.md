@@ -26,7 +26,7 @@ git commit.
    rewrite is safe before suggesting any reset:
    - only local, unpublished commits are in scope (unpublished = not yet pushed to a remote; check with `git log origin/<branch>..<branch>` if a remote is configured)
    - the affected commits are the recent commits just inspected
-   - the user wants history rewritten
+   - the user wants history rewritten — ask explicitly: "Rewrite history to split these commits? (yes/no)" and proceed only on an explicit "yes"
    If the user does not confirm (declines the rewrite), stop. Inform them:
    "Leaving the combined commit as-is. To split manually later:
    `git reset --soft HEAD~<N>` then re-commit each approved group separately."
