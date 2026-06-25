@@ -113,7 +113,7 @@ to changed files. **Non-scopable** lenses always receive the full corpus (they
 compare across files and would produce wrong results on a partial list).
 
 | Scopable — narrow to changed files | Non-scopable — always full corpus |
-|------------------------------------|-----------------------------------|
+| --- | --- |
 | All `quality-agent-lens-*` | `design-skill-lens-near-duplicates` |
 | All `quality-skill-lens-*` | `design-skill-lens-shared-backbone` |
 | `quality-agent-multilens` | |
@@ -169,6 +169,20 @@ After narrowing a scopable lens's file list:
 Non-scopable lenses are **never** skipped — they always run against the full corpus.
 
 ## Phase 2 — Pre-dispatch aggregation
+
+**Dimension gate (token saver):** If `--dimension` is `quality` or `naming`,
+**skip the map-parsing subagent entirely** — these dimensions' lenses (the quality
+combined readers and the static naming lens) consume no derived context. Write the
+Phase 1 globbed agent and skill file lists directly into the run manifest
+(`## Agent file list` and `## Skill file list`) and proceed to Phase 2.5.
+**When `--since` is active, also write the mandatory `## --since scoped file
+lists` section** (scoped agents and skills, derived by intersecting the full
+corpus lists against `$CHANGED` — see Phase 1 normalization), exactly as the
+non-gated path does. The scoped lists are **not** derived map context, and the
+scopable quality/static lenses depend on them; skip only the map-parsing
+subagent's derived-context mappings, **never the scoped file lists**. Run the
+subagent map-parse described below only for `--dimension design` or
+`--dimension all`.
 
 **Dispatch the map parse to a subagent — do not read the maps inline.** The two
 documentation maps total ~1800 lines; reading them into the orchestrating session
