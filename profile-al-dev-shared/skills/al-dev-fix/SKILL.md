@@ -187,7 +187,7 @@ IF complexity == "trivial":
 
 IF complexity == "simple":
   └─ Check if .dev/test-plan.md exists
-  │   ├─ If exists: Read test plan and execute tests (see knowledge/compile-lint-procedure.md for compile + lint steps)
+  │   ├─ If exists: Read test plan and execute tests using the runner specified in the plan (see knowledge/compile-lint-procedure.md for compile + lint steps)
   │   └─ If not exists: Create simple test case inline, execute, verify
   └─ Move to Step 4
 
