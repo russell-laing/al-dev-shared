@@ -1,6 +1,6 @@
 ---
 name: "al-dev-ticket-context-writer"
-description: "Fetch a Freshdesk ticket via API, write .dev/context file, and optionally download attachments. Dispatched by the al-dev-ticket skill."
+description: "Fetch a Freshdesk ticket via API, write .dev/context file, and download attachments only when the dispatcher requests a separate download phase. Dispatched by the al-dev-ticket skill."
 tools: ["execute", "edit"]
 ---
 
@@ -55,7 +55,7 @@ Fetch operations are sequential API calls (not parallel):
 
 ### Step 1.5: Detect Inline Image Attachments
 
-After extracting conversation HTML from the API response, scan for inline embedded images using patterns from `knowledge/ticket-image-patterns.md`.
+After extracting conversation HTML from the API response, scan for inline embedded images using patterns from `knowledge/ticket-image-patterns.md` — i.e. `<img>` `src=` attributes matching the `cid:`, `data:image/`, or `https?://` patterns defined there.
 
 For `data:image/` URIs specifically: note as "inline base64 image (not downloaded)" without attempting to decode or download the content. Append a single count line `[N inline base64 images (not downloaded)]` to the `**Inline Embeds:**` section of the context file (Step 2). Do not add per-image entries for base64 images — there is no URL to record.
 
