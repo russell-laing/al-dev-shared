@@ -142,10 +142,11 @@ Follow the **Competitive Debate** pattern in
 `knowledge/architect-invocation-patterns.md` (Pattern 1) for deriving 2-3
 meaningfully different starting approaches and the spawn-count guidance.
 
-Default fallback if nothing more specific fits — use these debate angles in
-order: (1) table extension (conservative, builds on base app); (2) separate
-table (isolated scope, decoupled from base); (3) event-driven (flexible,
-extensible, minimal coupling). If none of these three angles fits the actual
+Default fallback if nothing more specific fits — use these debate angles as
+three parallel debate angles (all run concurrently): (1) table extension
+(conservative, builds on base app); (2) separate table (isolated scope,
+decoupled from base); (3) event-driven (flexible, extensible, minimal
+coupling). If none of these three angles fits the actual
 problem domain, derive three domain-appropriate contrasting angles from the
 requirements directly (e.g. scope isolation, coupling strategy, data-ownership model).
 
@@ -277,16 +278,7 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 Review all architect outputs on these criteria:
 
-1. **Completeness** - All requirements addressed? Object
-   design complete? BC integration points identified?
-2. **Technical Quality** - AL best practices? Dependency
-   injection for testability? Edge cases handled?
-3. **BC Integration** - Right base objects extended?
-   Appropriate events? Upgrade-compatible?
-4. **Maintainability** - Clear object responsibilities?
-   Extensible design? Follows project patterns?
-5. **Trade-offs** - Costs acknowledged? Weak scenarios
-   identified? Complexity justified?
+**See:** `knowledge/architect-evaluation-criteria.md` for the full evaluation rubric.
 
 Then decide (this is YOUR tactical decision, not the user's):
 
