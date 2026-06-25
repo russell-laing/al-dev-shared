@@ -1,5 +1,5 @@
 ---
-description: "Apply scripted recovery fixes for classified pre-commit hook failures. Reads the HOOK_CLASSIFICATIONS block from al-dev-commit-hook-classifier, applies scripted bash fixes for Fixable failures, re-stages affected files, and returns recovery status. Never re-runs commits itself — returns next_step guidance so the caller re-dispatches the execute agent. Handles the error path in isolation; classification is handled by al-dev-commit-hook-classifier."
+description: "Apply scripted bash fixes for hook failures classified as Fixable, conditional on reversibility and scope checks. Receives a pre-classified HOOK_CLASSIFICATIONS block; does not re-run commits or perform primary failure classification."
 tools: ["Read", "Write", "Bash"]
 ---
 
