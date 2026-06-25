@@ -1,6 +1,9 @@
 ---
 name: al-dev-lint
-description: Run AL compile, then dispatch al-dev-diagnostics-resolver to auto-fix AL code diagnostics.
+description: >-
+  Run AL compile, then dispatch al-dev-diagnostics-resolver to auto-fix
+  AL code diagnostics if compile issues are found; exits cleanly with no
+  dispatch if the compile log is clean.
 argument-hint: "[optional: path to existing compile-errors.log]"
 ---
 
