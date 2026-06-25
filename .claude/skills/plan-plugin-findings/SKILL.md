@@ -305,27 +305,36 @@ missing records and resolve them (re-dispatch or escalate) before continuing.
 > **Refuted skips must still close the ledger.** A `skip` because the claim was
 > *refuted* (or is already-covered) leaves the accepted event open unless the
 > plan closes it. In addition to the `## Skipped` prose section, the plan **must
-> include a final ledger-action task** that appends a `declined` disposition for
-> every refuted-skip event:
+> include a final ledger-action task** that batch-appends a `declined`
+> disposition for every refuted-skip event in one deterministic pass. Write the
+> refuted-skip list to `.dev/refuted-skips.json` with the Write tool (do **not**
+> hand-unroll one `append_event` command per finding), one object per
+> refuted-skip event:
 >
-> ```bash
-> python3 scripts/health_disposition_store.py append_event \
->   --surface <surface> --dimension <dimension> \
->   --object "<object copied verbatim from the accepted event>" \
->   --finding "<finding copied verbatim from the accepted event>" \
->   --disposition declined --date <date> \
->   --evidence "declined: rubber-duck refuted — <one-line reason>" \
->   --closes-event-ids <accepted_event_id> \
->   --source plan-plugin-findings
+> ```json
+> [
+>   {"surface": "<surface>", "dimension": "<dimension>",
+>    "object": "<object copied verbatim from the accepted event>",
+>    "finding": "<finding copied verbatim from the accepted event>",
+>    "reason": "<one-line rubber-duck refutation reason>",
+>    "closes_event_id": "<accepted_event_id>"}
+> ]
 > ```
 >
-> The four key fields (`--surface --dimension --object --finding`) are copied
-> verbatim from the accepted event so the new `declined` event supersedes it by
-> object/key match, and `--closes-event-ids` lists the accepted event's id so the
-> closure is recorded explicitly — the live storage contract requires every
-> superseding event to set it, and omitting it raises an ambiguous-closure
-> integrity warning. Do **not** pass `--event-id` — the declined event
-> auto-allocates a fresh id; reusing the accepted id trips the duplicate-id guard.
+> Then invoke the batch helper once:
+>
+> ```bash
+> python3 scripts/health_disposition_store.py batch_decline \
+>   --input .dev/refuted-skips.json --date <date> --source plan-plugin-findings
+> ```
+>
+> The helper copies `surface`/`dimension`/`object`/`finding` verbatim into each
+> `declined` event (so it supersedes the accepted event by object/key match),
+> wires `closes_event_ids` to `[closes_event_id]` per row (the live storage
+> contract requires every superseding event to set it), prefixes the evidence
+> with `declined: rubber-duck refuted —`, and auto-allocates a fresh event id per
+> row. Do **not** reuse an accepted id — the helper allocates ids and reusing one
+> trips the duplicate-id guard.
 >
 > That task carries a Step 0 that commits any pre-existing dirty `docs/health/`
 > first (so a later `git add docs/health/` stages only this task's regenerated
