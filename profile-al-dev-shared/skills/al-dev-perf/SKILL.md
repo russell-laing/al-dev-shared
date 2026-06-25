@@ -1,6 +1,9 @@
 ---
 name: al-dev-perf
-description: Analyze AL codeunits for performance anti-patterns.
+description: >-
+  Analyze AL codeunits for performance anti-patterns; classifies codeunit
+  type (Entry Point, Batch Processor, Hot Path, Utility) and escalates
+  finding severity for high-impact contexts.
 argument-hint: "[codeunit name, file path, or 'scan all']"
 ---
 
@@ -84,7 +87,10 @@ Codeunit classifications:
 - CreateJobV6.Codeunit.al → Entry Point (has OnRun; evidence source: AL LSP)
 - BatchPostSales.Codeunit.al → Batch Processor (name heuristic; evidence source: text search)
 - StringHelper.Codeunit.al → Utility (no indicators found; evidence source: AL MCP)
+- HelperUtil.Codeunit.al → Utility (text search ran, zero anti-pattern indicators found; evidence source: text search)
 ```
+
+`unverified` means no lookup of any kind could be performed. `text search` means a text search ran but found zero indicators.
 
 ---
 
