@@ -80,8 +80,37 @@ def test_ignores_out_of_dimension_lens():
         assert "al-dev-bar" not in out
 
 
+def test_format_metrics_emits_eight_fields():
+    counts = {
+        "severity": {"design": {"high": 0, "medium": 1, "low": 0},
+                     "quality": {"high": 2, "medium": 3, "low": 1},
+                     "naming": {"high": 0, "medium": 0, "low": 0}},
+        "raw_count": 12, "verified_count": 7, "dropped_unverified_count": 3,
+        "stale_dropped_count": 1, "suppressed_count": 1, "failed_lens_count": 0,
+        "new_count": 5, "recurring_count": 2,
+    }
+    out = mod.format_metrics(counts)
+    for field in ("raw_count", "verified_count", "dropped_unverified_count",
+                  "stale_dropped_count", "suppressed_count", "failed_lens_count",
+                  "new_count", "recurring_count"):
+        assert f"{field}:" in out, field
+    assert "<!-- benchmark-metrics" in out and "-->" in out
+    assert "| High" in out  # severity table present
+
+
+def test_format_metrics_missing_field_raises():
+    try:
+        mod.format_metrics({"severity": {}, "raw_count": 1})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError on missing metric field")
+
+
 if __name__ == "__main__":
     test_assembles_with_markers_and_frontmatter()
     test_failed_lenses_and_incomplete_status()
     test_ignores_out_of_dimension_lens()
+    test_format_metrics_emits_eight_fields()
+    test_format_metrics_missing_field_raises()
     print("PASS")

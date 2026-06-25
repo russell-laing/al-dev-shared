@@ -257,6 +257,18 @@ When a count is genuinely unknown (e.g. a friction-ingest dossier with no raw
 candidate denominator), write the literal `not available` — never infer
 `raw_count` from `verified_count + dropped_unverified_count`.
 
+**Compute the table and metrics block deterministically.** Rather than
+hand-counting, write the Phase 2 tallies to a small JSON (`severity` breakdown
+plus the eight metric fields) and run:
+
+```bash
+python3 scripts/assemble_health_findings.py metrics --counts <counts.json>
+```
+
+Paste its output as the Summary severity table + `New this sweep:` line +
+`<!-- benchmark-metrics -->` block. The script raises if any of the eight fields
+is missing, enforcing the "all eight fields are mandatory" rule.
+
 ## Phase 4 — Present to user
 
 Read `.dev/health-loop-state.md` first (schema:
