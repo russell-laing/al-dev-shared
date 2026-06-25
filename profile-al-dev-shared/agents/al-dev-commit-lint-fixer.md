@@ -59,7 +59,7 @@ ruff check --fix <file> && ruff format <file> && git add <file>
 
 ### Step 3: Trailing Whitespace Fix (Text Files Only)
 
-⚠️ Use `[[:blank:]]+$` only — see `knowledge/bash-safe-patterns.md` for why `[ \t]+$`, `[[:space:]]+$`, and `\s+$` are unsafe on BSD `sed`.
+⚠️ Use `[[:blank:]]+$` only — it matches horizontal whitespace (tab and space) at end of line, not newline or carriage-return. See `knowledge/bash-safe-patterns.md` for why `[ \t]+$`, `[[:space:]]+$`, and `\s+$` are unsafe on BSD `sed`.
 
 Skip binary and OOXML files. Detect binary files via:
 
