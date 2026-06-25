@@ -73,10 +73,11 @@ def _project_tools(shared_tools: list[str], mapping: dict[str, Any]) -> list[Any
 
 def render_claude_projection(agent: dict, policy: dict) -> str:
     tools = _project_tools(agent["tools"], policy["claude"])
+    tools_line = f"tools: {json.dumps(tools)}\n" if tools else ""
     return (
         "---\n"
         f'description: "{agent["description"]}"\n'
-        f"tools: {json.dumps(tools)}\n"
+        f"{tools_line}"
         "---\n\n"
         f'{agent["body"]}'
     )
@@ -84,11 +85,12 @@ def render_claude_projection(agent: dict, policy: dict) -> str:
 
 def render_copilot_projection(agent: dict, policy: dict) -> str:
     tools = _project_tools(agent["tools"], policy["copilot"])
+    tools_line = f"tools: {json.dumps(tools)}\n" if tools else ""
     return (
         "---\n"
         f'name: "{agent["name"]}"\n'
         f'description: "{agent["description"]}"\n'
-        f"tools: {json.dumps(tools)}\n"
+        f"{tools_line}"
         "---\n\n"
         f'{agent["body"]}'
     )

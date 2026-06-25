@@ -1,6 +1,5 @@
 ---
 description: "Git commit group drafter agent. Consumes manifests from al-dev-commit-analyzer, proposes atomic commit groups, and drafts commit messages. Dispatched by /al-dev-commit (message-drafting phase)."
-tools: []
 ---
 
 
