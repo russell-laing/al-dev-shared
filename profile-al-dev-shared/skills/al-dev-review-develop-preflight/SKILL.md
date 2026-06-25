@@ -108,7 +108,7 @@ echo "review-preflight Phase 2 complete — $(date +%Y-%m-%d %H:%M): CHANGED_FIL
 
 **Goal:** Confirm compile passes and write the preflight context file.
 
-### Step 1: Run Compile
+### Phase 3.1: Run Compile
 
 ```bash
 al-compile --output .dev/compile-errors.log
@@ -125,7 +125,7 @@ Set `COMPILE_STATUS`:
 - `pass` — zero `error AL` lines
 - `fail` — one or more `error AL` lines
 
-### Step 2: Set PREREQUISITES_MET
+### Phase 3.2: Set PREREQUISITES_MET
 
 | Check | Pass condition |
 |-------|---------------|
@@ -136,7 +136,7 @@ Set `COMPILE_STATUS`:
 `PREREQUISITES_MET = yes` if all three checks pass.
 `PREREQUISITES_MET = no — [detail of which check failed]` otherwise.
 
-### Step 3: Write Preflight Context File
+### Phase 3.3: Write Preflight Context File
 
 ```bash
 PREFLIGHT_FILE=".dev/$(date +%Y-%m-%d)-plugin-review-preflight.md"
@@ -177,7 +177,7 @@ Write final progress checkpoint:
 echo "review-preflight Phase 3 complete — $(date +%Y-%m-%d %H:%M): preflight written to $PREFLIGHT_FILE" >> .dev/progress.md
 ```
 
-### Step 4: Present Result
+### Phase 3.4: Present Result
 
 If `PREREQUISITES_MET = yes`:
 
