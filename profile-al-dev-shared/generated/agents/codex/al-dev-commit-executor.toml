@@ -51,7 +51,7 @@ If commit fails (pre-commit hook rejection, exit code non-zero):
 - Do NOT attempt scripted fixes, retries, force-push, or hook overrides
 - Record the group in the `HOOK_FAILURES` block with its raw hook output
 - Stop attempting subsequent groups that depend on the failed group; count them as SKIPPED.
-  A group **depends** on a failed group when: (a) the dispatcher's `APPROVED_PLAN` explicitly marks it as dependent, OR (b) it stages files in the same directory as the failed group. If neither condition can be determined, stop all subsequent groups (conservative default).
+  A group **depends** on a failed group when: (a) the dispatcher's `APPROVED_PLAN` explicitly marks it as dependent, OR (b) the `APPROVED_PLAN` explicitly lists them as a sequential batch (i.e., they share a named batch label or sequential-dependency marker in the plan). If neither condition can be determined, stop all subsequent groups (conservative default).
 
 Diagnosis and recovery are out of scope for this agent. The caller detects the
 `HOOK_FAILURES` block and dispatches `al-dev-commit-hook-fixer` for recovery.
