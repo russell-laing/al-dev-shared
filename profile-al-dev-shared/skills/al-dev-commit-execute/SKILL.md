@@ -88,6 +88,8 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
 
 Store the `LINT_FIXES` value for display in Phase 4.
 
+**Sentinel convention:** The value `NONE` (all-caps literal string) means "no failures in this category." It is used as the empty-state sentinel for `OOXML_FAILURES`, `LINT_FIXES`, and `HOOK_FAILURES` throughout this skill. An agent returning one of these fields should set it to exactly `NONE` when there is nothing to report.
+
 ### 3.2 — Dispatch OOXML Validation Agent
 
 Dispatch the OOXML validator agent with the approved plan:
