@@ -67,11 +67,6 @@ When shell search or structured-file inspection is required, prefer `rg` and
 - Color/formatting for terminal use only
 - Exit code 0 on success, non-zero on failure
 
-### Toolkit Integration (When Available)
-
-Dynamically discover and source `al-analysis-toolkit` per
-`knowledge/script-engineer-conventions.md`; skip cleanly if it is not found.
-
 ### Token Generation (If Applicable)
 
 Emit governance tokens in script documentation:
