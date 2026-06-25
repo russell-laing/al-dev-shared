@@ -79,7 +79,7 @@ affected version range, do not leave `BC_VERSION_SCOPE` blank. Set it to an
 explicit fallback — `version scope undetermined — rely on the customer-reported
 BC version` — so the reply never silently drops the version context.
 
-**Link formatting rule:** All URLs in the draft reply must use labelled markdown references — `[descriptive label](url)` — never bare URLs. If the researcher findings contain a bare URL, wrap it: `[<source name>: <brief topic>](<url>)`. If a URL was marked `[unverified]` by the researcher, append `(link unverified)` after the reference, e.g. `[Microsoft Learn: <topic>](<url>) (link unverified)`.
+**Link formatting rule:** All URLs in the draft reply must use labelled markdown references — `[descriptive label](url)` — never bare URLs. If the researcher findings contain a bare URL, wrap it: `[<source name>: <brief topic>](<url>)`. If a URL was marked `[unverified]` by the researcher, append `(link unverified)` after the reference, e.g. `[Microsoft Learn: <topic>](<url>) (link unverified)`. If a URL appears in researcher findings with no explicit `[unverified]` marker, treat it as implicitly unverified and append `(link unverified)` after the reference. The absence of a marker does not mean the link is verified.
 
 **Tone and framing (apply throughout Step 2):**
 
