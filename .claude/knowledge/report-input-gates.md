@@ -98,18 +98,13 @@ findings false, 8 wrongly "verified" by eyeballing before this cross-check was
 added). The parent collects the returned `verified | dropped` table — it must
 **not** open the cited files itself.
 
-**Deterministic static-lens carve-out.** Findings from the deterministic static
-lenses — `quality-agent-lens-structure`, `quality-skill-lens-structure`,
-`naming-convention-lens`, and `design-agent-lens-tool-hygiene` — are true by
-construction (the static runner matched an exact rule). Do **not** dispatch a
-`verify-health-finding` agent for them. Re-verify deterministically instead: run
-`python3 scripts/health_static_lenses.py --surface <surface> --dimension <dim>
---date <findings-date>` and keep the finding only if it reappears in the
-regenerated lens JSON; otherwise drop it under "Stale (dropped)". Identify a
-finding's source lens from the `<!-- lens: <name> -->` marker the assembler writes
-above each block; if a findings file has no markers (predates the assembler), fall
-back to the block heading — `Structural Conventions`, `Naming Convention`, or
-`Tool Hygiene`.
+**Deterministic static-lens carve-out.** Findings from the four deterministic
+static lenses are true by construction — do **not** dispatch a
+`verify-health-finding` agent for them; re-verify deterministically instead. The
+lens list, lens identification (the `<!-- lens: <name> -->` marker with heading
+fallback), and the `scripts/health_static_lenses.py` re-verify command are
+canonical in `static-lens-carveout.md` — follow that procedure and apply its
+**evidence-mode** consumer rule here.
 
 Apply the results:
 
