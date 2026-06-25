@@ -71,6 +71,11 @@ If neither requested surface returns a path, stop.
 Read the findings file. Extract each `### <Lens Name> Findings` block.
 Parse each finding line: `- **[name]** | [Severity] | [observation] | [fix]`
 
+When a block is preceded by a `<!-- lens: <name> -->` marker (written by the
+discover assembler), record that lens name as the block's source lens — it is
+authoritative and disambiguates the two `Structural Conventions Findings` blocks.
+Fall back to the heading text only when no marker is present.
+
 Before parsing the finding blocks, read and preserve any findings metadata near
 the top of the file:
 
