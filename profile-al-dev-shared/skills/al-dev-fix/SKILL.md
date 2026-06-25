@@ -182,12 +182,12 @@ After classification (Step 1):
 
 ```text
 IF complexity == "trivial":
-  └─ Test via direct verification (no test plan needed)
+  └─ Test via direct verification (see Step 2 compile pass) (no test plan needed)
   └─ Skip to Step 4
 
 IF complexity == "simple":
   └─ Check if .dev/test-plan.md exists
-  │   ├─ If exists: Read test plan and execute tests
+  │   ├─ If exists: Read test plan and execute tests (see knowledge/compile-lint-procedure.md for compile + lint steps)
   │   └─ If not exists: Create simple test case inline, execute, verify
   └─ Move to Step 4
 
