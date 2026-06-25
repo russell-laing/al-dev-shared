@@ -25,21 +25,19 @@ AGENTS_DIR = os.path.join(REPO, ".claude/agents")
 STATIC_LENS_SCRIPT = os.path.join(REPO, "scripts/health_static_lenses.py")
 
 
-# The 19 LLM lens agents still dispatched on disk. The four deterministic
-# lenses converted to scripts/health_static_lenses.py are intentionally absent.
+# The 13 LLM lens agents still dispatched on disk (11 design + 2 combined
+# quality readers). The four deterministic lenses converted to
+# scripts/health_static_lenses.py are intentionally absent, and the eight
+# individual quality lenses are now bundled into quality-agent-multilens and
+# quality-skill-multilens (each reads its corpus once and applies all four
+# quality rubrics).
 EXPECTED_AGENTS = [
-    "quality-agent-lens-clarity",
-    "quality-agent-lens-description",
-    "quality-agent-lens-bloat",
-    "quality-agent-lens-name-fit",
+    "quality-agent-multilens",
+    "quality-skill-multilens",
     "design-agent-lens-model-fit",
     "design-agent-lens-scope-isolation",
     "design-agent-lens-caller-alignment",
     "design-agent-lens-usage-patterns",
-    "quality-skill-lens-clarity",
-    "quality-skill-lens-description",
-    "quality-skill-lens-bloat",
-    "quality-skill-lens-name-fit",
     "design-skill-lens-shared-backbone",
     "design-skill-lens-complexity",
     "design-skill-lens-near-duplicates",
