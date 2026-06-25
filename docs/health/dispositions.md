@@ -988,48 +988,42 @@
 | disp_20260625_000040 | plugin | quality | al-dev-plan-final-review | SKILL.md:65 'Duplicate object IDs (reconcile from architect merge)' gives no reconciliation procedure, unlike other bullets in the same list. | fixed | 2026-06-25 | c04cee6 — added 3-step procedure: identify architect, verify different purposes, rename object ID field with suffix; verified live 2026-06-25; closes disp_20260625_000028 |
 | disp_20260625_000041 | plugin | quality | al-dev-plan-final-review | SKILL.md description mentions running validate-plan.py but omits the Phase 2.5 scenario-coverage check, which is a distinct validation. | fixed | 2026-06-25 | c04cee6 — added 'validates structural completeness and scenario coverage' to description; verified live 2026-06-25; closes disp_20260625_000029 |
 | disp_20260625_000042 | plugin | quality | verify-commits | SKILL.md:~29 'the user wants history rewritten' names the confirmation condition but never defines how approval is obtained. | fixed | 2026-06-25 | d2b61c8 — added explicit prompt 'Rewrite history to split these commits? (yes/no)'; proceed only on explicit yes; verified live 2026-06-25; closes disp_20260625_000030 |
-| disp_20260625_000043 | plugin | quality | al-dev-commit-analyzer | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000044 | plugin | quality | al-dev-commit-hook-fixer | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000045 | plugin | quality | al-dev-developer-tdd | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000046 | plugin | quality | al-dev-developer-traditional | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000047 | plugin | quality | al-dev-commit-execute | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000048 | plugin | quality | al-dev-commit-preflight | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000049 | plugin | quality | al-dev-plan | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000050 | plugin | quality | al-dev-develop-orchestrate | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000051 | plugin | quality | al-dev-plan-preflight | Bloat | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000052 | plugin | quality | al-dev-commit-analyzer | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000053 | plugin | quality | al-dev-commit-executor | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000054 | plugin | quality | al-dev-commit-lint-fixer | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000055 | plugin | quality | al-dev-developer-tdd | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000071 | plugin | quality | al-dev-interview | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000057 | plugin | quality | al-dev-support-reply-drafter | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000058 | plugin | quality | al-dev-docs-writer | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000059 | plugin | quality | al-dev-release-notes-writer | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000061 | plugin | quality | al-dev-commit-preflight | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000063 | plugin | quality | al-dev-commit-execute | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000064 | plugin | quality | al-dev-develop-orchestrate | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000065 | plugin | quality | al-dev-document | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000067 | plugin | quality | al-dev-plan-preflight | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000068 | plugin | quality | al-dev-plan | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000069 | plugin | quality | al-dev-ticket | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000070 | plugin | quality | al-dev-fix | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000072 | plugin | quality | al-dev-perf | Clarity | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000073 | plugin | quality | al-dev-commit-group-drafter | Structural | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000074 | plugin | quality | al-dev-docs-writer | Structural | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000075 | plugin | quality | al-dev-develop-orchestrate | Structural | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000076 | plugin | quality | al-dev-review-develop-preflight | Structural | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000077 | plugin | quality | al-dev-commit-hook-fixer | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000078 | plugin | quality | al-dev-docs-writer | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000085 | plugin | quality | al-dev-explore | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000080 | plugin | quality | al-dev-script-engineer | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000081 | plugin | quality | al-dev-develop-orchestrate | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000082 | plugin | quality | al-dev-commit-execute | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000083 | plugin | quality | al-dev-lint | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
 | disp_20260625_000084 | plugin | quality | al-dev-perf | Description Drift | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000086 | plugin | quality | al-dev-commit-hook-fixer | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000087 | plugin | quality | al-dev-ticket-context-writer | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000088 | plugin | quality | al-dev-support-researcher | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000089 | plugin | quality | al-dev-commit-execute | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000090 | plugin | quality | al-dev-review-develop | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000091 | plugin | quality | al-dev-ticket | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
-| disp_20260625_000092 | plugin | quality | al-dev-help | Name Fit | accepted | 2026-06-25 | User batch-accepted all plugin quality findings in session. |
+| disp_20260626_000001 | plugin | quality | al-dev-commit-analyzer | Bloat | declined | 2026-06-26 | declined: rubber-duck refuted — no repeated commands; four variants each serve a distinct decision branch; closes disp_20260625_000043 |
+| disp_20260626_000002 | plugin | quality | al-dev-commit-hook-fixer | Bloat | declined | 2026-06-26 | declined: rubber-duck refuted — three conditions are distinct predicates, not repetitions; closes disp_20260625_000044 |
+| disp_20260626_000003 | plugin | quality | al-dev-developer-tdd | Bloat | declined | 2026-06-26 | declined: rubber-duck refuted — line-count overstated; three phase blocks carry distinct non-redundant content; closes disp_20260625_000045 |
+| disp_20260626_000004 | plugin | quality | al-dev-developer-traditional | Bloat | declined | 2026-06-26 | declined: rubber-duck refuted — AL Code Patterns sections are already thin delegation pointers; closes disp_20260625_000046 |
+| disp_20260626_000005 | plugin | quality | al-dev-commit-execute | Bloat | declined | 2026-06-26 | declined: rubber-duck refuted — parallelism already explicit; section count overstated; closes disp_20260625_000047 |
+| disp_20260626_000006 | plugin | quality | al-dev-commit-analyzer | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — recover appears once with unambiguous meaning; closes disp_20260625_000052 |
+| disp_20260626_000007 | plugin | quality | al-dev-commit-lint-fixer | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — both extension lists identical including .odt; closes disp_20260625_000054 |
+| disp_20260626_000008 | plugin | quality | al-dev-developer-tdd | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — expected reason distinction is present inline and in Standards; closes disp_20260625_000055 |
+| disp_20260626_000009 | plugin | quality | al-dev-docs-writer | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — OR/AND negation is logically self-consistent; closes disp_20260625_000058 |
+| disp_20260626_000010 | plugin | quality | al-dev-document | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — bash block uses angle-bracket placeholder not square-bracket glob; closes disp_20260625_000065 |
+| disp_20260626_000011 | plugin | quality | al-dev-interview | Clarity | declined | 2026-06-26 | declined: rubber-duck refuted — Step 4 already supplies the 2-3 attempt escalation path; closes disp_20260625_000071 |
+| disp_20260626_000012 | plugin | quality | al-dev-commit-group-drafter | Structural | declined | 2026-06-26 | declined: rubber-duck refuted — empty tools:[] is intentional and documented in agent body; closes disp_20260625_000073 |
+| disp_20260626_000013 | plugin | quality | al-dev-develop-orchestrate | Structural | declined | 2026-06-26 | declined: rubber-duck refuted — Phase and Step labels occupy distinct hierarchy levels; closes disp_20260625_000075 |
+| disp_20260626_000014 | plugin | quality | al-dev-review-develop-preflight | Structural | declined | 2026-06-26 | declined: rubber-duck refuted — Phase N at ## level, Step N at ### level; deliberate two-tier hierarchy; closes disp_20260625_000076 |
+| disp_20260626_000015 | plugin | quality | al-dev-docs-writer | Description Drift | declined | 2026-06-26 | declined: rubber-duck refuted — maintain description substantiated by Step 5 folder structure maintenance; closes disp_20260625_000078 |
+| disp_20260626_000016 | plugin | quality | al-dev-script-engineer | Description Drift | declined | 2026-06-26 | declined: rubber-duck refuted — execution step present at Step 5; claimed gap does not hold; closes disp_20260625_000080 |
+| disp_20260626_000017 | plugin | quality | al-dev-develop-orchestrate | Description Drift | declined | 2026-06-26 | declined: rubber-duck refuted — description already documents --autonomous, signature verification, and static validation; closes disp_20260625_000081 |
+| disp_20260626_000018 | plugin | quality | al-dev-commit-execute | Description Drift | declined | 2026-06-26 | declined: rubber-duck refuted — description accurately describes loading artifact and delegating execution; closes disp_20260625_000082 |
+| disp_20260626_000019 | plugin | quality | al-dev-explore | Description Drift | declined | 2026-06-26 | declined: rubber-duck refuted — finds files and symbols is correct for non-optional tool behavior; closes disp_20260625_000085 |
+| disp_20260626_000020 | plugin | quality | al-dev-commit-hook-fixer | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — agent receives pre-classified input; guard conditions are fix-safety checks; closes disp_20260625_000086 |
+| disp_20260626_000021 | plugin | quality | al-dev-ticket-context-writer | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — output-oriented naming; proposed rename violates 30-char limit; closes disp_20260625_000087 |
+| disp_20260626_000022 | plugin | quality | al-dev-support-researcher | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — al-dev-support- prefix already constrains domain to BC support; closes disp_20260625_000088 |
+| disp_20260626_000023 | plugin | quality | al-dev-commit-execute | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — name accurate; prerequisite dependency is standard Phase 0 pattern; closes disp_20260625_000089 |
+| disp_20260626_000024 | plugin | quality | al-dev-review-develop | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — description already clarifies orchestration role; closes disp_20260625_000090 |
+| disp_20260626_000025 | plugin | quality | al-dev-ticket | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — description and argument-hint already carry full-mode signal; closes disp_20260625_000091 |
+| disp_20260626_000026 | plugin | quality | al-dev-help | Name Fit | declined | 2026-06-26 | declined: rubber-duck refuted — description compensates for generic name; dossier itself deemed acceptable; closes disp_20260625_000092 |
