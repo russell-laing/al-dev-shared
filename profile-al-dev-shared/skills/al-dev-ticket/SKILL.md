@@ -65,6 +65,8 @@ if [[ ! "$MODE" =~ ^(context-only|full)$ ]]; then
 fi
 ```
 
+The validation is case-sensitive: only `context-only` and `full` (lowercase) are accepted. Passing `--mode=Full` or `--mode=FULL` will fail validation and emit the error message.
+
 **Test cases — trailing-argument boundary:**
 
 | Input `$ARGUMENTS` | Expected `$MODE` |
