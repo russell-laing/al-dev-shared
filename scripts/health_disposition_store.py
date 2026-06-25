@@ -139,6 +139,45 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
     return shard
 
 
+def batch_decline(
+    events_root: Path,
+    rows: list[dict[str, str]],
+    date: str,
+    source: str = "plan-plugin-findings",
+) -> list[tuple[str, Path]]:
+    """Append one `declined` event per refuted-skip row in a single pass.
+
+    Each row needs: surface, dimension, object, finding, reason, closes_event_id.
+    A fresh event_id is auto-allocated per row (kept sequential against the store),
+    closes_event_ids is wired to [closes_event_id], and the evidence is prefixed
+    with the canonical refuted-skip note. Returns [(event_id, shard_path), ...].
+    Replaces hand-unrolled append_event commands in plan-plugin-findings Phase 3.
+    """
+    required = ("surface", "dimension", "object", "finding", "reason", "closes_event_id")
+    written: list[tuple[str, Path]] = []
+    for i, row in enumerate(rows):
+        missing = [k for k in required if not str(row.get(k, "")).strip()]
+        if missing:
+            raise ValueError(f"row {i}: missing required field(s): {', '.join(missing)}")
+        event_id = next_event_id(list(iter_event_rows(events_root)), date)
+        event = {
+            "event_id": event_id,
+            "legacy_id": "",
+            "surface": row["surface"],
+            "dimension": row["dimension"],
+            "object": row["object"],
+            "finding": row["finding"],
+            "disposition": "declined",
+            "date": date,
+            "closes_event_ids": [row["closes_event_id"]],
+            "evidence": f"declined: rubber-duck refuted — {row['reason']}",
+            "source": source,
+        }
+        shard = append_event(events_root, event)
+        written.append((event_id, shard))
+    return written
+
+
 def _event_key(event: dict[str, object]) -> tuple[str, str, str, str]:
     return (
         str(event["surface"]).strip(),
@@ -822,6 +861,16 @@ if __name__ == "__main__":
     ae.add_argument("--closes-event-ids", default="")
     ae.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
 
+    bd = sub.add_parser(
+        "batch_decline",
+        help="Append a `declined` event per refuted-skip row from a JSON input file.",
+    )
+    bd.add_argument("--input", required=True, type=Path,
+                    help="JSON array of {surface, dimension, object, finding, reason, closes_event_id}")
+    bd.add_argument("--date", required=True)
+    bd.add_argument("--source", default="plan-plugin-findings")
+    bd.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
+
     regen = sub.add_parser("regenerate", help="Regenerate disposition views from JSONL events.")
     regen.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
     regen.add_argument("--open-view", type=Path, default=Path("docs/health/dispositions-open.md"))
@@ -872,6 +921,16 @@ if __name__ == "__main__":
         }
         shard = append_event(args.events_root, event)
         print(shard)
+        raise SystemExit(0)
+    if args.command == "batch_decline":
+        rows = json.loads(args.input.read_text(encoding="utf-8"))
+        if not isinstance(rows, list):
+            print("batch_decline: input must be a JSON array", file=sys.stderr)
+            raise SystemExit(1)
+        written = batch_decline(args.events_root, rows, args.date, args.source)
+        for event_id, shard in written:
+            print(f"{event_id} -> {shard}")
+        print(f"batch_decline: wrote {len(written)} declined event(s)")
         raise SystemExit(0)
     if args.command == "regenerate":
         events = list(iter_event_rows(args.events_root))
