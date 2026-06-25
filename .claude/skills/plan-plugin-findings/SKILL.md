@@ -352,6 +352,32 @@ missing records and resolve them (re-dispatch or escalate) before continuing.
 > (object no longer resolves) is the one exception — those stay user-decided via
 > `/record-plugin-dispositions`, not auto-declined.
 
+### Static-lens carve-out (partition before dispatch)
+
+Before the parallel dispatch below, partition the rubber-duck worklist by each
+finding's source lens (see `.claude/knowledge/static-lens-carveout.md` for lens
+identification and the re-verify command):
+
+- **Static-lens findings** (`quality-agent-lens-structure`,
+  `quality-skill-lens-structure`, `naming-convention-lens`,
+  `design-agent-lens-tool-hygiene`) **skip** the `verify-health-finding` agent.
+  Re-verify them deterministically with a single `health_static_lenses.py` pass
+  per active `(surface, dimension)` and apply the doc's **rubber-duck-mode**
+  consumer rule: a finding that reappears takes a `proceed` verdict whose Phase 4
+  fix is the lens's own canned remediation; a finding that does not reappear is
+  recorded in `## Skipped` as `static re-verify: claim no longer reproduces` and,
+  like the stale-object skip, is **not** auto-declined — surface it to the user
+  as a candidate stale-close via `/record-plugin-dispositions`.
+- **Reasoning-class findings** (Bloat, Prompt Clarity, Description Drift, Name
+  Fit, and every design lens except tool-hygiene) go to the
+  `verify-health-finding` dispatch below unchanged — their fix needs judgement
+  the static runner cannot supply.
+
+This carve-out adds **no** gate reordering. Phase 1's `match` step already runs
+disposition suppression before this phase, so suppress-before-gate (no LLM
+verify on ledger-closed findings) already holds; the partition only diverts
+deterministic findings away from the LLM agent.
+
 ### Dispatch
 
 Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
