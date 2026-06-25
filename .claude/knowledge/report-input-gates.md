@@ -59,11 +59,18 @@ Label any whose subject changed `⚠ possibly stale`.
 
 A labelled finding may enter the top 5 only after reading the live subject file
 and confirming the claim still holds; record the spot-check
-("verified against live file <date>") next to the action. If the claim no longer
+("verified against live file `<date>`") next to the action. If the claim no longer
 holds, drop the finding from counts and list it under a "Stale (dropped)" note
 instead.
 
 ### Evidence verification (every finding)
+
+**Run §1d disposition suppression first.** Before dispatching any
+`verify-health-finding` agent, run the deterministic matcher (§1d) and remove
+every finding it classifies `suppress` (declined/grandfathered) from this gate's
+worklist. Only findings classified `keep`, `verify`, or unmatched reach the
+evidence gate. This keeps the sonnet fan-out off findings the ledger has already
+closed.
 
 The `git log` staleness check above is time-boundary heuristics — it only
 catches subjects edited *since* the sweep. It does not catch a finding that was
@@ -111,6 +118,11 @@ events need inspection. New decisions are appended with `append_event` and
 views are regenerated; do not call `append_row`, read
 `docs/health/dispositions.md` for ordinary suppression, or use
 `iter_history_rows` for new closure chronology.
+
+**Ordering:** §1d runs **before** the evidence-verification fan-out (the
+`### Evidence verification` gate nested under §1c — see the "Run §1d disposition
+suppression first" note there). Suppressed findings never reach the sonnet verify
+gate.
 
 **Run the deterministic matcher first.** Before judging matches by hand, run:
 

@@ -100,6 +100,15 @@ Note any "Failed lenses" listed at the foot of the file.
 
 Full procedures are in `.claude/knowledge/report-input-gates.md`.
 
+**Gate order (token efficiency):** Execute the Phase 2 gates in this order —
+**(1) disposition suppression** (the deterministic `health_disposition_store.py
+match` step below), dropping `declined`/`grandfathered` findings; **(2) staleness
+spot-check**; **(3) evidence verification** over only the survivors. The evidence
+gate dispatches one sonnet `verify-health-finding` agent per subject file, so
+verifying findings the ledger has already closed is wasted spend. The sub-sections
+below are written in discovery order for reference; this directive governs
+execution order.
+
 ### Recurrence annotation
 
 Look up the previous findings file by re-running `scripts/select_health_artifacts.py` with `--offset 1` (its offset flag selects the Nth-newest artifact: `0` = latest, `1` = the prior one). If none exists, skip
