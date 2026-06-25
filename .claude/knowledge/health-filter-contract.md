@@ -51,11 +51,11 @@ each dimension-scoped run.
 | Dimension | LLM lens agents | Static lenses | Total expected |
 |-----------|-----------------|---------------|----------------|
 | design    | 10 per surface (11 total − 1 surface exclusion) | 1 (tool-hygiene) | 11 per surface |
-| quality   | 8 | 2 (agent-structure, skill-structure) | 10 |
+| quality   | 2 combined readers (quality-agent-multilens, quality-skill-multilens) producing 8 lens result-sets | 2 (agent-structure, skill-structure) | 10 result-sets |
 | naming    | 0 | 1 (naming-convention-lens) | 1 |
-| all       | 18 per surface (19 total − 1 surface exclusion) | 4 | 22 per surface |
+| all       | 13 on-disk (11 design + 2 combined quality); 12 dispatched per surface after the 1 design exclusion | 4 | 22 per surface |
 
-**Per-surface LLM exclusions (reduce 19 → 18):**
+**Per-surface LLM exclusions (reduce 13 → 12 dispatched per surface):**
 
 - `plugin` surface: `design-skill-lens-maintainer-handoff` excluded
 - `tooling` surface: `design-skill-lens-surface-placement` excluded

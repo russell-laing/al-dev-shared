@@ -104,6 +104,11 @@ not the findings themselves).
   verdicts, and do not restate the task.
 - If you find no issues, reply with exactly the lens heading followed by
   `_No issues found._` and nothing else.
+- **Combined multi-lens readers** (`quality-agent-multilens`,
+  `quality-skill-multilens`): the "reply with exactly the lens heading" rule
+  above does **not** apply. Always emit all four `<!-- lens: … -->` markers and
+  headings; for each clean lens emit its heading + `_No issues found._`. A
+  marker-less reply breaks the Phase 4 splitter.
 - **Roll-up cap:** when four or more findings share the same root cause **and**
   the same fix (for example, the same missing code-block language tag across many
   files), emit a single rolled-up finding whose location field lists the affected
@@ -230,31 +235,42 @@ writing the dossier section.
 
 ## Quality Lenses
 
-Agents: `quality-agent-lens-clarity`, `quality-agent-lens-description`,
-`quality-agent-lens-bloat`, `quality-agent-lens-name-fit`,
-`quality-skill-lens-clarity`, `quality-skill-lens-description`,
-`quality-skill-lens-bloat`, `quality-skill-lens-name-fit`
+Agents: `quality-agent-multilens`, `quality-skill-multilens` — two combined
+readers that each read their corpus once and apply all four quality rubrics
+(Bloat, Prompt Clarity, Description Drift, Name Fit), returning four
+`<!-- lens: … -->`-delimited blocks split into per-lens JSONs by
+`scripts/split_multilens_findings.py`. They take a file list only (no context),
+stay on haiku, and replace the eight former individual quality lens agents.
 
-(The two structural-conventions lenses and `naming-convention-lens` are now
-deterministic static-runner checks — see the Deterministic lenses section
-above.)
+(The two structural-conventions lenses and `naming-convention-lens` remain
+deterministic static-runner checks — see the Deterministic lenses section.)
 
 These lenses derive all findings from the file list alone. No context structures
 are required.
 
-### Dispatch template (quality agent lenses)
+### Dispatch template (quality-agent-multilens)
 
 ```text
-Analyze the following agent files. Apply your lens to every file and return a findings block.
+Analyze the following agent files. Apply ALL FOUR quality lenses (Bloat,
+Prompt Clarity, Description Drift, Name Fit) to every file in a single pass.
+Return exactly four findings blocks, each preceded by its
+`<!-- lens: quality-agent-lens-<name> -->` marker, in the order bloat, clarity,
+description, name-fit. Emit all four markers even when some or all lenses are
+clean.
 
 File list:
 [one absolute path per line]
 ```
 
-### Dispatch template (quality skill lenses)
+### Dispatch template (quality-skill-multilens)
 
 ```text
-Analyze the following SKILL.md files. Apply your lens to every file and return a findings block.
+Analyze the following SKILL.md files. Apply ALL FOUR quality lenses (Bloat,
+Prompt Clarity, Description Drift, Name Fit) to every file in a single pass.
+Return exactly four findings blocks, each preceded by its
+`<!-- lens: quality-skill-lens-<name> -->` marker, in the order bloat, clarity,
+description, name-fit. Emit all four markers even when some or all lenses are
+clean.
 
 File list:
 [one absolute path per line]
