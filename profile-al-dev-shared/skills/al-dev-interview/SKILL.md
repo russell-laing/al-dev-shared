@@ -77,8 +77,10 @@ The interview agent MUST:
 
 5. **GATE: The interview agent must explicitly state "INTERVIEW COMPLETE" and
    confirm questions were asked across the 11 categories listed above. Full
-   coverage of all 11 is the target; the five mandatory categories below are the
-   minimum bar enforced by the failure-recovery path. Upon this explicit signal,
+   coverage of all 11 is the target. The five mandatory categories below are gates
+   enforced by the failure-recovery path; the optional six are best-effort and do
+   not block completion, but uncovered ones are noted as gaps in the requirements
+   output. Upon this explicit signal,
    proceed to Phase 3.**
 
    **Completion check:** Verify agent output contains `INTERVIEW COMPLETE` and a
