@@ -95,6 +95,8 @@ Extract and hold in working memory:
 
 Ticket context is optional. If available, load it; otherwise skip to 0.3.
 
+`$ARGUMENTS` is harness-supplied — it contains the user's typed arguments after the skill name (e.g. `--ticket-id=12345`). `$BASH_REMATCH` is a standard bash variable populated by `=~` and needs no further explanation.
+
 ```bash
 # 1. Prefer --ticket-id if supplied by caller
 if [[ "$ARGUMENTS" =~ --ticket-id=([^ ]+) ]]; then
