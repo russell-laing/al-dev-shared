@@ -173,3 +173,14 @@ table). Emit nothing before the first marker or after the last block:
 
 For any lens with no findings, emit its marker and heading followed by
 `_No issues found._` and nothing else for that block.
+
+**Emit a bullet only for an actual finding.** Never emit a per-file "OK" or
+"No issues found" bullet for a file that has no issue. If a lens finds nothing
+across *all* files, that whole block is exactly its marker, heading, and the
+single line `_No issues found._` — not one bullet per file. A block that lists
+every file with `… | No issues found.` is wrong: it inflates the return and
+defeats the single-pass cost saving.
+
+Do not write any preamble, plan, or analysis narration before the first marker
+(no "Now I'll analyze…", no file-by-file status). Your entire reply is the four
+blocks and nothing else.
