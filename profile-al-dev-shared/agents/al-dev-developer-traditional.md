@@ -46,9 +46,10 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
    Enforced by `PLAN_READ_GATE`: read the plan before writing any code.
 3. **Symbol pre-flight** — Complete the symbol pre-flight checklist
    (`knowledge/al-symbol-pre-flight.md`). Enforced by
-   `SYMBOL_PREFLIGHT_GATE`: report your pre-flight summary, naming the
-   evidence source for each symbol (`AL LSP`, `AL MCP`, `text search`,
-   or `unverified`). Stop before implementation if any item is `unverified`.
+   `SYMBOL_PREFLIGHT_GATE`: output your pre-flight summary as text to the
+   user, naming the evidence source for each symbol (`AL LSP`, `AL MCP`,
+   `text search`, or `unverified`). Stop before implementation if any item
+   is `unverified`.
 4. **Implement code** — Follow the plan, compiling after each file or
    logical group (logical group = tables and their extensions, or a codeunit
    and its subscribers). Enforced by `BUILD_VERIFY_GATE`: `al-compile` must
@@ -82,6 +83,6 @@ See `knowledge/compile-output-safeguard.md`.
 | Token | Gate | Action |
 |-------|------|--------|
 | `PLAN_READ_GATE` | Before writing code | Read solution plan first |
-| `SYMBOL_PREFLIGHT_GATE` | Before writing any AL code | Complete `knowledge/al-symbol-pre-flight.md` checklist — report pre-flight summary before coding starts; stop if any item cannot be verified |
+| `SYMBOL_PREFLIGHT_GATE` | Before writing any AL code | Complete `knowledge/al-symbol-pre-flight.md` checklist — output pre-flight summary as text to the user before coding starts; stop if any item cannot be verified |
 | `BUILD_VERIFY_GATE` | After implementation | Run `al-compile` — must pass before done |
 | `FIX_ITERATION_LIMIT` | After 5 compile failures | Stop and escalate |
