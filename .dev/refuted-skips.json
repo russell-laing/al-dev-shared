@@ -1,0 +1,10 @@
+[
+  {
+    "surface": "plugin",
+    "dimension": "quality",
+    "object": "al-dev-commit-analyzer",
+    "finding": "grep -m1 -E object pattern at al-dev-commit-analyzer.md:91 has no BSD/GNU portability note or fallback",
+    "reason": "grep -m1 is POSIX 2017 and supported identically by BSD (macOS) and GNU grep; no portability gap exists",
+    "closes_event_id": "disp_20260626_000047"
+  }
+]
