@@ -40,7 +40,7 @@ Transform requirements into a complete solution plan that includes architectural
    **Definition of "best existing analogue":**
    - Performs the same business function as the proposed feature, **AND**
    - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
-   - If only one criterion is met, document the rationale before accepting the match
+   - If only one criterion is met, accept the match only if the 4-step search order above confirms no better two-criterion match exists — document the rationale and which search steps were exhausted
    - Variable/field names may differ; match on the two criteria above, not identifier names
    - Examples — YES: both add customer-credit validation to different tables (same
      business function, same event-subscription pattern). NO: one adds posting
