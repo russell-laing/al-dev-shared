@@ -158,6 +158,9 @@ Do not surface this decision to the user.
 
 Check whether $ARGUMENTS contains a meaningful feature description. Sufficient context requires all three of: (1) a feature name or description, (2) at least one functional requirement (a descriptive sentence stating what the feature should do — a single sentence suffices), AND (3) at least one concrete anchor — a named BC object (table, page, codeunit, event) or a named user workflow (e.g. "during sales order posting"). Example: "Add a credit limit check during posting."
 
+**VAGUE:** Missing one or more of: (1) a feature name or description, (2) at least one functional requirement, (3) at least one concrete anchor (ticket, file, or behaviour reference).
+**SUBSTANTIVE:** All three elements present — proceed.
+
 If $ARGUMENTS is empty, missing, or only a vague word (e.g. "plan", "help", "this") with no feature context, **STOP immediately**. Do **not** proceed to steps 1–4 below, read any files, or spawn any agents until a **substantive answer** supplying all three elements is provided. Escalate across attempts:
 
 | Attempt | Action |
@@ -181,9 +184,9 @@ Do NOT mark preflight complete if after 2 clarification attempts the description
 
    If a perf file is found, read CRITICAL/HIGH findings and record them as **"Performance constraints from prior analysis:"** in `user_context`. If an explore file is found, read the findings and synthesized recommendations and record them as **"Codebase exploration findings from prior investigation:"** in `user_context`. If an investigate file is found, read the root-cause findings and record them as **"Root cause investigation findings from prior investigation:"** in `user_context`. If none of the three exist, skip silently.
 
-## Phase 1.5: Verify External Claims
+## Phase 1.5: Verify and Confirm (Optional)
 
-**Phase 1.5 (Optional — External Claims Verification):** If the user request references a findings file, codeburn output, lint report, or third-party analysis, verify the claims before recording them. Otherwise, skip to Phase 1.6.
+**Phase 1.5 (Optional):** Run when the user request references a findings file, codeburn output, lint report, or third-party analysis (steps 1.5.1–1.5.5), or when Phase 1 discovers a target ambiguity or resource constraint (steps 1.5.6–1.5.8). Skip both if neither condition applies.
 
 1. **File path verification:** For each file path mentioned in findings:
    - Confirm the file exists at that exact path with `test -f <path>`
@@ -220,9 +223,16 @@ Do NOT mark preflight complete if after 2 clarification attempts the description
    - 50–74% verified → proceed with explicit caveat in `external_findings_status`
    - <50% verified → gate with USER_GATE decision (proceed as hypotheses / re-run investigation / proceed anyway)
 
-## Phase 1.6: Target Confirmation
+   Formula: score = (verified_count + 0.5 × partial_count) / total_count
+   - verified: claim confirmed against a live file or reference
+   - partial: claim partially corroborated (one supporting reference found, not all)
+   - unverified: no corroborating evidence found
 
-**Phase 1.6 (Optional — Target Confirmation):** If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before emitting context — run the steps below before acting on any findings file or context document. Otherwise, skip to the context write.
+   Note: This formula is consistent with the resume re-verification logic at Phase 0 stale-claim re-verification.
+
+### 1.5.6–1.5.8: Target Confirmation
+
+If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before emitting context — run the steps below before acting on any findings file or context document. Otherwise, skip to the context write.
 
 1. **Identify targets:**
    - Findings reference: Extract the target name/path from the document
