@@ -116,6 +116,8 @@ compare across files and would produce wrong results on a partial list).
 |------------------------------------|-----------------------------------|
 | All `quality-agent-lens-*` | `design-skill-lens-near-duplicates` |
 | All `quality-skill-lens-*` | `design-skill-lens-shared-backbone` |
+| `quality-agent-multilens` | |
+| `quality-skill-multilens` | |
 | `design-agent-lens-scope-isolation` | `design-skill-lens-handoff-gaps` |
 | `design-agent-lens-model-fit` | `design-skill-lens-preplanning` |
 | `design-agent-lens-caller-alignment` | |
@@ -170,7 +172,7 @@ Non-scopable lenses are **never** skipped — they always run against the full c
 
 **Dispatch the map parse to a subagent — do not read the maps inline.** The two
 documentation maps total ~1800 lines; reading them into the orchestrating session
-front-loads context and risks compaction before the 18-lens fan-out. Instead,
+front-loads context and risks compaction before the ~12-lens fan-out. Instead,
 dispatch one subagent (Agent tool) whose task is to read `docs/al-dev-agent-map.md`
 and `docs/al-dev-skills-map.md` in ITS OWN context, build the derived dispatch
 mappings, and write the run manifest (per the layout below). Pass it the full
@@ -202,7 +204,7 @@ context blocks **once** to a single run manifest at
 `.dev/<today>-discover-plugin-health-context.md` (layout in
 `.claude/knowledge/health-discover-aggregation.md`). Phase 3 points each lens at
 this manifest instead of re-inlining the file list into every dispatch prompt,
-which keeps the 20-lens fan-out small and avoids flooding this session's context.
+which keeps the ~12-lens fan-out small and avoids flooding this session's context.
 
 **`--since` scoped lists (mandatory when `--since` is active):** When `--since`
 is active, append a clearly-labelled section to the manifest immediately after the
@@ -278,7 +280,7 @@ verified for relevance before planning, since no LLM lens reviewed that skill's 
 Execute the following state machine in order:
 
 1. **Build `ALL_LENSES` (surface-scoped):** Start with the full LLM lens set
-   (the 19 lens agents on disk in `.claude/agents/` — the four deterministic
+   (the 13 lens agents on disk in `.claude/agents/` — the four deterministic
    lenses `naming-convention-lens`, `quality-agent-lens-structure`,
    `quality-skill-lens-structure`, and `design-agent-lens-tool-hygiene` are
    **not** in this set; they are produced by the Phase 2.5 static runner and are
@@ -296,13 +298,32 @@ Execute the following state machine in order:
    carry reduced semantic signal for tooling skills — see the effective-coverage
    note in `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`.
 
-   **Dispatch vs. on-disk counts (reconciled — not a typo for each other):** 19
-   LLM lens agents exist on disk; one design lens is excluded per surface (the
-   two mirror-image bindings above), so **18 LLM lenses dispatch per surface**.
-   The four deterministic lenses run as the Phase 2.5 script (zero LLM dispatch)
-   and write their `.json` outputs alongside the agent outputs, so a full sweep
-   still assembles all dimensions. The on-disk 19 is the count
-   `scripts/validate-lens-agents.py` asserts.
+   **Quality-dimension bundling:** When the requested dimension includes
+   `quality`, the four agent-quality lenses and four skill-quality lenses are NOT
+   dispatched individually. Instead dispatch two combined readers —
+   `quality-agent-multilens` (against the agent file list) and
+   `quality-skill-multilens` (against the skill file list). Each reads its corpus
+   once and returns four `<!-- lens: … -->` blocks. The design lenses are
+   unchanged. (Net: a `--dimension quality` run dispatches 2 LLM agents, not 8; a
+   `--dimension all` run dispatches 2 combined + the design lenses.)
+
+   **Response format for combined readers.** A combined reader replies in its own
+   four-block Output Format — one `<!-- lens: … -->` marker per lens, each clean
+   lens emitting its heading + `_No issues found._`. It must emit **all four
+   markers even when every lens is clean**: a marker-less "no issues" reply makes
+   the Phase 4 splitter raise `ValueError` and aborts the (common) all-clean
+   sweep. So when appending the canonical **Response format contract** to a
+   combined reader's prompt (the "Append … verbatim to every lens prompt"
+   instruction later in Phase 3), use the combined-reader variant from
+   `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`, **not** the
+   singular "reply with exactly the lens heading" no-issues clause, which would
+   suppress the markers.
+
+   **Dispatch vs. on-disk counts:** 13 LLM lens agents exist on disk (11 design +
+   2 combined quality). For the quality dimension, the 2 combined readers replace
+   what were 8 individual lenses and still produce 8 per-lens result-sets (via the
+   Phase 4 split). The four deterministic lenses run as the Phase 2.5 script. The
+   on-disk 13 is the count `scripts/validate-lens-agents.py` asserts.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.
@@ -312,9 +333,25 @@ Execute the following state machine in order:
      find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' 2>/dev/null
      ```
 
-     Parse the `"lens"` field from each `.json` file. Compute
-     `remaining_lenses = ALL_LENSES − completed_lenses` (set difference —
-     no script). Log: `"Resuming: X lenses already completed, Y remaining"`.
+     Parse the `"lens"` field from each into `completed_child_lenses`. Then
+     **collapse the child quality lenses into their combined reader** before the
+     set difference, using this fixed mapping:
+
+     - `quality-agent-multilens` ⇐ all of `quality-agent-lens-{bloat,clarity,description,name-fit}`
+     - `quality-skill-multilens` ⇐ all of `quality-skill-lens-{bloat,clarity,description,name-fit}`
+
+     A combined reader is **completed** iff *all four* of its child-lens JSONs are
+     present, **or** its
+     `.dev/<today>-plugin-health-multilens-<agent|skill>.raw.md` is present **and
+     passes the same completeness check used at write time** (all four expected
+     markers, or the explicit all-clean signature). A *partial* set of child JSONs,
+     or a malformed/truncated `.raw.md`, ⇒ the reader is **not** complete and is
+     re-dispatched (its child JSONs are overwritten on re-run, which is safe).
+
+     Build `completed_lenses` = every non-quality lens name in
+     `completed_child_lenses`, plus each combined reader completed by the rule
+     above. Compute `remaining_lenses = ALL_LENSES − completed_lenses` (set
+     difference — no script). Log: `"Resuming: X lenses already completed, Y remaining"`.
 
    - If `remaining_lenses` is empty: log all-complete and skip to Phase 4.
      Phase 4 then resolves exactly one of two explicit cases:
@@ -329,7 +366,7 @@ Execute the following state machine in order:
      (`ls -la .dev/<today>-discover-plugin-health-context.md`); if it is absent,
      halt with an error naming the missing manifest instead of dispatching
      lenses against a nonexistent path. Then dispatch the remaining lenses in
-     **bounded waves of at most 5 concurrent subagents** — never all ~18 at once,
+     **bounded waves of at most 5 concurrent subagents** — never all ~12 at once,
      which overruns the session's parallel-dispatch limit (two lenses were lost to
      this in production). Dispatch a wave, wait for every lens in it to return and
      write its `.json`, then start the next wave. Use
@@ -383,6 +420,25 @@ Execute the following state machine in order:
      `.dev/<today>-plugin-health-lens-<lens-name>.json` with fields `lens`,
      `findings`, `suggestion_count`, and `completed_at` (ISO timestamp).
 
+     **Exception — combined multi-lens readers.** For `quality-agent-multilens`
+     and `quality-skill-multilens` do **not** write a single
+     `…-lens-<reader>.json`. These readers return four `<!-- lens: … -->` blocks,
+     not one lens block. Instead persist the raw return to a **temporary** path
+     first, validate it, then rename it atomically to
+     `.dev/<today>-plugin-health-multilens-<agent|skill>.raw.md` (`agent` for
+     `quality-agent-multilens`, `skill` for `quality-skill-multilens`). Treat the
+     raw return as valid only when one of these holds:
+
+     - it contains all four expected `<!-- lens: … -->` markers for that object
+       type, or
+     - it is the explicit all-clean form for that object type: no markers,
+       contains `_No issues found._`, and contains no `- **` findings bullets.
+
+     If neither condition holds, treat the dispatch as failed, record the reader
+     under `## Failed lenses`, and do **not** leave a stable `.raw.md` on disk.
+     Phase 4 step 0 splits a validated `.raw.md` into the four child-lens JSONs
+     the rest of assembly and `--resume` consume.
+
 3. **Check for missing lenses:** Compare returned identifiers against
    `remaining_lenses`. Record any missing lens in a `## Failed lenses`
    section at the top of the findings file:
@@ -391,6 +447,39 @@ Execute the following state machine in order:
 ## Phase 4 — Assemble findings file from disk
 
 For each surface that had lenses run:
+
+0. **Split combined multi-lens returns.** For each
+   `.dev/<today>-plugin-health-multilens-<agent|skill>.raw.md` present (written by
+   the Phase 3 step 2 combined-reader exception, including any left by an
+   interrupted prior session), run:
+
+   ```bash
+   python3 scripts/split_multilens_findings.py \
+     --input .dev/<today>-plugin-health-multilens-<agent|skill>.raw.md \
+     --date <today> --out-dir .dev
+   ```
+
+   This produces the four per-lens `.dev/<today>-plugin-health-lens-<lens>.json`
+   files for that object type. After this step the `.dev/` directory contains the
+   same eight quality lens JSONs a pre-bundling run produced, so the rest of
+   Phase 4 assembly and `--resume` are unchanged. Then delete each consumed
+   `.raw.md`.
+
+   **All-clean fallback (defensive).** If a `.raw.md` contains no
+   `<!-- lens: … -->` markers but does contain `_No issues found._` (a reader that
+   reported all-clean without markers despite the Step 1 contract), do **not**
+   abort: write the four empty-block child JSONs for that object type directly —
+   `quality-<agent|skill>-lens-{bloat,clarity,description,name-fit}`, each with
+   `findings` = the heading + `_No issues found._`, `suggestion_count: 0`, and
+   `completed_at` = the same ISO timestamp used for the surrounding Phase 4
+   assembly — instead of invoking the splitter (which raises `ValueError` on a
+   marker-less input by design).
+
+   **Malformed raw fallback.** If a `.raw.md` is present but matches neither the
+   four-marker form nor the explicit all-clean signature, do **not** silently
+   assemble partial data. Record the combined reader in `## Failed lenses`, delete
+   the malformed `.raw.md`, and leave the corresponding quality reader in the
+   "not completed" state for the next `--resume` run.
 
 1. **Collect all lens output files from `.dev/`:**
 
@@ -458,6 +547,7 @@ Use this explicit mapping:
    ```bash
    find .dev -maxdepth 1 -name '*-plugin-health-lens-*.json' -delete
    find .dev -maxdepth 1 -name '*-discover-plugin-health-context.md' -delete
+   find .dev -maxdepth 1 -name '*-plugin-health-multilens-*.raw.md' -delete
    ```
 
 5. **Return to caller:**
