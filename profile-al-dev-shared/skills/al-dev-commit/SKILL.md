@@ -45,7 +45,7 @@ Do not claim the commit is complete or the staged set is ready until the success
 
 ## Phase A — Analysis and Confirmation
 
-Use the Skill tool to invoke `/al-dev-commit-preflight` with `$ARGUMENTS`.
+Use the Skill tool to invoke `/al-dev-commit-preflight` with `$ARGUMENTS` (pass the user's original typed arguments verbatim).
 
 Wait for the preflight skill to complete. If the preflight exits early due to any
 of the following, stop here and do not proceed to Phase B:
