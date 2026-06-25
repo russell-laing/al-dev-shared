@@ -5,18 +5,18 @@ scenarios:
     user_prompt: "Generate a Claude self-healing benchmark baseline report from recent docs/health artifacts, include token-efficiency findings, and include a final live-state validation loop before calling it ready."
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
-    notes: "Must treat JSONL disposition views as canonical, preserve unavailable counts as not available, separate measured versus inferred token-efficiency claims, and re-check live state after drafting."
+    notes: "Must treat JSONL disposition views as canonical, preserve unavailable counts as not available, separate measured versus inferred token-efficiency claims, re-check live state after drafting, and distinguish recovery plumbing from governance controls."
 
   - id: patch-benchmark-after-live-drift
     status: golden
     user_prompt: "Draft the benchmark report, then re-run the live health checks and lower the loop-quality score if JSONL open rows or the legacy effective-open checker drifted during writing."
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
-    notes: "Must explain the live-state validation loop and patch the report instead of leaving stale zero-open claims."
+    notes: "Must explain the live-state validation loop, patch the report instead of leaving stale zero-open claims, and prefer validation-only when an existing draft already matches live evidence."
 
   - id: token-efficiency-without-measured-data
     status: golden
     user_prompt: "Create a benchmark baseline from historical health artifacts and discuss token efficiency, but do not invent token counts that are not present in the source evidence."
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
-    notes: "Must record token efficiency as measured, inferred, or not available, and must not turn proxy evidence into fake exact token savings."
+    notes: "Must record token efficiency as measured, inferred, or not available, and must not turn proxy evidence into fake exact token savings or self-healing design claims into measured recovery."

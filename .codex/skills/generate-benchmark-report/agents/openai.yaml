@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Benchmark Report"
+  short_description: "Create and validate benchmark baseline reports"
+  default_prompt: "Use $generate-benchmark-report to create or validate a benchmark baseline report from live health artifacts, JSONL disposition views, and loop-state evidence."

@@ -1,6 +1,6 @@
 ---
 name: generate-benchmark-report
-description: Use when creating a benchmark baseline report from live health artifacts, JSONL disposition views, and loop-state evidence, especially when the result must separate measured token efficiency from historical inference before it is trusted.
+description: Use when creating or validating a benchmark baseline report from live health artifacts, JSONL disposition views, and loop-state evidence, especially when the result must separate measured token efficiency from historical inference and distinguish recovery plumbing, governance controls, and prompt/content changes.
 ---
 
 # Generate Benchmark Report
@@ -50,6 +50,37 @@ Read the benchmark request and identify:
 Follow any approved design or implementation plan unless live validation proves
 it drifted.
 
+### Self-Healing Synthesis Lens
+
+When the benchmark concerns self-healing agents, separate the evidence into
+two loops:
+
+- recovery loop: detect, classify, recover, and learn from failures
+- governance loop: discover, control, monitor, review, and retire agents
+
+Use the source artifacts to capture:
+
+- whether failures are split into semantic failures versus infrastructure
+  failures
+- what recovery mechanism is used, such as retry, checkpointing, replay logs,
+  caching, context compression, sandbox execution, or human escalation
+- whether recovery preserves state, reconstructs state, or restarts from
+  scratch
+- whether failures are surfaced as structured context rather than opaque
+  termination events
+- whether the system closes the loop from observability to improvement
+  proposals, or only reports on failures
+- governance signals such as ownership, approved tools, access boundaries,
+  runtime control, and retirement criteria
+
+Prefer measured counts, explicit timings, and concrete workflow evidence. If
+the source only implies a claim, label it as inference rather than promoting
+it to a measured result.
+
+If a matching benchmark report already exists, validate the draft against live
+state before rewriting it. Only regenerate from scratch when the draft is
+missing or materially stale.
+
 ## Workflow
 
 ### Phase 1: Capture baseline state
@@ -88,6 +119,12 @@ exist. Typical evidence includes:
 - loop-state stage and `next_command`
 - token counts, context-size reductions, prompt-size deltas, or explicit
   statements that token data is not available
+- failure mode breakdowns, recovery paths, escalation paths, and any reported
+  auto-recovery percentage or manual-intervention reduction
+- context-preservation signals such as replay logs, checkpoints, persistence
+  layers, or compressed memory used to support long-running runs
+- governance evidence such as named owners, runtime policy checks, tool access
+  limits, or retirement/decommissioning guidance
 
 If a denominator or count is unavailable, record `not available` instead of
 inferring it.
@@ -123,6 +160,8 @@ Keep claims:
 - explicit about what token-efficiency claims are measured versus inferred
 - conservative about recall and reliability unless controlled fixtures or fresh
   adversarial runs exist
+- explicit about whether a reported improvement comes from recovery plumbing,
+  governance controls, or prompt/content changes
 
 ### Phase 4: Live-State Validation Loop
 
@@ -154,6 +193,11 @@ Interpretation:
   that label explicit after the re-check
 - if the live state still supports the report, leave the text unchanged and
   record that validation produced no diff
+- if an existing report already matches live evidence, prefer a validation-only
+  pass over rewriting the report
+- if the report claims a self-healing outcome, verify whether the supporting
+  evidence shows actual recovery, reduced manual intervention, or only an
+  architecture/design proposal
 
 ### Phase 5: Final quality check
 
@@ -194,3 +238,8 @@ Before claiming the report is ready:
    available` language consistently.
 5. Confirm the working tree is clean or that only the intended report file is
    modified.
+6. Confirm self-healing claims are grounded in observed recovery behavior or
+   clearly marked as design/inference when they come from architecture-only
+   sources.
+7. Confirm existing matching drafts were validated rather than unnecessarily
+   regenerated.
