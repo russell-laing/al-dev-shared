@@ -57,7 +57,7 @@ Fetch operations are sequential API calls (not parallel):
 
 After extracting conversation HTML from the API response, scan for inline embedded images using patterns from `knowledge/ticket-image-patterns.md`.
 
-For `data:image/` URIs specifically: note as "inline base64 image (not downloaded)" without attempting to decode or download the content.
+For `data:image/` URIs specifically: note as "inline base64 image (not downloaded)" without attempting to decode or download the content. Append a single count line `[N inline base64 images (not downloaded)]` to the `**Inline Embeds:**` section of the context file (Step 2). Do not add per-image entries for base64 images — there is no URL to record.
 
 If inline images are found, include them in the return block as `INLINE_IMAGES_COUNT: [N]`.
 
