@@ -67,7 +67,7 @@ For each flagged file:
 
 - **HIGH:** Agent explicitly references the file for guidance it doesn't contain
   (for example, "Reference the related knowledge doc for the required examples").
-  Missing content blocks the worker.
+  Missing content blocks the agent.
 - **MEDIUM:** File is referenced but content gap is incomplete/shallow (agent can work
   around it).
 - **LOW:** False positive (file is intentionally brief) or formatting issue (easily

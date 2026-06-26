@@ -22,7 +22,7 @@ only; never harness-specific tokens.
 ## Persistence semantics
 
 `.dev/health-loop-state.md` is git-tracked, so the durability claim above
-(surviving fresh session and worktree boundaries) holds only when the latest
+(surviving fresh sessions and worktree boundaries) holds only when the latest
 breadcrumb write is **committed**. Therefore:
 
 - A loop skill MUST write the breadcrumb **before** creating its final commit
