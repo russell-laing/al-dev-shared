@@ -100,36 +100,42 @@ Store the `LINT_FIXES` value for display in Phase 4.
 
 **Sentinel convention:** The value `NONE` (all-caps literal string) means "no failures in this category." It is used as the empty-state sentinel for `OOXML_FAILURES`, `LINT_FIXES`, and `HOOK_FAILURES` throughout this skill. An agent returning one of these fields should set it to exactly `NONE` when there is nothing to report.
 
-### 3.2 — Dispatch OOXML Validation Agent
+### 3.2 — Validate Office Documents (OOXML files)
 
-Dispatch the OOXML validator agent with the approved plan:
+- [ ] **Step 3.2.1:** Identify OOXML files in staged commits
 
-Dispatch:
+Run: `grep -E '\.(docx|xlsx|pptx|odt)$' <(git diff --cached --name-only)`
 
-- agent: `al-dev-shared:al-dev-commit-ooxml-validator`
-- description: "OOXML ZIP integrity validation"
-- phase label: `Perform OOXML-VALIDATE phase for git commit workflow.`
-- prompt body: verbatim:
+If no files match, skip to Phase 4.
 
-  ```text
-  APPROVED_PLAN:
-  [paste the approved plan from Phase 0]
-  ```
+- [ ] **Step 3.2.2:** Run unzip -t validation on each OOXML file
 
-- return format: `OOXML_FAILURES`
+```bash
+OOXML_FILES=$(git diff --cached --name-only | grep -E '\.(docx|xlsx|pptx|odt)$')
+OOXML_FAILURES=""
 
-If `OOXML_FAILURES` is not `NONE`, show:
+if [ -n "$OOXML_FILES" ]; then
+  while IFS= read -r file; do
+    if [ -f "$file" ] && ! unzip -t "$file" > /dev/null 2>&1; then
+      OOXML_FAILURES="$OOXML_FAILURES$file (unzip test failed)\n"
+    fi
+  done <<< "$OOXML_FILES"
+fi
 
-```text
-⚠️  OOXML VALIDATION FAILURE
-
-The following files failed ZIP validation and cannot be committed:
-[OOXML_FAILURES output]
-
-Resolve these files (save in Microsoft Word, not via script), re-stage, and re-run.
+if [ -n "$OOXML_FAILURES" ]; then
+  echo "OOXML validation failed:"
+  echo -e "$OOXML_FAILURES"
+  exit 1
+fi
 ```
 
-Stop if any OOXML failures — do not proceed to Phase 4.
+Expected: PASS if all OOXML files are valid archives; FAIL if any fail unzip test
+
+- [ ] **Step 3.2.3:** Record validation result for Phase 3 summary
+
+Set: `OOXML_STATUS="PASS"` (if all valid) or abort execution
+
+If any file fails, present failure list to user and block commit.
 
 **Barrier:** await 3.1 (`LINT_FIXES`) and, if dispatched, 3.2 (`OOXML_FAILURES`) before
 proceeding to Phase 4.1. When 3.2 was skipped (no OOXML files staged), `OOXML_FAILURES`
