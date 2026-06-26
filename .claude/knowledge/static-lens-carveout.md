@@ -40,7 +40,10 @@ python3 scripts/health_static_lenses.py \
   --date <findings-date> --out-dir .dev
 ```
 
-Read the regenerated `.dev/<findings-date>-plugin-health-lens-<lens>.json`. The
+Read the regenerated `.dev/<findings-date>-plugin-health-lens-<lens>.json`.
+The `findings` value in this JSON is a Markdown string (not a list); check
+reappearance with a substring match — confirm the finding's `object` value
+appears as a substring of `findings`, not by iterating the field. The
 finding's `object` plus observation reappears → the claim still holds. It does
 not reappear → the subject was already fixed; drop the finding as stale.
 
