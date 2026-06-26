@@ -1,7 +1,7 @@
 ---
 name: quality-skill-multilens
 description: Apply all four quality lenses (Bloat, Prompt Clarity, Description Drift, Name Fit) to SKILL.md files in a single pass — reads each skill file once and returns four labelled findings blocks. Replaces the four individual quality-skill-lens-* agents to eliminate redundant corpus reads.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
