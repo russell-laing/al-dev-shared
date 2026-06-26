@@ -250,6 +250,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 _AL_DEV_PREFIX_RE = re.compile(r"^al-dev-")
 _KEBAB_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 SKILL_ONLY_FIELDS = ("argument-hint", "triggers")
+_AGENT_MAX_SECTIONS = 6  # top-level ## headers; matches the bloat-lens threshold
 
 
 def _has_phase_numbering_mix(body: str) -> bool:
@@ -366,6 +367,18 @@ def check_agent_structure(agent_paths: list[Path], surface: str) -> list[str]:
                 name, "Low",
                 f"`{path.name}` mixes `Phase N` and `Step N` header numbering",
                 "use one numbering scheme consistently",
+            ))
+
+        # High: too many top-level ## sections (mechanical count; matches the
+        # threshold removed from quality-agent-multilens Bloat lens).
+        top_sections = re.findall(r"^## ", body, re.MULTILINE)
+        if len(top_sections) > _AGENT_MAX_SECTIONS:
+            rows.append(_row(
+                name, "High",
+                f"`{path.name}` has {len(top_sections)} top-level sections "
+                f"(## headers); threshold is {_AGENT_MAX_SECTIONS}",
+                "reduce section count or extract distinct concerns into "
+                "separate agents",
             ))
 
     return rows

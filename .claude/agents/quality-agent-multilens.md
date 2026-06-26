@@ -32,14 +32,13 @@ row for them.
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
 
-> Note: this lens counts top-level **sections** (>6); the skill bloat lens
-> (`quality-skill-lens-bloat`) counts **steps/phases** (>8). The thresholds
-> differ by design because they measure different surfaces — do not flag the
-> mismatch as an inconsistency.
+> Note: the section-count check (>6 top-level ## headers) is now performed
+> statically by `scripts/health_static_lenses.py`; this lens no longer
+> evaluates it. The skill bloat lens (`quality-skill-multilens`) counts
+> **steps/phases** (>8) — a different metric with a different threshold.
 
 **Check for:**
 
-- Section count in the system prompt body (after frontmatter) > 6 top-level sections
 - Any single section > 30 lines **that is not inherent content** (see carve-out below)
 - `skip if...` or `only if...` conditions that always evaluate the same way in all
   realistic invocations based on the agent's documented contract (dead branches)
@@ -58,8 +57,7 @@ procedure it documents is long is acceptable as authored — do not flag it.
 
 **Severity rules:**
 
-- High: > 6 total top-level sections; OR a single section > 30 lines that is
-  repetitive, dead, or extractable (not merely long inherent content)
+- High: a single section > 30 lines that is repetitive, dead, or extractable (not merely long inherent content)
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
 
