@@ -241,9 +241,40 @@ Continue to Phase 1.
 
 ### 1.1 — Dispatch Analysis Agent (Manifest Extraction)
 
-Dispatch the analysis agent to extract manifests from staged changes:
+**Complexity pre-check** — run before deciding whether to dispatch:
 
-Dispatch per `knowledge/commit-dispatch-template.md`:
+```bash
+AL_COUNT=$(git diff --cached --name-only | grep -c '\.al$' || echo 0)
+DEL_COUNT=$(git diff --cached --name-only --diff-filter=D | wc -l | tr -d ' ')
+```
+
+**Inline path (AL_COUNT ≤ 4 AND DEL_COUNT = 0):** Extract manifest inline; skip the agent.
+
+```bash
+if [[ "$AL_COUNT" -le 4 && "$DEL_COUNT" -eq 0 ]]; then
+  MANIFESTS_INLINE="$(
+    echo "MANIFESTS:"
+    git diff --cached --name-only -- '*.al' | while IFS= read -r f; do
+      echo "  $f:"
+      git diff --cached --unified=0 -- "$f" | \
+        grep -E '^\+.*(procedure |trigger |field |event )' | \
+        sed 's/^\+/    + /' | head -10
+    done
+  )"
+  DELETIONS_INLINE=""
+  WARNINGS_INLINE=""
+  SKIP_ANALYZER=true
+fi
+```
+
+When `SKIP_ANALYZER` is set, use `MANIFESTS_INLINE`, `DELETIONS_INLINE`, and
+`WARNINGS_INLINE` in place of agent output throughout Phases 1.2 and 1.3,
+and proceed directly to Phase 1.2.
+
+**Agent path (AL_COUNT ≥ 5, or DEL_COUNT > 0, or non-AL staged types):** Dispatch the
+analysis agent to extract manifests from staged changes:
+
+Dispatch:
 
 - agent: `al-dev-shared:al-dev-commit-analyzer`
 - description: "Commit analysis: extract manifests from staged changes"
@@ -259,7 +290,9 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
 
 ### 1.2 — Deletion Audit Gate
 
-Read the `DELETIONS` block from the analysis agent output.
+Read the `DELETIONS` block from the analysis agent output, or use `DELETIONS_INLINE`
+if the inline path was taken in Phase 1.1 (inline path guarantees 0 deletions —
+proceed directly to 1.3 when `SKIP_ANALYZER` is set).
 
 If **any deleted files** appear, display them prominently:
 
@@ -302,7 +335,8 @@ Dispatch per `knowledge/commit-dispatch-template.md`:
 
   ```text
   MANIFESTS FROM ANALYSIS PHASE:
-  [paste the MANIFESTS block from the analysis agent output]
+  [paste the MANIFESTS block from the analysis agent output, or MANIFESTS_INLINE
+  if the inline path was taken in Phase 1.1]
   ```
 
   then `Follow the message-drafting phase instructions in your agent
