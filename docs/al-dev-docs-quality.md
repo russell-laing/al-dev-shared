@@ -19,13 +19,13 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ references | no external scripts/skills referenced | — |
 
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ code blocks | all tagged (json, text) | — |
 | ✅ sections | all adequately filled | — |
 
@@ -38,14 +38,14 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ scripts | test_naming_convention.py verified | File exists and is current |
 | ✅ agents | naming-convention-lens exists | Referenced agent found in agents/ |
 
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ sections | all adequately filled | — |
 
 ---
@@ -57,14 +57,14 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ scripts | all 5 referenced scripts verified | validate_harness_neutrality.py, validate-lens-agents.py, test_generate_agent_projections.py, generate-agent-projections.py all exist |
 | ✅ knowledge paths | agent-tool-projection-policy.md, harness-concepts.md verified | Both referenced files exist |
 
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ code blocks | all tagged (bash) | — |
 | ✅ sections | all adequately filled | — |
 
@@ -77,7 +77,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ `/audit-plugin-health` | skill exists | Current active skill |
 | ✅ `/discover-plugin-health` | skill exists | Current active skill |
 | ✅ `/report-plugin-health` | skill exists | Current active skill |
@@ -87,7 +87,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ code blocks | all properly tagged (bash, diff, etc.) | — |
 | ✅ FIXED | "Last updated" date marker | Date added: 2026-06-16 |
 | ✅ sections | all adequately filled | — |
@@ -101,14 +101,14 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ scripts | all referenced scripts verified | generate-agent-projections.py, validate_harness_neutrality.py, tests exist and are current |
 | ✅ knowledge paths | agent-tool-projection-policy.md, harness-concepts.md verified | Both referenced files exist |
 
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ code blocks | all properly tagged (mermaid, bash, json, markdown, etc.) | Large document (1043 lines) with many code examples; all properly tagged |
 | ✅ sections | all adequately filled (very comprehensive) | Extensive reference document, no thin sections |
 | ✅ diagrams | 4 mermaid flowcharts present | Clear and well-structured |
@@ -122,13 +122,13 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ### Technical Accuracy
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ references | no external scripts/skills referenced | — |
 
 ### Readability
 
 | Type | Finding | Detail |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | ✅ FIXED | Unordered list style (lines 15–35) | All asterisks converted to dashes; markdownlint now reports 0 violations |
 | ✅ FIXED | "Last updated" date marker | Date added: 2026-06-16 |
 | ✅ context | Limited documentation scope | Video summary clearly scoped as reference material |
@@ -138,7 +138,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 ## Skipped Files
 
 | File | Reason |
-|------|--------|
+| ------ | -------- |
 | al-dev-agent-map.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
 | al-dev-knowledge-quality.md | Quality report output (al-dev-*-quality.md pattern) |
 | al-dev-plugin-graph.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |

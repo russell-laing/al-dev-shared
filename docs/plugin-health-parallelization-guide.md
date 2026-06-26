@@ -167,7 +167,7 @@ cat docs/health/YYYY-MM-DD-<surface>-health.md
 ### Token Savings
 
 | Phase | Old System | New System |
-|-------|-----------|-----------|
+| ------- | --------- | -------- |
 | Dispatch | 0 (inline) | ~45 min |
 | Lens execution | ~4-5 hours | ~5-15 min (remote) |
 | Collection | 0 (inline) | ~20 min |
@@ -177,7 +177,7 @@ cat docs/health/YYYY-MM-DD-<surface>-health.md
 ### Wall-Clock Time
 
 | Metric | Old | New |
-|--------|-----|-----|
+| -------- | ----- | ----- |
 | User waits for results | 5+ hours | ~45 min + async |
 | Time to be freed | N/A (locked) | 45 minutes |
 | Time to resume work | N/A | Immediately after dispatch |

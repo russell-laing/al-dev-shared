@@ -23,7 +23,7 @@ Use this document when:
 ## Contract Matrix
 
 | Skill | Required inputs | Durable outputs | Resume read order | Handoff artifact | Success evidence |
-|------|---|---|---|---|---|
+| ------ | --- | --- | --- | --- | --- |
 | `al-dev-ticket` | Freshdesk ticket ID or URL, `.dev/` write access | `.dev/*-al-dev-ticket-ticket-context.md` (metadata context), `.dev/*-al-dev-ticket-reply.md` (drafted reply, optional, full mode) | `.dev/*-al-dev-ticket-ticket-context.md` (latest) | `.dev/*-al-dev-ticket-ticket-context.md` | latest ticket context file exists, is non-empty, contains ticket metadata section (ID, status, priority, summary), and was read after write in the current run |
 | `al-dev-interview` | user interview transcript or interaction logs, `.dev/` write access | `.dev/*-al-dev-interview-notes.md` (raw Q&A), `.dev/*-al-dev-interview-requirements.md` (formal requirements with REQ/ACC/RISK/DEP tokens) | `.dev/*-al-dev-interview-notes.md` (context), then latest `.dev/*-al-dev-interview-requirements.md` (authoritative) | `.dev/*-al-dev-interview-requirements.md` | latest requirements file exists, is non-empty, contains at least one REQ token (REQ:REQ-*), and was read after write in the current run |
 | `al-dev-explore` | user exploration request, repo context, `.dev/` write access | `.dev/*-al-dev-explore-findings.md` (structured exploration findings with file paths, code snippets, architectural patterns), optional updated `.dev/project-context.md` | `.dev/*-al-dev-explore-findings.md` (latest) | `.dev/*-al-dev-explore-findings.md` | latest findings file exists, is non-empty, contains at least ANSWER and FILES sections (structured findings format), and was read after write in the current run |

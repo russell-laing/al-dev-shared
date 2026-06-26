@@ -28,7 +28,7 @@ Use this document when reviewing report-driven suggestions, repeated workflow fa
 Use exactly these labels in the coverage table:
 
 | Label | Meaning |
-|---|---|
+| --- | --- |
 | `guide only` | The behavior is documented, but no automated test or blocking validation currently detects drift. |
 | `guide + test` | The behavior is documented and covered by a regression test, trigger-corpus case, scenario, or deterministic review check. |
 | `guide + blocking enforcement` | The behavior is documented and a validator, generator failure, workflow gate, or commit gate blocks known failure modes. |
@@ -42,7 +42,7 @@ Do not introduce ad hoc labels. If a row does not fit, improve the row instead o
 Use one of these owners unless the row has a concrete reason to name a narrower owner:
 
 | Owner | Scope |
-|---|---|
+| --- | --- |
 | Shared profile | Authored files under `profile-al-dev-shared/skills`, `profile-al-dev-shared/agents`, `profile-al-dev-shared/knowledge`, `profile-al-dev-shared/markdown`, or `profile-al-dev-shared/bc-code-intel-knowledge`. |
 | Generated projection | Files under `profile-al-dev-shared/generated/agents` and the generator that writes them. |
 | Repo-local maintainer tooling | Repository-only instructions, scripts, docs, or local maintainer workflows that are not distributed as shared plugin behavior. |
@@ -53,7 +53,7 @@ Use one of these owners unless the row has a concrete reason to name a narrower 
 ## Coverage Table
 
 | Behavior | Category | Guide | Sensor | Enforcement strength | Owner | Gap |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | Shared agent tool intent projects correctly to each harness | Architecture/projection fitness | `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`; `docs/projection-layer-readme.md` | `scripts/tests/test_generate_agent_projections.py`; generated projection diff review | `guide + test` | Shared profile plus generated projection | Keep this row aligned with `scripts/generate-agent-projections.py`, because the generator is the runtime source of truth. |
 | Harness-specific terms do not leak into shared authored files | Architecture/projection fitness | `profile-al-dev-shared/knowledge/harness-concepts.md`; `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | `scripts/validate_harness_neutrality.py`; `scripts/tests/test_validate_harness_neutrality.py` | `guide + blocking enforcement` | Shared profile plus repo-local validation script | Make intentional allowlisted mapping documents visible in this model. |
 | Long-running workflows resume from compact durable state | Workflow behavior | `profile-al-dev-shared/knowledge/workflow-resilience.md`; `profile-al-dev-shared/skills/al-dev-develop-orchestrate/tests/scenarios.yaml` | `develop-writes-resume-artifacts` scenario; manual resume review | `guide + test` | Shared profile | Add new rows only when additional resume artifacts become durable contracts. |

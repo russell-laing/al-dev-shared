@@ -12,7 +12,7 @@
 
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
-|-------|-------|-------|------------|
+| ------- | ------- | ------- | ------------ |
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
@@ -60,14 +60,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Files to review | **Yes** | Via spawn prompt — file paths or diff scope |
 | Spawn prompt | **Yes** | Task context: scope, other active reviewers, any open questions |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Code Review Findings | Text report returned to calling skill; structured as Critical / High / Medium / Low |
 
 ---
@@ -82,14 +82,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /al-dev-commit-preflight |
 | Staged git index | **Yes** | Read via `git diff --cached` commands |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `MANIFESTS` block | Per-file change summary (object IDs, added/removed fields and procedures) |
 | `WARNINGS` block | Validation issues and advisory notices |
 
@@ -105,14 +105,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /al-dev-commit-preflight |
 | Project context | No | `.dev/project-context.md` for domain knowledge |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `PROPOSED_GROUPS` block | Atomic commit group proposals with rationale |
 | `DELETIONS` block | Staged deletions for the user audit gate |
 | `WARNINGS` block | Validation issues and advisory notices |
@@ -129,13 +129,13 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups and messages from analysis phase |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `COMMITS` block | SHA and message for each committed group |
 | `SKIPPED` | Number of skipped groups |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
@@ -153,13 +153,13 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `LINT_FIXES` | Files re-staged after lint fixes (or `NONE`) |
 
 ---
@@ -174,13 +174,13 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `OOXML_FAILURES` | OOXML files that failed ZIP validation with reason (or `NONE`) |
 
 ---
@@ -195,14 +195,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `.dev/hook-failures.json` | **Yes** | Hook execution output (hook name, exit code, stderr/stdout). Read from file; fall back to the `HOOK_FAILURES` block in the dispatch prompt if missing. |
 | `.dev/commits.json` | No | Commit details that triggered the hooks; used for context only |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `HOOK_CLASSIFICATIONS` block | Per-failure classification: recoverability, root cause, recommended fix |
 
 ---
@@ -217,14 +217,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `.dev/hook-failures.json` | **Yes** | Hook execution output and error logs from the failed commit attempt (hook name, exit code, captured stderr/stdout) |
 | `.dev/commits.json` | **Yes** | Commit details that triggered the hooks (group id, files, approved message) |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `HOOK_FAILURES` block | Per-failure diagnosis, recovery status, and the next step for the caller |
 
 ---
@@ -239,7 +239,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
 | `.dev/*-al-dev-test-test-plan.md` | **Yes** | Test plan that drives the TDD cycle |
 | `.dev/project-context.md` | No | Project memory and conventions |
@@ -248,7 +248,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | AL source files | Implemented code in `src/` |
 | Test codeunits | Test code in `src/Tests/` |
 | `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md` | TDD log: one entry per RED-GREEN-REFACTOR cycle |
@@ -266,7 +266,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
 | `.dev/project-context.md` | No | Project memory and conventions |
 | `.dev/*-al-dev-develop-code-review.md` | No | Review findings for iteration |
@@ -274,7 +274,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | AL source files | Implemented code in `src/` |
 | `.dev/session-log.md` | Session log entry per file |
 
@@ -290,14 +290,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `.dev/compile-errors.log` | Yes | Output from `al-compile` |
 | AL source files (flagged paths) | Yes | Files to fix |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Fixed AL source files | In-place fixes applied |
 | Dated lint report | `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md` with fix summary |
 
@@ -313,7 +313,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Latest `*-requirements.md` | **Yes** | What was needed |
 | Latest `*-solution-plan.md` | **Yes** | Architecture |
 | AL source files | **Yes** | Actual implementation |
@@ -324,7 +324,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `docs/` or `wiki/` | **Primary** — Documentation files |
 | `docs/Features/[name].md` | Feature documentation |
 | `docs/API/[name].md` | API reference (if public procedures) |
@@ -343,14 +343,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | AL files to review | **Yes** | Via spawn prompt — list of file paths to read |
 | Spawn prompt | **Yes** | Task context: what was implemented, any open questions |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | AL Expert Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Minor Issues |
 
 ---
@@ -365,7 +365,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Question or search task | **Yes** | What to understand about the codebase (via spawn prompt) |
 | Scope | No | Directory or file patterns to focus on |
 | Context | No | Previous findings to build upon |
@@ -373,7 +373,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Findings | List of relevant files, code snippets, or relationships |
 | Summary | Concise explanation of codebase structure for the query |
 | Suggestions | Recommendations for next steps |
@@ -391,14 +391,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | File path argument | No | Existing spec to refine (e.g., `.dev/*-al-dev-interview-requirements.md`) |
 | Fresh start | No | If no file specified, creates new `.dev/*-al-dev-interview-requirements.md` |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` | **Primary** (new interview) — Complete spec with decisions |
 | Updated input file | **Primary** (refining) — Enhanced with interview findings |
 | `.dev/session-log.md` | Append entry with summary |
@@ -415,14 +415,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | AL files to review | **Yes** | Via spawn prompt — list of file paths to read |
 | Spawn prompt | **Yes** | Task context: what was implemented |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Performance Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
@@ -437,7 +437,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `START_HASH` | **Yes** | Earlier commit (exclusive lower bound) |
 | `END_HASH` | **Yes** | Later commit (inclusive upper bound) |
 | `RELEASE_TYPE` | **Yes** | `uat` or `prod` |
@@ -447,7 +447,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION or short-hash>.md` | **Primary** — formatted release notes file |
 | Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
 
@@ -463,14 +463,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | User request | **Yes** | Script goal and AL project context (via spawn prompt) |
 | `.dev/02-solution-plan.md` | No | If implementing a planned script |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Python script file(s) | In `scripts/` following toolkit conventions (Python default) |
 | Governance tokens | Inline in documentation or `.dev/` files |
 
@@ -486,14 +486,14 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | AL files to review | **Yes** | Via spawn prompt — list of file paths to read |
 | Spawn prompt | **Yes** | Task context: what was implemented, any open questions |
 
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Security Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
@@ -508,7 +508,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Dated requirements file | **Yes** (from /al-dev-plan) · Inline prompt (from /al-dev-fix) | From /interview (glob pattern match) — or inline analysis + fix approach when dispatched by /al-dev-fix |
 | `.dev/project-context.md` | No | Project memory (read FIRST if exists) |
 | MCP tools | No | BC Intelligence, MS Docs, AL Dependency |
@@ -516,7 +516,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Dated solution plan file | **Primary** — Architecture + implementation plan |
 | `.dev/project-context.md` | Update with new patterns/objects learned |
 | `.dev/session-log.md` | Append entry with summary of work done |
@@ -533,7 +533,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | `QUERY_CONTEXT` | **Yes** | The customer's question or symptom |
 | `TICKET_FILE` | No | Path to ticket context file from `/al-dev-ticket`, or `NONE` |
@@ -541,7 +541,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Return block | Structured internal findings: root cause, evidence (AL symbols, MS Docs, BC history), workarounds, recommended resolution |
 
 ---
@@ -556,7 +556,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | `QUERY_CONTEXT` | **Yes** | Original customer question or symptom |
 | `TICKET_FILE` | No | Path to ticket context file, or `NONE` |
@@ -565,7 +565,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `.dev/<date>-support-<slug>.md` | **Primary** — Internal findings + draft customer reply |
 | Return block | `FILE`, `QUERY_TYPE`, `BC_VERSION_SCOPE`, `SOURCES`, `SUMMARY` |
 
@@ -581,7 +581,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `TICKET_ID` | **Yes** | Freshdesk ticket number (in dispatch prompt) |
 | `FRESHDESK_API_KEY` | **Yes** | API key (from global settings via environment) |
 | `FRESHDESK_DOMAIN` | **Yes** | Freshdesk subdomain (from global settings via environment) |
@@ -589,7 +589,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` | **Primary** — structured ticket brief with inline image list |
 | `.dev/attachments/` | Attached files (downloaded with ticket context) |
 | Return block | `TICKET_CONTEXT_WRITTEN`, `TICKET_ID`, `STATUS`, `PRIORITY`, `COMMENTS_COUNT`, `ATTACHMENTS`, `INLINE_IMAGES_COUNT` |
@@ -606,7 +606,7 @@
 **Inputs:**
 
 | Input | Required | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | `REPO` | No | Inferred from working directory; not passed explicitly by /commit-recover |
 | `CORRUPTION_LOG` | **Yes** | Path to `.dev/commit-integrity.log` with flagged files |
 | `auto_fix` | No | If true, apply auto-fixes; if false, report findings only |
@@ -614,7 +614,7 @@
 **Outputs:**
 
 | Output | Description |
-|--------|-------------|
+| -------- | ------------- |
 | Fixed AL files | Recovered via fallback strategies (git restore, regex reconstruction, schema rebuild) |
 | `.dev/$(date +%Y-%m-%d)-al-dev-commit-recover-report.md` | Recovery report with per-file strategy and status |
 

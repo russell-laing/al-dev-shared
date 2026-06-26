@@ -8,7 +8,7 @@ in the agent bodies.
 Parameters supplied by the caller agent:
 
 | Placeholder | agent-update | skill-update |
-|-------------|--------------|--------------|
+| ------------- | -------------- | -------------- |
 | `{SURFACE}` | `agent` | `skill` |
 | `{AUDIT_JSON}` | `<result_dir>/audit/agent-audit.json` | `<result_dir>/audit/skill-audit.json` |
 | `{MAP_PATH}` | `docs/al-dev-agent-map.md` | `docs/al-dev-skills-map.md` |

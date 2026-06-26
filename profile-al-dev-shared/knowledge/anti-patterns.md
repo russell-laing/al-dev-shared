@@ -4,7 +4,7 @@ Watch for and prevent these failure modes in AL development workflows.
 These are workflow anti-patterns, not a catalog of AL language or code-level anti-patterns.
 
 | Anti-Pattern | Problem | Correct Approach |
-|-------------|---------|-----------------|
+| ------------- | --------- | ----------------- |
 | **Coding it yourself** | You write AL code instead of spawning an `al-dev-developer` | Always use `al-dev-developer` agent for code |
 | **Rubber-stamping** | Accepting agent output without review | Critically evaluate every deliverable |
 | **Skipping interviews** | Jumping to design without understanding requirements | Use `/al-dev-interview` for complex features |

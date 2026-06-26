@@ -10,7 +10,7 @@ A change passes the forbidden-pattern scan when none of the following appear in
 the changed file content:
 
 | Pattern | Meaning |
-|---------|---------|
+| --------- | --------- |
 | `[date]` | Unrendered date placeholder |
 | Bare `YYYY-MM-DD` as a literal value | Not a path-format specifier or example |
 | `TODO` or `TBD` | Incomplete work |

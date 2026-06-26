@@ -43,7 +43,7 @@ run — i.e. the findings remaining after Phase 1 disposition filtering, excludi
 any `suppress`/`verify`/skipped findings:
 
 | Stale ratio | Action |
-|---|---|
+| --- | --- |
 | 100% (all findings) | Advise re-running `/audit-plugin-health`; do not proceed |
 | ≥80% | Report ratio; offer (a) re-run audit or (b) proceed with heightened scrutiny; only proceed if user chooses (b) |
 | <80% | Proceed; mark stale findings `⚠ possibly stale` in the worklist |

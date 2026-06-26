@@ -26,7 +26,7 @@ Required fields: `stage` and `invoked-by`. All others are optional.
 ## Stage Meanings
 
 | Stage | Description |
-|---|---|
+| --- | --- |
 | `map-sync` | Synchronises documentation maps with the plugin surface |
 | `discover` | Dispatches lenses and gathers raw findings |
 | `decide` | Presents findings to the user for disposition or planning |
@@ -37,7 +37,7 @@ Required fields: `stage` and `invoked-by`. All others are optional.
 ## `invoked-by` Values
 
 | Value | Meaning |
-|---|---|
+| --- | --- |
 | `user` | Triggered directly by the user |
 | `both` | Triggered by the user AND internally by another skill |
 | `skill:<name>` | Triggered only internally by skill `<name>` |

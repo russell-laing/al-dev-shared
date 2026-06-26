@@ -17,7 +17,7 @@ Staleness, Lint Report Accumulation).
 ## Covered Artifacts
 
 | Artifact pattern | Producing skill | Stale when |
-|---|---|---|
+| --- | --- | --- |
 | `.dev/*-al-dev-ticket-ticket-context.md` | `al-dev-ticket` | the ticket was updated after the file was written |
 | `.dev/*-al-dev-explore-findings.md` | `al-dev-explore` | source files it references changed after it was written |
 | `.dev/*-al-dev-investigate-findings.md` | `al-dev-investigate` | source files in its evidence changed after it was written |
