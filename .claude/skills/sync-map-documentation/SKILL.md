@@ -39,8 +39,6 @@ completion, so the user is free to work meanwhile.
 3. `/sync-map-documentation-apply --team-ids <ids>` — validate artifacts, write maps
 4. `/sync-map-documentation-write` — regenerate diagrams/projections/graph, commit
 
----
-
 ## Maintainer Contracts
 
 Apply `../../knowledge/phase-proof-contract.md` at every phase boundary before

@@ -50,11 +50,12 @@ substitute the bracketed placeholders before dispatching.
 
 ---
 
-**If a non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-tdd`:**
+### Common dispatched prompt content
+
+Each selected route must include this common instruction body immediately after
+the route-specific `Agent:` line:
 
 ```text
-Agent: al-dev-shared:al-dev-developer-tdd
-
 Implement [module name] from the latest solution plan
 (.dev/*-al-dev-plan-solution-plan.md).
 
@@ -64,8 +65,6 @@ Your assigned objects:
 Object IDs: [assigned range from plan]
 Naming prefix: [from plan or project-context.md]
 Project patterns: [from project-context.md if available]
-
-Test plan: [path from $TEST_PLAN]
 
 Shared standards:
 Follow `knowledge/al-developer-shared-standards.md`.
@@ -82,6 +81,16 @@ Commit boundary:
 Do NOT run git commit. Your role is to implement and verify compilation
 only. Commits are handled separately by /al-dev-commit after user
 approval.
+```
+
+---
+
+**If a non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-tdd`:**
+
+```text
+Agent: al-dev-shared:al-dev-developer-tdd
+
+Include the common dispatched prompt content above.
 
 Route-specific workflow:
 - Test plan: [path from $TEST_PLAN]
@@ -101,31 +110,7 @@ Route-specific workflow:
 ```text
 Agent: al-dev-shared:al-dev-developer-traditional
 
-Implement [module name] from the latest solution plan
-(.dev/*-al-dev-plan-solution-plan.md).
-
-Your assigned objects:
-- [Object list from the Phase 2 partition]
-
-Object IDs: [assigned range from plan]
-Naming prefix: [from plan or project-context.md]
-Project patterns: [from project-context.md if available]
-
-Shared standards:
-Follow `knowledge/al-developer-shared-standards.md`.
-
-Scope expansion gate:
-Apply the full gate procedure from `knowledge/scope-expansion-gate.md`.
-Before editing any file or line not in the plan: stop, list proposed
-changes as numbered items, present to the user, and wait for per-item
-approval. Do NOT continue writing code until confirmed. Do NOT silently
-fix lint warnings, deprecated APIs, or unrelated issues not named in
-the plan.
-
-Commit boundary:
-Do NOT run git commit. Your role is to implement and verify compilation
-only. Commits are handled separately by /al-dev-commit after user
-approval.
+Include the common dispatched prompt content above.
 
 Route-specific workflow:
 - Workflow: Traditional build-verify
