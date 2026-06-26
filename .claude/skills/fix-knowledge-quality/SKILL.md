@@ -10,15 +10,17 @@ description: >-
   found. Run /audit-knowledge-quality first if no audit file
   exists. Triggers on: "fix knowledge quality", "fix knowledge issues",
   "implement knowledge fixes", "address high knowledge findings".
-argument-hint: "[--auto-fix]"
+argument-hint: "[--surface plugin|tooling] [--auto-fix]"
 workflow:
   stage: derive
   invoked-by: user
   repeatable: true
   inputs:
     - docs/al-dev-knowledge-quality.md
+    - docs/al-dev-knowledge-quality-tooling.md
   outputs:
     - profile-al-dev-shared/knowledge/
+    - .claude/knowledge/
   next: [validate-plugin-neutrality]
 ---
 
@@ -26,6 +28,20 @@ workflow:
 
 Converts HIGH-severity knowledge quality findings into actionable tasks and
 optionally dispatches fix agents.
+
+## Arguments
+
+| Argument | Values | Default | Effect |
+|----------|--------|---------|--------|
+| `--surface` | `plugin` \| `tooling` | `plugin` | Selects the audit file and target knowledge directory to fix |
+| `--auto-fix` | — | off | Skips the execution-mode prompt and dispatches fix agents immediately |
+
+**Surface routing:**
+
+| Surface | Audit file | Target knowledge directory |
+|---------|------------|---------------------------|
+| `plugin` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` |
+| `tooling` | `docs/al-dev-knowledge-quality-tooling.md` | `.claude/knowledge/` |
 
 ## Maintainer Contracts
 
@@ -38,22 +54,28 @@ deterministically, and log `preferred → outcome → fallback → reason`.
 
 ## Phase 0 — Locate audit file
 
+Resolve the audit file path from the `--surface` argument (default `plugin`):
+
+- `plugin` → `docs/al-dev-knowledge-quality.md`
+- `tooling` → `docs/al-dev-knowledge-quality-tooling.md`
+
 ```bash
-ls -t /Users/russelllaing/al-dev-shared/docs/al-dev-knowledge-quality.md 2>/dev/null | head -1
+# AUDIT_FILE is resolved from --surface above
+ls -t "$AUDIT_FILE" 2>/dev/null | head -1
 ```
 
 If no file found: stop and report:
 
-> No knowledge quality audit found. Run `/audit-knowledge-quality` first.
+> No knowledge quality audit found for surface '<surface>'. Run `/audit-knowledge-quality --surface <surface>` first.
 
 ## Phase 1 — Parse HIGH findings
 
-Read `docs/al-dev-knowledge-quality.md`. Locate the `## High-Priority Fix Tasks`
+Read the resolved audit file (`$AUDIT_FILE` from Phase 0). Locate the `## High-Priority Fix Tasks`
 YAML block.
 
 If the block is absent: stop and report:
 
-> Audit file exists but has no structured task block. Re-run `/audit-knowledge-quality`
+> Audit file exists but has no structured task block. Re-run `/audit-knowledge-quality --surface <surface>`
 > to regenerate with the current format.
 
 The `## High-Priority Fix Tasks` block is **valid** when it is that named block
@@ -61,7 +83,7 @@ containing a `tasks:` list with at least one entry, and each entry carries its
 required fields (`file`, `issue_type`, `description`, `suggested_action`). If the
 block is present but malformed — missing the `tasks:` list, empty, or with
 entries missing required fields — treat it as **corrupted** and stop and report
-with the same message as an absent block (re-run `/audit-knowledge-quality` to
+with the same message as an absent block (re-run `/audit-knowledge-quality --surface <surface>` to
 regenerate).
 
 If the block is present and valid, continue with the parsing steps below (still
@@ -125,6 +147,9 @@ If it reports forbidden harness tokens, surface them and stop — the fixes are 
 complete until neutrality passes. If no shared file was edited, note "no shared-surface
 edits — neutrality check not required" and continue.
 
+For `--surface tooling`, all edits target `.claude/knowledge/` which is not under
+`profile-al-dev-shared/`, so the neutrality gate always resolves to "not required".
+
 Only after the neutrality result is known, ask:
 
 > Neutrality: <passed | not required>. Choose a next step:
@@ -132,5 +157,5 @@ Only after the neutrality result is known, ask:
 > 1. Re-run `/audit-knowledge-quality` to verify the fixes
 > 2. Done — no further action
 
-If [1]: invoke `/audit-knowledge-quality`.
+If [1]: invoke `/audit-knowledge-quality --surface <surface>` (passing the same surface used in this run).
 If [2]: stop.

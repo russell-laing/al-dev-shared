@@ -5,21 +5,24 @@ description: >-
   parallel agents for large audit scopes (4+ files). It always writes
   HIGH-severity fix-guidance blocks to the report and optionally re-presents
   the HIGH-severity fix guidance interactively when the user opts in after reporting.
-argument-hint: "[--path <directory>] [--verbose]"
+argument-hint: "[--surface plugin|tooling] [--path <directory>] [--verbose]"
 workflow:
   stage: derive
   invoked-by: user
   repeatable: true
   inputs:
     - profile-al-dev-shared/knowledge/
+    - .claude/knowledge/
   outputs:
     - docs/al-dev-knowledge-quality.md
+    - docs/al-dev-knowledge-quality-tooling.md
   next: [fix-knowledge-quality]
 ---
 
 # Audit Knowledge Quality
 
-Review all knowledge files in `profile-al-dev-shared/knowledge/` for stub sections, thin content, and structural issues.
+Review knowledge files for stub sections, thin content, and structural issues. Use `--surface plugin` (default) to audit
+`profile-al-dev-shared/knowledge/`, or `--surface tooling` to audit `.claude/knowledge/`.
 After reporting, this audit optionally provides fix guidance for HIGH-severity findings when the user opts in; it does not edit files autonomously.
 
 ## Purpose
@@ -31,7 +34,7 @@ Its mission:
 1. Run the structural validator to identify potential stubs
 2. For each flagged file, read it and the agent/skill that references it
 3. Understand what content is missing or incomplete
-4. Write findings to `docs/al-dev-knowledge-quality.md` with recommendations
+4. Write findings to the surface-derived report path with recommendations
 5. Offer the user targeted fixes
 
 ## Maintainer Contracts
@@ -43,11 +46,34 @@ Apply `../../knowledge/dispatch-fallback-contract.md` before every agent
 dispatch. Declare the preferred path, run preflight, fall back
 deterministically, and log `preferred → outcome → fallback → reason`.
 
+## Arguments
+
+| Argument | Values | Default | Effect |
+|----------|--------|---------|--------|
+| `--surface` | `plugin` \| `tooling` | `plugin` | Selects the knowledge directory and referencing-agent search paths |
+| `--path` | directory | _(derived from `--surface`)_ | Overrides the knowledge directory directly; `--surface` still governs report path and search paths |
+| `--verbose` | — | off | Passes `--verbose` to the validator |
+
+**Surface routing:**
+
+| Surface | Knowledge path | Agent/skill search paths | Report output |
+|---------|----------------|--------------------------|---------------|
+| `plugin` | `profile-al-dev-shared/knowledge/` | `profile-al-dev-shared/agents/`, `profile-al-dev-shared/skills/` | `docs/al-dev-knowledge-quality.md` |
+| `tooling` | `.claude/knowledge/` | `.claude/agents/`, `.claude/skills/` | `docs/al-dev-knowledge-quality-tooling.md` |
+
 ## Implementation
 
 ### Phase 1: Discover Issues
 
 ```bash
+# Resolve surface argument (default: plugin)
+SURFACE="${SURFACE:-plugin}"  # set from --surface arg; default is plugin
+case "$SURFACE" in
+  plugin)  KNOWLEDGE_PATH="profile-al-dev-shared/knowledge" ;;
+  tooling) KNOWLEDGE_PATH=".claude/knowledge" ;;
+  *)       echo "Error: --surface must be 'plugin' or 'tooling'"; exit 1 ;;
+esac
+
 # Canonical location: in-repo scripts/; global plugin is the fallback.
 VALIDATOR="scripts/validate-knowledge-quality.py"
 if [ ! -f "$VALIDATOR" ]; then
@@ -57,7 +83,7 @@ if [ -z "$VALIDATOR" ] || [ ! -f "$VALIDATOR" ]; then
   echo "Error: validate-knowledge-quality.py not found in scripts/ or ~/.claude/plugins"
   exit 1
 fi
-python3 "$VALIDATOR" --path "profile-al-dev-shared/knowledge" --verbose
+python3 "$VALIDATOR" --path "$KNOWLEDGE_PATH" --verbose
 ```
 
 `validate-knowledge-quality.py` emits one multiline record per finding:
@@ -86,9 +112,14 @@ that requires them — add working code; DEAD-REF: the file cross-references a
 path that no longer exists — update or remove the reference), and the
 structured return schema that Phase 3 consumes.
 
+**Surface-specific referencing-search override:** `knowledge-audit-analysis.md` names
+`profile-al-dev-shared/agents/` and `profile-al-dev-shared/skills/` as the referencing
+search paths. For `--surface tooling`, replace those with `.claude/agents/` and
+`.claude/skills/` respectively. All other analysis rules apply unchanged.
+
 ### Phase 3: Write Findings Report
 
-Write to `docs/al-dev-knowledge-quality.md`. The report **always** contains the
+Determine the output path from the surface argument: `plugin` → `docs/al-dev-knowledge-quality.md`; `tooling` → `docs/al-dev-knowledge-quality-tooling.md`. Write to that path. The report **always** contains the
 `## Fix Recommendations` and `## High-Priority Fix Tasks` blocks — they are written
 unconditionally. Whether they are re-presented interactively is governed by the
 USER_GATE in Phase 4.
@@ -147,12 +178,12 @@ MEDIUM or LOW issues in this block.
 
 After writing the report:
 
-1. Print: `Knowledge quality report written to docs/al-dev-knowledge-quality.md`
+1. Print: `Knowledge quality report written to <report-path>` (where `<report-path>` is the surface-derived output path from Phase 3)
 2. Present the audit summary (findings count by severity and top 3 HIGH issues).
 
 **USER_GATE — fix-guidance presentation.** The `## Fix Recommendations` and
 `## High-Priority Fix Tasks` blocks already exist in the report
-(`docs/al-dev-knowledge-quality.md`): Phase 3 wrote these blocks unconditionally;
+(the surface-derived `<report-path>`): Phase 3 wrote these blocks unconditionally;
 this phase gates only their interactive re-presentation. After presenting the
 audit summary, ask:
 
@@ -167,23 +198,25 @@ the summary — the guidance remains in the report file for later use.
 ```text
 ## Knowledge File Quality Audit
 
-Scanning profile-al-dev-shared/knowledge/ for structural issues...
+Scanning <knowledge-path> for structural issues...
 
 FINDINGS SUMMARY:
 - HIGH (blocks agent guidance): N
 - MEDIUM (incomplete): N  
 - LOW (minor/false positives): N
 
-Report written to: docs/al-dev-knowledge-quality.md
+Report written to: <report-path>
 
 [Top 3 HIGH issues listed]
 
-Run `cat docs/al-dev-knowledge-quality.md` to see full report.
+Run `cat <report-path>` to see full report.
 ```
+
+Where `<knowledge-path>` and `<report-path>` are derived from the surface argument (see Arguments table).
 
 ## Success Criteria
 
-✅ All HIGH severity findings have concrete fix recommendations written to `docs/al-dev-knowledge-quality.md`
+✅ All HIGH severity findings have concrete fix recommendations written to the surface-derived report path (`docs/al-dev-knowledge-quality.md` for `plugin`; `docs/al-dev-knowledge-quality-tooling.md` for `tooling`)
 ✅ The report always contains `## Fix Recommendations` and `## High-Priority Fix Tasks` (written unconditionally)
 ✅ The USER_GATE in Phase 4 gates interactive re-presentation only — not generation of the report sections
 ✅ False positives (LOW severity) are clearly marked and explained
