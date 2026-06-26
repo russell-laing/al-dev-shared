@@ -498,6 +498,12 @@ If no `profile-al-dev-shared/` files changed, skip this phase entirely.
 
 ### Close the loop breadcrumb
 
+Read `.dev/health-loop-state.md` if it exists (ignore a missing-file error on
+a first-ever run where no prior loop has completed). This read satisfies the
+Write tool's in-session read-before-write contract, which is required after a
+`/compact` call or a cross-session Phase-5-only resumption where Phase 0's
+read is no longer in context.
+
 **Write this BEFORE the ledger-close commit.** Overwrite `.dev/health-loop-state.md`
 (schema: `.claude/knowledge/health-loop-state-contract.md`) to mark the loop
 closed:
