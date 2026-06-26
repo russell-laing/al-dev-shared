@@ -1,4 +1,18 @@
-"""Shared helper for reading, appending, and materializing health dispositions."""
+"""Shared helper for reading, appending, and materializing health dispositions.
+
+Frontmatter Normalization
+--------------------------
+Health artifacts (dispositions-open.md, findings files, etc.) use YAML frontmatter.
+The formatter normalizes all frontmatter to tight-list style (no blank lines between
+list items). When re-reading these files, downstream scripts and skills tolerate both
+tight and loose list styles — the normalization is transparent and requires no
+consumer changes.
+
+Behavior:
+- Tight list style (no blank lines): `- item1\n- item2`
+- Loose list style (blank lines): `- item1\n\n- item2`
+Both are normalized to tight style internally.
+"""
 
 from __future__ import annotations
 
