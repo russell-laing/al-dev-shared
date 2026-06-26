@@ -181,6 +181,34 @@ def _run_test(func):
     raise TypeError(f"Unsupported test signature: {func.__name__}{signature}")
 
 
+def test_claude_projection_omits_tools_line_when_empty():
+    """render_claude_projection must not emit a tools: line for zero-tool agents."""
+    agent = {
+        "name": "test-agent",
+        "description": "A test agent.",
+        "tools": [],
+        "body": "Body text.",
+    }
+    result = mod.render_claude_projection(agent, mod.default_projection_policy())
+    assert "tools:" not in result, (
+        f"Expected no 'tools:' line in Claude projection for zero-tool agent, got:\n{result}"
+    )
+
+
+def test_copilot_projection_omits_tools_line_when_empty():
+    """render_copilot_projection must not emit a tools: line for zero-tool agents."""
+    agent = {
+        "name": "test-agent",
+        "description": "A test agent.",
+        "tools": [],
+        "body": "Body text.",
+    }
+    result = mod.render_copilot_projection(agent, mod.default_projection_policy())
+    assert "tools:" not in result, (
+        f"Expected no 'tools:' line in Copilot projection for zero-tool agent, got:\n{result}"
+    )
+
+
 if __name__ == "__main__":
     tests = sorted(
         (name, value)
