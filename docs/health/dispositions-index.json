@@ -1,7 +1,7 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 107,
+      "current_rows": 115,
       "open_accepted": 3
     },
     "naming": {
@@ -20,12 +20,12 @@
   "by_disposition": {
     "accepted": 18,
     "declined": 161,
-    "fixed": 831,
+    "fixed": 839,
     "grandfathered": 71
   },
   "by_surface": {
     "plugin": {
-      "current_rows": 325,
+      "current_rows": 333,
       "open_accepted": 0
     },
     "tooling": {
@@ -37,10 +37,10 @@
       "open_accepted": 0
     }
   },
-  "current_rows": 1081,
-  "generated_at": "2026-06-26T11:23:02.627178+00:00",
+  "current_rows": 1089,
+  "generated_at": "2026-06-26T14:40:35.924606+00:00",
   "integrity_warnings": 0,
   "open_accepted": 18,
-  "source_hash": "8b5e1b7ea7ad94661f4629e91d7f001ee93a900441f9cb88ed12576b9053eba0",
-  "total_events": 1966
+  "source_hash": "cbad633570d00a5ad9cb0078c33082d0b1fa4a56a1bba74f4724373b7278e145",
+  "total_events": 1982
 }

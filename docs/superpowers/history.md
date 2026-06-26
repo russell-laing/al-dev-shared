@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-27
+
+### Plugin Design Fixes Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-27-plugin-map-design-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-27 | plugin-map-design-fixes | implemented; rows closed: [disp_20260627_000001, disp_20260627_000002, disp_20260627_000003, disp_20260627_000004, disp_20260627_000005, disp_20260627_000006, disp_20260627_000007, disp_20260627_000008]
+
 ## 2026-06-26
 
 ### Tooling Quality Fixes Implementation Plan
