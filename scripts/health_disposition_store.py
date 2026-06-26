@@ -630,7 +630,7 @@ def match_against_ledger(
     for finding in findings:
         f_obj = finding.get("object", "").strip()
         f_type = finding.get("type", "") or _finding_type(finding.get("finding", ""))
-        best: tuple[str, dict[str, str]] | None = None
+        candidates: list[tuple[str, dict[str, str]]] = []
         for row in current_rows:
             if not _field_compatible(finding.get("surface", ""), row["surface"]):
                 continue
@@ -660,13 +660,12 @@ def match_against_ledger(
                 ):
                     continue
             cls = _classification_for(row["disposition"])
-            if cls == "keep":
-                # accepted match: only record if nothing stronger seen
-                if best is None:
-                    best = (cls, row)
-                continue
-            if best is None or _PRECEDENCE[cls] < _PRECEDENCE[best[0]]:
-                best = (cls, row)
+            candidates.append((cls, row))
+
+        # Sort candidates by date (newest first); use newest match to respect supersession
+        candidates.sort(key=lambda x: x[1].get("date", ""), reverse=True)
+        best = candidates[0] if candidates else None
+
         classification = best[0] if best else "keep"
         results.append(
             {
