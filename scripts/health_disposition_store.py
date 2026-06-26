@@ -855,6 +855,8 @@ if __name__ == "__main__":
     p_sync_group.add_argument("--since", metavar="YYYY-MM-DD", help="Sync all events on or after this date")
     p_sync.add_argument("--events-root", type=Path, default=Path("docs/health/dispositions-events"))
     p_sync.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
+    p_sync.add_argument("--verbose", action="store_true",
+                        help="Print one line per synced event (default: summary only).")
 
     ih = sub.add_parser(
         "iter_history_rows",
@@ -973,6 +975,7 @@ if __name__ == "__main__":
         if not events:
             print("sync_shard: no matching events found", file=sys.stderr)
             sys.exit(1)
+        synced_shards: set[str] = set()
         for ev in events:
             row = {
                 "id": ev.get("legacy_id") or ev["event_id"],
@@ -984,6 +987,10 @@ if __name__ == "__main__":
                 "date": ev["date"],
                 "note": ev.get("evidence", ""),
             }
-            append_row(args.history_root, row)
-            print(f"sync_shard: wrote shard row for {ev['event_id']}")
+            shard = append_row(args.history_root, row)
+            synced_shards.add(str(shard))
+            if args.verbose:
+                print(f"sync_shard: wrote shard row for {ev['event_id']}")
+        shard_list = ", ".join(sorted(synced_shards))
+        print(f"sync_shard: synced {len(events)} row(s) to {shard_list}")
         raise SystemExit(0)
