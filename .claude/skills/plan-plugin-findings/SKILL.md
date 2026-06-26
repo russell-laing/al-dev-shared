@@ -86,13 +86,25 @@ verb/object routing as a dossier run. See the `--backlog` branch in Phase 1.
 
 **`--skills`:** keep only skill-design findings.
 
-- **Verb vocabulary:** Atomise, Absorb, Connect, Merge, Promote, Move, Extend
+- **Verb vocabulary:**
+  - **Atomise** — Break a large agent/skill into smaller, focused units
+  - **Absorb** — Merge related content into an existing agent/skill
+  - **Connect** — Link a new knowledge doc into existing workflow
+  - **Merge** — Combine two similar skills or agents
+  - **Promote** — Elevate a sub-skill or helper agent to top-level
+  - **Move** — Relocate a file between surfaces (plugin ↔ tooling)
+  - **Extend** — Add new downstream consumer or output stage
 - **Rubber-duck reads:** `profile-al-dev-shared/skills/<name>/SKILL.md`
 - **Plan task file paths:** reference skill file paths
 
 **`--agents`:** keep only agent-design findings.
 
-- **Verb vocabulary:** Trim, Remodel, Split, Inline, Align
+- **Verb vocabulary:**
+  - **Trim** — Remove unused tool declarations or dead code sections
+  - **Remodel** — Change a field value, frontmatter contract, or signature
+  - **Split** — Extract distinct concerns into separate agents/skills
+  - **Inline** — Remove a single-use wrapper skill; fold into caller
+  - **Align** — Update documented Inputs/Outputs or field definitions for consistency
 - **Rubber-duck reads:** `profile-al-dev-shared/agents/<name>.md` (not skills/)
 - **Plan task file paths:** reference agent file paths
 
