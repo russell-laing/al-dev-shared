@@ -98,6 +98,17 @@ historical context, see `docs/projection-layer-readme.md`.
 - If `rg` or `jq` is unavailable, fall back to `grep` or Python in the workflow
   body rather than changing the projection contract.
 
+**Zero-tool agents — field omission rule (normative):** When a source agent
+requires no tools, the `tools:` field MUST be **omitted entirely** from the
+agent frontmatter. Setting `tools: []` (an empty array) is not canonical:
+`scripts/health_static_lenses.py` flags it as a Medium structural finding, and
+recurring regressions (two occurrences by 2026-06-26) show the empty-array
+form keeps appearing. The generator render functions already implement this
+rule — `if tools else ""` omits the field in projection output regardless of
+whether the source used `[]` or field omission, but the policy is the
+authoritative source for authors and lenses. When reviewing source agent files,
+flag `tools: []` for correction to field omission (the zero-tool pattern).
+
 ## Maintainer Boundary and Regeneration Rules
 
 ### Authored vs. Generated Files
