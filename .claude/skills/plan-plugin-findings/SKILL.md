@@ -48,16 +48,14 @@ values, plan provenance, legacy `unknown`, and filter ordering.
 
 ---
 
-## Phase-proof requirement
+## Maintainer Contracts
 
-This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-proof block at each phase boundary before reporting completion or updating `.dev/health-loop-state.md`.
+Apply `../../knowledge/phase-proof-contract.md` at every phase boundary before
+reporting completion or updating `.dev/health-loop-state.md`.
 
-## Dispatch policy
-
-This skill's agent dispatch follows `../../knowledge/dispatch-fallback-contract.md`:
-declare the preferred path (the `Agent` tool), run preflight (tool available,
-arguments valid against the receiving contract), fall back deterministically on
-failure, and log `preferred → outcome → fallback → reason`.
+Apply `../../knowledge/dispatch-fallback-contract.md` before every agent
+dispatch. Declare the preferred path, run preflight, fall back
+deterministically, and log `preferred → outcome → fallback → reason`.
 
 ## Prerequisites
 

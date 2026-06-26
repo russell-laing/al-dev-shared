@@ -41,21 +41,19 @@ completion, so the user is free to work meanwhile.
 
 ---
 
-## Phase-proof requirement
+## Maintainer Contracts
 
-This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-proof block at each phase boundary before reporting completion or updating `.dev/health-loop-state.md`.
+Apply `../../knowledge/phase-proof-contract.md` at every phase boundary before
+reporting completion or updating `.dev/health-loop-state.md`.
 
-## Dispatch policy
-
-This skill's agent dispatch follows `../../knowledge/dispatch-fallback-contract.md`:
-declare the preferred path (the `Agent` tool), run preflight (tool available,
-arguments valid against the receiving contract), fall back deterministically on
-failure, and log `preferred → outcome → fallback → reason`.
+Apply `../../knowledge/dispatch-fallback-contract.md` before every agent
+dispatch. Declare the preferred path, run preflight, fall back
+deterministically, and log `preferred → outcome → fallback → reason`.
 
 ## Phase 0 — Parse Arguments
 
 | Argument | Default | Behaviour |
-|---|---|---|
+| --- | --- | --- |
 | `--all` | off | Auto-update both maps without prompting (passed to collect/finalize) |
 | `--skip-commit` | off | Write map changes but do not commit (dry-run) |
 | `--force` | off | Override the cadence guard and dispatch over an uncollected run |
@@ -177,7 +175,7 @@ Write these fields to `.dev/sync-map-documentation-checkpoint.json` (merge patte
 `${RUN_DIR}/manifest.json` (always new — create directly with Write):
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | `operation` | `"sync-map-documentation"` |
 | `run_id` | `RUN_ID` |
 | `spawned_at` | `"${SPAWNED_AT}"` |

@@ -7,6 +7,7 @@ contracts. Report mode only; exits 1 when any required reference is missing.
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ SKILLS_ROOT = REPO_ROOT / ".claude" / "skills"
 PHASE_PROOF_DOC = "phase-proof-contract.md"
 DISPATCH_DOC = "dispatch-fallback-contract.md"
 SCOPE_PACK_DOC = "delegated-scope-pack.md"
+MAINTAINER_CONTRACTS_HEADING = "## Maintainer Contracts"
 
 # Authoritative scope sets. Update deliberately when a skill changes shape.
 MULTI_PHASE_SKILLS = {
@@ -50,6 +52,21 @@ REQUIREMENTS = [
 ]
 
 
+def has_markdown_heading(text: str, heading: str) -> bool:
+    heading_re = re.compile(rf"^{re.escape(heading)}\s*$")
+    in_fence = False
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence or stripped.startswith(">"):
+            continue
+        if heading_re.match(line):
+            return True
+    return False
+
+
 def check_coverage(skills_root: Path) -> list[str]:
     violations: list[str] = []
     for skill_set, doc in REQUIREMENTS:
@@ -63,6 +80,15 @@ def check_coverage(skills_root: Path) -> list[str]:
             ref = f"../../knowledge/{doc}"
             if ref not in text:
                 violations.append(f"{name}: missing reference to {ref}")
+    for name in sorted(DISPATCHING_SKILLS):
+        skill_md = skills_root / name / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_text(encoding="utf-8")
+        if not has_markdown_heading(text, MAINTAINER_CONTRACTS_HEADING):
+            violations.append(
+                f"{name}: missing heading {MAINTAINER_CONTRACTS_HEADING}"
+            )
     return violations
 
 
