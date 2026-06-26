@@ -155,65 +155,57 @@ Critical rule: never claim the staged set is ready, "clean compile", or "zero er
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.
 
-### 0.4 — Optional Context: Prior Lint Findings & Acceptance Criteria
+### 0.4 — Validate Against Code Review (NEW MANDATORY GATE)
 
-**If a prior lint report exists,** load it to inform the commit workflow:
+- [ ] **Step 0.4.1:** Check if code-review artifact exists
 
-1. **Check for lint report:**
+Run: `ls -la .dev/*-al-dev-develop-code-review.md 2>/dev/null | head -1`
 
-   ```bash
-   ls .dev/*-al-dev-lint-lint-report.md 2>/dev/null | sort | tail -1
-   ```
+If file not found, skip to Step 0.4.2 (code review not performed; warning only).
 
-2. **If found, read the report:**
+- [ ] **Step 0.4.2:** (If artifact found) Read verdict from code-review artifact
 
-   Show the user:
+Run: `grep -E "^## Verdict|^Verdict:" .dev/*-al-dev-develop-code-review.md | head -1`
 
-   ```text
-   Prior lint findings found. Review before committing?
+Store: `REVIEW_VERDICT=<verdict>` (expected values: READY, BLOCKING, DEFER)
 
-   [paste lint report content — unresolved issues]
+- [ ] **Step 0.4.3:** Parse finding count and severity distribution
 
-   Note: These findings may inform your grouping decisions if lint fixes
-   need atomic separation.
-   ```
+Run: `grep -E "^## Findings|^Severity:" .dev/*-al-dev-develop-code-review.md`
 
-3. **If not found, continue:** Proceed to next section.
+Output findings count and high-severity issues to user.
 
-This is optional; missing lint report does not block commit workflow.
+- [ ] **Step 0.4.4:** BLOCK if verdict is BLOCKING
 
-**If a solution plan exists,** verify acceptance criteria:
-
-Check whether a solution plan exists:
+Condition:
 
 ```bash
-PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)
-```
-
-```bash
-STAMP=".dev/acceptance-criteria-verified"
-```
-
-If both a plan and a current stamp exist (stamp newer than plan), skip AC re-verification — the review cycle already signed off:
-
-```bash
-if [[ -n "$PLAN" && -f "$STAMP" && "$STAMP" -nt "$PLAN" ]]; then
-  echo "AC verification stamp current — skipping AC re-check."
-  # proceed to 0.5
+if [[ "$REVIEW_VERDICT" == "BLOCKING" ]]; then
+  echo "ERROR: Code review verdict is BLOCKING. Address critical findings before committing."
+  grep -A 20 "## Findings" .dev/*-al-dev-develop-code-review.md | grep "CRITICAL\|HIGH"
+  exit 1
 fi
 ```
 
-Otherwise (no plan, no stamp, or stamp older than plan), read the Acceptance Criteria section. For each directly checkable criterion (structural, gate, pattern forms):
+Expected: If BLOCKING, stop preflight. User must run code-review again after fixes.
 
-- **Structural criteria:** Verify that named files exist and contain named symbols (use `grep` or `al-compile` output)
-- **Gate criteria:** Confirm that referenced gates (e.g., `al-compile`) exit 0
-- **Pattern criteria:** Use `git diff --cached` to verify patterns do or do not appear in changed code
+- [ ] **Step 0.4.5:** Warn if verdict is DEFER
 
-Do not treat `[manual]` criteria as automatic blockers. Surface any pending manual criteria as a note to the user: "Manual validation pending: [list]"
+Condition:
 
-If verification of any directly checkable criterion fails, stop the commit workflow and report the failure to the user.
+```bash
+if [[ "$REVIEW_VERDICT" == "DEFER" ]]; then
+  echo "WARNING: Code review verdict is DEFER. Review raised concerns; proceed with caution."
+fi
+```
 
-If no solution plan exists, skip this step and continue to 0.5.
+Continue preflight (non-blocking warning).
+
+- [ ] **Step 0.4.6:** Record review outcome for Phase 1 summary
+
+Set: `CODE_REVIEW_STATUS="$REVIEW_VERDICT"` for inclusion in Phase 1 final summary
+
+(Examples: "Code review: READY", "Code review: BLOCKING (stop)", "Code review: DEFER (warning)")
 
 ### 0.5 — Establish Gitmoji Style
 
