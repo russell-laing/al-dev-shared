@@ -2,21 +2,16 @@
 
 from __future__ import annotations
 
-import importlib.util
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.health import check_ledger_staleness as MODULE
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "scripts" / "check_ledger_staleness.py"
-SPEC = importlib.util.spec_from_file_location("check_ledger_staleness", MODULE_PATH)
-assert SPEC is not None and SPEC.loader is not None
-MODULE = importlib.util.module_from_spec(SPEC)
-sys.modules[SPEC.name] = MODULE
-SPEC.loader.exec_module(MODULE)
+SCRIPT_PATH = REPO_ROOT / "scripts" / "check_ledger_staleness.py"
 
 
 class ResolveClosuresTest(unittest.TestCase):
@@ -201,7 +196,7 @@ class IntegrityWarningsTest(unittest.TestCase):
 
 def _run_checker(repo_root: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(MODULE_PATH), "--root", str(repo_root)],
+        [sys.executable, str(SCRIPT_PATH), "--root", str(repo_root)],
         capture_output=True,
         text=True,
     )

@@ -2,20 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
-import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-STORE_PATH = REPO_ROOT / "scripts" / "health_disposition_store.py"
-SPEC = importlib.util.spec_from_file_location("health_disposition_store", STORE_PATH)
-assert SPEC is not None and SPEC.loader is not None
-STORE = importlib.util.module_from_spec(SPEC)
-sys.modules[SPEC.name] = STORE
-SPEC.loader.exec_module(STORE)
+from scripts.al_dev_tools.health import health_disposition_store as STORE
+from scripts.al_dev_tools.health import migrate_health_disposition_store as MIGRATE
 
 
 class ShardPathTest(unittest.TestCase):
@@ -195,18 +187,6 @@ class ListOpenTest(unittest.TestCase):
             )
 
 
-MIGRATE_PATH = REPO_ROOT / "scripts" / "migrate_health_disposition_store.py"
-
-
-def _load_migrate() -> types.ModuleType:
-    spec = importlib.util.spec_from_file_location("migrate_health_disposition_store", MIGRATE_PATH)
-    assert spec is not None and spec.loader is not None
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
 class MigrateStoreTest(unittest.TestCase):
     def test_migration_preserves_row_count_and_produces_smaller_current_view(self) -> None:
         with tempfile.TemporaryDirectory() as d:
@@ -224,8 +204,7 @@ class MigrateStoreTest(unittest.TestCase):
             )
             history_root = Path(d) / "docs" / "health" / "dispositions-history"
 
-            mod = _load_migrate()
-            report = mod.migrate_store(source, history_root)
+            report = MIGRATE.migrate_store(source, history_root)
 
             self.assertEqual(report["source_rows"], 2)
             self.assertEqual(report["written_rows"], 2)

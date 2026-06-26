@@ -8,15 +8,13 @@ and the adapter never infers a denominator from the human-facing prose summary.
 
 from __future__ import annotations
 
-import sys
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.health import health_benchmark_adapter as adapter
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = REPO_ROOT / "scripts" / "tests" / "fixtures" / "benchmark"
-
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
-import health_benchmark_adapter as adapter  # noqa: E402
 
 
 class ParseDossierTest(unittest.TestCase):

@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.health import select_health_artifacts as selector
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
@@ -123,6 +125,20 @@ class SelectHealthArtifactsTest(unittest.TestCase):
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("", result.stdout)
+
+    def test_select_artifacts_library_call_orders_by_filename_date(self) -> None:
+        self.create_artifact("2026-06-05-plugin-health.md")
+        latest = self.create_artifact("2026-06-09-plugin-health.md")
+
+        result = selector.select_artifacts(
+            self.health_dir,
+            kind="health",
+            surface="plugin",
+            limit=1,
+            offset=0,
+        )
+
+        self.assertEqual([latest], result)
 
     def test_archived_subdirectory_files_are_not_returned(self) -> None:
         """Files under an archived/ subdirectory must not appear in results.
