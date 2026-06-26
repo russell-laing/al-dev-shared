@@ -244,6 +244,11 @@ _No issues found._  ← if requested and empty
 _Not requested in this run._  ← if outside the requested dimensions
 ```
 
+(The `dimensions:` block may be rewritten by the session formatter from the
+indented form above to loose unindented form after Write; both are valid YAML
+and `health_benchmark_adapter.py` parses either. No parser changes are
+needed.)
+
 Record any failed lenses at the foot of the Summary section.
 
 The `<!-- benchmark-metrics -->` block is the canonical, machine-readable source
