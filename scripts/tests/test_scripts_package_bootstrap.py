@@ -23,6 +23,23 @@ class ScriptsPackageBootstrapTest(unittest.TestCase):
         self.assertTrue(hasattr(map_doc_sections, "collect_inventory"))
         self.assertTrue(hasattr(maintainer_guide_sections, "build_sections"))
 
+    def test_new_docs_submodules_import(self) -> None:
+        from scripts.al_dev_tools.docs import (
+            maintainer_analysis,
+            maintainer_contracts,
+            maintainer_rendering,
+            map_inventory,
+            map_markers,
+            map_rendering,
+        )
+
+        self.assertTrue(hasattr(map_inventory, "collect_inventory"))
+        self.assertTrue(hasattr(map_markers, "replace_marked_sections"))
+        self.assertTrue(hasattr(map_rendering, "render_skill_lifecycle"))
+        self.assertTrue(hasattr(maintainer_contracts, "load_contracts"))
+        self.assertTrue(hasattr(maintainer_analysis, "compute_gaps"))
+        self.assertTrue(hasattr(maintainer_rendering, "build_sections"))
+
     def test_target_wrappers_no_longer_mutate_sys_path(self) -> None:
         for rel_path in (
             "scripts/generate-map-doc-sections.py",
