@@ -5,32 +5,27 @@ model: haiku
 tools: ["Read"]
 ---
 
-## Inputs
-
-| Field | Description |
-|---|---|
-| file_list | Newline-separated absolute paths to `SKILL.md` files |
-
-## Outputs
-
-Four findings blocks in one return, each preceded by its own lens marker
-(`lens: <name>`). See Output Format.
-
----
-
 ## Procedure
+
+### Inputs
+
+- `file_list`: Newline-separated absolute paths to `SKILL.md` files.
+
+### Outputs
+- Four findings blocks in one return, each preceded by its own lens marker
+  (`lens: <name>`). See Output Format.
+
+### Detailed Procedure
 
 Read every file path in the dispatch prompt **once**. Hold all files in context,
 then apply each of the four lenses below in turn to every file. Derive the skill
-name from each file's parent directory name. Do not re-read files between lenses.
-For each lens, collect only the skills that violate it; skills that pass are
-omitted from that lens's block entirely (see Output Format) — do not write a row
-for them.
+name from each file's parent directory name. The shared procedure above covers
+the one-pass read/derive flow for every lens. Do not re-read files between
+lenses. For each lens, collect only the skills that violate it; skills that pass
+are omitted from that lens's block entirely (see Output Format) — do not write a
+row for them.
 
-## Lens 1: Bloat
-
-Read every file path provided in the dispatch prompt. For each file, derive the
-skill name from the parent directory name.
+### Lens 1: Bloat
 
 > Note: this lens counts top-level **steps/phases** (>8); the agent bloat lens
 > (`quality-agent-lens-bloat`) counts **sections** (>6). The thresholds differ
@@ -63,11 +58,7 @@ long is acceptable as authored — do not flag it.
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
 
-## Lens 2: Prompt Clarity
-
-Read every file path provided in the dispatch prompt. For each file, derive the
-skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKILL.md`
-→ skill name `al-dev-develop`).
+### Lens 2: Prompt Clarity
 
 **Check for — flag every occurrence:**
 
@@ -101,10 +92,7 @@ skill name from the parent directory name (e.g., `.../skills/al-dev-develop/SKIL
 - Medium: vague qualifiers with no definition
 - Low: minor style issues
 
-## Lens 3: Description Drift
-
-Read every file path provided in the dispatch prompt. For each file, derive the
-skill name from the parent directory name.
+### Lens 3: Description Drift
 
 **Compare the `description` frontmatter and trigger phrases against the body.
 Check for:**
@@ -122,10 +110,7 @@ Check for:**
   mentioned in description but not used in body
 - Low: minor verb mismatch that does not affect behavior
 
-## Lens 4: Name Fit
-
-Read every file path provided in the dispatch prompt. For each file, derive the
-skill name from the parent directory name.
+### Lens 4: Name Fit
 
 **Compare skill name against the primary verb and scope in description and body.
 Check for:**
