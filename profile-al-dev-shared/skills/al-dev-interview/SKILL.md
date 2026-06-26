@@ -99,16 +99,23 @@ The interview agent MUST:
       categories were covered, stop and tell the user to re-run /al-dev-interview
       before planning.
 
-## Phase 3: Write Requirements (only after interview)
+## Phase 3: Validate and Log Interview Output
 
-Only after the interview conversation is complete:
+- [ ] **Step 3.1:** Read agent-generated requirements file (`.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md`) written in Phase 2
 
-1. Write `.dev/$(date +%Y-%m-%d)-al-dev-interview-notes.md` with raw
-   interview notes and key decisions captured during Q&A.
+- [ ] **Step 3.2:** Verify file contains all required sections: Interview Questions, Answers, and Distilled Requirements
 
-2. Write `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` as a
-   formal requirements
-   document using governance tokens:
+Run: `grep -q "## Interview Questions\|## Answers\|## Distilled Requirements" ".dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md"`
+
+Expected: All three section headers present
+
+- [ ] **Step 3.3:** Append summary line to session-log (agent-created `.dev/session-log.md`)
+
+Pattern: `- $(date): interview completed; requirements written to .dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md`
+
+Do NOT create `.dev/$(date +%Y-%m-%d)-al-dev-interview-notes.md` (agent responsibility)
+
+For formal requirements documentation using governance tokens:
 
    ```text
    REQ:REQ-001|FUNCTIONAL|HIGH|DEFINED|[Requirement text]

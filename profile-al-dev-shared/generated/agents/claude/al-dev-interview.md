@@ -20,10 +20,13 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
-| `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` | **Primary** - Complete spec with requirements, acceptance criteria, risks |
-| `.dev/session-log.md` | Append entry with interview summary |
+| Stream | Artifact | Type | Purpose |
+|--------|----------|------|---------|
+| **Primary** | `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` | Markdown | Interview questions, answers, and distilled requirements |
+| **Primary** | `.dev/session-log.md` | Markdown | Session log with timestamp and outcome summary |
+| Secondary | Interview transcript | Text | Raw conversation transcript (optional) |
+
+**Handoff:** Skill receives both files and performs no additional file writes, only appends summary to session-log.
 
 ## Interview Process
 
