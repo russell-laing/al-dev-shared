@@ -257,19 +257,54 @@ Read the returned `recovery_status` and act:
 - **`non-recoverable`** — report the condition (e.g., broken hook) to the user
   and abort the commit workflow.
 
-### 4.4 — Summary
+### 4.4 — Final Verification (Commit Count & History Integrity)
 
-Parse the agent output and display the final summary:
+- [ ] **Step 4.4.1:** Read approved commit plan artifact
 
-```text
-Commit workflow complete.
+Run: `cat ".dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md" | grep -A 100 "## Commits" | head -50`
 
-[For each line in COMMITS block:]
-  [sha] [emoji] [type(scope)]: [subject]
+Expected: List of expected commit subjects and files
 
-[N] commits created. [N] skipped.
-[If LINT_FIXES from Phase 3.1 is not NONE:]
-  Files re-staged after lint: [LINT_FIXES]
-[If a hook-fixer recovery ran:]
-  Hook recovery: [recovery_status] — [next_step]
+- [ ] **Step 4.4.2:** Count expected commit groups from plan
+
+Run: `grep -c "^### Commit" ".dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md"`
+
+Store: `EXPECTED_COMMITS=<count>`
+
+- [ ] **Step 4.4.3:** Compare against actual commits since base branch
+
+Run: `git log --oneline --since="$PLAN_DATE" -- | wc -l`
+
+Store: `ACTUAL_COMMITS=<count>`
+
+- [ ] **Step 4.4.4:** Safety gate — unpublished commits only
+
+Run: `git log --oneline origin/main.. 2>/dev/null | wc -l`
+
+If result = 0, commit is publishable. If greater, warn user: "Commits already pushed; history rewrite blocked."
+
+- [ ] **Step 4.4.5:** (Optional) Reset and re-commit if user confirms
+
+If ACTUAL_COMMITS ≠ EXPECTED_COMMITS and user confirms rewrite:
+
+```bash
+git reset --soft HEAD~$ACTUAL_COMMITS
+git commit -m "<consolidated message from plan>"
 ```
+
+Expected: Commits consolidated to match plan.
+
+- [ ] **Step 4.4.6:** Final verification — confirm commit presence
+
+Run: `git log --oneline --since="$PLAN_DATE" -- | head -5`
+
+Expected: Commit subjects match plan exactly
+
+- [ ] **Step 4.4.7:** Log final SHAs for handoff
+
+```bash
+git log --oneline --since="$PLAN_DATE" -- > ".dev/$(date +%Y-%m-%d)-al-dev-commit-verified-shas.txt"
+echo "Commits verified and logged to .dev/$(date +%Y-%m-%d)-al-dev-commit-verified-shas.txt"
+```
+
+Summary: `COMMIT_VERIFICATION_STATUS="READY"` (present in summary output for next step)
