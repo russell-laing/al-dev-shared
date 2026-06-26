@@ -327,9 +327,30 @@ new `fixed` event with `closes_event_ids` containing that `event_id`, then run
 
 Work through one Resolve → Verify → Append pass before moving to the next event_id:
 
-1. **Resolve** — `closes_event_ids:` lists `event_id` values from
-   `docs/health/dispositions-open.md`. Locate the event with that `event_id`
-   and extract its surface, dimension, object, and finding verbatim.
+1. **Resolve** — `closes_event_ids:` lists `event_id` values. Locate the
+   event and extract its surface, dimension, object, and finding verbatim
+   using this two-step lookup:
+
+   a. **Open-view lookup (primary):** search `docs/health/dispositions-open.md`
+      for a row with that `event_id`. This covers the common case where the
+      accepted event is still visible.
+
+   b. **JSONL-store fallback (when not in open view):** if the event_id is
+      absent from the open view (object-level closure removed it), derive the
+      shard path from the event_id date prefix and grep directly:
+
+      ```bash
+      # event_id format: disp_YYYYMMDD_NNNNNN
+      # Extract YYYY and MM; e.g. disp_20260619_000001 → 2026/2026-06.jsonl
+      YEAR=$(echo "$EVENT_ID" | sed 's/disp_\([0-9]\{4\}\).*/\1/')
+      MONTH=$(echo "$EVENT_ID" | sed 's/disp_[0-9]\{4\}\([0-9]\{2\}\).*/\1/')
+      SHARD="docs/health/dispositions-events/${YEAR}/${YEAR}-${MONTH}.jsonl"
+      grep "\"event_id\": \"$EVENT_ID\"" "$SHARD"
+      ```
+
+      Parse the returned JSON line to extract `surface`, `dimension`, `object`,
+      and `finding` verbatim. If the event_id is not in the shard, escalate to
+      the user — do not proceed with an unresolved event.
 2. **Verify** — read the live subject file named in the task and confirm the
    change is present. Do not append an event for an unverified change.
    If verification fails: report the failure, omit the event for that task,
