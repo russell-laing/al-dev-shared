@@ -7,6 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.docs import map_doc_sections as shared
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "generate_plugin_graph",
@@ -14,18 +16,6 @@ _spec = importlib.util.spec_from_file_location(
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
-
-
-def _load_map_doc_sections():
-    spec = importlib.util.spec_from_file_location(
-        "map_doc_sections",
-        REPO_ROOT / "scripts" / "map_doc_sections.py",
-    )
-    if spec is None or spec.loader is None:
-        raise FileNotFoundError(REPO_ROOT / "scripts" / "map_doc_sections.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def _build_fixture(root: Path) -> Path:
@@ -91,7 +81,6 @@ def _graph_doc_template() -> str:
 def test_build_document_preserves_fixture_edges_and_health() -> None:
     with tempfile.TemporaryDirectory() as td:
         plugin = _build_fixture(Path(td))
-        shared = _load_map_doc_sections()
         inventory = shared.collect_inventory(plugin)
         health = shared.summarize_plugin_health(inventory, workflow_paths=_mod.WORKFLOW_PATHS)
         rendered = _mod.build_document(inventory, health, today="2026-06-02")
@@ -111,7 +100,6 @@ def test_build_document_preserves_fixture_edges_and_health() -> None:
 def test_build_document_does_not_render_external_wrapper_nodes() -> None:
     with tempfile.TemporaryDirectory() as td:
         plugin = _build_fixture(Path(td))
-        shared = _load_map_doc_sections()
         inventory = shared.collect_inventory(plugin)
         health = shared.summarize_plugin_health(inventory, workflow_paths=_mod.WORKFLOW_PATHS)
         rendered = _mod.build_document(inventory, health, today="2026-06-02")
@@ -168,7 +156,6 @@ def test_main_fails_closed_without_partial_write_on_inventory_error() -> None:
 
 
 def test_node_id_uses_shared_mermaid_sanitization() -> None:
-    shared = _load_map_doc_sections()
     assert _mod.node_id("al-dev-worker") == "al_dev_worker"
     assert _mod.node_id("al-dev-worker") == shared.mermaid_node_id("al-dev-worker")
 

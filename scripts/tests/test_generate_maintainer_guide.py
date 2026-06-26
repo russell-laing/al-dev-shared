@@ -1,19 +1,20 @@
-"""Fixture-based tests for scripts/maintainer_guide_sections.py and generate-maintainer-guide.py."""
+"""Fixture-based tests for scripts/al_dev_tools/docs/maintainer_guide_sections.py and generate-maintainer-guide.py."""
 from __future__ import annotations
 
 import contextlib
 import importlib.util
 import inspect
 import io
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.docs import maintainer_guide_sections as lib
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _load_module(filename: str, module_name: str):
+def _load_cli_module(filename: str, module_name: str):
     spec = importlib.util.spec_from_file_location(
         module_name,
         REPO_ROOT / "scripts" / filename,
@@ -21,12 +22,8 @@ def _load_module(filename: str, module_name: str):
     if spec is None or spec.loader is None:
         raise FileNotFoundError(REPO_ROOT / "scripts" / filename)
     module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
-
-
-lib = _load_module("maintainer_guide_sections.py", "maintainer_guide_sections")
 
 
 def _write_skill(parent: Path, name: str, frontmatter_yaml: str) -> None:
@@ -872,7 +869,7 @@ def _stage_template(stage: str, *, drop_key: str | None = None) -> str:
 
 
 def _patched_cli(root: Path):
-    cli = _load_module("generate-maintainer-guide.py", "generate_maintainer_guide")
+    cli = _load_cli_module("generate-maintainer-guide.py", "generate_maintainer_guide")
     cli.REPO = root
     cli.SKILLS_DIR = root / ".claude" / "skills"
     cli.PAGE_KEYS = {

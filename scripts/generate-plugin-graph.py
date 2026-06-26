@@ -11,12 +11,8 @@ from pathlib import Path
 import sys
 import tempfile
 
-
-SCRIPT_DIR = Path(__file__).resolve().parent
-if str(SCRIPT_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPT_DIR))
-
-from map_doc_sections import (  # noqa: E402
+from scripts import REPO_ROOT
+from scripts.al_dev_tools.docs.map_doc_sections import (
     build_all_sections,
     build_plugin_graph_document,
     collect_inventory,
@@ -26,7 +22,7 @@ from map_doc_sections import (  # noqa: E402
 )
 
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = REPO_ROOT
 PLUGIN = REPO / "profile-al-dev-shared"
 OUTPUT = REPO / "docs" / "al-dev-plugin-graph.md"
 
@@ -102,4 +98,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

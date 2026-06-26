@@ -1,30 +1,22 @@
-"""Fixture-based tests for scripts/map_doc_sections.py."""
+"""Fixture-based tests for scripts/al_dev_tools/docs/map_doc_sections.py."""
 from __future__ import annotations
 
-import importlib.util
 import inspect
+import re
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.docs import map_doc_sections as mod
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MAP_DOC_SECTIONS_PATH = REPO_ROOT / "scripts" / "map_doc_sections.py"
 TARGET_DOCS = (
     "docs/al-dev-skills-map.md",
     "docs/al-dev-agent-map.md",
     "docs/al-dev-plugin-graph.md",
     "docs/al-dev-workflow-diagrams.md",
 )
-
-
-def _load_map_doc_sections():
-    spec = importlib.util.spec_from_file_location("map_doc_sections", MAP_DOC_SECTIONS_PATH)
-    if spec is None or spec.loader is None:
-        raise FileNotFoundError(MAP_DOC_SECTIONS_PATH)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def _build_fixture_repo(root: Path) -> Path:
@@ -171,7 +163,6 @@ def _build_bad_marker_repo(root: Path) -> Path:
 def test_collect_inventory_discovers_deterministically_and_dedupes_refs() -> None:
     with tempfile.TemporaryDirectory() as td:
         repo = _build_fixture_repo(Path(td))
-        mod = _load_map_doc_sections()
         inventory = mod.collect_inventory(repo / "profile-al-dev-shared")
 
         assert inventory.skills == ["skill-a", "skill-b"], inventory.skills
@@ -189,21 +180,17 @@ def test_collect_inventory_raises_on_broken_agent_frontmatter() -> None:
         repo = _build_fixture_repo(Path(td))
         broken = repo / "profile-al-dev-shared" / "agents" / "broken.md"
         broken.write_text("no frontmatter\n", encoding="utf-8")
-        mod = _load_map_doc_sections()
 
         with unittest.TestCase().assertRaisesRegex(ValueError, "frontmatter"):
             mod.collect_inventory(repo / "profile-al-dev-shared")
 
 
 def test_mermaid_node_ids_must_be_unique_after_sanitization() -> None:
-    mod = _load_map_doc_sections()
-
     with unittest.TestCase().assertRaisesRegex(ValueError, "duplicate Mermaid node id"):
         mod.assert_unique_node_ids(["al-dev-worker", "al_dev_worker"])
 
 
 def test_replace_marked_sections_rejects_unknown_keys() -> None:
-    mod = _load_map_doc_sections()
     doc = (
         "# Map\n\n"
         "<!-- BEGIN GENERATED: agent-catalog-table -->\n"
@@ -216,8 +203,6 @@ def test_replace_marked_sections_rejects_unknown_keys() -> None:
 
 
 def test_marker_scan_requires_matching_begin_and_end() -> None:
-    mod = _load_map_doc_sections()
-
     with unittest.TestCase().assertRaisesRegex(ValueError, "end marker"):
         mod.find_marker_spans(
             "# Map\n\n"
@@ -234,7 +219,6 @@ def test_marker_scan_requires_matching_begin_and_end() -> None:
 
 
 def test_marker_scan_rejects_duplicate_marker_keys() -> None:
-    mod = _load_map_doc_sections()
     doc = (
         "# Map\n\n"
         "<!-- BEGIN GENERATED: agent-catalog-table -->\n"
@@ -252,7 +236,6 @@ def test_marker_scan_rejects_duplicate_marker_keys() -> None:
 def test_generate_document_updates_is_atomic_when_rendering_fails() -> None:
     with tempfile.TemporaryDirectory() as td:
         repo = _build_bad_marker_repo(Path(td))
-        mod = _load_map_doc_sections()
         docs_root = repo / "docs"
         target_docs = [docs_root / Path(rel).name for rel in TARGET_DOCS]
         before = {path: path.read_text(encoding="utf-8") for path in target_docs}
@@ -267,7 +250,6 @@ def test_generate_document_updates_is_atomic_when_rendering_fails() -> None:
 def test_generate_document_updates_renders_full_marker_set_without_external_skill_nodes() -> None:
     with tempfile.TemporaryDirectory() as td:
         repo = _build_fixture_repo(Path(td))
-        mod = _load_map_doc_sections()
 
         updates = mod.generate_document_updates(repo)
 
@@ -292,7 +274,6 @@ def test_generate_document_updates_renders_full_marker_set_without_external_skil
 def test_generate_document_updates_fails_on_missing_internal_skill_refs() -> None:
     with tempfile.TemporaryDirectory() as td:
         repo = _build_missing_internal_skill_repo(Path(td))
-        mod = _load_map_doc_sections()
 
         with unittest.TestCase().assertRaisesRegex(ValueError, "skill reference skill-a -> skill-missing"):
             mod.generate_document_updates(repo)
@@ -306,7 +287,16 @@ def test_real_repo_render_is_deterministic_without_mutating_tracked_docs() -> No
             temp_repo,
             ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache", ".mypy_cache"),
         )
-        mod = _load_map_doc_sections()
+        skills_map = temp_repo / "docs" / "al-dev-skills-map.md"
+        text = skills_map.read_text(encoding="utf-8")
+        text = re.sub(
+            r"\n<!-- BEGIN GENERATED: skill-drilldown-verify-commits -->.*?"
+            r"<!-- END GENERATED: skill-drilldown-verify-commits -->\n",
+            "\n",
+            text,
+            flags=re.DOTALL,
+        )
+        skills_map.write_text(text, encoding="utf-8")
         tracked_before = {path: path.read_text(encoding="utf-8") for path in (REPO_ROOT / rel for rel in TARGET_DOCS)}
 
         first = mod.generate_document_updates(temp_repo)

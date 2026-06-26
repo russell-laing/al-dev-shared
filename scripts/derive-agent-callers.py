@@ -12,19 +12,16 @@ phase (regenerating the catalog from this parser) immediately reverted.
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-if str(SCRIPT_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPT_DIR))
-
-from map_doc_sections import collect_inventory, _internal_skill_agent_edges
+from scripts import REPO_ROOT
+from scripts.al_dev_tools.docs.map_doc_sections import (
+    _internal_skill_agent_edges,
+    collect_inventory,
+)
 
 
 def main() -> int:
-    repo = SCRIPT_DIR.parent
-    inv = collect_inventory(repo / "profile-al-dev-shared")
+    inv = collect_inventory(REPO_ROOT / "profile-al-dev-shared")
     edges = _internal_skill_agent_edges(inv)
     callers = {
         name: sorted({skill for skill, agent in edges if agent == name})
@@ -36,8 +33,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except Exception as exc:  # noqa: BLE001
-        sys.stderr.write(f"derive-agent-callers: {exc}\n")
-        raise SystemExit(1) from exc
+    raise SystemExit(main())
