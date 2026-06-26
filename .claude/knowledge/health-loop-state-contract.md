@@ -106,3 +106,40 @@ At a transition whose `fresh_session_recommended` is `true`, the completing
 skill stops after writing the breadcrumb and recommends running `next_command`
 in a fresh session. It does **not** auto-invoke the next skill in the same
 context — that is what drives mid-loop compaction.
+
+## Phase 0 Validation (report-plugin-health)
+
+When `report-plugin-health` reads `.dev/health-loop-state.md` at Phase 0, it must validate these required fields before proceeding:
+
+- `stage_completed`: Must be a recognized stage name (e.g., `discover-plugin-health`, `record-plugin-dispositions`)
+- `completed_at`: ISO date (YYYY-MM-DD); must be ≤ today
+- `next_command`: Must be `/report-plugin-health` or another valid skill name
+- `next_inputs`: Must list artifact paths; validate that at least one path exists (e.g., findings file)
+- `fresh_session_recommended`: Boolean; if true, operator should start a new session before continuing
+
+**Validation gate (Step 0 of report Phase 0):**
+
+```bash
+if ! [ -f .dev/health-loop-state.md ]; then
+  echo "ERROR: .dev/health-loop-state.md not found. Run discover-plugin-health first."
+  exit 1
+fi
+
+# Parse YAML and validate required fields
+stage=$(grep "^stage_completed:" .dev/health-loop-state.md | cut -d' ' -f2)
+completed=$(grep "^completed_at:" .dev/health-loop-state.md | cut -d' ' -f2)
+inputs=$(grep "next_inputs:" .dev/health-loop-state.md -A 5)
+
+if [ -z "$stage" ] || [ -z "$completed" ]; then
+  echo "ERROR: Missing required fields in health-loop-state.md"
+  exit 1
+fi
+
+# Validate that at least one input artifact exists
+if ! echo "$inputs" | grep -q "docs/health/"; then
+  echo "ERROR: No health artifacts referenced in next_inputs"
+  exit 1
+fi
+```
+
+This replaces the informal "discover-report-checkpoint" proposal with a concrete validation contract in the existing state-machine doc.
