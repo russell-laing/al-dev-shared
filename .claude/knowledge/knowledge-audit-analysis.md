@@ -8,8 +8,8 @@ on the return schema and severity rules defined here.
 
 ## 1. Progress Tracking
 
-Before analyzing any file, create one task per flagged file using `TaskCreate` named
-`[issue-type] [filename]`. Update each task to `in_progress` when analysis begins,
+Before analyzing any file, create one progress todo per flagged file named
+`[issue-type] [filename]`. Mark each todo `in_progress` when analysis begins and
 `completed` when the file analysis is written to findings.
 
 ---
@@ -65,8 +65,9 @@ For each flagged file:
 
 ### Severity Criteria
 
-- **HIGH:** Agent explicitly references the file for guidance it doesn't contain (e.g.,
-  "Reference knowledge/X.md for examples"). Missing content blocks the agent.
+- **HIGH:** Agent explicitly references the file for guidance it doesn't contain
+  (for example, "Reference the related knowledge doc for the required examples").
+  Missing content blocks the worker.
 - **MEDIUM:** File is referenced but content gap is incomplete/shallow (agent can work
   around it).
 - **LOW:** False positive (file is intentionally brief) or formatting issue (easily

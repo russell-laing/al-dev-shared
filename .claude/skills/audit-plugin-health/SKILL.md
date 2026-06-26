@@ -3,7 +3,7 @@ name: audit-plugin-health
 description: >-
   Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Dispatches
   the two-phase internal workflow `/discover-plugin-health` then
-  `/report-plugin-health` across two separate sessions (mandatory fresh-session
+  `/report-plugin-health` across two separate sessions (mandatory fresh session
   boundary between discover and report) to dispatch design + quality + naming lenses with a
   per-surface file list, rank findings, and write one dossier per surface to
   docs/health/. Never auto-edits source — all outputs are read-only observations. Supports
@@ -83,7 +83,7 @@ Invoke `/discover-plugin-health`, passing through all arguments received:
 `/discover-plugin-health` writes one findings file per surface to `docs/health/`.
 Collect the findings file path(s) it returns.
 
-After `/discover-plugin-health` completes, it writes a fresh-session breadcrumb and
+After `/discover-plugin-health` completes, it writes a fresh session breadcrumb and
 instructs the user to start a new session. **Stop here — do not proceed to Phase 2
 in the same session.** Phase 2 is reached only when the user re-invokes
 `/audit-plugin-health` in a fresh session and Phase 0 detects the

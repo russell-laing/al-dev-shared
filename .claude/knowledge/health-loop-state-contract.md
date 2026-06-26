@@ -4,12 +4,12 @@ Canonical schema and lifecycle for `.dev/health-loop-state.md` — the single
 durable breadcrumb that carries the health-audit loop from one skill to the
 next. Each loop skill **reads** this file at its Phase 0 and **writes** it on
 completion. The breadcrumb is what lets the loop survive context-window
-compaction and fresh-session boundaries: the "what runs next" pointer lives on
+compaction and fresh session boundaries: the "what runs next" pointer lives on
 disk, not only in conversation context.
 
 ## Loop order
 
-`/audit-plugin-health` → `/discover-plugin-health` → [fresh session] →
+`/audit-plugin-health` → `/discover-plugin-health` → fresh session →
 `/report-plugin-health` → dossier → `/record-plugin-dispositions` →
 `/plan-plugin-findings` → plan → `/implement-plugin-health` → ledger closed
 
@@ -22,7 +22,7 @@ only; never harness-specific tokens.
 ## Persistence semantics
 
 `.dev/health-loop-state.md` is git-tracked, so the durability claim above
-(surviving fresh sessions and worktree boundaries) holds only when the latest
+(surviving fresh session and worktree boundaries) holds only when the latest
 breadcrumb write is **committed**. Therefore:
 
 - A loop skill MUST write the breadcrumb **before** creating its final commit
@@ -59,7 +59,7 @@ the table below).
 | Skill | Reads | Writes `next_command` |
 | --- | --- | --- |
 | `/ingest-plugin-friction` | loop breadcrumb (warn if later step in flight) | `/report-plugin-health` |
-| `/discover-plugin-health` | breadcrumb (written by discover on completion) | `/report-plugin-health --findings <path>` |
+| `/discover-plugin-health` | loop breadcrumb (adopt when resuming) | `/report-plugin-health --findings <path>` |
 | `/report-plugin-health` | breadcrumb (warn if a loop is already in flight) | `/record-plugin-dispositions` |
 | `/record-plugin-dispositions` | breadcrumb | `/plan-plugin-findings` |
 | `/plan-plugin-findings` | breadcrumb | `/implement-plugin-health --plan <path>` |
