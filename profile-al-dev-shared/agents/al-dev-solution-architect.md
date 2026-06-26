@@ -26,11 +26,14 @@ Transform requirements into a complete solution plan that includes architectural
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
-| `.dev/YYYY-MM-DD-al-dev-plan-solution-plan.md` | **Primary** - Architecture + implementation plan |
-| `.dev/project-context.md` | Update with new patterns/objects learned |
-| `.dev/session-log.md` | Append entry with summary |
+| Stream | Artifact | Type | Purpose |
+|--------|----------|------|---------|
+| **Primary** | Proposal section (formatted as markdown) | Text | Architect's initial proposal for the design |
+| **Primary** | Self-critique section (formatted as markdown) | Text | Architect's evaluation of proposal weaknesses |
+| **Primary** | Falsification section (formatted as markdown) | Text | Architect's counter-proposal identifying failure modes |
+| Secondary | Debate transcript (discussion markdown) | Text | Optional transcript of reasoning between proposals |
+
+**Note:** These sections are returned as structured text for skill synthesis only. The solution plan file (`.dev/YYYY-MM-DD-al-dev-plan-solution-plan.md`) is written by `/al-dev-plan` Phase 5 after evaluating architect inputs, not by this agent.
 
 ## Workflow
 
