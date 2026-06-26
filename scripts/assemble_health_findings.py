@@ -167,6 +167,8 @@ def assemble_findings(lens_dir, date, surface, dimensions, failed_lenses,
 _METRIC_FIELDS = ("raw_count", "verified_count", "dropped_unverified_count",
                   "stale_dropped_count", "suppressed_count", "failed_lens_count",
                   "new_count", "recurring_count")
+_SEVERITY_DIMS = ("design", "quality", "naming")
+_SEVERITY_LEVELS = ("high", "medium", "low")
 
 
 def format_metrics(counts):
@@ -174,6 +176,22 @@ def format_metrics(counts):
     if missing:
         raise ValueError(f"missing metric fields: {missing}")
     sev = counts.get("severity", {})
+    if sev:
+        unknown_dims = [k for k in sev if k not in _SEVERITY_DIMS]
+        if unknown_dims:
+            raise ValueError(
+                f"unknown severity dimension keys: {unknown_dims}; "
+                f"expected lowercase {_SEVERITY_DIMS}"
+            )
+        for dim in sev:
+            if not isinstance(sev[dim], dict):
+                raise ValueError(f"severity[{dim!r}] must be a dict, got {type(sev[dim]).__name__}")
+            unknown_levels = [k for k in sev[dim] if k not in _SEVERITY_LEVELS]
+            if unknown_levels:
+                raise ValueError(
+                    f"unknown severity level keys in {dim!r}: {unknown_levels}; "
+                    f"expected {_SEVERITY_LEVELS}"
+                )
 
     def row(label, key):
         d = sev.get("design", {}).get(key, 0)
