@@ -14,6 +14,15 @@ from scripts.al_dev_tools.docs import maintainer_guide_sections as lib
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
+class FacadeExportTests(unittest.TestCase):
+    def test_maintainer_guide_sections_keeps_public_entrypoints(self) -> None:
+        from scripts.al_dev_tools.docs import maintainer_guide_sections as guide_mod
+
+        self.assertTrue(hasattr(guide_mod, "load_contracts"))
+        self.assertTrue(hasattr(guide_mod, "compute_gaps"))
+        self.assertTrue(hasattr(guide_mod, "build_sections"))
+
+
 def _load_cli_module(filename: str, module_name: str):
     spec = importlib.util.spec_from_file_location(
         module_name,
