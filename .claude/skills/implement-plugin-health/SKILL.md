@@ -133,6 +133,11 @@ skill was self-edited mid-run — require a restart (the self-edit ordering rule
 already mandates that a task editing this skill runs last, with a restart
 boundary before any later phase; do not re-add that rule, cross-reference it).
 
+**Restart boundary field:** If the checkpoint has `restart_boundary: true` and
+`phase: 1` with `status: complete`, skip the restart option and proceed directly
+to Phase 2. This enforces a clean phase boundary when a task has marked restart
+as blocked (e.g., after a mid-run self-edit that requires a restart).
+
 **If the checkpoint file does not exist:** proceed to Phase 1.
 
 Write initial checkpoint before proceeding:
@@ -597,4 +602,5 @@ tasks_completed:
       - disp_20260619_000002
 stale_open_rows: <count>    # populated in Phase 3
 executor_revision: <git short-hash of implement-plugin-health/SKILL.md at run start>
+restart_boundary: <bool>    # optional; when true and phase 1 is complete, skip restart at this boundary
 ```
