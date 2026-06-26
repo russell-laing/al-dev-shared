@@ -801,13 +801,24 @@ def _cli_match(
         f = r["finding"]
         assert isinstance(f, dict)
         mid = matched["id"] if isinstance(matched, dict) else "-"
-        snippet = f.get("finding", "")[:60]
-        print(f"{r['classification']:8} {mid:6} {f.get('object', ''):45} {snippet}")
+        snippet = f.get("finding", "")[:120]
+        print(f"{r['classification']:8} {mid:24} {f.get('object', ''):55} {snippet}")
     print(
         f"\nsuppress={counts['suppress']} verify={counts['verify']} "
         f"keep={counts['keep']} (total={len(results)})"
     )
     return 0
+
+
+def _cli_show(event_id: str, events_root: Path) -> int:
+    """Print full JSON for a single event by event_id."""
+    import json as _json
+    for ev in iter_event_rows(events_root):
+        if ev.get("event_id") == event_id:
+            print(_json.dumps(ev, indent=2, ensure_ascii=False))
+            return 0
+    print(f"show: no event found: {event_id}", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
@@ -887,6 +898,10 @@ if __name__ == "__main__":
     lo.add_argument("--surface")
     lo.add_argument("--dimension")
 
+    sh = sub.add_parser("show", help="Print full JSON for a single event by its event_id.")
+    sh.add_argument("--event-id", required=True, help="The event_id to look up (e.g. disp_20260626_000070).")
+    sh.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
+
     args = parser.parse_args()
     if args.command == "match":
         raise SystemExit(_cli_match(args.findings, args.ledger, args.events_root))
@@ -940,6 +955,8 @@ if __name__ == "__main__":
         render_legacy_compatibility_view(args.compatibility_view, events)
         print(f"regenerated {len(events)} event(s)")
         raise SystemExit(0)
+    if args.command == "show":
+        raise SystemExit(_cli_show(args.event_id, args.events_root))
     if args.command == "list-open":
         import json
 
