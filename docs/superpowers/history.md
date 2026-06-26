@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-26
+
+### Tooling Quality Fixes Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-26-tooling-quality-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-26 | tooling-quality-fixes | implemented; rows closed: [disp_20260626_000066, disp_20260626_000067, disp_20260626_000068, disp_20260626_000069, disp_20260626_000070, disp_20260626_000071, disp_20260626_000072, disp_20260626_000073, disp_20260626_000074, disp_20260626_000075, disp_20260626_000076, disp_20260626_000078]
+
 ## 2026-06-24
 
 ### Tooling Quality & Design Fixes Implementation Plan
