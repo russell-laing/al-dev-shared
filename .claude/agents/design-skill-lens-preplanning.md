@@ -1,7 +1,7 @@
 ---
 name: design-skill-lens-preplanning
 description: Apply Pre-planning Skills lens to plugin skills — checks whether pre-planning/brainstorming skills appear correctly in the Layer 1 diagram as dashed tributary arrows and have named outputs referenced downstream. Returns findings.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 

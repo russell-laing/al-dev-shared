@@ -68,8 +68,8 @@ for name in EXPECTED_AGENTS:
 
     content = open(path).read()
 
-    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), complexity (multi-file phase-count ranking + Atomise/Absorb synthesis), near-duplicates (multi-file comparative synthesis with multi-criterion judgement), maintainer-handoff (multi-file maintainer chain tracing from skill bodies), quality-agent-multilens/quality-skill-multilens (corpus retention across 4 sequential synthesis lenses)
-    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit", "design-skill-lens-complexity", "design-skill-lens-near-duplicates", "design-skill-lens-maintainer-handoff", "quality-agent-multilens", "quality-skill-multilens"}
+    # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), complexity (multi-file phase-count ranking + Atomise/Absorb synthesis), near-duplicates (multi-file comparative synthesis with multi-criterion judgement), maintainer-handoff (multi-file maintainer chain tracing from skill bodies), preplanning (multi-skill diagram cross-reference validation), quality-agent-multilens/quality-skill-multilens (corpus retention across 4 sequential synthesis lenses)
+    SONNET_AGENTS = {"design-skill-lens-shared-backbone", "design-skill-lens-handoff-gaps", "design-agent-lens-model-fit", "design-skill-lens-complexity", "design-skill-lens-near-duplicates", "design-skill-lens-maintainer-handoff", "design-skill-lens-preplanning", "quality-agent-multilens", "quality-skill-multilens"}
     if name in SONNET_AGENTS:
         if "model: sonnet" not in content:
             failures.append(_format_failure(
