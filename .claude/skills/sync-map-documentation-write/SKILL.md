@@ -1,10 +1,9 @@
 ---
-name: sync-map-documentation-regenerate
+name: sync-map-documentation-write
 description: >-
   Regenerate derived diagrams and projections from canonical source files,
   then commit all generated artifacts. Final step after map updates (apply skill)
   completes; regenerates and commits the generated product, not the maps.
-argument-hint: ""
 workflow:
   stage: map-sync
   invoked-by: user
