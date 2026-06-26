@@ -4,13 +4,17 @@
 
 This document defines the Test-Driven Development (TDD) workflow used across the AL development profile. It is referenced by agents and commands to ensure consistent TDD discipline.
 
+For the full credit-limit walkthrough, use
+[tdd-credit-limit-example.md](tdd-credit-limit-example.md) as the canonical
+example source.
+
 ---
 
 ## Core TDD Principles
 
 ### The TDD Cycle
 
-```
+```text
 RED → GREEN → REFACTOR → (repeat)
 ```
 
@@ -29,55 +33,22 @@ RED → GREEN → REFACTOR → (repeat)
 
 ## Phase 1: RED - Write Failing Test
 
-### Goal
-Create a test that fails because the production code doesn't exist yet.
+### RED Goal
 
-### Steps
+Create a test that fails because the production behavior doesn't exist yet.
+
+Worked example reference: see the
+[RED worked example](tdd-credit-limit-example.md#red) for the canonical
+failing-stub example used in this phase.
+
+### RED Steps
 
 1. **Read test specification** from `.dev/05-test-specification.md`
-2. **Implement test codeunit** following the spec:
-   ```al
-   codeunit 50200 "Credit Limit Tests"
-   {
-       Subtype = Test;
-
-       [Test]
-       procedure Test_ValidateCreditLimit_WithinLimit()
-       var
-           Validator: Codeunit "Credit Limit Validator";
-           MockRepo: Codeunit "Mock Customer Repository";
-           Result: Boolean;
-       begin
-           // [GIVEN] Customer with 10000 limit, 5000 outstanding
-           MockRepo.AddMockCustomer('C001', 10000, 5000);
-
-           // [WHEN] Validating order of 3000
-           Result := Validator.ValidateCreditLimit('C001', 3000, MockRepo);
-
-           // [THEN] Should allow (5000 + 3000 < 10000)
-           Assert.IsTrue(Result, 'Should allow order within limit');
-       end;
-   }
-   ```
-
+2. **Implement test codeunit** following the spec.
 3. **Implement mock repositories** for dependency injection
-4. **Create MINIMAL production code stubs** (compilation only - NO logic):
-   ```al
-   codeunit 50100 "Credit Limit Validator"
-   {
-       procedure ValidateCreditLimit(
-           CustomerNo: Code[20];
-           OrderAmount: Decimal;
-           Repo: Interface ICustomerRepository
-       ): Boolean
-       begin
-           // ⛔ NO LOGIC! Just return default so test compiles and FAILS
-           exit(false);  // or exit(true) - whichever makes test FAIL
-       end;
-   }
-   ```
-
+4. **Create MINIMAL production code stubs** (compilation only - NO logic).
 5. **Compile and publish app:**
+
    ```bash
    # Compile the app
    al-compile
@@ -87,6 +58,7 @@ Create a test that fails because the production code doesn't exist yet.
    ```
 
 6. **Run the test:**
+
    ```bash
    # Execute the test codeunit
    # Auto-detects codeunit range from app.json if available
@@ -100,6 +72,7 @@ Create a test that fails because the production code doesn't exist yet.
    ```
 
 7. **⛔ HARD STOP - Use USER_GATE:**
+
    ```markdown
    RED Phase Complete: [TestName]
 
@@ -119,7 +92,8 @@ Create a test that fails because the production code doesn't exist yet.
 ### RED Phase Violations
 
 **If test PASSES in RED phase:**
-```
+
+```text
 ❌ TDD VIOLATION: Test passed before production code exists!
 
 This means:
@@ -139,39 +113,20 @@ Please investigate the test.
 
 ## Phase 2: GREEN - Make It Pass
 
-### Goal
+### GREEN Goal
+
 Write minimal production code to make the test pass.
+Limit changes to the smallest behavior needed for the confirmed failing test.
 
-### Steps
+Worked example reference: see the
+[GREEN worked example](tdd-credit-limit-example.md#green).
 
-1. **NOW implement ACTUAL production logic** (replace RED phase stubs):
-   ```al
-   codeunit 50100 "Credit Limit Validator"
-   {
-       procedure ValidateCreditLimit(
-           CustomerNo: Code[20];
-           OrderAmount: Decimal;
-           Repo: Interface ICustomerRepository
-       ): Boolean
-       var
-           Customer: Record Customer;
-           Outstanding: Decimal;
-       begin
-           // ✅ ACTUAL LOGIC (minimal to make test pass)
-           if not Repo.TryGetCustomer(CustomerNo, Customer) then
-               Error('Customer not found');
+### GREEN Steps
 
-           if Customer.CreditLimit = 0 then
-               exit(true); // Unlimited
-
-           Outstanding := Repo.GetOutstandingAmount(CustomerNo);
-           exit(Outstanding + OrderAmount <= Customer.CreditLimit);
-       end;
-   }
-   ```
-
+1. **NOW implement ACTUAL production logic** (replace RED phase stubs).
 2. **Implement real interface implementations** (repositories, services)
 3. **Compile and publish app:**
+
    ```bash
    # Compile the app
    al-compile
@@ -181,6 +136,7 @@ Write minimal production code to make the test pass.
    ```
 
 4. **Run the test:**
+
    ```bash
    # Execute the test codeunit
    # Auto-detects codeunit range from app.json if available
@@ -194,6 +150,7 @@ Write minimal production code to make the test pass.
    ```
 
 5. **⛔ HARD STOP - Use USER_GATE:**
+
    ```markdown
    GREEN Phase Complete: [TestName]
 
@@ -213,6 +170,7 @@ Write minimal production code to make the test pass.
 ### GREEN Phase Iterations
 
 **If test still FAILS:**
+
 1. Ask user for error message
 2. Analyze failure
 3. Fix production code
@@ -225,12 +183,18 @@ Write minimal production code to make the test pass.
 
 ## Phase 3: REFACTOR - Improve Quality
 
-### Goal
+### REFACTOR Goal
+
 Improve code quality without changing behavior.
+Keep behavior fixed; any behavior change starts a new RED phase.
+
+Worked example reference: see the
+[REFACTOR worked example](tdd-credit-limit-example.md#refactor).
 
 ### What to Refactor
 
 ✅ **Do refactor:**
+
 - Extract helper procedures
 - Improve variable names
 - Add XML documentation
@@ -239,35 +203,16 @@ Improve code quality without changing behavior.
 - Remove duplication
 
 ❌ **Don't refactor:**
+
 - Behavior changes (creates new test failures)
 - Add new features (requires new tests first)
 - Change interfaces (breaks other tests)
 
-### Steps
+### REFACTOR Steps
 
-1. **Improve code quality:**
-   ```al
-   /// <summary>
-   /// Validates that a new order does not exceed customer credit limit.
-   /// </summary>
-   procedure ValidateCreditLimit(...): Boolean
-   var
-       Customer: Record Customer;
-   begin
-       Customer := GetCustomer(CustomerNo, Repo);
-
-       if IsUnlimitedCredit(Customer) then
-           exit(true);
-
-       exit(IsWithinCreditLimit(Customer, OrderAmount, Repo));
-   end;
-
-   local procedure GetCustomer(...): Record Customer
-   local procedure IsUnlimitedCredit(...): Boolean
-   local procedure IsWithinCreditLimit(...): Boolean
-   ```
-
+1. **Improve code quality.**
 2. **Compile and publish app:**
+
    ```bash
    # Compile the app
    al-compile
@@ -277,6 +222,7 @@ Improve code quality without changing behavior.
    ```
 
 3. **Run ALL tests:**
+
    ```bash
    # Execute all test codeunits to verify refactoring didn't break anything
    # Auto-detects full codeunit range from app.json
@@ -293,6 +239,7 @@ Improve code quality without changing behavior.
    ```
 
 4. **⛔ HARD STOP - Use USER_GATE:**
+
    ```markdown
    REFACTOR Phase Complete
 
@@ -312,6 +259,7 @@ Improve code quality without changing behavior.
 ### REFACTOR Phase Failures
 
 **If refactoring broke tests:**
+
 1. **Revert** refactoring immediately
 2. Document: "Refactoring reverted - broke tests"
 3. Skip further refactoring for this test
@@ -357,7 +305,7 @@ Do not add edge cases until this baseline cycle is green.
 
 **Agents should create granular tasks for each TDD cycle:**
 
-```
+```text
 TaskCreate: "TDD RED: [test name]"
   description: "Write failing test for [brief description]"
   activeForm: "Writing failing test: [test name]"
@@ -376,6 +324,7 @@ TaskUpdate: "TDD REFACTOR: [test]" → addBlockedBy: ["TDD GREEN: [test]"]
 ```
 
 **Update task status at each gate:**
+
 - After RED confirmation → mark RED complete, start GREEN
 - After GREEN confirmation → mark GREEN complete, start REFACTOR
 - After REFACTOR confirmation → mark REFACTOR complete, start next test
@@ -385,6 +334,7 @@ TaskUpdate: "TDD REFACTOR: [test]" → addBlockedBy: ["TDD GREEN: [test]"]
 ## Test Execution Context
 
 **AL tests can be executed automatically using bc-publish and bc-test:**
+
 - Agents use `bc-publish` to deploy .app files to BC server
 - Agents use `bc-test [codeunit-id]` to execute test codeunits
 - Requires `.bcconfig.json` with server configuration
@@ -423,6 +373,7 @@ The tool reads `app.json` to find test configuration:
 ```
 
 When `test.enabled` is `true`, bc-test:
+
 - Reads `codeunitIdRanges` array
 - Runs all test codeunits in those ranges
 - No user input needed
@@ -546,7 +497,7 @@ bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-results.txt"
 
 Example test-summary.txt structure:
 
-```
+```text
 TEST EXECUTION REPORT
 =====================
 Date: 2026-05-22T14:30:45Z
@@ -575,7 +526,7 @@ FAILED TESTS:
 
 Example pytest output format:
 
-```
+```text
 test-results.json (pytest):
 {
   "tests": [
@@ -635,7 +586,7 @@ test-results.json (pytest):
 
 Each test phase and framework produces separate files — no overwrites:
 
-```
+```text
 .dev/
   2026-05-22-tdd-al-red.txt              # RED phase (test fails)
   2026-05-22-tdd-al-green.txt            # GREEN phase (test passes)
@@ -686,6 +637,7 @@ bc-test -o .dev/failures.txt --failures-only
 #### Usage Heuristics
 
 **Full run (bc-test) is used when:**
+
 - First test verification after RED phase (confirm 1 test fails)
 - After GREEN phase (confirm 1 test passes)
 - After REFACTOR phase (confirm all tests still pass)
@@ -693,6 +645,7 @@ bc-test -o .dev/failures.txt --failures-only
 - CI/CD pipelines (complete record required)
 
 Example workflow:
+
 ```bash
 # RED phase: verify test fails
 bc-test  # Full run → shows "Passed: 0, Failed: 1"
@@ -705,12 +658,14 @@ bc-test  # Full run → shows "Passed: 567, Failed: 0"
 ```
 
 **Failures-only (bc-test --failures-only) is used when:**
+
 - Iterating on a fix (after seeing failure, fixing code, testing again)
 - Large test suite with only a few failures
 - During development to reduce console noise
 - Focusing on specific broken tests
 
 Example workflow:
+
 ```bash
 # Initial failure
 bc-test --failures-only
@@ -728,7 +683,7 @@ bc-test --failures-only
 
 #### Recommended Development Cycle
 
-```
+```text
 FULL RUN (verify failure)
   ↓
 FAILURES-ONLY (identify what failed)
@@ -751,11 +706,13 @@ This pattern balances speed during development with thorough verification before
 **bc-test adapts to your workflow:**
 
 **Console output (no `-o`):**
+
 - Defaults to `--failures-only` (less noise)
 - Shows summary statistics always
 - Override: `bc-test --no-failures-only` to see all
 
 **File output (with `-o`):**
+
 - Defaults to show all tests (complete record)
 - Includes full details and call stacks
 - Override: `bc-test -o file.txt --failures-only` for failures only
@@ -904,13 +861,15 @@ jq '{
 #### CI/CD Workflow Result
 
 Both GitHub and Azure show:
+
 - Test execution status in PR checks
 - Pass/fail count in build summary
 - Individual test failure details
 - Merge blocked until all tests pass
 
 Example PR check output:
-```
+
+```text
 ✓ Test (1 check)
   AL Test Results
     Passed: 558
@@ -929,174 +888,21 @@ These scenarios show how the command patterns above combine into an actual TDD
 loop rather than remaining isolated command snippets.
 Use them as templates, not as a mandate to copy every command verbatim.
 
-#### Scenario 1: New Feature (Red-Green-Refactor Cycle)
+#### Scenario 1: Credit Limit Walkthrough (Red-Green-Refactor Cycle)
 
 **Goal:** Add credit limit validation for customer orders
 
-**RED Phase:**
-```bash
-# 1. Write failing test
-cat > src/Tests.al <<'EOF'
-codeunit 50200 "Credit Limit Tests"
-{
-    Subtype = Test;
-
-    [Test]
-    procedure Test_Order_WithinCreditLimit_Allowed()
-    var
-        Customer: Record Customer;
-        Validator: Codeunit "Credit Limit Validator";
-        Result: Boolean;
-    begin
-        // [GIVEN] Customer with 10000 limit, 5000 outstanding
-        LibrarySmallBusiness.CreateCustomer(Customer, '10000', '5000');
-        
-        // [WHEN] Try to approve an order for 3000 (would total 8000)
-        Result := Validator.ValidateCreditLimit(Customer."No.", 3000);
-        
-        // [THEN] Should allow (5000 + 3000 = 8000 < 10000)
-        Assert.IsTrue(Result, 'Should allow order within limit');
-    end;
-}
-EOF
-
-# 2. Compile and test
-al-compile
-bc-publish
-
-# 3. Run test - should FAIL
-bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-red.txt"
-# Output: "Passed: 0, Failed: 1" ✓ RED phase verified
-```
-
-**GREEN Phase:**
-```bash
-# 1. Implement production code
-cat > src/CreditLimitValidator.al <<'EOF'
-codeunit 50100 "Credit Limit Validator"
-{
-    procedure ValidateCreditLimit(
-        CustomerNo: Code[20];
-        OrderAmount: Decimal
-    ): Boolean
-    var
-        Customer: Record Customer;
-        Outstanding: Decimal;
-    begin
-        if not Customer.Get(CustomerNo) then
-            Error('Customer not found');
-
-        if Customer."Credit Limit (LCY)" = 0 then
-            exit(true); // Unlimited
-
-        Outstanding := GetOutstandingAmount(CustomerNo);
-        exit(Outstanding + OrderAmount <= Customer."Credit Limit (LCY)");
-    end;
-
-    local procedure GetOutstandingAmount(CustomerNo: Code[20]): Decimal
-    var
-        SalesHeader: Record "Sales Header";
-        Outstanding: Decimal;
-    begin
-        SalesHeader.SetRange("Sell-to Customer No.", CustomerNo);
-        SalesHeader.SetFilter(Status, '<>%1', SalesHeader.Status::Released);
-        if SalesHeader.FindSet() then
-            repeat
-                Outstanding += SalesHeader."Amount Including VAT";
-            until SalesHeader.Next() = 0;
-        exit(Outstanding);
-    end;
-}
-EOF
-
-# 2. Compile and test
-al-compile
-bc-publish
-
-# 3. Run test - should PASS
-bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-green.txt"
-# Output: "Passed: 1, Failed: 0" ✓ GREEN phase verified
-```
-
-**REFACTOR Phase:**
-```bash
-# 1. Improve code quality
-cat > src/CreditLimitValidator.al <<'EOF'
-codeunit 50100 "Credit Limit Validator"
-{
-    /// <summary>
-    /// Validates that a new order does not exceed customer credit limit.
-    /// </summary>
-    procedure ValidateCreditLimit(
-        CustomerNo: Code[20];
-        OrderAmount: Decimal
-    ): Boolean
-    var
-        Customer: Record Customer;
-    begin
-        Customer := GetCustomer(CustomerNo);
-
-        if IsUnlimitedCredit(Customer) then
-            exit(true);
-
-        exit(IsWithinCreditLimit(Customer, OrderAmount));
-    end;
-
-    local procedure GetCustomer(CustomerNo: Code[20]): Record Customer
-    var
-        Customer: Record Customer;
-    begin
-        if not Customer.Get(CustomerNo) then
-            Error('Customer not found');
-        exit(Customer);
-    end;
-
-    local procedure IsUnlimitedCredit(Customer: Record Customer): Boolean
-    begin
-        exit(Customer."Credit Limit (LCY)" = 0);
-    end;
-
-    local procedure IsWithinCreditLimit(
-        Customer: Record Customer;
-        OrderAmount: Decimal
-    ): Boolean
-    var
-        Outstanding: Decimal;
-    begin
-        Outstanding := GetOutstandingAmount(Customer."No.");
-        exit(Outstanding + OrderAmount <= Customer."Credit Limit (LCY)");
-    end;
-
-    local procedure GetOutstandingAmount(CustomerNo: Code[20]): Decimal
-    var
-        SalesHeader: Record "Sales Header";
-        Outstanding: Decimal;
-    begin
-        SalesHeader.SetRange("Sell-to Customer No.", CustomerNo);
-        SalesHeader.SetFilter(Status, '<>%1', SalesHeader.Status::Released);
-        if SalesHeader.FindSet() then
-            repeat
-                Outstanding += SalesHeader."Amount Including VAT";
-            until SalesHeader.Next() = 0;
-        exit(Outstanding);
-    end;
-}
-EOF
-
-# 2. Compile and run ALL tests
-al-compile
-bc-publish
-
-bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-refactor.txt"
-# Output: "Passed: 1, Failed: 0" ✓ REFACTOR phase verified
-# No regressions introduced
-```
+Worked example reference: see the
+[RED worked example](tdd-credit-limit-example.md#red),
+[GREEN worked example](tdd-credit-limit-example.md#green), and
+[REFACTOR worked example](tdd-credit-limit-example.md#refactor).
 
 #### Scenario 2: Bug Fix with Test
 
 **Goal:** Fix rounding bug in invoice calculator
 
 **Quick Development Cycle:**
+
 ```bash
 # 1. Write failing test for the bug
 bc-test  # Run all first
@@ -1131,6 +937,7 @@ bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-bugfix.txt"
 **Goal:** Optimize payment processing without breaking behavior
 
 **Comprehensive Workflow:**
+
 ```bash
 # 0. Baseline: verify all tests pass
 bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-baseline.txt"
@@ -1177,7 +984,7 @@ bc-test -o ".dev/$(date +%Y-%m-%d)-tdd-al-reverted.txt"
 
 All three scenarios follow this pattern:
 
-```
+```text
 WRITE → COMPILE → PUBLISH → TEST → GATE → ITERATE
   ↓       ↓         ↓        ↓     ↓      ↓
 Code  Compiles  Updates  Runs  User    Next
@@ -1213,7 +1020,7 @@ Each phase is gated by user verification of test results before proceeding.
 
 ## Summary: The Hard Stops
 
-```
+```text
 1. Write test code + minimal stubs
 2. Compile, publish, run test (agent verifies FAIL)
 3. ⛔ STOP → Agent shows results, user reviews and confirms
