@@ -99,25 +99,18 @@ beyond the short evidence snippet a record needs.
 
 ## Output Format
 
-### rubber-duck mode
+Return one line per finding in this exact format:
 
-One block per finding, exactly:
-
-```text
-RUBBER DUCK: [Type — Subject]
-Claim:        [what the suggestion says]
-State:        [what reading the code reveals]
-Side-effects: [files/scripts that depend on what's being changed]
-Scope gap:    [anything the suggestion underspecifies, or "none"]
-Verdict:      proceed | modify [reason] | skip [reason]
-Staleness:    ⚠ possibly stale (<commits>)   # omit when subject unchanged
+```
+<finding_object> | <verdict> | <reason_one_liner> | <plan_anchor> | <fix_scope_delta>
 ```
 
-### evidence mode
+**Fields:**
 
-One line per finding:
+- `<finding_object>` — object slug from the finding (e.g., `tighten-return-schema`)
+- `<verdict>` — one of: `proceed` (claim is substantiated), `skip` (claim is refuted or already covered), `modify` (partially substantiated, adjust scope)
+- `<reason_one_liner>` — 1-line justification (e.g., "already implemented in Phase 3" or "claim contradicts live code")
+- `<plan_anchor>` — file path and line range or skill name where implementation touches (e.g., "verify-health-finding.md §Output" or "plan-plugin-findings.md Phase 3")
+- `<fix_scope_delta>` — change to scope vs original claim: "no change", "narrowed to", "expanded to include"
 
-```text
-<object> — verified
-<object> — dropped: <why it did not verify>
-```
+**Return ONLY the verdict line, no preamble.**
