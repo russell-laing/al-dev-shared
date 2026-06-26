@@ -57,6 +57,26 @@ When re-verifying static lens findings, assert:
 - `suggestion_count` matches the count of top-level list items in `findings`
 - Check with: `echo "$findings" | grep -c '^\s*[-*]'`
 
+### Grep Patterns with Special Characters
+
+When using `grep -F` (literal-string search) with strings beginning with `--`, you must use the `--` separator to prevent grep from interpreting the string as a flag:
+
+**Pattern:** `grep -F -- '<string>'`
+
+**Example — search for the literal string "--verbose":**
+
+```bash
+# WRONG: grep -F --verbose config.py  # grep interprets --verbose as a flag
+# CORRECT:
+grep -F -- '--verbose' config.py
+```
+
+**Static-lens check:** If a finding cites a string that begins with `-`, use `--` in its verification grep:
+
+```bash
+grep -F -- '-pattern' <file>  # Always include -- for safety
+```
+
 ## Consumer-specific application
 
 - **`/report-plugin-health` (evidence mode):** the carve-out replaces the
