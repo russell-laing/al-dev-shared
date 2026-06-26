@@ -1,12 +1,9 @@
 ---
-name: sync-map-documentation-write
+name: sync-map-documentation-regenerate
 description: >-
-  Final regeneration step after /sync-map-documentation-apply; fourth step of
-  the async sync flow. After the maps are applied, regenerates the map
-  diagrams, agent projections, the plugin graph, and the maintainer guide pages from
-  their canonical sources, then commits the resulting artifacts. A regeneration
-  failure does not block the commit; the failed artifact is reported and may be
-  left stale.
+  Regenerate derived diagrams and projections from canonical source files,
+  then commit all generated artifacts. Final step after map updates (apply skill)
+  completes; regenerates and commits the generated product, not the maps.
 argument-hint: ""
 workflow:
   stage: map-sync
