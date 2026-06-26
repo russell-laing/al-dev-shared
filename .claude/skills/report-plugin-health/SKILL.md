@@ -17,8 +17,10 @@ workflow:
     - docs/health/<date>-<surface>-findings.md
     - docs/health/<date>-<surface>-friction-findings.md
     - docs/health/dispositions-open.md
+    - .dev/health-loop-state.md
   outputs:
     - docs/health/<date>-<surface>-health.md
+    - .dev/health-loop-state.md
   next: [record-plugin-dispositions]
 ---
 

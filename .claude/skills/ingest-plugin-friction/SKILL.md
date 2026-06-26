@@ -22,8 +22,10 @@ workflow:
   inputs:
     - ~/friction-log/<session>-findings.md
     - ~/friction-log/<session>-signals.json
+    - .dev/health-loop-state.md
   outputs:
     - docs/health/<date>-<surface>-friction-findings.md
+    - .dev/health-loop-state.md
   next:
     - report-plugin-health
 ---

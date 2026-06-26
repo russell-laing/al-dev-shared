@@ -18,8 +18,10 @@ workflow:
   inputs:
     - docs/health/<date>-<surface>-health.md
     - docs/health/dispositions-open.md
+    - .dev/health-loop-state.md
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
+    - .dev/health-loop-state.md
   next: [plan-plugin-findings]
 ---
 

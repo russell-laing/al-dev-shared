@@ -29,8 +29,10 @@ workflow:
     - docs/health/dispositions-index.json
     - docs/health/<date>-<surface>-health.md
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
+    - .dev/health-loop-state.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
+    - .dev/health-loop-state.md
   next: [implement-plugin-health]
 ---
 

@@ -24,8 +24,10 @@ workflow:
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
     - profile-al-dev-shared/knowledge/lens-invocation-patterns.md
+    - .dev/health-loop-state.md
   outputs:
     - docs/health/<date>-<surface>-findings.md
+    - .dev/health-loop-state.md
   next: [report-plugin-health]
 ---
 

@@ -17,6 +17,9 @@ workflow:
   inputs:
     - docs/al-dev-skills-map.md
     - docs/al-dev-agent-map.md
+    - .dev/health-loop-state.md
+  outputs:
+    - .dev/health-loop-state.md
   next: [discover-plugin-health]
 ---
 

@@ -19,9 +19,11 @@ workflow:
   inputs:
     - docs/superpowers/plans/<date>-<topic>.md
     - docs/health/dispositions-open.md
+    - .dev/health-loop-state.md
   outputs:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-plugin-health-progress.md
+    - .dev/health-loop-state.md
   next: [regenerate-agent-projections, validate-plugin-neutrality, audit-plugin-health]
 ---
 
