@@ -2,10 +2,9 @@
 name: al-dev-ticket
 description: >-
   Fetch and contextualise a Freshdesk ticket, optionally research
-  and draft a support reply. Use --mode=context-only to load ticket
-  context only (default behavior), or --mode=full to include
-  research and reply drafting; Phase 5 branches on the selected mode.
-argument-hint: "[ticket-id or search-term] [--mode=context-only|full]"
+  and draft a support reply. Use without flag to load ticket context only
+  (default), or --research-reply to include research and reply drafting.
+argument-hint: "[--research-reply]"
 ---
 
 # Freshdesk Ticket Context Loader
@@ -39,44 +38,43 @@ feature/#CU86d0dnfx2-FD1234-description
 
 ---
 
-## Phase 0.5: Resolve Mode
+## Phase 0.5: Mode Routing
 
-Parse the `--mode` argument:
+The skill supports two modes via the `--research-reply` flag:
 
-- `--mode=context-only` (default) → Run Steps 1–4 only (fetch and contextualize ticket)
-- `--mode=full` → Run all steps including research + reply drafting
+**Mode 1: Context-only (default)**
+`al-dev-ticket` with no flag or `--research-reply=false`
 
-If `--mode=` is not specified, default to `context-only`.
+Behavior: Load and present ticket only. User gates next step to research/reply or other downstream skill.
 
-Extract the mode flag from $ARGUMENTS using:
+**Mode 2: Research + Reply (bundled)**
+`al-dev-ticket --research-reply` or `--research-reply=true`
 
-```bash
-MODE="context-only"
-if [[ "$ARGUMENTS" =~ --mode=([^ ]+) ]]; then
-  MODE="${BASH_REMATCH[1]}"
-  # Remove flag from ARGUMENTS (handles any position, not just with leading space)
-  ARGUMENTS="${ARGUMENTS//--mode=[^ ]*/}"
-fi
+Behavior: Load ticket, then dispatch the full al-dev-support-reply workflow (Phases 0–4 of support-reply skill):
 
-# Validate mode value
-if [[ ! "$MODE" =~ ^(context-only|full)$ ]]; then
-  echo "ERROR: Invalid mode '$MODE'. Allowed: context-only, full"
-  exit 1
-fi
-```
+- Phase 0: Resolve CONTEXT input (ticket context reused)
+- Phase 1: Dispatch research agent
+- Phase 2: Dispatch reply-draft agent
+- Phase 3: Return draft
+- Phase 4: Gated post-back to Freshdesk
 
-The validation is case-sensitive: only `context-only` and `full` (lowercase) are accepted. Passing `--mode=Full` or `--mode=FULL` will fail validation and emit the error message.
+This consolidates the common workflow ("load ticket, research, draft reply") while preserving al-dev-support-reply as a standalone skill for independent research/re-draft on existing ticket context.
 
-**Test cases — trailing-argument boundary:**
+- [ ] **Step 4.1:** Check incoming `--research-reply` flag
 
-| Input `$ARGUMENTS` | Expected `$MODE` |
-|---|---|
-| `--mode=full` | `full` (last and only token) |
-| `1234 --mode=full` | `full` (last arg; `[^ ]+` captures to end-of-string) |
-| `--mode=full --other-flag` | `full` (`[^ ]+` captures until next space) |
-| (empty) | `context-only` (default) |
+Run: `[[ "$1" == "--research-reply" || "$2" == "--research-reply=true" ]]` (pseudocode)
 
-The `[^ ]+` capture group matches one or more non-space characters, so `--mode=full` at the end of `$ARGUMENTS` is captured correctly without a trailing space.
+If flag present, continue to Step 4.2. Otherwise, skip to Phase 1 (context-only mode).
+
+- [ ] **Step 4.2:** (If research-reply) Dispatch al-dev-support-reply workflow
+
+Pattern: `Agent: "dispatch /al-dev-support-reply with CONTEXT from Phase X"`
+
+Await completion and capture REPLY block.
+
+- [ ] **Step 4.3:** Continue to Phase 5 with dispatch result
+
+If research-reply mode: REPLY block from support-reply is used. If context-only: proceed without dispatch.
 
 ---
 
