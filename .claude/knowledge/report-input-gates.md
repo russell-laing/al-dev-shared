@@ -13,7 +13,22 @@ These rules are canonical; the SKILL.md sub-sections point here.
 
 ## 2 — Recurrence annotation
 
-Locate the previous findings file for the same surface:
+Locate the previous artifact from the same family for the same surface by
+re-running `scripts/select_health_artifacts.py` with `--offset 1`. Keep the
+prior-artifact lookup inside the current artifact family so recurrence comparison
+stays within family.
+
+- If the current input path ends in `-friction-findings.md`, use:
+
+```bash
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind friction-findings \
+  --surface <surface> \
+  --offset 1
+```
+
+- Otherwise, use:
 
 ```bash
 python3 scripts/select_health_artifacts.py \

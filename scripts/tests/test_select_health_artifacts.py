@@ -172,6 +172,15 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
         self.assertIn("--kind friction-findings", report)
         self.assertIn("path ends in `-friction-findings.md`", report)
 
+    def test_report_input_gates_documents_family_specific_recurrence(self) -> None:
+        gates = self.read(".claude/knowledge/report-input-gates.md")
+
+        self.assertIn("--kind friction-findings", gates)
+        self.assertIn("--kind findings", gates)
+        self.assertIn("path ends in `-friction-findings.md`", gates)
+        self.assertIn("current artifact family", gates)
+        self.assertIn("stays within family", gates)
+
     def test_multi_surface_consumers_select_plugin_and_tooling_explicitly(self) -> None:
         for path in [
             ".claude/skills/report-plugin-health/SKILL.md",
