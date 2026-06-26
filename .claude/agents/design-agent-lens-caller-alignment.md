@@ -24,6 +24,8 @@ live in `.claude/skills/`, which is out of scope for this lens.
 
 Returns a findings block. See Output Format.
 
+> **Model fit note:** This lens performs contract extraction and pattern-matching against provided caller maps (haiku-appropriate). Architectural judgment about whether contract deviations are design violations vs. harmless differences (sonnet-appropriate) is secondary. Future enhancements for autonomous architectural reasoning may benefit from sonnet upgrade.
+
 ---
 
 ## Lens: Caller Alignment (→ Align)
