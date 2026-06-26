@@ -73,6 +73,38 @@ def test_check_references_emits_canonical_shape(tmp_path: Path) -> None:
     assert "missing-file.md" in output
 
 
+def test_check_references_allows_tooling_doc_to_reference_shared_knowledge(tmp_path: Path) -> None:
+    tooling_dir = tmp_path / ".claude" / "knowledge"
+    shared_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
+    tooling_dir.mkdir(parents=True)
+    shared_dir.mkdir(parents=True)
+    (shared_dir / "workflow-resilience.md").write_text("# shared\n", encoding="utf-8")
+
+    issues = check_references(
+        ".claude/knowledge/dispatch-fallback-contract.md",
+        "See knowledge/workflow-resilience.md for fallback rules.\n",
+        tooling_dir,
+    )
+
+    assert issues == [], f"Expected shared knowledge reference to resolve, got: {issues}"
+
+
+def test_check_references_still_flags_missing_shared_reference_for_tooling_doc(tmp_path: Path) -> None:
+    tooling_dir = tmp_path / ".claude" / "knowledge"
+    shared_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
+    tooling_dir.mkdir(parents=True)
+    shared_dir.mkdir(parents=True)
+
+    issues = check_references(
+        ".claude/knowledge/dispatch-fallback-contract.md",
+        "See knowledge/workflow-resilience.md for fallback rules.\n",
+        tooling_dir,
+    )
+
+    assert issues, "Expected a dead-ref issue when neither tooling nor shared knowledge contains the file"
+    assert "workflow-resilience.md" in issues[0]
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
