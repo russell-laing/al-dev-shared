@@ -4,6 +4,13 @@ Current source of truth: active implementation guidance lives in the current sha
 
 ## 2026-06-27
 
+### Tooling Health Backlog Draining Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-27-tooling-health-backlog-draining.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-27 | tooling-health-backlog-draining | implemented; rows closed: [disp_20260626_000108, disp_20260626_000107, disp_20260626_000116, disp_20260626_000119, disp_20260626_000113, disp_20260626_000110, disp_20260626_000115, disp_20260626_000120, disp_20260626_000118, disp_20260626_000122, disp_20260626_000123, disp_20260626_000106, disp_20260626_000114, disp_20260626_000121, disp_20260626_000111, disp_20260626_000117, disp_20260626_000112, disp_20260626_000109]
+
 ### Plugin Design Fixes Implementation Plan
 
 - Path: `docs/superpowers/plans/archived/2026-06-27-plugin-map-design-fixes.md`
