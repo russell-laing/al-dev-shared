@@ -114,10 +114,36 @@ execution order.
 
 ### Recurrence annotation
 
-Look up the previous findings file by re-running `scripts/select_health_artifacts.py` with `--offset 1` (its offset flag selects the Nth-newest artifact: `0` = latest, `1` = the prior one). If none exists, skip
-(every finding is new). For each repeat, annotate with `(open since YYYY-MM-DD)`,
-carrying forward the date of the **earliest** prior occurrence of that finding. Split the Summary totals:
-new vs recurring. See `report-input-gates.md §2` for the full procedure.
+Look up the previous artifact from the same family by re-running
+`scripts/select_health_artifacts.py` with `--offset 1` (its offset flag selects
+the Nth-newest artifact: `0` = latest, `1` = the prior one). Keep the
+prior-artifact lookup inside the current artifact family so recurrence
+comparison stays within family.
+
+- If the current input path ends in `-friction-findings.md`, use:
+
+```bash
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind friction-findings \
+  --surface <surface> \
+  --offset 1
+```
+
+- Otherwise, use:
+
+```bash
+python3 scripts/select_health_artifacts.py \
+  --directory docs/health \
+  --kind findings \
+  --surface <surface> \
+  --offset 1
+```
+
+If none exists, skip (every finding is new). For each repeat, annotate with
+`(open since YYYY-MM-DD)`, carrying forward the date of the **earliest** prior
+occurrence of that finding. Split the Summary totals: new vs recurring. See
+`report-input-gates.md §2` for the full procedure.
 
 ### Staleness spot-check and evidence verification
 

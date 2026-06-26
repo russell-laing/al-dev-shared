@@ -89,18 +89,13 @@ headings.
 ### Recurrence
 
 For prior-artifact lookup when the report processes a friction findings file
-(path ends in `-friction-findings.md`), the prior-artifact selector MUST use
+(path ends in `-friction-findings.md`), the prior-artifact selector uses
 `--kind friction-findings` (not `--kind findings`), so recurrence comparison
 stays within the friction family:
 
 ```bash
 select_health_artifacts.py --directory docs/health --kind friction-findings --surface <surface> --offset 1
 ```
-
-The `--kind friction-findings` mode is added by the companion selector
-extension task. Until the report skill is updated to invoke this mode, all
-friction findings will appear as new on every run (recurrence counts will be
-unsound). This is a known v1 limitation.
 
 ## Findings Metadata
 

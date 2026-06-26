@@ -1,10 +1,6 @@
 # Health Audit Preconditions
 
-> See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-events/` is the
-> append-only source of truth; `docs/health/dispositions-open.md` and
-> `docs/health/dispositions-index.json` are generated read artifacts.
-> Never append rows directly to `docs/health/dispositions.md`.
+> Storage contract: see `.claude/knowledge/health-disposition-storage-contract.md` for the canonical artifact roles, source-of-truth event store, and generated read views.
 
 Shared precondition and filtering rules for the health-audit loop. Referenced by
 `/discover-plugin-health` (cadence + stale-open guards) and

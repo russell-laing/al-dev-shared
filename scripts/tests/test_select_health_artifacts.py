@@ -166,6 +166,12 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
         self.assertIn("--kind findings", report)
         self.assertIn("--offset 1", report)
 
+    def test_report_documents_friction_specific_recurrence_path(self) -> None:
+        report = self.read(".claude/skills/report-plugin-health/SKILL.md")
+
+        self.assertIn("--kind friction-findings", report)
+        self.assertIn("path ends in `-friction-findings.md`", report)
+
     def test_multi_surface_consumers_select_plugin_and_tooling_explicitly(self) -> None:
         for path in [
             ".claude/skills/report-plugin-health/SKILL.md",

@@ -1,10 +1,6 @@
 # Health Disposition Rules
 
-> See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-events/` is the
-> append-only source of truth; `docs/health/dispositions-open.md` and
-> `docs/health/dispositions-index.json` are generated read artifacts.
-> Never append rows directly to `docs/health/dispositions.md`.
+> Storage contract: see `.claude/knowledge/health-disposition-storage-contract.md` for the canonical artifact roles, source-of-truth event store, and generated read views.
 
 Shared rules extracted from `/record-plugin-dispositions` for loop-state adoption,
 batch guards, and re-litigation prevention.
