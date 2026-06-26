@@ -11,7 +11,7 @@ fi
 mkdir -p .dev
 
 # Run compilation with output redirected to file only
-al-compile --output .dev/compile-errors.log
+al-compile --output .dev/compile-errors.log || true
 
 # Exit with success; errors are logged to file, not stdout
 exit 0
