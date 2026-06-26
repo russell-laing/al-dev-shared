@@ -7,7 +7,7 @@ description: >-
   their canonical sources, then commits the resulting artifacts. A regeneration
   failure does not block the commit; the failed artifact is reported and may be
   left stale.
-argument-hint: "[RUN_ID from checkpoint]"
+argument-hint: ""
 workflow:
   stage: map-sync
   invoked-by: user
