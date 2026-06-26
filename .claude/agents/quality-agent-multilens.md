@@ -27,7 +27,9 @@ lenses. For each lens, collect only the agents that violate it; agents that pass
 are omitted from that lens's block entirely (see Output Format) — do not write a
 row for them.
 
-## Lens 1: Bloat
+## Quality Lenses
+
+### Lens 1: Bloat
 
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
@@ -61,7 +63,7 @@ procedure it documents is long is acceptable as authored — do not flag it.
 - Medium: dead branches or repetitive instruction blocks
 - Low: minor historical commentary
 
-## Lens 2: Prompt Clarity
+### Lens 2: Prompt Clarity
 
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
@@ -97,7 +99,7 @@ agent name from the filename (strip directory path and `.md` extension).
 - Medium: vague qualifiers with no definition
 - Low: minor style issues
 
-## Lens 3: Description Drift
+### Lens 3: Description Drift
 
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
@@ -122,7 +124,7 @@ agent name from the filename (strip directory path and `.md` extension).
 - Medium: missing use case or absent promised output
 - Low: minor verb mismatch that does not affect behavior
 
-## Lens 4: Name Fit
+### Lens 4: Name Fit
 
 Read every file path provided in the dispatch prompt. For each file, derive the
 agent name from the filename (strip directory path and `.md` extension).
