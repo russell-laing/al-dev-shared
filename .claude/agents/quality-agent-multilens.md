@@ -1,7 +1,7 @@
 ---
 name: quality-agent-multilens
 description: Apply all four quality lenses (Bloat, Prompt Clarity, Description Drift, Name Fit) to agent files in a single pass — reads each agent file once and returns four labelled findings blocks. Replaces the four individual quality-agent-lens-* agents to eliminate redundant corpus reads.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
