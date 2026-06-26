@@ -444,6 +444,11 @@ The agent reads subject files in its own context and returns only compact
 rubber-duck records. The parent **must not** read any subject source file itself
 during Phase 3.
 
+The agent returns one line per finding:
+`<finding_object> | <verdict> | <reason> | <plan_anchor> | <fix_scope_delta>`
+
+Extract each field to populate the Phase 4 task (plan-anchor informs which file(s) the task touches; fix_scope_delta adjusts the task scope).
+
 In `--backlog` mode, pass each finding's own ledger `date` as `findings_date:`
 (there is no dossier filename). Backlog rows carry only the ledger `finding`
 text and may lack a `file:line` citation — that is expected; they take the
