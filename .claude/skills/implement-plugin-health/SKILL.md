@@ -541,10 +541,10 @@ Stage these paths explicitly (the archived dossier/findings are gitignored, so
 there is no deletion to stage):
 
 ```bash
-git add docs/health/dispositions-events/ docs/health/dispositions-history/ \
-        docs/health/dispositions-current.md docs/health/dispositions-index.json \
-        docs/health/dispositions.md docs/superpowers/history.md \
-        .dev/health-loop-state.md
+git add docs/health/dispositions-open.md docs/health/dispositions-events/ \
+        docs/health/dispositions-history/ docs/health/dispositions-current.md \
+        docs/health/dispositions-index.json docs/health/dispositions.md \
+        docs/superpowers/history.md .dev/health-loop-state.md
 git commit -m "📦 chore(health): close disposition events for <plan-topic>"
 ```
 
