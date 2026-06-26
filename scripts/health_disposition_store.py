@@ -676,8 +676,12 @@ def match_against_ledger(
             cls = _classification_for(row["disposition"])
             candidates.append((cls, row))
 
-        # Sort candidates by date (newest first); use newest match to respect supersession
-        candidates.sort(key=lambda x: x[1].get("date", ""), reverse=True)
+        # Prefer the newest ledger row, but keep stronger classifications first
+        # when rows share the same date so equal-date ordering is deterministic.
+        candidates.sort(
+            key=lambda x: (x[1].get("date", ""), -_PRECEDENCE[x[0]]),
+            reverse=True,
+        )
         best = candidates[0] if candidates else None
 
         classification = best[0] if best else "keep"

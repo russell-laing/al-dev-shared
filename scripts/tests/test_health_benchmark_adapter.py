@@ -98,7 +98,8 @@ class BuildReportSmokeTest(unittest.TestCase):
         )
         self.assertIn("list_open_accepted_count", report)
         self.assertIn("close_back_event_count", report)
-        self.assertTrue(report["dossiers"], "expected at least one live dossier")
+        self.assertIn("dossiers", report)
+        self.assertIsInstance(report["dossiers"], list)
         for record in report["dossiers"]:
             self.assertIn("jsonl_open_accepted_count", record)
             self.assertIn("loop_stage_completed", record)

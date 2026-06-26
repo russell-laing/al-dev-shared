@@ -162,15 +162,20 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
 
     def test_report_uses_previous_same_surface_findings_for_recurrence(self) -> None:
         report = self.read(".claude/skills/report-plugin-health/SKILL.md")
+        gates = self.read(".claude/knowledge/report-input-gates.md")
 
-        self.assertIn("--kind findings", report)
-        self.assertIn("--offset 1", report)
+        self.assertIn("Apply the canonical procedure in `report-input-gates.md §2 — Recurrence annotation`.", report)
+        self.assertIn("--kind findings", gates)
+        self.assertIn("--offset 1", gates)
 
     def test_report_documents_friction_specific_recurrence_path(self) -> None:
         report = self.read(".claude/skills/report-plugin-health/SKILL.md")
+        gates = self.read(".claude/knowledge/report-input-gates.md")
 
-        self.assertIn("--kind friction-findings", report)
-        self.assertIn("path ends in `-friction-findings.md`", report)
+        self.assertIn("inputs:", report)
+        self.assertIn("docs/health/<date>-<surface>-friction-findings.md", report)
+        self.assertIn("--kind friction-findings", gates)
+        self.assertIn("path ends in `-friction-findings.md`", gates)
 
     def test_report_input_gates_documents_family_specific_recurrence(self) -> None:
         gates = self.read(".claude/knowledge/report-input-gates.md")
