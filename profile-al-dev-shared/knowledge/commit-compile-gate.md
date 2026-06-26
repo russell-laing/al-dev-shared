@@ -19,10 +19,11 @@ If `$AL_STAGED` is non-empty, run the compile gate before proceeding.
 compile.** Compile only the current staged state. See the working-tree-safety
 prohibition in `knowledge/compile-lint-procedure.md`.
 
-1. Apply `knowledge/compile-lint-procedure.md` and
-   `knowledge/compile-output-safeguard.md`. Run `al-compile` with `--output`
+1. Apply `knowledge/compile-lint-procedure.md`. Run `al-compile` with `--output`
    only — never piped to `tee`, `grep`, `head`, or `tail` (piping captures the
-   entire multi-MB log into session context and forces a compact)
+   entire multi-MB log into session context and forces a compact).
+   (Piping prohibitions and output safeguards are summarised in
+   `knowledge/compile-output-safeguard.md` for standalone reference.)
 2. Produce a fresh `.dev/compile-errors.log` if the current log is absent or stale
 3. Read the log and report:
    - `Errors:` count
