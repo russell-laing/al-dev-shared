@@ -407,6 +407,28 @@ disposition suppression before this phase, so suppress-before-gate (no LLM
 verify on ledger-closed findings) already holds; the partition only diverts
 deterministic findings away from the LLM agent.
 
+### Citation-Bearing Findings Pre-Gate
+
+Before dispatching agents, verify findings that cite specific `file:line` locations. This gate rejects stale citations without LLM cost.
+
+For each finding with a `file:line` citation (e.g., "at line 340-351"):
+
+1. Extract the file path and line number(s)
+2. Run: `sed -n '<line>p' <file>` (or `sed -n '<start>,<end>p'` for ranges)
+3. If the output does not substantiate the cited claim, mark the finding **`⚠ cite-stale`** and skip dispatch (the LLM agent would also skip it after reading the file)
+4. If output matches, proceed to dispatch
+
+**Example:**
+
+```bash
+# Finding cites "line 340-351 contains JSONL fallback"
+# Verify:
+sed -n '340,351p' implement-plugin-health.md | grep -q 'JSONL'
+# If match, proceed; else skip
+```
+
+Only dispatch findings that pass this gate (or lack citations entirely).
+
 ### Dispatch
 
 Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
