@@ -114,81 +114,11 @@ execution order.
 
 ### Recurrence annotation
 
-Look up the previous artifact from the same family by re-running
-`scripts/select_health_artifacts.py` with `--offset 1` (its offset flag selects
-the Nth-newest artifact: `0` = latest, `1` = the prior one). Keep the
-prior-artifact lookup inside the current artifact family so recurrence
-comparison stays within family.
+Apply the canonical procedure in `report-input-gates.md §2 — Recurrence annotation`.
 
-- If the current input path ends in `-friction-findings.md`, use:
+### Staleness spot-check, evidence verification, and disposition suppression
 
-```bash
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind friction-findings \
-  --surface <surface> \
-  --offset 1
-```
-
-- Otherwise, use:
-
-```bash
-python3 scripts/select_health_artifacts.py \
-  --directory docs/health \
-  --kind findings \
-  --surface <surface> \
-  --offset 1
-```
-
-If none exists, skip (every finding is new). For each repeat, annotate with
-`(open since YYYY-MM-DD)`, carrying forward the date of the **earliest** prior
-occurrence of that finding. Split the Summary totals: new vs recurring. See
-`report-input-gates.md §2` for the full procedure.
-
-### Staleness spot-check and evidence verification
-
-Apply the staleness spot-check protocol from
-`../../knowledge/health-audit-preconditions.md` (see its
-"## Staleness spot-check protocol" section) to every High
-finding and every top-5 candidate before ranking. Supply `FINDINGS_DATE` from
-the findings-file name; for recurring findings also check with `PRIOR_DATE`
-from the recurrence step. Label changed subjects `⚠ possibly stale`; verify
-before top-5 inclusion; drop non-holding claims under "Stale (dropped)"
-(a claim is non-holding when it no longer matches the live subject file — see
-the "claim no longer holds" criterion in the "## Staleness spot-check protocol"
-section of `../../knowledge/health-audit-preconditions.md`).
-
-Then run the **evidence verification** gate on *every* finding (not just High /
-top-5): dispatch `verify-health-finding` agents in `evidence` mode — one per
-subject file, via `superpowers:dispatching-parallel-agents` — and collect the
-returned `verified | dropped` table. The parent must not open the cited files
-itself. Drop unverified findings under a **"Dropped (unverified)"** note. This
-is the primary false-positive filter. See `report-input-gates.md §1c` for the
-full dispatch procedure.
-
-### Disposition suppression
-
-Run `python3 scripts/health_disposition_store.py match` against the JSONL event
-store and generated views. Read `docs/health/dispositions-index.json` first for
-counts, then read `docs/health/dispositions-open.md` only when open accepted
-events need inspection. New decisions are appended with `append_event` and
-views are regenerated; do not call `append_row`, read
-`docs/health/dispositions.md` for ordinary suppression, or use
-`iter_history_rows` for new closure chronology.
-
-Run the deterministic matcher first to get a candidate shortlist, then confirm:
-
-```bash
-python3 scripts/health_disposition_store.py match \
-  --findings docs/health/YYYY-MM-DD-<surface>-findings.md
-```
-
-Apply the four outcomes to the confirmed set:
-declined/grandfathered → suppress; fixed → re-verify (spot-check then drop or
-flag regressed); accepted → keep annotated. The matcher is a high-precision
-candidate list, not an auto-decision — confirm each `suppress`/`verify` against
-the cited event and still hand-scan the `keep` set for missed matches. See
-`report-input-gates.md §1d` for the full suppression rules.
+Follow the canonical procedure in `report-input-gates.md §1c — Staleness spot-check` (includes the evidence verification gate and disposition suppression logic).
 
 ## Phase 3 — Rank and Write Dossier
 

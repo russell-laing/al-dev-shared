@@ -25,13 +25,7 @@ Follow every step in order. Do not skip steps or proceed past a stop condition.
 
 ## Intent Preflight
 
-Before dispatching commit agents, staging files, unstaging files, or committing,
-apply `knowledge/intent-preflight.md`.
-
-Default intent for this skill is `COMMIT`. If the request is review-only,
-edit-only, assessment-only, or asks for a commit plan without committing, stop
-and ask the intent-mismatch prompt from `knowledge/intent-preflight.md` before
-continuing.
+Before proceeding, apply the canonical intent-preflight check from `knowledge/commit-intent-preflight.md`.
 
 ## Artifact Contract
 
