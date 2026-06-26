@@ -175,7 +175,7 @@ Or skip to /al-dev-plan directly if requirements are already clear.
 | `project-context.md` only | Describe your goal and run `/al-dev-help <description>` |
 | `*-al-dev-interview-requirements.md` present | Run `/al-dev-plan` to design the solution |
 | `*-al-dev-plan-solution-plan.md` present | Run `/al-dev-develop-orchestrate` to implement |
-| `*-al-dev-develop-code-review.md` present | Run `/al-dev-document` for reference documentation |
+| `*-al-dev-develop-code-review.md` present | Run `/al-dev-commit` for final validation and commit execution, then optionally `/al-dev-document` for reference documentation |
 
 **Step 3: Output:**
 
