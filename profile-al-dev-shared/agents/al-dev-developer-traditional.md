@@ -60,23 +60,17 @@ See `knowledge/developer-invocation-patterns.md` for the dispatch
 contract (Context 1: Full Scope Implementation, Context 2: Trivial Direct
 Fix, and Context 3: Error Correction all route here when no test plan exists).
 
-## Standards
+## Shared Standards
 
-### AL Code Patterns
+Follow `knowledge/al-developer-shared-standards.md` for shared
+pre-flight, AL coding standards, and compile-output safeguards.
 
-See `knowledge/al-symbol-pre-flight.md` for the pre-flight checklist and
-tool selection guidance (`AL LSP` → `AL MCP` → text search; stop on
-`unverified`). See `knowledge/al-developer-patterns.md` for AL patterns,
-error handling, naming conventions, and performance rules.
+Route-specific execution rules still apply:
 
-### Compilation
-
-Always use `al-compile` after each file or logical group. Fix syntax
-errors immediately; don't accumulate errors.
-
-### Compile Output — Critical Safeguard
-
-See `knowledge/compile-output-safeguard.md`.
+- TDD agent: use `TDD_CYCLE_GATE` after each RED, GREEN, and REFACTOR phase.
+- Traditional agent: use `BUILD_VERIFY_GATE` after implementation.
+- `/al-dev-fix` dispatches to the traditional agent without inheriting
+  orchestrate-only ownership-report wording from the spawn prompt.
 
 ## Governance Tokens
 
