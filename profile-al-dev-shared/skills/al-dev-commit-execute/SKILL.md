@@ -67,7 +67,7 @@ reintroduce `.git/index` contention with the lint-fixer's `git add`.
 
 Dispatch the lint fixer agent with the approved plan from Phase 0:
 
-Dispatch per `knowledge/commit-dispatch-template.md`:
+Dispatch:
 
 - agent: `al-dev-shared:al-dev-commit-lint-fixer`
 - description: "Pre-flight lint and trailing whitespace fixes"
@@ -94,7 +94,7 @@ Store the `LINT_FIXES` value for display in Phase 4.
 
 Dispatch the OOXML validator agent with the approved plan:
 
-Dispatch per `knowledge/commit-dispatch-template.md`:
+Dispatch:
 
 - agent: `al-dev-shared:al-dev-commit-ooxml-validator`
 - description: "OOXML ZIP integrity validation"
@@ -143,7 +143,7 @@ GROUP_2:
 
 Dispatch the execution agent:
 
-Dispatch per `knowledge/commit-dispatch-template.md`:
+Dispatch:
 
 - agent: `al-dev-shared:al-dev-commit-executor`
 - description: "Commit execution: [N] commits"

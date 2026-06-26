@@ -1,5 +1,10 @@
 # Commit Agent Dispatch Template
 
+> **Documentation only.** The PROJECT_CONTEXT preamble is inlined directly at each
+> dispatch site in `al-dev-commit-preflight` (Phases 1.1, 1.3). The dispatch frame
+> is self-documented in each phase block. This file is kept as reference for the
+> frame format and preamble structure; it is no longer read at runtime.
+
 All `/al-dev-commit` phase dispatches share the same dispatch frame. Each phase
 supplies only its own parameters (agent, model, description, phase label, prompt
 body, return format). The six-agent commit contract in

@@ -280,9 +280,19 @@ Dispatch:
 - description: "Commit analysis: extract manifests from staged changes"
 - phase label: `Perform ANALYSIS phase for git commit workflow.` followed by a
   `Phase: analysis` line
-- prompt body: include the shared project-context preamble (PROJECT_CONTEXT +
-  FD_TICKET) from the template; then `Follow the analysis phase instructions in
-  your agent definition.`
+- prompt body: paste this preamble verbatim, then `Follow the analysis phase
+  instructions in your agent definition.`
+
+  ```text
+  PROJECT_CONTEXT:
+  - Valid scopes: [list from Phase 0.2]
+  - Object ID prefix: [from Phase 0.2]
+  - AL naming pattern: [from Phase 0.2]
+  - Gitmoji style: [from Phase 0.4]
+
+  FD_TICKET: [ticket number from Phase 0.2, or empty]
+  ```
+
 - return format: `MANIFESTS block, DELETIONS, WARNINGS` — append verbatim
   `Message drafting is handled in the next step.` after the return-format line
 
@@ -324,14 +334,25 @@ If no deleted files: continue to 1.3.
 
 Dispatch the message-drafting agent with the analysis results:
 
-Dispatch per `knowledge/commit-dispatch-template.md`:
+Dispatch:
 
 - agent: `al-dev-shared:al-dev-commit-group-drafter` (model: haiku)
 - description: "Draft commit messages and propose groups"
 - phase label: `Perform MESSAGE-DRAFTING phase for git commit workflow.`
   followed by a `Phase: message-drafting` line
-- prompt body: include the shared project-context preamble (PROJECT_CONTEXT +
-  FD_TICKET) from the template; then verbatim:
+- prompt body: paste this preamble verbatim:
+
+  ```text
+  PROJECT_CONTEXT:
+  - Valid scopes: [list from Phase 0.2]
+  - Object ID prefix: [from Phase 0.2]
+  - AL naming pattern: [from Phase 0.2]
+  - Gitmoji style: [from Phase 0.4]
+
+  FD_TICKET: [ticket number from Phase 0.2, or empty]
+  ```
+
+  then verbatim:
 
   ```text
   MANIFESTS FROM ANALYSIS PHASE:
