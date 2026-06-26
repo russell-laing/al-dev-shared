@@ -47,6 +47,16 @@ appears as a substring of `findings`, not by iterating the field. The
 finding's `object` plus observation reappears → the claim still holds. It does
 not reappear → the subject was already fixed; drop the finding as stale.
 
+- `suggestion_count` (integer) — number of findings/suggestions in the `findings` Markdown block. Used by Phase 3 verify step to validate carveout return completeness. Example: if `findings` lists 3 bulleted items, `suggestion_count` must be 3.
+
+### JSON Shape Validation
+
+When re-verifying static lens findings, assert:
+
+- `findings` is a valid Markdown string (contains heading + list)
+- `suggestion_count` matches the count of top-level list items in `findings`
+- Check with: `echo "$findings" | grep -c '^\s*[-*]'`
+
 ## Consumer-specific application
 
 - **`/report-plugin-health` (evidence mode):** the carve-out replaces the
