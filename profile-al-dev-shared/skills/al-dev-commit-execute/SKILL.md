@@ -55,8 +55,18 @@ Proceed to Phase 3.
 
 ## Phase 3 — Preflight
 
-Run preflight as two **parallel** agent dispatches — 3.1 (`al-dev-commit-lint-fixer`)
-and 3.2 (`al-dev-commit-ooxml-validator`) — then **await both** before Phase 4.1.
+**File-type gate (run before dispatching 3.1 or 3.2):**
+
+```bash
+OOXML_STAGED=$(git diff --cached --name-only | grep -E '\.(docx|xlsx|pptx|odt)$' || true)
+```
+
+- If `OOXML_STAGED` is **empty**: set `OOXML_FAILURES=NONE` inline and skip 3.2 entirely.
+- If `OOXML_STAGED` is **non-empty**: dispatch both 3.1 and 3.2 as below.
+
+Run preflight as up to two **parallel** agent dispatches — always 3.1
+(`al-dev-commit-lint-fixer`); conditionally 3.2 (`al-dev-commit-ooxml-validator`) when
+OOXML files are staged — then **await all dispatched agents** before Phase 4.1.
 The agents operate on disjoint state (lint-fixer excludes OOXML files and is the
 only Phase-3 agent that stages via `git add`; the validator sources its file list
 from `APPROVED_PLAN` and never reads the git index), so concurrent execution has
@@ -121,8 +131,10 @@ Resolve these files (save in Microsoft Word, not via script), re-stage, and re-r
 
 Stop if any OOXML failures — do not proceed to Phase 4.
 
-**Barrier:** await both 3.1 (`LINT_FIXES`) and 3.2 (`OOXML_FAILURES`) before
-proceeding to Phase 4.1. Both outputs must be in hand; neither depends on the other.
+**Barrier:** await 3.1 (`LINT_FIXES`) and, if dispatched, 3.2 (`OOXML_FAILURES`) before
+proceeding to Phase 4.1. When 3.2 was skipped (no OOXML files staged), `OOXML_FAILURES`
+is already set to `NONE` inline — treat it as in-hand and proceed to Phase 4.1 immediately
+after 3.1 completes.
 
 ---
 
