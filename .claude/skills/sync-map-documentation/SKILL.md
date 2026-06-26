@@ -130,7 +130,7 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 ## Phase 3 — Dispatch Audit Agents
 
-### Step 3.1 — Dispatch metadata agents (parallel)
+### Phase 3.1 — Dispatch metadata agents (parallel)
 
 Dispatch in parallel:
 
@@ -148,7 +148,7 @@ For the canonical dispatch template and surface parameterization table, follow
 
 Capture the returned agent IDs as `AGENT_METADATA_TEAM_ID` and `SKILL_METADATA_TEAM_ID`.
 
-### Step 3.2 — Dispatch discrepancy agents (parallel)
+### Phase 3.2 — Dispatch discrepancy agents (parallel)
 
 Dispatch in parallel after metadata agents complete:
 
