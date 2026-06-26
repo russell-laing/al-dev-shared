@@ -199,4 +199,16 @@ partial-review status near the top of the artifact.
    Next step: /al-dev-commit
    ```
 
-2. **Do not claim "clean" or "ready" until** the code-review artifact file has been read in this run (per `knowledge/artifact-contracts.md`).
+2. **Write acceptance-criteria-verified stamp (READY verdict only):**
+
+   When the verdict is READY, write the stamp so commit-preflight can skip
+   the AC re-read on the next `/al-dev-commit` run:
+
+   ```bash
+   touch .dev/acceptance-criteria-verified
+   ```
+
+   Do **not** write the stamp when the verdict is BLOCKING — the stamp signals
+   a clean sign-off, which a blocking verdict is not.
+
+3. **Do not claim "clean" or "ready" until** the code-review artifact file has been read in this run (per `knowledge/artifact-contracts.md`).

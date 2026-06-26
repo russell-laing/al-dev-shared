@@ -196,7 +196,20 @@ Check whether a solution plan exists:
 PLAN=$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null | sort | tail -1)
 ```
 
-If a solution plan file is found, read its Acceptance Criteria section. For each directly checkable criterion (structural, gate, pattern forms):
+```bash
+STAMP=".dev/acceptance-criteria-verified"
+```
+
+If both a plan and a current stamp exist (stamp newer than plan), skip AC re-verification — the review cycle already signed off:
+
+```bash
+if [[ -n "$PLAN" && -f "$STAMP" && "$STAMP" -nt "$PLAN" ]]; then
+  echo "AC verification stamp current — skipping AC re-check."
+  # proceed to 0.5
+fi
+```
+
+Otherwise (no plan, no stamp, or stamp older than plan), read the Acceptance Criteria section. For each directly checkable criterion (structural, gate, pattern forms):
 
 - **Structural criteria:** Verify that named files exist and contain named symbols (use `grep` or `al-compile` output)
 - **Gate criteria:** Confirm that referenced gates (e.g., `al-compile`) exit 0
