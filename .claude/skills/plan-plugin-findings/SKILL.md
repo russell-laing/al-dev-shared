@@ -219,8 +219,16 @@ into plan tasks as `closes_event_ids`.
   **Capture the `event_id`** from `docs/health/dispositions-open.md` for each
   accepted event. Carry this `event_id` forward to Phase 4 so each plan task
   can record which events it closes in `closes_event_ids`.
-- **`suppress`** (declined/grandfathered match): skip (note the skip count).
-- **`verify`** (fixed match): skip (note the skip count).
+- **`suppress`** (declined/grandfathered match): before skipping, check
+  `docs/health/dispositions-open.md` for an `accepted`-status row whose
+  `(surface, dimension, object)` triple matches the candidate. If such a row
+  exists, override the verdict to `keep` and use that row's `event_id` as the
+  close-back ID (the finding was re-accepted after the prior
+  decline/grandfather). If no override row exists, skip (note the skip count).
+- **`verify`** (fixed match): apply the same override check — if a later
+  `accepted` row for the same `(surface, dimension, object)` triple exists in
+  `dispositions-open.md`, override to `keep` and use its `event_id`. If no
+  override, skip (note the skip count).
 - **No matched event** (`keep` with no ledger entry): undispositioned — list
   them and ask the user whether to include them or record dispositions first
   via `/record-plugin-dispositions`.
