@@ -533,6 +533,25 @@ Pass as context to writing-plans all items listed in
     ledger close-back) chaining the repo's shared-surface validators with `&&`; it closes no
     events (`closes_event_ids: []`).
 
+    **For agent or script edits, regenerate projections first, then test:**
+
+    ```bash
+    python3 scripts/generate-projections.py --agents .claude/agents/verify-health-finding.md
+    pytest tests/test_verify_health_finding.py -v
+    ```
+
+    **Libexpat fallback (Python 3.13 macOS):**
+
+    ```bash
+    python3 -c "
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('mod', 'tests/test_verify_health_finding.py')
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    print('PASS')
+    "
+    ```
+
 - **Spec-only tasks must not earn closure.** When a rubber-duck `modify` verdict reduces
   a finding's scope to "write prerequisite documentation only" (the task body explicitly
   defers the behavior change to a future plan), the task must carry `closes_event_ids: []`
