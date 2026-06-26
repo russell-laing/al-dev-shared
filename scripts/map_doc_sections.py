@@ -69,7 +69,6 @@ SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
 
 WORKFLOW_ORDER: dict[str, list[str]] = {
     "development-spine": [
-        "al-dev-investigate",
         "al-dev-plan",
         "al-dev-develop",
         "al-dev-review-develop",
@@ -88,6 +87,7 @@ WORKFLOW_ORDER: dict[str, list[str]] = {
 LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
     ("al-dev-explore", "al-dev-plan", "optional", "explore-findings.md"),
     ("al-dev-interview", "al-dev-plan", "optional", "interview-requirements.md"),
+    ("al-dev-investigate", "al-dev-plan", "optional", None),
     ("al-dev-perf", "al-dev-plan", "optional", "perf-analysis.md"),
     ("al-dev-plan-preflight", "al-dev-plan", "optional", "preflight-context.md"),
     ("al-dev-develop", "al-dev-lint", "optional", None),
