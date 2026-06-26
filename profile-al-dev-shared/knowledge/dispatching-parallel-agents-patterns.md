@@ -43,7 +43,7 @@ Group findings that reference the same subject file and dispatch one agent per u
 
 **Example:** `plan-plugin-findings` Phase 3 batches findings by subject_path, dispatching one `verify-health-finding` agent per path.
 
-```
+```text
 Subject: skill-a.md → Agent 1 verifies [Finding 1, Finding 3, Finding 7]
 Subject: skill-b.md → Agent 2 verifies [Finding 2]
 Subject: skill-c.md → Agent 3 verifies [Finding 4, Finding 5, Finding 6]
@@ -64,7 +64,7 @@ Dispatch one agent per task with no grouping. Simple but risky at scale.
 
 When parallel dispatch is unavailable (e.g., harness limitation), fall back to sequential agent dispatch within a loop:
 
-```
+```pseudocode
 for finding in findings:
   agent = dispatch(verify, finding)
   record = agent.await_result()

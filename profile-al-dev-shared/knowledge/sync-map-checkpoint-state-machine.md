@@ -21,7 +21,7 @@ last_error: (optional) string describing why a stage failed
 
 ## Valid State Transitions
 
-```
+```text
 dispatcher → collect:  All audit artifacts present
 collect → apply:       All compare artifacts present + user decision recorded
 apply → write:         All update artifacts present + validation passed
