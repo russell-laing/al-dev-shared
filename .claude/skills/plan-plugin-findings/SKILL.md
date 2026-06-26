@@ -431,9 +431,9 @@ Only dispatch findings that pass this gate (or lack citations entirely).
 
 ### Dispatch
 
-Invoke `superpowers:dispatching-parallel-agents`. Dispatch **one
-`verify-health-finding` agent per finding**, batching findings that share the same
-`subject_path` into a single agent call. Pass in each dispatch:
+See `.claude/knowledge/cross-file-rubber-duck-batching.md` for batching strategy.
+
+Invoke `superpowers:dispatching-parallel-agents`. Dispatch agents grouped by `subject_path` (batching K≈5 findings per file). Pass in each dispatch:
 
 - `mode: rubber-duck`
 - `findings:` the finding(s) as `Type — Subject — proposed change`
