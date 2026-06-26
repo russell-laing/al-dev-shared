@@ -4,6 +4,13 @@ Current source of truth: active implementation guidance lives in the current sha
 
 ## 2026-06-27
 
+### Tooling Quality Fixes — Sync Map Documentation Write
+
+- Path: `docs/superpowers/plans/archived/2026-06-27-tooling-quality-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-27 | tooling-quality-fixes | implemented; rows closed: [disp_20260627_000077, disp_20260627_000078]
+
 ### Tooling Health Backlog Draining Implementation Plan
 
 - Path: `docs/superpowers/plans/archived/2026-06-27-tooling-health-backlog-draining.md`
