@@ -12,8 +12,11 @@ Every delegated maintainer task ships a scope pack in its dispatch prompt:
 
 - **Allowed paths:** the exact files/globs the task may create or modify.
 - **Do-not-touch list:** surfaces the task must never write — at minimum the
-  disposition ledger (`docs/health/dispositions.md`), validator scripts, and
-  any file outside Allowed paths.
+  disposition store artifacts (`docs/health/dispositions-events/`,
+  `docs/health/dispositions-open.md`, `docs/health/dispositions-current.md`,
+  `docs/health/dispositions-index.json`, and the generated compatibility view
+  `docs/health/dispositions.md`), validator scripts, and any file outside
+  Allowed paths.
 - **Expected outputs:** the artifact path(s) the dispatcher will verify on
   return.
 
@@ -23,7 +26,8 @@ After the agent returns, before accepting its result, the dispatcher runs a
 diff sanity check and rejects out-of-scope changes:
 
 ```bash
-git -C /Users/russelllaing/al-dev-shared status --short
+REPO=$(git rev-parse --show-toplevel)
+git -C "$REPO" status --short
 ```
 
 Any path not in Allowed paths — extra ledger rows, validator edits, partial

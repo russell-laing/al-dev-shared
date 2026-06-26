@@ -28,8 +28,8 @@ Do not use Markdown table row numbers or `legacy_id` values for new closures.
 2. Run `scripts/health_disposition_store.py regenerate` after every append to
    update `dispositions-open.md`, `dispositions-current.md`, and
    `dispositions-index.json`.
-3. Cite the accepted `event_id` in the resolving commit message so the closure
-   is auditable from git history.
+3. Keep closure auditability in the appended event and its
+   `closes_event_ids`; do not rely on extra commit-message identifiers.
 
 ## Verification
 

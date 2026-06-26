@@ -7,10 +7,11 @@ anything is committed.
 ## Gate Command
 
 ```bash
-DISK_AGENTS=$(ls /Users/russelllaing/al-dev-shared/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
-COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -o '[0-9]*')
+REPO=$(git rev-parse --show-toplevel)
+DISK_AGENTS=$(find "$REPO/profile-al-dev-shared/agents" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
+COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/al-dev-agent-map.md" | grep -o '[0-9]*')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md | grep -c '^| al-dev')
+  "$REPO/docs/al-dev-agent-map.md" | grep -c '^| al-dev')
 echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
 ```
 
