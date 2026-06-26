@@ -148,6 +148,19 @@ def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
     return [(match.group(1), match.start()) for match in matches]
 
 
+def _candidate_knowledge_roots(knowledge_dir: Path) -> List[Path]:
+    """Return the knowledge roots that should satisfy `knowledge/<file>.md` refs."""
+    roots = [knowledge_dir]
+    repo_root = knowledge_dir.parent.parent
+
+    if knowledge_dir.parts[-2:] == (".claude", "knowledge"):
+        shared_root = repo_root / "profile-al-dev-shared" / "knowledge"
+        if shared_root != knowledge_dir:
+            roots.append(shared_root)
+
+    return roots
+
+
 def check_thin_sections(filepath: str, sections: List) -> List[str]:
     """Check for sections with minimal body content.
 
@@ -247,13 +260,14 @@ def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[s
     issues = []
     refs = find_knowledge_references(content)
 
+    candidate_roots = _candidate_knowledge_roots(knowledge_dir)
+
     for ref_filename, _ in refs:
         # Skip self-references (file referencing itself is fine)
         if ref_filename == Path(filepath).name:
             continue
 
-        ref_path = knowledge_dir / ref_filename
-        if not ref_path.exists():
+        if not any((root / ref_filename).exists() for root in candidate_roots):
             issues.append(
                 _format_issue(
                     filepath,
