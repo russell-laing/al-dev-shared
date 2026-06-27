@@ -2,14 +2,22 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Match, Optional
 import re
 
-from .map_inventory import MarkerSpan, _OpenMarker
+from .map_inventory import MarkerSpan
 
 
 BEGIN_RE = re.compile(r"<!-- BEGIN GENERATED: ([a-z0-9-]+) -->")
 END_RE = re.compile(r"<!-- END GENERATED: ([a-z0-9-]+) -->")
+
+
+@dataclass(frozen=True)
+class _OpenMarker:
+    key: str
+    begin_start: int
+    begin_end: int
 
 
 def find_marker_spans(text: str) -> dict[str, MarkerSpan]:

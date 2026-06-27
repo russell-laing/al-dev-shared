@@ -146,13 +146,6 @@ class SectionSpec:
     context: Optional[str] = None
 
 
-@dataclass(frozen=True)
-class _OpenMarker:
-    key: str
-    begin_start: int
-    begin_end: int
-
-
 def dedupe_sorted(edges: Iterable[tuple[str, str]]) -> list[tuple[str, str]]:
     """Return deterministic edge order."""
     return sorted(set(edges), key=lambda item: (item[0], item[1]))
