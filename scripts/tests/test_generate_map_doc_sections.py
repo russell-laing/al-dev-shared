@@ -19,13 +19,12 @@ TARGET_DOCS = (
 )
 
 
-class FacadeExportTests(unittest.TestCase):
-    def test_map_doc_sections_keeps_public_entrypoints(self) -> None:
-        from scripts.al_dev_tools.docs import map_doc_sections as map_mod
+def test_map_doc_sections_keeps_public_entrypoints() -> None:
+    from scripts.al_dev_tools.docs import map_doc_sections as map_mod
 
-        self.assertTrue(hasattr(map_mod, "collect_inventory"))
-        self.assertTrue(hasattr(map_mod, "build_all_sections"))
-        self.assertTrue(hasattr(map_mod, "generate_document_updates"))
+    assert hasattr(map_mod, "collect_inventory")
+    assert hasattr(map_mod, "build_all_sections")
+    assert hasattr(map_mod, "generate_document_updates")
 
 
 def _build_fixture_repo(root: Path) -> Path:
