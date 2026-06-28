@@ -64,12 +64,12 @@ Copy these files if they exist:
 
 | Source (this repo) | Target (destination repo) |
 | --- | --- |
-| `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-ticket-context.md` |
-| `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-explore-findings.md` |
+| `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null &#124; sort &#124; tail -1)` | `.dev/source-ticket-context.md` |
+| `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null &#124; sort &#124; tail -1)` | `.dev/source-explore-findings.md` |
 | `.dev/project-context.md` | `.dev/source-project-context.md` |
-| `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-solution-plan.md` |
-| `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-requirements.md` |
-| `$(ls .dev/*-plugin-release-notes.md 2>/dev/null \| sort \| tail -1)` | `.dev/source-release-notes.md` |
+| `$(ls .dev/*-al-dev-plan-solution-plan.md 2>/dev/null &#124; sort &#124; tail -1)` | `.dev/source-solution-plan.md` |
+| `$(ls .dev/*-al-dev-interview-requirements.md 2>/dev/null &#124; sort &#124; tail -1)` | `.dev/source-requirements.md` |
+| `$(ls .dev/*-plugin-release-notes.md 2>/dev/null &#124; sort &#124; tail -1)` | `.dev/source-release-notes.md` |
 
 Rename `project-context.md` → `source-project-context.md` to avoid
 overwriting the target repo's own context document.
