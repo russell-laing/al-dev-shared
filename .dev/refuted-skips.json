@@ -1,1 +1,90 @@
-[]
+[
+  {
+    "surface": "tooling",
+    "dimension": "design",
+    "object": "design-agent-lens-scope-isolation",
+    "finding": "Architectural design analysis across multiple agent files requires sonnet for scope isolation decisions; haiku struggles with multi-file systems-thinking",
+    "reason": "Rubber-duck refuted: lens performs single-file scope analysis (no multi-file reasoning); haiku is appropriate for textual single-file analysis",
+    "closes_event_id": "disp_20260627_000028"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "design",
+    "object": "implement-plugin-health",
+    "finding": "6 phases exceeds typical complexity; task-execution loop, ledger-close, and downstream-regeneration are separable concerns requiring decomposition",
+    "reason": "Rubber-duck rejected: phases overlap (3 listed twice), inseparably coupled (Phase 3 ledger-close must precede Phase 4 artifact finalization), split would break health-loop contract and add orchestration overhead",
+    "closes_event_id": "disp_20260627_000031"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "design",
+    "object": "plan-plugin-findings",
+    "finding": "6 phases exceeds typical complexity; finding verification (Phase 3) and plan writing (Phase 4+) are separable architectural concerns",
+    "reason": "Rubber-duck rejected: proposal conflates agent-level and skill-level boundaries; verify-health-finding agent already encapsulates rubber-duck logic; extracting to skill-level loses context carry-over and over-fragments health loop",
+    "closes_event_id": "disp_20260627_000032"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "design",
+    "object": "static-lens-carveout-to-plan-phase3",
+    "finding": "Partition deterministic-only findings (structure, tool-hygiene, naming) for re-verification via script instead of LLM agents; promote carve-out to shared gate doc",
+    "reason": "rubber-duck verified: implemented in plan-plugin-findings Phase 3 \u00a73 and static-lens-carveout.md canonical procedure",
+    "closes_event_id": "disp_20260626_000106"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "phase3-jsonl-fallback-lookup",
+    "finding": "Look up events directly from dispositions-events JSONL when dispositions-open.md no longer shows them",
+    "reason": "rubber-duck verified: JSONL fallback with shard extraction bash implemented in implement-plugin-health Phase 3 lines 340-351",
+    "closes_event_id": "disp_20260626_000114"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "write-needs-prior-read-loopstate",
+    "finding": "Add prior Read step before Write call in /implement-plugin-health Phase 5 breadcrumb write",
+    "reason": "rubber-duck verified: Prior Read step documented in implement-plugin-health Phase 5 lines 503-507",
+    "closes_event_id": "disp_20260626_000121"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "show-event-by-id-subcommand",
+    "finding": "Add show --event-id subcommand to scripts/health_disposition_store.py for manual verification",
+    "reason": "rubber-duck verified: show subcommand with --event-id flag exists at health_disposition_store.py lines 813-821",
+    "closes_event_id": "disp_20260626_000111"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "sync-shard-verbose-output",
+    "finding": "Default sync_shard to summary output; gate per-row echo behind --verbose flag",
+    "reason": "rubber-duck verified: --verbose flag and summary-only default output implemented at health_disposition_store.py lines 858, 993, 995",
+    "closes_event_id": "disp_20260626_000117"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "metrics-zero-table-key-casing",
+    "finding": "Validate severity structure with same strictness as _METRIC_FIELDS check in scripts/assemble_health_findings.py",
+    "reason": "rubber-duck verified: validation with casing checks implemented at assemble_health_findings.py lines 180-184",
+    "closes_event_id": "disp_20260626_000112"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "lens-false-findings-verified",
+    "finding": "Bloat/Clarity/Structure lens reported 28 findings with 61% evidence verification drop rate; move section-count rule to deterministic static lens",
+    "reason": "rubber-duck verified: section-count rule moved to health_static_lenses.py check_agent_structure() lines 372-382",
+    "closes_event_id": "disp_20260626_000109"
+  },
+  {
+    "surface": "tooling",
+    "dimension": "quality",
+    "object": "design-skill-lens-preplanning",
+    "finding": "Has 7 top-level sections; threshold is 6 (regression from prior fix)",
+    "reason": "rubber-duck refuted: actual section count is 6, not 7; no regression detected",
+    "closes_event_id": "disp_20260627_000076"
+  }
+]

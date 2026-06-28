@@ -17,6 +17,11 @@ class ShardPathTest(unittest.TestCase):
 
 
 class MaterializeViewTest(unittest.TestCase):
+    def test_store_facade_keeps_public_helpers(self) -> None:
+        self.assertTrue(hasattr(STORE, "append_event"))
+        self.assertTrue(hasattr(STORE, "materialize_current_events"))
+        self.assertTrue(hasattr(STORE, "match_against_ledger"))
+
     def test_current_view_keeps_latest_row_per_finding_key(self) -> None:
         rows = [
             {

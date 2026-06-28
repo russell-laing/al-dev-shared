@@ -370,9 +370,9 @@ missing records and resolve them (re-dispatch or escalate) before continuing.
 > ```
 >
 > The task also carries a `regenerate` step, a **declined-row presence** check that
-> proves a `declined` event row exists for each ID — not merely the pre-existing
-> `accepted` row that was always there
-> (`grep -rh '"event_id": "<id>"' docs/health/dispositions-events/ | grep -q '"disposition": "declined"'`),
+> proves a new `declined` event row exists and explicitly closes the accepted id
+> — not merely the pre-existing `accepted` row that was always there
+> (`grep -rh '"closes_event_ids": \["<id>"\]' docs/health/dispositions-events/ | grep -q '"disposition": "declined"'`),
 > an **inverted** open-view absence check
 > (`if grep -q <id> docs/health/dispositions-open.md; then echo ERROR; exit 1; fi`),
 > and `closes_event_ids: []` with a note that `implement-plugin-health` MUST NOT

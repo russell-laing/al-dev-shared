@@ -15,6 +15,11 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "check_ledger_staleness.py"
 
 
 class ResolveClosuresTest(unittest.TestCase):
+    def test_ledger_facade_keeps_public_helpers(self) -> None:
+        self.assertTrue(hasattr(MODULE, "parse_ledger_text"))
+        self.assertTrue(hasattr(MODULE, "resolve_closures"))
+        self.assertTrue(hasattr(MODULE, "main"))
+
     def test_explicit_closure_does_not_also_close_by_object_order(self) -> None:
         rows = [
             MODULE.Row(
