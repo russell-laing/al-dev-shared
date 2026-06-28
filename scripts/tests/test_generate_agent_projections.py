@@ -3,6 +3,11 @@ from pathlib import Path
 import importlib.util
 import re
 import tempfile
+import sys
+
+SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 spec = importlib.util.spec_from_file_location(
     "generate_agent_projections",
@@ -139,6 +144,7 @@ def test_generate_all_writes_expected_files(tmp_path):
     assert (output_root / "claude" / "al-dev-interview.md").exists()
     assert (output_root / "copilot" / "al-dev-explore.md").exists()
     assert (output_root / "codex" / "al-dev-explore.toml").exists()
+    assert list(output_root.rglob(".*.tmp")) == []
 
 
 def test_generate_all_writes_generated_agents_readme(tmp_path):

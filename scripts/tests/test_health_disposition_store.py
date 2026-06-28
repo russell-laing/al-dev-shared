@@ -135,6 +135,32 @@ class RenderCurrentViewTest(unittest.TestCase):
                 "| #595 | tooling | quality | record-plugin-dispositions |", text
             )
 
+    def test_render_index_writes_json_atomically(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            output = Path(d) / "docs" / "health" / "dispositions-index.json"
+            events = [
+                {
+                    "event_id": "disp_20260612_000001",
+                    "surface": "tooling",
+                    "dimension": "quality",
+                    "object": "record-plugin-dispositions",
+                    "finding": "Schema count mismatch",
+                    "disposition": "accepted",
+                    "date": "2026-06-12",
+                    "closes_event_ids": [],
+                    "evidence": "queued",
+                    "source": "markdown-migration",
+                }
+            ]
+
+            STORE.render_index(output, events)
+
+            self.assertTrue(output.exists())
+            self.assertEqual(list(output.parent.rglob(".*.tmp")), [])
+            text = output.read_text(encoding="utf-8")
+            self.assertIn('"total_events": 1', text)
+            self.assertIn('"open_accepted": 1', text)
+
 
 class ListOpenTest(unittest.TestCase):
     LEDGER = (

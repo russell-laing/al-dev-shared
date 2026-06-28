@@ -10,6 +10,11 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 from pathlib import Path
+import sys
+
+SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "health_static_lenses.py"

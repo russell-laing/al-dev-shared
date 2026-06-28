@@ -2,25 +2,14 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.al_dev_tools.health import migrate_health_disposition_jsonl as migrate
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MIGRATE_PATH = REPO_ROOT / "scripts" / "migrate_health_disposition_jsonl.py"
-
-
-def load_migrate():
-    spec = importlib.util.spec_from_file_location("migrate_health_disposition_jsonl", MIGRATE_PATH)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
 
 
 class MigrationTest(unittest.TestCase):
@@ -37,7 +26,7 @@ class MigrationTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            report = load_migrate().migrate_to_jsonl(root)
+            report = migrate.migrate_to_jsonl(root)
 
             shard = root / "docs" / "health" / "dispositions-events" / "2026" / "2026-06.jsonl"
             events = [json.loads(line) for line in shard.read_text(encoding="utf-8").splitlines()]
@@ -60,7 +49,7 @@ class MigrationTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            report = load_migrate().migrate_to_jsonl(root)
+            report = migrate.migrate_to_jsonl(root)
 
             audit = root / "docs" / "health" / "dispositions-jsonl-migration-audit.md"
             self.assertIn("#600", audit.read_text(encoding="utf-8"))

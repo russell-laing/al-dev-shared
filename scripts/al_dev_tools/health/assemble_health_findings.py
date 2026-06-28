@@ -19,6 +19,8 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from ..io_utils import write_text_atomic
+
 # Canonical block order in the findings file. Lenses not listed here sort to the
 # end, alphabetically, so a new lens never silently disappears.
 LENS_ORDER = [
@@ -249,7 +251,7 @@ def main():
         failed_lenses=failed, total_lenses=args.total_lenses,
         completed_session=args.completed_session, completed_prior=args.completed_prior,
         skipped=args.skipped)
-    Path(args.out).write_text(text, encoding="utf-8")
+    write_text_atomic(Path(args.out), text)
     print(args.out)
     return 0
 

@@ -1,15 +1,9 @@
-import importlib.util
 import json
 import os
 import tempfile
 from pathlib import Path
 
-spec = importlib.util.spec_from_file_location(
-    "split_multilens_findings",
-    str(Path(__file__).resolve().parents[1] / "split_multilens_findings.py"),
-)
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
+from scripts.al_dev_tools.health import split_multilens_findings as mod
 
 COMBINED = """<!-- lens: quality-agent-lens-bloat -->
 ### Bloat Findings

@@ -15,6 +15,8 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from ..io_utils import write_json_atomic
+
 MARKER_RE = re.compile(r"<!--\s*lens:\s*([a-z0-9-]+)\s*-->")
 
 # The four child quality lenses each combined reader fans out into, keyed by
@@ -111,7 +113,7 @@ def split_combined(text, date, out_dir, completed_at=None):
             "completed_at": completed_at,
         }
         path = os.path.join(out_dir, f"{date}-plugin-health-lens-{lens}.json")
-        Path(path).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        write_json_atomic(Path(path), payload)
         written.append(path)
     return written
 
@@ -174,7 +176,7 @@ def write_allclean_children(object_type, date, out_dir, completed_at=None):
             "completed_at": completed_at,
         }
         path = os.path.join(out_dir, f"{date}-plugin-health-lens-{lens}.json")
-        Path(path).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        write_json_atomic(Path(path), payload)
         written.append(path)
     return written
 

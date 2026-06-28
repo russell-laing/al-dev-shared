@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from scripts.al_dev_tools.io_utils import write_text_atomic
+from scripts.al_dev_tools.io_utils import write_json_atomic, write_text_atomic
 
 
 def test_write_text_atomic_writes_content_and_leaves_no_temp_files() -> None:
@@ -31,6 +31,17 @@ def test_write_text_atomic_cleans_up_temp_file_when_replace_fails() -> None:
                 write_text_atomic(target, "hello world\n")
 
         assert not target.exists()
+        assert list(root.glob(f".{target.name}.*.tmp")) == []
+
+
+def test_write_json_atomic_sorts_keys_and_leaves_no_temp_files() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        target = root / "output.json"
+
+        write_json_atomic(target, {"b": 2, "a": 1})
+
+        assert target.read_text(encoding="utf-8") == '{\n  "a": 1,\n  "b": 2\n}\n'
         assert list(root.glob(f".{target.name}.*.tmp")) == []
 
 

@@ -40,7 +40,7 @@ class ScriptsPackageBootstrapTest(unittest.TestCase):
         self.assertTrue(hasattr(maintainer_analysis, "compute_gaps"))
         self.assertTrue(hasattr(maintainer_rendering, "build_sections"))
 
-    def test_target_wrappers_no_longer_mutate_sys_path(self) -> None:
+    def test_target_wrappers_use_shared_bootstrap_helper(self) -> None:
         for rel_path in (
             "scripts/generate-map-doc-sections.py",
             "scripts/generate-maintainer-guide.py",
@@ -49,7 +49,8 @@ class ScriptsPackageBootstrapTest(unittest.TestCase):
             "scripts/derive-skill-spawned-agents.py",
         ):
             text = (REPO_ROOT / rel_path).read_text(encoding="utf-8")
-            self.assertNotIn("sys.path.insert", text, rel_path)
+            self.assertIn("from _entrypoint_bootstrap import bootstrap_repo", text, rel_path)
+            self.assertIn("bootstrap_repo(__file__)", text, rel_path)
 
     def test_plugin_graph_uses_package_imports(self) -> None:
         text = (REPO_ROOT / "scripts/generate-plugin-graph.py").read_text(encoding="utf-8")

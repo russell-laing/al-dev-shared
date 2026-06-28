@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import tempfile
 
@@ -26,4 +27,8 @@ def write_text_atomic(path: Path, text: str) -> None:
             temp_path.unlink()
 
 
-__all__ = ["write_text_atomic"]
+def write_json_atomic(path: Path, payload: object) -> None:
+    write_text_atomic(path, json.dumps(payload, indent=2, sort_keys=True) + "\n")
+
+
+__all__ = ["write_json_atomic", "write_text_atomic"]

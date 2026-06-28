@@ -65,6 +65,12 @@ from pathlib import Path
 
 import yaml
 
+from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+
+from scripts.al_dev_tools.io_utils import write_json_atomic
+
 
 REPO = Path(__file__).resolve().parents[1]
 POLICY_PATH = REPO / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
@@ -562,7 +568,7 @@ def write_lens_json(out_dir: Path, date: str, lens: str, findings: str, count: i
         "suggestion_count": count,
         "completed_at": datetime.now().astimezone().isoformat(),
     }
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    write_json_atomic(path, payload)
     return path
 
 

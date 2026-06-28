@@ -10,6 +10,8 @@ import json
 import re
 import shutil
 
+from ..io_utils import write_text_atomic
+
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -121,7 +123,7 @@ def migrate_to_jsonl(repo_root: Path = REPO_ROOT) -> dict[str, object]:
         "duplicate_legacy_ids": duplicate_legacy_ids,
         "ambiguous_closures": ambiguous_closures,
     }
-    audit_output.write_text(_audit_text(report), encoding="utf-8")
+    write_text_atomic(audit_output, _audit_text(report))
     return report
 
 

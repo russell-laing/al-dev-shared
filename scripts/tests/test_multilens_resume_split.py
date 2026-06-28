@@ -5,11 +5,16 @@ dispatching real agents: the resume-collapse completeness rule (`reader_complete
 the raw classifier (`classify_raw`), the Phase 4 all-clean fallback
 (`write_allclean_children`), and the splitter fan-out (`split_combined`).
 """
-import importlib.util
 import json
 import os
 import tempfile
 from pathlib import Path
+import importlib.util
+import sys
+
+SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "multilens"
 

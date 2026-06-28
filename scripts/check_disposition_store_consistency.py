@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Compatibility wrapper for the packaged disposition-store consistency checker."""
 
-import runpy
+from importlib import import_module
 
-try:
-    from scripts.al_dev_tools.health.check_disposition_store_consistency import *  # noqa: F401,F403
-    MODULE_NAME = "scripts.al_dev_tools.health.check_disposition_store_consistency"
-except ModuleNotFoundError:
-    from al_dev_tools.health.check_disposition_store_consistency import *  # noqa: F401,F403
-    MODULE_NAME = "al_dev_tools.health.check_disposition_store_consistency"
+from _compat_entrypoint import resolve_module_name, run_module_entrypoint
+
+_module = import_module(
+    resolve_module_name("al_dev_tools.health.check_disposition_store_consistency")
+)
+globals().update(
+    {name: value for name, value in _module.__dict__.items() if not name.startswith("_")}
+)
 
 
 if __name__ == "__main__":
-    runpy.run_module(MODULE_NAME, run_name="__main__")
+    raise SystemExit(
+        run_module_entrypoint("al_dev_tools.health.check_disposition_store_consistency")
+    )

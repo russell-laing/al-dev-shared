@@ -15,6 +15,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
+SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRIPT = REPO_ROOT / "scripts" / "check_disposition_store_consistency.py"
 

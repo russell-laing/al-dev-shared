@@ -9,6 +9,12 @@ import yaml
 from pathlib import Path
 from typing import Any
 
+from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+
+from scripts.al_dev_tools.io_utils import write_text_atomic
+
 
 def load_projection_policy(policy_path: Path) -> dict:
     """Load the projection table from the policy frontmatter.
@@ -175,23 +181,14 @@ def write_projection_set(output_root: Path, agent: dict, policy: dict) -> None:
     (output_root / "claude").mkdir(parents=True, exist_ok=True)
     (output_root / "copilot").mkdir(parents=True, exist_ok=True)
     (output_root / "codex").mkdir(parents=True, exist_ok=True)
-    (output_root / "claude" / f'{agent["name"]}.md').write_text(
-        render_claude_projection(agent, policy),
-        encoding="utf-8",
-    )
-    (output_root / "copilot" / f'{agent["name"]}.md').write_text(
-        render_copilot_projection(agent, policy),
-        encoding="utf-8",
-    )
-    (output_root / "codex" / f'{agent["name"]}.toml').write_text(
-        render_codex_projection(agent, policy),
-        encoding="utf-8",
-    )
+    write_text_atomic(output_root / "claude" / f'{agent["name"]}.md', render_claude_projection(agent, policy))
+    write_text_atomic(output_root / "copilot" / f'{agent["name"]}.md', render_copilot_projection(agent, policy))
+    write_text_atomic(output_root / "codex" / f'{agent["name"]}.toml', render_codex_projection(agent, policy))
 
 
 def write_all_projections(output_root: Path, agents: list[dict], policy: dict) -> None:
     output_root.mkdir(parents=True, exist_ok=True)
-    (output_root / "README.md").write_text(render_generated_agents_readme(), encoding="utf-8")
+    write_text_atomic(output_root / "README.md", render_generated_agents_readme())
 
     # Compute desired filenames per harness before writing
     desired_claude = {f'{a["name"]}.md' for a in agents}

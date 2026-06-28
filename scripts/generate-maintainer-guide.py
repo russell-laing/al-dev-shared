@@ -15,7 +15,9 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-from scripts import REPO_ROOT
+from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
 from scripts.al_dev_tools.io_utils import write_text_atomic
 from scripts.al_dev_tools.docs.maintainer_guide_sections import (
     STAGE_DOCS,

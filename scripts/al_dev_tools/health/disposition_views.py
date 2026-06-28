@@ -10,6 +10,7 @@ from typing import Iterator
 
 from .disposition_events import build_disposition_index, materialize_current_events
 from .disposition_models import TABLE_DIVIDER, TABLE_HEADER, _escape_cell, _unescape_cell, disposition_key
+from ..io_utils import write_json_atomic, write_text_atomic
 
 
 def shard_path_for_date(iso_date: str) -> Path:
@@ -90,7 +91,7 @@ def render_current_view(output: Path, rows: list[dict[str, str]]) -> None:
         f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
         for r in current
     ]
-    output.write_text("\n".join(header_lines + body_lines) + "\n", encoding="utf-8")
+    write_text_atomic(output, "\n".join(header_lines + body_lines) + "\n")
 
 
 def iter_history_rows(history_root: Path) -> Iterator[dict[str, str]]:
@@ -150,7 +151,7 @@ def render_open_view(output: Path, events: list[dict[str, object]]) -> None:
         "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
     ]
     lines.extend(_markdown_event_row(event) for event in current)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_text_atomic(output, "\n".join(lines) + "\n")
 
 
 def render_current_events_view(output: Path, events: list[dict[str, object]]) -> None:
@@ -165,7 +166,7 @@ def render_current_events_view(output: Path, events: list[dict[str, object]]) ->
         "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
     ]
     lines.extend(_markdown_event_row(event) for event in current)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_text_atomic(output, "\n".join(lines) + "\n")
 
 
 def render_legacy_compatibility_view(output: Path, events: list[dict[str, object]]) -> None:
@@ -180,12 +181,9 @@ def render_legacy_compatibility_view(output: Path, events: list[dict[str, object
         "|----|---------|-----------|--------|---------|-------------|------|------|",
     ]
     lines.extend(_markdown_legacy_row(event) for event in current)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_text_atomic(output, "\n".join(lines) + "\n")
 
 
 def render_index(output: Path, events: list[dict[str, object]]) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
-        json.dumps(build_disposition_index(events), indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json_atomic(output, build_disposition_index(events))

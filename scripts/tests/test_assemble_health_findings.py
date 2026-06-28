@@ -1,15 +1,9 @@
-import importlib.util
 import os
 import tempfile
 import json
 from pathlib import Path
 
-spec = importlib.util.spec_from_file_location(
-    "assemble_health_findings",
-    str(Path(__file__).resolve().parents[1] / "assemble_health_findings.py"),
-)
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
+from scripts.al_dev_tools.health import assemble_health_findings as mod
 
 
 def _write_lens(d, lens, findings, count):

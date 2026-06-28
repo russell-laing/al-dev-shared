@@ -12,8 +12,11 @@ phase (regenerating the catalog from this parser) immediately reverted.
 from __future__ import annotations
 
 import json
+import sys
 
-from scripts import REPO_ROOT
+from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
 from scripts.al_dev_tools.docs.map_doc_sections import (
     _internal_skill_agent_edges,
     collect_inventory,
