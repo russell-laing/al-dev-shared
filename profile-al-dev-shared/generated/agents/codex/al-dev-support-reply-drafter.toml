@@ -79,7 +79,7 @@ BC version` — so the reply never silently drops the version context.
 - Preserve human, relatable voice: direct, clear section headings, minimal hedging.
 - Write as a first-person direct response, not meta-commentary on the conversation process.
 
-**Step 3:** Write combined file:
+**Step 3:** Write combined file following the structure defined in `knowledge/support-reply-output-format.md`.
 
 The file path is `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` where `<slug>` is:
 
@@ -87,40 +87,6 @@ The file path is `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md` where `
 - Query-type slug for freetext queries (e.g., `connection-error`, `perf-issue`)
 
 Write both **Internal Findings** and **Draft Customer Reply** sections to this file.
-
-## Output Format
-
-```markdown
-# Internal Findings
-
-## Root Cause
-[From researcher findings]
-
-## Evidence
-
-- AL Symbol: [from researcher]
-- MS Docs: [from researcher]
-- BC History: [from researcher]
-
-## Workarounds
-[From researcher findings]
-
----
-
-# Draft Customer Reply
-
-## Issue Summary
-[Restate customer's problem in clear terms]
-
-## Root Cause
-[Non-technical explanation]
-
-## Solution
-[Step-by-step fix or workaround]
-
-## If Issue Persists
-[Escalation path, support contacts, debug steps]
-```
 
 ## Return Block
 
