@@ -37,7 +37,6 @@ flowchart LR
         skill_al_dev_support_reply[al-dev-support-reply]
         skill_al_dev_ticket[al-dev-ticket]
         skill_commit_recover[commit-recover]
-        skill_verify_commits[verify-commits]
     end
     subgraph Agents[Agents]
         agent_al_dev_al_pattern_reviewer[al-dev-al-pattern-reviewer]
@@ -47,7 +46,6 @@ flowchart LR
         agent_al_dev_commit_hook_classifier[al-dev-commit-hook-classifier]
         agent_al_dev_commit_hook_fixer[al-dev-commit-hook-fixer]
         agent_al_dev_commit_lint_fixer[al-dev-commit-lint-fixer]
-        agent_al_dev_commit_ooxml_validator[al-dev-commit-ooxml-validator]
         agent_al_dev_commit_recover[al-dev-commit-recover]
         agent_al_dev_developer_tdd[al-dev-developer-tdd]
         agent_al_dev_developer_traditional[al-dev-developer-traditional]
@@ -70,19 +68,21 @@ flowchart LR
         knowledge_al_dev_fix_examples_md[al-dev-fix-examples]
         knowledge_al_dev_plan_phase_routing_md[al-dev-plan-phase-routing]
         knowledge_al_developer_patterns_md[al-developer-patterns]
+        knowledge_al_developer_shared_standards_md[al-developer-shared-standards]
         knowledge_al_linting_rules_md[al-linting-rules]
         knowledge_al_symbol_pre_flight_md[al-symbol-pre-flight]
+        knowledge_architect_evaluation_criteria_md[architect-evaluation-criteria]
         knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
         knowledge_artifact_contracts_md[artifact-contracts]
         knowledge_bash_safe_patterns_md[bash-safe-patterns]
         knowledge_code_review_patterns_md[code-review-patterns]
         knowledge_commit_analysis_patterns_md[commit-analysis-patterns]
-        knowledge_commit_dispatch_template_md[commit-dispatch-template]
+        knowledge_commit_compile_gate_md[commit-compile-gate]
         knowledge_commit_hook_recovery_patterns_md[commit-hook-recovery-patterns]
+        knowledge_commit_intent_preflight_md[commit-intent-preflight]
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
         knowledge_companion_context_ownership_md[companion-context-ownership]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
-        knowledge_compile_output_safeguard_md[compile-output-safeguard]
         knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
         knowledge_documentation_rtm_guide_md[documentation-rtm-guide]
         knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
@@ -119,7 +119,6 @@ flowchart LR
         artifact_commit_integrity_log[.dev/commit-integrity.log]
         artifact_commit_preflight_md[.dev/commit-preflight.md]
         artifact_commits_json[.dev/commits.json]
-        artifact_compile_baseline_log[.dev/compile-baseline.log]
         artifact_compile_errors_log[.dev/compile-errors.log]
         artifact_explore_findings_md[.dev/explore-findings.md]
         artifact_file_sizes_json[.dev/file-sizes.json]
@@ -132,6 +131,7 @@ flowchart LR
         artifact_preflight_context_md[.dev/preflight-context.md]
         artifact_progress_md[.dev/progress.md]
         artifact_project_context_md[.dev/project-context.md]
+        artifact_session_log_md[.dev/session-log.md]
         artifact_source_explore_findings_md[.dev/source-explore-findings.md]
         artifact_source_project_context_md[.dev/source-project-context.md]
         artifact_source_release_notes_md[.dev/source-release-notes.md]
@@ -168,7 +168,6 @@ flowchart LR
     skill_al_dev_commit_execute --> agent_al_dev_commit_hook_classifier
     skill_al_dev_commit_execute --> agent_al_dev_commit_hook_fixer
     skill_al_dev_commit_execute --> agent_al_dev_commit_lint_fixer
-    skill_al_dev_commit_execute --> agent_al_dev_commit_ooxml_validator
     skill_al_dev_commit_preflight --> agent_al_dev_commit_analyzer
     skill_al_dev_commit_preflight --> agent_al_dev_commit_group_drafter
     skill_al_dev_develop_orchestrate --> agent_al_dev_developer_tdd
@@ -187,15 +186,12 @@ flowchart LR
     skill_al_dev_ticket --> agent_al_dev_ticket_context_writer
     skill_commit_recover --> agent_al_dev_commit_recover
     skill_al_dev_commit --> knowledge_artifact_contracts_md
-    skill_al_dev_commit --> knowledge_intent_preflight_md
-    skill_al_dev_commit_execute --> knowledge_commit_dispatch_template_md
+    skill_al_dev_commit --> knowledge_commit_intent_preflight_md
     skill_al_dev_commit_preflight --> knowledge_artifact_contracts_md
-    skill_al_dev_commit_preflight --> knowledge_commit_dispatch_template_md
+    skill_al_dev_commit_preflight --> knowledge_commit_compile_gate_md
+    skill_al_dev_commit_preflight --> knowledge_commit_intent_preflight_md
     skill_al_dev_commit_preflight --> knowledge_commit_workflow_orchestration_md
     skill_al_dev_commit_preflight --> knowledge_companion_context_ownership_md
-    skill_al_dev_commit_preflight --> knowledge_compile_lint_procedure_md
-    skill_al_dev_commit_preflight --> knowledge_compile_output_safeguard_md
-    skill_al_dev_commit_preflight --> knowledge_intent_preflight_md
     skill_al_dev_commit_preflight --> knowledge_workflow_resilience_md
     skill_al_dev_develop_orchestrate --> knowledge_al_dev_develop_spawn_prompt_md
     skill_al_dev_develop_orchestrate --> knowledge_artifact_contracts_md
@@ -228,6 +224,7 @@ flowchart LR
     skill_al_dev_perf --> knowledge_explore_subagent_pattern_md
     skill_al_dev_perf --> knowledge_perf_anti_patterns_prompt_md
     skill_al_dev_perf --> knowledge_perf_report_template_md
+    skill_al_dev_plan --> knowledge_architect_evaluation_criteria_md
     skill_al_dev_plan --> knowledge_architect_invocation_patterns_md
     skill_al_dev_plan --> knowledge_artifact_contracts_md
     skill_al_dev_plan --> knowledge_intent_preflight_md
@@ -250,15 +247,13 @@ flowchart LR
     agent_al_dev_commit_hook_fixer --> knowledge_commit_hook_recovery_patterns_md
     agent_al_dev_commit_lint_fixer --> knowledge_bash_safe_patterns_md
     agent_al_dev_developer_tdd --> knowledge_al_dev_develop_spawn_prompt_md
-    agent_al_dev_developer_tdd --> knowledge_al_developer_patterns_md
+    agent_al_dev_developer_tdd --> knowledge_al_developer_shared_standards_md
     agent_al_dev_developer_tdd --> knowledge_al_symbol_pre_flight_md
-    agent_al_dev_developer_tdd --> knowledge_compile_output_safeguard_md
     agent_al_dev_developer_tdd --> knowledge_developer_invocation_patterns_md
     agent_al_dev_developer_tdd --> knowledge_tdd_workflow_md
     agent_al_dev_developer_traditional --> knowledge_al_dev_develop_spawn_prompt_md
-    agent_al_dev_developer_traditional --> knowledge_al_developer_patterns_md
+    agent_al_dev_developer_traditional --> knowledge_al_developer_shared_standards_md
     agent_al_dev_developer_traditional --> knowledge_al_symbol_pre_flight_md
-    agent_al_dev_developer_traditional --> knowledge_compile_output_safeguard_md
     agent_al_dev_developer_traditional --> knowledge_developer_invocation_patterns_md
     agent_al_dev_diagnostics_resolver --> knowledge_bash_safe_patterns_md
     agent_al_dev_docs_writer --> knowledge_documentation_rtm_guide_md
@@ -282,8 +277,6 @@ flowchart LR
     skill_al_dev_commit_execute --> artifact_commits_json
     skill_al_dev_commit_execute --> artifact_hook_failures_json
     skill_al_dev_commit_preflight --> artifact_commit_preflight_md
-    skill_al_dev_commit_preflight --> artifact_compile_baseline_log
-    skill_al_dev_commit_preflight --> artifact_compile_errors_log
     skill_al_dev_commit_preflight --> artifact_file_sizes_json
     skill_al_dev_develop_orchestrate --> artifact_progress_md
     skill_al_dev_develop_orchestrate --> artifact_project_context_md
@@ -303,6 +296,7 @@ flowchart LR
     skill_al_dev_help --> artifact_2026_05_19_al_dev_interview_requirements_md
     skill_al_dev_help --> artifact_2026_05_19_al_dev_plan_solution_plan_md
     skill_al_dev_help --> artifact_project_context_md
+    skill_al_dev_interview --> artifact_session_log_md
     skill_al_dev_investigate --> artifact_YYYY_MM_DD_al_dev_investigate_findings_md
     skill_al_dev_investigate --> artifact_investigate_errors_log
     skill_al_dev_investigate --> artifact_project_context_md
@@ -349,7 +343,6 @@ flowchart LR
     class skill_al_dev_support_reply skillNode
     class skill_al_dev_ticket skillNode
     class skill_commit_recover skillNode
-    class skill_verify_commits skillNode
     class agent_al_dev_al_pattern_reviewer agentNode
     class agent_al_dev_commit_analyzer agentNode
     class agent_al_dev_commit_executor agentNode
@@ -357,7 +350,6 @@ flowchart LR
     class agent_al_dev_commit_hook_classifier agentNode
     class agent_al_dev_commit_hook_fixer agentNode
     class agent_al_dev_commit_lint_fixer agentNode
-    class agent_al_dev_commit_ooxml_validator agentNode
     class agent_al_dev_commit_recover agentNode
     class agent_al_dev_developer_tdd agentNode
     class agent_al_dev_developer_traditional agentNode
@@ -378,19 +370,21 @@ flowchart LR
     class knowledge_al_dev_fix_examples_md knowledgeNode
     class knowledge_al_dev_plan_phase_routing_md knowledgeNode
     class knowledge_al_developer_patterns_md knowledgeNode
+    class knowledge_al_developer_shared_standards_md knowledgeNode
     class knowledge_al_linting_rules_md knowledgeNode
     class knowledge_al_symbol_pre_flight_md knowledgeNode
+    class knowledge_architect_evaluation_criteria_md knowledgeNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_bash_safe_patterns_md knowledgeNode
     class knowledge_code_review_patterns_md knowledgeNode
     class knowledge_commit_analysis_patterns_md knowledgeNode
-    class knowledge_commit_dispatch_template_md knowledgeNode
+    class knowledge_commit_compile_gate_md knowledgeNode
     class knowledge_commit_hook_recovery_patterns_md knowledgeNode
+    class knowledge_commit_intent_preflight_md knowledgeNode
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
-    class knowledge_compile_output_safeguard_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_documentation_rtm_guide_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
@@ -425,7 +419,6 @@ flowchart LR
     class artifact_commit_integrity_log artifactNode
     class artifact_commit_preflight_md artifactNode
     class artifact_commits_json artifactNode
-    class artifact_compile_baseline_log artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_explore_findings_md artifactNode
     class artifact_file_sizes_json artifactNode
@@ -438,6 +431,7 @@ flowchart LR
     class artifact_preflight_context_md artifactNode
     class artifact_progress_md artifactNode
     class artifact_project_context_md artifactNode
+    class artifact_session_log_md artifactNode
     class artifact_source_explore_findings_md artifactNode
     class artifact_source_project_context_md artifactNode
     class artifact_source_release_notes_md artifactNode
@@ -456,16 +450,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    skill_al_dev_investigate[al-dev-investigate]
     skill_al_dev_plan[al-dev-plan]
     skill_al_dev_review_develop[al-dev-review-develop]
     skill_al_dev_commit[al-dev-commit]
 
-    skill_al_dev_investigate --> skill_al_dev_plan
     skill_al_dev_plan --> skill_al_dev_review_develop
     skill_al_dev_review_develop --> skill_al_dev_commit
 
-    class skill_al_dev_investigate skillNode
     class skill_al_dev_plan skillNode
     class skill_al_dev_review_develop skillNode
     class skill_al_dev_commit skillNode
@@ -518,6 +509,10 @@ flowchart LR
 - `background-agent-dispatch.md`
 - `code-review-template.md`
 - `commit-conventions.md`
+- `commit-dispatch-template.md`
+- `compile-output-safeguard.md`
+- `discover-plugin-health-multi-surface-complexity.md`
+- `dispatching-parallel-agents-patterns.md`
 - `feedback-resolution.md`
 - `handoff-chain-map.md`
 - `harness-concepts.md`
@@ -531,7 +526,11 @@ flowchart LR
 - `rubber-duck.md`
 - `session-analysis-report-format.md`
 - `skill-test-format.md`
+- `subagent-dispatch-batching.md`
+- `sync-map-checkpoint-state-machine.md`
+- `tdd-credit-limit-example.md`
 - `verification-and-planning.md`
+- `verify-health-finding-invocation-contract.md`
 
 **Off-path skills (not on any configured workflow path):**
 
@@ -543,6 +542,7 @@ flowchart LR
 - `al-dev-handoff`
 - `al-dev-help`
 - `al-dev-interview`
+- `al-dev-investigate`
 - `al-dev-lint`
 - `al-dev-perf`
 - `al-dev-plan-final-review`
@@ -551,7 +551,6 @@ flowchart LR
 - `al-dev-release-notes`
 - `al-dev-review-develop-preflight`
 - `commit-recover`
-- `verify-commits`
 
 **Missing refs (referenced but not on disk):** none
 <!-- END GENERATED: plugin-health-callouts -->

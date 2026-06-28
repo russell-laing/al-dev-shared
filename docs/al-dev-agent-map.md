@@ -1,9 +1,9 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-18
+**Last updated:** 2026-06-28
 
 <!-- BEGIN GENERATED: agent-coverage -->
-**Coverage:** 24 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
+**Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
 <!-- END GENERATED: agent-coverage -->
 
 > **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
@@ -12,7 +12,7 @@
 
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
-| ------- | ------- | ------- | ------------ |
+|-------|-------|-------|------------|
 | al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
 | al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
 | al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
@@ -20,7 +20,6 @@
 | al-dev-commit-hook-classifier | haiku | Read | `/al-dev-commit-execute` |
 | al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
 | al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
-| al-dev-commit-ooxml-validator | haiku | Bash | `/al-dev-commit-execute` |
 | al-dev-commit-recover | sonnet | Write, Bash | `/commit-recover` |
 | al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate` |
 | al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate`, `/al-dev-fix` |
@@ -161,27 +160,6 @@
 | Output | Description |
 | -------- | ------------- |
 | `LINT_FIXES` | Files re-staged after lint fixes (or `NONE`) |
-
----
-
-### al-dev-commit-ooxml-validator
-
-**Description:** OOXML ZIP integrity validator for staged commit files. Validates .docx, .xlsx, .pptx, and .odt files using unzip integrity check. Returns OOXML_FAILURES. Dispatched sequentially by al-dev-commit-execute (validation) after lint preflight. Read-only: never modifies files.
-**Model:** haiku
-**Tools:** Bash
-**Spawned by:** /al-dev-commit-execute
-
-**Inputs:**
-
-| Input | Required | Description |
-| ------- | ---------- | ------------- |
-| Dispatch prompt | **Yes** | `APPROVED_PLAN` — approved groups from analysis phase (GROUP_N structured blocks with `files:` and `message:` fields) |
-
-**Outputs:**
-
-| Output | Description |
-| -------- | ------------- |
-| `OOXML_FAILURES` | OOXML files that failed ZIP validation with reason (or `NONE`) |
 
 ---
 
