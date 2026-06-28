@@ -7,8 +7,10 @@ import re
 import sys
 from pathlib import Path
 
+from .paths import compatibility_ledger_path
 
-LEDGER = Path("docs/health/dispositions.md")
+
+LEDGER = compatibility_ledger_path()
 
 
 @dataclass

@@ -16,6 +16,7 @@ import argparse
 from pathlib import Path
 
 from . import health_disposition_store as store
+from .paths import compatibility_ledger_path, dispositions_history_root
 
 
 def migrate_store(
@@ -45,12 +46,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--source",
-        default="docs/health/dispositions.md",
+        default=compatibility_ledger_path(),
         help="Path to the monolithic ledger (default: docs/health/dispositions.md)",
     )
     parser.add_argument(
         "--history-root",
-        default="docs/health/dispositions-history",
+        default=dispositions_history_root(),
         help="Destination directory for month shards",
     )
     parser.add_argument(

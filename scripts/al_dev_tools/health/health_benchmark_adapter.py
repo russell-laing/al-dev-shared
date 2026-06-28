@@ -24,6 +24,13 @@ from pathlib import Path
 from .check_ledger_staleness import load_rows_from_store, resolve_closures
 from .health_disposition_store import iter_event_rows, materialize_current_events
 from .select_health_artifacts import select_artifacts
+from .paths import (
+    DOCS_HEALTH,
+    dispositions_current_view_path,
+    dispositions_events_root,
+    dispositions_index_path,
+    dispositions_open_view_path,
+)
 
 METRIC_FIELDS = (
     "raw_count",
@@ -122,7 +129,7 @@ def parse_dossier(path: Path) -> dict:
 
 
 def read_index(root: Path) -> dict:
-    index_path = root / "docs/health/dispositions-index.json"
+    index_path = dispositions_index_path(root)
     if not index_path.is_file():
         return {}
     return json.loads(index_path.read_text(encoding="utf-8"))
@@ -130,7 +137,7 @@ def read_index(root: Path) -> dict:
 
 def run_list_open(root: Path) -> object:
     """Count open accepted events via the JSONL store when it exists."""
-    events_root = root / "docs" / "health" / "dispositions-events"
+    events_root = dispositions_events_root(root)
     if not events_root.is_dir():
         return NOT_AVAILABLE
     current = materialize_current_events(list(iter_event_rows(events_root)))
@@ -160,7 +167,7 @@ def read_loop_state(root: Path) -> dict:
 
 def count_close_back(root: Path) -> int:
     """Count fixed events carrying closes_event_ids in the JSONL event store."""
-    events_root = root / "docs/health/dispositions-events"
+    events_root = dispositions_events_root(root)
     total = 0
     if not events_root.is_dir():
         return total
@@ -179,20 +186,20 @@ def count_close_back(root: Path) -> int:
 
 
 def jsonl_views_present(root: Path) -> bool:
-    base = root / "docs/health"
+    base = root / DOCS_HEALTH
     return all(
         (base / name).is_file()
         for name in (
-            "dispositions-index.json",
-            "dispositions-open.md",
-            "dispositions-current.md",
+            dispositions_index_path().name,
+            dispositions_open_view_path().name,
+            dispositions_current_view_path().name,
         )
     )
 
 
 def collect_dossiers(root: Path, surface: str, limit: int) -> list[Path]:
     surfaces = ("plugin", "tooling") if surface == "both" else (surface,)
-    directories = [root / "docs/health", root / "docs/health/archived"]
+    directories = [root / DOCS_HEALTH, root / DOCS_HEALTH / "archived"]
     selected: list[Path] = []
     for surf in surfaces:
         candidates: list[Path] = []
