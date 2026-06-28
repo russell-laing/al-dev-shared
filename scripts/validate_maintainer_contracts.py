@@ -26,7 +26,7 @@ MULTI_PHASE_SKILLS = {
     "revise-plugin-plan", "sync-map-documentation", "sync-map-documentation-collect",
     "sync-map-documentation-apply", "sync-map-documentation-write",
     "audit-knowledge-quality", "fix-knowledge-quality", "ingest-plugin-friction",
-    "al-dev-consolidate", "review-docs", "validate-plugin-neutrality", "regenerate-agent-projections",
+    "al-dev-consolidate", "review-docs", "validate-plugin-neutrality", "regenerate_agent_projections",
 }
 # 18 of the 19 live phase-bearing skills. `verify-files` is excluded as a pure
 # read-only verifier (no mutating phase deliverable). `audit-plugin-health` is

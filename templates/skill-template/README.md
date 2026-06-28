@@ -21,5 +21,5 @@ To add a new shared skill:
    and regenerate projections:
 
    ```bash
-   python3 scripts/generate-agent-projections.py
+   python3 scripts/generate_agent_projections.py
    ```
