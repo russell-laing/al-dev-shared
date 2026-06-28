@@ -244,12 +244,19 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path(args[0]) if args else None
     violations, skill_count = validate(repo_root)
 
-    if not violations:
-        print(f"OK: {skill_count} skills conform to artifact-contracts.md")
+    if violations:
+        blocks = "\n\n".join(_format_violation(v) for v in violations)
+        print(blocks)
+        return 1
+
+    print(f"OK: {skill_count} skills conform to artifact-contracts.md")
+    print("\nRunning artifact contract tests...")
+    all_passed = run_artifact_tests(repo_root)
+    if all_passed:
+        print("\n✓ All artifact contract tests passed")
         return 0
 
-    blocks = "\n\n".join(_format_violation(v) for v in violations)
-    print(blocks)
+    print("\n✗ Some artifact contract tests failed")
     return 1
 
 
@@ -257,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
 # Runtime artifact tests (verify actual .dev/ files exist and contain markers)
 # ---------------------------------------------------------------------------
 
-def test_al_dev_ticket_contracts() -> bool:
+def test_al_dev_ticket_contracts(repo_root: Path | None = None) -> bool:
     """Verify al-dev-ticket produces required artifacts with completion markers.
 
     Checks for latest .dev/*-al-dev-ticket-ticket-context.md file and validates
@@ -269,7 +276,8 @@ def test_al_dev_ticket_contracts() -> bool:
     import glob
 
     # Find latest ticket context file using glob
-    ticket_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-ticket-ticket-context.md"))
+    root = _REPO_ROOT if repo_root is None else repo_root
+    ticket_files = glob.glob(str(root / ".dev" / "*-al-dev-ticket-ticket-context.md"))
 
     if not ticket_files:
         # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
@@ -294,7 +302,7 @@ def test_al_dev_ticket_contracts() -> bool:
         return False
 
 
-def test_al_dev_interview_contracts() -> bool:
+def test_al_dev_interview_contracts(repo_root: Path | None = None) -> bool:
     """Verify al-dev-interview produces required artifacts with completion markers.
 
     Checks for latest .dev/*-al-dev-interview-requirements.md file and validates
@@ -306,7 +314,8 @@ def test_al_dev_interview_contracts() -> bool:
     import glob
 
     # Find latest interview requirements file
-    req_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-interview-requirements.md"))
+    root = _REPO_ROOT if repo_root is None else repo_root
+    req_files = glob.glob(str(root / ".dev" / "*-al-dev-interview-requirements.md"))
 
     if not req_files:
         # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
@@ -329,7 +338,7 @@ def test_al_dev_interview_contracts() -> bool:
         return False
 
 
-def test_al_dev_explore_contracts() -> bool:
+def test_al_dev_explore_contracts(repo_root: Path | None = None) -> bool:
     """Verify al-dev-explore produces required artifacts with completion markers.
 
     Checks for latest .dev/*-al-dev-explore-findings.md file and validates it
@@ -342,7 +351,8 @@ def test_al_dev_explore_contracts() -> bool:
     import glob
 
     # Find latest exploration findings file
-    findings_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-explore-findings.md"))
+    root = _REPO_ROOT if repo_root is None else repo_root
+    findings_files = glob.glob(str(root / ".dev" / "*-al-dev-explore-findings.md"))
 
     if not findings_files:
         # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
@@ -367,7 +377,7 @@ def test_al_dev_explore_contracts() -> bool:
         return False
 
 
-def test_al_dev_investigate_contracts() -> bool:
+def test_al_dev_investigate_contracts(repo_root: Path | None = None) -> bool:
     """Verify al-dev-investigate produces required artifacts with completion markers.
 
     Checks for latest .dev/*-al-dev-investigate-findings.md and validates it
@@ -378,7 +388,8 @@ def test_al_dev_investigate_contracts() -> bool:
     """
     import glob
 
-    findings_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-investigate-findings.md"))
+    root = _REPO_ROOT if repo_root is None else repo_root
+    findings_files = glob.glob(str(root / ".dev" / "*-al-dev-investigate-findings.md"))
 
     if not findings_files:
         return True
@@ -401,7 +412,7 @@ def test_al_dev_investigate_contracts() -> bool:
         return False
 
 
-def test_al_dev_handoff_contracts() -> bool:
+def test_al_dev_handoff_contracts(repo_root: Path | None = None) -> bool:
     """Verify al-dev-handoff produces a handoff prompt with required sections.
 
     Checks for latest .dev/*-al-dev-handoff-handoff-prompt.md and validates it
@@ -412,7 +423,8 @@ def test_al_dev_handoff_contracts() -> bool:
     """
     import glob
 
-    prompt_files = glob.glob(str(_REPO_ROOT / ".dev" / "*-al-dev-handoff-handoff-prompt.md"))
+    root = _REPO_ROOT if repo_root is None else repo_root
+    prompt_files = glob.glob(str(root / ".dev" / "*-al-dev-handoff-handoff-prompt.md"))
 
     if not prompt_files:
         return True
@@ -435,7 +447,7 @@ def test_al_dev_handoff_contracts() -> bool:
         return False
 
 
-def run_artifact_tests() -> bool:
+def run_artifact_tests(repo_root: Path | None = None) -> bool:
     """Run all runtime artifact contract tests.
 
     Returns True if all tests pass (or skip due to missing artifacts).
@@ -452,7 +464,7 @@ def run_artifact_tests() -> bool:
     results = []
     for skill_name, test_func in tests:
         try:
-            passed = test_func()
+            passed = test_func(repo_root)
             results.append((skill_name, passed))
             status = "✓" if passed else "✗"
             print(f"{status} {skill_name}")
@@ -462,26 +474,5 @@ def run_artifact_tests() -> bool:
 
     return all(passed for _, passed in results)
 
-
 if __name__ == "__main__":
-    # Run structural validator first
-    violations, skill_count = validate()
-
-    if violations:
-        # Structural violations found; exit with error
-        blocks = "\n\n".join(_format_violation(v) for v in violations)
-        print(blocks)
-        raise SystemExit(1)
-    else:
-        print(f"✓ {skill_count} skills conform to artifact-contracts.md")
-
-    # Run runtime artifact tests
-    print("\nRunning artifact contract tests...")
-    all_passed = run_artifact_tests()
-
-    if all_passed:
-        print("\n✓ All artifact contract tests passed")
-        raise SystemExit(0)
-    else:
-        print("\n✗ Some artifact contract tests failed")
-        raise SystemExit(1)
+    raise SystemExit(main())

@@ -4,13 +4,14 @@ import inspect
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.validate_artifact_contracts import validate  # noqa: E402
+from scripts.validate_artifact_contracts import main, validate  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -145,6 +146,20 @@ def test_unresolved_row(tmp_path: Path) -> None:
     assert any(v.rule == "row-resolution" for v in violations), (
         f"Expected rule 1 violation. Got: {[v.rule for v in violations]}"
     )
+
+
+def test_main_returns_zero_for_happy_fixture_when_runtime_tests_pass(tmp_path: Path) -> None:
+    contract = _make_contract([{"skill": "my-skill"}])
+    repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    with mock.patch("scripts.validate_artifact_contracts.run_artifact_tests", return_value=True):
+        assert main([str(repo)]) == 0
+
+
+def test_main_returns_one_for_happy_fixture_when_runtime_tests_fail(tmp_path: Path) -> None:
+    contract = _make_contract([{"skill": "my-skill"}])
+    repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    with mock.patch("scripts.validate_artifact_contracts.run_artifact_tests", return_value=False):
+        assert main([str(repo)]) == 1
 
 
 # ---------------------------------------------------------------------------
