@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import runpy
+import inspect
 from importlib import import_module
-from typing import Callable
+import sys
+from typing import Sequence
 
 
 def resolve_module_name(packaged: str) -> str:
@@ -15,13 +16,38 @@ def resolve_module_name(packaged: str) -> str:
     return f"scripts.{packaged}"
 
 
-def run_module_entrypoint(packaged: str) -> int:
-    runpy.run_module(resolve_module_name(packaged), run_name="__main__")
-    return 0
+def _invoke_main(module, argv: Sequence[str] | None = None) -> int:
+    main = getattr(module, "main")
+    if argv is None:
+        argv = sys.argv[1:]
 
+    try:
+        signature = inspect.signature(main)
+    except (TypeError, ValueError):
+        signature = None
 
-def run_main_entrypoint(packaged: str) -> int:
-    module = import_module(resolve_module_name(packaged))
-    main: Callable[[], int | None] = getattr(module, "main")
-    result = main()
+    if signature is not None:
+        positional = [
+            param
+            for param in signature.parameters.values()
+            if param.kind
+            in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        ]
+        if not positional:
+            result = main()
+        else:
+            result = main(list(argv))
+    else:
+        result = main(list(argv))
+
     return 0 if result is None else int(result)
+
+
+def run_module_entrypoint(packaged: str, argv: Sequence[str] | None = None) -> int:
+    module = import_module(resolve_module_name(packaged))
+    return _invoke_main(module, argv)
+
+
+def run_main_entrypoint(packaged: str, argv: Sequence[str] | None = None) -> int:
+    module = import_module(resolve_module_name(packaged))
+    return _invoke_main(module, argv)

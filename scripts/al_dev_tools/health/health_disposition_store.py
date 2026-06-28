@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -41,6 +42,14 @@ from .disposition_views import (
     render_open_view,
     shard_path_for_date,
     write_shard,
+)
+from .paths import (
+    compatibility_ledger_path,
+    dispositions_current_view_path,
+    dispositions_events_root,
+    dispositions_history_root,
+    dispositions_index_path,
+    dispositions_open_view_path,
 )
 
 parse_ledger = parse_ledger_file
@@ -147,13 +156,20 @@ def _cli_show(event_id: str, events_root: Path) -> int:
     return 1
 
 
-def main() -> int:
-    import argparse
-
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("match", help="Classify findings against the disposition ledger.")
-    _HISTORY_DEFAULT = Path("docs/health/dispositions-history")
+    _HISTORY_DEFAULT = dispositions_history_root()
+    _EVENTS_DEFAULT = dispositions_events_root()
+    _LEDGER_DEFAULT = compatibility_ledger_path()
+    _OPEN_VIEW_DEFAULT = dispositions_open_view_path()
+    _CURRENT_VIEW_DEFAULT = dispositions_current_view_path()
+    _INDEX_DEFAULT = dispositions_index_path()
+
+    pm = sub.add_parser("match", help="Classify findings against the disposition ledger.")
+    pm.add_argument("findings", type=Path, help="Findings markdown file to classify.")
+    pm.add_argument("ledger", type=Path, help="Disposition ledger markdown file.")
+    pm.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
 
     ap = sub.add_parser(
         "append_row",
@@ -167,7 +183,7 @@ def main() -> int:
     p_sync_group = p_sync.add_mutually_exclusive_group(required=True)
     p_sync_group.add_argument("--event-id", help="Sync the single event matching this ID")
     p_sync_group.add_argument("--since", metavar="YYYY-MM-DD", help="Sync all events on or after this date")
-    p_sync.add_argument("--events-root", type=Path, default=Path("docs/health/dispositions-events"))
+    p_sync.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
     p_sync.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
     p_sync.add_argument(
         "--verbose",
@@ -180,8 +196,6 @@ def main() -> int:
         help="Print every history-shard row in chronological order as JSON lines.",
     )
     ih.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
-
-    _EVENTS_DEFAULT = Path("docs/health/dispositions-events")
 
     ae = sub.add_parser("append_event", help="Append one JSONL disposition event.")
     for field in ("surface", "dimension", "object", "finding", "disposition", "date", "evidence", "source"):
@@ -207,16 +221,16 @@ def main() -> int:
 
     regen = sub.add_parser("regenerate", help="Regenerate disposition views from JSONL events.")
     regen.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
-    regen.add_argument("--open-view", type=Path, default=Path("docs/health/dispositions-open.md"))
-    regen.add_argument("--current-view", type=Path, default=Path("docs/health/dispositions-current.md"))
-    regen.add_argument("--index", type=Path, default=Path("docs/health/dispositions-index.json"))
-    regen.add_argument("--compatibility-view", type=Path, default=Path("docs/health/dispositions.md"))
+    regen.add_argument("--open-view", type=Path, default=_OPEN_VIEW_DEFAULT)
+    regen.add_argument("--current-view", type=Path, default=_CURRENT_VIEW_DEFAULT)
+    regen.add_argument("--index", type=Path, default=_INDEX_DEFAULT)
+    regen.add_argument("--compatibility-view", type=Path, default=_LEDGER_DEFAULT)
 
     lo = sub.add_parser(
         "list-open",
         help="Print current-view rows with a given disposition (default accepted) as JSON lines.",
     )
-    lo.add_argument("--ledger", type=Path, default=Path("docs/health/dispositions.md"))
+    lo.add_argument("--ledger", type=Path, default=_LEDGER_DEFAULT)
     lo.add_argument("--status", default="accepted")
     lo.add_argument("--surface")
     lo.add_argument("--dimension")
@@ -225,7 +239,11 @@ def main() -> int:
     sh.add_argument("--event-id", required=True, help="The event_id to look up (e.g. disp_20260626_000070).")
     sh.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
 
-    args = parser.parse_args()
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     if args.command == "match":
         return _cli_match(args.findings, args.ledger, args.events_root)
     if args.command == "append_row":

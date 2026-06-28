@@ -21,6 +21,19 @@ class CompatEntrypointTest(unittest.TestCase):
             check=False,
         )
 
+    def test_health_wrappers_direct_execution_is_warning_free(self) -> None:
+        for script_name in (
+            "health_disposition_store.py",
+            "check_disposition_store_consistency.py",
+        ):
+            result = self._run_help(script_name)
+            self.assertEqual(result.returncode, 0, (script_name, result.stderr))
+            self.assertNotIn(
+                "RuntimeWarning",
+                result.stderr,
+                (script_name, result.stderr),
+            )
+
     def test_argparse_wrappers_support_direct_help(self) -> None:
         for script_name in (
             "assemble_health_findings.py",

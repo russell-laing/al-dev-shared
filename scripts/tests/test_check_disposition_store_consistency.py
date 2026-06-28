@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -73,6 +74,27 @@ class ConsistentStoreTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             rc = mod.run(Path(d) / "nonexistent")
         self.assertEqual(0, rc)
+
+    def test_subprocess_root_override_uses_temporary_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "repo"
+            events_dir = root / "docs" / "health" / "dispositions-events" / "2026"
+            _write_jsonl(events_dir, [_ACCEPTED_EVENT, _FIXED_EVENT])
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertIn("consistent", result.stdout)
+            self.assertNotIn("RuntimeWarning", result.stderr, result.stderr)
 
 
 class DanglingReferenceTest(unittest.TestCase):

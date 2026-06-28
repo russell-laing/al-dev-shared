@@ -10,11 +10,18 @@ import importlib.util
 import inspect
 import io
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 MODULE_PATH = REPO_ROOT / "scripts" / "health_disposition_store.py"
 
 _spec = importlib.util.spec_from_file_location("health_disposition_store", MODULE_PATH)
@@ -387,6 +394,59 @@ def test_store_facade_keeps_match_against_ledger() -> None:
     from scripts.al_dev_tools.health import health_disposition_store as store_mod
 
     assert hasattr(store_mod, "match_against_ledger")
+
+
+def test_match_cli_subprocess_uses_jsonl_store_without_warning() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        repo_root = tmp_path / "repo"
+        events_root = repo_root / "docs" / "health" / "dispositions-events"
+
+        _write_jsonl_shard(
+            events_root,
+            [
+                _make_event(
+                    "disp_20260619_000001",
+                    "tooling",
+                    "quality",
+                    "my-skill",
+                    "Bloat: Phase 0 location scan bloated",
+                    "grandfathered",
+                )
+            ],
+        )
+
+        findings_path = tmp_path / "findings.md"
+        _write_findings_file(findings_path, _FINDINGS_CONTENT)
+
+        ledger_path = tmp_path / "ledger.md"
+        ledger_path.write_text(
+            "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
+            "|----|---------|-----------|--------|---------|-------------|------|------------------|\n"
+            "| #1 | tooling | quality | my-skill | stale row | accepted | 2026-01-01 | legacy |\n",
+            encoding="utf-8",
+        )
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts" / "health_disposition_store.py"),
+                "match",
+                str(findings_path),
+                str(ledger_path),
+                "--events-root",
+                str(events_root),
+            ],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        assert result.returncode == 0, result.stderr
+        assert "RuntimeWarning" not in result.stderr, result.stderr
+        assert "JSONL" in result.stdout, result.stdout
+        assert "suppress" in result.stdout, result.stdout
 
 
 def _run(func):

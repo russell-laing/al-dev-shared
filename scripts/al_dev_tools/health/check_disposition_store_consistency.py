@@ -12,12 +12,14 @@ docs/health/dispositions-history/ or any other file.
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
+from .paths import dispositions_events_root
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-EVENTS_ROOT = REPO_ROOT / "docs" / "health" / "dispositions-events"
+EVENTS_ROOT = dispositions_events_root(REPO_ROOT)
 
 
 def _load_store():
@@ -64,8 +66,16 @@ def run(events_root: Path) -> int:
     return 0
 
 
-def main() -> int:
-    return run(EVENTS_ROOT)
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=REPO_ROOT, help="Repository root to inspect.")
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    events_root = dispositions_events_root(args.root)
+    return run(events_root)
 
 
 if __name__ == "__main__":
