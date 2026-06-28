@@ -48,6 +48,13 @@ def object_members(cell: str) -> set[str]:
     return set(_KEBAB_RE.findall(cell.lower()))
 
 
+def _is_table_separator_row(line: str) -> bool:
+    cells = [c.strip() for c in line.strip().strip("|").split("|")]
+    return bool(cells) and all(
+        not cell or re.fullmatch(r":?-{3,}:?", cell) for cell in cells
+    )
+
+
 _TYPE_ALIASES = {
     "bloat": "bloat",
     "clarity": "clarity",
@@ -216,17 +223,28 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
                 }
             )
             parsed_count += 1
-        elif line.startswith("|") and not line.startswith("| Object") and not line.startswith("| Event") and not line.startswith("|---") and not line.startswith("| ---"):
+        elif line.startswith("|") and not _is_table_separator_row(line) and not line.startswith("| Object") and not line.startswith("| Event"):
             cols = [c.strip() for c in line.strip("|").split("|")]
             if len(cols) >= 2 and cols[0]:
                 obj = cols[0]
                 finding_text = cols[1] if len(cols) > 1 else ""
-                findings.append({"object": obj, "finding": finding_text})
+                findings.append(
+                    {
+                        "surface": surface,
+                        "dimension": dimension,
+                        "object": obj,
+                        "finding": finding_text,
+                        "type": ftype,
+                    }
+                )
                 parsed_count += 1
     total_data_lines = sum(
         1
         for ln in text.splitlines()
-        if ln.startswith("|") and not ln.startswith("| Object") and not ln.startswith("| Event")
+        if ln.startswith("|")
+        and not _is_table_separator_row(ln)
+        and not ln.startswith("| Object")
+        and not ln.startswith("| Event")
         and not ln.startswith("|---") and not ln.startswith("| ---")
     )
     if total_data_lines > 0 and parsed_count < total_data_lines:

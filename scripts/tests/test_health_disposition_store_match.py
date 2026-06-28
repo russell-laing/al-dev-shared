@@ -6,6 +6,7 @@ Run with unittest (pytest may hit the macOS libexpat conflict; see CLAUDE.md):
 """
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import inspect
 import io
@@ -447,6 +448,72 @@ def test_match_cli_subprocess_uses_jsonl_store_without_warning() -> None:
         assert "RuntimeWarning" not in result.stderr, result.stderr
         assert "JSONL" in result.stdout, result.stdout
         assert "suppress" in result.stdout, result.stdout
+
+
+def test_parse_findings_file_table_format_inherits_context() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        findings_path = tmp_path / "findings.md"
+        findings_path.write_text(
+            """\
+surface: plugin
+
+### Clarity Findings
+
+| Object | Finding |
+|--------|---------|
+| :----- | :------ |
+| my-skill | Clarity: vague qualifier in phase 2 |
+""",
+            encoding="utf-8",
+        )
+
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            results = hds.parse_findings_file(findings_path)
+
+        assert len(results) == 1, results
+        assert stderr.getvalue() == "", stderr.getvalue()
+        finding = results[0]
+        assert finding.get("surface") == "plugin", finding
+        assert finding.get("dimension") == "quality", finding
+        assert finding.get("type") == "clarity", finding
+        assert finding.get("object") == "my-skill", finding
+
+
+def test_parse_findings_file_table_format_can_be_suppressed_by_ledger() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        findings_path = tmp_path / "findings.md"
+        findings_path.write_text(
+            """\
+surface: plugin
+
+### Clarity Findings
+
+| Object | Finding |
+|--------|---------|
+| :----- | :------ |
+| my-skill | Clarity: vague qualifier in phase 2 |
+""",
+            encoding="utf-8",
+        )
+
+        findings = hds.parse_findings_file(findings_path)
+        rows = [
+            _row(
+                "plugin",
+                "quality",
+                "my-skill",
+                "Clarity: vague qualifier in phase 2",
+                "declined",
+                date="2026-06-28",
+            )
+        ]
+
+        result = hds.match_against_ledger(findings, rows)
+
+        assert result[0]["classification"] == "suppress", result[0]
 
 
 def _run(func):

@@ -122,7 +122,7 @@ tools:
 
 **Workflow resilience** (`knowledge/workflow-resilience.md`): Multi-phase skills checkpoint to `.dev/progress.md` after each phase. Phase 0 of every multi-phase skill checks this file and offers resume/restart.
 
-**`.dev/` directory convention**: All skill artifacts are written here — progress checkpoints, solution plans (`YYYY-MM-DD-al-dev-plan-solution-plan.md`), code reviews (`YYYY-MM-DD-al-dev-develop-code-review.md`), lint reports (`YYYY-MM-DD-al-dev-lint-lint-report.md`), ticket contexts, requirements files. See `knowledge/artifact-contracts.md` for the per-skill contract governing which of these files are required, in what read-order, and what completion they evidence.
+**`.dev/` directory convention**: All skill artifacts are written here — progress checkpoints, solution plans, code reviews, lint reports, ticket contexts, requirements files. See `knowledge/artifact-contracts.md` for the per-skill contract governing which of these files are required, in what read-order, and what completion they evidence.
 
 **Artifact contracts** (`knowledge/artifact-contracts.md`): Defines the durable handoff artifacts, resume read-order, and success-evidence requirements for each core skill. The key rule: a skill may not claim completion (ready, clean, validated) until it has read its named success-evidence file in the current run. Skills that implement this: `al-dev-plan`, `al-dev-develop`, `al-dev-review-develop`, `al-dev-fix`, `al-dev-commit`, `al-dev-lint`. Each implementing skill has an **Artifact Contract** section in its SKILL.md that cross-references this file.
 
@@ -175,9 +175,9 @@ Before committing changes:
    ```
 
 2. **Forbidden patterns scan** — Check for unfinished work:
-   - `[date]` like `[2026-05-15]` — unrendered template
-   - `YYYY-MM-DD` as literal string — unrendered date placeholder
-   - `TODO` or `TBD` — incomplete work
+   - date placeholder like `2026-05-15` — unrendered template
+   - literal ISO date text — unrendered date placeholder
+   - incomplete-work markers — incomplete work
    - `Co-Authored-By` in code comments — AI attribution (OK in git trailers)
    - `claude:` or `copilot:` prefixed comments — harness debug tokens left in
 
@@ -188,6 +188,10 @@ Before committing changes:
    ```bash
    python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
    ```
+
+5. **No unprompted destructive git actions** — Do not perform branch deletion,
+   `git reset --hard`, `git push --force`, or any other destructive version-control
+   operation unless the user has explicitly requested it in the current turn.
 
 ---
 
@@ -351,6 +355,15 @@ Before invoking any health or plan skill, confirm argument names match the
 skill's contract. `tooling` and `plugin` are surface values; `design`, `quality`,
 `naming`, and `all` are dimension values. Passing a surface as `--dimension`
 stalls the run silently.
+
+## Plugin Health / Disposition Workflow
+
+When parsing findings for disposition (in `/record-plugin-dispositions` or any
+skill that calls `health_disposition_store.py filter_findings`), verify that the
+parsed finding count matches the total findings count in the source file before
+proceeding. Bullet-format and table-format findings must both be counted. If the
+counts diverge, stop and report the discrepancy rather than silently continuing
+with a partial list.
 
 ## Health Ledger
 
