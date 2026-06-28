@@ -66,27 +66,4 @@ When running build, compile, test, or other tools that produce verbose output:
 
 ## Findings File Format
 
-When writing persistent findings:
-
-```markdown
-# Codebase Exploration Results
-
-**Question:** [Original exploration question]
-**Date:** [Today's date]
-**Scope:** [Scope explored]
-
-## Findings
-
-### [Category 1]
-- **File:** path/to/file.al (lines X-Y)
-- **Finding:** What was discovered
-
-### [Category 2]
-[Repeat]
-
-## Summary
-[Concise explanation of code organization relevant to question]
-
-## Recommendations
-[Next steps or related areas to explore]
-```
+When writing persistent findings, follow the structure defined in `knowledge/explore-findings-format.md`.
