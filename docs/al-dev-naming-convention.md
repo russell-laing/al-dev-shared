@@ -50,6 +50,9 @@ This rule is advisory: existing names that deviate are grandfathered — see
 conform; the `naming-convention-lens` flags non-conforming names as Low-severity
 suggestions rather than hard failures.
 
+The repo-local `regenerate_agent_projections` skill is currently grandfathered
+until the compat surface is retired.
+
 The repo-local maintainer command `/plan-plugin-findings` is the current name
 for the workflow that used to be wired to `/verify-map-suggestions`.
 
@@ -57,6 +60,9 @@ for the workflow that used to be wired to `/verify-map-suggestions`.
 
 Pattern: `snake_case.py`, with a verb-first stem that states the file's primary
 behavior.
+
+Top-level CLI entrypoints under `scripts/` SHOULD also use `snake_case.py` so
+the import path, test naming, and direct file invocation all align.
 
 ## Outputs
 
@@ -88,4 +94,4 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
-(none currently)
+- `regenerate_agent_projections`
