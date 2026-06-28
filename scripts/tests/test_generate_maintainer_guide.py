@@ -1,4 +1,4 @@
-"""Fixture-based tests for scripts/al_dev_tools/docs/maintainer_guide_sections.py and generate_maintainer_guide.py."""
+"""Fixture-based tests for scripts/al_dev_tools/docs/maintainer_guide_sections.py and generate-maintainer-guide.py."""
 from __future__ import annotations
 
 import contextlib
@@ -18,7 +18,10 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from scripts.al_dev_tools.docs import maintainer_guide_sections as lib
+from scripts.al_dev_tools.docs.maintainer_journey import render_stage_journey, render_user_journey
+from scripts.al_dev_tools.docs.maintainer_mermaid import render_overview, render_stage_detail
 from scripts.al_dev_tools.docs.maintainer_pages import PAGE_KEYS
+from scripts.al_dev_tools.docs.maintainer_tables import render_gaps_table, render_skills_tables
 
 
 def test_maintainer_guide_sections_keeps_public_entrypoints() -> None:
@@ -27,6 +30,15 @@ def test_maintainer_guide_sections_keeps_public_entrypoints() -> None:
     assert hasattr(guide_mod, "load_contracts")
     assert hasattr(guide_mod, "compute_gaps")
     assert hasattr(guide_mod, "build_sections")
+
+
+def test_render_helpers_are_exposed_from_split_modules() -> None:
+    assert callable(render_overview)
+    assert callable(render_stage_detail)
+    assert callable(render_user_journey)
+    assert callable(render_stage_journey)
+    assert callable(render_skills_tables)
+    assert callable(render_gaps_table)
 
 
 def _load_cli_module(filename: str, module_name: str):
@@ -567,8 +579,8 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         skills = Path(td) / ".claude" / "skills"
         _write_skill(
             skills,
-            "regenerate_agent_projections",
-            "name: regenerate_agent_projections\n"
+            "regenerate-agent-projections",
+            "name: regenerate-agent-projections\n"
             "description: Regenerate projections.\n"
             "workflow:\n"
             "  stage: derive\n"
@@ -632,7 +644,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         )
         assert 'subgraph agent_lane["Agent source changed"]' in text
         assert 'subgraph knowledge_lane["Knowledge source changed"]' in text
-        assert 'skill_regenerate_agent_projections["/regenerate_agent_projections"]' in text
+        assert 'skill_regenerate_agent_projections["/regenerate-agent-projections"]' in text
         assert 'skill_audit_knowledge_quality["/audit-knowledge-quality"]' in text
         assert 'skill_fix_knowledge_quality["/fix-knowledge-quality"]' in text
         assert 'skill_align_harness_repos["/validate-plugin-neutrality"]' in text
