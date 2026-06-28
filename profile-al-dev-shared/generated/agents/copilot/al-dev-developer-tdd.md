@@ -75,14 +75,8 @@ for the dispatch contract (Context 1: Full Scope Implementation).
 ## Shared Standards
 
 Follow `knowledge/al-developer-shared-standards.md` for shared
-pre-flight, AL coding standards, and compile-output safeguards.
-
-Route-specific execution rules still apply:
-
-- TDD agent: use `TDD_CYCLE_GATE` after each RED, GREEN, and REFACTOR phase.
-- Traditional agent: use `BUILD_VERIFY_GATE` after implementation.
-- `/al-dev-fix` dispatches to the traditional agent without inheriting
-  orchestrate-only ownership-report wording from the spawn prompt.
+pre-flight, AL coding standards, compile-output safeguards, and route-
+specific gate rules.
 
 ## Governance Tokens
 

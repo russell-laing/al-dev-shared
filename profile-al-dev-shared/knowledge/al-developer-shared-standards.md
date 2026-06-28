@@ -20,3 +20,10 @@ implementation and `/al-dev-fix` dispatch paths.
 
 - Apply `knowledge/compile-output-safeguard.md` before treating compile
   output as success evidence.
+
+## Agent Route Rules
+
+- TDD agent: use `TDD_CYCLE_GATE` after each RED, GREEN, and REFACTOR phase.
+- Traditional agent: use `BUILD_VERIFY_GATE` after implementation.
+- `/al-dev-fix` dispatches to the traditional agent without inheriting
+  orchestrate-only ownership-report wording from the spawn prompt.
