@@ -9,7 +9,7 @@ Issues: HIGH: 0 | MEDIUM: 0 | LOW: 13 (all false positives or validator limitati
 ## Summary
 
 All 13 findings are false positives produced by a validator limitation: the
-`validate-knowledge-quality.py` script checks dead-refs by resolving paths
+`validate_knowledge_quality.py` script checks dead-refs by resolving paths
 relative to `.claude/knowledge/`, but cannot follow cross-surface references to
 `profile-al-dev-shared/knowledge/`. Every referenced file exists in the repo.
 No agent guidance is impaired.
@@ -167,7 +167,7 @@ _No MEDIUM-severity issues found._
 
 ### Low Priority — Validator Enhancement (optional)
 
-The `validate-knowledge-quality.py` dead-ref checker could be taught to
+The `validate_knowledge_quality.py` dead-ref checker could be taught to
 recognise cross-surface references (paths starting with
 `profile-al-dev-shared/knowledge/` or resolving to that directory via `../../`)
 as valid, preventing the 13 recurring false-positive warnings in future audits.

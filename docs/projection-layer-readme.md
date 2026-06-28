@@ -18,7 +18,7 @@ The projection layer solves this by maintaining **one canonical authored surface
 
 - Shared source (`profile-al-dev-shared/agents/*.md`) uses generic capability names (e.g., `Read`, `Bash`, `USER_GATE`)
 - The projection **policy doc** (`knowledge/agent-tool-projection-policy.md`) documents the intended mapping from each generic capability to each harness's native tool or behavior, plus the canonical shared maintainer boundary rules
-- The **generator** reads the shared source and applies the currently implemented mapping logic from `scripts/generate-agent-projections.py`, then outputs three sets of harness-specific versions
+- The **generator** reads the shared source and applies the currently implemented mapping logic from `scripts/generate_agent_projections.py`, then outputs three sets of harness-specific versions
 
 This means maintainers edit once, and all three harnesses get consistent, synchronized agents automatically.
 
@@ -26,7 +26,7 @@ This means maintainers edit once, and all three harnesses get consistent, synchr
 
 ```mermaid
 graph LR
-    A["Shared Source<br/>(agents/*.md)"] -->|read by| C["Generator Script<br/>(generate-agent-projections.py)"]
+    A["Shared Source<br/>(agents/*.md)"] -->|read by| C["Generator Script<br/>(generate_agent_projections.py)"]
     B["Projection Policy<br/>(agent-tool-projection-policy.md)"] -->|documents intended mappings for| C
     C -->|outputs| D["Claude Code<br/>(generated/agents/claude/)"]
     C -->|outputs| E["Copilot CLI<br/>(generated/agents/copilot/)"]
@@ -147,7 +147,7 @@ argument-hint: "[optional args]"
 EOF
 ```
 
-**Key rule:** Use generic capability names in the `tools:` list (e.g., `Read`, `Bash`, `USER_GATE`), never harness-specific names like `AskUserQuestion` or `ask_user`. Keep the `tools:` value in the inline list format currently used by authored agents, because `scripts/generate-agent-projections.py` parses that format. Reference `profile-al-dev-shared/knowledge/harness-concepts.md` for the complete generic vocabulary.
+**Key rule:** Use generic capability names in the `tools:` list (e.g., `Read`, `Bash`, `USER_GATE`), never harness-specific names like `AskUserQuestion` or `ask_user`. Keep the `tools:` value in the inline list format currently used by authored agents, because `scripts/generate_agent_projections.py` parses that format. Reference `profile-al-dev-shared/knowledge/harness-concepts.md` for the complete generic vocabulary.
 
 #### Step 2A: Regenerate Projections for a New or Edited Agent
 
@@ -155,7 +155,7 @@ Run the generator to create harness-native versions:
 
 ```bash
 cd /Users/russelllaing/al-dev-shared
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 Expected output for an agent change:
@@ -219,7 +219,7 @@ Regenerated projections for all three harnesses."
 
 ```mermaid
 graph LR
-    A["1. Author Shared Source<br/>(agents/*.md or skills/*/SKILL.md)<br/>Use generic capability names"] -->|agent changes only| B["2. Regenerate Projections<br/>(python3 scripts/generate-agent-projections.py)<br/>Creates harness-native versions"]
+    A["1. Author Shared Source<br/>(agents/*.md or skills/*/SKILL.md)<br/>Use generic capability names"] -->|agent changes only| B["2. Regenerate Projections<br/>(python3 scripts/generate_agent_projections.py)<br/>Creates harness-native versions"]
     A -->|all shared-source changes| C["3. Validate Harness Neutrality<br/>(python3 scripts/validate_harness_neutrality.py)<br/>Checks for leaked tokens"]
     B --> D["4. Commit<br/>(stage shared + generated files for agent changes)"]
     C --> D
@@ -247,7 +247,7 @@ section summarizes the maintainer workflow around those rules.
 You must regenerate projections after either of these changes:
 
 1. **Editing an agent:** You modify `profile-al-dev-shared/agents/*.md`
-2. **Editing the generator's implemented mapping logic:** You modify `scripts/generate-agent-projections.py`
+2. **Editing the generator's implemented mapping logic:** You modify `scripts/generate_agent_projections.py`
 
 You do **not** need to regenerate when editing skills, the policy documentation, knowledge files, or non-source files, unless you also changed agents or the generator implementation.
 
@@ -257,7 +257,7 @@ Run the generator script:
 
 ```bash
 cd /Users/russelllaing/al-dev-shared
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 The script reads all shared agent files and applies its built-in mapping logic, then outputs harness-native versions in-place:
@@ -405,7 +405,7 @@ If blocked, ask the user how to proceed and wait for a response.
 rm profile-al-dev-shared/agents/corrupted-file.md
 
 # Regenerate to ensure consistency
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 
 # Validate
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
@@ -425,7 +425,7 @@ python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 vi profile-al-dev-shared/agents/my-agent.md
 
 # Regenerate
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 
 # Validate
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
@@ -454,7 +454,7 @@ flowchart LR
     %% Nodes
     Shared["Shared agent source
     agents/*.md"] --> Generator["Projection generator
-    scripts/generate-agent-projections.py"]
+    scripts/generate_agent_projections.py"]
     Policy["Projection policy
     agent-tool-projection-policy.md"] --> Generator
 
@@ -667,7 +667,7 @@ git status                          # Shows worktree branch state
 git diff                            # Reviews worktree edits
 
 # Regenerate projections in-place when shared agents change:
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 # → Updates profile-al-dev-shared/generated/agents/claude/*.md
 # → Updates profile-al-dev-shared/generated/agents/copilot/*.md
 # → Updates profile-al-dev-shared/generated/agents/codex/*.toml
@@ -733,7 +733,7 @@ Quick lookup for file locations and purposes:
 | `profile-al-dev-shared/generated/agents/claude/` | Claude Code projections | ❌ No (regenerate instead) |
 | `profile-al-dev-shared/generated/agents/copilot/` | Copilot CLI projections | ❌ No (regenerate instead) |
 | `profile-al-dev-shared/generated/agents/codex/` | Codex projections | ❌ No (regenerate instead) |
-| `scripts/generate-agent-projections.py` | Generator script | Read only |
+| `scripts/generate_agent_projections.py` | Generator script | Read only |
 | `scripts/validate_harness_neutrality.py` | Neutrality validator | Read only |
 
 ---
@@ -760,7 +760,7 @@ This branch introduced the actual projection system.
 
 Key contribution areas:
 
-- `scripts/generate-agent-projections.py`
+- `scripts/generate_agent_projections.py`
 - `scripts/tests/test_generate_agent_projections.py`
 - `profile-al-dev-shared/generated/agents/{claude,copilot,codex}/`
 - `knowledge/agent-tool-projection-policy.md`
@@ -792,7 +792,7 @@ Current `master` uses the projection-layer model directly, but not by merging th
 - Projection policy: `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`
 - Harness concepts: `profile-al-dev-shared/knowledge/harness-concepts.md`
 - Generated outputs: `profile-al-dev-shared/generated/agents/`
-- Generator: `scripts/generate-agent-projections.py`
+- Generator: `scripts/generate_agent_projections.py`
 - Projection tests: `scripts/tests/test_generate_agent_projections.py`
 
 ---
@@ -882,7 +882,7 @@ EOF
 Run the generator to create harness-native versions:
 
 ```bash
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 The worktree now has:
@@ -991,7 +991,7 @@ Bash          | Bash             | execute     | native shell capability
 When the generator runs, it:
 
 1. Reads `profile-al-dev-shared/agents/*.md` (generic definitions)
-2. Applies the mapping logic implemented in `scripts/generate-agent-projections.py`
+2. Applies the mapping logic implemented in `scripts/generate_agent_projections.py`
 3. Renders each harness-specific output format, including Codex capability notes in `developer_instructions`
 4. Writes the generated artifacts under `profile-al-dev-shared/generated/agents/`
 
@@ -1017,7 +1017,7 @@ Bash          | Bash             | execute     | native shell capability        
 3. **Test the generator** to ensure MyHarness projections are created correctly:
 
    ```bash
-   python3 scripts/generate-agent-projections.py
+   python3 scripts/generate_agent_projections.py
    ls profile-al-dev-shared/generated/agents/myharness/
    ```
 
@@ -1031,7 +1031,7 @@ A: No. All harness-specific customizations should be made to the shared source u
 
 **Q: What if my harness needs a tool that doesn't map to any generic capability?**
 
-A: Add it to the shared vocabulary and implemented mapping together. Define a new generic capability name in `harness-concepts.md`, document it in `agent-tool-projection-policy.md`, update `scripts/generate-agent-projections.py`, and regenerate. This keeps the system extensible and maintains parity across harnesses.
+A: Add it to the shared vocabulary and implemented mapping together. Define a new generic capability name in `harness-concepts.md`, document it in `agent-tool-projection-policy.md`, update `scripts/generate_agent_projections.py`, and regenerate. This keeps the system extensible and maintains parity across harnesses.
 
 **Q: How do I test a projection before committing?**
 

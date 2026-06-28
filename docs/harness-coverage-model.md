@@ -54,7 +54,7 @@ Use one of these owners unless the row has a concrete reason to name a narrower 
 
 | Behavior | Category | Guide | Sensor | Enforcement strength | Owner | Gap |
 | --- | --- | --- | --- | --- | --- | --- |
-| Shared agent tool intent projects correctly to each harness | Architecture/projection fitness | `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`; `docs/projection-layer-readme.md` | `scripts/tests/test_generate_agent_projections.py`; generated projection diff review | `guide + test` | Shared profile plus generated projection | Keep this row aligned with `scripts/generate-agent-projections.py`, because the generator is the runtime source of truth. |
+| Shared agent tool intent projects correctly to each harness | Architecture/projection fitness | `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`; `docs/projection-layer-readme.md` | `scripts/tests/test_generate_agent_projections.py`; generated projection diff review | `guide + test` | Shared profile plus generated projection | Keep this row aligned with `scripts/generate_agent_projections.py`, because the generator is the runtime source of truth. |
 | Harness-specific terms do not leak into shared authored files | Architecture/projection fitness | `profile-al-dev-shared/knowledge/harness-concepts.md`; `profile-al-dev-shared/knowledge/agent-tool-projection-policy.md` | `scripts/validate_harness_neutrality.py`; `scripts/tests/test_validate_harness_neutrality.py` | `guide + blocking enforcement` | Shared profile plus repo-local validation script | Make intentional allowlisted mapping documents visible in this model. |
 | Long-running workflows resume from compact durable state | Workflow behavior | `profile-al-dev-shared/knowledge/workflow-resilience.md`; `profile-al-dev-shared/skills/al-dev-develop-orchestrate/tests/scenarios.yaml` | `develop-writes-resume-artifacts` scenario; manual resume review | `guide + test` | Shared profile | Add new rows only when additional resume artifacts become durable contracts. |
 | Review-only, plan-only, edit, and commit intents are not conflated | Workflow behavior | `profile-al-dev-shared/knowledge/intent-preflight.md` | `profile-al-dev-shared/knowledge/skill-test-trigger-corpus.yaml`; per-skill review-only scenarios | `guide + test` | Shared profile | Add trigger-corpus cases for repeated misroutes before changing skill wording. |
@@ -104,14 +104,14 @@ Use these commands when coverage changes touch shared-profile files or projectio
 
 ```bash
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
 python3 scripts/tests/test_generate_agent_projections.py
 ```
 
 If authored agents under `profile-al-dev-shared/agents` change, regenerate projections:
 
 ```bash
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 If only `docs/`, shared knowledge, or test files change, projection regeneration is not required unless `git diff --name-only HEAD -- profile-al-dev-shared/agents` shows authored agent changes.

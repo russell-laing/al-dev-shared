@@ -37,7 +37,7 @@ Run `/implement-plugin-health --plan <path>` to execute the plan from Decide. Th
    `closes_event_ids:` identifiers. This proves the work happened and links the fix back to the
    original finding.
 5. **Run supported Derive checks (if needed)** — If implementation changed shared
-   agents, the skill invokes `/regenerate-agent-projections`. If any
+   agents, the skill invokes `/regenerate_agent_projections`. If any
    `profile-al-dev-shared/` source changed, it invokes `/validate-plugin-neutrality`.
    Knowledge quality audit/fix commands remain part of Derive for direct knowledge
    maintenance and are not part of the automatic close-back path unless separately

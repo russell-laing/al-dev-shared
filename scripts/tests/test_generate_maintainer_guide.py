@@ -567,8 +567,8 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         skills = Path(td) / ".claude" / "skills"
         _write_skill(
             skills,
-            "regenerate-agent-projections",
-            "name: regenerate-agent-projections\n"
+            "regenerate_agent_projections",
+            "name: regenerate_agent_projections\n"
             "description: Regenerate projections.\n"
             "workflow:\n"
             "  stage: derive\n"
@@ -632,7 +632,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
         )
         assert 'subgraph agent_lane["Agent source changed"]' in text
         assert 'subgraph knowledge_lane["Knowledge source changed"]' in text
-        assert 'skill_regenerate_agent_projections["/regenerate-agent-projections"]' in text
+        assert 'skill_regenerate_agent_projections["/regenerate_agent_projections"]' in text
         assert 'skill_audit_knowledge_quality["/audit-knowledge-quality"]' in text
         assert 'skill_fix_knowledge_quality["/fix-knowledge-quality"]' in text
         assert 'skill_align_harness_repos["/validate-plugin-neutrality"]' in text

@@ -215,14 +215,14 @@ DISCOVER_REQUIRED_NEXT = {
 }
 
 DERIVE_REQUIRED_SKILLS = {
-    "regenerate-agent-projections",
+    "regenerate_agent_projections",
     "audit-knowledge-quality",
     "fix-knowledge-quality",
     "validate-plugin-neutrality",
 }
 
 DERIVE_REQUIRED_INPUTS = {
-    "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
+    "regenerate_agent_projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
     "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
     "validate-plugin-neutrality": (
@@ -233,13 +233,13 @@ DERIVE_REQUIRED_INPUTS = {
 }
 
 DERIVE_REQUIRED_OUTPUTS = {
-    "regenerate-agent-projections": ("profile-al-dev-shared/generated/agents/",),
+    "regenerate_agent_projections": ("profile-al-dev-shared/generated/agents/",),
     "audit-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
     "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
 }
 
 DERIVE_REQUIRED_NEXT = {
-    "regenerate-agent-projections": ("validate-plugin-neutrality",),
+    "regenerate_agent_projections": ("validate-plugin-neutrality",),
     "audit-knowledge-quality": ("fix-knowledge-quality",),
     "fix-knowledge-quality": ("validate-plugin-neutrality",),
 }
@@ -547,7 +547,7 @@ def render_derive_stage_detail(
         "",
         '    subgraph agent_lane["Agent source changed"]',
         '        art_agent_source["agents/"]',
-        '        skill_regenerate_agent_projections["/regenerate-agent-projections"]',
+        '        skill_regenerate_agent_projections["/regenerate_agent_projections"]',
         '        art_generated_agents["generated/agents/"]',
         "    end",
         '    subgraph knowledge_lane["Knowledge source changed"]',
@@ -814,7 +814,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             [
                 "### Agent source changed",
                 "",
-                "1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.",
+                "1. Run `/regenerate_agent_projections` to validate authored agents and regenerate harness-native projections.",
                 "2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.",
                 "",
                 "### Knowledge source changed",
