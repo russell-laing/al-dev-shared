@@ -63,7 +63,7 @@ Do not hand-edit files in this directory. Edit the shared agent source or
 projection policy instead, then regenerate with:
 
 ```bash
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 """
 

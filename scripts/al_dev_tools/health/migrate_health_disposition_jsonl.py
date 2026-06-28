@@ -11,6 +11,15 @@ import re
 import shutil
 
 from ..io_utils import write_text_atomic
+from .paths import (
+    compatibility_ledger_path,
+    dispositions_current_view_path,
+    dispositions_events_root,
+    dispositions_history_root,
+    dispositions_index_path,
+    dispositions_jsonl_migration_audit_path,
+    dispositions_open_view_path,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -53,13 +62,13 @@ def _audit_text(report: dict[str, object]) -> str:
 
 def migrate_to_jsonl(repo_root: Path = REPO_ROOT) -> dict[str, object]:
     store = _load_store()
-    history_root = repo_root / "docs" / "health" / "dispositions-history"
-    events_root = repo_root / "docs" / "health" / "dispositions-events"
-    current_output = repo_root / "docs" / "health" / "dispositions-current.md"
-    open_output = repo_root / "docs" / "health" / "dispositions-open.md"
-    index_output = repo_root / "docs" / "health" / "dispositions-index.json"
-    compatibility_output = repo_root / "docs" / "health" / "dispositions.md"
-    audit_output = repo_root / "docs" / "health" / "dispositions-jsonl-migration-audit.md"
+    history_root = dispositions_history_root(repo_root)
+    events_root = dispositions_events_root(repo_root)
+    current_output = dispositions_current_view_path(repo_root)
+    open_output = dispositions_open_view_path(repo_root)
+    index_output = dispositions_index_path(repo_root)
+    compatibility_output = compatibility_ledger_path(repo_root)
+    audit_output = dispositions_jsonl_migration_audit_path(repo_root)
 
     if events_root.exists():
         shutil.rmtree(events_root)

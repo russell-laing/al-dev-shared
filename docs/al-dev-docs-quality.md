@@ -58,7 +58,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 
 | Type | Finding | Detail |
 | ------ | --------- | -------- |
-| ✅ scripts | all 5 referenced scripts verified | validate_harness_neutrality.py, validate-lens-agents.py, test_generate_agent_projections.py, generate-agent-projections.py all exist |
+| ✅ scripts | all 5 referenced scripts verified | validate_harness_neutrality.py, validate_lens_agents.py, test_generate_agent_projections.py, generate_agent_projections.py all exist |
 | ✅ knowledge paths | agent-tool-projection-policy.md, harness-concepts.md verified | Both referenced files exist |
 
 ### Readability
@@ -102,7 +102,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 
 | Type | Finding | Detail |
 | ------ | --------- | -------- |
-| ✅ scripts | all referenced scripts verified | generate-agent-projections.py, validate_harness_neutrality.py, tests exist and are current |
+| ✅ scripts | all referenced scripts verified | generate_agent_projections.py, validate_harness_neutrality.py, tests exist and are current |
 | ✅ knowledge paths | agent-tool-projection-policy.md, harness-concepts.md verified | Both referenced files exist |
 
 ### Readability

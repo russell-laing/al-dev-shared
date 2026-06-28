@@ -105,15 +105,16 @@ Run the applicable checks after shared-surface changes:
 
 ```bash
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
-python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_knowledge_quality.py --path profile-al-dev-shared/knowledge
 python3 scripts/tests/test_generate_agent_projections.py
 ```
 
 Projection regeneration:
 
 ```bash
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
+python3 scripts/generate_maintainer_guide.py
 ```
 
 Use `docs/development-commands.md` for the full maintainer command set.

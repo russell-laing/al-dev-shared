@@ -24,7 +24,7 @@ workflow contract but not consumed by another workflow contract.
 
 Content between `BEGIN GENERATED` and `END GENERATED` markers comes from
 `.claude/skills/*/SKILL.md` workflow contracts through
-`scripts/generate-maintainer-guide.py`. Update the source contract or generator,
+`scripts/generate_maintainer_guide.py`. Update the source contract or generator,
 then regenerate; do not edit marked content directly.
 
 ## Workflow Overview
@@ -130,7 +130,7 @@ The canonical schema and lifecycle are in `.claude/knowledge/health-loop-state-c
 | Ready to record decisions from a dossier | `/record-plugin-dispositions` | Opens a gate to record accept/decline/grandfather/fixed decisions for each finding in a dossier. Ledger entries become durable; later audits can suppress already-decided findings. |
 | Ready to turn accepted events into a plan | `/plan-plugin-findings` | Verifies accepted findings against the live codebase, then writes an implementation plan with explicit `closes_event_ids:` identifiers. Each plan task maps to the event IDs it will close. |
 | Ready to execute a verified plan and close events | `/implement-plugin-health --plan <path>` | Executes the plan tasks one-by-one with verification, appends `fixed` events to the JSONL event store, and closes the loop with `next_command: none`. Resumable if interrupted. |
-| Edited shared agent source directly (without using a health plan) | `/regenerate-agent-projections` → then `/validate-plugin-neutrality` | Regenerates harness-native projections from your edited agents, then validates that the shared surface remains harness-neutral across all three harnesses. |
+| Edited shared agent source directly (without using a health plan) | `/regenerate_agent_projections` → then `/validate-plugin-neutrality` | Regenerates harness-native projections from your edited agents, then validates that the shared surface remains harness-neutral across all three harnesses. |
 | Edited shared knowledge directly | `/audit-knowledge-quality` → if HIGH findings exist, run `/fix-knowledge-quality` → then `/validate-plugin-neutrality` | Audits knowledge for structural issues. If HIGH-severity items are discovered and you approve them, fix them, then validate the shared surface remains harness-neutral. |
 
 **If a run appears blocked:**
@@ -195,7 +195,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/implement-plugin-health` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
-| `/regenerate-agent-projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
+| `/regenerate_agent_projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 | `/validate-plugin-neutrality` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface by running validate_harness_neutrality.py, which checks for forbidden harness-specific tokens across seven classes (Claude tool tokens, dispatch tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP tokens; and harness-specific session wording) that could break distributable content. |
 
 ### Inputs and outputs
@@ -213,10 +213,10 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/plan-plugin-findings` | `docs/health/dispositions-open.md`, `docs/health/dispositions-index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`, `.dev/health-loop-state.md` | `docs/superpowers/plans/<date>-<topic>.md`, `.dev/health-loop-state.md` | `/implement-plugin-health` |
 | `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
 | `/revise-plugin-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/implement-plugin-health` |
-| `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md`, `.dev/health-loop-state.md` | `/regenerate-agent-projections`, `/validate-plugin-neutrality`, `/audit-plugin-health` |
+| `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md`, `.dev/health-loop-state.md` | `/regenerate_agent_projections`, `/validate-plugin-neutrality`, `/audit-plugin-health` |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/`, `.claude/knowledge/` | `docs/al-dev-knowledge-quality.md`, `docs/al-dev-knowledge-quality-tooling.md` | `/fix-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/al-dev-knowledge-quality.md`, `docs/al-dev-knowledge-quality-tooling.md` | `profile-al-dev-shared/knowledge/`, `.claude/knowledge/` | `/validate-plugin-neutrality` |
-| `/regenerate-agent-projections` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/validate-plugin-neutrality` |
+| `/regenerate_agent_projections` | `profile-al-dev-shared/agents/` | `profile-al-dev-shared/generated/agents/` | `/validate-plugin-neutrality` |
 | `/validate-plugin-neutrality` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | `/audit-knowledge-quality` |
 <!-- END GENERATED: maintainer-skills-tables -->
 
@@ -241,7 +241,7 @@ artifact signal.
 | Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-plugin-health, /record-plugin-dispositions, /revise-plugin-plan; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer-tooling/` | produced by /sync-map-documentation-write; consumed by no skill |
-| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate_agent_projections, /sync-map-documentation-write; consumed by no skill |
 | Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-plugin-findings; produced by no skill |
 | Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-plugin-health, /plan-plugin-findings, /record-plugin-dispositions, /report-plugin-health, /revise-plugin-plan; produced by no skill |
 | Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-plugin-plan; produced by no skill |

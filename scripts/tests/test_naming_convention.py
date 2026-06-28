@@ -7,12 +7,16 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPT_DIR = REPO_ROOT / "scripts"
 AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
 SKILLS_DIR = REPO_ROOT / ".claude" / "skills"
 CONVENTION_DOC = REPO_ROOT / "docs" / "al-dev-naming-convention.md"
 
 LENS_PATTERN = re.compile(r"^(design|quality)-(agent|skill)-lens-[a-z0-9-]+$")
 LENS_EXCEPTIONS = {"naming-convention-lens"}
+SNAKE_CASE_SCRIPT = re.compile(r"^[a-z0-9_]+\.py$")
+SCRIPT_EXCEPTIONS = {"__init__.py", "_compat_entrypoint.py", "_entrypoint_bootstrap.py"}
+SKILL_DIR_EXCEPTIONS = {"regenerate_agent_projections"}
 
 
 def test_convention_doc_exists() -> None:
@@ -39,9 +43,20 @@ def test_no_legacy_lens_names_remain() -> None:
 def test_skill_dirs_are_kebab_case() -> None:
     kebab = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
     offenders = [
-        p.name for p in SKILLS_DIR.iterdir() if p.is_dir() and not kebab.match(p.name)
+        p.name
+        for p in SKILLS_DIR.iterdir()
+        if p.is_dir() and p.name not in SKILL_DIR_EXCEPTIONS and not kebab.match(p.name)
     ]
     assert not offenders, f"non-kebab skill dirs: {offenders}"
+
+
+def test_top_level_python_scripts_are_snake_case() -> None:
+    offenders = [
+        path.name
+        for path in SCRIPT_DIR.glob("*.py")
+        if path.name not in SCRIPT_EXCEPTIONS and not SNAKE_CASE_SCRIPT.match(path.name)
+    ]
+    assert not offenders, f"non-snake-case top-level python scripts: {offenders}"
 
 
 def _run(func):

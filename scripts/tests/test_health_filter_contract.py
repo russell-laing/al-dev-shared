@@ -12,15 +12,15 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MIGRATION_SPEC = importlib.util.spec_from_file_location(
-    "migrate_health_dispositions",
-    REPO_ROOT / "scripts" / "migrate_health_dispositions.py",
+    "migrate_health_disposition_columns",
+    REPO_ROOT / "scripts" / "migrate_health_disposition_columns.py",
 )
 assert MIGRATION_SPEC is not None and MIGRATION_SPEC.loader is not None
 MIGRATION = importlib.util.module_from_spec(MIGRATION_SPEC)
 sys.modules[MIGRATION_SPEC.name] = MIGRATION
 MIGRATION_SPEC.loader.exec_module(MIGRATION)
 
-SCRIPT = REPO_ROOT / "scripts" / "migrate_health_dispositions.py"
+SCRIPT = REPO_ROOT / "scripts" / "migrate_health_disposition_columns.py"
 
 
 class HealthFilterContractFileTest(unittest.TestCase):

@@ -131,7 +131,7 @@ Regenerate projections after either of these changes:
 
 - You edit shared agent source in `profile-al-dev-shared/agents/*.md`
 - You change implemented projection behavior in
-  `scripts/generate-agent-projections.py`
+  `scripts/generate_agent_projections.py`
 
 Prose-only documentation edits do not require regeneration by themselves. If
 you change this file's frontmatter mapping rules or any intended projection
@@ -145,9 +145,9 @@ Run these checks when changing shared projection behavior or the shared
 authored surface around it:
 
 ```bash
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
 python3 scripts/tests/test_generate_agent_projections.py
 ```
 

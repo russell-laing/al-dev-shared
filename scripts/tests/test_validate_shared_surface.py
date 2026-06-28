@@ -9,7 +9,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "validate_shared_surface",
-    REPO_ROOT / "scripts" / "validate-shared-surface.py",
+    REPO_ROOT / "scripts" / "validate_shared_surface.py",
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)

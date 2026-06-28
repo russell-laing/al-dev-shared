@@ -20,6 +20,6 @@ Scope: `scripts/` follow-up work after the second quality sweep
 
 ## Remaining Follow-Ups
 
-1. Consider pushing the `docs/health` path helper into the remaining migration/reporting scripts that still compute paths inline.
-2. Consider a separate plan for larger module decomposition in `scripts/al_dev_tools/docs/maintainer_rendering.py` and `scripts/migrate_health_dispositions.py`.
+1. Task 3 pushes the shared `docs/health` path helper through the remaining migration and reporting scripts that previously computed those paths inline.
+2. Consider a separate plan for larger module decomposition in `scripts/al_dev_tools/docs/maintainer_rendering.py` and `scripts/migrate_health_disposition_columns.py`.
 3. Keep any future `scripts/` review-only sweeps appending new evidence instead of rewriting this artifact.

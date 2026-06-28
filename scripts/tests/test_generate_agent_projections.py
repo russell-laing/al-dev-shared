@@ -11,7 +11,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 spec = importlib.util.spec_from_file_location(
     "generate_agent_projections",
-    Path(__file__).resolve().parent.parent / "generate-agent-projections.py",
+    Path(__file__).resolve().parent.parent / "generate_agent_projections.py",
 )
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
@@ -154,7 +154,7 @@ def test_generate_all_writes_generated_agents_readme(tmp_path):
     assert "Generated Agent Projections" in readme
     assert "`profile-al-dev-shared/agents/*.md`" in readme
     assert "`profile-al-dev-shared/knowledge/agent-tool-projection-policy.md`" in readme
-    assert "python3 scripts/generate-agent-projections.py" in readme
+    assert "python3 scripts/generate_agent_projections.py" in readme
     assert "`*.toml`" in readme
 
 

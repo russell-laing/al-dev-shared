@@ -68,7 +68,7 @@ For each active agent, Read `profile-al-dev-shared/agents/<name>.md`. Extract:
 ### Step 3 — Derive callers
 
 ```bash
-python3 scripts/derive-agent-callers.py
+python3 scripts/derive_agent_callers.py
 ```
 
 On failure (non-zero exit or invalid JSON output): set `callers: {}` and

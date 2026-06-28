@@ -1,6 +1,6 @@
 # Plugin Dependency Graph
 
-> Generated sections refreshed by `scripts/generate-map-doc-sections.py` on 2026-06-01.
+> Generated sections refreshed by `scripts/generate_map_doc_sections.py` on 2026-06-01.
 > Re-run the script to refresh bounded generated blocks. Do not hand-edit inside markers.
 
 ## Dependency graph

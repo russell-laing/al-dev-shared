@@ -9,10 +9,10 @@ Common commands for maintaining the shared plugin surface.
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 
 # Validate agent structure (frontmatter, tools, model assignment)
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
 
 # Validate knowledge file quality
-python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+python3 scripts/validate_knowledge_quality.py --path profile-al-dev-shared/knowledge
 
 # Validate that skills honour the artifact-contract matrix
 python3 scripts/validate_artifact_contracts.py
@@ -31,7 +31,7 @@ git config core.hooksPath .githooks
 The hook runs, in order:
 
 - `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`
-- `python3 scripts/validate-lens-agents.py`
+- `python3 scripts/validate_lens_agents.py`
 - a projections-current check (regenerates to a temp dir and diffs against
   `profile-al-dev-shared/generated/`)
 
@@ -42,7 +42,7 @@ work-in-progress; the hook is fast local feedback, not a security control.
 
 ```bash
 # Regenerate all harness projections after shared agent/policy changes
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 ## Documentation Maps (Mermaid Diagrams)
@@ -54,15 +54,15 @@ The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`,
 # - Layer 1 lifecycle diagrams
 # - Layer 2 per-skill drilldowns (with Phase<N> nodes)
 # - Agent catalog and dependency graphs
-python3 scripts/generate-map-doc-sections.py
+python3 scripts/generate_map_doc_sections.py
 
 # Regenerate plugin dependency graph separately
-python3 scripts/generate-plugin-graph.py
+python3 scripts/generate_plugin_graph.py
 
 # Regenerate the maintainer guide's generated sections
 # (summary overview, stage diagrams, run order, artifact roles, contract appendix)
 # from the `workflow:` frontmatter blocks in .claude/skills/*/SKILL.md
-python3 scripts/generate-maintainer-guide.py
+python3 scripts/generate_maintainer_guide.py
 ```
 
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-map-documentation`) for interactive updates.
@@ -74,10 +74,14 @@ Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artif
   `head -80 docs/health/dispositions.md`
 - Inspect the latest history shard:
   `ls docs/health/dispositions-history/$(date +%Y)/` then `head -80 <shard>`
+- Stamp legacy 5-column ledger rows with explicit surface/dimension/ID columns:
+  `python3 scripts/migrate_health_disposition_columns.py --help`
 - Run the closure-staleness check:
   `python3 scripts/check_ledger_staleness.py`
 - Rebuild the generated current view from history shards (re-run after manual shard edits):
   `python3 scripts/migrate_health_disposition_store.py --rebuild-current-only`
+- Migrate Markdown history shards into JSONL events and regenerate derived views:
+  `python3 scripts/migrate_health_disposition_jsonl.py --root .`
 
 ## Plugin Health and Documentation
 

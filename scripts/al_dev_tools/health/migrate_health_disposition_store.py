@@ -6,7 +6,7 @@ docs/health/dispositions-history/, and rewrites docs/health/dispositions.md
 as a generated current-state projection.
 
 This is a one-shot migration tool. Do not confuse it with
-scripts/migrate_health_dispositions.py, which adds ID/surface/dimension
+scripts/migrate_health_disposition_columns.py, which adds ID/surface/dimension
 columns to legacy 5-column rows.
 """
 

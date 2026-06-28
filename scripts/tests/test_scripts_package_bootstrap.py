@@ -42,18 +42,18 @@ class ScriptsPackageBootstrapTest(unittest.TestCase):
 
     def test_target_wrappers_use_shared_bootstrap_helper(self) -> None:
         for rel_path in (
-            "scripts/generate-map-doc-sections.py",
-            "scripts/generate-maintainer-guide.py",
-            "scripts/generate-plugin-graph.py",
-            "scripts/derive-agent-callers.py",
-            "scripts/derive-skill-spawned-agents.py",
+            "scripts/generate_map_doc_sections.py",
+            "scripts/generate_maintainer_guide.py",
+            "scripts/generate_plugin_graph.py",
+            "scripts/derive_agent_callers.py",
+            "scripts/derive_skill_spawned_agents.py",
         ):
             text = (REPO_ROOT / rel_path).read_text(encoding="utf-8")
             self.assertIn("from _entrypoint_bootstrap import bootstrap_repo", text, rel_path)
             self.assertIn("bootstrap_repo(__file__)", text, rel_path)
 
     def test_plugin_graph_uses_package_imports(self) -> None:
-        text = (REPO_ROOT / "scripts/generate-plugin-graph.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / "scripts/generate_plugin_graph.py").read_text(encoding="utf-8")
         self.assertIn("from scripts.al_dev_tools.docs.map_doc_sections import", text)
 
 

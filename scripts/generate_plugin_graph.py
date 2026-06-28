@@ -50,7 +50,7 @@ def build_document(inventory, health, *, today: str) -> str:  # noqa: ANN001
     return build_plugin_graph_document(
         inventory,
         today=today,
-        generated_by="scripts/generate-plugin-graph.py",
+        generated_by="scripts/generate_plugin_graph.py",
         workflow_paths=WORKFLOW_PATHS,
     )
 
@@ -73,7 +73,7 @@ def main() -> int:
         updated = replace_marked_sections(current, replacements)
         write_text_atomic(OUTPUT, updated)
     except Exception as exc:  # noqa: BLE001
-        sys.stderr.write(f"generate-plugin-graph: {exc}\n")
+        sys.stderr.write(f"generate_plugin_graph: {exc}\n")
         return 1
 
     print(f"Wrote {OUTPUT}")

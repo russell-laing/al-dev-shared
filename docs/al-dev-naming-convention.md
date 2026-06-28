@@ -50,6 +50,9 @@ This rule is advisory: existing names that deviate are grandfathered — see
 conform; the `naming-convention-lens` flags non-conforming names as Low-severity
 suggestions rather than hard failures.
 
+The repo-local `regenerate_agent_projections` skill is currently grandfathered
+until the compat surface is retired.
+
 The repo-local maintainer command `/plan-plugin-findings` is the current name
 for the workflow that used to be wired to `/verify-map-suggestions`.
 
@@ -76,6 +79,9 @@ Examples: `validate_harness_neutrality.py`, `check_ledger_staleness.py`,
 During staged migrations, a legacy top-level wrapper may temporarily remain for
 compatibility, but the canonical filename should still be the snake_case form
 that matches the imported module and the documented command.
+
+The repo-local `regenerate_agent_projections` skill is currently grandfathered
+until the compat surface is retired.
 
 ## Outputs
 
@@ -107,4 +113,4 @@ remain harness-specific, but its produced documents must not.
 These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
 are accepted; lenses should not re-flag them:
 
-(none currently)
+- `regenerate_agent_projections`

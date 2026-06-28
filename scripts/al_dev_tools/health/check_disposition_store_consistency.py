@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """JSONL disposition event store consistency checker.
 
-Reads docs/health/dispositions-events/ via health_disposition_store helpers and
+Reads the shared disposition-event root via health_disposition_store helpers and
 verifies internal consistency. Prints a short summary. Exits 0 when consistent
 so the PostToolUse git-commit hook stays green; exits 1 only on a real
 inconsistency (unparseable events or dangling closes_event_ids references).

@@ -110,7 +110,7 @@ def _cli_match(
     ledger_path: Path,
     events_root: Path | None = None,
 ) -> int:
-    _DEFAULT_EVENTS_ROOT = Path("docs/health/dispositions-events")
+    _DEFAULT_EVENTS_ROOT = dispositions_events_root()
     resolved_events_root = events_root if events_root is not None else _DEFAULT_EVENTS_ROOT
 
     if resolved_events_root.exists() and any(resolved_events_root.rglob("*.jsonl")):

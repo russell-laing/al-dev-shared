@@ -2,9 +2,9 @@
 """Print the canonical skill → spawned-agent mapping as JSON.
 
 Single source of truth for "Agents spawned" derivation: uses the same edge
-parser as scripts/generate-map-doc-sections.py, so skill-metadata audit
+parser as scripts/generate_map_doc_sections.py, so skill-metadata audit
 results can never disagree with the generated skill-drilldown sections.
-Mirrors scripts/derive-agent-callers.py for the skill side.
+Mirrors scripts/derive_agent_callers.py for the skill side.
 
 Replaces the canonical-slug-only extraction formerly embedded in
 sync-map-documentation-skill-metadata, whose narrower matching missed bare

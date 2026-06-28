@@ -54,7 +54,7 @@ def parse_ledger_text(text: str) -> list[Row]:
 
         if header_col_count == 7 and n == 1:
             print(
-                "Ledger lacks ID column — run migrate_health_dispositions.py --stamp-ids",
+                "Ledger lacks ID column — run migrate_health_disposition_columns.py --stamp-ids",
                 file=sys.stderr,
             )
 

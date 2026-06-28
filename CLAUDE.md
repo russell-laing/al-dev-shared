@@ -67,7 +67,7 @@ Repo-local tooling may *inspect* shared source and generated projection outputs 
 
 **Maintainer skill workflow contracts:** `.claude/skills/` files may also contain a
 `workflow:` block — a repo-local frontmatter extension consumed by
-`scripts/generate-maintainer-guide.py` to auto-generate the
+`scripts/generate_maintainer_guide.py` to auto-generate the
 `docs/maintainer-tooling.md` summary and `docs/maintainer-tooling/` stage pages.
 This block is invisible to Claude Code and all distributed harnesses. See
 `.claude/knowledge/skill-workflow-contract.md` for the schema. Skills without a
@@ -186,7 +186,7 @@ Before committing changes:
 4. **Skill/agent validation** — If editing skills or agents:
 
    ```bash
-   python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+   python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
    ```
 
 ---

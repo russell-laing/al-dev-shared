@@ -8,7 +8,7 @@ FALSE POSITIVES ELIMINATED (2026-05-22):
 - [THIN] summary sections: Skip intentional summary sections (Goal, Overview, etc.)
 
 Usage:
-  python3 validate-knowledge-quality.py [--path <dir>] [--strict] [--verbose]
+  python3 validate_knowledge_quality.py [--path <dir>] [--strict] [--verbose]
 
 Exit codes:
   0: No issues (or advisory-only with --strict off)
