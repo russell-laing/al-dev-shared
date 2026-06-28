@@ -53,6 +53,30 @@ suggestions rather than hard failures.
 The repo-local maintainer command `/plan-plugin-findings` is the current name
 for the workflow that used to be wired to `/verify-map-suggestions`.
 
+### Python maintainer tooling files — ADVISORY
+
+Pattern: `snake_case.py`, with a verb-first stem that states the file's primary
+behavior.
+
+- importable modules and tests MUST use `snake_case.py`
+- top-level CLI entrypoints under `scripts/` SHOULD also use `snake_case.py`
+  so the import path, test naming, and direct file invocation all align
+- choose the leading verb from the dominant behavior of the file:
+  `generate_`, `validate_`, `derive_`, `check_`, `select_`, `migrate_`,
+  `assemble_`, `summarize_`
+- choose the noun from the primary subject or output, not a broader subsystem:
+  `check_disposition_store_consistency.py` is better than a vague transport or
+  workflow name because it states the file's observable job
+- if a file bundles multiple materially different behaviors, split it before
+  stretching the filename into a catch-all
+
+Examples: `validate_harness_neutrality.py`, `check_ledger_staleness.py`,
+`select_health_artifacts.py`, `maintainer_rendering.py`.
+
+During staged migrations, a legacy top-level wrapper may temporarily remain for
+compatibility, but the canonical filename should still be the snake_case form
+that matches the imported module and the documented command.
+
 ## Outputs
 
 ### Living docs — overwritten in place, no date
