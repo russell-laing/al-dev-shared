@@ -14,9 +14,9 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
-import tempfile
 
 from scripts import REPO_ROOT
+from scripts.al_dev_tools.io_utils import write_text_atomic
 from scripts.al_dev_tools.docs.maintainer_guide_sections import (
     STAGE_DOCS,
     SUMMARY_DOC,
@@ -63,25 +63,6 @@ PAGE_KEYS = {
 }
 
 
-def _write_text_atomic(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        "w",
-        encoding="utf-8",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        handle.write(text)
-        temp_path = Path(handle.name)
-    try:
-        temp_path.replace(path)
-    finally:
-        if temp_path.exists():
-            temp_path.unlink()
-
-
 def main() -> int:
     try:
         contracts, missing = load_contracts(SKILLS_DIR)
@@ -93,7 +74,7 @@ def main() -> int:
             current = page_path.read_text(encoding="utf-8")
             replacements = {key: sections[key] for key in keys}
             updated = replace_marked_sections(current, replacements)
-            _write_text_atomic(page_path, updated)
+            write_text_atomic(page_path, updated)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"generate-maintainer-guide: {exc}\n")
         return 1

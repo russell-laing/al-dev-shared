@@ -288,8 +288,7 @@ def validate_knowledge_dir(
     clean_files = []
 
     if not knowledge_dir.exists():
-        print(f"Error: Knowledge directory not found: {knowledge_dir}")
-        sys.exit(1)
+        raise FileNotFoundError(f"Knowledge directory not found: {knowledge_dir}")
 
     md_files = sorted(knowledge_dir.rglob("*.md"))
 
@@ -305,8 +304,7 @@ def validate_knowledge_dir(
 
         # Read and parse
         try:
-            with open(filepath, "r") as f:
-                content = f.read()
+            content = filepath.read_text(encoding="utf-8")
         except Exception as e:
             warnings.append(
                 _format_issue(
@@ -360,7 +358,11 @@ def main():
         knowledge_dir = Path.cwd() / knowledge_dir
 
     print(f"Validating {knowledge_dir}...")
-    warnings, clean_files = validate_knowledge_dir(knowledge_dir, args.verbose)
+    try:
+        warnings, clean_files = validate_knowledge_dir(knowledge_dir, args.verbose)
+    except FileNotFoundError:
+        print(f"Error: Knowledge directory not found: {knowledge_dir}")
+        return 1
 
     # Print results
     if warnings:

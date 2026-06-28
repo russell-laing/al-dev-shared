@@ -1,8 +1,7 @@
-"""Compatibility facade for health disposition store helpers and CLI."""
+"""Compatibility facade and CLI for health finding disposition helpers."""
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from pathlib import Path
@@ -19,13 +18,7 @@ from .disposition_events import (
     validate_event,
     validate_index_freshness,
 )
-from .disposition_matching import (
-    _event_to_legacy_row,
-    match_against_ledger,
-    object_members,
-    normalize_type,
-    parse_findings_file,
-)
+from .disposition_matching import match_against_ledger, normalize_type, object_members, parse_findings_file
 from .disposition_models import (
     EVENT_ID_RE,
     EVENT_REQUIRED_FIELDS,
@@ -50,43 +43,57 @@ from .disposition_views import (
     write_shard,
 )
 
+parse_ledger = parse_ledger_file
+
 __all__ = [
-    "TABLE_HEADER",
-    "TABLE_DIVIDER",
-    "EVENT_REQUIRED_FIELDS",
-    "VALID_DISPOSITIONS",
     "EVENT_ID_RE",
-    "normalize_finding",
+    "EVENT_REQUIRED_FIELDS",
+    "TABLE_DIVIDER",
+    "TABLE_HEADER",
+    "VALID_DISPOSITIONS",
+    "append_event",
+    "append_row",
+    "batch_decline",
+    "build_disposition_index",
     "disposition_key",
     "event_shard_path_for_date",
-    "next_event_id",
-    "validate_event",
-    "parse_event_file",
     "iter_event_rows",
-    "append_event",
-    "batch_decline",
-    "materialize_current_events",
-    "build_disposition_index",
-    "validate_index_freshness",
-    "shard_path_for_date",
-    "parse_ledger_file",
-    "materialize_current_view",
-    "write_shard",
-    "append_row",
-    "render_current_view",
-    "render_open_view",
-    "render_current_events_view",
-    "render_legacy_compatibility_view",
-    "render_index",
     "iter_history_rows",
     "list_open",
-    "object_members",
-    "normalize_type",
+    "materialize_current_events",
+    "materialize_current_view",
     "match_against_ledger",
+    "next_event_id",
+    "normalize_finding",
+    "normalize_type",
+    "object_members",
+    "parse_event_file",
     "parse_findings_file",
-    "main",
-    "_cli_match",
+    "parse_ledger",
+    "parse_ledger_file",
+    "render_current_events_view",
+    "render_current_view",
+    "render_index",
+    "render_legacy_compatibility_view",
+    "render_open_view",
+    "shard_path_for_date",
+    "validate_event",
+    "validate_index_freshness",
+    "write_shard",
 ]
+
+
+def _event_to_legacy_row(event: dict[str, object]) -> dict[str, str]:
+    return {
+        "id": str(event.get("event_id", "")),
+        "surface": str(event.get("surface", "")),
+        "dimension": str(event.get("dimension", "")),
+        "object": str(event.get("object", "")),
+        "finding": str(event.get("finding", "")),
+        "disposition": str(event.get("disposition", "")),
+        "date": str(event.get("date", "")),
+        "note": str(event.get("evidence", "")),
+    }
 
 
 def _cli_match(
@@ -94,7 +101,6 @@ def _cli_match(
     ledger_path: Path,
     events_root: Path | None = None,
 ) -> int:
-    """Classify findings against the JSONL event store when present, else Markdown ledger."""
     _DEFAULT_EVENTS_ROOT = Path("docs/health/dispositions-events")
     resolved_events_root = events_root if events_root is not None else _DEFAULT_EVENTS_ROOT
 
@@ -133,7 +139,6 @@ def _cli_match(
 
 
 def _cli_show(event_id: str, events_root: Path) -> int:
-    """Print full JSON for a single event by event_id."""
     for ev in iter_event_rows(events_root):
         if ev.get("event_id") == event_id:
             print(json.dumps(ev, indent=2, ensure_ascii=False))
@@ -143,21 +148,11 @@ def _cli_show(event_id: str, events_root: Path) -> int:
 
 
 def main() -> int:
+    import argparse
+
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
     sub = parser.add_subparsers(dest="command", required=True)
-    m = sub.add_parser("match", help="Classify findings against the disposition ledger.")
-    m.add_argument("--findings", required=True, type=Path)
-    m.add_argument(
-        "--ledger", type=Path, default=Path("docs/health/dispositions.md")
-    )
-    m.add_argument(
-        "--events-root",
-        type=Path,
-        default=None,
-        help="Override default JSONL events root (docs/health/dispositions-events/). "
-        "When present and non-empty, takes precedence over the Markdown ledger.",
-    )
-
+    sub.add_parser("match", help="Classify findings against the disposition ledger.")
     _HISTORY_DEFAULT = Path("docs/health/dispositions-history")
 
     ap = sub.add_parser(
@@ -175,7 +170,8 @@ def main() -> int:
     p_sync.add_argument("--events-root", type=Path, default=Path("docs/health/dispositions-events"))
     p_sync.add_argument("--history-root", type=Path, default=_HISTORY_DEFAULT)
     p_sync.add_argument(
-        "--verbose", action="store_true",
+        "--verbose",
+        action="store_true",
         help="Print one line per synced event (default: summary only).",
     )
 
@@ -200,7 +196,9 @@ def main() -> int:
         help="Append a `declined` event per refuted-skip row from a JSON input file.",
     )
     bd.add_argument(
-        "--input", required=True, type=Path,
+        "--input",
+        required=True,
+        type=Path,
         help="JSON array of {surface, dimension, object, finding, reason, closes_event_id}",
     )
     bd.add_argument("--date", required=True)

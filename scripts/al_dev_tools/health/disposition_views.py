@@ -1,31 +1,23 @@
-"""Markdown view helpers for health disposition tooling."""
+"""Markdown history and view helpers for health finding dispositions."""
 
 from __future__ import annotations
 
-from collections import OrderedDict
 import json
+import re
+from collections import OrderedDict
 from pathlib import Path
 from typing import Iterator
-import re
 
-from .disposition_events import materialize_current_events
-from .disposition_models import (
-    TABLE_DIVIDER,
-    TABLE_HEADER,
-    _escape_cell,
-    _unescape_cell,
-    disposition_key,
-)
+from .disposition_events import build_disposition_index, materialize_current_events
+from .disposition_models import TABLE_DIVIDER, TABLE_HEADER, _escape_cell, _unescape_cell, disposition_key
 
 
 def shard_path_for_date(iso_date: str) -> Path:
-    """Return relative shard path YYYY/YYYY-MM.md for the given ISO date."""
     year, month, _ = iso_date.split("-")
     return Path(year) / f"{year}-{month}.md"
 
 
 def parse_ledger_file(path: Path) -> list[dict[str, str]]:
-    """Parse an 8-column disposition Markdown table into a list of row dicts."""
     rows: list[dict[str, str]] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.startswith("|"):
@@ -56,7 +48,6 @@ def parse_ledger_file(path: Path) -> list[dict[str, str]]:
 
 
 def materialize_current_view(rows: list[dict[str, str]]) -> list[dict[str, str]]:
-    """Return one row per latest disposition key (last writer wins)."""
     latest: OrderedDict[tuple[str, str, str, str], dict[str, str]] = OrderedDict()
     for row in rows:
         latest[disposition_key(row)] = row
@@ -64,31 +55,25 @@ def materialize_current_view(rows: list[dict[str, str]]) -> list[dict[str, str]]
 
 
 def write_shard(shard: Path, shard_rows: list[dict[str, str]]) -> None:
-    """Write or append rows to a month shard file, creating it with header if new."""
     shard.parent.mkdir(parents=True, exist_ok=True)
-    if not shard.exists():
-        header = TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
-    else:
-        header = ""
+    header = "" if shard.exists() else TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
     body_lines = [
         f"| {r['id']} | {r['surface']} | {r['dimension']} | {r['object']} | "
         f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
         for r in shard_rows
     ]
     mode = "a" if shard.exists() else "w"
-    with open(shard, mode, encoding="utf-8") as f:
+    with shard.open(mode, encoding="utf-8") as f:
         f.write(header + "\n".join(body_lines) + "\n")
 
 
 def append_row(history_root: Path, row: dict[str, str]) -> Path:
-    """Append a single row to its month shard under history_root. Returns the shard path."""
     shard = history_root / shard_path_for_date(row["date"])
     write_shard(shard, [row])
     return shard
 
 
 def render_current_view(output: Path, rows: list[dict[str, str]]) -> None:
-    """Write the generated current-state projection to output path."""
     current = materialize_current_view(rows)
     output.parent.mkdir(parents=True, exist_ok=True)
     header_lines = [
@@ -105,9 +90,28 @@ def render_current_view(output: Path, rows: list[dict[str, str]]) -> None:
         f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
         for r in current
     ]
-    output.write_text(
-        "\n".join(header_lines + body_lines) + "\n", encoding="utf-8"
-    )
+    output.write_text("\n".join(header_lines + body_lines) + "\n", encoding="utf-8")
+
+
+def iter_history_rows(history_root: Path) -> Iterator[dict[str, str]]:
+    for shard in sorted(history_root.rglob("*.md")):
+        yield from parse_ledger_file(shard)
+
+
+def list_open(
+    ledger_path: Path,
+    status: str = "accepted",
+    surface: str | None = None,
+    dimension: str | None = None,
+) -> list[dict[str, str]]:
+    target = status.strip().lower()
+    rows = materialize_current_view(parse_ledger_file(ledger_path))
+    out = [r for r in rows if r["disposition"].strip().lower() == target]
+    if surface:
+        out = [r for r in out if r["surface"].strip() == surface]
+    if dimension:
+        out = [r for r in out if r["dimension"].strip() == dimension]
+    return out
 
 
 def _markdown_event_row(event: dict[str, object]) -> str:
@@ -135,11 +139,7 @@ def _markdown_legacy_row(event: dict[str, object]) -> str:
 
 
 def render_open_view(output: Path, events: list[dict[str, object]]) -> None:
-    """Write the compact open-accepted view Claude should read by default."""
-    current = [
-        event for event in materialize_current_events(events)
-        if event["disposition"] == "accepted"
-    ]
+    current = [event for event in materialize_current_events(events) if event["disposition"] == "accepted"]
     output.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Open Health Dispositions",
@@ -154,7 +154,6 @@ def render_open_view(output: Path, events: list[dict[str, object]]) -> None:
 
 
 def render_current_events_view(output: Path, events: list[dict[str, object]]) -> None:
-    """Write the human current-state view from JSONL events."""
     current = materialize_current_events(events)
     output.parent.mkdir(parents=True, exist_ok=True)
     lines = [
@@ -170,7 +169,6 @@ def render_current_events_view(output: Path, events: list[dict[str, object]]) ->
 
 
 def render_legacy_compatibility_view(output: Path, events: list[dict[str, object]]) -> None:
-    """Write the temporary legacy eight-column Markdown view from JSONL events."""
     current = materialize_current_events(events)
     output.parent.mkdir(parents=True, exist_ok=True)
     lines = [
@@ -186,33 +184,8 @@ def render_legacy_compatibility_view(output: Path, events: list[dict[str, object
 
 
 def render_index(output: Path, events: list[dict[str, object]]) -> None:
-    from .disposition_events import build_disposition_index
-
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         json.dumps(build_disposition_index(events), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-
-
-def iter_history_rows(history_root: Path) -> Iterator[dict[str, str]]:
-    """Yield all rows from all month shard files in ascending chronological order."""
-    for shard in sorted(history_root.rglob("*.md")):
-        yield from parse_ledger_file(shard)
-
-
-def list_open(
-    ledger_path: Path,
-    status: str = "accepted",
-    surface: str | None = None,
-    dimension: str | None = None,
-) -> list[dict[str, str]]:
-    """Rows in the current view whose disposition == status."""
-    target = status.strip().lower()
-    rows = materialize_current_view(parse_ledger_file(ledger_path))
-    out = [r for r in rows if r["disposition"].strip().lower() == target]
-    if surface:
-        out = [r for r in out if r["surface"].strip() == surface]
-    if dimension:
-        out = [r for r in out if r["dimension"].strip() == dimension]
-    return out

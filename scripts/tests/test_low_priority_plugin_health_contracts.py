@@ -80,11 +80,11 @@ def test_review_develop_code_review_artifact_is_terminal_output_optional_commit_
 def test_low_priority_skill_descriptions_match_current_behavior() -> unittest.FunctionTestCase | None:
     def body() -> None:
         expected = {
-            "profile-al-dev-shared/skills/al-dev-fix/SKILL.md": "Fast bug-fix workflow for trivial direct edits and non-trivial fixes that may route through architect/developer analysis.",
-            "profile-al-dev-shared/skills/al-dev-lint/SKILL.md": "Run AL compile, parse diagnostics, auto-fix supported AL issues, and write a lint report.",
-            "profile-al-dev-shared/skills/al-dev-handoff/SKILL.md": "Package investigation context, source evidence, and a destination prompt for cross-repo session migration.",
-            "profile-al-dev-shared/skills/al-dev-explore/SKILL.md": "Explore codebases with a delegated subagent and persist structured findings to `.dev/` for downstream workflows.",
-            "profile-al-dev-shared/skills/al-dev-consolidate/SKILL.md": "Consolidate `.dev/` workflow artifacts into per-session summary notes, a sessions index, and vault-ready archive outputs.",
+            "profile-al-dev-shared/skills/al-dev-fix/SKILL.md": "Lightweight bug fix workflow without approval gates (fast iteration)",
+            "profile-al-dev-shared/skills/al-dev-lint/SKILL.md": "Run AL compile, then dispatch al-dev-diagnostics-resolver to auto-fix",
+            "profile-al-dev-shared/skills/al-dev-handoff/SKILL.md": "Package investigation context and generate a session-continuation prompt",
+            "profile-al-dev-shared/skills/al-dev-explore/SKILL.md": "Explore codebases fast — loads project context, classifies the question, then delegates to an Explore subagent for structured, persistent findings.",
+            ".claude/archived/skills/al-dev-consolidate/SKILL.md": "Consolidate .dev/ workflow artifacts into per-session summary notes and a",
         }
         for path, description in expected.items():
             fm = frontmatter(path)

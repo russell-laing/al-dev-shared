@@ -1,31 +1,30 @@
-"""JSONL event-store helpers for health disposition tooling."""
+"""JSONL event-store helpers for health finding dispositions."""
 
 from __future__ import annotations
 
+import json
+import re
 from collections import Counter, defaultdict, OrderedDict
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Iterator
-import json
-import re
 
 from .disposition_models import (
     EVENT_ID_RE,
     EVENT_REQUIRED_FIELDS,
     VALID_DISPOSITIONS,
+    disposition_key,
     normalize_finding,
 )
 
 
 def event_shard_path_for_date(iso_date: str) -> Path:
-    """Return relative JSONL shard path YYYY/YYYY-MM.jsonl for an ISO date."""
     year, month, _ = iso_date.split("-")
     return Path(year) / f"{year}-{month}.jsonl"
 
 
 def next_event_id(events: list[dict[str, object]], iso_date: str) -> str:
-    """Allocate the next stable event ID for the given date."""
     date_token = iso_date.replace("-", "")
     max_seq = 0
     for event in events:
@@ -38,7 +37,6 @@ def next_event_id(events: list[dict[str, object]], iso_date: str) -> str:
 
 
 def validate_event(event: dict[str, object]) -> list[str]:
-    """Return validation errors for one JSONL disposition event."""
     errors: list[str] = []
     for field in EVENT_REQUIRED_FIELDS:
         if field not in event:
@@ -56,7 +54,6 @@ def validate_event(event: dict[str, object]) -> list[str]:
 
 
 def parse_event_file(path: Path) -> list[dict[str, object]]:
-    """Parse a JSONL event shard into event dictionaries."""
     events: list[dict[str, object]] = []
     if not path.exists():
         return events
@@ -78,18 +75,20 @@ def parse_event_file(path: Path) -> list[dict[str, object]]:
 
 
 def iter_event_rows(events_root: Path) -> Iterator[dict[str, object]]:
-    """Yield JSONL events from all shards in sorted order."""
     for shard in sorted(events_root.rglob("*.jsonl")):
         yield from parse_event_file(shard)
 
 
 def append_event(events_root: Path, event: dict[str, object]) -> Path:
-    """Append one event to its JSONL month shard and return the shard path."""
     errors = validate_event(event)
     if errors:
         raise ValueError("; ".join(errors))
     event_id = str(event["event_id"])
-    existing_ids = {str(existing["event_id"]) for existing in iter_event_rows(events_root) if existing.get("event_id")}
+    existing_ids = {
+        str(existing["event_id"])
+        for existing in iter_event_rows(events_root)
+        if existing.get("event_id")
+    }
     if event_id in existing_ids:
         raise ValueError(f"duplicate event_id: {event_id}")
     shard = events_root / event_shard_path_for_date(str(event["date"]))
@@ -105,7 +104,6 @@ def batch_decline(
     date: str,
     source: str = "plan-plugin-findings",
 ) -> list[tuple[str, Path]]:
-    """Append one `declined` event per refuted-skip row in a single pass."""
     required = ("surface", "dimension", "object", "finding", "reason", "closes_event_id")
     written: list[tuple[str, Path]] = []
     for i, row in enumerate(rows):
@@ -141,7 +139,6 @@ def _event_key(event: dict[str, object]) -> tuple[str, str, str, str]:
 
 
 def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str, object]]:
-    """Return current event state, preserving legacy closure semantics during migration."""
     by_id = {str(event["event_id"]): event for event in events}
     closed_ids: set[str] = set()
     for event in events:
@@ -166,7 +163,9 @@ def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str
             target = by_legacy_id.get(legacy_id)
             if target:
                 closed_ids.add(str(target["event_id"]))
-                open_accepted = [e for e in open_accepted if str(e["event_id"]) != str(target["event_id"])]
+                open_accepted = [
+                    e for e in open_accepted if str(e["event_id"]) != str(target["event_id"])
+                ]
                 by_legacy_id.pop(legacy_id, None)
                 continue
         if str(event["disposition"]) in ("declined", "grandfathered"):
@@ -193,8 +192,12 @@ def build_disposition_index(
 ) -> dict[str, object]:
     current = materialize_current_events(events)
     by_disposition = Counter(str(e["disposition"]) for e in current)
-    by_surface: dict[str, dict[str, int]] = defaultdict(lambda: {"current_rows": 0, "open_accepted": 0})
-    by_dimension: dict[str, dict[str, int]] = defaultdict(lambda: {"current_rows": 0, "open_accepted": 0})
+    by_surface: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"current_rows": 0, "open_accepted": 0}
+    )
+    by_dimension: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"current_rows": 0, "open_accepted": 0}
+    )
     for event in current:
         surface = str(event["surface"])
         dimension = str(event["dimension"])
@@ -225,17 +228,3 @@ def validate_index_freshness(index: dict[str, object], events: list[dict[str, ob
     if index.get("open_accepted") != build_disposition_index(events)["open_accepted"]:
         errors.append("open_accepted is stale")
     return errors
-
-
-def _event_to_legacy_row(event: dict[str, object]) -> dict[str, str]:
-    """Convert a JSONL event dict to a legacy row dict for matching."""
-    return {
-        "id": str(event.get("event_id", "")),
-        "surface": str(event.get("surface", "")),
-        "dimension": str(event.get("dimension", "")),
-        "object": str(event.get("object", "")),
-        "finding": str(event.get("finding", "")),
-        "disposition": str(event.get("disposition", "")),
-        "date": str(event.get("date", "")),
-        "note": str(event.get("evidence", "")),
-    }

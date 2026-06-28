@@ -9,9 +9,9 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 import sys
-import tempfile
 
 from scripts import REPO_ROOT
+from scripts.al_dev_tools.io_utils import write_text_atomic
 from scripts.al_dev_tools.docs.map_doc_sections import (
     build_all_sections,
     build_plugin_graph_document,
@@ -53,25 +53,6 @@ def build_document(inventory, health, *, today: str) -> str:  # noqa: ANN001
     )
 
 
-def _write_text_atomic(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        "w",
-        encoding="utf-8",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        handle.write(text)
-        temp_path = Path(handle.name)
-    try:
-        temp_path.replace(path)
-    finally:
-        if temp_path.exists():
-            temp_path.unlink()
-
-
 def main() -> int:
     try:
         inventory = collect_inventory(PLUGIN)
@@ -88,7 +69,7 @@ def main() -> int:
         }
         current = OUTPUT.read_text(encoding="utf-8")
         updated = replace_marked_sections(current, replacements)
-        _write_text_atomic(OUTPUT, updated)
+        write_text_atomic(OUTPUT, updated)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"generate-plugin-graph: {exc}\n")
         return 1

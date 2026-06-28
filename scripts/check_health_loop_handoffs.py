@@ -13,9 +13,7 @@ text is in place; confirm actual loop closure in a live run.
 import pathlib
 import sys
 
-SKILLS = pathlib.Path(".claude/skills")
 STATE = ".dev/health-loop-state.md"
-CONTRACT = pathlib.Path(".claude/knowledge/health-loop-state-contract.md")
 
 LOOP = [
     "discover-plugin-health",
@@ -25,48 +23,56 @@ LOOP = [
     "implement-plugin-health",
 ]
 
-errors = []
+def main(repo_root: pathlib.Path | None = None) -> int:
+    root = pathlib.Path.cwd() if repo_root is None else pathlib.Path(repo_root)
+    skills_root = root / ".claude" / "skills"
+    contract = root / ".claude" / "knowledge" / "health-loop-state-contract.md"
+    errors = []
 
-if not CONTRACT.exists():
-    errors.append(f"missing contract doc {CONTRACT}")
+    if not contract.exists():
+        errors.append(f"missing contract doc {contract}")
 
-for name in LOOP:
-    path = SKILLS / name / "SKILL.md"
-    if not path.exists():
-        errors.append(f"{name}: SKILL.md not found at {path}")
-        continue
-    body = path.read_text()
-    refs = body.count(STATE)
-    if refs < 2:
-        errors.append(
-            f"{name}: must both read (Phase 0) and write {STATE} "
-            f"(found {refs} reference(s), need >= 2)"
-        )
+    for name in LOOP:
+        path = skills_root / name / "SKILL.md"
+        if not path.exists():
+            errors.append(f"{name}: SKILL.md not found at {path}")
+            continue
+        body = path.read_text(encoding="utf-8")
+        refs = body.count(STATE)
+        if refs < 2:
+            errors.append(
+                f"{name}: must both read (Phase 0) and write {STATE} "
+                f"(found {refs} reference(s), need >= 2)"
+            )
 
-phf_path = SKILLS / "plan-plugin-findings" / "SKILL.md"
-if phf_path.exists():
-    phf = phf_path.read_text()
-    wp = phf.find("superpowers:writing-plans")
-    ihp = phf.rfind("implement-plugin-health")
-    if wp == -1:
-        errors.append("plan-plugin-findings: writing-plans invocation not found")
-    elif ihp == -1 or ihp < wp:
-        errors.append(
-            "plan-plugin-findings: must reference /implement-plugin-health AFTER "
-            "the writing-plans invocation (the override handoff)"
-        )
-    if phf.count("Execution Handoff") < 2:
-        errors.append(
-            "plan-plugin-findings: must reference 'Execution Handoff' at least "
-            "twice — once to suppress it in Phase 3, once as the authoritative "
-            f"ending in Phase 4 (found {phf.count('Execution Handoff')})"
-        )
+    phf_path = skills_root / "plan-plugin-findings" / "SKILL.md"
+    if phf_path.exists():
+        phf = phf_path.read_text(encoding="utf-8")
+        wp = phf.find("superpowers:writing-plans")
+        ihp = phf.rfind("implement-plugin-health")
+        if wp == -1:
+            errors.append("plan-plugin-findings: writing-plans invocation not found")
+        elif ihp == -1 or ihp < wp:
+            errors.append(
+                "plan-plugin-findings: must reference /implement-plugin-health AFTER "
+                "the writing-plans invocation (the override handoff)"
+            )
+        if phf.count("Execution Handoff") < 2:
+            errors.append(
+                "plan-plugin-findings: must reference 'Execution Handoff' at least "
+                "twice — once to suppress it in Phase 3, once as the authoritative "
+                f"ending in Phase 4 (found {phf.count('Execution Handoff')})"
+            )
 
-if errors:
-    print("HEALTH LOOP HANDOFF CHECK: FAIL")
-    for e in errors:
-        print(f"  - {e}")
-    sys.exit(1)
+    if errors:
+        print("HEALTH LOOP HANDOFF CHECK: FAIL")
+        for error in errors:
+            print(f"  - {error}")
+        return 1
 
-print("HEALTH LOOP HANDOFF CHECK: PASS")
-sys.exit(0)
+    print("HEALTH LOOP HANDOFF CHECK: PASS")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

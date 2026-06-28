@@ -1,12 +1,13 @@
-"""Deterministic matcher helpers for health disposition tooling."""
+"""Finding-to-ledger suppression matcher for health findings."""
 
 from __future__ import annotations
 
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 from .disposition_models import normalize_finding
+
 
 SIMILARITY_THRESHOLD = 0.4
 SIMILARITY_THRESHOLD_SAME_TYPE = 0.25
@@ -20,9 +21,33 @@ _PATH_CITATION_RE = re.compile(
     r"^`?[a-z0-9_./-]+\.[a-z0-9]+(?::\d+(?:-\d+)?)?`?\s*(?:[—–-]+\s*)?"
 )
 _STOPWORDS = {
-    "the", "a", "an", "of", "to", "in", "is", "it", "that", "this",
-    "and", "or", "for", "with", "but", "not", "no", "are", "was", "its",
+    "the",
+    "a",
+    "an",
+    "of",
+    "to",
+    "in",
+    "is",
+    "it",
+    "that",
+    "this",
+    "and",
+    "or",
+    "for",
+    "with",
+    "but",
+    "not",
+    "no",
+    "are",
+    "was",
+    "its",
 }
+
+
+def object_members(cell: str) -> set[str]:
+    return set(_KEBAB_RE.findall(cell.lower()))
+
+
 _TYPE_ALIASES = {
     "bloat": "bloat",
     "clarity": "clarity",
@@ -53,16 +78,9 @@ _TYPE_ALIASES = {
     "shared execution backbone": "shared-backbone",
     "surface placement": "surface-placement",
 }
-_PRECEDENCE = {"suppress": 0, "verify": 1, "keep": 2}
-
-
-def object_members(cell: str) -> set[str]:
-    """Return the set of kebab-case object names named in a ledger Object cell."""
-    return set(_KEBAB_RE.findall(cell.lower()))
 
 
 def normalize_type(raw: str) -> str:
-    """Map a finding-type label or block title to a canonical type, or '' if unknown."""
     key = re.sub(r"\s+", " ", raw.strip().lower()).rstrip("s")
     if key in _TYPE_ALIASES:
         return _TYPE_ALIASES[key]
@@ -70,7 +88,6 @@ def normalize_type(raw: str) -> str:
 
 
 def _finding_type(text: str) -> str:
-    """Derive a canonical finding type from a leading 'Label:' prefix, else ''."""
     head = normalize_finding(text)
     if ":" in head:
         label = head.split(":", 1)[0]
@@ -113,10 +130,12 @@ def _classification_for(disposition: str) -> str:
     return "keep"
 
 
+_PRECEDENCE = {"suppress": 0, "verify": 1, "keep": 2}
+
+
 def match_against_ledger(
     findings: list[dict[str, str]], current_rows: list[dict[str, str]]
 ) -> list[dict[str, object]]:
-    """Classify each finding against the current-view ledger."""
     results: list[dict[str, object]] = []
     for finding in findings:
         f_obj = finding.get("object", "").strip()
@@ -140,19 +159,12 @@ def match_against_ledger(
                 threshold = (
                     SIMILARITY_THRESHOLD_SAME_TYPE if same_type else SIMILARITY_THRESHOLD
                 )
-                if not _text_similar(
-                    finding.get("finding", ""), row["finding"], threshold
-                ):
+                if not _text_similar(finding.get("finding", ""), row["finding"], threshold):
                     continue
             cls = _classification_for(row["disposition"])
             candidates.append((cls, row))
-
-        candidates.sort(
-            key=lambda x: (x[1].get("date", ""), -_PRECEDENCE[x[0]]),
-            reverse=True,
-        )
+        candidates.sort(key=lambda x: (x[1].get("date", ""), -_PRECEDENCE[x[0]]), reverse=True)
         best = candidates[0] if candidates else None
-
         classification = best[0] if best else "keep"
         results.append(
             {
@@ -165,7 +177,6 @@ def match_against_ledger(
 
 
 def parse_findings_file(path: Path) -> list[dict[str, str]]:
-    """Extract (surface, dimension, object, finding) tuples from a findings file."""
     text = path.read_text(encoding="utf-8")
     surface = _WILDCARD
     fm = re.search(r"^surface:\s*(\S+)\s*$", text, re.MULTILINE)
@@ -213,7 +224,8 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
                 findings.append({"object": obj, "finding": finding_text})
                 parsed_count += 1
     total_data_lines = sum(
-        1 for ln in text.splitlines()
+        1
+        for ln in text.splitlines()
         if ln.startswith("|") and not ln.startswith("| Object") and not ln.startswith("| Event")
         and not ln.startswith("|---") and not ln.startswith("| ---")
     )
@@ -223,16 +235,3 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
             file=sys.stderr,
         )
     return findings
-
-
-def _event_to_legacy_row(event: dict[str, object]) -> dict[str, str]:
-    return {
-        "id": str(event.get("event_id", "")),
-        "surface": str(event.get("surface", "")),
-        "dimension": str(event.get("dimension", "")),
-        "object": str(event.get("object", "")),
-        "finding": str(event.get("finding", "")),
-        "disposition": str(event.get("disposition", "")),
-        "date": str(event.get("date", "")),
-        "note": str(event.get("evidence", "")),
-    }

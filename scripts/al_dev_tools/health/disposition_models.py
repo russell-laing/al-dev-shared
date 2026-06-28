@@ -1,4 +1,4 @@
-"""Shared models and pure helpers for health disposition tooling."""
+"""Shared models and constants for health finding dispositions."""
 
 from __future__ import annotations
 
@@ -32,12 +32,10 @@ def normalize_finding(text: str) -> str:
 
 
 def _escape_cell(text: object) -> str:
-    """Escape bare pipe characters in a Markdown table cell value."""
     return str(text).replace("|", r"\|")
 
 
 def _unescape_cell(text: str) -> str:
-    """Unescape \\| back to | when reading a Markdown table cell."""
     return text.replace(r"\|", "|")
 
 

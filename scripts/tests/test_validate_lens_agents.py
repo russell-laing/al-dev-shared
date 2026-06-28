@@ -49,6 +49,10 @@ def test_format_failure_embeds_path_in_fix_when_provided() -> None:
     assert "fix:" in output
 
 
+def test_main_returns_zero_for_current_repo() -> None:
+    assert _mod.main() == 0
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:
