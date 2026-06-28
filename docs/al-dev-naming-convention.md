@@ -53,6 +53,11 @@ suggestions rather than hard failures.
 The repo-local maintainer command `/plan-plugin-findings` is the current name
 for the workflow that used to be wired to `/verify-map-suggestions`.
 
+### Python maintainer tooling files — ADVISORY
+
+Pattern: `snake_case.py`, with a verb-first stem that states the file's primary
+behavior.
+
 ## Outputs
 
 ### Living docs — overwritten in place, no date

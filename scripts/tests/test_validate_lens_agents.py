@@ -1,5 +1,5 @@
 # scripts/tests/test_validate_lens_agents.py
-"""Tests for canonical self-correction output shape in validate-lens-agents."""
+"""Tests for canonical self-correction output shape in validate_lens_agents."""
 from __future__ import annotations
 
 import importlib.util
@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "validate_lens_agents",
-    REPO_ROOT / "scripts" / "validate-lens-agents.py",
+    REPO_ROOT / "scripts" / "validate_lens_agents.py",
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)

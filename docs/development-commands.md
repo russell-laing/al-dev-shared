@@ -9,10 +9,10 @@ Common commands for maintaining the shared plugin surface.
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 
 # Validate agent structure (frontmatter, tools, model assignment)
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
 
 # Validate knowledge file quality
-python3 scripts/validate-knowledge-quality.py --path profile-al-dev-shared/knowledge
+python3 scripts/validate_knowledge_quality.py --path profile-al-dev-shared/knowledge
 
 # Validate that skills honour the artifact-contract matrix
 python3 scripts/validate_artifact_contracts.py
@@ -31,7 +31,7 @@ git config core.hooksPath .githooks
 The hook runs, in order:
 
 - `python3 scripts/validate_harness_neutrality.py profile-al-dev-shared`
-- `python3 scripts/validate-lens-agents.py`
+- `python3 scripts/validate_lens_agents.py`
 - a projections-current check (regenerates to a temp dir and diffs against
   `profile-al-dev-shared/generated/`)
 
@@ -42,7 +42,7 @@ work-in-progress; the hook is fast local feedback, not a security control.
 
 ```bash
 # Regenerate all harness projections after shared agent/policy changes
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 ## Documentation Maps (Mermaid Diagrams)

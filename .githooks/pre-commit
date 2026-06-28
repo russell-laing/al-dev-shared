@@ -10,15 +10,15 @@ echo "pre-commit: validating harness neutrality..."
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 
 echo "pre-commit: validating lens agents (incl. lens-policy sync)..."
-python3 scripts/validate-lens-agents.py
+python3 scripts/validate_lens_agents.py
 
 echo "pre-commit: checking projections are current..."
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-python3 scripts/generate-agent-projections.py --output-root "$tmp" >/dev/null
+python3 scripts/generate_agent_projections.py --output-root "$tmp" >/dev/null
 if ! diff -r --exclude="README.md" "$tmp" profile-al-dev-shared/generated/agents >/dev/null 2>&1; then
   echo "ERROR: generated projections are stale." >&2
-  echo "  Run: python3 scripts/generate-agent-projections.py" >&2
+  echo "  Run: python3 scripts/generate_agent_projections.py" >&2
   echo "  then stage profile-al-dev-shared/generated/ and commit again." >&2
   exit 1
 fi

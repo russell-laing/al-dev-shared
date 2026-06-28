@@ -116,10 +116,10 @@ To validate the plugin and regenerate Codex projections after changes to shared 
 python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 
 # Validate agent structure
-python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
 
 # Regenerate projections for all harnesses (including Codex)
-python3 scripts/generate-agent-projections.py
+python3 scripts/generate_agent_projections.py
 ```
 
 ## Commit Conventions

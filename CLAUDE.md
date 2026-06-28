@@ -186,7 +186,7 @@ Before committing changes:
 4. **Skill/agent validation** — If editing skills or agents:
 
    ```bash
-   python3 scripts/validate-lens-agents.py --path profile-al-dev-shared/agents
+   python3 scripts/validate_lens_agents.py --path profile-al-dev-shared/agents
    ```
 
 ---
