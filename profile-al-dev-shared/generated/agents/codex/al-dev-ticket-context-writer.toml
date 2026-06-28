@@ -61,40 +61,7 @@ If inline images are found, include them in the return block as `INLINE_IMAGES_C
 
 ### Step 2: Write Context File
 
-Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`:
-
-```markdown
-# Freshdesk Ticket Context
-
-**Ticket ID:** [ID]
-**Status:** [Status]
-**Priority:** [Priority]
-**Created:** [Date]
-**Updated:** [Date]
-
-## Subject
-[Ticket subject/title]
-
-## Description
-[Original ticket description]
-
-## Comments
-[Author] — [Timestamp]
-[Comment content]
-
-[Repeat for each comment]
-
-## Custom Fields
-[If applicable: field name: value pairs]
-
-## Attachments
-
-**File Attachments:** (from API attachments array)
-[If applicable: filename, size, URL]
-
-**Inline Embeds:** (extracted from HTML src= and cid: references)
-[If applicable: image URL or cid:reference, extracted from description and comments]
-```
+Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` following the structure defined in `knowledge/ticket-context-output-format.md`.
 
 ### Step 3: Return Output
 
