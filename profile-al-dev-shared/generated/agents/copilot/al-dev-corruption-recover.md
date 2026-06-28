@@ -1,6 +1,10 @@
-name = "al-dev-commit-recover"
-description = "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/$(date +%Y-%m-%d)-plugin-recover-report.md. Dispatched by /commit-recover Phase 2 with one recovery agent spawned per corruption incident found in .dev/commit-integrity.log."
-developer_instructions = """
+---
+name: "al-dev-corruption-recover"
+description: "Recover corrupted AL files using fallback strategies (git restore, regex reconstruction, schema rebuild) and writes a recovery report to .dev/$(date +%Y-%m-%d)-plugin-recover-report.md. Dispatched by /commit-recover Phase 2 with one recovery agent spawned per corruption incident found in .dev/commit-integrity.log."
+tools: ["edit", "execute"]
+---
+
+
 # Agent: al-dev-commit-recover
 
 Recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
@@ -50,7 +54,3 @@ UNRECOVERABLE: <file count> files
 STRATEGIES_USED: [git restore | regex reconstruction | schema rebuild]
 REPORT_FILE: .dev/$(date +%Y-%m-%d)-plugin-recover-report.md
 ```
-
-Codex capability notes:
-- edit files available in the active Codex session
-- run shell commands allowed by the active Codex session"""

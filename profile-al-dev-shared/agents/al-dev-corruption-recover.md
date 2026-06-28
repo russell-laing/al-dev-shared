@@ -1,5 +1,5 @@
 ---
-name: al-dev-commit-recover
+name: al-dev-corruption-recover
 description: >-
   Recover corrupted AL files using fallback strategies (git restore, regex reconstruction,
   schema rebuild) and writes a recovery report to
