@@ -23,14 +23,15 @@ from pathlib import Path
 
 from .check_ledger_staleness import load_rows_from_store, resolve_closures
 from .health_disposition_store import iter_event_rows, materialize_current_events
-from .select_health_artifacts import select_artifacts
 from .paths import (
-    DOCS_HEALTH,
+    dispositions_archived_root,
     dispositions_current_view_path,
     dispositions_events_root,
     dispositions_index_path,
     dispositions_open_view_path,
+    docs_health_root,
 )
+from .select_health_artifacts import select_artifacts
 
 METRIC_FIELDS = (
     "raw_count",
@@ -186,7 +187,7 @@ def count_close_back(root: Path) -> int:
 
 
 def jsonl_views_present(root: Path) -> bool:
-    base = root / DOCS_HEALTH
+    base = docs_health_root(root)
     return all(
         (base / name).is_file()
         for name in (
@@ -199,7 +200,7 @@ def jsonl_views_present(root: Path) -> bool:
 
 def collect_dossiers(root: Path, surface: str, limit: int) -> list[Path]:
     surfaces = ("plugin", "tooling") if surface == "both" else (surface,)
-    directories = [root / DOCS_HEALTH, root / DOCS_HEALTH / "archived"]
+    directories = [docs_health_root(root), dispositions_archived_root(root)]
     selected: list[Path] = []
     for surf in surfaces:
         candidates: list[Path] = []

@@ -8,6 +8,11 @@ import unittest
 from pathlib import Path
 
 from scripts.al_dev_tools.health import migrate_health_disposition_jsonl as migrate
+from scripts.al_dev_tools.health.paths import (
+    dispositions_events_root,
+    dispositions_history_root,
+    dispositions_jsonl_migration_audit_path,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -16,7 +21,7 @@ class MigrationTest(unittest.TestCase):
     def test_migration_assigns_event_ids_and_preserves_legacy_ids(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            history = root / "docs" / "health" / "dispositions-history" / "2026"
+            history = dispositions_history_root(root) / "2026"
             history.mkdir(parents=True)
             (history / "2026-06.md").write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
@@ -28,7 +33,7 @@ class MigrationTest(unittest.TestCase):
 
             report = migrate.migrate_to_jsonl(root)
 
-            shard = root / "docs" / "health" / "dispositions-events" / "2026" / "2026-06.jsonl"
+            shard = dispositions_events_root(root) / "2026" / "2026-06.jsonl"
             events = [json.loads(line) for line in shard.read_text(encoding="utf-8").splitlines()]
             self.assertEqual(2, len(events))
             self.assertEqual("disp_20260619_000001", events[0]["event_id"])
@@ -39,7 +44,7 @@ class MigrationTest(unittest.TestCase):
     def test_migration_audit_reports_duplicate_legacy_ids(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            history = root / "docs" / "health" / "dispositions-history" / "2026"
+            history = dispositions_history_root(root) / "2026"
             history.mkdir(parents=True)
             (history / "2026-06.md").write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
@@ -51,7 +56,7 @@ class MigrationTest(unittest.TestCase):
 
             report = migrate.migrate_to_jsonl(root)
 
-            audit = root / "docs" / "health" / "dispositions-jsonl-migration-audit.md"
+            audit = dispositions_jsonl_migration_audit_path(root)
             self.assertIn("#600", audit.read_text(encoding="utf-8"))
             self.assertEqual(["#600"], report["duplicate_legacy_ids"])
 

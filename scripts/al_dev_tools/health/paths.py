@@ -13,6 +13,15 @@ DISPOSITIONS_OPEN = DOCS_HEALTH / "dispositions-open.md"
 DISPOSITIONS_CURRENT = DOCS_HEALTH / "dispositions-current.md"
 DISPOSITIONS_INDEX = DOCS_HEALTH / "dispositions-index.json"
 DISPOSITIONS_ARCHIVED = DOCS_HEALTH / "archived"
+DISPOSITIONS_JSONL_MIGRATION_AUDIT = DOCS_HEALTH / "dispositions-jsonl-migration-audit.md"
+
+
+def docs_health_root(root: Path = Path(".")) -> Path:
+    return root / DOCS_HEALTH
+
+
+def dispositions_archived_root(root: Path = Path(".")) -> Path:
+    return root / DISPOSITIONS_ARCHIVED
 
 
 def dispositions_events_root(root: Path = Path(".")) -> Path:
@@ -37,3 +46,7 @@ def dispositions_current_view_path(root: Path = Path(".")) -> Path:
 
 def dispositions_index_path(root: Path = Path(".")) -> Path:
     return root / DISPOSITIONS_INDEX
+
+
+def dispositions_jsonl_migration_audit_path(root: Path = Path(".")) -> Path:
+    return root / DISPOSITIONS_JSONL_MIGRATION_AUDIT

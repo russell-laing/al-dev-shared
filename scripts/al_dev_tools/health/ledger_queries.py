@@ -10,6 +10,7 @@ from pathlib import Path
 
 from . import health_disposition_store as store
 from .ledger_models import LEDGER, Row, dict_to_row, parse_ledger
+from .paths import dispositions_events_root, dispositions_history_root
 
 
 CLOSES_RE = re.compile(r"closes row (\d+)", re.IGNORECASE)
@@ -24,7 +25,7 @@ PATH_TEMPLATES = (
 
 
 def load_rows_from_store(repo_root: Path) -> list[Row]:
-    events_root = repo_root / "docs" / "health" / "dispositions-events"
+    events_root = dispositions_events_root(repo_root)
     if events_root.exists():
         raw_events = list(store.iter_event_rows(events_root))
         current_events = store.materialize_current_events(raw_events)
@@ -45,7 +46,7 @@ def load_rows_from_store(repo_root: Path) -> list[Row]:
             )
         return rows
 
-    history_root = repo_root / "docs" / "health" / "dispositions-history"
+    history_root = dispositions_history_root(repo_root)
     if history_root.exists():
         raw = list(store.iter_history_rows(history_root))
         current = store.materialize_current_view(raw)

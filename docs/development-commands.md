@@ -74,10 +74,14 @@ Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artif
   `head -80 docs/health/dispositions.md`
 - Inspect the latest history shard:
   `ls docs/health/dispositions-history/$(date +%Y)/` then `head -80 <shard>`
+- Stamp legacy 5-column ledger rows with explicit surface/dimension/ID columns:
+  `python3 scripts/migrate_health_disposition_columns.py --help`
 - Run the closure-staleness check:
   `python3 scripts/check_ledger_staleness.py`
 - Rebuild the generated current view from history shards (re-run after manual shard edits):
   `python3 scripts/migrate_health_disposition_store.py --rebuild-current-only`
+- Migrate Markdown history shards into JSONL events and regenerate derived views:
+  `python3 scripts/migrate_health_disposition_jsonl.py --root .`
 
 ## Plugin Health and Documentation
 
