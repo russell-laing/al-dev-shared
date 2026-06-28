@@ -250,5 +250,12 @@ class JsonlStoreCheckerTest(unittest.TestCase):
             self.assertNotIn("legacy-open", result.stdout)
 
 
+class HealthLedgerFacadeTests(unittest.TestCase):
+    def test_ledger_facade_keeps_public_helpers(self) -> None:
+        self.assertTrue(hasattr(MODULE, "parse_ledger_text"))
+        self.assertTrue(hasattr(MODULE, "resolve_closures"))
+        self.assertTrue(hasattr(MODULE, "main"))
+
+
 if __name__ == "__main__":
     unittest.main()

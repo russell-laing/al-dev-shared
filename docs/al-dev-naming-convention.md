@@ -50,6 +50,9 @@ This rule is advisory: existing names that deviate are grandfathered — see
 conform; the `naming-convention-lens` flags non-conforming names as Low-severity
 suggestions rather than hard failures.
 
+The repo-local maintainer command `/plan-plugin-findings` is the current name
+for the workflow that used to be wired to `/verify-map-suggestions`.
+
 ## Outputs
 
 ### Living docs — overwritten in place, no date

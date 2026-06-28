@@ -7,6 +7,7 @@ import inspect
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -103,6 +104,28 @@ def test_check_references_still_flags_missing_shared_reference_for_tooling_doc(t
 
     assert issues, "Expected a dead-ref issue when neither tooling nor shared knowledge contains the file"
     assert "workflow-resilience.md" in issues[0]
+
+
+def test_validate_knowledge_dir_reports_unreadable_file_with_same_rule(tmp_path: Path) -> None:
+    knowledge_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
+    knowledge_dir.mkdir(parents=True)
+    target = knowledge_dir / "broken.md"
+    target.write_text("# Broken\n\ncontent\n", encoding="utf-8")
+
+    original_read_text = Path.read_text
+
+    def fake_read_text(self: Path, *args, **kwargs) -> str:
+        if self == target:
+            raise OSError("boom")
+        return original_read_text(self, *args, **kwargs)
+
+    with mock.patch.object(Path, "read_text", fake_read_text):
+        warnings, clean_files = _mod.validate_knowledge_dir(knowledge_dir)
+
+    assert clean_files == []
+    assert len(warnings) == 1
+    assert "file-unreadable" in warnings[0]
+    assert "could not read file: boom" in warnings[0]
 
 
 def _run(func):

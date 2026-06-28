@@ -19,13 +19,30 @@ TARGET_DOCS = (
 )
 
 
-class FacadeExportTests(unittest.TestCase):
-    def test_map_doc_sections_keeps_public_entrypoints(self) -> None:
-        from scripts.al_dev_tools.docs import map_doc_sections as map_mod
+def test_map_doc_sections_keeps_public_entrypoints() -> None:
+    from scripts.al_dev_tools.docs import map_doc_sections as map_mod
 
-        self.assertTrue(hasattr(map_mod, "collect_inventory"))
-        self.assertTrue(hasattr(map_mod, "build_all_sections"))
-        self.assertTrue(hasattr(map_mod, "generate_document_updates"))
+    assert hasattr(map_mod, "collect_inventory")
+    assert hasattr(map_mod, "AgentMeta")
+    assert hasattr(map_mod, "MarkerSpan")
+    assert hasattr(map_mod, "build_all_sections")
+    assert hasattr(map_mod, "render_skill_lifecycle")
+    assert hasattr(map_mod, "generate_document_updates")
+
+
+def test_split_modules_expose_expected_helpers() -> None:
+    from scripts.al_dev_tools.docs import map_inventory, map_markers, map_rendering
+
+    assert hasattr(map_inventory, "AgentMeta")
+    assert hasattr(map_inventory, "Inventory")
+    assert hasattr(map_inventory, "SectionSpec")
+    assert hasattr(map_inventory, "collect_inventory")
+    assert hasattr(map_markers, "MarkerSpan")
+    assert hasattr(map_markers, "find_marker_spans")
+    assert hasattr(map_markers, "replace_marked_sections")
+    assert hasattr(map_rendering, "build_all_sections")
+    assert hasattr(map_rendering, "render_skill_lifecycle")
+    assert hasattr(map_rendering, "generate_document_updates")
 
 
 def _build_fixture_repo(root: Path) -> Path:

@@ -18,6 +18,25 @@ class HealthPackageBootstrapTest(unittest.TestCase):
         self.assertTrue(hasattr(health, "health_benchmark_adapter"))
         self.assertTrue(hasattr(health, "select_health_artifacts"))
 
+    def test_new_health_submodules_import(self) -> None:
+        from scripts.al_dev_tools.health import (
+            disposition_events,
+            disposition_matching,
+            disposition_models,
+            disposition_views,
+            ledger_cli,
+            ledger_models,
+            ledger_queries,
+        )
+
+        self.assertTrue(hasattr(disposition_models, "normalize_finding"))
+        self.assertTrue(hasattr(disposition_events, "append_event"))
+        self.assertTrue(hasattr(disposition_views, "render_open_view"))
+        self.assertTrue(hasattr(disposition_matching, "match_against_ledger"))
+        self.assertTrue(hasattr(ledger_models, "Row"))
+        self.assertTrue(hasattr(ledger_queries, "commits_since"))
+        self.assertTrue(hasattr(ledger_cli, "main"))
+
     def test_target_tests_no_longer_bootstrap_modules_by_path(self) -> None:
         for rel_path in (
             "scripts/tests/test_health_disposition_store.py",

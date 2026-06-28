@@ -383,6 +383,12 @@ def test_cli_match_jsonl_overrides_stale_markdown() -> None:
         assert keep_lines, f"Expected keep classification from JSONL accepted event:\n{output}"
 
 
+def test_store_facade_keeps_match_against_ledger() -> None:
+    from scripts.al_dev_tools.health import health_disposition_store as store_mod
+
+    assert hasattr(store_mod, "match_against_ledger")
+
+
 def _run(func):
     sig = inspect.signature(func)
     if sig.parameters:
