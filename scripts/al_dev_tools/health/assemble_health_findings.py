@@ -17,6 +17,7 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 
 # Canonical block order in the findings file. Lenses not listed here sort to the
 # end, alphabetically, so a new lens never silently disappears.
@@ -79,7 +80,7 @@ def _load_lens_blocks(lens_dir, date, dimensions):
         m = _LENS_FILE_RE.search(os.path.basename(p))
         if not m:
             continue
-        data = json.load(open(p))
+        data = json.loads(Path(p).read_text(encoding="utf-8"))
         lens = data["lens"]
         if allowed is not None and not lens.startswith(allowed):
             continue  # stale out-of-dimension JSON — skip silently
@@ -236,9 +237,9 @@ def main():
     args = ap.parse_args()
 
     if args.command == "metrics":
-        counts = json.load(open(args.counts))
+        counts = json.loads(Path(args.counts).read_text(encoding="utf-8"))
         print(format_metrics(counts))
-        return
+        return 0
 
     failed = [] if args.failed_lenses.strip().lower() == "none" else \
         [s.strip() for s in args.failed_lenses.split(",") if s.strip()]
@@ -248,10 +249,10 @@ def main():
         failed_lenses=failed, total_lenses=args.total_lenses,
         completed_session=args.completed_session, completed_prior=args.completed_prior,
         skipped=args.skipped)
-    with open(args.out, "w") as f:
-        f.write(text)
+    Path(args.out).write_text(text, encoding="utf-8")
     print(args.out)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

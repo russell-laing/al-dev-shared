@@ -93,7 +93,7 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
         raise ValueError(f"duplicate event_id: {event_id}")
     shard = events_root / event_shard_path_for_date(str(event["date"]))
     shard.parent.mkdir(parents=True, exist_ok=True)
-    with open(shard, "a", encoding="utf-8") as f:
+    with shard.open("a", encoding="utf-8") as f:
         f.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
     return shard
 

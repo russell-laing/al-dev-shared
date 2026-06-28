@@ -139,17 +139,15 @@ def _cli_match(
 
 
 def _cli_show(event_id: str, events_root: Path) -> int:
-    import json as _json
-
     for ev in iter_event_rows(events_root):
         if ev.get("event_id") == event_id:
-            print(_json.dumps(ev, indent=2, ensure_ascii=False))
+            print(json.dumps(ev, indent=2, ensure_ascii=False))
             return 0
     print(f"show: no event found: {event_id}", file=sys.stderr)
     return 1
 
 
-if __name__ == "__main__":
+def main() -> int:
     import argparse
 
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
@@ -229,7 +227,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.command == "match":
-        raise SystemExit(_cli_match(args.findings, args.ledger, args.events_root))
+        return _cli_match(args.findings, args.ledger, args.events_root)
     if args.command == "append_row":
         row = {
             f: getattr(args, f)
@@ -237,11 +235,11 @@ if __name__ == "__main__":
         }
         shard = append_row(args.history_root, row)
         print(shard)
-        raise SystemExit(0)
+        return 0
     if args.command == "iter_history_rows":
         for r in iter_history_rows(args.history_root):
             print(json.dumps(r, ensure_ascii=False))
-        raise SystemExit(0)
+        return 0
     if args.command == "append_event":
         event_id = args.event_id or next_event_id(list(iter_event_rows(args.events_root)), args.date)
         event = {
@@ -259,17 +257,17 @@ if __name__ == "__main__":
         }
         shard = append_event(args.events_root, event)
         print(shard)
-        raise SystemExit(0)
+        return 0
     if args.command == "batch_decline":
         rows = json.loads(args.input.read_text(encoding="utf-8"))
         if not isinstance(rows, list):
             print("batch_decline: input must be a JSON array", file=sys.stderr)
-            raise SystemExit(1)
+            return 1
         written = batch_decline(args.events_root, rows, args.date, args.source)
         for event_id, shard in written:
             print(f"{event_id} -> {shard}")
         print(f"batch_decline: wrote {len(written)} declined event(s)")
-        raise SystemExit(0)
+        return 0
     if args.command == "regenerate":
         events = list(iter_event_rows(args.events_root))
         render_open_view(args.open_view, events)
@@ -277,13 +275,13 @@ if __name__ == "__main__":
         render_index(args.index, events)
         render_legacy_compatibility_view(args.compatibility_view, events)
         print(f"regenerated {len(events)} event(s)")
-        raise SystemExit(0)
+        return 0
     if args.command == "show":
-        raise SystemExit(_cli_show(args.event_id, args.events_root))
+        return _cli_show(args.event_id, args.events_root)
     if args.command == "list-open":
         for r in list_open(args.ledger, args.status, args.surface, args.dimension):
             print(json.dumps(r, ensure_ascii=False))
-        raise SystemExit(0)
+        return 0
     elif args.command == "sync_shard":
         events = []
         for ev in iter_event_rows(args.events_root):
@@ -293,7 +291,7 @@ if __name__ == "__main__":
                 events.append(ev)
         if not events:
             print("sync_shard: no matching events found", file=sys.stderr)
-            sys.exit(1)
+            return 1
         synced_shards: set[str] = set()
         for ev in events:
             row = {
@@ -312,4 +310,9 @@ if __name__ == "__main__":
                 print(f"sync_shard: wrote shard row for {ev['event_id']}")
         shard_list = ", ".join(sorted(synced_shards))
         print(f"sync_shard: synced {len(events)} row(s) to {shard_list}")
-        raise SystemExit(0)
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -63,7 +63,7 @@ def write_shard(shard: Path, shard_rows: list[dict[str, str]]) -> None:
         for r in shard_rows
     ]
     mode = "a" if shard.exists() else "w"
-    with open(shard, mode, encoding="utf-8") as f:
+    with shard.open(mode, encoding="utf-8") as f:
         f.write(header + "\n".join(body_lines) + "\n")
 
 

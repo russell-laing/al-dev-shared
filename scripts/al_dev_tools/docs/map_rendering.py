@@ -8,6 +8,8 @@ import shutil
 import tempfile
 from typing import Callable, Iterable, Optional
 
+from scripts.al_dev_tools.io_utils import write_text_atomic
+
 from .map_inventory import (
     Inventory,
     SectionSpec,
@@ -579,22 +581,11 @@ def generate_document_updates(repo: Path) -> dict[Path, str]:
 
 def apply_document_updates(updates: dict[Path, str]) -> None:
     """Write all prepared document updates atomically."""
-    temp_paths: dict[Path, Path] = {}
     backup_paths: dict[Path, Path] = {}
     committed: list[Path] = []
     try:
         for path, new_text in updates.items():
             path.parent.mkdir(parents=True, exist_ok=True)
-            with tempfile.NamedTemporaryFile(
-                "w",
-                encoding="utf-8",
-                dir=path.parent,
-                prefix=f".{path.name}.",
-                suffix=".tmp",
-                delete=False,
-            ) as handle:
-                handle.write(new_text)
-                temp_paths[path] = Path(handle.name)
             with tempfile.NamedTemporaryFile(
                 "wb",
                 dir=path.parent,
@@ -605,19 +596,14 @@ def apply_document_updates(updates: dict[Path, str]) -> None:
                 backup_path = Path(handle.name)
             shutil.copy2(path, backup_path)
             backup_paths[path] = backup_path
+            write_text_atomic(path, new_text)
+            committed.append(path)
 
-        try:
-            for path in updates:
-                temp_paths[path].replace(path)
-                committed.append(path)
-        except Exception:
-            for path in reversed(committed):
-                backup_paths[path].replace(path)
-            raise
+    except Exception:
+        for path in reversed(committed):
+            write_text_atomic(path, backup_paths[path].read_text(encoding="utf-8"))
+        raise
     finally:
-        for temp_path in temp_paths.values():
-            if temp_path.exists():
-                temp_path.unlink()
         for backup_path in backup_paths.values():
             if backup_path.exists():
                 backup_path.unlink()

@@ -13,6 +13,7 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 
 MARKER_RE = re.compile(r"<!--\s*lens:\s*([a-z0-9-]+)\s*-->")
 
@@ -110,8 +111,7 @@ def split_combined(text, date, out_dir, completed_at=None):
             "completed_at": completed_at,
         }
         path = os.path.join(out_dir, f"{date}-plugin-health-lens-{lens}.json")
-        with open(path, "w") as f:
-            json.dump(payload, f, indent=2)
+        Path(path).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         written.append(path)
     return written
 
@@ -174,8 +174,7 @@ def write_allclean_children(object_type, date, out_dir, completed_at=None):
             "completed_at": completed_at,
         }
         path = os.path.join(out_dir, f"{date}-plugin-health-lens-{lens}.json")
-        with open(path, "w") as f:
-            json.dump(payload, f, indent=2)
+        Path(path).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         written.append(path)
     return written
 
@@ -186,7 +185,7 @@ def main():
     ap.add_argument("--date", required=True, help="ISO date for filenames, e.g. 2026-06-25")
     ap.add_argument("--out-dir", default=".dev")
     args = ap.parse_args()
-    written = split_combined(open(args.input).read(), args.date, args.out_dir)
+    written = split_combined(Path(args.input).read_text(encoding="utf-8"), args.date, args.out_dir)
     for p in written:
         print(p)
 
