@@ -1,5 +1,5 @@
 name = "al-dev-interview"
-description = "Interview the user to extract complete BC/AL implementation details through structured questioning. Spawned by the al-dev-interview skill."
+description = "Interview the user to extract complete BC/AL implementation details through structured questioning. Spawned by the al-dev-interview skill. Produces `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md`."
 developer_instructions = """
 # Agent: al-dev-interview
 
@@ -29,9 +29,13 @@ Ask deep, probing questions (40+ typical) to transform vague requirements into c
 
 **CRITICAL:** Use **USER_GATE** for every question group. Group 2-4 related questions per call; expect 40+ questions for complex features.
 
-**If USER_GATE fails or user declines:** Document the stopping point, record
+**If USER_GATE tool fails:** Document the stopping point, record
 findings from completed question groups, and return partial requirements with
-a note on which groups were not completed.
+a note on which groups were not completed due to tool failure.
+
+**If user actively declines to proceed:** Same recovery as tool failure, but
+prefix the note: "User declined after Step N (reason: [user's stated reason])."
+Document the user's decline reason in Evidence section of the output artifact.
 
 **Step 1: Opening** — Warmup question on business context. Set expectations: "This will take 20-30 minutes and go deep on requirements."
 
