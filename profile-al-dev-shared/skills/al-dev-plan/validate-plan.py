@@ -4,14 +4,20 @@
 Usage:
     python3 validate-plan.py <path-to-solution-plan.md> [path-to-requirements.md]
 
-Exit codes:
-    0 - All checks pass
-    1 - Validation issues found (printed to stdout)
+Validation outcome:
+    0 means the plan passes structural and traceability checks.
+    1 means the plan validator printed issues to stdout.
 """
 
 import re
 import sys
 from pathlib import Path
+
+SKILLS_ROOT = Path(__file__).resolve().parents[1]
+if str(SKILLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(SKILLS_ROOT))
+
+import validator_common
 
 
 REQUIRED_SECTIONS = [
@@ -36,37 +42,17 @@ REQ_TOKEN_PATTERN = re.compile(r"^###\s+REQ-(\d+)", re.MULTILINE)
 REQ_REF_PATTERN = re.compile(r"REQ-(\d+)")
 
 
-def check_structure(text: str, lines: list[str]) -> list[str]:
-    """Check required sections and minimum length."""
-    issues: list[str] = []
-
-    if len(lines) < 30:
-        issues.append(
-            f"Document too short ({len(lines)} lines). "
-            "Expected 30+ for a meaningful solution plan."
-        )
-
-    headings = [
-        ln.lstrip("#").strip() for ln in lines if ln.startswith("#")
-    ]
-    heading_text = " ".join(headings).lower()
-
-    for section in REQUIRED_SECTIONS:
-        if section.lower() not in heading_text:
-            issues.append(f"Missing required section: '{section}'")
+def check_plan_structure(text: str, lines: list[str]) -> list[str]:
+    """Check required sections, minimum length, and plan-specific rules."""
+    issues = validator_common.check_structure(
+        lines, REQUIRED_SECTIONS, 30, "solution plan"
+    )
 
     for subsection in ARCHITECTURE_SUBSECTIONS:
-        if subsection.lower() not in heading_text and subsection.lower() not in text.lower():
+        if subsection.lower() not in text.lower():
             issues.append(
                 f"Architecture missing subsection or mention: "
                 f"'{subsection}'"
-            )
-
-    for i, line in enumerate(lines[:-1]):
-        if line.startswith("#") and lines[i + 1].startswith("#"):
-            issues.append(
-                f"Possibly empty section at line {i + 1}: "
-                f"'{line.strip()}'"
             )
 
     return issues
@@ -131,13 +117,12 @@ def main() -> int:
         print(f"File not found: {plan_path}")
         return 1
 
-    text = Path(plan_path).read_text(encoding="utf-8")
-    lines = text.splitlines()
+    text, lines = validator_common.read_text_lines(plan_path)
 
     all_issues: list[str] = []
 
     # 1. Structural checks
-    struct_issues = check_structure(text, lines)
+    struct_issues = check_plan_structure(text, lines)
     if struct_issues:
         all_issues.append("--- Structure ---")
         all_issues.extend(struct_issues)

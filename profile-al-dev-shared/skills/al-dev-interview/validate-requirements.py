@@ -4,14 +4,21 @@
 Usage:
     python validate-requirements.py <path-to-requirements.md>
 
-Exit codes:
-    0 - All checks pass
-    1 - Validation issues found (printed to stdout)
+Validation outcome:
+    0 means the requirements document passes all checks.
+    1 means the requirements validator printed issues to stdout.
 """
 
 import re
 import sys
 from pathlib import Path
+
+MODULE_ROOT = Path(__file__).resolve().parents[1]
+if str(MODULE_ROOT) not in sys.path:
+    sys.path.insert(0, str(MODULE_ROOT))
+
+from validator_common import check_structure as check_document_structure
+from validator_common import read_text_lines
 
 
 REQUIRED_SECTIONS = [
@@ -27,23 +34,13 @@ REQUIRED_SECTIONS = [
 def validate(path: str) -> list[str]:
     """Return list of validation issues found."""
     issues: list[str] = []
-    text = Path(path).read_text(encoding="utf-8")
-    lines = text.splitlines()
+    text, lines = read_text_lines(path)
 
-    if len(lines) < 20:
-        issues.append(
-            f"Document too short ({len(lines)} lines). "
-            "Expected 20+ for meaningful requirements."
+    issues.extend(
+        check_document_structure(
+            lines, REQUIRED_SECTIONS, 20, "requirements document"
         )
-
-    headings = [
-        ln.lstrip("#").strip() for ln in lines if ln.startswith("#")
-    ]
-    heading_text = " ".join(headings).lower()
-
-    for section in REQUIRED_SECTIONS:
-        if section.lower() not in heading_text:
-            issues.append(f"Missing required section: '{section}'")
+    )
 
     req_count = len(re.findall(r"^###\s+REQ-\d+", text, re.MULTILINE))
     if req_count == 0:
@@ -58,13 +55,6 @@ def validate(path: str) -> list[str]:
             "No ACC governance tokens found. "
             "Expected at least one **ACC-NNN** criterion."
         )
-
-    for i, line in enumerate(lines[:-1]):
-        if line.startswith("#") and lines[i + 1].startswith("#"):
-            issues.append(
-                f"Possibly empty section at line {i + 1}: "
-                f"'{line.strip()}'"
-            )
 
     return issues
 

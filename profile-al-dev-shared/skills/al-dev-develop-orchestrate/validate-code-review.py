@@ -4,14 +4,20 @@
 Usage:
     python3 validate-code-review.py <code-review.md> [solution-plan.md]
 
-Exit codes:
-    0 - All checks pass
-    1 - Validation issues found (printed to stdout)
+Validation outcome:
+    0 means the code review passes structure, coverage, and resolution checks.
+    1 means the review validator printed issues to stdout.
 """
 
 import re
 import sys
 from pathlib import Path
+
+VALIDATION_ROOT = Path(__file__).resolve().parents[1]
+if str(VALIDATION_ROOT) not in sys.path:
+    sys.path.insert(0, str(VALIDATION_ROOT))
+
+import validator_common as review_validator
 
 
 REQUIRED_SECTIONS = [
@@ -34,33 +40,11 @@ OBJECT_ID_PATTERN = re.compile(r"\b(\d{5,6})\b")
 
 # Matches severity labels
 
-def check_structure(lines: list[str]) -> list[str]:
+def check_review_structure(lines: list[str]) -> list[str]:
     """Check required sections and document quality."""
-    issues: list[str] = []
-
-    if len(lines) < 20:
-        issues.append(
-            f"Document too short ({len(lines)} lines). "
-            "Expected 20+ for a meaningful code review."
-        )
-
-    headings = [
-        ln.lstrip("#").strip() for ln in lines if ln.startswith("#")
-    ]
-    heading_text = " ".join(headings).lower()
-
-    for section in REQUIRED_SECTIONS:
-        if section.lower() not in heading_text:
-            issues.append(f"Missing required section: '{section}'")
-
-    for i, line in enumerate(lines[:-1]):
-        if line.startswith("#") and lines[i + 1].startswith("#"):
-            issues.append(
-                f"Possibly empty section at line {i + 1}: "
-                f"'{line.strip()}'"
-            )
-
-    return issues
+    return review_validator.check_structure(
+        lines, REQUIRED_SECTIONS, 20, "code review"
+    )
 
 
 def check_review_completeness(text: str) -> list[str]:
@@ -162,13 +146,12 @@ def main() -> int:
         print(f"File not found: {review_path}")
         return 1
 
-    text = Path(review_path).read_text(encoding="utf-8")
-    lines = text.splitlines()
+    text, lines = review_validator.read_text_lines(review_path)
 
     all_issues: list[str] = []
 
     # 1. Structural checks
-    struct_issues = check_structure(lines)
+    struct_issues = check_review_structure(lines)
     if struct_issues:
         all_issues.append("--- Structure ---")
         all_issues.extend(struct_issues)
