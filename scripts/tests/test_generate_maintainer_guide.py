@@ -10,13 +10,15 @@ import unittest
 from pathlib import Path
 import sys
 
-SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from scripts.al_dev_tools.docs import maintainer_guide_sections as lib
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from scripts.al_dev_tools.docs.maintainer_pages import PAGE_KEYS
 
 
 def test_maintainer_guide_sections_keeps_public_entrypoints() -> None:
@@ -885,40 +887,23 @@ def _patched_cli(root: Path):
     cli = _load_cli_module("generate-maintainer-guide.py", "generate_maintainer_guide")
     cli.REPO = root
     cli.SKILLS_DIR = root / ".claude" / "skills"
-    cli.PAGE_KEYS = {
-        lib.SUMMARY_DOC: (
-            "maintainer-workflow-overview",
-            "maintainer-breadcrumb-orchestrator",
-            "maintainer-skills-tables",
-            "maintainer-gaps",
-        ),
-        lib.STAGE_DOCS["map-sync"]: (
-            "maintainer-stage-map-sync-diagram",
-            "maintainer-stage-map-sync-journey",
-            "maintainer-stage-map-sync-artifacts",
-        ),
-        lib.STAGE_DOCS["discover"]: (
-            "maintainer-stage-discover-diagram",
-            "maintainer-stage-discover-journey",
-            "maintainer-stage-discover-artifacts",
-        ),
-        lib.STAGE_DOCS["decide"]: (
-            "maintainer-stage-decide-diagram",
-            "maintainer-stage-decide-journey",
-            "maintainer-stage-decide-artifacts",
-        ),
-        lib.STAGE_DOCS["implement"]: (
-            "maintainer-stage-implement-diagram",
-            "maintainer-stage-implement-journey",
-            "maintainer-stage-implement-artifacts",
-        ),
-        lib.STAGE_DOCS["derive"]: (
-            "maintainer-stage-derive-diagram",
-            "maintainer-stage-derive-journey",
-            "maintainer-stage-derive-artifacts",
-        ),
-    }
     return cli
+
+
+def test_shared_page_registry_covers_summary_and_core_stage_docs() -> None:
+    assert PAGE_KEYS[lib.SUMMARY_DOC] == (
+        "maintainer-workflow-overview",
+        "maintainer-breadcrumb-orchestrator",
+        "maintainer-skills-tables",
+        "maintainer-gaps",
+    )
+    assert set(PAGE_KEYS) == {lib.SUMMARY_DOC, *lib.STAGE_DOCS.values()}
+    for stage in lib.CORE_STAGES:
+        assert PAGE_KEYS[lib.STAGE_DOCS[stage]] == (
+            f"maintainer-stage-{stage}-diagram",
+            f"maintainer-stage-{stage}-journey",
+            f"maintainer-stage-{stage}-artifacts",
+        )
 
 
 def test_cli_main_rewrites_only_marked_regions() -> None:
