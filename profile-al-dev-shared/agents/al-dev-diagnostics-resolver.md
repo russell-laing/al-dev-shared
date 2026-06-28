@@ -88,27 +88,4 @@ Document:
 
 ### Output Report Format
 
-```markdown
-# AL Diagnostics Report
-
-## Summary
-
-- Total issues: X
-- Fixed: Y
-- Unresolved: Z
-- Duration: ~Xm
-
-## Fixed Issues
-
-- AA0073 (5 occurrences): Temporary variable naming → Fixed
-- AA0218 (12 occurrences): Field DataClassification → Fixed
-
-## Unresolved Issues
-
-- AS0016 (3 occurrences): DataClassification requires explicit choice
-  - File: src/Tables/Price.al (lines: 10, 25, 42)
-  - Action: Review and apply appropriate classification
-
-## Compilation Status
-✓ All fixes applied; compilation passing (0 errors, X warnings)
-```
+See `knowledge/diagnostics-report-format.md` for the report structure and examples.
