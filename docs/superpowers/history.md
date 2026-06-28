@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-28
+
+### Plugin Quality Fixes Implementation Plan
+
+- Path: `docs/superpowers/plans/archived/2026-06-28-plugin-quality-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-28 | plugin-quality-fixes | implemented; rows closed: [disp_20260628_000001, disp_20260628_000002, disp_20260628_000003, disp_20260628_000004, disp_20260628_000005, disp_20260628_000006, disp_20260628_000007, disp_20260628_000008, disp_20260628_000009, disp_20260628_000010, disp_20260628_000011, disp_20260628_000012, disp_20260628_000013, disp_20260628_000014, disp_20260628_000015, disp_20260628_000016, disp_20260628_000017]
+
 ## 2026-06-27
 
 ### Tooling Quality Fixes — Sync Map Documentation Write
