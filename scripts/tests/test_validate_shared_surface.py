@@ -24,6 +24,34 @@ def test_main_returns_zero_for_clean_agent_file() -> None:
     assert _mod.main([str(target)]) == 0
 
 
+def test_check_agent_rejects_malformed_frontmatter(tmp_path: Path) -> None:
+    target = tmp_path / "broken.md"
+    target.write_text("---\n- bad\n---\nbody\n", encoding="utf-8")
+
+    issues = _mod._check_agent(target)
+
+    assert issues
+    assert any("frontmatter" in issue for issue in issues)
+
+
+def test_check_agent_accepts_valid_structured_frontmatter(tmp_path: Path) -> None:
+    target = tmp_path / "agent.md"
+    target.write_text(
+        "---\n"
+        "name: agent\n"
+        "description: >-\n"
+        "  Example agent.\n"
+        "model: haiku\n"
+        "tools:\n"
+        "  - Read\n"
+        "---\n"
+        "body\n",
+        encoding="utf-8",
+    )
+
+    assert _mod._check_agent(target) == []
+
+
 def _run(func):
     sig = inspect.signature(func)
     if not sig.parameters:

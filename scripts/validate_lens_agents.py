@@ -1,8 +1,17 @@
 """Validates all lens agent files and refactored skills meet the spec."""
 import os
-import re
 import sys
 from pathlib import Path
+
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - direct-script fallback
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
+REPO = bootstrap_repo(__file__)
+
+from scripts.al_dev_tools.markdown_frontmatter import find_markdown_heading, parse_required_frontmatter
 
 
 def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
@@ -14,7 +23,6 @@ def _format_failure(path: str, rule: str, issue: str, fix: str) -> str:
     )
 
 
-REPO = Path(__file__).resolve().parents[1]
 AGENTS_DIR = REPO / ".claude" / "agents"
 
 # Deterministic static-lens runner that replaces the four converted LLM lenses
@@ -65,6 +73,26 @@ SONNET_AGENTS = {
 }
 
 
+def _has_output_format_section(content: str) -> bool:
+    return find_markdown_heading(content, "## Output Format")
+
+
+def _has_phase_two_heading(content: str) -> bool:
+    in_fence = False
+    for line in content.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence or stripped.startswith(">"):
+            continue
+        if stripped.startswith("#"):
+            heading = stripped.lstrip("#").strip()
+            if heading.startswith("Phase 2"):
+                return True
+    return False
+
+
 def main() -> int:
     failures = []
 
@@ -80,29 +108,41 @@ def main() -> int:
             continue
 
         content = path.read_text(encoding="utf-8")
+        try:
+            frontmatter, _body = parse_required_frontmatter(content)
+        except ValueError as exc:
+            failures.append(_format_failure(
+                str(path),
+                "agent-frontmatter",
+                str(exc),
+                f"fix the YAML frontmatter in {path}",
+            ))
+            continue
 
         # sonnet exceptions: shared-backbone (multi-file synthesis), handoff-gaps (chain tracing), model-fit (multi-file evaluative analysis), complexity (multi-file phase-count ranking + Atomise/Absorb synthesis), near-duplicates (multi-file comparative synthesis with multi-criterion judgement), maintainer-handoff (multi-file maintainer chain tracing from skill bodies), preplanning (multi-skill diagram cross-reference validation), quality-agent-multilens/quality-skill-multilens (corpus retention across 4 sequential synthesis lenses)
         if name in SONNET_AGENTS:
-            if "model: sonnet" not in content:
+            model = str(frontmatter.get("model", "")).strip()
+            if model != "sonnet":
                 failures.append(_format_failure(
                     str(path),
                     "agent-model",
                     "model is not set to sonnet",
                     f'add "model: sonnet" to the YAML frontmatter in {path}',
                 ))
-        elif "model: haiku" not in content:
-            failures.append(_format_failure(
-                str(path),
-                "agent-model",
-                "model is not set to haiku",
-                f'add "model: haiku" to the YAML frontmatter in {path}',
-            ))
+        else:
+            model = str(frontmatter.get("model", "")).strip()
+            if model != "haiku":
+                failures.append(_format_failure(
+                    str(path),
+                    "agent-model",
+                    "model is not set to haiku",
+                    f'add "model: haiku" to the YAML frontmatter in {path}',
+                ))
 
-        tools_match = re.search(r'tools:\s*\[([^\]]*)\]', content)
-        if tools_match:
-            tools_str = tools_match.group(1)
+        tools = frontmatter.get("tools", [])
+        if isinstance(tools, list):
             for tool in FORBIDDEN_TOOLS:
-                if tool in tools_str:
+                if tool in tools:
                     failures.append(_format_failure(
                         str(path),
                         "agent-forbidden-tool",
@@ -110,7 +150,7 @@ def main() -> int:
                         f'remove "{tool}" from the tools list in {path}',
                     ))
 
-        if "## Output Format" not in content:
+        if not _has_output_format_section(content):
             failures.append(_format_failure(
                 str(path),
                 "agent-output-format-section",
@@ -136,7 +176,7 @@ def main() -> int:
             ))
             continue
         content = skill_path.read_text(encoding="utf-8")
-        if "Phase 2" not in content:
+        if not _has_phase_two_heading(content):
             failures.append(_format_failure(
                 str(skill_path),
                 "skill-parallel-dispatch",

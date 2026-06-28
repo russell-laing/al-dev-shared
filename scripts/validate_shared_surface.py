@@ -3,25 +3,34 @@ import re
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - direct-script fallback
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
+REPO = bootstrap_repo(__file__)
+
+from scripts.al_dev_tools.markdown_frontmatter import parse_required_frontmatter
+
 AGENTS_DIR = REPO / "profile-al-dev-shared" / "agents"
 SKILLS_DIR = REPO / "profile-al-dev-shared" / "skills"
 
-REQUIRED_AGENT_FIELDS = ("name:", "description:", "model:", "tools:")
+REQUIRED_AGENT_FIELDS = ("name", "description", "model", "tools")
 UNLABELED_FENCE = re.compile(r"(?m)^```[ \t]*$")
 
 
 def _check_agent(path: Path) -> list[str]:
     issues = []
     content = path.read_text(encoding="utf-8")
-    fm_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
-    if not fm_match:
-        issues.append("missing YAML frontmatter")
+    try:
+        fm, _body = parse_required_frontmatter(content)
+    except ValueError as exc:
+        issues.append(str(exc))
         return issues
-    fm = fm_match.group(1)
     for field in REQUIRED_AGENT_FIELDS:
         if field not in fm:
-            issues.append(f"missing '{field.rstrip(':')}' in frontmatter")
+            issues.append(f"missing '{field}' in frontmatter")
     unlabeled = len(UNLABELED_FENCE.findall(content))
     if unlabeled:
         issues.append(f"{unlabeled} unlabeled code block(s) — add language specifier after ```")

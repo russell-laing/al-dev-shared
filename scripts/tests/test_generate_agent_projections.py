@@ -4,6 +4,7 @@ import importlib.util
 import re
 import tempfile
 import sys
+import unittest
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_DIR) not in sys.path:
@@ -108,6 +109,46 @@ def test_project_codex_emits_toml():
     assert "projected_tools" not in rendered
 
 
+def test_load_agent_supports_yaml_list_style_tools(tmp_path):
+    path = tmp_path / "demo.md"
+    path.write_text(
+        "---\n"
+        "name: demo\n"
+        "description: Example\n"
+        "model: sonnet\n"
+        "tools:\n"
+        "  - Read\n"
+        "  - USER_GATE\n"
+        "---\n"
+        "Body\n",
+        encoding="utf-8",
+    )
+
+    agent = mod.load_agent(path)
+
+    assert agent["tools"] == ["Read", "USER_GATE"]
+
+
+def test_load_agent_supports_multiline_yaml_description(tmp_path):
+    path = tmp_path / "demo.md"
+    path.write_text(
+        "---\n"
+        "name: demo\n"
+        "description: >-\n"
+        "  First sentence.\n"
+        "  Second sentence.\n"
+        "model: sonnet\n"
+        "tools: []\n"
+        "---\n"
+        "Body\n",
+        encoding="utf-8",
+    )
+
+    agent = mod.load_agent(path)
+
+    assert agent["description"] == "First sentence. Second sentence."
+
+
 def test_unsupported_mapping_fails_closed():
     agent = {
         "name": "al-dev-script-engineer",
@@ -185,6 +226,14 @@ def _run_test(func):
             func(Path(td))
         return
     raise TypeError(f"Unsupported test signature: {func.__name__}{signature}")
+
+
+def load_tests(loader, tests, pattern):  # noqa: ARG001
+    suite = unittest.TestSuite()
+    for name, func in sorted(globals().items()):
+        if name.startswith("test_") and callable(func):
+            suite.addTest(unittest.FunctionTestCase(lambda func=func: _run_test(func)))
+    return suite
 
 
 def test_claude_projection_omits_tools_line_when_empty():

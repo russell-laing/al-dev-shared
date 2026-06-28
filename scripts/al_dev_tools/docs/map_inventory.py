@@ -7,7 +7,10 @@ from pathlib import Path
 import re
 from typing import Iterable, Optional
 
-import yaml
+from scripts.al_dev_tools.markdown_frontmatter import (
+    parse_optional_frontmatter,
+    parse_required_frontmatter,
+)
 
 
 AGENT_REF = re.compile(r"al-dev-shared:(al-dev-[a-z0-9-]+)")
@@ -157,30 +160,20 @@ def _read_text(path: Path) -> str:
 
 def _parse_frontmatter(path: Path) -> tuple[dict, str]:
     text = _read_text(path)
-    match = re.match(r"^---\n(.*?)\n---\n?", text, re.DOTALL)
-    if not match:
-        raise ValueError(f"{path}: missing or malformed frontmatter")
     try:
-        data = yaml.safe_load(match.group(1)) or {}
-    except yaml.YAMLError as exc:
-        raise ValueError(f"{path}: invalid YAML frontmatter: {exc}") from exc
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: frontmatter must be a mapping")
-    return data, text[match.end():]
+        data, body = parse_required_frontmatter(text)
+    except ValueError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
+    return data, body
 
 
 def _split_optional_frontmatter(path: Path) -> tuple[dict, str]:
     text = _read_text(path)
-    match = re.match(r"^---\n(.*?)\n---\n?", text, re.DOTALL)
-    if not match:
-        return {}, text
     try:
-        data = yaml.safe_load(match.group(1)) or {}
-    except yaml.YAMLError as exc:
-        raise ValueError(f"{path}: invalid YAML frontmatter: {exc}") from exc
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: frontmatter must be a mapping")
-    return data, text[match.end():]
+        data, body = parse_optional_frontmatter(text)
+    except ValueError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
+    return data, body
 
 
 def _parse_agent_meta(path: Path) -> AgentMeta:

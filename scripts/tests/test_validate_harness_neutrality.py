@@ -8,7 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.validate_harness_neutrality import scan_paths
+from scripts.validate_harness_neutrality import scan_models, scan_paths
 
 
 def test_flags_shared_surface_leakage_and_ignores_allowlisted_mapping_docs(tmp_path: Path) -> None:
@@ -51,6 +51,39 @@ def test_flags_harness_native_copilot_dispatch_syntax_for_any_agent_type(tmp_pat
 
     assert any(
         item.path == "skills/demo/SKILL.md" and item.rule == "Copilot dispatch token"
+        for item in findings
+    )
+
+
+def test_scan_models_reads_structured_frontmatter_without_regex_drift(tmp_path: Path) -> None:
+    plugin_root = tmp_path / "profile-al-dev-shared"
+    knowledge = plugin_root / "knowledge"
+    agents = plugin_root / "agents"
+
+    knowledge.mkdir(parents=True)
+    agents.mkdir(parents=True)
+
+    (knowledge / "agent-tool-projection-policy.md").write_text(
+        "---\nshared_model_aliases:\n  - haiku\n  - sonnet\n---\n",
+        encoding="utf-8",
+    )
+    (agents / "demo.md").write_text(
+        "---\n"
+        "name: demo\n"
+        "description: >-\n"
+        "  Example agent.\n"
+        "model: custom-tier\n"
+        "tools:\n"
+        "  - Read\n"
+        "---\n"
+        "Body\n",
+        encoding="utf-8",
+    )
+
+    findings = scan_models(plugin_root)
+
+    assert any(
+        item.path == "agents/demo.md" and item.rule == "Non-canonical model" and item.excerpt == "custom-tier"
         for item in findings
     )
 

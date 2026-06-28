@@ -2,10 +2,7 @@
 from __future__ import annotations
 
 import argparse
-import ast
 import json
-import re
-import yaml
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +10,7 @@ from _entrypoint_bootstrap import bootstrap_repo
 
 REPO_ROOT = bootstrap_repo(__file__)
 
+from scripts.al_dev_tools.markdown_frontmatter import parse_required_frontmatter
 from scripts.al_dev_tools.io_utils import write_text_atomic
 
 
@@ -23,8 +21,7 @@ def load_projection_policy(policy_path: Path) -> dict:
     key); codex capabilities keep their dict form (`developer_instruction`
     or `native_capability`), matching what the render functions expect.
     """
-    frontmatter, _ = _extract_frontmatter(policy_path.read_text(encoding="utf-8"))
-    data = yaml.safe_load(frontmatter)
+    data, _body = parse_required_frontmatter(policy_path.read_text(encoding="utf-8"))
     rules = data.get("projection_rules")
     if not rules:
         raise ValueError(f"Projection policy {policy_path} has no projection_rules")
@@ -120,36 +117,18 @@ def render_codex_projection(agent: dict, policy: dict) -> str:
     )
 
 
-def _extract_frontmatter(text: str) -> tuple[str, str]:
-    match = re.match(r"^---\n(.*?)\n---\n?(.*)$", text, re.DOTALL)
-    if not match:
-        raise ValueError("Agent file is missing YAML frontmatter")
-    return match.group(1), match.group(2)
-
-
-def _extract_name(frontmatter: str, path: Path) -> str:
-    match = re.search(r"^name:\s*(.+)$", frontmatter, re.MULTILINE)
-    if match:
-        return match.group(1).strip().strip('"')
-    return path.stem
-
-
-def _extract_description(frontmatter: str) -> str:
-    block_match = re.search(r"^description:\s*>-\s*\n((?:[ \t].*\n?)*)", frontmatter, re.MULTILINE)
-    if block_match and block_match.group(1).strip():
-        lines = [line.strip() for line in block_match.group(1).splitlines() if line.strip()]
-        return " ".join(lines)
-    inline_match = re.search(r"^description:\s*(.+)$", frontmatter, re.MULTILINE)
-    if inline_match:
-        return inline_match.group(1).strip().strip('"')
-    raise ValueError("Agent frontmatter is missing description")
-
-
-def _extract_tools(frontmatter: str) -> list[str]:
-    match = re.search(r"^tools:\s*(\[[\s\S]*?\])", frontmatter, re.MULTILINE)
-    if not match:
-        return []
-    return list(ast.literal_eval(match.group(1)))
+def _normalize_agent(path: Path, data: dict[str, Any], body: str) -> dict[str, Any]:
+    name = str(data.get("name", path.stem)).strip() or path.stem
+    description = str(data.get("description", path.stem)).strip() or path.stem
+    tools = data.get("tools", [])
+    if not isinstance(tools, list) or any(not isinstance(tool, str) for tool in tools):
+        raise ValueError(f"{path}: tools must be a list of strings")
+    return {
+        "name": name,
+        "description": description,
+        "tools": tools,
+        "body": body,
+    }
 
 
 def load_agent(path: Path) -> dict:
@@ -168,13 +147,8 @@ def load_agent(path: Path) -> dict:
             "tools": [],
             "body": text,
         }
-    frontmatter, body = _extract_frontmatter(text)
-    return {
-        "name": _extract_name(frontmatter, path),
-        "description": _extract_description(frontmatter),
-        "tools": _extract_tools(frontmatter),
-        "body": body,
-    }
+    data, body = parse_required_frontmatter(text)
+    return _normalize_agent(path, data, body)
 
 
 def write_projection_set(output_root: Path, agent: dict, policy: dict) -> None:

@@ -49,6 +49,38 @@ def test_format_failure_embeds_path_in_fix_when_provided() -> None:
     assert "fix:" in output
 
 
+def test_has_output_format_section_ignores_fenced_code() -> None:
+    content = (
+        "---\n"
+        "model: haiku\n"
+        "tools: [Read]\n"
+        "---\n"
+        "```md\n"
+        "## Output Format\n"
+        "```\n"
+        "\n"
+        "## Real Heading\n"
+    )
+
+    assert _mod._has_output_format_section(content) is False
+
+
+def test_has_phase_two_heading_ignores_fenced_code() -> None:
+    content = (
+        "---\n"
+        "model: haiku\n"
+        "tools: [Read]\n"
+        "---\n"
+        "```md\n"
+        "### Phase 2\n"
+        "```\n"
+        "\n"
+        "## Phase 2\n"
+    )
+
+    assert _mod._has_phase_two_heading(content) is True
+
+
 def test_main_returns_zero_for_current_repo() -> None:
     assert _mod.main() == 0
 

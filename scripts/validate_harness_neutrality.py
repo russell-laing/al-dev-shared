@@ -7,7 +7,16 @@ from pathlib import Path
 from dataclasses import dataclass
 import re
 import sys
-import yaml
+
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - direct-script fallback
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+
+from scripts.al_dev_tools.markdown_frontmatter import parse_required_frontmatter
 
 SCAN_DIRS = ("skills", "agents", "knowledge", "markdown", "bc-code-intel-knowledge")
 SCAN_SUFFIXES = {".md", ".yaml", ".yml"}
@@ -120,10 +129,10 @@ def load_model_aliases(plugin_root: Path) -> set[str]:
     policy = plugin_root / "knowledge" / "agent-tool-projection-policy.md"
     if not policy.exists():
         return set()
-    fm = re.match(r"^---\n(.*?)\n---", policy.read_text(encoding="utf-8"), re.DOTALL)
-    if not fm:
+    try:
+        data, _body = parse_required_frontmatter(policy.read_text(encoding="utf-8"))
+    except ValueError:
         return set()
-    data = yaml.safe_load(fm.group(1))
     return set(data.get("shared_model_aliases", []))
 
 
@@ -136,10 +145,11 @@ def scan_models(plugin_root: Path) -> list[Finding]:
         return findings
     for path in sorted(agents_dir.glob("*.md")):
         relative_path = path.relative_to(plugin_root).as_posix()
-        match = re.search(r"^model:\s*(.+)$", path.read_text(encoding="utf-8"), re.MULTILINE)
-        if not match:
+        try:
+            data, _body = parse_required_frontmatter(path.read_text(encoding="utf-8"))
+        except ValueError:
             continue
-        value = match.group(1).split("#", 1)[0].strip()
+        value = str(data.get("model", "")).strip()
         if value not in aliases:
             findings.append(Finding(relative_path, "Non-canonical model", value))
     return findings

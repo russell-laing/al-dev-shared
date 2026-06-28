@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 
-import yaml
+from scripts.al_dev_tools.markdown_frontmatter import parse_required_frontmatter
 
 
 STAGES = ("map-sync", "discover", "decide", "implement", "derive", "support")
@@ -54,16 +54,10 @@ class WorkflowContract:
 
 
 def _read_frontmatter(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
-    match = re.match(r"^---\n(.*?)\n---\n?", text, re.DOTALL)
-    if not match:
-        raise ValueError(f"{path}: missing or malformed frontmatter")
     try:
-        data = yaml.safe_load(match.group(1)) or {}
-    except yaml.YAMLError as exc:
-        raise ValueError(f"{path}: invalid YAML frontmatter: {exc}") from exc
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: frontmatter must be a mapping")
+        data, _body = parse_required_frontmatter(path.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
     return data
 
 
