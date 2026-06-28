@@ -8,7 +8,24 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parent.parent
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - exercised in package imports
+    from scripts._entrypoint_bootstrap import bootstrap_repo
+try:
+    from scripts.al_dev_tools.runtime_artifacts import (
+        RuntimeArtifactRule,
+        contains_any_marker,
+        latest_runtime_artifact,
+    )
+except ModuleNotFoundError:  # pragma: no cover - exercised in direct script execution
+    from al_dev_tools.runtime_artifacts import (
+        RuntimeArtifactRule,
+        contains_any_marker,
+        latest_runtime_artifact,
+    )
+
+_REPO_ROOT = bootstrap_repo(__file__)
 _CROSS_REF_TOKEN = "knowledge/artifact-contracts.md"
 _FINAL_GATE_PHRASE = "success evidence named in"
 
@@ -19,6 +36,47 @@ class Violation:
     rule: str
     issue: str
     fix: str
+
+
+RUNTIME_ARTIFACT_RULES = (
+    RuntimeArtifactRule(
+        skill="al-dev-ticket",
+        pattern="*-al-dev-ticket-ticket-context.md",
+        markers=(
+            "TICKET_ID",
+            "STATUS",
+            "PRIORITY",
+            "**Ticket ID**",
+            "**Status**",
+            "**Priority**",
+        ),
+        problem="Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)",
+    ),
+    RuntimeArtifactRule(
+        skill="al-dev-interview",
+        pattern="*-al-dev-interview-requirements.md",
+        markers=("REQ:", "REQ-", "ACC:"),
+        problem="Missing REQ/ACC tokens (formal requirements)",
+    ),
+    RuntimeArtifactRule(
+        skill="al-dev-explore",
+        pattern="*-al-dev-explore-findings.md",
+        markers=("## ANSWER", "## FILES", "## SNIPPETS", "## Findings"),
+        problem="Missing structured sections (ANSWER/FILES/SNIPPETS)",
+    ),
+    RuntimeArtifactRule(
+        skill="al-dev-investigate",
+        pattern="*-al-dev-investigate-findings.md",
+        markers=("Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"),
+        problem="Missing investigation markers (Root Cause/Hypotheses/VERDICT)",
+    ),
+    RuntimeArtifactRule(
+        skill="al-dev-handoff",
+        pattern="*-al-dev-handoff-handoff-prompt.md",
+        markers=("## Context", "Context files available", "Suggested first command", "Handoff Prompt"),
+        problem="Missing handoff sections (Context/Context files available/Suggested first command)",
+    ),
+)
 
 
 # ---------------------------------------------------------------------------
@@ -239,6 +297,49 @@ def _format_violation(v: Violation) -> str:
     )
 
 
+def run_runtime_artifact_rule(rule: RuntimeArtifactRule, repo_root: Path) -> bool:
+    """Run a single runtime artifact rule against the live tree."""
+
+    latest_file = latest_runtime_artifact(repo_root, rule.pattern)
+    if latest_file is None:
+        return True
+
+    try:
+        content = latest_file.read_text(encoding="utf-8")
+    except OSError as exc:
+        print(f"⚠ {latest_file}: Cannot read file ({exc})")
+        return False
+
+    has_marker, missing_detail = contains_any_marker(content, rule.markers)
+    if has_marker:
+        return True
+
+    print(f"⚠ {latest_file}: {rule.problem}")
+    if missing_detail:
+        print(f"  missing markers from set: {missing_detail}")
+    return False
+
+
+def run_artifact_tests(repo_root: Path | None = None) -> bool:
+    """Run all runtime artifact contract tests."""
+
+    root = _REPO_ROOT if repo_root is None else repo_root
+
+    results: list[bool] = []
+    for rule in RUNTIME_ARTIFACT_RULES:
+        try:
+            passed = run_runtime_artifact_rule(rule, root)
+        except Exception as exc:
+            print(f"⚠ {rule.skill}: Unexpected error ({exc})")
+            passed = False
+
+        results.append(passed)
+        status = "✓" if passed else "✗"
+        print(f"{status} {rule.skill}")
+
+    return all(results)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
     repo_root = Path(args[0]) if args else None
@@ -258,221 +359,6 @@ def main(argv: list[str] | None = None) -> int:
 
     print("\n✗ Some artifact contract tests failed")
     return 1
-
-
-# ---------------------------------------------------------------------------
-# Runtime artifact tests (verify actual .dev/ files exist and contain markers)
-# ---------------------------------------------------------------------------
-
-def test_al_dev_ticket_contracts(repo_root: Path | None = None) -> bool:
-    """Verify al-dev-ticket produces required artifacts with completion markers.
-
-    Checks for latest .dev/*-al-dev-ticket-ticket-context.md file and validates
-    it contains ticket metadata markers (TICKET_ID, STATUS, PRIORITY sections).
-
-    Returns True if test passes, False if artifacts don't exist (acceptable in
-    sessions where ticket skill hasn't run).
-    """
-    import glob
-
-    # Find latest ticket context file using glob
-    root = _REPO_ROOT if repo_root is None else repo_root
-    ticket_files = glob.glob(str(root / ".dev" / "*-al-dev-ticket-ticket-context.md"))
-
-    if not ticket_files:
-        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
-        return True
-
-    latest_file = max(ticket_files, key=lambda p: Path(p).stat().st_mtime)
-
-    try:
-        content = Path(latest_file).read_text(encoding="utf-8")
-        # Check for metadata markers: ticket ID, status, or priority section
-        has_metadata = any(marker in content for marker in [
-            "TICKET_ID", "STATUS", "PRIORITY", "**Ticket ID**", "**Status**", "**Priority**"
-        ])
-
-        if not has_metadata:
-            print(f"⚠ {latest_file}: Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)")
-            return False
-
-        return True
-    except OSError as e:
-        print(f"⚠ {latest_file}: Cannot read file ({e})")
-        return False
-
-
-def test_al_dev_interview_contracts(repo_root: Path | None = None) -> bool:
-    """Verify al-dev-interview produces required artifacts with completion markers.
-
-    Checks for latest .dev/*-al-dev-interview-requirements.md file and validates
-    it contains REQ tokens (REQ-NNN format) indicating formal requirements extracted.
-
-    Returns True if test passes, False if artifacts don't exist (acceptable in
-    sessions where interview skill hasn't run).
-    """
-    import glob
-
-    # Find latest interview requirements file
-    root = _REPO_ROOT if repo_root is None else repo_root
-    req_files = glob.glob(str(root / ".dev" / "*-al-dev-interview-requirements.md"))
-
-    if not req_files:
-        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
-        return True
-
-    latest_file = max(req_files, key=lambda p: Path(p).stat().st_mtime)
-
-    try:
-        content = Path(latest_file).read_text(encoding="utf-8")
-        # Check for REQ tokens (formal requirement markers)
-        has_req_tokens = "REQ:" in content or "REQ-" in content or "ACC:" in content
-
-        if not has_req_tokens:
-            print(f"⚠ {latest_file}: Missing REQ/ACC tokens (formal requirements)")
-            return False
-
-        return True
-    except OSError as e:
-        print(f"⚠ {latest_file}: Cannot read file ({e})")
-        return False
-
-
-def test_al_dev_explore_contracts(repo_root: Path | None = None) -> bool:
-    """Verify al-dev-explore produces required artifacts with completion markers.
-
-    Checks for latest .dev/*-al-dev-explore-findings.md file and validates it
-    contains structured sections (ANSWER, FILES, SNIPPETS) indicating complete
-    exploration findings.
-
-    Returns True if test passes, False if artifacts don't exist (acceptable in
-    sessions where explore skill hasn't run).
-    """
-    import glob
-
-    # Find latest exploration findings file
-    root = _REPO_ROOT if repo_root is None else repo_root
-    findings_files = glob.glob(str(root / ".dev" / "*-al-dev-explore-findings.md"))
-
-    if not findings_files:
-        # Artifact doesn't exist yet; acceptable for sessions where skill hasn't run
-        return True
-
-    latest_file = max(findings_files, key=lambda p: Path(p).stat().st_mtime)
-
-    try:
-        content = Path(latest_file).read_text(encoding="utf-8")
-        # Check for structured section markers
-        has_sections = any(section in content for section in [
-            "## ANSWER", "## FILES", "## SNIPPETS", "## Findings"
-        ])
-
-        if not has_sections:
-            print(f"⚠ {latest_file}: Missing structured sections (ANSWER/FILES/SNIPPETS)")
-            return False
-
-        return True
-    except OSError as e:
-        print(f"⚠ {latest_file}: Cannot read file ({e})")
-        return False
-
-
-def test_al_dev_investigate_contracts(repo_root: Path | None = None) -> bool:
-    """Verify al-dev-investigate produces required artifacts with completion markers.
-
-    Checks for latest .dev/*-al-dev-investigate-findings.md and validates it
-    contains a Root Cause section and at least one hypothesis verdict.
-
-    Returns True if test passes, False if artifacts don't exist (acceptable in
-    sessions where investigate skill hasn't run).
-    """
-    import glob
-
-    root = _REPO_ROOT if repo_root is None else repo_root
-    findings_files = glob.glob(str(root / ".dev" / "*-al-dev-investigate-findings.md"))
-
-    if not findings_files:
-        return True
-
-    latest_file = max(findings_files, key=lambda p: Path(p).stat().st_mtime)
-
-    try:
-        content = Path(latest_file).read_text(encoding="utf-8")
-        has_markers = any(marker in content for marker in [
-            "Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"
-        ])
-
-        if not has_markers:
-            print(f"⚠ {latest_file}: Missing investigation markers (Root Cause/Hypotheses/VERDICT)")
-            return False
-
-        return True
-    except OSError as e:
-        print(f"⚠ {latest_file}: Cannot read file ({e})")
-        return False
-
-
-def test_al_dev_handoff_contracts(repo_root: Path | None = None) -> bool:
-    """Verify al-dev-handoff produces a handoff prompt with required sections.
-
-    Checks for latest .dev/*-al-dev-handoff-handoff-prompt.md and validates it
-    contains a Context section and a Suggested first command section.
-
-    Returns True if test passes, False if artifacts don't exist (acceptable in
-    sessions where handoff skill hasn't run).
-    """
-    import glob
-
-    root = _REPO_ROOT if repo_root is None else repo_root
-    prompt_files = glob.glob(str(root / ".dev" / "*-al-dev-handoff-handoff-prompt.md"))
-
-    if not prompt_files:
-        return True
-
-    latest_file = max(prompt_files, key=lambda p: Path(p).stat().st_mtime)
-
-    try:
-        content = Path(latest_file).read_text(encoding="utf-8")
-        has_sections = any(section in content for section in [
-            "## Context", "Context files available", "Suggested first command", "Handoff Prompt"
-        ])
-
-        if not has_sections:
-            print(f"⚠ {latest_file}: Missing handoff sections (Context/Context files available/Suggested first command)")
-            return False
-
-        return True
-    except OSError as e:
-        print(f"⚠ {latest_file}: Cannot read file ({e})")
-        return False
-
-
-def run_artifact_tests(repo_root: Path | None = None) -> bool:
-    """Run all runtime artifact contract tests.
-
-    Returns True if all tests pass (or skip due to missing artifacts).
-    Returns False if any test fails.
-    """
-    tests = [
-        ("al-dev-ticket", test_al_dev_ticket_contracts),
-        ("al-dev-interview", test_al_dev_interview_contracts),
-        ("al-dev-explore", test_al_dev_explore_contracts),
-        ("al-dev-investigate", test_al_dev_investigate_contracts),
-        ("al-dev-handoff", test_al_dev_handoff_contracts),
-    ]
-
-    results = []
-    for skill_name, test_func in tests:
-        try:
-            passed = test_func(repo_root)
-            results.append((skill_name, passed))
-            status = "✓" if passed else "✗"
-            print(f"{status} {skill_name}")
-        except Exception as e:
-            print(f"⚠ {skill_name}: Unexpected error ({e})")
-            results.append((skill_name, False))
-
-    return all(passed for _, passed in results)
 
 if __name__ == "__main__":
     raise SystemExit(main())

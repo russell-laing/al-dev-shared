@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.validate_artifact_contracts import main, validate  # noqa: E402
+from scripts.validate_artifact_contracts import main, run_artifact_tests, validate  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -53,6 +53,13 @@ def _make_repo(tmp_path: Path, contract_content: str, skills: dict[str, str]) ->
         (skill_dir / "SKILL.md").write_text(body, encoding="utf-8")
 
     return tmp_path
+
+
+def _make_runtime_artifacts(repo: Path, artifacts: dict[str, str]) -> None:
+    dev = repo / ".dev"
+    dev.mkdir()
+    for name, body in artifacts.items():
+        (dev / name).write_text(body, encoding="utf-8")
 
 
 # A skill body that satisfies both rule 2 (cross-reference) and rule 3 (final-gate).
@@ -146,6 +153,30 @@ def test_unresolved_row(tmp_path: Path) -> None:
     assert any(v.rule == "row-resolution" for v in violations), (
         f"Expected rule 1 violation. Got: {[v.rule for v in violations]}"
     )
+
+
+def test_run_artifact_tests_passes_when_latest_runtime_artifacts_match(tmp_path: Path) -> None:
+    contract = _make_contract([{"skill": "my-skill"}])
+    repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    _make_runtime_artifacts(repo, {
+        "2026-06-28-al-dev-ticket-ticket-context.md": "TICKET_ID: 1",
+        "2026-06-28-al-dev-interview-requirements.md": "REQ: 1",
+        "2026-06-28-al-dev-explore-findings.md": "## ANSWER",
+        "2026-06-28-al-dev-investigate-findings.md": "Root Cause",
+        "2026-06-28-al-dev-handoff-handoff-prompt.md": "## Context",
+    })
+
+    assert run_artifact_tests(repo) is True
+
+
+def test_run_artifact_tests_fails_when_latest_runtime_artifact_is_missing_marker(tmp_path: Path) -> None:
+    contract = _make_contract([{"skill": "my-skill"}])
+    repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    _make_runtime_artifacts(repo, {
+        "2026-06-28-al-dev-ticket-ticket-context.md": "plain body without markers",
+    })
+
+    assert run_artifact_tests(repo) is False
 
 
 def test_main_returns_zero_for_happy_fixture_when_runtime_tests_pass(tmp_path: Path) -> None:
