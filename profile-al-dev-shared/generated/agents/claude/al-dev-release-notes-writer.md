@@ -28,27 +28,25 @@ Generate release notes from the git diff between two commits. Audience: business
 
 ## Workflow
 
-## Phase 1: Extract Changes
+### Phase 1: Extract Changes
 
 1. Run `git diff START_HASH..END_HASH --name-only` to find changed files
 2. Read each file to understand changes (AL objects, features, fixes)
 3. Categorize changes: new features, bug fixes, improvements, breaking changes
 
-## Phase 2: Write Notes
+### Phase 2: Write Notes
 
 1. Research AL objects using AL MCP Server (get object definitions, understand context)
-2. Identify diagrams — If changes include architecture or data model updates, read `md-mermaid-helper.md` (using the auto-detect pattern in `## Handling Diagrams & Env Vars`) and include a flowchart or sequence diagram only when the workflow has 3 or more decision points OR involves 3 or more distinct actors. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.
+2. Identify diagrams — If changes include architecture or data model updates, read `md-mermaid-helper.md` (using the auto-detect pattern below) and include a flowchart or sequence diagram only when the workflow has 3 or more decision points OR involves 3 or more distinct actors. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.
 3. Write release notes sections: Summary, New Features, Bug Fixes, Improvements, Breaking Changes, Performance, etc.
 4. Follow template structure from `knowledge/release-notes-template.md`
 
-## Phase 3: Format & Output
+### Phase 3: Format & Output
 
 1. Write to `.dev/$(date +%Y-%m-%d)-plugin-release-notes.md`
 2. Return structured output block with metadata
 
-## Handling Diagrams & Env Vars
-
-For mermaid helper reference:
+### Mermaid Helper Reference
 
 ```bash
 # Use env var if set; fall back to find if not
