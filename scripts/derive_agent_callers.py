@@ -2,7 +2,7 @@
 """Print the canonical agent → caller-skill mapping as JSON.
 
 Single source of truth for "Spawned by" derivation: uses the same edge
-parser as scripts/generate-map-doc-sections.py, so audit results can never
+parser as scripts/generate_map_doc_sections.py, so audit results can never
 disagree with the generated agent-catalog table. Replaces the grep-based
 caller discovery formerly embedded in sync-documentation-maps-agent-audit,
 whose looser matching produced caller_mismatch findings that the write

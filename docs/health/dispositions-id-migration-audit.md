@@ -526,7 +526,7 @@ Source ledger: `docs/health/dispositions.md`
 | 368 | unknown | unknown | projection-sync | Description: says "harness-native projections" but body regenerates agent projections only | 2026-06-10 | no live provenance match |
 | 369 | unknown | unknown | design-agent-lens-caller-alignment | Name fit: name emphasizes measured aspect (alignment) rather than lens evaluation action | 2026-06-10 | no live provenance match |
 | 370 | unknown | unknown | design-skill-lens-shared-backbone | Model Fit: multi-file synthesis requires Sonnet reasoning; currently haiku | 2026-06-10 | no live provenance match |
-| 371 | unknown | unknown | sync-documentation-maps-agent-audit | Caller Alignment: Inputs missing `scripts/derive-agent-callers.py` dependency | 2026-06-10 | no live provenance match |
+| 371 | unknown | unknown | sync-documentation-maps-agent-audit | Caller Alignment: Inputs missing `scripts/derive_agent_callers.py` dependency | 2026-06-10 | no live provenance match |
 | 372 | unknown | unknown | design-agent-lens-caller-alignment | Caller Alignment: Inputs missing directory path dependency for Grep on spawning skills directory | 2026-06-10 | no live provenance match |
 | 373 | unknown | unknown | review-maps + sync-documentation-maps | Near-Duplicate: `review-maps` thin wrapper adds no capability beyond `--no-update` gate | 2026-06-10 | no live provenance match |
 | 374 | unknown | unknown | design-skill-lens-complexity | Caller Alignment: Inputs ambiguous whether `phase_counts`/`no_agent_skills` are pre-computed or agent-derived | 2026-06-10 | no live provenance match |

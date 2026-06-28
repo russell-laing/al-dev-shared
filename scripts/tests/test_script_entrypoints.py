@@ -15,7 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 class ScriptEntrypointTest(unittest.TestCase):
     def test_bootstrap_repo_returns_repo_root_and_is_idempotent(self) -> None:
-        script_path = REPO_ROOT / "scripts" / "derive-agent-callers.py"
+        script_path = REPO_ROOT / "scripts" / "derive_agent_callers.py"
         first = bootstrap_repo(str(script_path))
         second = bootstrap_repo(str(script_path))
         self.assertEqual(first, REPO_ROOT)
@@ -24,7 +24,7 @@ class ScriptEntrypointTest(unittest.TestCase):
 
     def test_derive_agent_callers_runs_as_direct_script(self) -> None:
         result = subprocess.run(
-            [sys.executable, "scripts/derive-agent-callers.py"],
+            [sys.executable, "scripts/derive_agent_callers.py"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,
@@ -36,7 +36,7 @@ class ScriptEntrypointTest(unittest.TestCase):
 
     def test_derive_skill_spawned_agents_runs_as_direct_script(self) -> None:
         result = subprocess.run(
-            [sys.executable, "scripts/derive-skill-spawned-agents.py"],
+            [sys.executable, "scripts/derive_skill_spawned_agents.py"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,

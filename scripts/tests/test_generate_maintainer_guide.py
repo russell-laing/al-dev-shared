@@ -1,4 +1,4 @@
-"""Fixture-based tests for scripts/al_dev_tools/docs/maintainer_guide_sections.py and generate-maintainer-guide.py."""
+"""Fixture-based tests for scripts/al_dev_tools/docs/maintainer_guide_sections.py and generate_maintainer_guide.py."""
 from __future__ import annotations
 
 import contextlib
@@ -884,7 +884,7 @@ def _stage_template(stage: str, *, drop_key: str | None = None) -> str:
 
 
 def _patched_cli(root: Path):
-    cli = _load_cli_module("generate-maintainer-guide.py", "generate_maintainer_guide")
+    cli = _load_cli_module("generate_maintainer_guide.py", "generate_maintainer_guide")
     cli.REPO = root
     cli.SKILLS_DIR = root / ".claude" / "skills"
     return cli

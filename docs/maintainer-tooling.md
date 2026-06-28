@@ -24,7 +24,7 @@ workflow contract but not consumed by another workflow contract.
 
 Content between `BEGIN GENERATED` and `END GENERATED` markers comes from
 `.claude/skills/*/SKILL.md` workflow contracts through
-`scripts/generate-maintainer-guide.py`. Update the source contract or generator,
+`scripts/generate_maintainer_guide.py`. Update the source contract or generator,
 then regenerate; do not edit marked content directly.
 
 ## Workflow Overview

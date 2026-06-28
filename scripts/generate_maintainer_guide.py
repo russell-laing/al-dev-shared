@@ -5,7 +5,7 @@ Reads `workflow:` frontmatter blocks from .claude/skills/*/SKILL.md (excluding
 archived/) and rewrites only the <!-- BEGIN GENERATED: ... --> regions of
 docs/maintainer-tooling.md and docs/maintainer-tooling/*.md.
 
-Fail-closed, following scripts/generate-plugin-graph.py: any parse or validation
+Fail-closed, following scripts/generate_plugin_graph.py: any parse or validation
 error (including a missing marker pair) exits non-zero, names the offending skill
 or section, and leaves the document untouched. Node-budget overruns are warnings
 on stderr; generation still succeeds.
@@ -44,11 +44,11 @@ def main() -> int:
             updated = replace_marked_sections(current, replacements)
             write_text_atomic(page_path, updated)
     except Exception as exc:  # noqa: BLE001
-        sys.stderr.write(f"generate-maintainer-guide: {exc}\n")
+        sys.stderr.write(f"generate_maintainer_guide: {exc}\n")
         return 1
 
     for warning in warnings:
-        sys.stderr.write(f"generate-maintainer-guide: warning: {warning}\n")
+        sys.stderr.write(f"generate_maintainer_guide: warning: {warning}\n")
     for rel_path in PAGE_KEYS:
         print(f"Wrote {REPO / rel_path}")
     return 0

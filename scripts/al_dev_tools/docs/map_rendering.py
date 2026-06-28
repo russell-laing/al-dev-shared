@@ -525,7 +525,7 @@ def build_plugin_graph_document(
     inv: Inventory,
     *,
     today: str,
-    generated_by: str = "scripts/generate-plugin-graph.py",
+    generated_by: str = "scripts/generate_plugin_graph.py",
     workflow_paths: Optional[dict[str, list[str]]] = None,
 ) -> str:
     return (

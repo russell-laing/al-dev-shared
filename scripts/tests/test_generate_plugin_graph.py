@@ -1,4 +1,4 @@
-"""Fixture-based tests for scripts/generate-plugin-graph.py."""
+"""Fixture-based tests for scripts/generate_plugin_graph.py."""
 from __future__ import annotations
 
 import importlib.util
@@ -17,7 +17,7 @@ from scripts.al_dev_tools.docs import map_doc_sections as shared
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "generate_plugin_graph",
-    REPO_ROOT / "scripts" / "generate-plugin-graph.py",
+    REPO_ROOT / "scripts" / "generate_plugin_graph.py",
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)

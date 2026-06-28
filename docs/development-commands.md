@@ -54,15 +54,15 @@ The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`,
 # - Layer 1 lifecycle diagrams
 # - Layer 2 per-skill drilldowns (with Phase<N> nodes)
 # - Agent catalog and dependency graphs
-python3 scripts/generate-map-doc-sections.py
+python3 scripts/generate_map_doc_sections.py
 
 # Regenerate plugin dependency graph separately
-python3 scripts/generate-plugin-graph.py
+python3 scripts/generate_plugin_graph.py
 
 # Regenerate the maintainer guide's generated sections
 # (summary overview, stage diagrams, run order, artifact roles, contract appendix)
 # from the `workflow:` frontmatter blocks in .claude/skills/*/SKILL.md
-python3 scripts/generate-maintainer-guide.py
+python3 scripts/generate_maintainer_guide.py
 ```
 
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-map-documentation`) for interactive updates.

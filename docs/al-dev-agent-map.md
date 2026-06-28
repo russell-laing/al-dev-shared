@@ -6,7 +6,7 @@
 **Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
 <!-- END GENERATED: agent-coverage -->
 
-> **Generated sections** are refreshed by `scripts/generate-map-doc-sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
+> **Generated sections** are refreshed by `scripts/generate_map_doc_sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
 
 ## Layer 1: Agent Catalog
 
@@ -44,7 +44,7 @@
 
 > **Maintainer note:** The per-agent profile blocks below are hand-authored and
 > live outside the `<!-- BEGIN/END GENERATED -->` markers.
-> `scripts/generate-map-doc-sections.py` refreshes only the coverage count and the
+> `scripts/generate_map_doc_sections.py` refreshes only the coverage count and the
 > catalog table above — it does **not** update these blocks. When an agent is
 > renamed, added, or removed, hand-edit the matching `### <agent-name>` block here
 > in the same change.
