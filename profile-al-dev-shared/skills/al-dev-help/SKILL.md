@@ -1,6 +1,8 @@
 ---
 name: al-dev-help
-description: Show contextual guidance and recommend workflows.
+description: >-
+  Show contextual guidance (Reference, Situation-based routing, Context-driven assessment)
+  and recommend workflows.
 ---
 
 # Command: /al-dev-help
