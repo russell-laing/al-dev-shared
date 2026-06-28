@@ -51,7 +51,7 @@ if __name__ == "__main__":
         if agent_changes and not generated_changes:
             reason = (
                 "Agent source files modified but projections not regenerated.\n"
-                "Run: python3 scripts/generate-agent-projections.py\n"
+                "Run: python3 scripts/generate_agent_projections.py\n"
                 f"Modified agents: {', '.join(agent_changes)}"
             )
             print(f"[stop-hook] warning: {reason}", file=sys.stderr)

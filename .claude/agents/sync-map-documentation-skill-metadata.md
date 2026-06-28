@@ -6,7 +6,7 @@ description: >-
   spawned agents). Writes a structured JSON snapshot to the run artifact directory.
   Called by /sync-map-documentation dispatch phase; its output is consumed by
   sync-map-documentation-skill-compare. spawned_agents is derived by
-  scripts/derive-skill-spawned-agents.py — the same edge parser the map
+  scripts/derive_skill_spawned_agents.py — the same edge parser the map
   generator uses — so it can never disagree with the generated drilldowns.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -46,7 +46,7 @@ Do not summarise findings — return only the path.
 
 `phase_count` is the count of `## Phase N` headings in `SKILL.md` (where N is a
 digit). `spawned_agents` is the per-skill list emitted by
-`scripts/derive-skill-spawned-agents.py` (canonical `al-dev-shared:<agent-name>`
+`scripts/derive_skill_spawned_agents.py` (canonical `al-dev-shared:<agent-name>`
 form). These two fields are required by `sync-map-documentation-skill-compare`
 to detect `phase_count_mismatch` and `agent_name_mismatch` discrepancy types.
 
@@ -73,7 +73,7 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
 - **workflow_stage:** the `workflow.stage:` frontmatter field value (empty string if absent).
 - **phase_count:** count headings matching `## Phase N` (where N is a digit).
 - **spawned_agents:** do **not** hand-extract these from the body. Run
-  `python3 scripts/derive-skill-spawned-agents.py` once (it prints a JSON object
+  `python3 scripts/derive_skill_spawned_agents.py` once (it prints a JSON object
   mapping every skill name to its sorted `al-dev-shared:<agent-name>` list) and
   use this skill's entry verbatim. This script reuses the map generator's edge
   parser, so it catches both canonical `al-dev-shared:` references and bare
@@ -85,7 +85,7 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
 
 ### Step 3 — Write JSON and return path
 
-`derive-skill-spawned-agents.py` covers skill→agent edges (see Step 2), but there
+`derive_skill_spawned_agents.py` covers skill→agent edges (see Step 2), but there
 is no equivalent deriver for skill-to-skill *caller* references.
 Set `callers: {}` always — omit the callers derivation step.
 

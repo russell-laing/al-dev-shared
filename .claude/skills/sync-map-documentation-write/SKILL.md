@@ -83,7 +83,7 @@ keep all derived artifacts in sync.
 First, regenerate all Mermaid diagrams (Layer 1 lifecycle, Layer 2 drilldowns, agent catalog):
 
 ```bash
-python3 /Users/russelllaing/al-dev-shared/scripts/generate-map-doc-sections.py
+python3 /Users/russelllaing/al-dev-shared/scripts/generate_map_doc_sections.py
 ```
 
 Capture the exit code. If non-zero, report:
@@ -103,14 +103,14 @@ script and capture its exit code; on a non-zero code, report the labelled error
 
 | Artifact | Script | Error label on non-zero exit |
 | --- | --- | --- |
-| Agent projections | `generate-agent-projections.py` | `Agent projection regeneration failed (exit <code>).` |
-| Dependency graph | `generate-plugin-graph.py` | `Dependency graph refresh failed (exit <code>).` |
-| Maintainer guide | `generate-maintainer-guide.py` | `Maintainer guide regeneration failed (exit <code>).` |
+| Agent projections | `generate_agent_projections.py` | `Agent projection regeneration failed (exit <code>).` |
+| Dependency graph | `generate_plugin_graph.py` | `Dependency graph refresh failed (exit <code>).` |
+| Maintainer guide | `generate_maintainer_guide.py` | `Maintainer guide regeneration failed (exit <code>).` |
 
 ```bash
-python3 /Users/russelllaing/al-dev-shared/scripts/generate-agent-projections.py
-python3 /Users/russelllaing/al-dev-shared/scripts/generate-plugin-graph.py
-python3 /Users/russelllaing/al-dev-shared/scripts/generate-maintainer-guide.py
+python3 /Users/russelllaing/al-dev-shared/scripts/generate_agent_projections.py
+python3 /Users/russelllaing/al-dev-shared/scripts/generate_plugin_graph.py
+python3 /Users/russelllaing/al-dev-shared/scripts/generate_maintainer_guide.py
 ```
 
 Run them one at a time so the failure label can be matched to the failing script.
