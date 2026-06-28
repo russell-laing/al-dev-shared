@@ -44,15 +44,9 @@ Transform requirements into a complete solution plan that includes architectural
      `knowledge/solution-architect-research-patterns.md` (AL LSP → AL MCP → text search).
      Record the file path and line number as the `Pattern reference`. If no useful analogue exists, record `none` with a one-line rationale. This is not exact structural matching—only the best analogue the developer should inspect first.
 
-   **Definition of "best existing analogue":**
-   - Performs the same business function as the proposed feature, **AND**
-   - Uses the same pattern (event subscription, table extension, page extension) as the proposed feature
-   - If only one criterion is met, accept the match only if the 4-step search order above confirms no better two-criterion match exists — document the rationale and which search steps were exhausted
-   - Variable/field names may differ; match on the two criteria above, not identifier names
-   - Examples — YES: both add customer-credit validation to different tables (same
-     business function, same event-subscription pattern). NO: one adds posting
-     validation, the other adds UI field formatting (different function and pattern —
-     reject the match).
+   **Definition of "best existing analogue":** See `knowledge/solution-architect-research-patterns.md#best-existing-analogue-bea`
+   for the full definition and examples. In brief: same business function AND same pattern (event, table, page
+   extension).
 
    **Search order (apply in sequence, stop when a match is found):**
    1. Exact pattern match (same table/event being extended, same design pattern)
@@ -66,7 +60,7 @@ Transform requirements into a complete solution plan that includes architectural
      Microsoft Docs, text fallback) are listed in
      `knowledge/solution-architect-research-patterns.md`.
 5. **Design solution** — extension strategy, event subscribers, table/page design, external dependencies
-6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block only if (a) interfaces are defined for every external dependency, (b) at least one mock/test-double strategy is named per dependency, and (c) those doubles are referenced in the plan. If any is missing, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation. To resolve: (a) name the exact procedures, events, or interfaces to be defined; (b) state at least one testable assertion per dependency (expected output for happy path and one failure case); (c) verify each mock or test-double is referenced in the plan. Re-run this step from the top once all three criteria are satisfied.
+6. **Design testability architecture (MANDATORY)** — identify dependencies, define interfaces, plan mocks (see project instructions). Add `TESTABILITY_COMPLETE: yes` to your return block only if (a) interfaces are defined for every external dependency (file I/O, database queries, HTTP calls, user input, third-party APIs, schema builders), (b) at least one mock/test-double strategy is named per dependency, and (c) those doubles are referenced in the plan. If any is missing, add `TESTABILITY_COMPLETE: no` and return without writing the plan — the architect must resolve before proceeding to implementation. To resolve: (a) name the exact procedures, events, or interfaces to be defined; (b) state at least one testable assertion per dependency (expected output for happy path and one failure case); (c) verify each mock or test-double is referenced in the plan. Re-run this step from the top once all three criteria are satisfied.
 7. **Plan implementation** — break into files, steps, code templates; match output detail to complexity
 8. **Write output** — Create solution plan file following `knowledge/solution-plan-template.md` structure
 9. **Update project context** — append new patterns/objects learned
