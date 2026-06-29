@@ -89,10 +89,10 @@ that matches the imported module and the documented command.
 
 ### Living docs — overwritten in place, no date
 
-Pattern: `{object}-{kind}.md`
+Pattern: `{object}_{kind}.md`
 
-Examples: `skills-map.md`, `agent-map.md`, `knowledge-quality.md`,
-`plugin-graph.md`.
+Examples: `skills_map.md`, `agent_map.md`, `knowledge_quality.md`,
+`plugin_graph.md`.
 
 ### Point-in-time artifacts — dated
 

@@ -17,10 +17,10 @@ workflow:
   repeatable: true
   inputs:
     - docs/health/<date>-<surface>-health.md
-    - docs/health/dispositions-open.md
+    - docs/health/dispositions_open.md
     - .dev/health-loop-state.md
   outputs:
-    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
+    - docs/health/dispositions_events/<year>/<year>-<month>.jsonl
     - .dev/health-loop-state.md
   next: [plan-plugin-findings]
 ---
@@ -64,8 +64,8 @@ valid resume pointer exists, locate the latest dossier per surface with
 If no dossier exists for a requested surface, report "No `<surface>` dossier
 found — run /audit-plugin-health first." and skip that surface.
 
-Read `docs/health/dispositions-index.json` (if present) for a quick count of
-open accepted events. Read `docs/health/dispositions-open.md` to see the
+Read `docs/health/dispositions_index.json` (if present) for a quick count of
+open accepted events. Read `docs/health/dispositions_open.md` to see the
 current open accepted event list.
 
 ## Phase 1 — Collect open findings
@@ -96,7 +96,7 @@ Inline — design-agent-lens-usage-patterns — Fold into the caller skill body 
 With `--top`, restrict the worklist to the dossier's "Top N ranked
 actions" entries.
 
-Then read `docs/health/dispositions-open.md` and drop from the worklist every
+Then read `docs/health/dispositions_open.md` and drop from the worklist every
 finding that already matches an event by **surface + dimension + object +
 issue essence**
 (not exact wording — lenses rephrase between sweeps).
@@ -139,8 +139,8 @@ separate decision per finding.
 
 - Append one JSONL event per decision with `append_event`.
 - Run `scripts/health_disposition_store.py regenerate`.
-- Read `docs/health/dispositions-index.json` to report total events and open accepted count.
-- Read `docs/health/dispositions-open.md` only when open accepted rows need to be listed.
+- Read `docs/health/dispositions_index.json` to report total events and open accepted count.
+- Read `docs/health/dispositions_open.md` only when open accepted rows need to be listed.
 
 For each non-skip decision, call `scripts/health_disposition_store.py append_event`
 with the required fields: `surface`, `dimension`, `object`, `finding`,
@@ -157,7 +157,7 @@ rule** in the same session. Full procedure in
 
 1. Run `python3 scripts/health_disposition_store.py regenerate` (if not already
    done in Phase 3) and confirm the generated views updated. Read
-   `docs/health/dispositions-index.json` to verify the event count increased by
+   `docs/health/dispositions_index.json` to verify the event count increased by
    the non-skip decision count.
 2. Scan the appended rows for unfinished-work markers (to-do markers,
    unrendered date placeholders).
@@ -185,7 +185,7 @@ rule** in the same session. Full procedure in
    - `stage_completed: record-plugin-dispositions`
    - `completed_at:` today's ISO date
    - `next_command: /plan-plugin-findings`
-   - `next_inputs: docs/health/dispositions-open.md` plus the dossier path(s)
+   - `next_inputs: docs/health/dispositions_open.md` plus the dossier path(s)
    - `fresh_session_recommended: false`
    - `note:` plan the `accepted` rows. When the backlog guard fired (step 4
      — T > N), add `run with --backlog to drain all T open accepted rows,

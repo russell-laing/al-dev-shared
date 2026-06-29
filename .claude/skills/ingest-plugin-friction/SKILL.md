@@ -8,7 +8,7 @@ description: >-
     construction orders plugin surface first. Writes per-surface
   YYYY-MM-DD-<surface>-friction-findings.md artifacts consumed by
   /report-plugin-health via --findings, and records local runtime provenance in
-  docs/health/friction-ingest-log.md (gitignored). Run when friction logs have
+  docs/health/friction_ingest_log.md (gitignored). Run when friction logs have
   accumulated. This skill writes intermediate findings files that
   `/report-plugin-health` consumes via --findings; it is not itself an audit
   step.
@@ -167,7 +167,7 @@ severity reflecting how often it blocked work.
    Only include `dimensions:` entries (and their blocks) that actually have
    findings. Omit a block entirely if its dimension has no findings.
 
-2. **Manifest.** Ensure `docs/health/friction-ingest-log.md` exists; if absent,
+2. **Manifest.** Ensure `docs/health/friction_ingest_log.md` exists; if absent,
    create it with this header:
 
    ```markdown

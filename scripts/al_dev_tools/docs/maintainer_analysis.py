@@ -11,7 +11,7 @@ from .maintainer_contracts import WorkflowContract
 
 PLACEHOLDER_RE = re.compile(r"<[^<>]+>|RUN_ID")
 EXTERNAL_INPUT_PREFIXES = ("profile-al-dev-shared/", ".claude/")
-SELF_GENERATED_DOC = "docs/maintainer-tooling.md"
+SELF_GENERATED_DOC = "docs/maintainer_tooling.md"
 
 
 def normalize_template(template: str) -> str:

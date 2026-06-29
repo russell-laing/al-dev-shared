@@ -1,6 +1,6 @@
 ---
 name: naming-convention-lens
-description: Apply the Naming Convention lens to maintainer tool files and output paths — flags any tool name or output filename that violates docs/naming-convention.md. Returns a findings block.
+description: Apply the Naming Convention lens to maintainer tool files and output paths — flags any tool name or output filename that violates docs/naming_convention.md. Returns a findings block.
 model: haiku
 tools: ["Read"]
 ---
@@ -10,7 +10,7 @@ tools: ["Read"]
 | Field | Description |
 |---|---|
 | file_list | Newline-separated absolute paths to agent `.md` and/or skill `SKILL.md` files |
-| convention_doc | Absolute path to `docs/naming-convention.md` (read it before judging) |
+| convention_doc | Absolute path to `docs/naming_convention.md` (read it before judging) |
 
 ## Outputs
 
@@ -31,7 +31,7 @@ this block verbatim in the aggregated dossier.
 
 ## Lens: Naming Convention
 
-Read `docs/naming-convention.md` first — it is the source of truth. Then
+Read `docs/naming_convention.md` first — it is the source of truth. Then
 read every file path in the dispatch prompt and derive each tool's name:
 
 - Agent name = filename without directory and `.md`.
@@ -48,7 +48,7 @@ read every file path in the dispatch prompt and derive each tool's name:
 
 - Maintainer skills SHOULD match `{verb}-{object}-{aspect}` with the documented
   verb/object sets. A non-conforming skill name that is not listed in the
-  `## Grandfathered exceptions` section of `docs/naming-convention.md` is
+  `## Grandfathered exceptions` section of `docs/naming_convention.md` is
   a **Low** finding (advisory). Treat that section as the authoritative
   grandfather set — do not hardcode names here, as the set is consolidated and
   maintained in the convention doc.

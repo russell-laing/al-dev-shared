@@ -45,7 +45,7 @@ Required fields: `stage` and `invoked-by`. All others are optional.
 ## Skills Without a Contract
 
 Skills with no `workflow:` block appear in the "Missing contract" gap table
-of `docs/maintainer-tooling.md`. If a skill genuinely has no place in the
+of `docs/maintainer_tooling.md`. If a skill genuinely has no place in the
 self-healing loop, it should remain uncontracted — adding a `workflow:` block
 (even with `stage: support`) would cause it to be included in health audit
 lens runs by `discover-plugin-health`.
@@ -54,7 +54,7 @@ lens runs by `discover-plugin-health`.
 
 `scripts/generate-maintainer-guide.py` reads all `workflow:` blocks from
 `.claude/skills/*/SKILL.md` (excluding `archived/`) and rewrites the
-`<!-- BEGIN GENERATED: ... -->` sections of `docs/maintainer-tooling.md`.
+`<!-- BEGIN GENERATED: ... -->` sections of `docs/maintainer_tooling.md`.
 
 Validation rules (fail-closed):
 

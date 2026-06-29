@@ -72,8 +72,8 @@ class HealthFilterContractFileTest(unittest.TestCase):
         self.assertNotIn("[--dimension", report)
 
     def test_docs_link_to_canonical_contract_and_resume_rule(self) -> None:
-        maintainer = self.read("docs/maintainer-tooling.md")
-        commands = self.read("docs/development-commands.md")
+        maintainer = self.read("docs/maintainer_tooling.md")
+        commands = self.read("docs/development_commands.md")
         self.assertIn("health-filter-contract.md", maintainer)
         self.assertIn("--resume` is audit-only", maintainer)
         self.assertIn("/audit-plugin-health --surface tooling --dimension quality", commands)

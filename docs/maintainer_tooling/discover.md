@@ -1,6 +1,6 @@
 # Stage 2: Discover
 
-[Previous: Map sync](./map-sync.md) | [Back to summary](../maintainer-tooling.md) | [Next: Decide](./decide.md)
+[Previous: Map sync](./map_sync.md) | [Back to summary](../maintainer_tooling.md) | [Next: Decide](./decide.md)
 
 Discover is where improvement candidates enter the core health loop. This stage answers:
 "What architectural, quality, or naming issues exist in the plugin right now?"
@@ -60,7 +60,7 @@ flowchart TD
         skill_ingest_friction_log["/ingest-plugin-friction"]
     end
     art_breadcrumb[".dev/health-loop-state.md"]
-    art_dispositions["docs/health/dispositions-open.md"]
+    art_dispositions["docs/health/dispositions_open.md"]
     skill_plugin_health_report["/report-plugin-health"]
     art_dossier["ranked health dossier"]
 
@@ -105,12 +105,12 @@ flowchart TD
 | `docs/health/<date>-<surface>-findings.md` | Stores raw lens findings before report-time evidence checks and ranking. |
 | `docs/health/<date>-<surface>-friction-findings.md` | Carries friction-derived findings into report through an explicit `--findings` path. |
 | `.dev/health-loop-state.md` | Persists the exact report handoff across sessions. |
-| `docs/health/dispositions-open.md` | Lets report suppress or re-verify findings that already have durable decisions. |
+| `docs/health/dispositions_open.md` | Lets report suppress or re-verify findings that already have durable decisions. |
 | `docs/health/<date>-<surface>-health.md` | The ranked dossier handed to the Decide stage. |
 <!-- END GENERATED: maintainer-stage-discover-artifacts -->
 
 Exact per-skill reads, writes, and `next` declarations are in
-[Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+[Appendix B of the summary](../maintainer_tooling.md#appendix-b-contracted-skills).
 
 ---
 

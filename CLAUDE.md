@@ -68,7 +68,7 @@ Repo-local tooling may *inspect* shared source and generated projection outputs 
 **Maintainer skill workflow contracts:** `.claude/skills/` files may also contain a
 `workflow:` block — a repo-local frontmatter extension consumed by
 `scripts/generate_maintainer_guide.py` to auto-generate the
-`docs/maintainer-tooling.md` summary and `docs/maintainer-tooling/` stage pages.
+`docs/maintainer_tooling.md` summary and `docs/maintainer_tooling/` stage pages.
 This block is invisible to Claude Code and all distributed harnesses. See
 `.claude/knowledge/skill-workflow-contract.md` for the schema. Skills without a
 `workflow:` block appear in the generator's "Missing contract" gap table; skills that
@@ -137,13 +137,13 @@ Full spec: profile-al-dev-shared/knowledge/commit-conventions.md
 
 ## Development Commands
 
-See `docs/development-commands.md` for the full command reference (validation, pre-commit gate, projections, documentation map regeneration).
+See `docs/development_commands.md` for the full command reference (validation, pre-commit gate, projections, documentation map regeneration).
 
 ## Plugin Architecture Quick Reference
 
 **Start here:** `docs/skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
-**Maintainer surface:** `docs/maintainer-tooling.md` (five-stage summary with detailed pages under `docs/maintainer-tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/skills-map.md` scope note)
+**Maintainer surface:** `docs/maintainer_tooling.md` (five-stage summary with detailed pages under `docs/maintainer_tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/skills-map.md` scope note)
 
 **Active skills:** 24 distributed skills covering three main flows:
 
@@ -225,8 +225,8 @@ lifecycle rules:
 **Persistent Artifacts** (committed to git):
 
 - Core tracking files: `.dev/progress.md` (resume pointer for multi-phase skills)
-- Disposition ledger: `docs/health/dispositions*.md`, `docs/health/dispositions-events/`,
-  `docs/health/dispositions-history/`
+- Disposition ledger: `docs/health/dispositions*.md`, `docs/health/dispositions_events/`,
+  `docs/health/dispositions_history/`
 - Generated documentation: `docs/al-dev-*.md`, `.claude/knowledge/`, etc.
 - Durable planning provenance: `docs/superpowers/history.md` and
   `docs/superpowers/README.md`
@@ -424,7 +424,7 @@ with a partial list.
 ## Health Ledger
 
 After appending any `fixed` ledger events, sync them to the correct month shard
-under `docs/health/dispositions-history/` using `sync_shard --since`:
+under `docs/health/dispositions_history/` using `sync_shard --since`:
 
 ```bash
 python3 scripts/health_disposition_store.py sync_shard --since <today's ISO date>
@@ -432,4 +432,4 @@ python3 scripts/health_disposition_store.py sync_shard --since <today's ISO date
 
 (The `/implement-plugin-health` Phase 3 "Sync the history shard" step does exactly
 this.) Do not declare the loop closed until shard presence is verified
-(`grep <fixed-event-id> docs/health/dispositions-history/<year>/<month>.md`).
+(`grep <fixed-event-id> docs/health/dispositions_history/<year>/<month>.md`).

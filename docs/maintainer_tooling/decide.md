@@ -1,6 +1,6 @@
 # Stage 3: Decide
 
-[Previous: Discover](./discover.md) | [Back to summary](../maintainer-tooling.md) | [Next: Implement](./implement.md)
+[Previous: Discover](./discover.md) | [Back to summary](../maintainer_tooling.md) | [Next: Implement](./implement.md)
 
 Decide converts a ranked dossier into durable maintainer choices and an executable plan. This
 stage answers: "Which findings do we accept? Which do we decline? What work will we do?"
@@ -15,8 +15,8 @@ stage answers: "Which findings do we accept? Which do we decline? What work will
    - **Fixed** — We realized this was already fixed in a prior session (since the last dossier)
      or by a different maintainer.
 
-   These decisions are recorded as events in the JSONL event store (`docs/health/dispositions-events/`). Later audits filter out
-   already-decided findings using the generated `docs/health/dispositions-open.md` view, so you don't re-triage the same issue twice.
+   These decisions are recorded as events in the JSONL event store (`docs/health/dispositions_events/`). Later audits filter out
+   already-decided findings using the generated `docs/health/dispositions_open.md` view, so you don't re-triage the same issue twice.
 
 2. **Plan accepted findings** — For findings you've accepted, `/plan-plugin-findings` verifies
    each one against the live codebase (using rubber-duck checks), then writes an implementation
@@ -31,7 +31,7 @@ step. This is a side path, not a required step.
 
 Dispositions are the key to this stage. By recording durable decisions as JSONL events, you create a durable
 audit trail: "We looked at this finding, made a decision, and here's what we did." Later audits
-can read the generated `docs/health/dispositions-open.md` view and skip re-triaging findings you've already decided on, making the loop
+can read the generated `docs/health/dispositions_open.md` view and skip re-triaging findings you've already decided on, making the loop
 more efficient over time.
 
 The plan that emerges from accepted findings is not a generic task list—it's a **verified
@@ -97,14 +97,14 @@ Run `/revise-plugin-plan` only when a separate review or commentary artifact req
 | Artifact | Role |
 | --- | --- |
 | `docs/health/<date>-<surface>-health.md` | Presents the verified findings that require a maintainer decision. |
-| `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions-open.md` | Canonical event store for decisions; dispositions-open.md is the generated open-items read view. |
+| `docs/health/dispositions_events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions_open.md` | Canonical event store for decisions; dispositions-open.md is the generated open-items read view. |
 | `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md` | Defines the live verification checks used before accepted findings become plan tasks. |
 | `docs/superpowers/plans/<date>-<topic>.md` | Carries the verified implementation tasks and required `closes_event_ids:` identifiers. |
 | `docs/superpowers/plans/<date>-<topic>-commentary.md` | Optional review evidence used only when the plan must be revised. |
 <!-- END GENERATED: maintainer-stage-decide-artifacts -->
 
 Exact per-skill reads, writes, and `next` declarations are in
-[Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+[Appendix B of the summary](../maintainer_tooling.md#appendix-b-contracted-skills).
 
 ---
 

@@ -1,6 +1,6 @@
 # Stage 5: Derive
 
-[Previous: Implement](./implement.md) | [Back to summary](../maintainer-tooling.md)
+[Previous: Implement](./implement.md) | [Back to summary](../maintainer_tooling.md)
 
 Derive refreshes generated outputs and validates canonical shared source during finalization.
 This stage answers: "Did the implementation change shared source? If so, did we regenerate
@@ -134,4 +134,4 @@ Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowl
 <!-- END GENERATED: maintainer-stage-derive-artifacts -->
 
 Exact per-skill reads, writes, and `next` declarations are in
-[Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+[Appendix B of the summary](../maintainer_tooling.md#appendix-b-contracted-skills).

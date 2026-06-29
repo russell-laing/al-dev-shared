@@ -51,10 +51,10 @@ TOKEN_FIELDS = (
 )
 
 NOT_AVAILABLE = "not available"
-FALSE_POSITIVE_CLASS_PATH = Path("docs/health/false-positive-classes.md")
+FALSE_POSITIVE_CLASS_PATH = Path("docs/health/false_positive_classes.md")
 FALSE_POSITIVE_STATUSES = ("Candidate", "Monitor", "Suppress")
 PROCEDURE_LOG_PATH = Path(".dev/implement-plugin-health-procedure-log.jsonl")
-EXPECTED_PHASES_PATH = Path("docs/health/expected-phases.md")
+EXPECTED_PHASES_PATH = Path("docs/health/expected_phases.md")
 
 _METRICS_BLOCK = re.compile(r"<!--\s*benchmark-metrics\b(.*?)-->", re.DOTALL)
 _TOKEN_BLOCK = re.compile(r"<!--\s*token-usage\b(.*?)-->", re.DOTALL)

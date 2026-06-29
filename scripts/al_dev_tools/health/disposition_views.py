@@ -145,7 +145,7 @@ def render_open_view(output: Path, events: list[dict[str, object]]) -> None:
     lines = [
         "# Open Health Dispositions",
         "",
-        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "<!-- generated from docs/health/dispositions_events/; do not edit directly -->",
         "",
         "| Event ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence | Closes |",
         "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
@@ -160,7 +160,7 @@ def render_current_events_view(output: Path, events: list[dict[str, object]]) ->
     lines = [
         "# Health Finding Dispositions",
         "",
-        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "<!-- generated from docs/health/dispositions_events/; do not edit directly -->",
         "",
         "| Event ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence | Closes |",
         "|----------|---------|-----------|--------|---------|-------------|------|----------|--------|",
@@ -175,7 +175,7 @@ def render_legacy_compatibility_view(output: Path, events: list[dict[str, object
     lines = [
         "# Health Finding Dispositions",
         "",
-        "<!-- generated from docs/health/dispositions-events/; do not edit directly -->",
+        "<!-- generated from docs/health/dispositions_events/; do not edit directly -->",
         "",
         "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Note |",
         "|----|---------|-----------|--------|---------|-------------|------|------|",

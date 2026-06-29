@@ -1,6 +1,6 @@
 # Stage 1: Map Sync
 
-[Back to summary](../maintainer-tooling.md) | Next:
+[Back to summary](../maintainer_tooling.md) | Next:
 [Discover](./discover.md)
 
 Map sync prepares trustworthy inventory context for later health audits. It answers the question:
@@ -83,12 +83,12 @@ flowchart TD
 | `docs/skills-map.md` and `docs/agent-map.md` | Canonical inventory maps audited and updated by the stage. |
 | `.dev/sync-map-documentation-checkpoint.json` | Records the active run, team identifiers, and current async phase. |
 | `.dev/sync-map-documentation-runs/RUN_ID/` | Keeps raw audit results and validated update artifacts separate from the canonical maps. |
-| `docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/` | Derived documentation regenerated only after the canonical maps are applied. |
+| `docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/` | Derived documentation regenerated only after the canonical maps are applied. |
 | `profile-al-dev-shared/generated/agents/` | Harness-native projections regenerated from canonical shared agent source. |
 <!-- END GENERATED: maintainer-stage-map-sync-artifacts -->
 
 Exact per-skill reads, writes, and `next` declarations are in
-[Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+[Appendix B of the summary](../maintainer_tooling.md#appendix-b-contracted-skills).
 
 ---
 

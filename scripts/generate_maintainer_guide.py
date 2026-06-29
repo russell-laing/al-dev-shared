@@ -3,7 +3,7 @@
 
 Reads `workflow:` frontmatter blocks from .claude/skills/*/SKILL.md (excluding
 archived/) and rewrites only the <!-- BEGIN GENERATED: ... --> regions of
-docs/maintainer-tooling.md and docs/maintainer-tooling/*.md.
+docs/maintainer_tooling.md and docs/maintainer_tooling/*.md.
 
 Fail-closed, following scripts/generate_plugin_graph.py: any parse or validation
 error (including a missing marker pair) exits non-zero, names the offending skill

@@ -59,7 +59,7 @@ structurally different `profile-al-dev-shared/` files.
 
 **Immediate action (Recommendation 6, currently deferred):**
 
-Create `docs/health/false-positive-classes.md` with the starter table from §5.
+Create `docs/health/false_positive_classes.md` with the starter table from §5.
 Start with the two classes the baseline names: `friction-surface-mismatch` and
 `subjective-clarity-name-fit`. Both are currently `Candidate` (seen once each).
 Add a row each time a class is first seen; promote through `Candidate → Monitor
@@ -124,7 +124,7 @@ required phase-proof steps were actually taken.
   Verify the adapter reads it before extending to upstream phases.
 - A procedure log is only checkable if the "expected phase list" is defined
   somewhere the adapter can compare against. Define this list in a companion
-  file (e.g., `docs/health/expected-phases.md`) before writing the log.
+  file (e.g., `docs/health/expected_phases.md`) before writing the log.
 
 ### 2.4 Token Efficiency Findings
 
@@ -208,7 +208,7 @@ Do not generate a delta report just because the date changed.
 Recommendation 6 from the baseline is the only unimplemented recommendation.
 Its lightweight implementation:
 
-**File:** `docs/health/false-positive-classes.md`
+**File:** `docs/health/false_positive_classes.md`
 
 ```markdown
 # False-Positive Classes

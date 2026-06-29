@@ -82,7 +82,7 @@ harness-native agent metadata or capability notes. Shared files keep the
 canonical vocabulary. Harness-specific instructions files and profile repos
 perform the projection.
 For a repo-local maintainer walkthrough of the broader architecture and
-historical context, see `docs/projection-layer-readme.md`.
+historical context, see `docs/projection_layer_readme.md`.
 
 ## Canonical Shared Vocabulary
 

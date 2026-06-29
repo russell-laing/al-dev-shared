@@ -60,7 +60,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
         ),
         (
-            "docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/",
+            "docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/",
             "Derived documentation regenerated only after the canonical maps are applied.",
         ),
         (
@@ -86,7 +86,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Persists the exact report handoff across sessions.",
         ),
         (
-            "docs/health/dispositions-open.md",
+            "docs/health/dispositions_open.md",
             "Lets report suppress or re-verify findings that already have durable decisions.",
         ),
         (
@@ -100,7 +100,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Presents the verified findings that require a maintainer decision.",
         ),
         (
-            "docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions-open.md",
+            "docs/health/dispositions_events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions_open.md",
             "Canonical event store for decisions; dispositions-open.md is the generated open-items read view.",
         ),
         (
@@ -126,7 +126,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Supports recovery by recording completed tasks and their commits.",
         ),
         (
-            "docs/health/dispositions-events/YYYY/YYYY-MM.jsonl",
+            "docs/health/dispositions_events/YYYY/YYYY-MM.jsonl",
             "Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store.",
         ),
         (

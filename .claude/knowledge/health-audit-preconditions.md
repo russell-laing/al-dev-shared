@@ -10,10 +10,10 @@ Canonical filter vocabulary lives in `health-filter-contract.md`.
 ## Disposition coverage criterion (cadence guard)
 
 A prior dossier counts as **dispositioned** when every *actionable* finding in it
-has a disposition event in the JSONL store (`docs/health/dispositions-events/`) —
+has a disposition event in the JSONL store (`docs/health/dispositions_events/`) —
 that is, an event whose disposition is `accepted`, `declined`, `grandfathered`,
-or `fixed`. Read `docs/health/dispositions-index.json` for a quick count check,
-then `docs/health/dispositions-open.md` for the open accepted list. Non-actionable
+or `fixed`. Read `docs/health/dispositions_index.json` for a quick count check,
+then `docs/health/dispositions_open.md` for the open accepted list. Non-actionable
 lens lines (fix field states no action required) do not need an event.
 
 - If coverage exists for the prior dossier, proceed.
@@ -66,7 +66,7 @@ python3 scripts/select_health_artifacts.py \
 **Disposition-coverage test:** If a dossier exists, check whether its actionable
 findings have disposition coverage in the JSONL event store per the
 *Disposition coverage criterion* section above. Read
-`docs/health/dispositions-index.json` for a quick count check. A single recent
+`docs/health/dispositions_index.json` for a quick count check. A single recent
 event is not enough — every actionable finding needs its own event.
 
 **Warning branch (undispositioned dossier):** If the ledger is absent or coverage

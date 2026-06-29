@@ -50,7 +50,7 @@ If any answer is missing, weak, or harness-specific, classify the suggestion as
 ## Coverage Model Ratchet
 
 When a suggestion passes the gate and becomes shared-profile scope, update or
-check `docs/harness-coverage-model.md` before changing distributed guidance.
+check `docs/harness_coverage_model.md` before changing distributed guidance.
 
 The coverage row must name:
 

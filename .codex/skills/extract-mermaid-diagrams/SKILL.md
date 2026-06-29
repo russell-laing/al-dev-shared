@@ -15,14 +15,14 @@ Run the bundled script from the repository root or any workspace with Markdown
 files:
 
 ```bash
-python3 .codex/skills/extract-mermaid-diagrams/scripts/extract_mermaid_diagrams.py docs/maintainer-tooling.md --out /private/tmp/mermaid-diagrams
+python3 .codex/skills/extract-mermaid-diagrams/scripts/extract_mermaid_diagrams.py docs/maintainer_tooling.md --out /private/tmp/mermaid-diagrams
 ```
 
 Use `--format svg` for scalable review artifacts or repeat `--format` to
 produce multiple render types:
 
 ```bash
-python3 .codex/skills/extract-mermaid-diagrams/scripts/extract_mermaid_diagrams.py docs/maintainer-tooling.md --format png --format svg --out /private/tmp/mermaid-diagrams
+python3 .codex/skills/extract-mermaid-diagrams/scripts/extract_mermaid_diagrams.py docs/maintainer_tooling.md --format png --format svg --out /private/tmp/mermaid-diagrams
 ```
 
 ## Workflow

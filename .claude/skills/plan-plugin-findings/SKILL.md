@@ -2,7 +2,7 @@
 name: plan-plugin-findings
 description: >-
   Verify and plan accepted health-audit findings. Reads accepted events from
-  docs/health/dispositions-open.md, runs a deterministic disposition matcher in
+  docs/health/dispositions_open.md, runs a deterministic disposition matcher in
   Phase 1 to classify findings before rubber-ducking proceeds, rubber-ducks each
   finding against the live codebase before any plan content is written, then produces a verified
   implementation plan via the writing-plans sub-skill (note: `closes_event_ids`
@@ -25,8 +25,8 @@ workflow:
   invoked-by: user
   repeatable: true
   inputs:
-    - docs/health/dispositions-open.md
-    - docs/health/dispositions-index.json
+    - docs/health/dispositions_open.md
+    - docs/health/dispositions_index.json
     - docs/health/<date>-<surface>-health.md
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
     - .dev/health-loop-state.md
@@ -144,8 +144,8 @@ topic contains the current surface keyword and any concrete dimension keyword
 (`design`, `quality`, or `naming`). Emit:
 
 > Note: `<surface>/<dimension>` findings were recently implemented on `<date>`
-> (plan: `<topic>`). Verify that `docs/health/dispositions-open.md` and
-> `docs/health/dispositions-index.json` reflect those closures before planning again.
+> (plan: `<topic>`). Verify that `docs/health/dispositions_open.md` and
+> `docs/health/dispositions_index.json` reflect those closures before planning again.
 
 This is an informational check — do not block planning.
 
@@ -219,20 +219,20 @@ python3 scripts/health_disposition_store.py match \
 The matcher returns a **high-precision candidate shortlist** classifying each
 finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify`
 candidate against the cited ledger row before acting. Read the specific flagged events from the JSONL event store by event ID
-(e.g., `grep -r '"event_id": "disp_YYYYMMDD_NNNNNN"' docs/health/dispositions-events/`) —
+(e.g., `grep -r '"event_id": "disp_YYYYMMDD_NNNNNN"' docs/health/dispositions_events/`) —
 do not read the full event store or the generated dispositions.md view directly.
 
-Read `docs/health/dispositions-index.json` first. If `open_accepted` is zero,
+Read `docs/health/dispositions_index.json` first. If `open_accepted` is zero,
 stop: there are no accepted findings to plan. If it is nonzero, read
-`docs/health/dispositions-open.md` and carry only the relevant `event_id` values
+`docs/health/dispositions_open.md` and carry only the relevant `event_id` values
 into plan tasks as `closes_event_ids`.
 
 - **`keep` with `accepted` status:** the primary planning input — keep it.
-  **Capture the `event_id`** from `docs/health/dispositions-open.md` for each
+  **Capture the `event_id`** from `docs/health/dispositions_open.md` for each
   accepted event. Carry this `event_id` forward to Phase 4 so each plan task
   can record which events it closes in `closes_event_ids`.
 - **`suppress`** (declined/grandfathered match): before skipping, check
-  `docs/health/dispositions-open.md` for an `accepted`-status row whose
+  `docs/health/dispositions_open.md` for an `accepted`-status row whose
   `(surface, dimension, object)` triple matches the candidate. If such a row
   exists, override the verdict to `keep` and use that row's `event_id` as the
   close-back ID (the finding was re-accepted after the prior
@@ -372,9 +372,9 @@ missing records and resolve them (re-dispatch or escalate) before continuing.
 > The task also carries a `regenerate` step, a **declined-row presence** check that
 > proves a new `declined` event row exists and explicitly closes the accepted id
 > — not merely the pre-existing `accepted` row that was always there
-> (`grep -rh '"closes_event_ids": \["<id>"\]' docs/health/dispositions-events/ | grep -q '"disposition": "declined"'`),
+> (`grep -rh '"closes_event_ids": \["<id>"\]' docs/health/dispositions_events/ | grep -q '"disposition": "declined"'`),
 > an **inverted** open-view absence check
-> (`if grep -q <id> docs/health/dispositions-open.md; then echo ERROR; exit 1; fi`),
+> (`if grep -q <id> docs/health/dispositions_open.md; then echo ERROR; exit 1; fi`),
 > and `closes_event_ids: []` with a note that `implement-plugin-health` MUST NOT
 > write `fixed` for these events (they are closed by `append_event`). The
 > **stale-object** skip below
@@ -597,7 +597,7 @@ steps below.
    Character count, not bytes — one emoji counts as one character.
 
 3. **Coverage reconciliation (mandatory gate).** Every accepted event in
-   `docs/health/dispositions-open.md` must be resolved **exactly once** across
+   `docs/health/dispositions_open.md` must be resolved **exactly once** across
    `(plan-task closes_event_ids)` ∪ `(decline/grandfather ledger tasks)` — none
    missing, none in both. Compute it explicitly and state the arithmetic in the
    handoff summary (e.g. "15 plan events + 1 grandfathered + 3 declined = 19
@@ -612,7 +612,7 @@ steps below.
    - `stage_completed: plan-plugin-findings`
    - `completed_at:` today's ISO date
    - `next_command: /implement-plugin-health --plan <plan-path>`
-   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions-open.md`
+   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions_open.md`
    - `fresh_session_recommended: true`
    - `note:` run `/implement-plugin-health` to execute AND close the ledger; do
      NOT use the writing-plans Subagent-Driven/Inline options — they skip

@@ -117,7 +117,7 @@ python3 scripts/generate_agent_projections.py
 python3 scripts/generate_maintainer_guide.py
 ```
 
-Use `docs/development-commands.md` for the full maintainer command set.
+Use `docs/development_commands.md` for the full maintainer command set.
 
 ## Documentation Quality Standards
 

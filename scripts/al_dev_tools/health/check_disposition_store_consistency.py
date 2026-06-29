@@ -7,7 +7,7 @@ so the PostToolUse git-commit hook stays green; exits 1 only on a real
 inconsistency (unparseable events or dangling closes_event_ids references).
 
 This script is intentionally read-only: it never writes to
-docs/health/dispositions-history/ or any other file.
+docs/health/dispositions_history/ or any other file.
 """
 
 from __future__ import annotations

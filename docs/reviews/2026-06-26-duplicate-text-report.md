@@ -616,8 +616,8 @@ Excerpt:
 ```text
 
 Run `python3 scripts/health_disposition_store.py match` against the JSONL event
-store and generated views. Read `docs/health/dispositions-index.json` first for
-counts, then read `docs/health/dispositions-open.md` only when open accepted
+store and generated views. Read `docs/health/dispositions_index.json` first for
+counts, then read `docs/health/dispositions_open.md` only when open accepted
 events need inspection. New decisions are appended with `append_event` and
 views are regenerated; do not call `append_row`, read
 `docs/health/dispositions.md` for ordinary suppression, or use

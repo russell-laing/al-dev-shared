@@ -226,7 +226,7 @@ Current source of truth: active implementation guidance lives in the current sha
 - Path: `docs/superpowers/plans/2026-06-05-self-healing-maintainer-guide.md`
 - Kind: plan
 - Status: superseded
-- Summary: Make `docs/maintainer-tooling.md` largely auto-generated from structured `workflow:` frontmatter contracts in each maintainer SKILL.md, so the guide that documents the self-healing loop self-heals.
+- Summary: Make `docs/maintainer_tooling.md` largely auto-generated from structured `workflow:` frontmatter contracts in each maintainer SKILL.md, so the guide that documents the self-healing loop self-heals.
 
 ### Rubber-Duck Commentary: Self-Healing Maintainer Guide Plan
 

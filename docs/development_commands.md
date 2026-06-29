@@ -57,7 +57,7 @@ python3 scripts/generate_agent_projections.py
 
 ## Documentation Maps (Mermaid Diagrams)
 
-The documentation maps (`docs/skills-map.md`, `docs/agent-map.md`, `docs/plugin-graph.md`) and maintainer guide pages (`docs/maintainer-tooling.md`, `docs/maintainer-tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
+The documentation maps (`docs/skills-map.md`, `docs/agent-map.md`, `docs/plugin-graph.md`) and maintainer guide pages (`docs/maintainer_tooling.md`, `docs/maintainer_tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
 
 ```bash
 # Regenerate all documentation map sections
@@ -76,14 +76,14 @@ python3 scripts/generate_maintainer_guide.py
 ```
 
 **Do not hand-edit** sections between `<!-- BEGIN GENERATED: ... -->` and `<!-- END GENERATED: ... -->` markers; changes will be overwritten on the next regeneration. Use the skills-based interface (`/sync-map-documentation`) for interactive updates.
-Local HTML exports such as `docs/maintainer-tooling.html` are preview-only artifacts, not maintained repo outputs; do not edit or commit them.
+Local HTML exports such as `docs/maintainer_tooling.html` are preview-only artifacts, not maintained repo outputs; do not edit or commit them.
 
 ## Health Disposition Store
 
 - Inspect current state (generated projection):
   `head -80 docs/health/dispositions.md`
 - Inspect the latest history shard:
-  `ls docs/health/dispositions-history/$(date +%Y)/` then `head -80 <shard>`
+  `ls docs/health/dispositions_history/$(date +%Y)/` then `head -80 <shard>`
 - Stamp legacy 5-column ledger rows with explicit surface/dimension/ID columns:
   `python3 scripts/migrate_health_disposition_columns.py --help`
 - Run the closure-staleness check:

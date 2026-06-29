@@ -1,6 +1,6 @@
 # Stage 4: Implement
 
-[Previous: Decide](./decide.md) | [Back to summary](../maintainer-tooling.md) | [Next: Derive](./derive.md)
+[Previous: Decide](./decide.md) | [Back to summary](../maintainer_tooling.md) | [Next: Derive](./derive.md)
 
 Implement executes the verified plan one task at a time, verifies each result, and closes
 the health loop by appending `fixed` events to the JSONL event store to prove work was completed. This stage
@@ -94,13 +94,13 @@ flowchart TD
 | --- | --- |
 | `docs/superpowers/plans/<date>-<topic>.md` | The approved execution contract; each task must name the event IDs it closes via `closes_event_ids:`. |
 | `.dev/implement-plugin-health-progress.md` | Supports recovery by recording completed tasks and their commits. |
-| `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl` | Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store. |
+| `docs/health/dispositions_events/YYYY/YYYY-MM.jsonl` | Receives the fixed close-back events that prove accepted work was completed; generated views regenerate from the event store. |
 | `.dev/health-loop-state.md` | Closes the core loop with `next_command: none` in the ledger-close commit. |
 | `docs/health/archived/` and `docs/superpowers/plans/archived/` | Retain consumed findings, dossiers, plans, and review evidence outside live selectors. |
 <!-- END GENERATED: maintainer-stage-implement-artifacts -->
 
 Exact per-skill reads, writes, and `next` declarations are in
-[Appendix B of the summary](../maintainer-tooling.md#appendix-b-contracted-skills).
+[Appendix B of the summary](../maintainer_tooling.md#appendix-b-contracted-skills).
 
 ---
 

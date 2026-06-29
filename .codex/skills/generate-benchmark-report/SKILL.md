@@ -102,7 +102,7 @@ Before writing the report:
 2. Capture the canonical disposition state:
 
    ```bash
-   python3 -m json.tool docs/health/dispositions-index.json
+   python3 -m json.tool docs/health/dispositions_index.json
    python3 scripts/health_disposition_store.py list-open
    python3 scripts/health_disposition_store.py list-open | wc -l
    python3 scripts/check_ledger_staleness.py
@@ -186,7 +186,7 @@ rg -n "^## (Scope|Executive Summary|Rubric|Evidence Inventory|Scores|Precision N
 rg -n "Initial scaffold created|Evidence inventory is added|Scores are added|Precision notes are added|Loop quality notes are added|Best-practice alignment is added|Harness follow-up fields are added|Recommendations are added|[T]ODO|[T]BD|\\.\\.\\." [report-path]
 find docs/health -maxdepth 3 -type f -print | sort > "$post_snapshot"
 comm -13 "$pre_snapshot" "$post_snapshot"
-python3 -m json.tool docs/health/dispositions-index.json
+python3 -m json.tool docs/health/dispositions_index.json
 python3 scripts/health_disposition_store.py list-open
 python3 scripts/health_disposition_store.py list-open | wc -l
 python3 scripts/check_ledger_staleness.py

@@ -192,7 +192,7 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "  outputs:\n"
         "    - docs/workflow-diagrams.md\n"
         "    - docs/plugin-graph.md\n"
-        "    - docs/maintainer-tooling.md\n"
+        "    - docs/maintainer_tooling.md\n"
         "    - profile-al-dev-shared/generated/agents/\n",
     )
     return skills
@@ -455,7 +455,7 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
             {
                 "docs/workflow-diagrams.md",
                 "docs/plugin-graph.md",
-                "docs/maintainer-tooling.md",
+                "docs/maintainer_tooling.md",
                 "profile-al-dev-shared/generated/agents/",
             },
         )
@@ -541,7 +541,7 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
     decide_text, _ = lib.render_stage_detail(
         contracts,
         "decide",
-        {"docs/health/dispositions-events/*/*-*.jsonl"},
+        {"docs/health/dispositions_events/*/*-*.jsonl"},
     )
     assert "flowchart TD" in decide_text
     assert 'skill_record_health_dispositions["/record-plugin-dispositions"]' in decide_text
@@ -559,7 +559,7 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
         "implement",
         {
             ".dev/implement-plugin-health-progress.md",
-            "docs/health/dispositions-events/*/*-*.jsonl",
+            "docs/health/dispositions_events/*/*-*.jsonl",
         },
     )
     assert "flowchart TD" in implement_text
@@ -677,7 +677,7 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         assert 'art_docs_workflow_diagrams_md[".../workflow-diagrams.md"]' in text
         assert 'art__dev_sync_map_documentation_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
         assert 'art_docs_plugin_graph_md[".../plugin-graph.md"]' not in text
-        assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
+        assert 'art_docs_maintainer_tooling_md["docs/maintainer_tooling.md"]' in text
         assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
         assert node_count >= 1
 
@@ -922,13 +922,14 @@ def test_cli_main_rewrites_only_marked_regions() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         _build_skills_fixture(root)
-        guide = root / "docs" / "maintainer-tooling.md"
+        guide = root / "docs" / "maintainer_tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(), encoding="utf-8")
-        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir = root / "docs" / "maintainer_tooling"
         detail_dir.mkdir(parents=True)
         for stage in ("map-sync", "discover", "decide", "implement", "derive"):
-            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
+            stage_name = lib.STAGE_DOCS[stage].name
+            (detail_dir / stage_name).write_text(_stage_template(stage), encoding="utf-8")
         cli = _patched_cli(root)
         assert cli.main() == 0
         text = guide.read_text(encoding="utf-8")
@@ -954,13 +955,14 @@ def test_cli_main_fails_closed_on_malformed_contract() -> None:
             "  stage: nonsense\n"
             "  invoked-by: user\n",
         )
-        guide = root / "docs" / "maintainer-tooling.md"
+        guide = root / "docs" / "maintainer_tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(), encoding="utf-8")
-        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir = root / "docs" / "maintainer_tooling"
         detail_dir.mkdir(parents=True)
         for stage in ("map-sync", "discover", "decide", "implement", "derive"):
-            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
+            stage_name = lib.STAGE_DOCS[stage].name
+            (detail_dir / stage_name).write_text(_stage_template(stage), encoding="utf-8")
         before = guide.read_bytes()
         cli = _patched_cli(root)
         stderr = io.StringIO()
@@ -974,13 +976,14 @@ def test_cli_main_fails_closed_when_marker_pair_missing() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         _build_skills_fixture(root)
-        guide = root / "docs" / "maintainer-tooling.md"
+        guide = root / "docs" / "maintainer_tooling.md"
         guide.parent.mkdir(parents=True)
         guide.write_text(_guide_template(drop_key="maintainer-gaps"), encoding="utf-8")
-        detail_dir = root / "docs" / "maintainer-tooling"
+        detail_dir = root / "docs" / "maintainer_tooling"
         detail_dir.mkdir(parents=True)
         for stage in ("map-sync", "discover", "decide", "implement", "derive"):
-            (detail_dir / f"{stage}.md").write_text(_stage_template(stage), encoding="utf-8")
+            stage_name = lib.STAGE_DOCS[stage].name
+            (detail_dir / stage_name).write_text(_stage_template(stage), encoding="utf-8")
         before = guide.read_bytes()
         cli = _patched_cli(root)
         assert cli.main() == 1
@@ -1025,19 +1028,19 @@ def test_compute_gaps_excludes_self_generated_guide_from_freshness() -> None:
             "  invoked-by: user\n"
             "  repeatable: false\n"
             "  outputs:\n"
-            "    - docs/maintainer-tooling.md\n"
+            "    - docs/maintainer_tooling.md\n"
             "    - docs/other-output.md\n",
         )
         contracts, missing = lib.load_contracts(skills)
         gaps = lib.compute_gaps(contracts, missing, repo)
         stale_items = [item for item, _ in gaps["stale-artifact"]]
         # The guide must NOT report its own freshness (self-referential, breaks idempotence):
-        assert "docs/maintainer-tooling.md" not in stale_items
+        assert "docs/maintainer_tooling.md" not in stale_items
         # But other produced artifacts still get a freshness row:
         assert "docs/other-output.md" in stale_items
         # And the guide is still surfaced as an orphaned artifact (time-invariant signal):
         orphan_items = [item for item, _ in gaps["orphaned-artifact"]]
-        assert "docs/maintainer-tooling.md" in orphan_items
+        assert "docs/maintainer_tooling.md" in orphan_items
 
 
 def test_live_contracts_select_focused_map_sync_and_derive_renderers() -> None:
@@ -1066,7 +1069,7 @@ def test_live_contracts_cover_multi_page_docs_and_friction_report_input() -> Non
     contracts, _ = lib.load_contracts(REPO_ROOT / ".claude" / "skills")
     by_name = {contract.skill: contract for contract in contracts}
     assert (
-        "docs/maintainer-tooling/"
+        "docs/maintainer_tooling/"
         in by_name["sync-map-documentation-write"].outputs
     )
     assert (

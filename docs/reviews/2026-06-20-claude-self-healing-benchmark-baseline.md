@@ -10,7 +10,7 @@ staleness checker, the benchmark adapter, and the current loop-state breadcrumb.
 The latest generated disposition index is from June 28, 2026 and still reports a
 closed loop.
 
-The current disposition evidence is JSONL-backed. Canonical disposition events live under `docs/health/dispositions-events/`, and the generated JSONL views `docs/health/dispositions-open.md`, `docs/health/dispositions-current.md`, and `docs/health/dispositions-index.json` are the current baseline for open/current counts. `docs/health/dispositions.md` is treated as a temporary generated legacy compatibility view, not as the source of truth.
+The current disposition evidence is JSONL-backed. Canonical disposition events live under `docs/health/dispositions_events/`, and the generated JSONL views `docs/health/dispositions_open.md`, `docs/health/dispositions_current.md`, and `docs/health/dispositions_index.json` are the current baseline for open/current counts. `docs/health/dispositions.md` is treated as a temporary generated legacy compatibility view, not as the source of truth.
 
 ## Executive Summary
 
@@ -46,8 +46,8 @@ External anchors:
 | `docs/health/archived/2026-06-18-tooling-health.md` | Recent tooling quality check | Raw/candidate count not available, 11 retained findings, 25 dropped unverified, 11 new, 0 recurring, no failed lenses. |
 | `docs/superpowers/plans/archived/2026-06-19-plugin-map-health-fixes.md` | Implementation and close-back evidence | 46 accepted rows addressed, 33 planned, 13 re-dispositioned, close-back via `closes_rows`. |
 | `.dev/health-loop-state.md` | Durable loop pointer | Current live breadcrumb shows `stage_completed: implement-plugin-health`, `completed_at: 2026-06-28`, `next_command: none`, and a note that 13 implementation tasks completed with 17 fixed disposition events appended. |
-| `docs/health/dispositions-index.json` | Generated JSONL disposition index | `open_accepted` is 0 and `integrity_warnings` is 0. |
-| `docs/health/dispositions-open.md` | Generated JSONL open-row view | Contains no open accepted events according to `health_disposition_store.py list-open`. |
+| `docs/health/dispositions_index.json` | Generated JSONL disposition index | `open_accepted` is 0 and `integrity_warnings` is 0. |
+| `docs/health/dispositions_open.md` | Generated JSONL open-row view | Contains no open accepted events according to `health_disposition_store.py list-open`. |
 | `scripts/check_ledger_staleness.py` output | Legacy effective-open closure check | Reports 0 effective-open accepted row(s). |
 | `docs/health/dispositions.md` | Legacy compatibility view | Temporary generated compatibility output only; not the current source of truth for benchmark extraction. |
 
@@ -98,7 +98,7 @@ The recent loop shows good end-to-end closure:
 - Findings were ranked only after evidence verification and disposition suppression.
 - The June 19 implementation plan says 46 accepted rows were addressed, 33 were planned, and 13 were re-dispositioned.
 - Plan tasks carried `closes_rows` identifiers for ledger close-back.
-- `docs/health/dispositions-index.json` reports `open_accepted: 0` and `integrity_warnings: 0`.
+- `docs/health/dispositions_index.json` reports `open_accepted: 0` and `integrity_warnings: 0`.
 - `python3 scripts/health_disposition_store.py list-open` prints no open accepted events.
 - `.dev/health-loop-state.md` now reports `stage_completed: implement-plugin-health`, `completed_at: 2026-06-28`, and `next_command: none`.
 - `python3 scripts/check_ledger_staleness.py` reports 0 effective-open accepted row(s).
@@ -162,9 +162,9 @@ The later rerunnable harness should extract these fields:
 | `recurring_raw_text` | raw `Recurring from prior sweeps` summary text | unchanged |
 | `accepted_rows_planned` | implementation plan summary and disposition views | JSONL open/current view adapter |
 | `closed_rows` | `closes_rows`, JSONL close events, and legacy checker | JSONL event close-back adapter |
-| `jsonl_open_accepted_count` | `docs/health/dispositions-index.json` and `health_disposition_store.py list-open` | unchanged |
+| `jsonl_open_accepted_count` | `docs/health/dispositions_index.json` and `health_disposition_store.py list-open` | unchanged |
 | `legacy_effective_open_count` | `check_ledger_staleness.py` | unchanged until legacy checker is retired |
-| `integrity_warning_count` | `docs/health/dispositions-index.json` | unchanged |
+| `integrity_warning_count` | `docs/health/dispositions_index.json` | unchanged |
 | `loop_stage_completed` | `.dev/health-loop-state.md` | unchanged |
 | `next_command` | `.dev/health-loop-state.md` | unchanged |
 

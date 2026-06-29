@@ -2,7 +2,7 @@
 """Shard-migrate the monolithic health disposition ledger.
 
 Reads docs/health/dispositions.md, splits rows into per-month shards under
-docs/health/dispositions-history/, and rewrites docs/health/dispositions.md
+docs/health/dispositions_history/, and rewrites docs/health/dispositions.md
 as a generated current-state projection.
 
 This is a one-shot migration tool. Do not confuse it with

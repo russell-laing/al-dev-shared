@@ -31,7 +31,7 @@ def _short_label(template: str) -> str:
             return parts[-1] + "/"
         return template
 
-    if len(parts) == 2 and parts[0] == "docs" and parts[1] != "maintainer-tooling.md":
+    if len(parts) == 2 and parts[0] == "docs" and parts[1] != "maintainer_tooling.md":
         return ".../" + parts[1]
 
     if len(template) <= 30:
@@ -161,7 +161,7 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
     "sync-map-documentation-write": (
         "docs/workflow-diagrams.md",
         "docs/plugin-graph.md",
-        "docs/maintainer-tooling.md",
+        "docs/maintainer_tooling.md",
         "profile-al-dev-shared/generated/agents/",
     ),
 }
@@ -192,7 +192,7 @@ DISCOVER_REQUIRED_INPUTS = {
     ),
     "report-plugin-health": (
         "docs/health/<date>-<surface>-findings.md",
-        "docs/health/dispositions-open.md",
+        "docs/health/dispositions_open.md",
     ),
 }
 
@@ -383,8 +383,8 @@ def render_map_sync_stage_detail(
         orphans,
         "docs/workflow-diagrams.md",
         "docs/plugin-graph.md",
-        "docs/maintainer-tooling.md",
-        "docs/maintainer-tooling/",
+        "docs/maintainer_tooling.md",
+        "docs/maintainer_tooling/",
         "profile-al-dev-shared/generated/agents/",
     )
     lines = [
@@ -418,7 +418,7 @@ def render_discover_stage_detail(
     """Focused discover view: audit-driven and friction-driven entries converge on report."""
     del stage_contracts
     breadcrumb_class = _focused_artifact_class(orphans, ".dev/health-loop-state.md")
-    dispositions_class = _focused_artifact_class(orphans, "docs/health/dispositions-open.md")
+    dispositions_class = _focused_artifact_class(orphans, "docs/health/dispositions_open.md")
     dossier_class = _focused_artifact_class(orphans, "docs/health/<date>-<surface>-health.md")
     lines = [
         "flowchart TD",
@@ -432,7 +432,7 @@ def render_discover_stage_detail(
         '        skill_ingest_friction_log["/ingest-plugin-friction"]',
         "    end",
         '    art_breadcrumb[".dev/health-loop-state.md"]',
-        '    art_dispositions["docs/health/dispositions-open.md"]',
+        '    art_dispositions["docs/health/dispositions_open.md"]',
         '    skill_plugin_health_report["/report-plugin-health"]',
         '    art_dossier["ranked health dossier"]',
         "",
@@ -458,7 +458,7 @@ def render_decide_stage_detail(orphans: set[str]) -> tuple[str, int]:
     """Focused decide view: primary ledger-to-plan path plus optional revision."""
     ledger_class = _focused_artifact_class(
         orphans,
-        "docs/health/dispositions-events/<year>/<year>-<month>.jsonl",
+        "docs/health/dispositions_events/<year>/<year>-<month>.jsonl",
     )
     plan_class = _focused_artifact_class(orphans, "docs/superpowers/plans/<date>-<topic>.md")
     commentary_class = _focused_artifact_class(
@@ -501,7 +501,7 @@ def render_implement_stage_detail(orphans: set[str]) -> tuple[str, int]:
     progress_class = _focused_artifact_class(orphans, ".dev/implement-plugin-health-progress.md")
     closed_class = _focused_artifact_class(
         orphans,
-        "docs/health/dispositions-events/<year>/<year>-<month>.jsonl",
+        "docs/health/dispositions_events/<year>/<year>-<month>.jsonl",
         ".dev/health-loop-state.md",
     )
     lines = [

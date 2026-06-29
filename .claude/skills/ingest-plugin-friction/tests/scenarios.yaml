@@ -4,21 +4,21 @@ scenarios:
     status: golden
     user_prompt: "ingest the friction logs"
     expected_artifacts:
-      - "docs/health/friction-ingest-log.md"
+      - "docs/health/friction_ingest_log.md"
     notes: "Primary trigger phrase — should locate un-archived friction logs and begin Phase 0."
 
   - id: process-friction-logs
     status: golden
     user_prompt: "process the friction logs in ~/friction-log"
     expected_artifacts:
-      - "docs/health/friction-ingest-log.md"
+      - "docs/health/friction_ingest_log.md"
     notes: "Paraphrase trigger; same execution path as the primary trigger."
 
   - id: fold-friction-into-loop
     status: golden
     user_prompt: "fold the friction logs into the health loop"
     expected_artifacts:
-      - "docs/health/friction-ingest-log.md"
+      - "docs/health/friction_ingest_log.md"
     notes: "Trigger phrase referencing loop integration."
 
   - id: no-trigger-audit-plugin-health

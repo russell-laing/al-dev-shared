@@ -54,7 +54,7 @@ open accepted events, and all validators before implementation.
 2. Verify the plan is execution-ready:
    - it is not under `docs/superpowers/plans/archived/`
    - it contains `closes_event_ids:` for every ledger-closing task
-   - those IDs still appear as open accepted events in `docs/health/dispositions-open.md`
+   - those IDs still appear as open accepted events in `docs/health/dispositions_open.md`
    - skipped, declined, or grandfathered items are handled by ledger events, not by pretending a source edit fixed them.
 3. Start in a project-local `.worktrees/<topic>` worktree only after checking the current branch, unrelated dirty files, and whether `.worktrees/` is ignored.
    If the plan file is absent inside the worktree, copy the full plan text into scope before relying on path-based reads.

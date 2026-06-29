@@ -15,8 +15,8 @@ workflow:
   outputs:
     - docs/workflow-diagrams.md
     - docs/plugin-graph.md
-    - docs/maintainer-tooling.md
-    - docs/maintainer-tooling/
+    - docs/maintainer_tooling.md
+    - docs/maintainer_tooling/
     - profile-al-dev-shared/generated/agents/
   next: [audit-plugin-health]
 ---
@@ -169,8 +169,8 @@ git -C /Users/russelllaing/al-dev-shared status
 git -C /Users/russelllaing/al-dev-shared add \
     docs/skills-map.md \
     docs/agent-map.md \
-    docs/maintainer-tooling.md \
-    docs/maintainer-tooling/ \
+    docs/maintainer_tooling.md \
+    docs/maintainer_tooling/ \
     docs/workflow-diagrams.md \
     docs/plugin-graph.md
 git -C /Users/russelllaing/al-dev-shared add \

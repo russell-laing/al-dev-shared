@@ -45,7 +45,7 @@ agent name from the filename (strip directory path and `.md` extension).
   - For files under `.claude/agents/` (maintainer tooling): filename matches a
     maintainer pattern (`{design|quality}-{agent|skill}-lens-{aspect}`,
     `sync-map-documentation-*`, or `naming-convention-lens`). Do **not** apply
-    the `al-dev-` rule here — see `docs/naming-convention.md`.
+    the `al-dev-` rule here — see `docs/naming_convention.md`.
 - `description` field is present in YAML frontmatter and is a single sentence
 - `model` field is present in YAML frontmatter. The short model aliases
   (`sonnet`, `haiku`, `opus`) are the canonical project convention — do

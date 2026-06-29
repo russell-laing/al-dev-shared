@@ -19,13 +19,13 @@ STAGE_TITLES = {
     "derive": "Derive",
     "support": "Adjacent tooling",
 }
-SUMMARY_DOC = Path("docs/maintainer-tooling.md")
+SUMMARY_DOC = Path("docs/maintainer_tooling.md")
 STAGE_DOCS = {
-    "map-sync": Path("docs/maintainer-tooling/map-sync.md"),
-    "discover": Path("docs/maintainer-tooling/discover.md"),
-    "decide": Path("docs/maintainer-tooling/decide.md"),
-    "implement": Path("docs/maintainer-tooling/implement.md"),
-    "derive": Path("docs/maintainer-tooling/derive.md"),
+    "map-sync": Path("docs/maintainer_tooling/map_sync.md"),
+    "discover": Path("docs/maintainer_tooling/discover.md"),
+    "decide": Path("docs/maintainer_tooling/decide.md"),
+    "implement": Path("docs/maintainer_tooling/implement.md"),
+    "derive": Path("docs/maintainer_tooling/derive.md"),
 }
 NODE_BUDGET = 15
 SKILL_INVOKER_RE = re.compile(r"^skill:([a-z0-9-]+)$")
