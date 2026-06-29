@@ -72,17 +72,9 @@ Create `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` following the st
 
 ### Step 3: Return Output
 
-Return structured block:
-
-```text
-TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
-TICKET_ID: [ID]
-STATUS: [Status]
-PRIORITY: [Priority]
-COMMENTS_COUNT: [N]
-ATTACHMENTS: [Count or "None"]
-INLINE_IMAGES_COUNT: [N or "None"]
-```
+Return the structured block defined in
+`knowledge/ticket-agent-invocation-pattern.md` so the fetch phase and the
+canonical dispatch pattern stay in sync.
 
 ## Download Phase (Conditional)
 

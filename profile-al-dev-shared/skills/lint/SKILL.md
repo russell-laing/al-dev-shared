@@ -51,22 +51,9 @@ If `$ARGUMENTS` is provided and points to an existing log file, copy it:
 cp "$ARGUMENTS" .dev/compile-errors.log
 ```
 
-Otherwise run:
-
-```bash
-if command -v al-compile &>/dev/null; then
-  al-compile --output .dev/compile-errors.log
-elif command -v al &>/dev/null; then
-  al compile /project:. /packagecachepath:.alpackages \
-    /errorlog:.dev/compile-errors.log
-else
-  echo "AL compiler not found; install al-compile or AL CLI tools before retrying." \
-    | tee .dev/compile-errors.log
-  exit 1
-fi
-```
-
-**Note:** Use `al-compile` if available (preferred—faster and simpler). If `al-compile` is not in PATH, fall back to `al compile`. Both produce the same output log format.
+Otherwise follow `knowledge/compile-lint-procedure.md` for the current
+compiler selection and fallback logic. That procedure owns the shared command
+block so the lint skill stays aligned with the canonical compile flow.
 
 (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
 
