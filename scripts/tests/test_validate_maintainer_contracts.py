@@ -66,9 +66,59 @@ def test_bare_filename_does_not_satisfy():
     print("PASS test_bare_filename_does_not_satisfy")
 
 
+def test_false_positive_classes_reference_is_required():
+    module = _load()
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        _make_skill(root, "discover-plugin-health", "# Skill\n\nNo tracker reference here.\n")
+        _make_skill(root, "report-plugin-health", "# Skill\n\nAlso missing the tracker.\n")
+        violations = module.check_coverage(root)
+        assert any(
+            "discover-plugin-health" in v and "false-positive-classes" in v
+            for v in violations
+        ), violations
+        assert any(
+            "report-plugin-health" in v and "false-positive-classes" in v
+            for v in violations
+        ), violations
+    print("PASS test_false_positive_classes_reference_is_required")
+
+
+def test_token_usage_block_is_required_for_report_plugin_health():
+    module = _load()
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        _make_skill(root, "report-plugin-health", "# Skill\n\nSee ../../knowledge/false-positive-classes.md\n")
+        violations = module.check_coverage(root)
+        assert any(
+            "report-plugin-health" in v and "token-usage" in v
+            for v in violations
+        ), violations
+    print("PASS test_token_usage_block_is_required_for_report_plugin_health")
+
+
+def test_implement_skill_requires_procedure_log_contract():
+    module = _load()
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        _make_skill(
+            root,
+            "implement-plugin-health",
+            "# Skill\n\nSee ../../knowledge/phase-proof-contract.md\n",
+        )
+        violations = module.check_coverage(root)
+        assert any(
+            "implement-plugin-health-procedure-log.jsonl" in v for v in violations
+        ), violations
+    print("PASS test_implement_skill_requires_procedure_log_contract")
+
+
 if __name__ == "__main__":
     test_missing_reference_is_flagged()
     test_present_reference_passes()
     test_unlisted_skill_not_required()
     test_bare_filename_does_not_satisfy()
+    test_false_positive_classes_reference_is_required()
+    test_token_usage_block_is_required_for_report_plugin_health()
+    test_implement_skill_requires_procedure_log_contract()
     print("\nAll tests passed")

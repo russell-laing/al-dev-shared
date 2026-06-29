@@ -43,10 +43,21 @@ METRIC_FIELDS = (
     "new_count",
     "recurring_count",
 )
+TOKEN_FIELDS = (
+    "token_data_available",
+    "prompt_tokens",
+    "completion_tokens",
+    "context_compaction_events",
+)
 
 NOT_AVAILABLE = "not available"
+FALSE_POSITIVE_CLASS_PATH = Path("docs/health/false-positive-classes.md")
+FALSE_POSITIVE_STATUSES = ("Candidate", "Monitor", "Suppress")
+PROCEDURE_LOG_PATH = Path(".dev/implement-plugin-health-procedure-log.jsonl")
+EXPECTED_PHASES_PATH = Path("docs/health/expected-phases.md")
 
 _METRICS_BLOCK = re.compile(r"<!--\s*benchmark-metrics\b(.*?)-->", re.DOTALL)
+_TOKEN_BLOCK = re.compile(r"<!--\s*token-usage\b(.*?)-->", re.DOTALL)
 _FILENAME = re.compile(
     r"^(?P<date>\d{4}-\d{2}-\d{2})-(?P<surface>plugin|tooling)-"
 )
@@ -85,6 +96,30 @@ def parse_metrics_block(text: str) -> dict | None:
     return {field: parsed.get(field, NOT_AVAILABLE) for field in METRIC_FIELDS}
 
 
+def parse_token_usage_block(text: str) -> tuple[dict[str, object], bool]:
+    defaults: dict[str, object] = {
+        "token_data_available": False,
+        "prompt_tokens": NOT_AVAILABLE,
+        "completion_tokens": NOT_AVAILABLE,
+        "context_compaction_events": NOT_AVAILABLE,
+    }
+    match = _TOKEN_BLOCK.search(text)
+    if match is None:
+        return defaults, False
+    parsed = defaults.copy()
+    for line in match.group(1).splitlines():
+        if ":" not in line:
+            continue
+        key, _, raw = line.partition(":")
+        key = key.strip()
+        value = raw.strip()
+        if key == "token_data_available":
+            parsed[key] = value.lower() == "true"
+        elif key in TOKEN_FIELDS:
+            parsed[key] = _coerce_count(value)
+    return parsed, True
+
+
 def _dossier_surface_dimensions(text: str, path: Path) -> tuple[str, list[str]]:
     surface = ""
     name_match = _FILENAME.match(path.name)
@@ -114,6 +149,7 @@ def parse_dossier(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     surface, dimensions = _dossier_surface_dimensions(text, path)
     metrics = parse_metrics_block(text)
+    token_usage, token_block_present = parse_token_usage_block(text)
     record: dict[str, object] = {
         "artifact_path": str(path),
         "surface": surface,
@@ -126,7 +162,118 @@ def parse_dossier(path: Path) -> dict:
     else:
         record.update(metrics)
         record["metrics_block_present"] = True
+    record.update(token_usage)
+    record["token_usage_block_present"] = token_block_present
     return record
+
+
+def _parse_markdown_table_row(line: str) -> list[str] | None:
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+    if not cells:
+        return None
+    if all(set(cell) <= {"-", ":", " "} for cell in cells):
+        return None
+    return cells
+
+
+def parse_false_positive_classes(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        return []
+    rows: list[dict[str, str]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        cells = _parse_markdown_table_row(line)
+        if cells is None or len(cells) != 5 or cells[0] == "ID":
+            continue
+        status = cells[4]
+        if status not in FALSE_POSITIVE_STATUSES:
+            status = NOT_AVAILABLE
+        rows.append(
+            {
+                "id": cells[0],
+                "description": cells[1],
+                "first_seen": cells[2],
+                "last_seen": cells[3],
+                "status": status,
+            }
+        )
+    return rows
+
+
+def false_positive_status_counts(rows: list[dict[str, str]]) -> dict[str, int]:
+    counts = {status: 0 for status in FALSE_POSITIVE_STATUSES}
+    for row in rows:
+        status = row.get("status", NOT_AVAILABLE)
+        if status in counts:
+            counts[status] += 1
+    return counts
+
+
+def parse_expected_phases(text: str) -> dict[str, list[str]]:
+    expected: dict[str, list[str]] = {}
+    current_skill: str | None = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("## "):
+            current_skill = stripped[3:].strip()
+            expected[current_skill] = []
+            continue
+        cells = _parse_markdown_table_row(stripped)
+        if (
+            current_skill
+            and cells is not None
+            and len(cells) >= 2
+            and cells[0] != "Phase"
+        ):
+            expected[current_skill].append(cells[0])
+    return expected
+
+
+def load_expected_phases(path: Path) -> dict[str, list[str]]:
+    if not path.is_file():
+        return {}
+    return parse_expected_phases(path.read_text(encoding="utf-8"))
+
+
+def parse_procedure_log(path: Path) -> list[dict[str, object]]:
+    if not path.is_file():
+        return []
+    records: list[dict[str, object]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            records.append(json.loads(stripped))
+        except json.JSONDecodeError:
+            records.append({"parse_error": stripped})
+    return records
+
+
+def summarize_procedure_log(
+    records: list[dict[str, object]],
+    expected: dict[str, list[str]],
+) -> dict[str, dict[str, object]]:
+    summary: dict[str, dict[str, object]] = {}
+    by_skill: dict[str, set[str]] = {}
+    for record in records:
+        skill = str(record.get("skill", NOT_AVAILABLE))
+        phase = str(record.get("phase", NOT_AVAILABLE))
+        if skill == NOT_AVAILABLE or phase == NOT_AVAILABLE:
+            continue
+        if record.get("status") == "complete":
+            by_skill.setdefault(skill, set()).add(phase)
+    for skill, phases in expected.items():
+        completed = by_skill.get(skill, set())
+        missing = [phase for phase in phases if phase not in completed]
+        summary[skill] = {
+            "complete": not missing,
+            "completed_phases": sorted(completed),
+            "missing_phases": missing,
+        }
+    return summary
 
 
 def read_index(root: Path) -> dict:
@@ -150,6 +297,13 @@ def run_staleness(root: Path) -> object:
     rows = load_rows_from_store(root)
     resolve_closures(rows)
     return sum(1 for row in rows if row.disposition == "accepted" and row.closed_by is None)
+
+
+def load_disposition_events(root: Path) -> list[dict[str, object]]:
+    events_root = dispositions_events_root(root)
+    if not events_root.is_dir():
+        return []
+    return list(iter_event_rows(events_root))
 
 
 def read_loop_state(root: Path) -> dict:
@@ -184,6 +338,39 @@ def count_close_back(root: Path) -> int:
             if event.get("disposition") == "fixed" and event.get("closes_event_ids"):
                 total += 1
     return total
+
+
+def compute_self_healing_signals(
+    events: list[dict[str, object]],
+    records: list[dict[str, object]],
+) -> dict[str, object]:
+    disposition_counts: dict[str, int] = {}
+    close_back_events = 0
+    for event in events:
+        disposition = str(event.get("disposition", NOT_AVAILABLE))
+        disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
+        if disposition == "fixed" and event.get("closes_event_ids"):
+            close_back_events += 1
+
+    raw_total = 0
+    dropped_total = 0
+    for record in records:
+        raw = record.get("raw_count")
+        dropped = record.get("dropped_unverified_count")
+        if isinstance(raw, int) and isinstance(dropped, int) and raw > 0:
+            raw_total += raw
+            dropped_total += dropped
+
+    cascade_rate: object = NOT_AVAILABLE
+    if raw_total:
+        cascade_rate = round(dropped_total / raw_total, 4)
+
+    return {
+        "disposition_event_counts": disposition_counts,
+        "close_back_event_count": close_back_events,
+        "cascade_prevention_rate": cascade_rate,
+        "cascade_prevention_denominator": raw_total,
+    }
 
 
 def jsonl_views_present(root: Path) -> bool:
@@ -227,7 +414,14 @@ def build_report(root: Path, surface: str, limit: int) -> dict:
     legacy_open = run_staleness(root)
     list_open = run_list_open(root)
     loop = read_loop_state(root)
+    events = load_disposition_events(root)
     close_back = count_close_back(root)
+    false_positive_classes = parse_false_positive_classes(
+        root / FALSE_POSITIVE_CLASS_PATH
+    )
+    expected_phases = load_expected_phases(root / EXPECTED_PHASES_PATH)
+    procedure_log = parse_procedure_log(root / PROCEDURE_LOG_PATH)
+    prospective_procedure = summarize_procedure_log(procedure_log, expected_phases)
 
     records = []
     for path in collect_dossiers(root, surface, limit):
@@ -238,6 +432,8 @@ def build_report(root: Path, surface: str, limit: int) -> dict:
         record["loop_stage_completed"] = loop["loop_stage_completed"]
         record["next_command"] = loop["next_command"]
         records.append(record)
+
+    self_healing_signals = compute_self_healing_signals(events, records)
 
     checklist = {
         "evidence_gate_run": any(
@@ -259,6 +455,12 @@ def build_report(root: Path, surface: str, limit: int) -> dict:
         "procedure_integrity": checklist,
         "list_open_accepted_count": list_open,
         "close_back_event_count": close_back,
+        "false_positive_classes": false_positive_classes,
+        "false_positive_status_counts": false_positive_status_counts(
+            false_positive_classes
+        ),
+        "self_healing_signals": self_healing_signals,
+        "prospective_procedure": prospective_procedure,
         "dossiers": records,
     }
 
@@ -273,10 +475,43 @@ def render_markdown(report: dict) -> str:
         mark = "✅" if value else "❌"
         lines.append(f"- {mark} `{key}`: {_fmt(value)}")
     lines.append("")
+    lines.append("## Prospective procedure")
+    prospective = report.get("prospective_procedure", {})
+    if prospective:
+        for skill, summary in prospective.items():
+            mark = "✅" if summary.get("complete") else "❌"
+            missing = ", ".join(summary.get("missing_phases", [])) or "none"
+            lines.append(f"- {mark} `{skill}` missing phases: {missing}")
+    else:
+        lines.append("- not available")
+    lines.append("")
     lines.append(
         f"list-open accepted: {report['list_open_accepted_count']} · "
         f"close-back events: {report['close_back_event_count']}"
     )
+    lines.append("")
+    lines.append("## Self-healing signals")
+    signals = report.get("self_healing_signals", {})
+    if signals:
+        lines.append(
+            f"- cascade_prevention_rate: {signals.get('cascade_prevention_rate')}"
+        )
+        lines.append(
+            f"- cascade_prevention_denominator: {signals.get('cascade_prevention_denominator')}"
+        )
+        lines.append(
+            f"- close_back_event_count: {signals.get('close_back_event_count')}"
+        )
+    else:
+        lines.append("- not available")
+    lines.append("")
+    lines.append("## False-positive classes")
+    counts = report.get("false_positive_status_counts", {})
+    if counts:
+        for status in FALSE_POSITIVE_STATUSES:
+            lines.append(f"- {status}: {counts.get(status, 0)}")
+    else:
+        lines.append("- not available")
     lines.append("")
     lines.append("## Dossiers")
     for record in report["dossiers"]:

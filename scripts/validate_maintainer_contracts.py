@@ -17,6 +17,8 @@ SKILLS_ROOT = REPO_ROOT / ".claude" / "skills"
 PHASE_PROOF_DOC = "phase-proof-contract.md"
 DISPATCH_DOC = "dispatch-fallback-contract.md"
 SCOPE_PACK_DOC = "delegated-scope-pack.md"
+FALSE_POSITIVE_CLASSES_DOC = "false-positive-classes.md"
+PROCEDURE_LOG_PATH = ".dev/implement-plugin-health-procedure-log.jsonl"
 MAINTAINER_CONTRACTS_HEADING = "## Maintainer Contracts"
 
 # Authoritative scope sets. Update deliberately when a skill changes shape.
@@ -51,6 +53,19 @@ REQUIREMENTS = [
     (DELEGATING_EXECUTION_SKILLS, SCOPE_PACK_DOC),
 ]
 
+FALSE_POSITIVE_CLASS_TRACKING_SKILLS = {
+    "discover-plugin-health",
+    "report-plugin-health",
+}
+
+TOKEN_USAGE_BLOCK_SKILLS = {
+    "report-plugin-health",
+}
+
+PROCEDURE_LOG_SKILLS = {
+    "implement-plugin-health",
+}
+
 
 def has_markdown_heading(text: str, heading: str) -> bool:
     heading_re = re.compile(rf"^{re.escape(heading)}\s*$")
@@ -80,6 +95,28 @@ def check_coverage(skills_root: Path) -> list[str]:
             ref = f"../../knowledge/{doc}"
             if ref not in text:
                 violations.append(f"{name}: missing reference to {ref}")
+    for name in sorted(FALSE_POSITIVE_CLASS_TRACKING_SKILLS):
+        skill_md = skills_root / name / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_text(encoding="utf-8")
+        ref = f"../../knowledge/{FALSE_POSITIVE_CLASSES_DOC}"
+        if ref not in text:
+            violations.append(f"{name}: missing reference to {ref}")
+    for name in sorted(TOKEN_USAGE_BLOCK_SKILLS):
+        skill_md = skills_root / name / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_text(encoding="utf-8")
+        if "<!-- token-usage -->" not in text:
+            violations.append(f"{name}: missing token-usage block contract")
+    for name in sorted(PROCEDURE_LOG_SKILLS):
+        skill_md = skills_root / name / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_text(encoding="utf-8")
+        if PROCEDURE_LOG_PATH not in text:
+            violations.append(f"{name}: missing reference to {PROCEDURE_LOG_PATH}")
     for name in sorted(DISPATCHING_SKILLS):
         skill_md = skills_root / name / "SKILL.md"
         if not skill_md.exists():

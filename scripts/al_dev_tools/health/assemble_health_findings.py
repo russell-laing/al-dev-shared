@@ -170,6 +170,12 @@ def assemble_findings(lens_dir, date, surface, dimensions, failed_lenses,
 _METRIC_FIELDS = ("raw_count", "verified_count", "dropped_unverified_count",
                   "stale_dropped_count", "suppressed_count", "failed_lens_count",
                   "new_count", "recurring_count")
+_TOKEN_FIELDS = (
+    "token_data_available",
+    "prompt_tokens",
+    "completion_tokens",
+    "context_compaction_events",
+)
 _SEVERITY_DIMS = ("design", "quality", "naming")
 _SEVERITY_LEVELS = ("high", "medium", "low")
 
@@ -208,13 +214,25 @@ def format_metrics(counts):
         row("High", "high"), row("Medium", "medium"), row("Low", "low"),
     ])
     metrics = "\n".join(f"{f}: {counts[f]}" for f in _METRIC_FIELDS)
+    token_usage = counts.get("token_usage", {})
+    token_data_available = str(bool(token_usage.get("token_data_available", False))).lower()
+    token_values = {
+        "token_data_available": token_data_available,
+        "prompt_tokens": token_usage.get("prompt_tokens", "not available"),
+        "completion_tokens": token_usage.get("completion_tokens", "not available"),
+        "context_compaction_events": token_usage.get(
+            "context_compaction_events", "not available"
+        ),
+    }
+    token_block = "\n".join(f"{field}: {token_values[field]}" for field in _TOKEN_FIELDS)
     return (
         f"{table}\n\n"
         f"New this sweep: {counts['new_count']} · "
         f"Recurring from prior sweeps: {counts['recurring_count']} · "
         f"Stale (dropped): {counts['stale_dropped_count']} · "
         f"Dropped (unverified): {counts['dropped_unverified_count']}\n\n"
-        f"<!-- benchmark-metrics\n{metrics}\n-->\n"
+        f"<!-- benchmark-metrics\n{metrics}\n-->\n\n"
+        f"<!-- token-usage\n{token_block}\n-->\n"
     )
 
 

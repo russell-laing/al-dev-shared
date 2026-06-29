@@ -49,6 +49,11 @@ Apply `../../knowledge/dispatch-fallback-contract.md` before every agent
 dispatch. Declare the preferred path, run preflight, fall back
 deterministically, and log `preferred → outcome → fallback → reason`.
 
+Read `../../knowledge/false-positive-classes.md` before every lens dispatch
+wave. Treat any `Suppress` rows in that tracker as known noise context and pass
+them into the dispatched prompts so repeated false-positive classes stay in
+scope as background information instead of new findings.
+
 ## Phase 0 — Parse arguments
 
 - `--surface` ∈ `plugin` | `tooling` | `both` (default `both`)
@@ -419,10 +424,14 @@ Execute the following state machine in order:
      verification belongs there — not in costly orchestrator re-`grep` round-trips.
      Add this instruction to every lens dispatch prompt:
 
-     > Before emitting any finding with a `snippet:` block, confirm the
-     > `snippet.text` appears verbatim at the cited `snippet.file:line` in the file
-     > you already read. If it does not, drop the `snippet:` field (or the finding)
-     > — do not emit an unverified snippet.
+    > Before emitting any finding with a `snippet:` block, confirm the
+    > `snippet.text` appears verbatim at the cited `snippet.file:line` in the file
+    > you already read. If it does not, drop the `snippet:` field (or the finding)
+    > — do not emit an unverified snippet.
+
+     Also include the current suppressed false-positive classes from
+     `../../knowledge/false-positive-classes.md` as known noise context for the
+     lens so the sweep does not re-litigate already-classified patterns.
 
      The orchestrator does **not** re-`grep` each snippet. It trusts the lens
      self-verification and lets the report-phase evidence gate

@@ -29,3 +29,5 @@ docs/health/*
 !docs/health/dispositions-current.md
 !docs/health/dispositions-index.json
 !docs/health/dispositions-jsonl-migration-audit.md
+!docs/health/false-positive-classes.md
+!docs/health/expected-phases.md

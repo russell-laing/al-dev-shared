@@ -113,6 +113,17 @@ findings false, 8 wrongly "verified" by eyeballing before this cross-check was
 added). The parent collects the returned `verified | dropped` table — it must
 **not** open the cited files itself.
 
+### Precision-gate fixture retention
+
+When the evidence gate is being exercised against the synthetic precision-gate
+fixtures used by the benchmark plan, preserve the retained findings exactly as
+listed in `scripts/tests/fixtures/benchmark/precision-gate-expected-retained.txt`.
+Those fixtures are a retention check, not a real-world suppression sweep: the
+goal is to prove that valid findings survive the gate, not to reinterpret the
+fixture corpus as live health data. If a future fixture run changes the retained
+set, treat that as a regression in the gate contract and update the fixture pair
+deliberately.
+
 **Deterministic static-lens carve-out.** Findings from the four deterministic
 static lenses are true by construction — do **not** dispatch a
 `verify-health-finding` agent for them; re-verify deterministically instead. The

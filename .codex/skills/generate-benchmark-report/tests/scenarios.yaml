@@ -27,3 +27,10 @@ scenarios:
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
     notes: "Must run scripts/health_benchmark_adapter.py and scripts/validate_health_loop_state.py before scoring, cite adapter-backed procedure_integrity output, and patch or downgrade clean-closure claims when any checklist item fails."
+
+  - id: delta-benchmark-after-deferred-recommendation
+    status: golden
+    user_prompt: "A deferred benchmark recommendation was implemented. Write the delta benchmark section for the existing Claude self-healing baseline."
+    expected_artifacts:
+      - "docs/reviews/*-benchmark-baseline.md"
+    notes: "Runs validator and adapter, re-reads the existing baseline, and appends a dated delta only when a health cycle completed, a deferred recommendation was implemented, or a score-relevant gate changed; must not rewrite the full baseline when a two-section delta is sufficient."

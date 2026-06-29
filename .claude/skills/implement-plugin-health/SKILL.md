@@ -45,6 +45,34 @@ Loop position:
 
 This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-proof block at each phase boundary before reporting completion or updating `.dev/health-loop-state.md`.
 
+## Prospective procedure log
+
+In addition to the phase-proof block, append one JSON object per completed
+phase to `.dev/implement-plugin-health-procedure-log.jsonl`. The log records
+the prospective phase sequence that `scripts/health_benchmark_adapter.py`
+summarizes against `docs/health/expected-phases.md`.
+
+Use this record shape:
+
+```json
+{"skill":"implement-plugin-health","phase":"0","status":"complete","proof":"plan_located","artifact":".dev/implement-plugin-health-progress.md","recorded_at":"2026-06-29T00:00:00Z"}
+```
+
+Append the record after the phase-proof block and before advancing to the next
+phase. Keep the `proof` value aligned with the expected phase table:
+
+| Phase | proof |
+| --- | --- |
+| 0 | plan_located |
+| 1 | tasks_executing |
+| 2 | per_task_verified |
+| 3 | ledger_closed |
+| 4 | artifacts_finalized |
+| 5 | loop_closed |
+
+If a phase blocks, append the same shape with `status:"blocked"` and a
+`reason` field, then stop without writing later phase records.
+
 ## Inputs / Outputs
 
 **Inputs:**
@@ -64,6 +92,7 @@ This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-pr
 - Archived dossier + findings → `docs/health/archived/`
 - `.dev/implement-plugin-health-progress.md` — progress checkpoint (undated,
   fixed path)
+- `.dev/implement-plugin-health-procedure-log.jsonl` — prospective phase log
 
 ---
 
@@ -151,6 +180,32 @@ tasks_total: <N>
 tasks_completed: []
 executor_revision: <git short-hash of .claude/skills/implement-plugin-health/SKILL.md at run start>
 ```
+
+Append the Phase 0 procedure-log record immediately after writing the
+checkpoint:
+
+```bash
+python3 - <<'PY'
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+record = {
+    "skill": "implement-plugin-health",
+    "phase": "0",
+    "status": "complete",
+    "proof": "plan_located",
+    "artifact": ".dev/implement-plugin-health-progress.md",
+    "recorded_at": datetime.now(timezone.utc).isoformat(),
+}
+path = Path(".dev/implement-plugin-health-procedure-log.jsonl")
+path.parent.mkdir(parents=True, exist_ok=True)
+with path.open("a", encoding="utf-8") as handle:
+    handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+PY
+```
+
+Repeat the same append pattern after each later phase boundary, changing
+`phase` and `proof` to the values listed above.
 
 ---
 

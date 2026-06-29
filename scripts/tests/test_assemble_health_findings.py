@@ -92,6 +92,30 @@ def test_format_metrics_emits_eight_fields():
     assert "| High" in out  # severity table present
 
 
+def test_format_metrics_emits_token_usage_block():
+    counts = {
+        "severity": {},
+        "raw_count": 1,
+        "verified_count": 1,
+        "dropped_unverified_count": 0,
+        "stale_dropped_count": 0,
+        "suppressed_count": 0,
+        "failed_lens_count": 0,
+        "new_count": 1,
+        "recurring_count": 0,
+        "token_usage": {
+            "token_data_available": False,
+            "prompt_tokens": "not available",
+            "completion_tokens": "not available",
+            "context_compaction_events": "not available",
+        },
+    }
+    out = mod.format_metrics(counts)
+    assert "<!-- token-usage" in out
+    assert "token_data_available: false" in out
+    assert "context_compaction_events: not available" in out
+
+
 def test_format_metrics_missing_field_raises():
     try:
         mod.format_metrics({"severity": {}, "raw_count": 1})
@@ -106,5 +130,6 @@ if __name__ == "__main__":
     test_failed_lenses_and_incomplete_status()
     test_ignores_out_of_dimension_lens()
     test_format_metrics_emits_eight_fields()
+    test_format_metrics_emits_token_usage_block()
     test_format_metrics_missing_field_raises()
     print("PASS")

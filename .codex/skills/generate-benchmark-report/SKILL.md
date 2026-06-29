@@ -132,6 +132,8 @@ exist. Typical evidence includes:
   auto-recovery percentage or manual-intervention reduction
 - context-preservation signals such as replay logs, checkpoints, persistence
   layers, or compressed memory used to support long-running runs
+- adapter-extracted self-healing signals: disposition event counts,
+  cascade-prevention rate, and prospective procedure log status
 - governance evidence such as named owners, runtime policy checks, tool access
   limits, or retirement/decommissioning guidance
 
@@ -213,6 +215,57 @@ Interpretation:
 - if the report claims a self-healing outcome, verify whether the supporting
   evidence shows actual recovery, reduced manual intervention, or only an
   architecture/design proposal
+- if `self_healing_signals.cascade_prevention_rate` is `not available`, keep
+  cascade-prevention discussion qualitative; do not invent a rate from prose
+
+### Phase 4b: Delta benchmark append
+
+Use this phase when an existing baseline remains valid and one score-relevant
+change has occurred since the last benchmark entry. A delta is warranted only
+when at least one condition is true:
+
+- A full health cycle completed after the prior benchmark entry.
+- A deferred benchmark recommendation was implemented.
+- A score-relevant script or gate changed, such as the adapter, loop-state
+  validator, staleness checker, false-positive tracker, token block, or
+  prospective procedure log.
+
+Run the validator and adapter first:
+
+```bash
+python3 scripts/validate_health_loop_state.py
+python3 scripts/health_benchmark_adapter.py --surface tooling --limit 1 --format markdown
+```
+
+Append this section to the existing baseline report, replacing the date with
+the current ISO date:
+
+```markdown
+## Delta - <current ISO date>
+
+### Trigger
+
+<one sentence naming the completed health cycle, deferred recommendation, or
+score-relevant gate change>
+
+### Score Impact
+
+| Dimension | Previous | Current | Change | Evidence |
+| --- | ---: | ---: | --- | --- |
+| Precision | 4 | 4 | stable | <adapter-backed evidence> |
+| Loop quality | 4 | 4 | stable | <validator/procedure evidence> |
+| Recall signal | 2 | 2 | stable | <fixture/adversarial evidence boundary> |
+| Best-practice alignment | 4 | 4 | stable | <control evidence> |
+
+### Evidence Notes
+
+- Validator result: `<exact result>`.
+- Adapter procedure result: `<exact summary>`.
+- Deferred recommendation status: `<implemented/deferred and why>`.
+```
+
+If no condition is true, do not append a delta. Report that no benchmark delta
+is warranted and cite the last benchmark entry date.
 
 ### Phase 5: Final quality check
 

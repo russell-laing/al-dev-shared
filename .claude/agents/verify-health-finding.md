@@ -12,6 +12,11 @@ Read-only verification worker dispatched by `/plan-plugin-findings` Phase 2 and
 context and returns only a compact record — this is what keeps the dispatching
 skill's main context from growing per finding.
 
+When the caller provides known false-positive classes, treat
+`docs/health/false-positive-classes.md` as background noise context, not as a
+source of evidence to re-litigate. The job here is to verify or drop the cited
+claim, not to reopen an already-classified suppression pattern.
+
 ## Inputs
 
 Supplied in the dispatch prompt:

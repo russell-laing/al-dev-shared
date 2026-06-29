@@ -34,6 +34,9 @@ wording, and legacy `unknown` handling. `/report-plugin-health` preserves and
 validates upstream dimension metadata; it does not expose a public
 `--dimension` argument.
 
+Read `../../knowledge/false-positive-classes.md` before applying the evidence
+gate so the report phase carries the same suppression context as discovery.
+
 ## Maintainer Contracts
 
 Apply `../../knowledge/phase-proof-contract.md` at every phase boundary before
@@ -171,6 +174,13 @@ new_count: <n>
 recurring_count: <n>
 -->
 
+<!-- token-usage
+token_data_available: false
+prompt_tokens: not available
+completion_tokens: not available
+context_compaction_events: not available
+-->
+
 Top 5 ranked actions:
 1. ...
 
@@ -207,16 +217,18 @@ needed.)
 
 Record any failed lenses at the foot of the Summary section.
 
-The `<!-- benchmark-metrics -->` block is the canonical, machine-readable source
-for benchmark extraction (`scripts/health_benchmark_adapter.py`); the human-facing
-`New this sweep: …` line stays as-is for readers. Populate it from the Phase 2
-evidence-gate counts: `verified_count` is the count retained after evidence
-verification, `dropped_unverified_count` / `stale_dropped_count` /
-`suppressed_count` / `failed_lens_count` are the corresponding filtered sets, and
-`raw_count` is the pre-gate lens-finding total. All eight fields are mandatory.
-When a count is genuinely unknown (e.g. a friction-ingest dossier with no raw
-candidate denominator), write the literal `not available` — never infer
-`raw_count` from `verified_count + dropped_unverified_count`.
+The `<!-- benchmark-metrics -->` block and the `<!-- token-usage -->` block are
+the canonical, machine-readable sources for benchmark extraction
+(`scripts/health_benchmark_adapter.py`); the human-facing `New this sweep: …`
+line stays as-is for readers. Populate them from the Phase 2 evidence-gate
+counts and token accounting. `verified_count` is the count retained after
+evidence verification, `dropped_unverified_count` / `stale_dropped_count` /
+`suppressed_count` / `failed_lens_count` are the corresponding filtered sets,
+and `raw_count` is the pre-gate lens-finding total. All benchmark fields are
+mandatory. When a count is genuinely unknown (e.g. a friction-ingest dossier
+with no raw candidate denominator), write the literal `not available` — never
+infer `raw_count` from `verified_count + dropped_unverified_count`, and never
+omit the token-usage block because a value is unavailable.
 
 **Compute the table and metrics block deterministically.** Rather than
 hand-counting, write the Phase 2 tallies to a small JSON (`severity` breakdown
@@ -229,6 +241,30 @@ python3 scripts/assemble_health_findings.py metrics --counts <counts.json>
 Paste its output as the Summary severity table + `New this sweep:` line +
 `<!-- benchmark-metrics -->` block. The script raises if any of the eight fields
 is missing, enforcing the "all eight fields are mandatory" rule.
+
+Add the `<!-- token-usage -->` block immediately after the benchmark-metrics
+block in the dossier. Use `token_data_available: false` plus `not available`
+placeholders unless the current run exposes measured token counts.
+
+## Precision-gate fixture run
+
+For benchmark fixture validation, a maintainer may run this skill against
+`scripts/tests/fixtures/benchmark/precision-gate-findings.md` copied to
+`docs/health/<date>-tooling-findings.md`. This tests whether the evidence gate
+retains valid findings that already entered the report phase; it does not test
+whether discovery lenses find upstream defects. Use fixture-only target files
+so the claims do not go stale when the live skill files are fixed by earlier
+tasks.
+
+After the dossier is written, verify retained fixture IDs with:
+
+```bash
+python3 scripts/precision_gate_fixture.py \
+  --dossier docs/health/<date>-tooling-health.md \
+  --expected scripts/tests/fixtures/benchmark/precision-gate-expected-retained.txt
+```
+
+Expected: `precision-gate fixture: PASS`.
 
 ## Phase 4 — Present to user
 
