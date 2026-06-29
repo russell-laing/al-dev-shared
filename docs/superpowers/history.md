@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-29
+
+### Repo Hygiene and Artifact Lifecycle Implementation Plan
+
+- Path: `docs/superpowers/plans/2026-06-29-repo-hygiene-and-artifact-lifecycle.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-06-29 | repo-hygiene artifact-lifecycle | implemented; repaired the `docs/superpowers/` ignore boundary, removed the known dated `.dev/` leak set and one stray tracked spec, added artifact-lifecycle guidance plus a staged-artifact validator, and tightened the validator/policy so raw plan/spec markdown and named scratch progress files are blocked from future commits.
+
 ## 2026-06-28
 
 ### Plugin Quality Fixes Implementation Plan

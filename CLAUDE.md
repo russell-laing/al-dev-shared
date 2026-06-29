@@ -228,7 +228,10 @@ lifecycle rules:
 - Disposition ledger: `docs/health/dispositions*.md`, `docs/health/dispositions-events/`,
   `docs/health/dispositions-history/`
 - Generated documentation: `docs/al-dev-*.md`, `.claude/knowledge/`, etc.
-- Plan history: `docs/superpowers/plans/archived/` (readonly reference)
+- Durable planning provenance: `docs/superpowers/history.md` and
+  `docs/superpowers/README.md`
+- Legacy tracked raw plan/spec files may remain as readonly historical references
+  until they are retired deliberately; do not add to that set during normal work
 
 **Cleanup Expectations by Skill Type**:
 
@@ -238,7 +241,10 @@ lifecycle rules:
 
 - **Planning skills** (`writing-plans`, `plan-*-findings`): Temporary specs go in
   `docs/superpowers/specs/` (gitignored). Remove dated spec files after plan is
-  written to `docs/superpowers/plans/`. Keep only the final plan.
+  written to `docs/superpowers/plans/`. Raw plan files under
+  `docs/superpowers/plans/` are working artifacts, not durable outputs; record
+  durable provenance in `docs/superpowers/history.md` instead of force-adding
+  new plan/spec markdown files.
 
 - **Audit/Review skills** (`audit-*`, `report-*`): Remove intermediate working
   files (e.g. `.dev/audit-work-*.json`, `.dev/review-draft.md`). Keep only final
@@ -250,13 +256,16 @@ lifecycle rules:
 - [ ] All `.dev/*-work*.json` or `.dev/*-draft*` files removed
 - [ ] Progress checkpoints cleaned up (only `.dev/progress.md` remains if needed)
 - [ ] `docs/superpowers/specs/` directory empty except `.gitkeep`
+- [ ] No new raw markdown files are staged from `docs/superpowers/plans/` or
+  `docs/superpowers/specs/`
 - [ ] Final outputs (plans, reports, dossiers) are in their persistent locations
 - [ ] If `git status` shows any `.dev/` or `docs/superpowers/specs/` files staged
   for commit, verify they are intentional (usually they shouldn't be)
 
 **Prevention:** The pre-commit hook (`.githooks/pre-commit`) runs
-`scripts/validate-artifact-leaks.py` to catch any dated or working files
-about to be committed. If caught, abort commit and clean up before re-attempting.
+`scripts/validate-artifact-leaks.py` to catch dated scratch files, named
+progress files, and raw Superpowers plan/spec markdown before commit. If caught,
+abort commit and clean up before re-attempting.
 
 ## Subagent-Driven Development Best Practices
 

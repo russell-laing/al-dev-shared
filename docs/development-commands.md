@@ -34,6 +34,8 @@ The hook runs, in order:
 - `python3 scripts/validate_lens_agents.py`
 - a projections-current check (regenerates to a temp dir and diffs against
   `profile-al-dev-shared/generated/`)
+- `python3 scripts/validate-artifact-leaks.py` to block staged scratch files and
+  raw `docs/superpowers/plans|specs` markdown
 
 Bypass with `git commit --no-verify` only when intentionally committing a
 work-in-progress; the hook is fast local feedback, not a security control.

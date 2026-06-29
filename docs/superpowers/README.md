@@ -16,8 +16,13 @@ Raw generated plans and specs are not current implementation guidance. They are 
 - Track `docs/superpowers/README.md`.
 - Track `docs/superpowers/history.md`.
 - Do not track new raw files under `docs/superpowers/plans/`.
+- Do not track new raw files under `docs/superpowers/plans/archived/`; keep
+  durable provenance in `docs/superpowers/history.md` instead.
 - Do not track new raw files under `docs/superpowers/specs/` unless a maintainer explicitly promotes the spec to durable design documentation.
 - When promoting a spec, move or copy the durable content into a named document outside the raw historical folder.
+- Legacy tracked raw plan/spec files are historical references only. Do not add
+  to that set or treat those paths as current source of truth during normal
+  implementation work.
 
 ## `.dev` Policy
 

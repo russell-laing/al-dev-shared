@@ -13,19 +13,22 @@ This script is run as a pre-commit hook to catch leaks early.
 
 import subprocess
 import sys
-from pathlib import Path
+from fnmatch import fnmatchcase
 
 TEMP_PATTERNS = [
-    ".dev/????-??-??-*.md",      # Dated research files
-    ".dev/*-checkpoint.json",     # Checkpoint files
-    ".dev/*-work*.json",          # Work-in-progress JSON
-    ".dev/*-draft*.md",           # Draft markdown
-    "docs/superpowers/specs/*",   # Spec directory (except .gitkeep)
+    ".dev/????-??-??-*.md",          # Dated research files
+    ".dev/*-progress.md",            # Named progress scratch files
+    ".dev/*-checkpoint.json",        # Checkpoint files
+    ".dev/*-work*.json",             # Work-in-progress JSON
+    ".dev/*-draft*.md",              # Draft markdown
+    "docs/superpowers/plans/*.md",   # Raw plans, including archived legacy paths
+    "docs/superpowers/specs/*.md",   # Raw specs
 ]
 
 EXCLUDE = [
-    ".dev/progress.md",                # Active progress file
-    "docs/superpowers/specs/.gitkeep", # Directory marker
+    ".dev/progress.md",                 # Active progress file
+    "docs/superpowers/plans/.gitkeep",  # Directory marker
+    "docs/superpowers/specs/.gitkeep",  # Directory marker
 ]
 
 
@@ -47,29 +50,27 @@ def get_staged_files():
 def matches_pattern(path, patterns):
     """Check if path matches any glob pattern.
 
-    Uses pathlib.Path.match() which supports glob syntax:
-    - ? matches any single character
-    - * matches zero or more characters
-    - [seq] matches any character in seq
-
-    Example: '.dev/????-??-??-*.md' matches '.dev/2026-06-29-test.md'
+    Uses fnmatch-style matching so rules apply consistently to nested paths.
     """
-    p = Path(path)
     for pattern in patterns:
-        if p.match(pattern):
+        if fnmatchcase(path, pattern):
             return True
     return False
 
 
+def find_temporary_artifacts(paths):
+    """Return staged paths that should not be committed."""
+    leaks = []
+    for path in paths:
+        if path and matches_pattern(path, TEMP_PATTERNS):
+            if not matches_pattern(path, EXCLUDE):
+                leaks.append(path)
+    return leaks
+
+
 def validate():
     """Check staged files for temporary artifacts."""
-    staged = get_staged_files()
-    leaks = []
-
-    for f in staged:
-        if f and matches_pattern(f, TEMP_PATTERNS):
-            if not matches_pattern(f, EXCLUDE):
-                leaks.append(f)
+    leaks = find_temporary_artifacts(get_staged_files())
 
     if leaks:
         print("\n❌ Pre-commit check FAILED: Temporary artifacts detected\n",
