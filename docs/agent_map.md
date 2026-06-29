@@ -49,9 +49,9 @@
 > renamed, added, or removed, hand-edit the matching `### <agent-name>` block here
 > in the same change.
 
-### al-dev-general-code-reviewer
+### general-code-reviewer
 
-**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /al-dev-develop-orchestrate (which uses specialist reviewers for security, patterns, and performance).
+**Description:** General code review specialist — finds bugs, logic errors, and security issues with high signal-to-noise ratio. Available for standalone use; not integrated into /develop-orchestrate (which uses specialist reviewers for security, patterns, and performance).
 **Model:** sonnet
 **Tools:** Read
 **Spawned by:** (none found in skill files)
@@ -71,18 +71,18 @@
 
 ---
 
-### al-dev-commit-analyzer
+### commit-analyzer
 
-**Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit-preflight (analysis phase). Read-only — never modifies files.
+**Description:** Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by commit-preflight (analysis phase). Read-only — never modifies files.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit-preflight
+**Spawned by:** /commit-preflight
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /al-dev-commit-preflight |
+| Dispatch prompt | **Yes** | `PROJECT_CONTEXT` and `FD_TICKET` from /commit-preflight |
 | Staged git index | **Yes** | Read via `git diff --cached` commands |
 
 **Outputs:**
@@ -94,18 +94,18 @@
 
 ---
 
-### al-dev-commit-group-drafter
+### commit-group-drafter
 
-**Description:** Git commit group drafter. Consumes manifests from al-dev-commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
+**Description:** Git commit group drafter. Consumes manifests from commit-analyzer and drafts commit messages with context-aware description. Enables independent iteration on message quality.
 **Model:** haiku
 **Tools:** (none)
-**Spawned by:** /al-dev-commit-preflight
+**Spawned by:** /commit-preflight
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /al-dev-commit-preflight |
+| Dispatch prompt | **Yes** | `MANIFESTS`, `PROJECT_CONTEXT`, `FD_TICKET` from /commit-preflight |
 | Project context | No | `.dev/project-context.md` for domain knowledge |
 
 **Outputs:**
@@ -118,12 +118,12 @@
 
 ---
 
-### al-dev-commit-executor
+### commit-executor
 
-**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by al-dev-commit-execute (execute phase) after al-dev-commit-lint-fixer and al-dev-commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
+**Description:** Git commit execution agent. Executes git commits from an approved plan, handling hook failures and retry logic. Dispatched by commit-execute (execute phase) after commit-lint-fixer and commit-ooxml-validator complete. Never writes or edits source files directly — all fixes go through Bash.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit-execute
+**Spawned by:** /commit-execute
 
 **Inputs:**
 
@@ -142,12 +142,12 @@
 
 ---
 
-### al-dev-commit-lint-fixer
+### commit-lint-fixer
 
-**Description:** Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by al-dev-commit-execute (preflight) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files.
+**Description:** Pre-flight lint and trailing-whitespace fixer for staged commit files. Runs Python lint (ruff), trailing whitespace fixes on text files, and line-count corruption detection. Returns LINT_FIXES. Dispatched sequentially by commit-execute (preflight) before OOXML validation. Applies fixes via Bash only; never uses Write or Edit on source files.
 **Model:** haiku
 **Tools:** Bash, Read
-**Spawned by:** /al-dev-commit-execute
+**Spawned by:** /commit-execute
 
 **Inputs:**
 
@@ -163,12 +163,12 @@
 
 ---
 
-### al-dev-commit-hook-classifier
+### commit-hook-classifier
 
-**Description:** Classify pre-commit hook failures by recoverability. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Dispatched by al-dev-commit-execute before al-dev-commit-hook-fixer.
+**Description:** Classify pre-commit hook failures by recoverability. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Dispatched by commit-execute before commit-hook-fixer.
 **Model:** haiku
 **Tools:** Read
-**Spawned by:** /al-dev-commit-execute
+**Spawned by:** /commit-execute
 
 **Inputs:**
 
@@ -185,12 +185,12 @@
 
 ---
 
-### al-dev-commit-hook-fixer
+### commit-hook-fixer
 
-**Description:** Apply scripted recovery fixes for classified pre-commit hook failures. Reads the HOOK_CLASSIFICATIONS block from al-dev-commit-hook-classifier, applies scripted bash fixes for Fixable failures, re-stages affected files, and returns recovery status. Never re-runs commits itself — returns next_step guidance so the caller re-dispatches the execute agent. Handles the error path in isolation; classification is handled by al-dev-commit-hook-classifier.
+**Description:** Apply scripted recovery fixes for classified pre-commit hook failures. Reads the HOOK_CLASSIFICATIONS block from commit-hook-classifier, applies scripted bash fixes for Fixable failures, re-stages affected files, and returns recovery status. Never re-runs commits itself — returns next_step guidance so the caller re-dispatches the execute agent. Handles the error path in isolation; classification is handled by commit-hook-classifier.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-commit-execute
+**Spawned by:** /commit-execute
 
 **Inputs:**
 
@@ -207,21 +207,21 @@
 
 ---
 
-### al-dev-developer-tdd
+### developer-tdd
 
 **Description:** Implement AL code using test-driven development when a test plan exists.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop-orchestrate
+**Spawned by:** /develop-orchestrate
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
-| `.dev/*-al-dev-test-test-plan.md` | **Yes** | Test plan that drives the TDD cycle |
+| `.dev/*-plan-solution-plan.md` | **Yes** | Implementation plan |
+| `.dev/*-test-test-plan.md` | **Yes** | Test plan that drives the TDD cycle |
 | `.dev/project-context.md` | No | Project memory and conventions |
-| `.dev/*-al-dev-develop-code-review.md` | No | Review findings when iterating |
+| `.dev/*-develop-code-review.md` | No | Review findings when iterating |
 
 **Outputs:**
 
@@ -229,25 +229,25 @@
 | -------- | ------------- |
 | AL source files | Implemented code in `src/` |
 | Test codeunits | Test code in `src/Tests/` |
-| `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md` | TDD log: one entry per RED-GREEN-REFACTOR cycle |
+| `.dev/$(date +%Y-%m-%d)-developer-tdd-log.md` | TDD log: one entry per RED-GREEN-REFACTOR cycle |
 | `.dev/session-log.md` | Session log entry per file |
 
 ---
 
-### al-dev-developer-traditional
+### developer-traditional
 
 **Description:** Implement AL code following an implementation plan without test-driven development.
 **Model:** sonnet
 **Tools:** Read, Write, Bash
-**Spawned by:** /al-dev-develop-orchestrate, /al-dev-fix
+**Spawned by:** /develop-orchestrate, /fix
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Implementation plan |
+| `.dev/*-plan-solution-plan.md` | **Yes** | Implementation plan |
 | `.dev/project-context.md` | No | Project memory and conventions |
-| `.dev/*-al-dev-develop-code-review.md` | No | Review findings for iteration |
+| `.dev/*-develop-code-review.md` | No | Review findings for iteration |
 
 **Outputs:**
 
@@ -258,12 +258,12 @@
 
 ---
 
-### al-dev-diagnostics-resolver
+### diagnostics-resolver
 
-**Description:** Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by al-dev-lint skill.
+**Description:** Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by /lint skill.
 **Model:** sonnet
 **Tools:** Read, Edit, Bash
-**Spawned by:** `/al-dev-lint`
+**Spawned by:** `/lint`
 
 **Inputs:**
 
@@ -277,11 +277,11 @@
 | Output | Description |
 | -------- | ------------- |
 | Fixed AL source files | In-place fixes applied |
-| Dated lint report | `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md` with fix summary |
+| Dated lint report | `.dev/$(date +%Y-%m-%d)-diagnostics-resolver-lint-report.md` with fix summary |
 
 ---
 
-### al-dev-docs-writer
+### docs-writer
 
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
@@ -311,12 +311,12 @@
 
 ---
 
-### al-dev-al-pattern-reviewer
+### al-pattern-reviewer
 
 **Description:** Review AL code for adherence to naming conventions, AL patterns, and BC design patterns.
 **Model:** sonnet
 **Tools:** Read
-**Spawned by:** /al-dev-review-develop
+**Spawned by:** /review-develop
 
 **Inputs:**
 
@@ -329,11 +329,11 @@
 
 | Output | Description |
 | -------- | ------------- |
-| AL Expert Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Minor Issues |
+| AL Expert Review Findings | Text report returned to /develop-orchestrate; structured as Critical / High / Minor Issues |
 
 ---
 
-### al-dev-explore
+### explore
 
 **Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization.
 **Model:** haiku
@@ -355,40 +355,40 @@
 | Findings | List of relevant files, code snippets, or relationships |
 | Summary | Concise explanation of codebase structure for the query |
 | Suggestions | Recommendations for next steps |
-| `.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md` | Persistent findings file written by the `/al-dev-explore` skill |
+| `.dev/$(date +%Y-%m-%d)-explore-findings.md` | Persistent findings file written by the `/explore` skill |
 
 ---
 
-### al-dev-interview
+### interview
 
 **Description:** Interview the user to extract complete BC/AL implementation details through structured questioning.
 **Model:** sonnet
 **Tools:** Read, Write, USER_GATE
-**Spawned by:** /al-dev-interview
+**Spawned by:** /interview
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| File path argument | No | Existing spec to refine (e.g., `.dev/*-al-dev-interview-requirements.md`) |
-| Fresh start | No | If no file specified, creates new `.dev/*-al-dev-interview-requirements.md` |
+| File path argument | No | Existing spec to refine (e.g., `.dev/*-interview-requirements.md`) |
+| Fresh start | No | If no file specified, creates new `.dev/*-interview-requirements.md` |
 
 **Outputs:**
 
 | Output | Description |
 | -------- | ------------- |
-| `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md` | **Primary** (new interview) — Complete spec with decisions |
+| `.dev/$(date +%Y-%m-%d)-interview-requirements.md` | **Primary** (new interview) — Complete spec with decisions |
 | Updated input file | **Primary** (refining) — Enhanced with interview findings |
 | `.dev/session-log.md` | Append entry with summary |
 
 ---
 
-### al-dev-performance-reviewer
+### performance-reviewer
 
 **Description:** Review AL code for performance issues, inefficient queries, N+1 patterns, and resource consumption.
 **Model:** sonnet
 **Tools:** Read
-**Spawned by:** /al-dev-review-develop
+**Spawned by:** /review-develop
 
 **Inputs:**
 
@@ -401,16 +401,16 @@
 
 | Output | Description |
 | -------- | ------------- |
-| Performance Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
+| Performance Review Findings | Text report returned to /develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
 
-### al-dev-release-notes-writer
+### release-notes-writer
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
 **Tools:** Bash, Write, Read, MCP: al-mcp-server
-**Spawned by:** /al-dev-release-notes
+**Spawned by:** /release-notes
 
 **Inputs:**
 
@@ -426,12 +426,12 @@
 
 | Output | Description |
 | -------- | ------------- |
-| `.dev/$(date +%Y-%m-%d)-al-dev-release-notes-<VERSION or short-hash>.md` | **Primary** — formatted release notes file |
+| `.dev/$(date +%Y-%m-%d)-release-notes-<VERSION or short-hash>.md` | **Primary** — formatted release notes file |
 | Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
 
 ---
 
-### al-dev-script-engineer
+### script-engineer
 
 **Description:** Write, validate, and run scripts for AL development and documentation workflows.
 **Model:** sonnet
@@ -454,12 +454,12 @@
 
 ---
 
-### al-dev-security-reviewer
+### security-reviewer
 
 **Description:** Review AL code for security vulnerabilities, permission issues, and data exposure risks.
 **Model:** sonnet
 **Tools:** Read
-**Spawned by:** /al-dev-review-develop
+**Spawned by:** /review-develop
 
 **Inputs:**
 
@@ -472,22 +472,22 @@
 
 | Output | Description |
 | -------- | ------------- |
-| Security Review Findings | Text report returned to /al-dev-develop-orchestrate; structured as Critical / High / Medium / Low |
+| Security Review Findings | Text report returned to /develop-orchestrate; structured as Critical / High / Medium / Low |
 
 ---
 
-### al-dev-solution-architect
+### solution-architect
 
 **Description:** Design BC-integrated solutions and create detailed implementation plans.
 **Model:** opus
 **Tools:** Read, Write, Glob, Grep
-**Spawned by:** /al-dev-fix, /al-dev-plan
+**Spawned by:** /fix, /plan
 
 **Inputs:**
 
 | Input | Required | Description |
 | ------- | ---------- | ------------- |
-| Dated requirements file | **Yes** (from /al-dev-plan) · Inline prompt (from /al-dev-fix) | From /interview (glob pattern match) — or inline analysis + fix approach when dispatched by /al-dev-fix |
+| Dated requirements file | **Yes** (from /plan) · Inline prompt (from /fix) | From /interview (glob pattern match) — or inline analysis + fix approach when dispatched by /fix |
 | `.dev/project-context.md` | No | Project memory (read FIRST if exists) |
 | MCP tools | No | BC Intelligence, MS Docs, AL Dependency |
 
@@ -501,12 +501,12 @@
 
 ---
 
-### al-dev-support-researcher
+### support-researcher
 
 **Description:** Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Uses systematic, curated sources only (no web search/fetch).
 **Model:** sonnet
 **Tools:** MCP: bc-code-intelligence, MCP: microsoft-docs
-**Spawned by:** /al-dev-support-reply
+**Spawned by:** /support-reply
 
 **Inputs:**
 
@@ -514,7 +514,7 @@
 | ------- | ---------- | ------------- |
 | `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | `QUERY_CONTEXT` | **Yes** | The customer's question or symptom |
-| `TICKET_FILE` | No | Path to ticket context file from `/al-dev-ticket`, or `NONE` |
+| `TICKET_FILE` | No | Path to ticket context file from `/ticket`, or `NONE` |
 
 **Outputs:**
 
@@ -524,12 +524,12 @@
 
 ---
 
-### al-dev-support-reply-drafter
+### support-reply-drafter
 
-**Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with al-dev-support-researcher. Applies evidence requirements and tone constraints.
+**Description:** Draft a customer-facing reply from internal BC support research findings. Pairs with support-researcher. Applies evidence requirements and tone constraints.
 **Model:** sonnet
 **Tools:** Write
-**Spawned by:** /al-dev-support-reply
+**Spawned by:** /support-reply
 
 **Inputs:**
 
@@ -538,7 +538,7 @@
 | `QUERY_TYPE` | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | `QUERY_CONTEXT` | **Yes** | Original customer question or symptom |
 | `TICKET_FILE` | No | Path to ticket context file, or `NONE` |
-| `RESEARCHER_FINDINGS` | **Yes** | Full structured output block from al-dev-support-researcher |
+| `RESEARCHER_FINDINGS` | **Yes** | Full structured output block from support-researcher |
 
 **Outputs:**
 
@@ -549,12 +549,12 @@
 
 ---
 
-### al-dev-ticket-context-writer
+### ticket-context-writer
 
-**Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
+**Description:** Fetch a Freshdesk ticket via API, write .dev/\$(date +%Y-%m-%d)-ticket-ticket-context.md, download attachments, and detect inline images in HTML body. Follows canonical invocation pattern in knowledge/ticket-agent-invocation-pattern.md.
 **Model:** haiku
 **Tools:** Bash, Write
-**Spawned by:** /al-dev-ticket
+**Spawned by:** /ticket
 
 **Inputs:**
 
@@ -568,13 +568,13 @@
 
 | Output | Description |
 | -------- | ------------- |
-| `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md` | **Primary** — structured ticket brief with inline image list |
+| `.dev/$(date +%Y-%m-%d)-ticket-ticket-context.md` | **Primary** — structured ticket brief with inline image list |
 | `.dev/attachments/` | Attached files (downloaded with ticket context) |
 | Return block | `TICKET_CONTEXT_WRITTEN`, `TICKET_ID`, `STATUS`, `PRIORITY`, `COMMENTS_COUNT`, `ATTACHMENTS`, `INLINE_IMAGES_COUNT` |
 
 ---
 
-### al-dev-commit-recover
+### corruption-recover
 
 **Description:** Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
 **Model:** sonnet
@@ -594,7 +594,7 @@
 | Output | Description |
 | -------- | ------------- |
 | Fixed AL files | Recovered via fallback strategies (git restore, regex reconstruction, schema rebuild) |
-| `.dev/$(date +%Y-%m-%d)-al-dev-commit-recover-report.md` | Recovery report with per-file strategy and status |
+| `.dev/$(date +%Y-%m-%d)-plugin-recover-report.md` | Recovery report with per-file strategy and status |
 
 ---
 
@@ -604,7 +604,7 @@
 > documentation only — it describes the current agent roster. To find
 > improvement suggestions (Trim, Remodel, Split, Inline, Align), run
 > `/audit-plugin-health` and read the ranked dossier in `docs/health/`, then
-> `/al-dev-map-suggestions-verify` to turn accepted findings into a plan.
+> `/map-suggestions-verify` to turn accepted findings into a plan.
 >
 > History: in-map suggestions through 2026-06-01 were retired when findings
 > converged on the health dossier (2026-06-02).

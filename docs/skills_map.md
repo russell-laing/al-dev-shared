@@ -80,7 +80,7 @@ flowchart TD
 
 ## Layer 2: Per-Skill Drill-Downs
 
-Each skill is shown with its internal phases, spawned agents, and key outputs. Agents are referenced by their full type name (for example, `al-dev-shared:al-dev-developer-tdd`).
+Each skill is shown with its internal phases, spawned agents, and key outputs. Agents are referenced by their full type name (for example, `al-dev-shared:developer-tdd`).
 
 ### Notation
 
@@ -260,7 +260,7 @@ Agents spawned: `al-dev-shared:explore`
 
 ### /al-dev-fix
 
-**Complexity routing:** Trivial fixes skip the analysis phase; complex fixes route through al-dev-solution-architect.
+**Complexity routing:** Trivial fixes skip the analysis phase; complex fixes route through `solution-architect`.
 
 <!-- BEGIN GENERATED: skill-drilldown-fix -->
 ```mermaid
@@ -832,7 +832,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:commit-analyzer`, `al-dev-shared:commit-group-drafter`
 <!-- END GENERATED: skill-drilldown-commit-preflight -->
 
-### /al-dev-explore
+### /explore
 
 <!-- BEGIN GENERATED: skill-drilldown-explore -->
 ```mermaid
@@ -876,7 +876,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-explore -->
 
-### /al-dev-interview
+### /interview
 
 Phases: 1, 2, 3, 4.
 

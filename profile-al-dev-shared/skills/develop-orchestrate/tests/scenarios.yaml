@@ -6,7 +6,7 @@ scenarios:
     expected_artifacts:
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer
@@ -28,7 +28,7 @@ scenarios:
       - ".dev/*-develop-progress.md"
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer
@@ -42,7 +42,7 @@ scenarios:
       - ".dev/*-develop-scope.md"
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
     must_not_invoke_agent:
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
@@ -55,7 +55,7 @@ scenarios:
     expected_artifacts:
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer
@@ -66,7 +66,7 @@ scenarios:
     user_prompt: "Review the approved plan for risks only. Do not edit files or dispatch developers."
     expected_artifacts: []
     must_not_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer
@@ -80,7 +80,7 @@ scenarios:
       - ".dev/*-autonomous-static-validation.md"
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer
@@ -93,7 +93,7 @@ scenarios:
       - ".dev/*-develop-phase4-handoff.md"
       - ".dev/*-develop-code-review.md"
     must_invoke_agent:
-      - al-dev-shared:al-dev-developer
+      - al-dev-shared:developer-traditional
       - al-dev-shared:security-reviewer
       - al-dev-shared:al-pattern-reviewer
       - al-dev-shared:performance-reviewer

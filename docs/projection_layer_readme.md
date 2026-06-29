@@ -520,7 +520,7 @@ flowchart LR
 
 ## Concrete Example
 
-Use `al-dev-interview` as a simple example.
+Use `interview` as a simple example.
 
 ### 1. Shared source
 
@@ -544,9 +544,9 @@ The generator reads the shared agent file and applies the currently implemented 
 
 The same authored agent becomes:
 
-- `generated/agents/claude/al-dev-interview.md`
-- `generated/agents/copilot/al-dev-interview.md`
-- `generated/agents/codex/al-dev-interview.toml`
+- `generated/agents/claude/interview.md`
+- `generated/agents/copilot/interview.md`
+- `generated/agents/codex/interview.toml`
 
 This is the key idea of the projection layer: one authored agent, three harness-native outputs.
 
@@ -558,7 +558,7 @@ Claude Code uses the projection layer to load skills and dispatch agents while s
 
 ### 1. Skill Invocation and Plugin Discovery
 
-When a user types `/al-dev-plan` in Claude Code:
+When a user types `/plan` in Claude Code:
 
 1. Claude Code resolves the skill from `~/.claude/settings.json`:
 
@@ -570,15 +570,15 @@ When a user types `/al-dev-plan` in Claude Code:
    }
    ```
 
-2. Claude Code loads `profile-al-dev-shared/skills/al-dev-plan/SKILL.md`
+2. Claude Code loads `profile-al-dev-shared/skills/plan/SKILL.md`
 
-3. The skill may dispatch agents referenced by name (e.g., `al-dev-shared:al-dev-solution-architect`)
+3. The skill may dispatch agents referenced by name (e.g., `al-dev-shared:solution-architect`)
 
 ### 2. Agent Projection Resolution
 
-When a skill dispatches `al-dev-shared:al-dev-interview`, Claude Code:
+When a skill dispatches `al-dev-shared:interview`, Claude Code:
 
-1. Looks up the agent in `profile-al-dev-shared/generated/agents/claude/al-dev-interview.md`
+1. Looks up the agent in `profile-al-dev-shared/generated/agents/claude/interview.md`
 
 2. Reads the Claude Code-native frontmatter:
 
@@ -603,15 +603,15 @@ cd .claude/worktrees/feature-xyz
 
 ## Phase 2: Skill Execution in Worktree
 
-While in the worktree, the user invokes `/al-dev-develop-orchestrate`:
+While in the worktree, the user invokes `/develop-orchestrate`:
 
 ### Skill Execution Flow
 
 ```mermaid
 graph LR
-    A["User<br/>/al-dev-develop-orchestrate<br/>in worktree"] -->|Claude Code| B["Load Skill<br/>profile-al-dev-shared/<br/>skills/al-dev-develop-orchestrate/SKILL.md"]
-    B -->|Dispatches| C["Agent:<br/>al-dev-developer"]
-    C -->|Project lookup| D["Load from<br/>generated/agents/<br/>claude/<br/>al-dev-developer.md"]
+    A["User<br/>/develop-orchestrate<br/>in worktree"] -->|Claude Code| B["Load Skill<br/>profile-al-dev-shared/<br/>skills/develop-orchestrate/SKILL.md"]
+    B -->|Dispatches| C["Agent:<br/>developer-traditional"]
+    C -->|Project lookup| D["Load from<br/>generated/agents/<br/>claude/<br/>developer-traditional.md"]
     D -->|Tool mapping| E["Claude Code<br/>Native Tools"]
     E -->|Bash| F["git status<br/>npm test<br/>git commit"]
     E -->|Read| G["Read files<br/>in worktree"]
@@ -642,7 +642,7 @@ graph LR
 ### Execution Details
 
 1. Skill loads from the plugin (shared across all workspaces)
-2. Skill dispatches `al-dev-shared:al-dev-developer` agent
+2. Skill dispatches `al-dev-shared:developer-traditional` agent
 3. Agent runs in the worktree context (CWD is the worktree root)
 4. Agent uses `Bash` tool to run commands in the worktree
 5. Agent uses `Read`/`Write` to edit files in the worktree
@@ -683,17 +683,17 @@ When development completes, finish the branch using the harness-specific workflo
 User: /al-dev-plan "Add new skill for X"
 
 → /al-dev-plan skill invokes:
-  - Solution architect agent (`al-dev-solution-architect`) for design work
-  - Dispatched via: `al-dev-shared:al-dev-solution-architect`
+   - Solution architect agent (`solution-architect`) for design work
+   - Dispatched via: `al-dev-shared:solution-architect`
   - Uses: AskUserQuestion (USER_GATE projected to Claude native tool)
   
 → User approves design
 
-→ User: /al-dev-develop-orchestrate "Implement the skill"
+→ User: /develop-orchestrate "Implement the skill"
 
-→ /al-dev-develop-orchestrate skill:
+→ /develop-orchestrate skill:
   - Creates worktree: .claude/worktrees/skill-xyz
-  - Loads developer agent: al-dev-shared:al-dev-developer
+  - Loads developer agent: al-dev-shared:developer-traditional
   - Agent uses Bash, Read, Write tools (all Claude Code natives)
   - Agent creates: profile-al-dev-shared/skills/new-skill/SKILL.md
   - Agent or maintainer regenerates harness artifacts when shared agents change

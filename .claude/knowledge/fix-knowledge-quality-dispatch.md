@@ -4,10 +4,10 @@ Agent dispatch template for `/fix-knowledge-quality` Phase 3. Consumed when
 `--auto-fix` mode is active. Substitute `{file}`, `{issue_type}`,
 `{description}`, `{suggested_action}` from the parsed task before dispatching.
 
-## Agent: al-dev-shared:al-dev-docs-writer
+## Agent: al-dev-shared:docs-writer
 
 ```text
-Agent: al-dev-shared:al-dev-docs-writer
+Agent: al-dev-shared:docs-writer
 Prompt:
   Fix a knowledge file quality issue.
 

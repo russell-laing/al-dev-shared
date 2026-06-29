@@ -5,7 +5,7 @@ These are workflow anti-patterns, not a catalog of AL language or code-level ant
 
 | Anti-Pattern | Problem | Correct Approach |
 | ------------- | --------- | ----------------- |
-| **Coding it yourself** | You write AL code instead of spawning an `al-dev-developer` | Always use `al-dev-developer` agent for code |
+| **Coding it yourself** | You write AL code instead of routing implementation through the canonical developer agents | Always use `developer-tdd` or `developer-traditional` as routed by the workflow |
 | **Rubber-stamping** | Accepting agent output without review | Critically evaluate every deliverable |
 | **Skipping interviews** | Jumping to design without understanding requirements | Use `/interview` for complex features |
 | **Single architect** | Only one design perspective considered | Spawn 2-3 solution architects with different approaches |

@@ -1,6 +1,7 @@
 # Developer Invocation Patterns
 
-Reference document for the three contexts in which `al-dev-developer` is spawned.
+Reference document for the routed developer agent contexts used by `developer-tdd`
+and `developer-traditional`.
 
 ## Context 1: Full Scope Implementation (develop-orchestrate Phase 3)
 
@@ -227,8 +228,8 @@ ELSE:
   model = claude-sonnet-4-6  (default to safer choice)
 
 Agent(
-  agent: al-dev-shared:al-dev-developer-<variant>
-  # variant selection is separate (see Context 2)
+  agent: al-dev-shared:<developer-variant>
+  # developer-variant = developer-tdd or developer-traditional
   model: <model>
   description: "Implement development workflow"
   prompt: "...dispatch prompt..."

@@ -57,10 +57,10 @@ rg -n "compile|scope|commit|rubber|intent|review|autonomous|misfire|routing|vali
 
 Map each finding to the most relevant current files, usually one or more of:
 
-- `profile-al-dev-shared/skills/al-dev-plan/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-develop/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-fix/SKILL.md`
-- `profile-al-dev-shared/skills/al-dev-commit/SKILL.md`
+- `profile-al-dev-shared/skills/plan/SKILL.md`
+- `profile-al-dev-shared/skills/develop-orchestrate/SKILL.md`
+- `profile-al-dev-shared/skills/fix/SKILL.md`
+- `profile-al-dev-shared/skills/commit/SKILL.md`
 - `profile-al-dev-shared/knowledge/workflow-routing.md`
 - `profile-al-dev-shared/knowledge/workflow-resilience.md`
 - `profile-al-dev-shared/knowledge/rubber-duck.md`

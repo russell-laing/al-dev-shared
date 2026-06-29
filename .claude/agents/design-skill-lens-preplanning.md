@@ -11,7 +11,7 @@ tools: ["Read"]
 |---|---|
 | file_list | Newline-separated absolute paths to `SKILL.md` files |
 | preplanning_skills | Starting list of pre-planning tributary skills (provided in dispatch prompt). Agent also searches `file_list` autonomously for additional pre-planning skills not already in this list. |
-| layer1_diagram_content | Content of the Layer 1 diagram from docs/skills-map.md (provided in dispatch prompt) |
+| layer1_diagram_content | Content of the Layer 1 diagram from docs/skills_map.md (provided in dispatch prompt) |
 
 ## Outputs
 
@@ -32,8 +32,8 @@ this block verbatim in the aggregated dossier.
 
 ## Reference: Canonical pre-planning skills
 
-- `/al-dev-interview` — produces `interview-requirements.md`
-- `/al-dev-explore` — produces `explore-findings.md`
+- `/interview` — produces `interview-requirements.md`
+- `/explore` — produces `explore-findings.md`
 
 ---
 
@@ -50,8 +50,8 @@ detected as pre-planning is **out of scope** — skip it and emit no finding for
 1. Check whether it appears in `layer1_diagram_content` as a dashed tributary
    arrow (`-.->`) rather than a main-spine node. Require an **exact**
    tributary-label match (the node label text — not the node ID — equals the
-   skill name), not a substring match — `al-dev-explore` must not be counted as present merely because
-   `al-dev-explore-deep` appears in the diagram.
+   skill name), not a substring match — `explore` must not be counted as present merely because
+   `explore-deep` appears in the diagram.
 2. Check whether its output filename is referenced in Layer 1 handoff labels.
 3. Check whether a downstream skill explicitly names it as an input in its body.
 

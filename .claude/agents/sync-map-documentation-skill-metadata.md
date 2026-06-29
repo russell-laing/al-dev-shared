@@ -38,7 +38,7 @@ Do not summarise findings — return only the path.
       "argument_hint": "[optional args]",
       "workflow_stage": "develop",
       "phase_count": 3,
-      "spawned_agents": ["al-dev-shared:al-dev-developer"]
+      "spawned_agents": ["al-dev-shared:solution-architect"]
     }
   ]
 }
@@ -77,7 +77,7 @@ For each active skill, Read `profile-al-dev-shared/skills/<name>/SKILL.md`. Extr
   mapping every skill name to its sorted `al-dev-shared:<agent-name>` list) and
   use this skill's entry verbatim. This script reuses the map generator's edge
   parser, so it catches both canonical `al-dev-shared:` references and bare
-  references on spawn-hint lines (e.g. `Spawn **al-dev-solution-architect**`) —
+  references on spawn-hint lines (e.g. `Spawn **solution-architect**`) —
   matching the generated drilldowns exactly and avoiding the
   `agent_name_mismatch` false positives that canonical-only matching produced.
   If the script exits non-zero, fall back to extracting well-formed

@@ -46,7 +46,7 @@ Analyze the user request and classify:
 
 - Spawns `solution-architect` for quick root-cause analysis (~5 min)
 - Reviews architect's hypothesis; presents to user for approval
-- Spawns `al-dev-developer` with confirmed approach
+- Spawns `developer-traditional` by default, or `developer-tdd` when a test plan exists
 - Runs compile/lint verification and presents result
 
 Do not route to `plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `fix` escalation handles these efficiently.

@@ -4,7 +4,7 @@ tools: ["Write", "Bash"]
 ---
 
 
-# Agent: al-dev-commit-recover
+# Agent: corruption-recover
 
 Recover corrupted AL files flagged in `.dev/commit-integrity.log` using learned fallback strategies.
 

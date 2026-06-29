@@ -546,7 +546,7 @@ and treat a suggestion targeting a path under `generated/` as an automatic REJEC
 ```markdown
 # SOURCE ARTIFACTS (Edit Here)
 profile-al-dev-shared/agents/commit-analyzer.md
-profile-al-dev-shared/agents/al-dev-developer.md
+profile-al-dev-shared/agents/developer-traditional.md
 profile-al-dev-shared/skills/develop-orchestrate/SKILL.md
 profile-al-dev-shared/knowledge/artifact-contracts.md
 
@@ -554,7 +554,7 @@ profile-al-dev-shared/knowledge/artifact-contracts.md
 profile-al-dev-shared/generated/agents/claude/commit-analyzer.md
 profile-al-dev-shared/generated/agents/copilot/commit-analyzer.md
 profile-al-dev-shared/generated/agents/codex/commit-analyzer.md
-profile-al-dev-shared/generated/agents/claude/al-dev-developer.md
+profile-al-dev-shared/generated/agents/claude/developer-traditional.md
 
 # REJECTION EXAMPLES
 REJECT: "Fix typo in profile-al-dev-shared/generated/agents/claude/commit-analyzer.md"

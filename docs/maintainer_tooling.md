@@ -194,7 +194,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/revise-plugin-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
 | `/implement-plugin-health` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
-| `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `al-dev-docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
+| `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
 | `/regenerate-agent-projections` | derive | user | Validates shared agent source and unidirectionally regenerates harness-native agent projections from the canonical agent source, summarizes changes, and asks before committing. |
 | `/validate-plugin-neutrality` | derive | user | Validate harness neutrality in the al-dev-shared single shared plugin surface by running validate_harness_neutrality.py, which checks for forbidden harness-specific tokens across seven classes (Claude tool tokens, dispatch tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP tokens; and harness-specific session wording) that could break distributable content. |
 
@@ -236,11 +236,11 @@ artifact signal.
 | Signal | Item | Detail |
 | --- | --- | --- |
 | Orphaned artifact | `.dev/implement-plugin-health-progress.md` | produced by /implement-plugin-health; consumed by no skill |
-| Orphaned artifact | `docs/plugin-graph.md` | produced by /sync-map-documentation-write; consumed by no skill |
-| Orphaned artifact | `docs/workflow-diagrams.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/health/dispositions_events/*/*-*.jsonl` | produced by /implement-plugin-health, /record-plugin-dispositions, /revise-plugin-plan; consumed by no skill |
 | Orphaned artifact | `docs/maintainer_tooling.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer_tooling/` | produced by /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `docs/plugin-graph.md` | produced by /sync-map-documentation-write; consumed by no skill |
+| Orphaned artifact | `docs/workflow-diagrams.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-map-documentation-write; consumed by no skill |
 | Sourceless input | `docs/health/dispositions_index.json` | consumed by /plan-plugin-findings; produced by no skill |
 | Sourceless input | `docs/health/dispositions_open.md` | consumed by /implement-plugin-health, /plan-plugin-findings, /record-plugin-dispositions, /report-plugin-health, /revise-plugin-plan; produced by no skill |
@@ -251,23 +251,23 @@ artifact signal.
 | Missing contract | `review-docs` | active skill with no workflow contract |
 | Missing contract | `verify-files` | active skill with no workflow contract |
 | Artifact freshness | `.claude/knowledge/` | present |
-| Artifact freshness | `.dev/health-loop-state.md` | latest 2026-06-29 |
-| Artifact freshness | `.dev/implement-plugin-health-progress.md` | never produced |
-| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | never produced |
-| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | never produced |
-| Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | never produced |
-| Artifact freshness | `docs/agent-map.md` | latest 2026-06-29 |
-| Artifact freshness | `docs/knowledge-quality-tooling.md` | latest 2026-06-29 |
-| Artifact freshness | `docs/knowledge-quality.md` | latest 2026-06-29 |
-| Artifact freshness | `docs/plugin-graph.md` | latest 2026-06-29 |
-| Artifact freshness | `docs/skills-map.md` | latest 2026-06-29 |
-| Artifact freshness | `docs/workflow-diagrams.md` | latest 2026-06-29 |
+| Artifact freshness | `.dev/health-loop-state.md` | latest 2026-06-28 |
+| Artifact freshness | `.dev/implement-plugin-health-progress.md` | latest 2026-06-28 |
+| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | latest 2026-06-28 |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-06-30 |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | latest 2026-06-28 |
+| Artifact freshness | `docs/agent-map.md` | never produced |
 | Artifact freshness | `docs/health/*-*-findings.md` | never produced |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | never produced |
 | Artifact freshness | `docs/health/*-*-health.md` | never produced |
-| Artifact freshness | `docs/health/dispositions_events/*/*-*.jsonl` | latest 2026-06-29 |
+| Artifact freshness | `docs/health/dispositions_events/*/*-*.jsonl` | latest 2026-06-30 |
+| Artifact freshness | `docs/knowledge-quality-tooling.md` | never produced |
+| Artifact freshness | `docs/knowledge-quality.md` | never produced |
 | Artifact freshness | `docs/maintainer_tooling/` | present |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-29 |
+| Artifact freshness | `docs/plugin-graph.md` | never produced |
+| Artifact freshness | `docs/skills-map.md` | never produced |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-06-30 |
+| Artifact freshness | `docs/workflow-diagrams.md` | never produced |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

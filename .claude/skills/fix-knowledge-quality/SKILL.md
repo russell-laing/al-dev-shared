@@ -3,7 +3,7 @@ name: fix-knowledge-quality
 description: >-
   Reads HIGH-severity knowledge quality tasks from the fix-task block produced
   by /audit-knowledge-quality, presents the HIGH-only task list, and
-  conditionally dispatches one `al-dev-docs-writer` agent per issue when the
+  conditionally dispatches one `docs-writer` agent per issue when the
   user approves (or when --auto-fix is passed). Scope: HIGH severity only;
   execution is user-gated. A mandatory neutrality gate validates any
   shared-surface edits and blocks completion if forbidden harness tokens are
@@ -130,7 +130,7 @@ ls .claude/knowledge/fix-knowledge-quality-dispatch.md
 
 If absent, stop and restore it: `git checkout HEAD -- .claude/knowledge/fix-knowledge-quality-dispatch.md`
 
-For each HIGH task, dispatch one `al-dev-shared:al-dev-docs-writer` agent
+For each HIGH task, dispatch one `al-dev-shared:docs-writer` agent
 (`al-dev-shared:` is the plugin namespace prefix; see CLAUDE.md — Agent File
 Format). Use the dispatch template in
 `.claude/knowledge/fix-knowledge-quality-dispatch.md`, substituting `{file}`,
