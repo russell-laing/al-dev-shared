@@ -20,3 +20,10 @@ scenarios:
     expected_artifacts:
       - "docs/reviews/*-benchmark-baseline.md"
     notes: "Must record token efficiency as measured, inferred, or not available, and must not turn proxy evidence into fake exact token savings or self-healing design claims into measured recovery."
+
+  - id: adapter-procedure-integrity-gates-scoring
+    status: golden
+    user_prompt: "Refresh the existing Claude self-healing benchmark report and only keep the loop-quality score clean if the benchmark adapter procedure_integrity checklist and health-loop-state validator both pass."
+    expected_artifacts:
+      - "docs/reviews/*-benchmark-baseline.md"
+    notes: "Must run scripts/health_benchmark_adapter.py and scripts/validate_health_loop_state.py before scoring, cite adapter-backed procedure_integrity output, and patch or downgrade clean-closure claims when any checklist item fails."

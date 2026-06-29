@@ -90,8 +90,14 @@ Before writing the report:
 1. Snapshot existing health artifacts:
 
    ```bash
-   find docs/health -maxdepth 3 -type f -print | sort > /tmp/pre-benchmark-health-files.txt
+   pre_snapshot=$(mktemp /tmp/benchmark-health-files.XXXXXX.pre)
+   post_snapshot="${pre_snapshot%.pre}.post"
+   find docs/health -maxdepth 3 -type f -print | sort > "$pre_snapshot"
+   printf 'pre_snapshot=%s\npost_snapshot=%s\n' "$pre_snapshot" "$post_snapshot"
    ```
+
+   Keep both printed variable values in your notes for Phase 4 if your shell
+   session does not preserve them.
 
 2. Capture the canonical disposition state:
 
@@ -100,10 +106,13 @@ Before writing the report:
    python3 scripts/health_disposition_store.py list-open
    python3 scripts/health_disposition_store.py list-open | wc -l
    python3 scripts/check_ledger_staleness.py
+   python3 scripts/validate_health_loop_state.py
+   python3 scripts/health_benchmark_adapter.py --surface both --limit 3 --format markdown
    ```
 
-3. Treat nonzero JSONL or legacy checker values as live evidence. Do not write
-   a zero-open claim from stale memory.
+3. Treat nonzero JSONL or legacy checker values, invalid loop-state output, or
+   any failing `procedure_integrity` item from the adapter as live evidence. Do
+   not write a zero-open or clean-closure claim from stale memory.
 
 ### Phase 2: Extract evidence
 
@@ -173,12 +182,14 @@ Run:
 ```bash
 rg -n "^## (Scope|Executive Summary|Rubric|Evidence Inventory|Scores|Precision Notes|Loop Quality Notes|Token Efficiency Findings|Best-Practice Alignment|Harness Follow-Up|Recommendations)$" [report-path]
 rg -n "Initial scaffold created|Evidence inventory is added|Scores are added|Precision notes are added|Loop quality notes are added|Best-practice alignment is added|Harness follow-up fields are added|Recommendations are added|[T]ODO|[T]BD|\\.\\.\\." [report-path]
-find docs/health -maxdepth 3 -type f -print | sort > /tmp/post-benchmark-health-files.txt
-comm -13 /tmp/pre-benchmark-health-files.txt /tmp/post-benchmark-health-files.txt
+find docs/health -maxdepth 3 -type f -print | sort > "$post_snapshot"
+comm -13 "$pre_snapshot" "$post_snapshot"
 python3 -m json.tool docs/health/dispositions-index.json
 python3 scripts/health_disposition_store.py list-open
 python3 scripts/health_disposition_store.py list-open | wc -l
 python3 scripts/check_ledger_staleness.py
+python3 scripts/validate_health_loop_state.py
+python3 scripts/health_benchmark_adapter.py --surface both --limit 3 --format markdown
 git diff --check -- [report-path]
 ```
 
@@ -189,6 +200,10 @@ Interpretation:
   benchmark work created them
 - if live JSONL or legacy checker values changed, update the report so key
   claims match the live counts
+- if `validate_health_loop_state.py` fails, do not claim the loop breadcrumb is
+  clean even when `next_command` text appears to be `none`
+- if the adapter reports any ❌ `procedure_integrity` item, do not assign or
+  preserve a clean loop-quality score until the report reflects that failure
 - if token-efficiency findings rely on historical or indirect evidence, keep
   that label explicit after the re-check
 - if the live state still supports the report, leave the text unchanged and
@@ -205,12 +220,14 @@ Before reporting completion:
 
 ```bash
 npx --yes markdownlint-cli2 [report-path]
-git status --short --ignored=matching docs/health .dev/health-loop-state.md [report-path]
+git status --short docs/health .dev/health-loop-state.md [report-path]
+git status --short --ignored=matching [report-path]
 ```
 
 Confirm markdown is valid, placeholders are gone, no tracked health artifacts
 were created, and only the intended report file changed among tracked relevant
-files.
+files. Use the ignored-status check only to confirm the report itself is not
+hidden from normal status output.
 
 ## Guardrails
 

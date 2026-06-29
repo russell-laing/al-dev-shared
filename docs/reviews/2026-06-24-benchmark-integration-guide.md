@@ -5,10 +5,16 @@ artifacts to drive concrete improvements to the Claude Code self-healing loop.
 This is a process guide, not a report — it maps benchmark findings to workflow
 actions.
 
-**Status as of 2026-06-24:**
+**Status as of 2026-06-29:**
 Baseline report exists at
 `docs/reviews/2026-06-20-claude-self-healing-benchmark-baseline.md`.
-Recommendations 1–5 implemented; Recommendation 6 deferred.
+Recommendations 1–5 are still implemented; Recommendation 6 is still deferred.
+The adapter survived the later health-package refactor: the public CLI remains
+`scripts/health_benchmark_adapter.py`, while implementation lives in
+`scripts/al_dev_tools/health/health_benchmark_adapter.py`. The updated
+`generate-benchmark-report` skill now runs both the adapter and
+`scripts/validate_health_loop_state.py` before preserving clean loop-quality
+claims.
 
 ---
 
@@ -24,10 +30,10 @@ Health sweep → Benchmark report → Integration actions → Next health sweep
                      └──────────── delta benchmark ←───────────┘
 ```
 
-Right now the loop is open: the baseline exists and recommendations are
-partially implemented, but there is no mechanism that forces benchmark findings
-to become disposition events, no delta report that measures whether scores
-improved, and no cadence that triggers a refresh.
+The health loop itself is currently closed (`.dev/health-loop-state.md` reports
+`next_command: none`), but the benchmark integration loop is still open:
+Recommendation 6 is deferred, no delta report measures whether scores improved,
+and no automatic cadence triggers a refresh.
 
 ---
 
@@ -105,7 +111,10 @@ required phase-proof steps were actually taken.
 
 - The adapter already emits a `procedure_integrity` checklist retrospectively
   from artifacts. The gap is that this checklist is generated after the fact
-  rather than written during the run.
+  rather than written during the run. The current benchmark skill now treats any
+  ❌ checklist item or failed `validate_health_loop_state.py` run as scoring
+  evidence, so retrospective failures should no longer be hidden by a clean
+  prose summary.
 - Adding a prospective procedure log requires appending a record at the end of
   each skill phase — across 6+ skills with multiple phases each. That is a
   significant cross-cutting change and should not be treated as a simple fix.
@@ -173,7 +182,7 @@ instrumentation changes.
 The current baseline is a one-shot scorecard. To make it durable, introduce a
 **delta benchmark** that runs after each completed health cycle:
 
-1. Run the adapter: `python3 scripts/health_benchmark_adapter.py --surface tooling --limit 1 --format markdown`
+1. Run the validator and adapter: `python3 scripts/validate_health_loop_state.py` and `python3 scripts/health_benchmark_adapter.py --surface tooling --limit 1 --format markdown`
 2. Re-read the baseline scores.
 3. For each dimension, ask: did the score change? If so, which action caused it?
 4. Write a two-section append to the baseline (`## Delta — YYYY-MM-DD`) rather
@@ -235,8 +244,11 @@ insufficient and needs a stronger suppression instruction.
 The benchmark currently uses human scoring after adapter extraction. The path
 toward evidence-based scoring (not replacing human review, but anchoring it):
 
-**Stage 1 (now):** Adapter extracts fields; human assigns 1-5 scores based on
-adapter output. Current state.
+**Stage 1 (now):** The health-loop validator must pass, the adapter extracts
+fields, and human review assigns 1-5 scores based on adapter output. The June
+29, 2026 updated-skill run produced one clean post-refactor sample: all
+`procedure_integrity` checks passed, `list-open accepted: 0`, and
+`health-loop-state: PASS`.
 
 **Stage 2 (after 3 clean adapter runs):** Define evidence-based score thresholds
 per dimension. For example:
@@ -248,8 +260,9 @@ per dimension. For example:
   is a different signal than both being low. A combined precision score of at
   least 3/5 is supportable only if the gate is clean (`failed_lens_count == 0`)
   and lens noise is trending down across sweeps.
-- Loop quality: if `procedure_integrity` checklist is all ✅ and
-  `jsonl_open_accepted_count == 0`, loop quality is at least 4/5.
+- Loop quality: if `validate_health_loop_state.py` passes, `procedure_integrity`
+  checklist is all ✅, and `jsonl_open_accepted_count == 0`, loop quality is at
+  least 4/5.
 
 The adapter emits the raw values; a thin scoring function maps them to suggested
 scores. Human confirms or overrides.
@@ -271,7 +284,7 @@ cadence:
 
 | Trigger | Action | Executor |
 | --- | --- | --- |
-| Health cycle completed (implement → closed) | Run adapter; write delta benchmark if any score-relevant change occurred | Codex (handover from Claude Code) |
+| Health cycle completed (implement → closed) | Run validator and adapter; write delta benchmark if any score-relevant change occurred | Codex (handover from Claude Code) |
 | Deferred recommendation implemented | Write delta benchmark section for that dimension only | Codex (manually triggered session) |
 | Score-relevant script changed (adapter, gates, staleness checker) | Run adapter smoke test; write delta benchmark only if scores shift | Codex (manually triggered session) |
 | Time-based (quarterly backstop) | Run full benchmark refresh if no handover-triggered refresh has occurred that quarter | Codex (manually triggered session) |
@@ -353,21 +366,23 @@ needed.
 **Handover pattern:**
 
 1. Claude Code health cycle reaches `stage_completed: implement-plugin-health`.
-2. Loop-state breadcrumb records `next_command: run-benchmark` and the current
-   date, signalling to the next session that a benchmark run is due.
-3. The user opens a Codex session; Codex reads `.dev/health-loop-state.md` and
-   acts on the `next_command: run-benchmark` breadcrumb to run
-   `generate-benchmark-report`.
-4. Codex writes the delta or refresh to `docs/reviews/` and updates the
-   breadcrumb to `next_command: none`.
+2. The health-loop breadcrumb records `next_command: none`; do not write
+   `run-benchmark` there. `scripts/validate_health_loop_state.py` only accepts
+   known health-loop slash commands or `none`, and the benchmark is a Codex-owned
+   review step outside that state machine.
+3. The user opens a Codex session, points it at the closed breadcrumb and the
+   latest health artifacts, and asks it to run `generate-benchmark-report` or a
+   delta refresh.
+4. Codex writes the delta or refresh to `docs/reviews/`. It should not modify
+   `.dev/health-loop-state.md` unless a separate, validator-backed benchmark
+   handoff state is introduced.
 5. Claude Code reads the new benchmark output on the next session start.
 
-**Current limitation:** Step 3 assumes Codex reads `.dev/health-loop-state.md`
-at session start and interprets `next_command: run-benchmark` as a trigger. If
-this is not yet wired into Codex session start, the handover remains a manual
-convention — the user reads the breadcrumb and opens a Codex session with that
-context — rather than an automatic trigger. This wiring should be confirmed
-before the pattern is relied upon.
+**Current limitation:** This is a manual convention, not an automatic trigger.
+The current `.dev/health-loop-state.md` contract is deliberately scoped to the
+Claude health loop. If benchmark due-state needs to be machine-readable later,
+add a separate benchmark handoff artifact or extend the validator and lifecycle
+contract first; do not overload `next_command` with an unrecognized token.
 
 This also means the benchmark cadence is primarily driven by health-cycle
 completion and user-initiated Codex sessions, not by a Claude Code cron or

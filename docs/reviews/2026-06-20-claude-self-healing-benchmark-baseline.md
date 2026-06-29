@@ -4,7 +4,11 @@
 
 This baseline scores the recent Claude Code self-healing loop using historical artifacts from June 18-20, 2026. It includes both plugin-surface and tooling-surface health runs because both exercise the same Claude health loop. It does not run a fresh health sweep, does not create synthetic fixtures, and does not score the full May or early-June history.
 
-The scorecard remains historical, but its live-state claims were revalidated on June 22, 2026 against the current JSONL disposition views, the legacy staleness checker, and the current loop-state breadcrumb.
+The scorecard remains historical, but its live-state claims were revalidated on
+June 29, 2026 against the current JSONL disposition views, the legacy
+staleness checker, the benchmark adapter, and the current loop-state breadcrumb.
+The latest generated disposition index is from June 28, 2026 and still reports a
+closed loop.
 
 The current disposition evidence is JSONL-backed. Canonical disposition events live under `docs/health/dispositions-events/`, and the generated JSONL views `docs/health/dispositions-open.md`, `docs/health/dispositions-current.md`, and `docs/health/dispositions-index.json` are the current baseline for open/current counts. `docs/health/dispositions.md` is treated as a temporary generated legacy compatibility view, not as the source of truth.
 
@@ -41,7 +45,7 @@ External anchors:
 | `docs/health/2026-06-18-plugin-health.md` | Friction-ingest mapping check | Raw/candidate count not available, 0 verified findings, 6 dropped unverified because the ingest mapped profile-claude-al-dev findings to structurally different shared-profile files, 0 new, 0 recurring. |
 | `docs/health/archived/2026-06-18-tooling-health.md` | Recent tooling quality check | Raw/candidate count not available, 11 retained findings, 25 dropped unverified, 11 new, 0 recurring, no failed lenses. |
 | `docs/superpowers/plans/archived/2026-06-19-plugin-map-health-fixes.md` | Implementation and close-back evidence | 46 accepted rows addressed, 33 planned, 13 re-dispositioned, close-back via `closes_rows`. |
-| `.dev/health-loop-state.md` | Durable loop pointer | Current live breadcrumb shows `stage_completed: implement-plugin-health`, `completed_at: 2026-06-22`, `next_command: none`, and a note that the ledger staleness check passed with 0 open rows. |
+| `.dev/health-loop-state.md` | Durable loop pointer | Current live breadcrumb shows `stage_completed: implement-plugin-health`, `completed_at: 2026-06-28`, `next_command: none`, and a note that 13 implementation tasks completed with 17 fixed disposition events appended. |
 | `docs/health/dispositions-index.json` | Generated JSONL disposition index | `open_accepted` is 0 and `integrity_warnings` is 0. |
 | `docs/health/dispositions-open.md` | Generated JSONL open-row view | Contains no open accepted events according to `health_disposition_store.py list-open`. |
 | `scripts/check_ledger_staleness.py` output | Legacy effective-open closure check | Reports 0 effective-open accepted row(s). |
@@ -73,7 +77,7 @@ The June 18 component counts are useful precision and recurrence evidence, but t
 | --- | ---: | --- | --- | --- |
 | Best-practice alignment | 4 | Medium | The loop has evidence verification, human disposition gates, durable loop state, close-back IDs, stale/fixed suppression, JSONL open-row checks, and legacy effective-open closure checks. | Reliability stress testing is not measured yet; rerun consistency and fault tolerance are inferred from artifacts rather than tested. |
 | Precision | 4 | Medium | June 19 dossiers directly report 74 raw lens findings, 40 verified, 29 dropped unverified, 2 stale/fixed dropped, 3 ledger-suppressed, and 0 failed lenses. June 18 artifacts add 31 dropped-unverified component signals but lack explicit raw denominators. | The loop still produces many raw false positives, especially from friction mapping and subjective clarity lenses, and the June 18 denominator is unavailable. |
-| Loop quality | 4 | High | The June 19 plan addressed 46 accepted rows, planned 33, re-dispositioned 13, used `closes_rows`, the JSONL index reports `open_accepted: 0`, and the current live loop state is still closed at `next_command: none` with 0 effective-open accepted rows. | The clean final state depends on correct procedure; the report should still watch for corrupt success where close-back happens without sufficient phase proof. |
+| Loop quality | 4 | High | The June 19 plan addressed 46 accepted rows, planned 33, re-dispositioned 13, used `closes_rows`, the JSONL index reports `open_accepted: 0`, and the current live loop state is still closed at `next_command: none` with 0 effective-open accepted rows after the June 28 close-back. | The clean final state depends on correct procedure; the report should still watch for corrupt success where close-back happens without sufficient phase proof. |
 | Recall signal | 2 | Low | Backlog rows, recurrence fields, and friction-ingest mapping issues show recall-relevant signals, but the baseline does not run a fresh adversarial sweep or controlled fixture set. | False negatives cannot be measured rigorously from recent historical artifacts alone. |
 
 ## Precision Notes
@@ -96,8 +100,20 @@ The recent loop shows good end-to-end closure:
 - Plan tasks carried `closes_rows` identifiers for ledger close-back.
 - `docs/health/dispositions-index.json` reports `open_accepted: 0` and `integrity_warnings: 0`.
 - `python3 scripts/health_disposition_store.py list-open` prints no open accepted events.
-- `.dev/health-loop-state.md` now reports `stage_completed: implement-plugin-health`, `completed_at: 2026-06-22`, and `next_command: none`.
+- `.dev/health-loop-state.md` now reports `stage_completed: implement-plugin-health`, `completed_at: 2026-06-28`, and `next_command: none`.
 - `python3 scripts/check_ledger_staleness.py` reports 0 effective-open accepted row(s).
+- `python3 scripts/validate_health_loop_state.py` reports `health-loop-state: PASS`.
+- `python3 scripts/health_benchmark_adapter.py --surface both --limit 3 --format markdown` reports every `procedure_integrity` item as passing, `list-open accepted: 0`, and 784 close-back events.
+
+The updated `generate-benchmark-report` skill was exercised on June 29, 2026
+against this report. Its adapter-first validation path sampled the latest
+machine-readable dossier metrics: latest plugin evidence included 20 raw / 17
+verified / 2 dropped-unverified findings from
+`docs/health/archived/2026-06-28-plugin-health.md`, while latest tooling
+evidence included 4 raw / 3 verified / 1 dropped-unverified finding from
+`docs/health/archived/2026-06-27-tooling-health.md`. Those newer samples support
+the existing clean loop-quality score, but they do not change the historical
+June 18-20 baseline scores.
 
 The main procedure-aware risk is corrupt success: a clean final ledger is not enough if a future run skips phase-proof blocks, evidence verification, disposition gates, JSONL view regeneration, or close-back validation. The benchmark should therefore keep procedure-integrity checks alongside outcome checks.
 
@@ -165,13 +181,15 @@ First automation should parse and report these fields without changing scores au
 
 ## Implementation Status
 
-Live repo check on June 22, 2026:
+Live repo check on June 29, 2026:
 
 - Recommendation 1 is implemented. There is no automated benchmark-report
   workflow (the scorecard is authored by hand), so the adapter invocation is now
   documented as the mandatory first step of the Benchmark Refresh Procedure below
   and is regression-guarded by the `build_report` smoke test in
-  `scripts/tests/test_health_benchmark_adapter.py`.
+  `scripts/tests/test_health_benchmark_adapter.py`. The public CLI path remains
+  `scripts/health_benchmark_adapter.py`; the implementation now lives in the
+  packaged module `scripts/al_dev_tools/health/health_benchmark_adapter.py`.
 - Recommendation 2 is implemented. The adapter's extraction contract now has a
   fixture/test surface: `scripts/tests/test_health_benchmark_adapter.py` with
   three fixtures under `scripts/tests/fixtures/benchmark/` covering the full
@@ -185,6 +203,11 @@ Live repo check on June 22, 2026:
 - Recommendation 5 is implemented. The adapter emits a concrete
   `procedure_integrity` checklist covering JSONL views, loop closure, close-back
   IDs, and staleness/index cleanliness.
+- The `generate-benchmark-report` skill now requires both
+  `scripts/validate_health_loop_state.py` and
+  `scripts/health_benchmark_adapter.py --surface both --limit 3 --format markdown`
+  before preserving clean loop-quality claims, so future refreshes should catch
+  invalid breadcrumbs or failing `procedure_integrity` items before scoring.
 - Recommendation 6 is not yet implemented as a dedicated mechanism. The report
   still names the important false-positive classes, but the repo does not yet
   contain a standalone tracker or benchmark-specific fixture coverage for them.
@@ -208,6 +231,10 @@ a procedure-integrity checklist (Recommendation 5). It reports only — the 1-5
 scores remain human-assigned until the extractor has passed cleanly on several
 runs.
 
+As of the June 29, 2026 recheck, `scripts/health_benchmark_adapter.py` is a
+compatibility wrapper over `scripts/al_dev_tools/health/health_benchmark_adapter.py`.
+That packaging change does not change the documented CLI contract.
+
 Recommendation 3 is enforced at the source: dossiers written before the
 metrics block existed carry no machine-readable counts, so the adapter surfaces
 their raw/verified/dropped fields as `not available` rather than inferring a
@@ -229,14 +256,16 @@ Before any future manual scoring run, regenerate the evidence fields from live
 surfaces first (Recommendation 1). Run:
 
 ```bash
+python3 scripts/validate_health_loop_state.py
 python3 scripts/health_benchmark_adapter.py --surface both --limit 1 --format markdown
 ```
 
-Do not assign or revise the 1-5 scores until every `procedure_integrity`
-checklist item reads ✅ and the footer shows `list-open accepted: 0`. A ❌ on any
-checklist item means the loop state is not closed (open accepted rows, missing
-JSONL views, stale ledger, or absent close-back IDs) and the scorecard must not
-report a clean closure.
+Do not assign or revise the 1-5 scores until the loop-state validator passes,
+every `procedure_integrity` checklist item reads ✅, and the footer shows
+`list-open accepted: 0`. A validator failure or ❌ checklist item means the loop
+state is not closed (open accepted rows, missing JSONL views, stale ledger,
+invalid breadcrumb, or absent close-back IDs) and the scorecard must not report a
+clean closure.
 
 The adapter's extraction contract — metrics-block parsing, the `not available`
 fallback for missing blocks/fields (Recommendation 3), and the
