@@ -210,6 +210,54 @@ Every plan task must end with a verification step before its commit:
 When dispatching subagents to execute plan tasks (both Claude Code and Copilot CLI),
 pass the above checklist in the dispatch prompt so subagents self-verify before returning.
 
+## Artifact Lifecycle and Cleanup
+
+Skills that write output to `.dev/` or `docs/superpowers/` must follow these
+lifecycle rules:
+
+**Temporary Artifacts** (removed at task completion):
+
+- Dated research files: `.dev/YYYY-MM-DD-*.md` — one-off investigation outputs
+- Working checkpoints: `.dev/*-progress.md`, `.dev/*-checkpoint.json`
+- Intermediate findings: `.dev/discover-*-findings.md` (before report phase)
+- Unused review docs: `.dev/review-*.md` that didn't become part of main output
+
+**Persistent Artifacts** (committed to git):
+
+- Core tracking files: `.dev/progress.md` (resume pointer for multi-phase skills)
+- Disposition ledger: `docs/health/dispositions*.md`, `docs/health/dispositions-events/`,
+  `docs/health/dispositions-history/`
+- Generated documentation: `docs/al-dev-*.md`, `.claude/knowledge/`, etc.
+- Plan history: `docs/superpowers/plans/archived/` (readonly reference)
+
+**Cleanup Expectations by Skill Type**:
+
+- **Investigation skills** (`discover-*`, `research-*`): Remove `.dev/YYYY-MM-DD-*.md`
+  files after rolling findings into structured output (`.dev/findings.md` or
+  `docs/health/` entries). Checkpoints are auto-removed after success.
+
+- **Planning skills** (`writing-plans`, `plan-*-findings`): Temporary specs go in
+  `docs/superpowers/specs/` (gitignored). Remove dated spec files after plan is
+  written to `docs/superpowers/plans/`. Keep only the final plan.
+
+- **Audit/Review skills** (`audit-*`, `report-*`): Remove intermediate working
+  files (e.g. `.dev/audit-work-*.json`, `.dev/review-draft.md`). Keep only final
+  dossiers and reports.
+
+**Cleanup Checklist** (every multi-phase skill MUST perform before returning):
+
+- [ ] All `.dev/YYYY-MM-DD-*.md` research/investigation files removed
+- [ ] All `.dev/*-work*.json` or `.dev/*-draft*` files removed
+- [ ] Progress checkpoints cleaned up (only `.dev/progress.md` remains if needed)
+- [ ] `docs/superpowers/specs/` directory empty except `.gitkeep`
+- [ ] Final outputs (plans, reports, dossiers) are in their persistent locations
+- [ ] If `git status` shows any `.dev/` or `docs/superpowers/specs/` files staged
+  for commit, verify they are intentional (usually they shouldn't be)
+
+**Prevention:** The pre-commit hook (`.githooks/pre-commit`) runs
+`scripts/validate-artifact-leaks.py` to catch any dated or working files
+about to be committed. If caught, abort commit and clean up before re-attempting.
+
 ## Subagent-Driven Development Best Practices
 
 When dispatching subagents via `superpowers:subagent-driven-development`:
