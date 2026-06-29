@@ -25,7 +25,7 @@ def test_flags_shared_surface_leakage_and_ignores_allowlisted_mapping_docs(tmp_p
         encoding="utf-8",
     )
     (knowledge / "review-panel-pattern.md").write_text(
-        'Agent(\n  subagent_type: "al-dev-shared:al-dev-security-reviewer"\n)\n',
+        'Agent(\n  subagent_type: "al-dev-shared:security-reviewer"\n)\n',
         encoding="utf-8",
     )
 

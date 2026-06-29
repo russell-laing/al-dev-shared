@@ -11,28 +11,29 @@ from scripts.al_dev_tools.markdown_frontmatter import (
     parse_optional_frontmatter,
     parse_required_frontmatter,
 )
+from scripts.al_dev_tools.shared_surface_names import strip_legacy_shared_prefix
 
 
-AGENT_REF = re.compile(r"al-dev-shared:(al-dev-[a-z0-9-]+)")
-BARE_AGENT_REF = re.compile(r"\b(al-dev-[a-z0-9-]+)\b")
+AGENT_REF = re.compile(r"al-dev-shared:([a-z][a-z0-9-]+)")
+BARE_AGENT_REF = re.compile(r"\b([a-z][a-z0-9-]+)\b")
 SKILL_REF = re.compile(r"(?<![A-Za-z0-9_.-])/([a-z][a-z0-9-]+)\b")
 KNOWLEDGE_REF = re.compile(r"knowledge/([a-z0-9-]+\.md)")
 ARTIFACT_REF = re.compile(r"\.dev/([A-Za-z0-9._-]+\.[A-Za-z0-9_-]+)")
 
 WORKFLOW_ORDER: dict[str, list[str]] = {
     "development-spine": [
-        "al-dev-plan",
-        "al-dev-develop",
-        "al-dev-review-develop",
-        "al-dev-commit",
+        "plan",
+        "develop-orchestrate",
+        "review-develop",
+        "commit",
     ],
     "ticket-support": [
-        "al-dev-ticket",
-        "al-dev-support-reply",
+        "ticket",
+        "support-reply",
     ],
     "direct-fix": [
-        "al-dev-fix",
-        "al-dev-commit",
+        "fix",
+        "commit",
     ],
 }
 
@@ -260,8 +261,9 @@ def _extract_bare_agent_refs(text: str, agent_set: set[str]) -> set[str]:
         if not _line_allows_bare_agent_refs(line):
             continue
         for candidate in BARE_AGENT_REF.findall(line):
-            if candidate in agent_set:
-                found.add(candidate)
+            canonical = strip_legacy_shared_prefix(candidate)
+            if canonical in agent_set:
+                found.add(canonical)
     return found
 
 
@@ -271,7 +273,11 @@ def _extract_skill_refs(
     *,
     agent_set: set[str],
 ) -> tuple[set[tuple[str, str]], set[tuple[str, str]], set[tuple[str, str]], set[tuple[str, str]]]:
-    skill_to_agent = {(skill_name, dst) for dst in AGENT_REF.findall(text)}
+    skill_to_agent = {
+        (skill_name, strip_legacy_shared_prefix(dst))
+        for dst in AGENT_REF.findall(text)
+        if strip_legacy_shared_prefix(dst) in agent_set
+    }
     skill_to_agent.update((skill_name, dst) for dst in _extract_bare_agent_refs(text, agent_set))
 
     skill_to_skill: set[tuple[str, str]] = set()

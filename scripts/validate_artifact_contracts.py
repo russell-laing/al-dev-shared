@@ -123,7 +123,7 @@ def parse_contract_matrix(text: str) -> list[dict[str, str]]:
 # ---------------------------------------------------------------------------
 
 def extract_skill_name(raw: str) -> str:
-    """Extract skill name from a cell value like '`al-dev-plan`'."""
+    """Extract skill name from a cell value like '`plan`'."""
     m = re.search(r"`([^`]+)`", raw)
     return m.group(1) if m else raw.strip()
 

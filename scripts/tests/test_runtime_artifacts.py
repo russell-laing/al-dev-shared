@@ -17,14 +17,14 @@ from scripts.al_dev_tools.runtime_artifacts import contains_any_marker, latest_r
 def test_latest_runtime_artifact_prefers_newest_matching_filename_by_mtime(tmp_path: Path) -> None:
     dev = tmp_path / ".dev"
     dev.mkdir()
-    older = dev / "2026-06-28-al-dev-ticket-ticket-context.md"
-    newer = dev / "2026-06-29-al-dev-ticket-ticket-context.md"
+    older = dev / "2026-06-28-ticket-ticket-context.md"
+    newer = dev / "2026-06-29-ticket-ticket-context.md"
     older.write_text("older", encoding="utf-8")
     newer.write_text("newer", encoding="utf-8")
     os.utime(older, (1_000_000_000, 1_000_000_000))
     os.utime(newer, (1_000_000_001, 1_000_000_001))
 
-    selected = latest_runtime_artifact(tmp_path, "*-al-dev-ticket-ticket-context.md")
+    selected = latest_runtime_artifact(tmp_path, "*-ticket-ticket-context.md")
 
     assert selected == newer
 
@@ -32,7 +32,7 @@ def test_latest_runtime_artifact_prefers_newest_matching_filename_by_mtime(tmp_p
 def test_latest_runtime_artifact_returns_none_when_no_match(tmp_path: Path) -> None:
     (tmp_path / ".dev").mkdir()
 
-    selected = latest_runtime_artifact(tmp_path, "*-al-dev-interview-requirements.md")
+    selected = latest_runtime_artifact(tmp_path, "*-interview-requirements.md")
 
     assert selected is None
 

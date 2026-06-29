@@ -26,8 +26,8 @@ def _called_from_unittest_loader() -> bool:
 def test_developer_agents_do_not_declare_unused_grep_tool() -> unittest.FunctionTestCase | None:
     def body() -> None:
         for path in [
-            "profile-al-dev-shared/agents/al-dev-developer-tdd.md",
-            "profile-al-dev-shared/agents/al-dev-developer-traditional.md",
+            "profile-al-dev-shared/agents/developer-tdd.md",
+            "profile-al-dev-shared/agents/developer-traditional.md",
         ]:
             fm = frontmatter(path)
             assert '"Grep"' not in fm, f"{path} still declares unused Grep"
@@ -41,8 +41,8 @@ def test_developer_agents_do_not_declare_unused_grep_tool() -> unittest.Function
 def test_developer_agent_inputs_explain_auto_located_dev_artifacts() -> unittest.FunctionTestCase | None:
     def body() -> None:
         for path in [
-            "profile-al-dev-shared/agents/al-dev-developer-tdd.md",
-            "profile-al-dev-shared/agents/al-dev-developer-traditional.md",
+            "profile-al-dev-shared/agents/developer-tdd.md",
+            "profile-al-dev-shared/agents/developer-traditional.md",
         ]:
             text = read(path)
             assert "Callers do not pass these paths explicitly" in text
@@ -55,7 +55,7 @@ def test_developer_agent_inputs_explain_auto_located_dev_artifacts() -> unittest
 
 def test_al_dev_plan_phase_2_keeps_architect_invocation_reference() -> unittest.FunctionTestCase | None:
     def body() -> None:
-        text = read("profile-al-dev-shared/skills/al-dev-plan/SKILL.md")
+        text = read("profile-al-dev-shared/skills/plan/SKILL.md")
         phase_2 = text.split("## Phase 2: Spawn Architect Team", 1)[1]
         phase_2 = phase_2.split("## Phase 3:", 1)[0]
         assert "knowledge/architect-invocation-patterns.md" in phase_2
@@ -69,8 +69,8 @@ def test_review_develop_code_review_artifact_is_terminal_output_optional_commit_
     def body() -> None:
         handoff_map = read("profile-al-dev-shared/knowledge/handoff-chain-map.md")
 
-        assert "`al-dev-review-develop` | `code-review.md` | commit | Optional | Ctx" in handoff_map
-        assert "`al-dev-review-develop` | `code-review.md` | commit | **Mandatory**" not in handoff_map
+        assert "`review-develop` | `code-review.md` | commit | Optional | Ctx" in handoff_map
+        assert "`review-develop` | `code-review.md` | commit | **Mandatory**" not in handoff_map
 
     if _called_from_unittest_loader():
         return unittest.FunctionTestCase(body)
@@ -80,10 +80,10 @@ def test_review_develop_code_review_artifact_is_terminal_output_optional_commit_
 def test_low_priority_skill_descriptions_match_current_behavior() -> unittest.FunctionTestCase | None:
     def body() -> None:
         expected = {
-            "profile-al-dev-shared/skills/al-dev-fix/SKILL.md": "Lightweight bug fix workflow without approval gates (fast iteration)",
-            "profile-al-dev-shared/skills/al-dev-lint/SKILL.md": "Run AL compile, then dispatch al-dev-diagnostics-resolver to auto-fix",
-            "profile-al-dev-shared/skills/al-dev-handoff/SKILL.md": "Package investigation context and generate a session-continuation prompt",
-            "profile-al-dev-shared/skills/al-dev-explore/SKILL.md": "Explore codebases fast — loads project context, classifies the question, then delegates to an Explore subagent for structured, persistent findings.",
+            "profile-al-dev-shared/skills/fix/SKILL.md": "Lightweight bug fix workflow without approval gates (fast iteration)",
+            "profile-al-dev-shared/skills/lint/SKILL.md": "Run AL compile, then dispatch diagnostics-resolver to auto-fix",
+            "profile-al-dev-shared/skills/handoff/SKILL.md": "Package investigation context and generate a session-continuation prompt",
+            "profile-al-dev-shared/skills/explore/SKILL.md": "Explore codebases fast — loads project context, classifies the question, then delegates to an Explore subagent for structured, persistent findings.",
             ".claude/archived/skills/al-dev-consolidate/SKILL.md": "Consolidate .dev/ workflow artifacts into per-session summary notes and a",
         }
         for path, description in expected.items():

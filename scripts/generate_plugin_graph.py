@@ -30,14 +30,14 @@ OUTPUT = REPO / "docs" / "al-dev-plugin-graph.md"
 
 # The three canonical workflow paths (from CLAUDE.md "Plugin Architecture").
 WORKFLOW_PATHS = {
-    "Ticket / Support": ["al-dev-ticket", "al-dev-support-reply-drafter"],
+    "Ticket / Support": ["ticket", "support-reply"],
     "Development spine": [
-        "al-dev-investigate",
-        "al-dev-plan",
-        "al-dev-develop",
-        "al-dev-commit",
+        "investigate",
+        "plan",
+        "develop-orchestrate",
+        "commit",
     ],
-    "Direct fix": ["al-dev-fix"],
+    "Direct fix": ["fix"],
 }
 
 

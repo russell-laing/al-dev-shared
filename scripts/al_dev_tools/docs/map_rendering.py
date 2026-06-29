@@ -71,18 +71,18 @@ SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
 }
 
 LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
-    ("al-dev-explore", "al-dev-plan", "optional", "explore-findings.md"),
-    ("al-dev-interview", "al-dev-plan", "optional", "interview-requirements.md"),
-    ("al-dev-investigate", "al-dev-plan", "optional", None),
-    ("al-dev-perf", "al-dev-plan", "optional", "perf-analysis.md"),
-    ("al-dev-plan-preflight", "al-dev-plan", "optional", "preflight-context.md"),
-    ("al-dev-develop", "al-dev-lint", "optional", None),
-    ("al-dev-commit", "al-dev-release-notes", "optional", None),
-    ("al-dev-commit", "al-dev-handoff", "optional", None),
-    ("al-dev-commit", "al-dev-document", "optional", None),
-    ("al-dev-commit", "al-dev-consolidate", "optional", None),
-    ("al-dev-commit", "verify-commits", "default", None),
-    ("commit-recover", "al-dev-commit", "default", None),
+    ("explore", "plan", "optional", "explore-findings.md"),
+    ("interview", "plan", "optional", "interview-requirements.md"),
+    ("investigate", "plan", "optional", None),
+    ("perf", "plan", "optional", "perf-analysis.md"),
+    ("plan-preflight", "plan", "optional", "preflight-context.md"),
+    ("develop-orchestrate", "lint", "optional", None),
+    ("commit", "release-notes", "optional", None),
+    ("commit", "handoff", "optional", None),
+    ("commit", "document", "optional", None),
+    ("commit", "consolidate", "optional", None),
+    ("commit", "verify-commits", "default", None),
+    ("commit-recover", "commit", "default", None),
 )
 
 SKILL_DRILLDOWN_PREFIX = "skill-drilldown-"

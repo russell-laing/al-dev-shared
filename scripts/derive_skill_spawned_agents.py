@@ -8,7 +8,7 @@ Mirrors scripts/derive_agent_callers.py for the skill side.
 
 Replaces the canonical-slug-only extraction formerly embedded in
 sync-map-documentation-skill-metadata, whose narrower matching missed bare
-agent references (e.g. `Spawn **al-dev-solution-architect**`) and produced
+agent references (e.g. `Spawn **solution-architect**`) and produced
 agent_name_mismatch findings that the write phase — regenerating the
 drilldowns from this parser — immediately reverted.
 

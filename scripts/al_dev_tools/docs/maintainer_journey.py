@@ -136,13 +136,12 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             ]
         )
     if stage == "derive":
-        alias_names = {name.replace("-", "_") for name in by_name}
         if {
-            "regenerate_agent_projections",
-            "audit_knowledge_quality",
-            "fix_knowledge_quality",
-            "validate_plugin_neutrality",
-        } <= alias_names:
+            "regenerate-agent-projections",
+            "audit-knowledge-quality",
+            "fix-knowledge-quality",
+            "validate-plugin-neutrality",
+        } <= set(by_name):
             return "\n".join(
                 [
                     "### Agent source changed",

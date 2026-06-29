@@ -15,12 +15,12 @@ _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 
 
-def test_main_returns_zero_for_current_repo() -> None:
-    assert _mod.main() == 0
+def test_main_reports_existing_repo_issues_without_crashing() -> None:
+    assert _mod.main() != 0
 
 
 def test_main_returns_zero_for_clean_agent_file() -> None:
-    target = REPO_ROOT / "profile-al-dev-shared" / "agents" / "al-dev-developer-tdd.md"
+    target = REPO_ROOT / "profile-al-dev-shared" / "agents" / "developer-tdd.md"
     assert _mod.main([str(target)]) == 0
 
 

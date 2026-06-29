@@ -7,10 +7,15 @@ import shutil
 import tempfile
 import unittest
 from pathlib import Path
-
-from scripts.al_dev_tools.docs import map_doc_sections as mod
+import sys
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+for path in (REPO_ROOT, SCRIPTS_DIR):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
+
+from scripts.al_dev_tools.docs import map_doc_sections as mod
 TARGET_DOCS = (
     "docs/al-dev-skills-map.md",
     "docs/al-dev-agent-map.md",
@@ -65,7 +70,7 @@ def _build_fixture_repo(root: Path) -> Path:
         "description: Skill A\n"
         "---\n\n"
         "# Skill A\n"
-        "Spawn al-dev-worker to parallelize checks.\n"
+        "Spawn worker to parallelize checks.\n"
         "Then run /skill-b and /skill-b again.\n"
         "If needed, run /plan to switch to an external wrapper.\n"
         "Uses knowledge/guide.md and knowledge/guide.md.\n"
@@ -81,25 +86,25 @@ def _build_fixture_repo(root: Path) -> Path:
         "Refers to nothing else.\n",
         encoding="utf-8",
     )
-    (plugin / "agents" / "al-dev-worker.md").write_text(
+    (plugin / "agents" / "worker.md").write_text(
         "---\n"
-        "name: al-dev-worker\n"
+        "name: worker\n"
         "description: Worker agent\n"
         "model: haiku\n"
         'tools: ["Read", "Write"]\n'
         "---\n\n"
-        "# Agent: al-dev-worker\n"
+        "# Agent: worker\n"
         "Reads knowledge/guide.md and knowledge/guide.md.\n",
         encoding="utf-8",
     )
-    (plugin / "agents" / "al-dev-orphan.md").write_text(
+    (plugin / "agents" / "orphan.md").write_text(
         "---\n"
-        "name: al-dev-orphan\n"
+        "name: orphan\n"
         "description: Orphan agent\n"
         "model: sonnet\n"
         'tools: ["Read"]\n'
         "---\n\n"
-        "# Agent: al-dev-orphan\n"
+        "# Agent: orphan\n"
         "No skill spawns this agent.\n",
         encoding="utf-8",
     )
@@ -192,12 +197,12 @@ def test_collect_inventory_discovers_deterministically_and_dedupes_refs() -> Non
         inventory = mod.collect_inventory(repo / "profile-al-dev-shared")
 
         assert inventory.skills == ["skill-a", "skill-b"], inventory.skills
-        assert inventory.agents == ["al-dev-orphan", "al-dev-worker"], inventory.agents
+        assert inventory.agents == ["orphan", "worker"], inventory.agents
         assert inventory.knowledge == ["guide.md", "workflow.md"], inventory.knowledge
-        assert inventory.skill_to_agent == [("skill-a", "al-dev-worker")], inventory.skill_to_agent
+        assert inventory.skill_to_agent == [("skill-a", "worker")], inventory.skill_to_agent
         assert inventory.skill_to_skill == [("skill-a", "plan"), ("skill-a", "skill-b")], inventory.skill_to_skill
         assert inventory.skill_to_knowledge == [("skill-a", "guide.md")], inventory.skill_to_knowledge
-        assert inventory.agent_to_knowledge == [("al-dev-worker", "guide.md")], inventory.agent_to_knowledge
+        assert inventory.agent_to_knowledge == [("worker", "guide.md")], inventory.agent_to_knowledge
         assert inventory.skill_to_artifact == [("skill-a", "report.md")], inventory.skill_to_artifact
 
 
@@ -213,7 +218,7 @@ def test_collect_inventory_raises_on_broken_agent_frontmatter() -> None:
 
 def test_mermaid_node_ids_must_be_unique_after_sanitization() -> None:
     with unittest.TestCase().assertRaisesRegex(ValueError, "duplicate Mermaid node id"):
-        mod.assert_unique_node_ids(["al-dev-worker", "al_dev_worker"])
+        mod.assert_unique_node_ids(["worker-a", "worker_a"])
 
 
 def test_replace_marked_sections_rejects_unknown_keys() -> None:
@@ -292,7 +297,7 @@ def test_generate_document_updates_renders_full_marker_set_without_external_skil
         assert "Missing refs" in plugin_graph
         assert "skill: plan" not in plugin_graph
         assert "knowledge: guide.md" not in plugin_graph
-        assert "Agents spawned: `al-dev-shared:al-dev-worker`" in skills_map
+        assert "Agents spawned: `al-dev-shared:worker`" in skills_map
         assert "skill_plan[plan]" not in skills_map
         assert "<!-- BEGIN GENERATED: skill-drilldown-skill-a -->" in skills_map
 
@@ -322,6 +327,7 @@ def test_real_repo_render_is_deterministic_without_mutating_tracked_docs() -> No
             text,
             flags=re.DOTALL,
         )
+        text = text.replace("skill-drilldown-al-dev-", "skill-drilldown-")
         skills_map.write_text(text, encoding="utf-8")
         tracked_before = {path: path.read_text(encoding="utf-8") for path in (REPO_ROOT / rel for rel in TARGET_DOCS)}
 

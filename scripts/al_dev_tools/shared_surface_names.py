@@ -55,6 +55,26 @@ SHARED_AGENT_RENAMES = {
     "al-dev-ticket-context-writer": "ticket-context-writer",
 }
 
+CANONICAL_SHARED_SKILLS = tuple(SHARED_SKILL_RENAMES.values())
+CANONICAL_SHARED_AGENTS = tuple(SHARED_AGENT_RENAMES.values())
+
+SHARED_WORKFLOW_ORDER = {
+    "development-spine": (
+        "plan",
+        "develop-orchestrate",
+        "review-develop",
+        "commit",
+    ),
+    "ticket-support": (
+        "ticket",
+        "support-reply",
+    ),
+    "direct-fix": (
+        "fix",
+        "commit",
+    ),
+}
+
 
 def strip_legacy_shared_prefix(name: str) -> str:
     """Return the canonical prefix-free shared name for a prefixed entry."""

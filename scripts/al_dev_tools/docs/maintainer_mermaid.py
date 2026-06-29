@@ -208,17 +208,17 @@ DISCOVER_REQUIRED_NEXT = {
 }
 
 DERIVE_REQUIRED_SKILLS = {
-    "regenerate_agent_projections",
-    "audit_knowledge_quality",
-    "fix_knowledge_quality",
-    "validate_plugin_neutrality",
+    "regenerate-agent-projections",
+    "audit-knowledge-quality",
+    "fix-knowledge-quality",
+    "validate-plugin-neutrality",
 }
 
 DERIVE_REQUIRED_INPUTS = {
-    "regenerate_agent_projections": ("profile-al-dev-shared/agents/",),
-    "audit_knowledge_quality": ("profile-al-dev-shared/knowledge/",),
-    "fix_knowledge_quality": ("docs/al-dev-knowledge-quality.md",),
-    "validate_plugin_neutrality": (
+    "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
+    "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
+    "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "validate-plugin-neutrality": (
         "profile-al-dev-shared/skills/",
         "profile-al-dev-shared/agents/",
         "profile-al-dev-shared/knowledge/",
@@ -226,15 +226,15 @@ DERIVE_REQUIRED_INPUTS = {
 }
 
 DERIVE_REQUIRED_OUTPUTS = {
-    "regenerate_agent_projections": ("profile-al-dev-shared/generated/agents/",),
-    "audit_knowledge_quality": ("docs/al-dev-knowledge-quality.md",),
-    "fix_knowledge_quality": ("profile-al-dev-shared/knowledge/",),
+    "regenerate-agent-projections": ("profile-al-dev-shared/generated/agents/",),
+    "audit-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
 }
 
 DERIVE_REQUIRED_NEXT = {
-    "regenerate_agent_projections": ("validate_plugin_neutrality",),
-    "audit_knowledge_quality": ("fix_knowledge_quality",),
-    "fix_knowledge_quality": ("validate_plugin_neutrality",),
+    "regenerate-agent-projections": ("validate-plugin-neutrality",),
+    "audit-knowledge-quality": ("fix-knowledge-quality",),
+    "fix-knowledge-quality": ("validate-plugin-neutrality",),
 }
 
 
@@ -629,20 +629,19 @@ def render_stage_detail(
     ):
         return render_discover_stage_detail(stage_contracts, orphans)
     if stage == "derive":
-        alias_by_name = {_normalize_skill_alias(contract.skill): contract for contract in stage_contracts}
-        alias_names = set(alias_by_name)
-        if alias_names == DERIVE_REQUIRED_SKILLS:
+        by_name = {contract.skill: contract for contract in stage_contracts}
+        if set(by_name) == DERIVE_REQUIRED_SKILLS:
             if all(
                 _has_required_templates(
-                    alias_by_name[name].inputs,
+                    by_name[name].inputs,
                     DERIVE_REQUIRED_INPUTS.get(name, ()),
                 )
                 and _has_required_templates(
-                    alias_by_name[name].outputs,
+                    by_name[name].outputs,
                     DERIVE_REQUIRED_OUTPUTS.get(name, ()),
                 )
                 and set(DERIVE_REQUIRED_NEXT.get(name, ())) <= {
-                    _normalize_skill_alias(target) for target in alias_by_name[name].next_skills
+                    target for target in by_name[name].next_skills
                 }
                 for name in DERIVE_REQUIRED_SKILLS
             ):

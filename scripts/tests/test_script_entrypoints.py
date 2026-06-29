@@ -7,10 +7,11 @@ import sys
 import unittest
 from pathlib import Path
 
-from scripts._entrypoint_bootstrap import bootstrap_repo
-
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts._entrypoint_bootstrap import bootstrap_repo
 
 
 class ScriptEntrypointTest(unittest.TestCase):
@@ -32,7 +33,7 @@ class ScriptEntrypointTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(result.stdout.startswith("{\n"), result.stdout)
-        self.assertIn('"al-dev-interview"', result.stdout)
+        self.assertIn('"interview"', result.stdout)
 
     def test_derive_skill_spawned_agents_runs_as_direct_script(self) -> None:
         result = subprocess.run(
