@@ -16,7 +16,6 @@ __pycache__/
 .dev/sync-map-documentation-checkpoint.json
 docs/superpowers/plans/
 docs/superpowers/specs/
-!docs/superpowers/
 !docs/superpowers/README.md
 !docs/superpowers/history.md
 docs/health/*
