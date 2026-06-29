@@ -1,7 +1,7 @@
 # Compile + Lint Procedure
 
-Standard AL compile and lint-fix pass used by `al-dev-lint`,
-`al-dev-develop-orchestrate`, and `al-dev-fix`.
+Standard AL compile and lint-fix pass used by `lint`,
+`develop-orchestrate`, and `fix`.
 
 ## Step 0 — Log Freshness Check
 
@@ -227,7 +227,7 @@ Treat any `Error AL0` diagnostic as a hard blocker. Treat `Warning AA0` diagnost
 as required work but not a compilation blocker. Never escalate `Info` items to the
 caller — filter them out of the lint report.
 
-**Note:** `al-dev-commit` must consume this procedure before any commit orchestration begins.
+**Note:** `commit` must consume this procedure before any commit orchestration begins.
 
 ### Auto-Fix Applicability Criteria
 
@@ -276,7 +276,7 @@ Splitting a long procedure requires understanding intent; log as Unresolved.
 
 ## Step 2 — Spawn diagnostics-resolver
 
-If compile errors were found, spawn `al-dev-fix` to fix them first,
+If compile errors were found, spawn `fix` to fix them first,
 re-compile, then continue.
 
 If only warnings remain after a clean compile, spawn

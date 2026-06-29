@@ -2,16 +2,16 @@
 
 Reference document for the three contexts in which `al-dev-developer` is spawned.
 
-## Context 1: Full Scope Implementation (al-dev-develop-orchestrate Phase 3)
+## Context 1: Full Scope Implementation (develop-orchestrate Phase 3)
 
-**Caller:** `/al-dev-develop-orchestrate` (Phase 3: Developer Dispatch and Implementation)
+**Caller:** `/develop-orchestrate` (Phase 3: Developer Dispatch and Implementation)
 
-**Trigger:** User has approved a solution plan and /al-dev-develop-orchestrate is
+**Trigger:** User has approved a solution plan and /develop-orchestrate is
 orchestrating parallel developer agents to implement it.
 
 **Developer is responsible for:**
 
-- Reading the full solution plan (`.dev/*-al-dev-plan-solution-plan.md`)
+- Reading the full solution plan (`.dev/*-plan-solution-plan.md`)
 - Implementing a specific module/component assignment
 - TDD workflow if test plan exists; traditional workflow otherwise
 - Scope Expansion Gate: stopping before out-of-scope edits for user approval
@@ -33,12 +33,12 @@ orchestrating parallel developer agents to implement it.
 - Session log updated
 - Code ready for review panel (al-dev-security-reviewer,
 
-  al-dev-al-pattern-reviewer, al-dev-performance-reviewer)
+  al-dev-al-pattern-reviewer, performance-reviewer)
 
 **Routing decision:**
 
 ```text
-If a test plan file exists (.dev/*-al-dev-test-test-plan.md is present and non-empty):
+If a test plan file exists (.dev/*-test-test-plan.md is present and non-empty):
   spawn al-dev-shared:al-dev-developer-tdd
   Include in prompt: TDD cycle expectations (RED-GREEN-REFACTOR),
     TDD_CYCLE_GATE approval gates after each phase
@@ -55,9 +55,9 @@ Agent: al-dev-shared:al-dev-developer-tdd
 Prompt:
   Implement the following module from the approved solution plan.
 
-  Solution plan: [paste .dev/*-al-dev-plan-solution-plan.md]
+  Solution plan: [paste .dev/*-plan-solution-plan.md]
   Module assignment: [paste the assigned module/component section]
-  Test plan: [paste .dev/*-al-dev-test-test-plan.md]
+  Test plan: [paste .dev/*-test-test-plan.md]
 
   Follow the TDD cycle: RED → GREEN → REFACTOR for each requirement.
   Stop at the TDD_CYCLE_GATE after each phase for approval before proceeding.
@@ -71,7 +71,7 @@ Agent: al-dev-shared:al-dev-developer-traditional
 Prompt:
   Implement the following module from the approved solution plan.
 
-  Solution plan: [paste .dev/*-al-dev-plan-solution-plan.md]
+  Solution plan: [paste .dev/*-plan-solution-plan.md]
   Module assignment: [paste the assigned module/component section]
 
   Follow the traditional build-verify workflow.
@@ -80,17 +80,17 @@ Prompt:
 
 ---
 
-## Context 2: Trivial Direct Fix (al-dev-fix Task 3–5)
+## Context 2: Trivial Direct Fix (fix Task 3–5)
 
-**Caller:** `/al-dev-fix` (Steps 3–5: Non-Trivial Implementation Path)
+**Caller:** `/fix` (Steps 3–5: Non-Trivial Implementation Path)
 
 **Trigger:** User approved a trivial fix scope (single file, obvious
-implementation), and /al-dev-fix is dispatching a developer for quick
+implementation), and /fix is dispatching a developer for quick
 implementation.
 
 **Developer is responsible for:**
 
-- Reading the fix scope and requirements (from /al-dev-fix context)
+- Reading the fix scope and requirements (from /fix context)
 - Implementing a single, focused change
 - No full solution plan; minimal context gathering
 - Direct implementation without TDD (test plan typically absent for trivial fixes)
@@ -102,7 +102,7 @@ implementation.
 - Issue description and fix scope
 - Single file path or object name
 - AL symbol preflight evidence (focused on the changed object)
-- Implementation constraints from /al-dev-fix scope check
+- Implementation constraints from /fix scope check
 - Code quality standards (same as Context 1)
 - Traditional workflow assumed (no test plan)
 
@@ -125,7 +125,7 @@ If a test plan is present, route to `al-dev-developer-tdd` (rare for trivial fix
 Agent: al-dev-shared:al-dev-developer-traditional
 Prompt:
   Fix [specific issue] in [file path].
-  Issue: [description from al-dev-fix context]
+  Issue: [description from fix context]
   Expected fix: [what needs to change]
   Verify the fix compiles. Keep it minimal — only change what is necessary.
   Return: files changed and confirmation that fix resolves the stated issue.
@@ -133,13 +133,13 @@ Prompt:
 
 ---
 
-## Context 3: Error Correction (al-dev-review-develop Phase 2, Autonomous Mode)
+## Context 3: Error Correction (review-develop Phase 2, Autonomous Mode)
 
-**Caller:** `/al-dev-review-develop` (Phase 2: Compile Verification,
+**Caller:** `/review-develop` (Phase 2: Compile Verification,
 --autonomous mode only)
 
 **Trigger:** Compilation has errors after Phase 4 implementation, and
-/al-dev-review-develop --autonomous is dispatching a developer to fix them
+/review-develop --autonomous is dispatching a developer to fix them
 before the review panel runs.
 
 **Developer is responsible for:**
@@ -177,7 +177,7 @@ Agent: al-dev-shared:al-dev-developer-traditional
 Prompt:
   Apply the following corrections from the code review.
 
-  Code review: [paste .dev/*-al-dev-develop-code-review.md]
+  Code review: [paste .dev/*-develop-code-review.md]
   Corrections required: [paste the specific correction list]
 
   Fix each listed item. Compile after each correction. Do not change code
@@ -375,7 +375,7 @@ Conditional routing is most useful here because:
 Conditional routing is possible but less valuable because:
 
 - Trivial fixes are already pre-filtered to single-file scope
-- If the fix proves non-trivial mid-task, /al-dev-fix escalates to architect
+- If the fix proves non-trivial mid-task, /fix escalates to architect
 - Conditional routing here mostly avoids unnecessary sonnet overhead for obvious fixes
 
 **Context 3 (Error Correction)** — ❌ **NOT APPLICABLE**
@@ -474,22 +474,22 @@ agent = spawn_developer(
 
 ### Current implementation status
 
-- `/al-dev-fix`: Has explicit conditional routing on the *architect* spawn
+- `/fix`: Has explicit conditional routing on the *architect* spawn
   (sonnet for SIMPLE, opus for COMPLEX). Developer routing is not yet
   conditional — the spawn does not vary model by scope complexity.
 
-- `/al-dev-develop-orchestrate`: Always uses developer; complexity routing not yet wired
-- `/al-dev-review-develop`: Always uses developer; complexity routing not yet wired
+- `/develop-orchestrate`: Always uses developer; complexity routing not yet wired
+- `/review-develop`: Always uses developer; complexity routing not yet wired
 
 This pattern is reserved for future enhancement. When wired, it will apply to:
 
-- Context 1 (`/al-dev-develop-orchestrate`, Phase 3 dispatch) — model selection for
+- Context 1 (`/develop-orchestrate`, Phase 3 dispatch) — model selection for
   developer spawn
-- Context 3 (`/al-dev-review-develop`, Phase 2 dispatch) — model selection
+- Context 3 (`/review-develop`, Phase 2 dispatch) — model selection
   for developer spawn
 
 No spawning skills currently use conditional developer routing; the
-architect in `/al-dev-fix` has explicit routing already wired.
+architect in `/fix` has explicit routing already wired.
 
 ---
 
@@ -545,7 +545,7 @@ Module Assignment / Object List: [specific objects to implement or fix]
 
 Implementation Notes:
 
-- [Key pattern from solution plan or /al-dev-fix scope]
+- [Key pattern from solution plan or /fix scope]
 - [AL symbol evidence from preflight or prior search]
 - [Code quality standards: labels for errors, symbol preflight, compile
 

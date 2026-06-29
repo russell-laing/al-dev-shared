@@ -6,7 +6,7 @@
 
 ### 🟢 TRIVIAL (Skip Planning)
 - No planning documents
-- Route through the `/al-dev-fix` fast path for bounded fixes
+- Route through the `/fix` fast path for bounded fixes
 
 ---
 
@@ -228,7 +228,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 
 ## Agent-Specific Guidelines
 
-### al-dev-plan-preflight / requirements capture
+### plan-preflight / requirements capture
 
 **Output target by complexity:**
 - SIMPLE: 50-75 lines
@@ -442,7 +442,7 @@ Classification: SIMPLE
 
 Target planning: 100-150 lines total
 
-Spawning `/al-dev-plan-preflight` with instruction:
+Spawning `/plan-preflight` with instruction:
 "Keep output to 50-75 lines. No user stories, brief requirements list only."
 
 Spawning `al-dev-solution-architect` with instruction:
@@ -454,7 +454,7 @@ Spawning `al-dev-solution-architect` with instruction:
 Each agent checks their output length before returning:
 
 ```markdown
-al-dev-plan-preflight:
+plan-preflight:
 - Feature classified as: SIMPLE
 - Target output: 50-75 lines
 - Current output: 68 lines ✓

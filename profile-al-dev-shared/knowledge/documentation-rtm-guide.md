@@ -1,6 +1,6 @@
 # Documentation RTM Guide
 
-Referenced by: `al-dev-docs-writer` agent and `/al-dev-document` skill
+Referenced by: `al-dev-docs-writer` agent and `/document` skill
 
 ## Overview
 
@@ -10,7 +10,7 @@ This guide documents how to parse source requirements, track status, and render 
 
 ## RTM Token System
 
-Requirements and acceptance criteria are encoded in `*-al-dev-interview-requirements.md` files as line-anchored `REQ:` and `ACC:` tokens:
+Requirements and acceptance criteria are encoded in `*-interview-requirements.md` files as line-anchored `REQ:` and `ACC:` tokens:
 
 ### Token Format
 
@@ -40,7 +40,7 @@ The token examples above are internal parsing patterns, not output examples. Use
 
 ### Parsing Rules
 
-1. Scan the latest `*-al-dev-interview-requirements.md` file for all `REQ:REQ-NNN` and `ACC:ACC-NNN` tokens.
+1. Scan the latest `*-interview-requirements.md` file for all `REQ:REQ-NNN` and `ACC:ACC-NNN` tokens.
 2. Each requirement (`REQ-NNN`) may have multiple acceptance criteria (`ACC-NNN`).
 3. **Every REQ-NNN found in the requirements file must appear in the RTM table** — this is the completeness check.
 4. `ACC-NNN` criteria linked to a REQ-NNN should be listed on the same RTM table row (if audience rules permit) or in a separate row.
@@ -55,12 +55,12 @@ The RTM status for each requirement is inferred from the **presence of `.dev/` f
 
 | .dev/ Files Present | Inferred Status | Meaning |
 |---|---|---|
-| Only `*-al-dev-interview-requirements.md` | `DEFINED` | Requirements documented, no design or code yet |
-| + `*-al-dev-plan-solution-plan.md` | `IN-PROGRESS` | Architecture designed, implementation starting |
-| + `*-al-dev-develop-code-review.md` | `IMPLEMENTED` | Code written and reviewed |
+| Only `*-interview-requirements.md` | `DEFINED` | Requirements documented, no design or code yet |
+| + `*-plan-solution-plan.md` | `IN-PROGRESS` | Architecture designed, implementation starting |
+| + `*-develop-code-review.md` | `IMPLEMENTED` | Code written and reviewed |
 | + Test results or explicit sign-off | `VERIFIED` | Tested, validated, or signed off by stakeholder |
 
-**Application rule:** Query for the latest `*-al-dev-plan-solution-plan.md`, `*-al-dev-develop-code-review.md`, and any test/sign-off artifact. Determine the highest status level supported by those current-run artifacts and apply that to all requirements in the RTM table.
+**Application rule:** Query for the latest `*-plan-solution-plan.md`, `*-develop-code-review.md`, and any test/sign-off artifact. Determine the highest status level supported by those current-run artifacts and apply that to all requirements in the RTM table.
 
 ---
 

@@ -1,6 +1,6 @@
 # Interview Question Bank for BC/AL Projects
 
-Used by: `al-dev-interview` agent
+Used by: `interview` agent
 
 ## Question Categories
 

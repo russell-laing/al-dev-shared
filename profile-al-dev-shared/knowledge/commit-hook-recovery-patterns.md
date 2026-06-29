@@ -1,6 +1,6 @@
 # Commit Hook Recovery Patterns
 
-Reference for `al-dev-commit-hook-fixer`. Classification of pre-commit hook
+Reference for `commit-hook-fixer`. Classification of pre-commit hook
 failures and the approved scripted fixes per class.
 
 ## Failure Classification

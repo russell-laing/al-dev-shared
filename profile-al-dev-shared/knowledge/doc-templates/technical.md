@@ -17,7 +17,7 @@ description: >-
 
 ## Business Requirements
 
-[Key requirements from `*-al-dev-interview-requirements.md` — include inline REQ ID
+[Key requirements from `*-interview-requirements.md` — include inline REQ ID
 references, e.g. "Users can set a credit limit per customer (REQ-001)"]
 
 ## How It Works

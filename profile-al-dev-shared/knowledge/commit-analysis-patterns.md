@@ -1,6 +1,6 @@
 # Commit Analysis Patterns
 
-Diff-parsing patterns and manifest extraction rules for al-dev-commit-analyzer.
+Diff-parsing patterns and manifest extraction rules for commit-analyzer.
 
 ## AL File Detection
 

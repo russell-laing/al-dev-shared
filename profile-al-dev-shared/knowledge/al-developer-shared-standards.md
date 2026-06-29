@@ -2,7 +2,7 @@
 
 This document is the canonical shared standards reference for AL developer
 agents. It covers only the rules that are correct across both orchestrated
-implementation and `/al-dev-fix` dispatch paths.
+implementation and `/fix` dispatch paths.
 
 ## Required Pre-Flight
 
@@ -25,5 +25,5 @@ implementation and `/al-dev-fix` dispatch paths.
 
 - TDD agent: use `TDD_CYCLE_GATE` after each RED, GREEN, and REFACTOR phase.
 - Traditional agent: use `BUILD_VERIFY_GATE` after implementation.
-- `/al-dev-fix` dispatches to the traditional agent without inheriting
+- `/fix` dispatches to the traditional agent without inheriting
   orchestrate-only ownership-report wording from the spawn prompt.

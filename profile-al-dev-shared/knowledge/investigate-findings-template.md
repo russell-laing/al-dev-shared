@@ -72,7 +72,7 @@ git log -p -- path/to/file.al | grep -A5 -B5 "design\|assumption\|constraint"
 
 This section is a critical gate for hypothesis prioritization — not decorative metadata. The value of "Recently working?" determines which hypothesis families to investigate first:
 
-- **Recently working = yes** → Blame-driven hypotheses dominate. Investigate what changed (code commits, config updates, dependency upgrades) in the timeline window. See `/al-dev-investigate` skill, Step 2 (lines 100–131) for how timeline gates hypothesis prioritization logic.
+- **Recently working = yes** → Blame-driven hypotheses dominate. Investigate what changed (code commits, config updates, dependency upgrades) in the timeline window. See `/investigate` skill, Step 2 (lines 100–131) for how timeline gates hypothesis prioritization logic.
 - **Recently working = no** → Design and pre-existing-defect hypotheses dominate. Investigate architectural assumptions, boundary conditions, and integration contracts that may have always been problematic but were only exposed under specific conditions.
 
 ## Root Cause
@@ -118,9 +118,9 @@ in `Cod50741.al:471`.
 [Exactly one of:]
 
 - Root cause confirmed in this repo →
-  `/al-dev-plan [fix description]`
+  `/plan [fix description]`
 - Fix needed in another repo →
-  `/al-dev-handoff [path to target repo]`
+  `/handoff [path to target repo]`
 - Inconclusive — specific data needed →
   [exact query or check to run]
 

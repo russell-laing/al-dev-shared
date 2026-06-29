@@ -1,6 +1,6 @@
 # Performance Review Examples
 
-Used by: `al-dev-performance-reviewer` agent
+Used by: `performance-reviewer` agent
 
 These are review examples for spotting common performance issues in AL/BC.
 Treat them as illustrative patterns, not production-ready snippets to copy verbatim.

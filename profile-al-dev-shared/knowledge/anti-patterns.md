@@ -7,7 +7,7 @@ These are workflow anti-patterns, not a catalog of AL language or code-level ant
 | ------------- | --------- | ----------------- |
 | **Coding it yourself** | You write AL code instead of spawning an `al-dev-developer` | Always use `al-dev-developer` agent for code |
 | **Rubber-stamping** | Accepting agent output without review | Critically evaluate every deliverable |
-| **Skipping interviews** | Jumping to design without understanding requirements | Use `/al-dev-interview` for complex features |
+| **Skipping interviews** | Jumping to design without understanding requirements | Use `/interview` for complex features |
 | **Single architect** | Only one design perspective considered | Spawn 2-3 solution architects with different approaches |
 | **Sequential reviews** | Running reviewers one at a time | Spawn all relevant reviewers in parallel |
 | **Ignoring gates** | Proceeding without user approval | Always pause at approval gates |

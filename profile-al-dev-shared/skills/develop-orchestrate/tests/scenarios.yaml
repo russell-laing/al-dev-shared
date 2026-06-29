@@ -1,0 +1,100 @@
+skill: develop-orchestrate
+scenarios:
+  - id: develop-implement-plan-with-full-panel
+    status: golden
+    user_prompt: "Implement the solution plan at .dev/2026-05-17-plan-solution-plan.md."
+    expected_artifacts:
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Standard development path. Asserts the developer and all 3 reviewer specialists are dispatched. Plan file is a fixture — harness pre-seeds it before run."
+
+  - id: develop-requires-plan
+    status: golden
+    user_prompt: "Implement a new tax-exemption feature."
+    expected_artifacts: []
+    notes: "No plan exists. Skill must refuse and direct the user to /plan first; no AL files should be written."
+
+  - id: develop-writes-resume-artifacts
+    status: golden
+    user_prompt: "Implement the latest approved solution plan and preserve resume artifacts for hand-off."
+    expected_artifacts:
+      - ".dev/progress.md"
+      - ".dev/*-develop-checklist.md"
+      - ".dev/*-develop-scope.md"
+      - ".dev/*-develop-progress.md"
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Locks in the dated resume pack so compaction recovery reads artifacts instead of re-parsing the full plan."
+
+  - id: develop-stops-on-unexpected-working-tree-changes
+    status: golden
+    user_prompt: "Implement the approved plan, but stop if any modified file falls outside the approved scope."
+    expected_artifacts:
+      - ".dev/progress.md"
+      - ".dev/*-develop-scope.md"
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+    must_not_invoke_agent:
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Asserts the orchestrator stages expected in-scope files, blocks on unexpected residue, writes the blocking review artifact, and does not continue into normal reviewer flow or a success review while unexpected files remain."
+
+  - id: develop-summarizes-compile-results
+    status: golden
+    user_prompt: "Implement the approved plan and keep compile feedback concise by summarizing the log instead of replaying it."
+    expected_artifacts:
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Locks in summary-only compile reporting and references `.dev/compile-errors.log` as the full source of diagnostics."
+
+  - id: develop-rejects-review-only-misfire
+    status: golden
+    user_prompt: "Review the approved plan for risks only. Do not edit files or dispatch developers."
+    expected_artifacts: []
+    must_not_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Intent preflight regression. Review-only prompts must not enter edit or review-panel execution flow."
+
+  - id: develop-autonomous-compile-routing
+    status: golden
+    user_prompt: "Implement the latest approved plan with --autonomous and keep compiling until it builds."
+    expected_artifacts:
+      - ".dev/*-autonomous-signatures.md"
+      - ".dev/*-autonomous-static-validation.md"
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Locks autonomous compile prompts to develop-orchestrate autonomous behavior instead of ad-hoc fixes."
+
+  - id: develop-requires-phase4-handoff-before-ready-claim
+    status: golden
+    user_prompt: "Implement the approved plan and do not say it is ready for review unless the Phase 4 handoff artifact exists and has been read."
+    expected_artifacts:
+      - ".dev/*-develop-phase4-handoff.md"
+      - ".dev/*-develop-code-review.md"
+    must_invoke_agent:
+      - al-dev-shared:al-dev-developer
+      - al-dev-shared:al-dev-security-reviewer
+      - al-dev-shared:al-dev-al-pattern-reviewer
+      - al-dev-shared:performance-reviewer
+    notes: "Final-gate regression. The develop flow must produce and read the Phase 4 handoff before making a ready-for-review claim."

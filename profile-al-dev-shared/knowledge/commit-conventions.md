@@ -166,7 +166,7 @@ project-type: tool
 
 **Why this matters:**
 
-- Determines which skills and agents are active (e.g., `al-dev-develop-orchestrate` only works for AL projects)
+- Determines which skills and agents are active (e.g., `develop-orchestrate` only works for AL projects)
 - Informs compile/test commands (AL projects run `al-compile`, tool projects run `pytest` or `npm test`)
 - Shapes documentation requirements (AL projects need RTM mapping, vault projects need knowledge audits)
 - Drives commit scope rules (see per-type guidance below)
@@ -237,7 +237,7 @@ Projects: nzpg vault, mml vault, second-brain, client-abc vault.
 
 Projects: al-dev-shared, al-smart-compile, repo-maintainer-tools, automation-utils.
 
-**Scope:** Component or module name — e.g. `al-dev-align`, `al-dev-commit`, `skills`, `agents`, `knowledge`, `markdown`. Match the directory or skill name.
+**Scope:** Component or module name — e.g. `al-dev-align`, `commit`, `skills`, `agents`, `knowledge`, `markdown`. Match the directory or skill name.
 
 **Body:** Subject line only. No WHY block and no CHANGED COMPONENTS.
 
@@ -299,7 +299,7 @@ CHANGED COMPONENTS
 **Tool — new skill:**
 
 ```text
-✨ feat(al-dev-commit): add advisory alignment check to commit workflow
+✨ feat(commit): add advisory alignment check to commit workflow
 ```
 
 ---

@@ -23,9 +23,9 @@ Before spawning, check for and read:
 1. `.dev/project-context.md` (if it exists) — key objects,
    architectural patterns, directory layout
 2. Latest ticket context (glob):
-   `$(ls .dev/*-al-dev-ticket-ticket-context.md 2>/dev/null | sort | tail -1)`
+   `$(ls .dev/*-ticket-ticket-context.md 2>/dev/null | sort | tail -1)`
 3. Latest explore findings (glob):
-   `$(ls .dev/*-al-dev-explore-findings.md 2>/dev/null | sort | tail -1)`
+   `$(ls .dev/*-explore-findings.md 2>/dev/null | sort | tail -1)`
 
 Pass relevant excerpts (not the full files) into the agent prompt
 to narrow scope and avoid redundant discovery.
@@ -57,9 +57,9 @@ Do NOT accumulate results in memory and write at the end of the skill.
 Naming: `$(date +%Y-%m-%d)-<skill-name>-<artifact-name>.md`
 
 Examples:
-- `2026-05-18-al-dev-explore-findings.md`
-- `2026-05-18-al-dev-perf-perf-analysis.md`
-- `2026-05-18-al-dev-explore-findings.md` (some investigate flows also reuse this findings filename convention)
+- `2026-05-18-explore-findings.md`
+- `2026-05-18-perf-perf-analysis.md`
+- `2026-05-18-explore-findings.md` (some investigate flows also reuse this findings filename convention)
 
 Files are date-prefixed to preserve history. Do not overwrite previous runs.
 

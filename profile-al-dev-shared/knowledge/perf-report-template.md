@@ -56,7 +56,7 @@ until V6QuoteItem.Next() = 0;
 ## Next Steps
 
 [If CRITICAL or HIGH findings:]
-Design fixes with: `/al-dev-plan fix performance issues in [scope]`
+Design fixes with: `/plan fix performance issues in [scope]`
 
 [If only LOW findings:]
 No critical issues. Low findings documented for reference.

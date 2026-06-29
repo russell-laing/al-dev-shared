@@ -1,6 +1,6 @@
 # Ticket Image Detection Patterns
 
-Reference patterns for al-dev-ticket-context-writer image attachment detection.
+Reference patterns for ticket-context-writer image attachment detection.
 
 ## Detection Patterns
 

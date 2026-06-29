@@ -18,7 +18,7 @@ Analyze the user request and classify:
 
 ### 🟢 TRIVIAL (Use Fast Path - 2-5 min)
 
-**Route:** `al-dev-fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
+**Route:** `fix` workflow (fast-fix entrypoint; may escalate to quick architect analysis if the issue proves non-trivial)
 
 **Criteria:**
 
@@ -42,14 +42,14 @@ Analyze the user request and classify:
 3. If the fix stays obvious and single-scope, implement directly
 4. Run compile/lint verification and present the bounded result
 
-**Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `al-dev-fix` switches automatically to its built-in escalation branch:
+**Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `fix` switches automatically to its built-in escalation branch:
 
 - Spawns `al-dev-solution-architect` for quick root-cause analysis (~5 min)
 - Reviews architect's hypothesis; presents to user for approval
 - Spawns `al-dev-developer` with confirmed approach
 - Runs compile/lint verification and presents result
 
-Do not route to `al-dev-plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `al-dev-fix` escalation handles these efficiently.
+Do not route to `plan` for issues that are bounded (single subsystem, clear root cause after architect review) — the `fix` escalation handles these efficiently.
 
 **Time saved:** 15-25 min vs full workflow (direct path); 10-15 min vs full plan cycle (escalation path)
 
@@ -137,7 +137,7 @@ Do not route to `al-dev-plan` for issues that are bounded (single subsystem, cle
 
 ### 🔴 COMPLEX (Use Full Pipeline - 45-90 min)
 
-**Route:** `al-dev-develop-orchestrate` full workflow
+**Route:** `develop-orchestrate` full workflow
 
 **Criteria:**
 
@@ -316,16 +316,16 @@ Then: Synthesize results into solution plan
 
 User can force a specific path:
 
-- `al-dev-fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
-- `al-dev-develop-orchestrate` → SIMPLE/MEDIUM path (no requirements phase)
-- `al-dev-plan` → MEDIUM path (planning only)
+- `fix` → Explicit fast-fix entrypoint; still allows architect escalation for non-trivial bugs
+- `develop-orchestrate` → SIMPLE/MEDIUM path (no requirements phase)
+- `plan` → MEDIUM path (planning only)
 - COMPLEX path → full pipeline workflow
 
 But AI should suggest if path seems wrong:
 
 ```
 "This looks like a simple field addition. A fast-fix path is available.
-Would you like to use `al-dev-fix` instead of the standard workflow?
+Would you like to use `fix` instead of the standard workflow?
 It keeps the change bounded and usually saves 15-20 minutes."
 ```
 

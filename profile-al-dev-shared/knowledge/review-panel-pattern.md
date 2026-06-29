@@ -1,7 +1,7 @@
 # Review Panel Pattern
 
 The three-reviewer panel is the standard parallel review composition used by
-`/al-dev-review-develop` after `/al-dev-develop-orchestrate` produces its implementation
+`/review-develop` after `/develop-orchestrate` produces its implementation
 handoff. Dispatch all three reviewers simultaneously through the active
 harness's parallel agent capability.
 
@@ -15,12 +15,12 @@ risks, authentication gaps.
 Review for AL naming conventions, BC best practices
 (SetLoadFields, FieldCaption), code organization, event patterns.
 
-**al-dev-performance-reviewer:**
+**performance-reviewer:**
 Review for query efficiency, N+1 patterns, SetLoadFields usage,
 loop efficiency, record variable scoping.
 
 Each reviewer receives the same preflight `CHANGED_FILES` list and the
-implementation context from the `/al-dev-develop-orchestrate` handoff.
+implementation context from the `/develop-orchestrate` handoff.
 
 ## Spawn Instructions
 
@@ -36,7 +36,7 @@ Dispatch agent: al-dev-shared:al-dev-al-pattern-reviewer
   description: "AL patterns and BC best practices review"
   prompt: "Review these AL files for naming, patterns, and BC conventions: [CHANGED_FILES]. Use the supplied implementation context. Check SetLoadFields, naming consistency, event patterns."
 
-Dispatch agent: al-dev-shared:al-dev-performance-reviewer
+Dispatch agent: al-dev-shared:performance-reviewer
   description: "Performance analysis of implemented code"
   prompt: "Review these AL files for query efficiency and performance: [CHANGED_FILES]. Use the supplied implementation context. Check N+1 patterns, SetLoadFields, loop scoping."
 ```

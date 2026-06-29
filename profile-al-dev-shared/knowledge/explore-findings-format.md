@@ -25,4 +25,4 @@ When writing persistent findings, follow this structure:
 [Next steps or related areas to explore]
 ```
 
-**File path:** `.dev/$(date +%Y-%m-%d)-al-dev-explore-findings.md`
+**File path:** `.dev/$(date +%Y-%m-%d)-explore-findings.md`

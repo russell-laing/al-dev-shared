@@ -41,7 +41,7 @@ counts (see the example in Step 3). Status labels are uppercase and matched
 exactly: `CORRUPTION`, `SYNTAX_ERROR`, or `RESTORED`. The file may be absent when
 no integrity incident has occurred — in that case report "no incidents" and stop.
 `.dev/compile-errors.log` (referenced above for the verified-restore check) is
-the AL compiler error log written by `/al-dev-lint`; an empty or absent file
+the AL compiler error log written by `/lint`; an empty or absent file
 means no compile errors.
 
 ### Step 2: Analyze each incident with a fixer subagent

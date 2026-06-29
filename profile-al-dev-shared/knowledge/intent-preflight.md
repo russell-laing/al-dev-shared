@@ -33,12 +33,12 @@ Continue only after the user confirms the intended action.
 
 | Skill | Default Intent |
 |---|---|
-| `al-dev-commit` | `COMMIT` |
-| `al-dev-develop-orchestrate` | `EDIT` |
-| `al-dev-fix` | `EDIT` |
-| `al-dev-lint` | `EDIT` |
-| `al-dev-plan-preflight` | `REVIEW` for reusable planning-context assembly; writing the requested `.dev/preflight-context.md` artifact is allowed within that review workflow |
-| `al-dev-plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
+| `commit` | `COMMIT` |
+| `develop-orchestrate` | `EDIT` |
+| `fix` | `EDIT` |
+| `lint` | `EDIT` |
+| `plan-preflight` | `REVIEW` for reusable planning-context assembly; writing the requested `.dev/preflight-context.md` artifact is allowed within that review workflow |
+| `plan` | `REVIEW` for design, planning, or architecture output; writing the requested `.dev/` plan artifact is allowed within that review workflow |
 
 ## Examples
 

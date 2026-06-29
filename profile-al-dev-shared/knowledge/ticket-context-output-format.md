@@ -35,4 +35,4 @@ The context file follows this structure:
 [If applicable: image URL or cid:reference, extracted from description and comments]
 ```
 
-**File path:** `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
+**File path:** `.dev/$(date +%Y-%m-%d)-ticket-ticket-context.md`

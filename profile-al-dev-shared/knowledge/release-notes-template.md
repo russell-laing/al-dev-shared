@@ -1,6 +1,6 @@
 # Release Notes Template
 
-Used by: `al-dev-release-notes-writer` agent
+Used by: `release-notes-writer` agent
 
 ## Release Notes Structure
 

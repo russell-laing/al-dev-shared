@@ -269,7 +269,7 @@ Worked example reference: see the
 
 ## TDD Log Documentation
 
-**Every cycle MUST be documented in `.dev/$(date +%Y-%m-%d)-al-dev-developer-tdd-log.md`:**
+**Every cycle MUST be documented in `.dev/$(date +%Y-%m-%d)-developer-tdd-log.md`:**
 
 ```markdown
 ## Feature: Credit Limit Validation

@@ -9,13 +9,13 @@ Located at `AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/skills/<skill-name>/
 ### Example
 
 ```yaml
-skill: al-dev-plan
+skill: plan
 scenarios:
   - id: plan-new-feature
     status: golden
     user_prompt: "Design how I'd add a tax-exemption certificate validation feature to the Sales Order workflow."
     expected_artifacts:
-      - ".dev/*-al-dev-plan-solution-plan.md"
+      - ".dev/*-plan-solution-plan.md"
     must_invoke_agent: al-dev-shared:al-dev-solution-architect
     notes: "Common entry path; should produce a solution plan with 2-3 architect options."
 
@@ -54,11 +54,11 @@ Located at `AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge/skill-test
 ```yaml
 corpus:
   - prompt: "design how I'd build a sales-tax exemption feature"
-    expected: al-dev-plan
+    expected: plan
   - prompt: "implement the plan we just wrote"
-    expected: al-dev-develop-orchestrate
+    expected: develop-orchestrate
   - prompt: "squash these commits before pushing"
-    expected: al-dev-commit
+    expected: commit
 ```
 
 ### Fields

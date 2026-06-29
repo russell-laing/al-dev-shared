@@ -18,11 +18,11 @@ Staleness, Lint Report Accumulation).
 
 | Artifact pattern | Producing skill | Stale when |
 | --- | --- | --- |
-| `.dev/*-al-dev-ticket-ticket-context.md` | `al-dev-ticket` | the ticket was updated after the file was written |
-| `.dev/*-al-dev-explore-findings.md` | `al-dev-explore` | source files it references changed after it was written |
-| `.dev/*-al-dev-investigate-findings.md` | `al-dev-investigate` | source files in its evidence changed after it was written |
-| `.dev/*-al-dev-handoff-handoff-prompt.md` | `al-dev-handoff` | the underlying findings were regenerated after the prompt |
-| `.dev/*-al-dev-lint-lint-report.md` | `al-dev-lint` | any source file changed after the report |
+| `.dev/*-ticket-ticket-context.md` | `ticket` | the ticket was updated after the file was written |
+| `.dev/*-explore-findings.md` | `explore` | source files it references changed after it was written |
+| `.dev/*-investigate-findings.md` | `investigate` | source files in its evidence changed after it was written |
+| `.dev/*-handoff-handoff-prompt.md` | `handoff` | the underlying findings were regenerated after the prompt |
+| `.dev/*-lint-lint-report.md` | `lint` | any source file changed after the report |
 
 ## Gate Procedure
 

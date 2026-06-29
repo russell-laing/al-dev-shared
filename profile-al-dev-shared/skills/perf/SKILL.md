@@ -1,0 +1,203 @@
+---
+name: perf
+description: >-
+  Analyze AL codeunits for performance anti-patterns; classifies codeunit
+  type (Entry Point, Batch Processor, Hot Path, Utility) and escalates
+  finding severity for high-impact contexts.
+argument-hint: "[codeunit name, file path, or 'scan all']"
+---
+
+# Skill: /perf
+
+Static performance analysis — surfaces AL anti-patterns before
+they reach production.
+
+---
+
+## When to Use
+
+| Situation | Use |
+| --- | --- |
+| A process is noticeably slow in BC | ✅ |
+| Implementing a codeunit with large data sets | ✅ |
+| Code review flagged performance concerns | ✅ |
+| Before a performance-critical feature ships | ✅ |
+| General style review (no perf concern) | ❌ |
+
+---
+
+## Implementation
+
+### Step 1 — Determine Scope
+
+From user args:
+
+- **Specific file path**: analyse that file directly
+- **Codeunit name**: find via Glob then analyse
+
+```bash
+find src/ -iname "*.codeunit.al" 2>/dev/null
+```
+
+- **"scan all"** or no args: find all codeunit files in `src/`
+
+Load `.dev/project-context.md` to prioritise objects noted as
+high-volume (tables over ~1000 rows; see the Notes section) or batch-processing
+(codeunits classified by the Step 1a entry-point heuristic — names containing
+Batch/Process/Import/Post/Transfer/Run).
+
+### Step 1a — Identify Entry-Point Metadata
+
+For each codeunit found in Step 1, use the strongest available symbol evidence
+to classify it before spawning the analysis agent. Prefer `AL LSP` document
+symbols when the active harness exposes semantic navigation. Otherwise use
+`AL MCP`:
+
+- `al_get_object_summary` — check for OnRun() and codeunit type
+- `al_search_object_members` — detect event subscriber attributes
+
+If no semantic provider is available, use scoped text search against the
+codeunit file list from Step 1:
+
+```bash
+rg -n \
+  "trigger OnRun\\(|\\[EventSubscriber\\]|codeunit [0-9]+ .*(Batch|Process|Import|Post|Transfer|Run)" \
+  [codeunit files from Step 1]
+```
+
+| Indicator | Classification | Severity modifier |
+| --- | --- | --- |
+| Has `OnRun()` | Entry Point | +1 level |
+| Has `[EventSubscriber]` attribute | Hot Path | +1 level |
+| Name contains Batch/Process/Import/Post/Transfer/Run | Batch Processor | +1 level |
+| None of the above | Utility | none |
+
+When a codeunit matches multiple indicators, apply the highest-priority
+classification: Entry Point > Batch Processor > Hot Path > Utility.
+
+If neither `AL LSP` nor `AL MCP` is available and scoped text search finds no
+entry-point indicators, default to Utility (no modifier). Do not block the
+analysis. Label the source as `text search` if the fallback search ran, or
+`unverified` if no lookup could be performed.
+
+Produce a classification summary to pass into Step 2:
+
+```text
+Codeunit classifications:
+- CreateJobV6.Codeunit.al → Entry Point (has OnRun; evidence source: AL LSP)
+- BatchPostSales.Codeunit.al → Batch Processor (name heuristic; evidence source: text search)
+- StringHelper.Codeunit.al → Utility (no indicators found; evidence source: AL MCP)
+- HelperUtil.Codeunit.al → Utility (text search ran, zero anti-pattern indicators found; evidence source: text search)
+```
+
+`unverified` means no lookup of any kind could be performed. `text search` means a text search ran but found zero indicators.
+
+---
+
+### Step 2 — Spawn Performance Analysis Agent
+
+Before assembling the dispatch prompt, read
+`knowledge/perf-anti-patterns-prompt.md` and hold its full content as
+`PERF_PATTERNS` in working memory. Do not read any other file at this step.
+
+> Pattern: `knowledge/explore-subagent-pattern.md` — Steps A–D.
+> Performance-specific prompt content is below.
+
+```text
+Spawn an explore agent:
+  purpose: Perf scan: [scope description]
+  prompt: [performance analysis prompt]
+  output: performance findings with file:line references
+
+Prompt:
+  "Scan these AL codeunit files for performance anti-patterns.
+   Read each file fully, then report ALL findings.
+
+   Files to analyse: [file paths from Step 1]
+
+   Codeunit classifications (with evidence source labels: AL LSP, AL MCP, text search, or unverified):
+   [paste the classification summary from Step 1a]
+
+   Severity escalation rule: For any P1–P8 finding in a codeunit
+   classified as Entry Point, Hot Path, or Batch Processor — escalate
+   its severity by one level (LOW→MEDIUM, MEDIUM→HIGH, HIGH→CRITICAL).
+   Reflect this in the SEVERITY field and explain it in the IMPACT field.
+
+   Anti-patterns to find and 'Do NOT flag' exclusions:
+   [PERF_PATTERNS — content of knowledge/perf-anti-patterns-prompt.md loaded above]
+
+   For EACH finding report:
+   PATTERN: [P1–P11 ID]
+   SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
+   FILE: [exact path]
+   LINE: [line number]
+   CODE: [3–5 lines of the problematic code]
+   FIX: [3–5 lines of the corrected version]
+   IMPACT: [estimated frequency — per record, per batch, etc.]"
+```
+
+---
+
+### Step 3 — Write Analysis Report
+
+Write `.dev/$(date +%Y-%m-%d)-perf-perf-analysis.md`:
+
+Produce the performance report using the structure in
+`knowledge/perf-report-template.md` (read it before writing).
+
+---
+
+### Step 4 — Present to User
+
+**Handoff artifact:** `.dev/$(date +%Y-%m-%d)-perf-perf-analysis.md`
+is the handoff artifact for downstream plan/fix routing.
+
+```text
+Performance analysis complete → perf-analysis.md
+
+Findings: N total
+  🔴 Critical: N  (N+1 queries in hot paths)
+  🟠 High: N      (missing SetLoadFields)
+  🟡 Medium: N    (FindSet(true) write-lock misuse)
+  🟢 Low: N       (minor optimisations)
+
+Top priority: [most critical finding in one line]
+
+[If CRITICAL/HIGH:]
+Ready to plan fixes? /plan fix performance issues in [scope]
+
+[If LOW only:]
+No critical issues found. Findings in perf-analysis.md.
+```
+
+To route findings to the development pipeline, pass the perf-analysis.md path
+to `/plan`: `/plan fix performance issues identified in [scope]`
+
+---
+
+## Notes
+
+- SetLoadFields is only worth flagging when fewer than ~3 fields
+  are used — do not flag comprehensive record reads
+- FindSet(true) is only a problem when the loop body has no
+  Modify/Delete/Rename (loop body = the statements inside the `repeat … until`
+  or `while … do` block, up to the first record modification or loop exit)
+- CalcFields on FlowFields is required — only flag when it is
+  inside a loop with many iterations
+- For very large codebases, scope to specific codeunits first;
+  use "scan all" only for smaller extensions
+- Symbol lookup (Step 1a) enriches severity by context. Prefer `AL LSP`
+  document symbols when available, otherwise use `AL MCP`, then scoped text
+  search. If no lookup can be performed, fall back to equal-weight analysis and
+  label classification evidence as `unverified`.
+  
+  **Definition of "equal-weight analysis":** When semantic providers (AL LSP, AL MCP) are unavailable and no specific context about the procedure/table can be determined:
+  - Classify all findings at baseline severity without context escalation
+  - Do not apply severity escalation for Batch Processor context (no context known)
+  - Do not apply severity escalation for high-row-count tables (unknown row count)
+  - Mark evidence source as `unverified — semantic context unavailable`
+  - Include note: "Severity may be under-reported; verify context with AL symbols if available"
+- The +1 severity escalation applies once per finding — a LOW finding
+  in a Batch Processor becomes MEDIUM, not CRITICAL
+- P8 (full table scan) is most useful on tables > ~1000 rows; do not
+  flag config or setup tables

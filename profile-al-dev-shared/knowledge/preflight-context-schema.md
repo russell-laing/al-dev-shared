@@ -1,10 +1,10 @@
 # PREFLIGHT_CONTEXT Schema
 
 Canonical schema for `.dev/preflight-context.md`, the context block written
-by `/al-dev-plan-preflight` and consumed by `/al-dev-plan` (Phase 2 architect
+by `/plan-preflight` and consumed by `/plan` (Phase 2 architect
 debate) and any other workflow that chains preflight.
 
-Writer: `/al-dev-plan-preflight` (end of Phase 1.6). Overwrite any existing
+Writer: `/plan-preflight` (end of Phase 1.6). Overwrite any existing
 context file — latest state wins.
 
 ## Schema
@@ -36,5 +36,5 @@ context file — latest state wins.
 | `no_crit_swarm` | When `true`, consumers skip the critic-swarm validation step |
 
 If a required field is missing when consuming the block, re-run the specific
-preflight step that produces it (or re-dispatch `/al-dev-plan-preflight`)
+preflight step that produces it (or re-dispatch `/plan-preflight`)
 rather than proceeding with empty state.

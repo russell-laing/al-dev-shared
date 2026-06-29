@@ -71,7 +71,7 @@ The following rules are enforced automatically by the system:
 ## Requirements Traceability
 
 [Reduced RTM table generated from the latest
-`*-al-dev-interview-requirements.md` REQ tokens — columns: ID, Status,
+`*-interview-requirements.md` REQ tokens — columns: ID, Status,
 Requirement only. No Type, Priority, or Acceptance Criteria columns.
 Requirement text stays in plain language with no code references.]
 

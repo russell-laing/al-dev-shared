@@ -37,10 +37,10 @@ A routed skill must never block solely because the companion
 
 ## Consumers
 
-`workflow-routing.md`, `al-dev-explore`, `al-dev-plan-preflight`,
-`al-dev-develop-orchestrate`, and `al-dev-commit-preflight` all read or suggest
+`workflow-routing.md`, `explore`, `plan-preflight`,
+`develop-orchestrate`, and `commit-preflight` all read or suggest
 `.dev/project-context.md`, or route to `al-dev-init-context`. Each applies the
-degrade-to-inferred fallback above. `al-dev-commit-preflight` is a special case:
+degrade-to-inferred fallback above. `commit-preflight` is a special case:
 its guard is on the project *instructions* file rather than the optional
 `.dev/project-context.md`, but it must still degrade — never hard-stop — when the
 companion `al-dev-init-context` capability is unavailable.

@@ -1,6 +1,6 @@
 # Performance Anti-Patterns Prompt Content
 
-Paste this block into the spawn prompt for `al-dev-performance-reviewer` (Step 2 of /al-dev-perf):
+Paste this block into the spawn prompt for `performance-reviewer` (Step 2 of /perf):
 
 ```text
 Anti-patterns to find:
@@ -94,7 +94,7 @@ The pattern causes O(N) or O(N²) database round-trips that scale with business 
 
 - P1: Inner `FindSet` inside outer `FindSet` loop — 1 000 customers × 1 000 ledger entries = 1 M DB calls per batch run.
 - P3 inside a Batch Processor codeunit that processes all open Sales Orders — CalcFields on each line multiplies DB calls by line count.
-- `Entry Point` and `Batch Processor` are heuristic hot-path labels from `/al-dev-perf` classification, not formal AL object types.
+- `Entry Point` and `Batch Processor` are heuristic hot-path labels from `/perf` classification, not formal AL object types.
 
 ### High
 

@@ -50,7 +50,7 @@ If any artifact is missing:
 
 - Mark as **REJECT** with reason "artifact deleted since analysis"
 
-**Example pass:** Split suggestion targets agent `al-dev-plan`. File exists on disk.
+**Example pass:** Split suggestion targets agent `plan`. File exists on disk.
 
 **Example fail:** Inline suggestion targets skill `temp-skill-x` that was deleted
 before check ran.
@@ -74,8 +74,8 @@ skill to agent, agent to knowledge, and skill to skill.
 4. **If a reference is broken:**
    - Mark as **REJECT** with reason "broken reference: REF"
 
-**Example pass:** Agent `al-dev-develop-orchestrate` invokes agent `al-dev-shared:al-dev-review-develop`.
-Target file exists at `profile-al-dev-shared/agents/al-dev-review-develop.md`.
+**Example pass:** Agent `develop-orchestrate` invokes agent `al-dev-shared:review-develop`.
+Target file exists at `profile-al-dev-shared/agents/review-develop.md`.
 
 **Example fail:** Skill reads `../../../nonexistent-knowledge.md`. Target file does
 not exist.
@@ -167,8 +167,8 @@ MERGE: Combine <artifact-A> and <artifact-B> — overlapping concerns, shared pa
 the same validation tools and read the same linting knowledge. Overlap ≈ 75%.
 → ACCEPT
 
-**Example fail:** Suggestion to merge skill `al-dev-interview` and skill
-`al-dev-explore`. Different tools and knowledge used. Overlap ≈ 30%. → REJECT
+**Example fail:** Suggestion to merge skill `interview` and skill
+`explore`. Different tools and knowledge used. Overlap ≈ 30%. → REJECT
 
 ### Split Check
 
@@ -198,11 +198,11 @@ SPLIT: Separate <artifact> into <artifact-A> and <artifact-B> — distinct conce
    - DEFER if split is possible but requires caller refactoring
    - REJECT if concerns are too intertwined or artifact is small
 
-**Example pass:** Suggestion to split agent `al-dev-plan` into `al-dev-plan-architect`
-and `al-dev-plan-estimator`. Agent is 350 lines with clean tool clustering.
+**Example pass:** Suggestion to split agent `plan` into `plan-architect`
+and `plan-estimator`. Agent is 350 lines with clean tool clustering.
 Most skills call only the appropriate half. → ACCEPT
 
-**Example fail:** Suggestion to split skill `al-dev-develop-orchestrate` into `code-write` and
+**Example fail:** Suggestion to split skill `develop-orchestrate` into `code-write` and
 `code-test`. Both concerns require file context from the same sources. → REJECT
 
 ### Inline Check
@@ -264,7 +264,7 @@ ALIGN: Mismatched input/output contract — expects <type-A> but called with <ty
    - DEFER if mismatch is known and handled gracefully
    - REJECT if no actual mismatch is found
 
-**Example pass:** Suggestion to align agent `al-dev-review-develop` output. Agent
+**Example pass:** Suggestion to align agent `review-develop` output. Agent
 documents JSON but returns markdown. Callers expect JSON and parse fails silently.
 → ACCEPT
 
@@ -307,7 +307,7 @@ report" pattern. The same workflow appears in three live validation-oriented
 artifacts and would remove 250+ lines of duplicated procedure text. → ACCEPT
 
 **Example fail:** Suggestion to extract "log progress to .dev/progress.md". Grep
-finds this pattern only in skill `al-dev-develop-orchestrate`. Overhead > savings. → REJECT
+finds this pattern only in skill `develop-orchestrate`. Overhead > savings. → REJECT
 
 ### Promote Check
 
@@ -470,12 +470,12 @@ This matters because ducks run in different environments and may see different a
 # Agent SKILL.md file invoking another agent:
 ## Procedure
 1. Gather requirements
-2. Run `/al-dev-plan` to create the solution plan
-3. Dispatch the plan to al-dev-shared:al-dev-develop-orchestrate for implementation
+2. Run `/plan` to create the solution plan
+3. Dispatch the plan to al-dev-shared:develop-orchestrate for implementation
 
 # Agent frontmatter with tools list:
 ---
-name: al-dev-review-develop
+name: review-develop
 description: Review a completed code implementation
 tools:
   - Read
@@ -545,26 +545,26 @@ and treat a suggestion targeting a path under `generated/` as an automatic REJEC
 
 ```markdown
 # SOURCE ARTIFACTS (Edit Here)
-profile-al-dev-shared/agents/al-dev-commit-analyzer.md
+profile-al-dev-shared/agents/commit-analyzer.md
 profile-al-dev-shared/agents/al-dev-developer.md
-profile-al-dev-shared/skills/al-dev-develop-orchestrate/SKILL.md
+profile-al-dev-shared/skills/develop-orchestrate/SKILL.md
 profile-al-dev-shared/knowledge/artifact-contracts.md
 
 # GENERATED ARTIFACTS (Read-Only)
-profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md
-profile-al-dev-shared/generated/agents/copilot/al-dev-commit-analyzer.md
-profile-al-dev-shared/generated/agents/codex/al-dev-commit-analyzer.md
+profile-al-dev-shared/generated/agents/claude/commit-analyzer.md
+profile-al-dev-shared/generated/agents/copilot/commit-analyzer.md
+profile-al-dev-shared/generated/agents/codex/commit-analyzer.md
 profile-al-dev-shared/generated/agents/claude/al-dev-developer.md
 
 # REJECTION EXAMPLES
-REJECT: "Fix typo in profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md"
-REASON: Edit source file profile-al-dev-shared/agents/al-dev-commit-analyzer.md instead
+REJECT: "Fix typo in profile-al-dev-shared/generated/agents/claude/commit-analyzer.md"
+REASON: Edit source file profile-al-dev-shared/agents/commit-analyzer.md instead
 
 REJECT: "Reorganize tool list in profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md"
 REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd.md; regenerate projections
 
 # CORRECT WORKFLOW
-1. Edit the source artifact (e.g., profile-al-dev-shared/agents/al-dev-commit-analyzer.md)
+1. Edit the source artifact (e.g., profile-al-dev-shared/agents/commit-analyzer.md)
 2. Run projection regeneration (scripts/generate-projections.py)
 3. Generated artifacts in profile-al-dev-shared/generated/agents/*/ update automatically
 ```
@@ -576,21 +576,21 @@ REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd
 
 | Content Type | Source Path (Edit Here) | Generated Paths (Read-Only) |
 | --- | --- | --- |
-| Agent | `profile-al-dev-shared/agents/al-dev-commit-analyzer.md` | `profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md` and similar for copilot/, codex/ |
-| Skill | `profile-al-dev-shared/skills/al-dev-develop-orchestrate/SKILL.md` | No generated copies; distributed as-is |
+| Agent | `profile-al-dev-shared/agents/commit-analyzer.md` | `profile-al-dev-shared/generated/agents/claude/commit-analyzer.md` and similar for copilot/, codex/ |
+| Skill | `profile-al-dev-shared/skills/develop-orchestrate/SKILL.md` | No generated copies; distributed as-is |
 | Knowledge | `profile-al-dev-shared/knowledge/artifact-contracts.md` | No generated copies; distributed as-is |
 
 **Example violations to reject:**
 
-- Duck suggests: "Fix typo in `profile-al-dev-shared/generated/agents/claude/al-dev-commit-analyzer.md`"
-  → REJECT: Edit the source file `profile-al-dev-shared/agents/al-dev-commit-analyzer.md` instead
+- Duck suggests: "Fix typo in `profile-al-dev-shared/generated/agents/claude/commit-analyzer.md`"
+  → REJECT: Edit the source file `profile-al-dev-shared/agents/commit-analyzer.md` instead
   
 - Duck suggests: "Reorganize tool list in `profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md`"
   → REJECT: Make changes to source `profile-al-dev-shared/agents/al-dev-developer-tdd.md`; regenerate projections afterward
 
 **Correct workflow:**
 
-1. Edit the source artifact (e.g., `profile-al-dev-shared/agents/al-dev-commit-analyzer.md`)
+1. Edit the source artifact (e.g., `profile-al-dev-shared/agents/commit-analyzer.md`)
 2. Run the projection regeneration step (e.g., `scripts/generate-projections.py`)
 3. Generated artifacts in `profile-al-dev-shared/generated/agents/*/` are updated automatically
 

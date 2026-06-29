@@ -1,7 +1,7 @@
 # Workflow Resilience
 
-Protocols for multi-phase skills (`al-dev-plan`,
-`al-dev-develop-orchestrate`) to survive usage limits and resume cleanly.
+Protocols for multi-phase skills (`plan`,
+`develop-orchestrate`) to survive usage limits and resume cleanly.
 
 ## Progress Checkpointing
 
@@ -42,21 +42,21 @@ The newest checkpoint state is authoritative — overwrite, never append.
 Write the checkpoint before spawning subagents for the next
 phase and again after collecting their output.
 
-For `/al-dev-develop-orchestrate`, also refresh the dated
-`.dev/YYYY-MM-DD-al-dev-develop-progress.md` after each named
+For `/develop-orchestrate`, also refresh the dated
+`.dev/YYYY-MM-DD-develop-progress.md` after each named
 phase so the durable session narrative stays aligned with the
 latest checkpoint.
 
 ### Develop-Specific Resume Pack
 
-For `/al-dev-develop-orchestrate`, maintain these files together:
+For `/develop-orchestrate`, maintain these files together:
 
 - `.dev/progress.md` — latest checkpoint
-- `.dev/YYYY-MM-DD-al-dev-develop-progress.md` — dated session
+- `.dev/YYYY-MM-DD-develop-progress.md` — dated session
   narrative
-- `.dev/YYYY-MM-DD-al-dev-develop-checklist.md` — extracted
+- `.dev/YYYY-MM-DD-develop-checklist.md` — extracted
   implementation checklist
-- `.dev/YYYY-MM-DD-al-dev-develop-scope.md` — approved scope
+- `.dev/YYYY-MM-DD-develop-scope.md` — approved scope
   boundary
 
 Resume order:
@@ -74,7 +74,7 @@ is missing or contradictory.
 At skill startup, before Phase 1, follow the applicable resume
 path for the current skill.
 
-For `/al-dev-develop-orchestrate`, the Develop-Specific Resume Pack above is
+For `/develop-orchestrate`, the Develop-Specific Resume Pack above is
 authoritative:
 
 - Read `.dev/progress.md` if it exists
@@ -96,7 +96,7 @@ if it exists. If the file exists, display its contents and ask:
 - **restart** — start fresh and do not reuse checkpoint artifacts
   from the abandoned run:
   - delete `.dev/progress.md`
-  - for `/al-dev-develop-orchestrate`, either delete the latest dated develop
+  - for `/develop-orchestrate`, either delete the latest dated develop
     progress/checklist/scope files from that abandoned run or
     ignore them explicitly for the restarted session and record
     that choice in the new `.dev/progress.md`
@@ -113,7 +113,7 @@ If an agent returns empty output or hits a usage limit:
 2. If no output at all, synthesize from the relevant plan
    document:
    - For develop phases: `.dev/02-solution-plan.md`
-   - For plan phases: latest `.dev/*-al-dev-interview-requirements.md`
+   - For plan phases: latest `.dev/*-interview-requirements.md`
 3. Log the fallback in `.dev/progress.md` under
    **Pending decisions**: `"Phase X synthesized directly
    (agent hit limit)"`

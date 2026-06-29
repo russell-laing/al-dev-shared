@@ -1,6 +1,6 @@
 # Commit Compile Gate
 
-Called from `al-dev-commit-preflight` Phase 0.3 when staged changes include AL files.
+Called from `commit-preflight` Phase 0.3 when staged changes include AL files.
 
 Run this compile gate when staged changes include any `.al`, `app.json`, or `.al.json`
 files. Skip the compile gate when **all** staged files match documentation or

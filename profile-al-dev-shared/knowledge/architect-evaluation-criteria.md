@@ -1,6 +1,6 @@
 # Architect Evaluation Criteria
 
-Used in `al-dev-plan` Phase 4 to score architect proposals.
+Used in `plan` Phase 4 to score architect proposals.
 
 1. **Completeness** - All requirements addressed? Object
    design complete? BC integration points identified?

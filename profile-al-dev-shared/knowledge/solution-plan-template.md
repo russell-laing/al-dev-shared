@@ -88,7 +88,7 @@ Validate: ...
 - `Validate:` is required. Use an exact shell command when the task can be machine-checked; use `Validate: [manual] — [description]` only when the validation cannot be automated.
 - Tasks here are the architect's logical implementation units. They inform
   (but do not replace) the detailed execution and review flow performed by
-  `al-dev-plan`, `al-dev-plan-final-review`, and downstream implementation
+  `plan`, `plan-final-review`, and downstream implementation
   workflows.
 
 ### Acceptance Criteria

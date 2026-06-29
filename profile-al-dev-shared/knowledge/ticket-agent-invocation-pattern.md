@@ -1,21 +1,21 @@
 # Ticket Agent Invocation Pattern
 
-Canonical pattern for dispatching `al-dev-ticket-context-writer` from skills that interact with Freshdesk.
+Canonical pattern for dispatching `ticket-context-writer` from skills that interact with Freshdesk.
 
 ## Pattern Summary
 
-The `/al-dev-ticket` skill dispatches `al-dev-ticket-context-writer` for the fetch phase in both modes. When `--mode=full` is selected, `/al-dev-ticket` then chains to `/al-dev-support-reply` for research and reply drafting. This document captures the canonical fetch-phase pattern to prevent drift.
+The `/ticket` skill dispatches `ticket-context-writer` for the fetch phase in both modes. When `--mode=full` is selected, `/ticket` then chains to `/support-reply` for research and reply drafting. This document captures the canonical fetch-phase pattern to prevent drift.
 
 ## Dispatch Block Template
 
 ```bash
 Agent tool:
-  agent: al-dev-shared:al-dev-ticket-context-writer
+  agent: al-dev-shared:ticket-context-writer
   description: "Fetch Freshdesk ticket #[TICKET_ID]"
 
 Prompt: |
   Fetch Freshdesk ticket and write
-  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md.
+  .dev/$(date +%Y-%m-%d)-ticket-ticket-context.md.
 
   Phase: fetch
   Ticket ID: [TICKET_ID]
@@ -49,12 +49,12 @@ Fetch Freshdesk ticket metadata, conversations, and attachments. Output structur
 4. Write structured `.dev/` output file with metadata, conversations, and attachments
 5. Return structured block with file path and summary
 
-**Output file:** `.dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md`
+**Output file:** `.dev/$(date +%Y-%m-%d)-ticket-ticket-context.md`
 
 **Return block format:**
 
 ```text
-TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md
+TICKET_CONTEXT_WRITTEN: .dev/YYYY-MM-DD-ticket-ticket-context.md
 TICKET_ID: [ID]
 STATUS: [Status]
 PRIORITY: [Priority]
@@ -76,14 +76,14 @@ When a new skill needs to fetch Freshdesk tickets, it should:
 ## Related Files
 
 ```text
-profile-al-dev-shared/agents/al-dev-ticket-context-writer.md
-profile-al-dev-shared/skills/al-dev-ticket/SKILL.md
+profile-al-dev-shared/agents/ticket-context-writer.md
+profile-al-dev-shared/skills/ticket/SKILL.md
 ```
 
-- Agent definition: `profile-al-dev-shared/agents/al-dev-ticket-context-writer.md`
+- Agent definition: `profile-al-dev-shared/agents/ticket-context-writer.md`
 - Skills using this pattern:
-  - `/al-dev-ticket` — Fetch and contextualize the ticket (with `--mode=context-only` or `--mode=full`)
-  - `/al-dev-support-reply` — Follow-on research and reply drafting after ticket context is loaded
+  - `/ticket` — Fetch and contextualize the ticket (with `--mode=context-only` or `--mode=full`)
+  - `/support-reply` — Follow-on research and reply drafting after ticket context is loaded
 
 ### Ticket Type → Affected Files Mapping
 
@@ -134,13 +134,13 @@ Quick reference:
 
 ```text
 Agent invocation (Skill tool):
-  skill: al-dev-ticket-context-writer
+  skill: ticket-context-writer
   args: "TICKET_ID=12345"
 
 This internally dispatches:
-  agent: al-dev-shared:al-dev-ticket-context-writer
+  agent: al-dev-shared:ticket-context-writer
   with environment: FRESHDESK_API_KEY, FRESHDESK_DOMAIN
-  with prompt: "Fetch Freshdesk ticket and write .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md. Phase: fetch. Ticket ID: 12345"
+  with prompt: "Fetch Freshdesk ticket and write .dev/$(date +%Y-%m-%d)-ticket-ticket-context.md. Phase: fetch. Ticket ID: 12345"
 ```
 
 For the canonical fetch phase, the live dispatch contract is intentionally small:
@@ -158,7 +158,7 @@ The skill invokes the agent using the Skill tool with the dispatch block templat
 ```
 Skill: superpowers:dispatching-parallel-agents
 
-skill: al-dev-ticket-context-writer
+skill: ticket-context-writer
 args: "TICKET_ID=12345"
 ```
 
@@ -197,7 +197,7 @@ When dispatching the agent, the skill extracts the ticket ID from user input and
 ```text
 Prompt: |
   Fetch Freshdesk ticket and write
-  .dev/$(date +%Y-%m-%d)-al-dev-ticket-ticket-context.md.
+  .dev/$(date +%Y-%m-%d)-ticket-ticket-context.md.
 
   Phase: fetch
   Ticket ID: 12345
@@ -214,7 +214,7 @@ The agent receives both the ticket ID in the prompt (for display and context) an
 
 The agent writes a structured `.dev/` file and returns a summary block. For the complete structure and parsing details, see the "Return block format" section (lines 53–63). In brief:
 
-- **Output file:** `.dev/YYYY-MM-DD-al-dev-ticket-ticket-context.md` (structured markdown with metadata, conversations, and attachments)
+- **Output file:** `.dev/YYYY-MM-DD-ticket-ticket-context.md` (structured markdown with metadata, conversations, and attachments)
 - **Return summary:** A text block with fields like `TICKET_CONTEXT_WRITTEN`, `TICKET_ID`, `STATUS`, `PRIORITY`, `COMMENTS_COUNT`, `ATTACHMENTS`, `INLINE_IMAGES_COUNT`
 
-The calling skill parses this return block to extract the output file path and use it in subsequent phases (e.g., routing to `/al-dev-support-reply` for full-mode analysis).
+The calling skill parses this return block to extract the output file path and use it in subsequent phases (e.g., routing to `/support-reply` for full-mode analysis).

@@ -5,7 +5,7 @@ This guide is the shared reference for cross-harness operational standards in mu
 - Confirm targets before starting work
 - Run adversarial architecture planning
 
-Read this when: running `/al-dev-plan`, building multi-phase skills, or implementing robust task verification.
+Read this when: running `/plan`, building multi-phase skills, or implementing robust task verification.
 
 ---
 
@@ -135,7 +135,7 @@ Every multi-phase skill should use this checkpoint structure after each phase:
 - [x] Risk assessment complete (medium complexity, 1 data model change)
 
 **Output:** Requirements context file saved to
-`.dev/2026-05-22-al-dev-interview-requirements.md`
+`.dev/2026-05-22-interview-requirements.md`
 
 **Resume capability:** Can restart from Phase 1 with requirements cached
 
@@ -144,7 +144,7 @@ Every multi-phase skill should use this checkpoint structure after each phase:
 ## Phase 1: Design & Planning
 - [ ] Architect debate completed
 - [ ] Design decision: Use event-based architecture (vs. procedure override)
-- [ ] Plan written to `.dev/2026-05-22-al-dev-plan-solution-plan.md`
+- [ ] Plan written to `.dev/2026-05-22-plan-solution-plan.md`
 
 **Next:** Phase 2 (Implementation) can proceed with design from Phase 1
 
@@ -476,5 +476,5 @@ When updating skill behavior across Claude Code, Copilot CLI, and Codex, use thi
 ## References
 
 - **project instructions file** → the repository's harness-specific instructions file (`AGENTS.md`, `CLAUDE.md`, or `CODEX.md` as applicable), especially the "Plan Task Verification Standard" and "Write-Persistence Verification" sections
-- **skills/al-dev-investigate/SKILL.md** → Step 0 — Target Confirmation (workflow implementation)
-- **skills/al-dev-plan/SKILL.md** → Phase 2–4 architect briefing and facilitation (workflow implementation)
+- **skills/investigate/SKILL.md** → Step 0 — Target Confirmation (workflow implementation)
+- **skills/plan/SKILL.md** → Phase 2–4 architect briefing and facilitation (workflow implementation)

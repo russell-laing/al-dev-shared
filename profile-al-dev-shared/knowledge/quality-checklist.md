@@ -3,7 +3,7 @@
 Use these checklists when reviewing agent deliverables at each phase gate. Every item should be verified before approving and passing work to the next phase.
 
 **For solution plans:**
-- [ ] All requirements from the latest `.dev/*-al-dev-interview-requirements.md` are addressed
+- [ ] All requirements from the latest `.dev/*-interview-requirements.md` are addressed
 - [ ] Data model is complete (all entities, fields, relationships, constraints)
 - [ ] Error handling strategy is defined, not hand-waved
 - [ ] Integration points are explicit (events, APIs, dependencies)

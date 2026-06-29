@@ -1,14 +1,14 @@
 # Architect Invocation Patterns
 
 `al-dev-solution-architect` is used through two structurally different
-invocation styles: competitive planning in `/al-dev-plan` and a bounded
-single-architect diagnostic pass in `/al-dev-fix`. The domain-specific prompt
+invocation styles: competitive planning in `/plan` and a bounded
+single-architect diagnostic pass in `/fix`. The domain-specific prompt
 content (what to analyse, what to produce) stays local to each skill; only the
 structural mechanics are documented here.
 
 ## Pattern 1: Competitive Debate (×2-3 parallel)
 
-Used by /al-dev-plan.
+Used by /plan.
 
 Spawn 2-3 `al-dev-solution-architect` agents in parallel, each assigned a
 **meaningfully different starting approach** to prevent convergence. The goal
@@ -26,7 +26,7 @@ After agents complete:
 3. Synthesise the winner or create a hybrid from the best elements.
 
 Spawn count guidance: 2 for SIMPLE; 2-3 for MEDIUM / COMPLEX, matching
-`knowledge/al-dev-plan-phase-routing.md`.
+`knowledge/plan-phase-routing.md`.
 
 ### Pattern 1 dispatch block
 
@@ -62,18 +62,18 @@ Prompt:
   3. Falsification — one scenario that would prove your approach wrong
 ```
 
-`{COMPLEXITY_TIER}` is resolved by the calling skill (e.g. al-dev-plan maps it
+`{COMPLEXITY_TIER}` is resolved by the calling skill (e.g. plan maps it
 from the architect model tier).
 
 Include in prompt: the finalized `.dev/preflight-context.md` inputs consumed by
-`/al-dev-plan` Phase 2 (`requirements`, `scope`, `user_context`, and
+`/plan` Phase 2 (`requirements`, `scope`, `user_context`, and
 `external_findings_status` when present), any AL symbol or analogue evidence
 gathered during preflight, and the approach assignment derived from the
 requirement.
 
 ## Pattern 2: Quick Analysis (×1 serial)
 
-Used by `/al-dev-fix` only for its bounded single-architect diagnostic path.
+Used by `/fix` only for its bounded single-architect diagnostic path.
 
 Spawn **one** `al-dev-solution-architect` with a time-bounded prompt (5 min
 max) to diagnose a bounded fix issue, not to produce a full architecture plan.

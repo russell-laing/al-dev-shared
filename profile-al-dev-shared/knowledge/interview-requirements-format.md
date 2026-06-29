@@ -13,14 +13,14 @@ ACC:ACC-002|REQ-001|Given: Customer with $10,000 credit limit | When: Posting $8
 ## Session Log Entry Format
 
 ```markdown
-## [HH:MM:SS] al-dev-interview
+## [HH:MM:SS] interview
 
 - Interview duration: ~30 minutes
 - Requirements gathered: X features
 - Edge cases identified: Y
 - Open questions: Z (for stakeholder resolution)
-- Output: .dev/YYYY-MM-DD-al-dev-interview-requirements.md
+- Output: .dev/YYYY-MM-DD-interview-requirements.md
 - Status: ✓ Complete
 ```
 
-**File path:** `.dev/$(date +%Y-%m-%d)-al-dev-interview-requirements.md`
+**File path:** `.dev/$(date +%Y-%m-%d)-interview-requirements.md`

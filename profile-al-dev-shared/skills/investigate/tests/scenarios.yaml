@@ -1,0 +1,21 @@
+skill: investigate
+scenarios:
+  - id: investigate-root-cause-trigger
+    status: golden
+    user_prompt: "Investigate why posting Total Kg is overstated after Copy Document — find the root cause."
+    expected_artifacts:
+      - ".dev/*-investigate-findings.md"
+    notes: "Canonical trigger — unclear root cause, competing hypotheses. Should run the investigation framework and write date-prefixed findings."
+
+  - id: investigate-blocks-claim-without-findings
+    status: golden
+    user_prompt: "Investigate the intermittent posting failure but do not conclude a root cause until the findings file is written and read."
+    expected_artifacts:
+      - ".dev/*-investigate-findings.md"
+    notes: "Final-gate regression. Per the Artifact Contract, no completion/root-cause claim before the success-evidence findings file is produced and read in the current run."
+
+  - id: investigate-rejects-plan-request-misfire
+    status: golden
+    user_prompt: "I already know the fix — write me a solution plan for the posting bug."
+    expected_artifacts: []
+    notes: "Misfire guard. A request for a solution design belongs to /plan, not the investigation framework (root cause is already known)."

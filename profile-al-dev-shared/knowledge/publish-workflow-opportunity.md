@@ -4,15 +4,15 @@
 
 ## Context
 
-- `/al-dev-commit` → `/al-dev-release-notes` → [END]
-- Release-notes output (`.dev/*-al-dev-release-notes-*.md`) is not consumed by
+- `/commit` → `/release-notes` → [END]
+- Release-notes output (`.dev/*-release-notes-*.md`) is not consumed by
   any downstream skill today. This is an observed workflow gap, not a current
   artifact contract.
 - This is a natural continuation point for automation: plan → develop → commit → release-notes → **publish**
 
 ## Proposed /al-dev-publish Skill
 
-Would consume `/al-dev-release-notes` output and orchestrate:
+Would consume `/release-notes` output and orchestrate:
 
 1. **Copy to changelog** — merge release notes into the project's changelog
    target (for example, `CHANGELOG.md`)

@@ -20,13 +20,13 @@ it as a gap.
 
 | Phase | File | Gate |
 |-------|------|------|
-| Requirements gathered | `profile-al-dev-shared/skills/al-dev-interview/SKILL.md` | Before final interview summary |
+| Requirements gathered | `profile-al-dev-shared/skills/interview/SKILL.md` | Before final interview summary |
 | Solution designed | `profile-al-dev-shared/agents/al-dev-solution-architect.md` | Before returning the recommended option |
-| Plan validated | `profile-al-dev-shared/skills/al-dev-plan/SKILL.md` | Before presenting the plan for approval |
+| Plan validated | `profile-al-dev-shared/skills/plan/SKILL.md` | Before presenting the plan for approval |
 | Code implemented | `profile-al-dev-shared/agents/al-dev-developer-tdd.md` and `profile-al-dev-shared/agents/al-dev-developer-traditional.md` | Before reporting implementation complete |
-| Code reviewed | `profile-al-dev-shared/skills/al-dev-review-develop/SKILL.md` | Before reporting review complete or ready for the next workflow step |
-| Bug fixed | `profile-al-dev-shared/skills/al-dev-fix/SKILL.md` | Before presenting the fix |
-| Commit prepared | `profile-al-dev-shared/skills/al-dev-commit/SKILL.md` | Before commit execution |
+| Code reviewed | `profile-al-dev-shared/skills/review-develop/SKILL.md` | Before reporting review complete or ready for the next workflow step |
+| Bug fixed | `profile-al-dev-shared/skills/fix/SKILL.md` | Before presenting the fix |
+| Commit prepared | `profile-al-dev-shared/skills/commit/SKILL.md` | Before commit execution |
 | Report-driven plugin suggestion accepted | `profile-al-dev-shared/knowledge/rubber-duck.md` | Before a report suggestion becomes shared-profile scope |
 
 ## Suggestion-of-Merit Gate
