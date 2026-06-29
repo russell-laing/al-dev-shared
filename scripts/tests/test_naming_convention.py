@@ -16,7 +16,7 @@ LENS_PATTERN = re.compile(r"^(design|quality)-(agent|skill)-lens-[a-z0-9-]+$")
 LENS_EXCEPTIONS = {"naming-convention-lens"}
 SNAKE_CASE_SCRIPT = re.compile(r"^[a-z0-9_]+\.py$")
 SCRIPT_EXCEPTIONS = {"__init__.py", "_compat_entrypoint.py", "_entrypoint_bootstrap.py"}
-SKILL_DIR_EXCEPTIONS = {"regenerate_agent_projections"}
+SKILL_DIR_EXCEPTIONS = set()
 
 
 def test_convention_doc_exists() -> None:

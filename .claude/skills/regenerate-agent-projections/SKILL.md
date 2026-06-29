@@ -1,5 +1,5 @@
 ---
-name: regenerate_agent_projections
+name: regenerate-agent-projections
 description: >-
   Validates shared agent source and unidirectionally regenerates harness-native agent projections
   from the canonical agent source, summarizes changes, and asks before committing.
@@ -31,7 +31,7 @@ This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-pr
 
 ### Phase 0: Resume Check
 
-Check `.dev/regenerate_agent_projections-progress.md`:
+Check `.dev/regenerate-agent-projections-progress.md`:
 
 - **If exists:** Read the `status` field. Recognized values are `complete` and
   `blocked` (the only statuses this workflow writes). If the status value is
@@ -41,7 +41,7 @@ Check `.dev/regenerate_agent_projections-progress.md`:
   respond, default to `Restart` (regenerate from a clean state).
 - **If not exists:** Proceed to Phase 1
 
-Progress checkpoint file location: `.dev/regenerate_agent_projections-progress.md`
+Progress checkpoint file location: `.dev/regenerate-agent-projections-progress.md`
 
 ---
 
@@ -159,7 +159,7 @@ Changed files ([N] total):
 
 Change type: [projections-only | mixed (projections + other tracked files)]
 
-Note: progress checkpoint (.dev/regenerate_agent_projections-progress.md) included in staged set.
+Note: progress checkpoint (.dev/regenerate-agent-projections-progress.md) included in staged set.
 
 Do you want me to stage and commit these changes?
 ```
@@ -192,7 +192,7 @@ Conservative failure mode:
 
 ## Progress Checkpoint Format
 
-Location: `.dev/regenerate_agent_projections-progress.md`
+Location: `.dev/regenerate-agent-projections-progress.md`
 
 YAML structure:
 
@@ -210,7 +210,7 @@ result: <description>
 This skill runs the orchestration script:
 
 ```bash
-bash .claude/skills/regenerate_agent_projections/run.sh
+bash .claude/skills/regenerate-agent-projections/run.sh
 ```
 
 The script handles all four phases, manages progress checkpointing, and stops on failures.

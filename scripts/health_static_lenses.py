@@ -7,9 +7,8 @@ the LLM lenses use, so discover Phase 4 assembly and `--resume` need no changes.
 
 Converted lenses (each emits one ``.dev/<date>-plugin-health-lens-<name>.json``):
 
-- ``naming-convention-lens`` (naming) — filename + documented-output-path patterns
-  against docs/al-dev-naming-convention.md, with the grandfather list read from
-  that doc's ``## Grandfathered exceptions`` section.
+- ``naming-convention-lens`` (naming) — filename + distributed shared naming
+  checks against docs/al-dev-naming-convention.md.
 - ``quality-agent-lens-structure`` (quality, agents) — frontmatter field presence,
   tool canonicality (canonical set read from the projection policy, not a marker),
   empty ``tools: []`` rejection, Inputs/Outputs sections, header numbering,
@@ -70,11 +69,15 @@ from _entrypoint_bootstrap import bootstrap_repo
 REPO_ROOT = bootstrap_repo(__file__)
 
 from scripts.al_dev_tools.io_utils import write_json_atomic
+from scripts.al_dev_tools.shared_surface_names import (
+    LEGACY_SHARED_PREFIX,
+    SHARED_AGENT_RENAMES,
+    SHARED_SKILL_RENAMES,
+)
 
 
 REPO = Path(__file__).resolve().parents[1]
 POLICY_PATH = REPO / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
-CONVENTION_DOC = REPO / "docs/al-dev-naming-convention.md"
 
 # Surface → corpus roots (mirrors discover Phase 0/1; do not re-derive).
 SURFACE_ROOTS = {
@@ -132,17 +135,6 @@ def canonical_tools() -> set[str]:
     """
     data, _ = _split_frontmatter(POLICY_PATH.read_text(encoding="utf-8"))
     return set(data["projection_rules"]["claude"].keys())
-
-
-def grandfathered_skill_names() -> set[str]:
-    """Read the grandfather list from the convention doc's exceptions section."""
-    if not CONVENTION_DOC.exists():
-        return set()
-    text = CONVENTION_DOC.read_text(encoding="utf-8")
-    m = re.search(r"##\s+Grandfathered exceptions\s*\n(.*?)(?:\n##\s|\Z)", text, re.DOTALL)
-    if not m:
-        return set()
-    return set(re.findall(r"^-\s+`([^`]+)`", m.group(1), re.MULTILINE))
 
 
 def agent_files(surface_root: Path) -> list[Path]:
@@ -218,10 +210,16 @@ _MAINTAINER_SKILL_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 
 def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
     rows: list[str] = []
-    grandfathered = grandfathered_skill_names()
 
     for path in agent_paths:
         name = path.stem
+        if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
+            target = SHARED_AGENT_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
+            rows.append(_row(
+                name, "High",
+                f"`{path.name}:1` distributed agent filename still uses the retired `al-dev-` prefix",
+                f"rename to the canonical prefix-free shared agent name `{target}`",
+            ))
         # Lens agents (filename matches *-lens-*) MUST match the lens pattern,
         # with the single allowed exception of naming-convention-lens.
         if "-lens-" in name and name != "naming-convention-lens":
@@ -235,15 +233,21 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 
     for path in skill_paths:
         name = path.parent.name
-        # Maintainer skills SHOULD match {verb}-{object}-{aspect}; a non-kebab
-        # name not in the grandfather set is a Low advisory finding.
-        if not _MAINTAINER_SKILL_RE.match(name) and name not in grandfathered:
+        if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
+            target = SHARED_SKILL_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
+            rows.append(_row(
+                name, "High",
+                f"`{path.parent.name}/SKILL.md:1` distributed skill directory still uses the retired `al-dev-` prefix",
+                f"rename to the canonical prefix-free shared skill name `{target}`",
+            ))
+        # Maintainer skills SHOULD match {verb}-{object}-{aspect}; non-kebab
+        # names are advisory findings with no grandfathered exceptions.
+        if "profile-al-dev-shared" not in path.parts and not _MAINTAINER_SKILL_RE.match(name):
             rows.append(_row(
                 name, "Low",
                 f"`{path.parent.name}/SKILL.md:1` skill name is not kebab-case "
                 "`{verb}-{object}-{aspect}`",
-                "rename to the advisory pattern or add to "
-                "`## Grandfathered exceptions` in docs/al-dev-naming-convention.md",
+                "rename to the advisory pattern in docs/al-dev-naming-convention.md",
             ))
 
     return rows
@@ -253,7 +257,6 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 # Lens: quality-agent-lens-structure
 # ---------------------------------------------------------------------------
 
-_AL_DEV_PREFIX_RE = re.compile(r"^al-dev-")
 _KEBAB_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 SKILL_ONLY_FIELDS = ("argument-hint", "triggers")
 _AGENT_MAX_SECTIONS = 6  # top-level ## headers; matches the bloat-lens threshold
@@ -289,11 +292,11 @@ def check_agent_structure(agent_paths: list[Path], surface: str) -> list[str]:
 
         # Medium: filename convention (surface-aware).
         if surface == "plugin":
-            if not _AL_DEV_PREFIX_RE.match(name):
+            if name.startswith(LEGACY_SHARED_PREFIX):
                 rows.append(_row(
                     name, "Medium",
-                    f"`{path.name}:1` distributed agent filename lacks the `al-dev-` prefix",
-                    "rename with the distributed `al-dev-<name>` prefix",
+                    f"`{path.name}:1` distributed agent filename still uses the retired `al-dev-` prefix",
+                    "rename to the canonical prefix-free shared agent name",
                 ))
         else:  # tooling
             # Enforced rule: a lens-agent filename (matches *-lens-*) must follow

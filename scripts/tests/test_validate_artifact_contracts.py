@@ -11,6 +11,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from scripts.al_dev_tools.shared_surface_names import (
+    LEGACY_SHARED_PREFIX,
+    runtime_artifact_patterns,
+)
 from scripts.validate_artifact_contracts import main, run_artifact_tests, validate  # noqa: E402
 
 
@@ -177,6 +181,18 @@ def test_run_artifact_tests_fails_when_latest_runtime_artifact_is_missing_marker
     })
 
     assert run_artifact_tests(repo) is False
+
+
+def test_runtime_artifact_patterns_use_prefix_free_skill_names() -> None:
+    patterns = runtime_artifact_patterns()
+    assert patterns["ticket"]["context"] == "*-ticket-ticket-context.md"
+    assert patterns["interview"]["requirements"] == "*-interview-requirements.md"
+    assert patterns["handoff"]["prompt"] == "*-handoff-handoff-prompt.md"
+    assert all(
+        LEGACY_SHARED_PREFIX not in value
+        for group in patterns.values()
+        for value in group.values()
+    )
 
 
 def test_main_returns_zero_for_happy_fixture_when_runtime_tests_pass(tmp_path: Path) -> None:

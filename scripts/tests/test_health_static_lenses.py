@@ -7,14 +7,25 @@ CLAUDE.md libexpat workaround (importlib spec_from_file_location).
 
 from __future__ import annotations
 
+import sys
 import importlib.util
 import tempfile
 from pathlib import Path
-import sys
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
+
+from scripts.al_dev_tools.shared_surface_names import (
+    LEGACY_SHARED_PREFIX,
+    SHARED_AGENT_RENAMES,
+    SHARED_SKILL_RENAMES,
+    runtime_artifact_patterns,
+    strip_legacy_shared_prefix,
+)
 
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "health_static_lenses.py"
@@ -55,11 +66,50 @@ def test_naming_silent_on_good_lens_name():
         assert M.check_naming([good, also], []) == []
 
 
+def test_strip_legacy_shared_prefix_removes_al_dev_prefix():
+    assert strip_legacy_shared_prefix("al-dev-plan") == "plan"
+    assert strip_legacy_shared_prefix("plan") == "plan"
+
+
+def test_runtime_artifact_patterns_use_prefix_free_skill_names():
+    patterns = runtime_artifact_patterns()
+    assert patterns["ticket"]["context"] == "*-ticket-ticket-context.md"
+    assert patterns["plan"]["solution_plan"] == "*-plan-solution-plan.md"
+    assert all(
+        LEGACY_SHARED_PREFIX not in value
+        for group in patterns.values()
+        for value in group.values()
+    )
+
+
+def test_shared_rename_maps_cover_every_prefixed_entry():
+    assert SHARED_SKILL_RENAMES["al-dev-plan"] == "plan"
+    assert SHARED_AGENT_RENAMES["al-dev-solution-architect"] == "solution-architect"
+
+
+def test_naming_fires_on_prefixed_distributed_shared_names():
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        agent = _write(
+            root,
+            "profile-al-dev-shared/agents/al-dev-solution-architect.md",
+            "---\nname: al-dev-solution-architect\n---\nx\n",
+        )
+        skill = _write(
+            root,
+            "profile-al-dev-shared/skills/al-dev-plan/SKILL.md",
+            "---\nname: al-dev-plan\n---\nx\n",
+        )
+        rows = M.check_naming([agent], [skill])
+        assert any("retired `al-dev-` prefix" in row and "solution-architect" in row for row in rows), rows
+        assert any("retired `al-dev-` prefix" in row and "al-dev-plan" in row for row in rows), rows
+
+
 # --- quality-agent-lens-structure -------------------------------------------
 
 _GOOD_AGENT = (
     "---\n"
-    "name: al-dev-thing\n"
+    "name: thing\n"
     "description: Does a thing.\n"
     "model: haiku\n"
     'tools: ["Read"]\n'
@@ -72,8 +122,8 @@ def test_agent_structure_fires_on_missing_model_and_inputs():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
         bad = _write(
-            root, "al-dev-thing.md",
-            "---\nname: al-dev-thing\ndescription: x\n"
+            root, "thing.md",
+            "---\nname: thing\ndescription: x\n"
             'tools: ["Read"]\n---\n## Outputs\n\nbar\n',
         )
         rows = M.check_agent_structure([bad], "plugin")
@@ -85,8 +135,8 @@ def test_agent_structure_fires_on_noncanonical_tool():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
         bad = _write(
-            root, "al-dev-thing.md",
-            "---\nname: al-dev-thing\ndescription: x\nmodel: haiku\n"
+            root, "thing.md",
+            "---\nname: thing\ndescription: x\nmodel: haiku\n"
             'tools: ["Frobnicate"]\n---\n## Inputs\n\nfoo\n\n## Outputs\n\nbar\n',
         )
         rows = M.check_agent_structure([bad], "plugin")
@@ -99,8 +149,8 @@ def test_agent_structure_fires_on_empty_tools_array():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
         bad = _write(
-            root, "al-dev-thing.md",
-            "---\nname: al-dev-thing\ndescription: x\nmodel: haiku\n"
+            root, "thing.md",
+            "---\nname: thing\ndescription: x\nmodel: haiku\n"
             "tools: []\n---\n## Inputs\n\nfoo\n\n## Outputs\n\nbar\n",
         )
         rows = M.check_agent_structure([bad], "plugin")
@@ -114,7 +164,7 @@ def test_agent_structure_silent_on_populated_tools():
     finding."""
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
-        good = _write(root, "al-dev-thing.md", _GOOD_AGENT)
+        good = _write(root, "thing.md", _GOOD_AGENT)
         rows = M.check_agent_structure([good], "plugin")
         assert not any("empty `tools: []`" in r for r in rows), rows
 
@@ -122,7 +172,7 @@ def test_agent_structure_silent_on_populated_tools():
 def test_agent_structure_silent_on_good_agent():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
-        good = _write(root, "al-dev-thing.md", _GOOD_AGENT)
+        good = _write(root, "thing.md", _GOOD_AGENT)
         assert M.check_agent_structure([good], "plugin") == []
 
 

@@ -45,16 +45,21 @@ Pattern: `{verb}-{object}-{aspect}`
 
 Examples: `audit-plugin-health`, `review-agent-map`, `verify-map-suggestions`.
 
-This rule is advisory: existing names that deviate are grandfathered — see
-[Grandfathered exceptions](#grandfathered-exceptions). New skills SHOULD
-conform; the `naming-convention-lens` flags non-conforming names as Low-severity
+This rule is advisory for repo-local maintainer skills. Skills SHOULD conform;
+the `naming-convention-lens` flags non-conforming names as Low-severity
 suggestions rather than hard failures.
-
-The repo-local `regenerate_agent_projections` skill is currently grandfathered
-until the compat surface is retired.
 
 The repo-local maintainer command `/plan-plugin-findings` is the current name
 for the workflow that used to be wired to `/verify-map-suggestions`.
+
+### Distributed shared skills and agents — ENFORCED
+
+Shared distributed names under `profile-al-dev-shared/` are canonical
+plugin-surface names, not maintainer aliases. They MUST use prefix-free
+kebab-case names, and no grandfathered exceptions apply to the retired
+`al-dev-` prefix on that surface.
+
+Examples: `plan`, `ticket`, `solution-architect`, `ticket-context-writer`.
 
 ### Python maintainer tooling files — ADVISORY
 
@@ -80,9 +85,6 @@ During staged migrations, a legacy top-level wrapper may temporarily remain for
 compatibility, but the canonical filename should still be the snake_case form
 that matches the imported module and the documented command.
 
-The repo-local `regenerate_agent_projections` skill is currently grandfathered
-until the compat surface is retired.
-
 ## Outputs
 
 ### Living docs — overwritten in place, no date
@@ -107,10 +109,3 @@ Examples: `docs/health/2026-05-29-plugin-health.md`,
 Every output named above must use generic vocabulary (no harness-specific
 tokens such as tool names or settings paths). The maintainer tooling itself may
 remain harness-specific, but its produced documents must not.
-
-## Grandfathered exceptions
-
-These names predate or intentionally deviate from `{verb}-{object}-{aspect}` and
-are accepted; lenses should not re-flag them:
-
-- `regenerate_agent_projections`
