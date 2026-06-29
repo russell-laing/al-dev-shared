@@ -9,6 +9,7 @@ import tempfile
 from typing import Callable, Iterable, Optional
 
 from scripts.al_dev_tools.io_utils import write_text_atomic
+from scripts.al_dev_tools.shared_surface_names import strip_legacy_shared_prefix
 
 from .map_inventory import (
     Inventory,
@@ -22,50 +23,50 @@ from .map_markers import find_marker_spans, replace_marked_sections
 
 
 TARGET_DOCS = (
-    Path("docs/skills-map.md"),
-    Path("docs/agent-map.md"),
-    Path("docs/plugin-graph.md"),
-    Path("docs/workflow-diagrams.md"),
+    Path("docs/skills_map.md"),
+    Path("docs/agent_map.md"),
+    Path("docs/plugin_graph.md"),
+    Path("docs/workflow_diagrams.md"),
 )
 
-SKILLS_MAP_DOC = Path("docs/skills-map.md")
+SKILLS_MAP_DOC = Path("docs/skills_map.md")
 DRILLDOWN_LAYER_HEADING = "## Layer 2: Per-Skill Drill-Downs"
 
 SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
     "skill-lifecycle-mermaid": {
-        "doc": Path("docs/skills-map.md"),
+        "doc": Path("docs/skills_map.md"),
         "renderer": "render_skill_lifecycle",
     },
     "agent-catalog-table": {
-        "doc": Path("docs/agent-map.md"),
+        "doc": Path("docs/agent_map.md"),
         "renderer": "render_agent_catalog",
     },
     "agent-coverage": {
-        "doc": Path("docs/agent-map.md"),
+        "doc": Path("docs/agent_map.md"),
         "renderer": "render_agent_coverage",
     },
     "skill-coverage": {
-        "doc": Path("docs/skills-map.md"),
+        "doc": Path("docs/skills_map.md"),
         "renderer": "render_skill_coverage",
     },
     "plugin-dependency-mermaid": {
-        "doc": Path("docs/plugin-graph.md"),
+        "doc": Path("docs/plugin_graph.md"),
         "renderer": "render_plugin_dependency",
     },
     "plugin-workflow-overlays": {
-        "doc": Path("docs/plugin-graph.md"),
+        "doc": Path("docs/plugin_graph.md"),
         "renderer": "render_plugin_workflow_overlays",
     },
     "plugin-health-callouts": {
-        "doc": Path("docs/plugin-graph.md"),
+        "doc": Path("docs/plugin_graph.md"),
         "renderer": "render_plugin_health_callouts",
     },
     "workflow-skills-agents-mermaid": {
-        "doc": Path("docs/workflow-diagrams.md"),
+        "doc": Path("docs/workflow_diagrams.md"),
         "renderer": "render_workflow_skills_agents",
     },
     "workflow-knowledge-mermaid": {
-        "doc": Path("docs/workflow-diagrams.md"),
+        "doc": Path("docs/workflow_diagrams.md"),
         "renderer": "render_workflow_knowledge",
     },
 }
@@ -86,6 +87,13 @@ LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
 )
 
 SKILL_DRILLDOWN_PREFIX = "skill-drilldown-"
+
+
+def _canonical_marker_key(key: str) -> str:
+    if key.startswith(SKILL_DRILLDOWN_PREFIX):
+        suffix = key[len(SKILL_DRILLDOWN_PREFIX):]
+        return SKILL_DRILLDOWN_PREFIX + strip_legacy_shared_prefix(suffix)
+    return key
 
 
 def _read_text(path: Path) -> str:
@@ -505,7 +513,7 @@ def build_section_registry(inv: Inventory) -> dict[str, SectionSpec]:
         key = f"{SKILL_DRILLDOWN_PREFIX}{skill_name}"
         registry[key] = SectionSpec(
             key=key,
-            doc=Path("docs/skills-map.md"),
+            doc=Path("docs/skills_map.md"),
             renderer_name="render_skill_drilldown",
             context=skill_name,
         )
@@ -552,20 +560,29 @@ def plan_document_updates(repo: Path, rendered: dict[str, str], inv: Inventory) 
         path = repo / rel_path
         text = _read_text(path)
         spans = find_marker_spans(text)
+        canonical_spans: dict[str, str] = {}
+        for actual_key, _span in spans.items():
+            canonical_key = _canonical_marker_key(actual_key)
+            if canonical_key in canonical_spans:
+                raise ValueError(f"{rel_path}: duplicate canonical marker key: {canonical_key}")
+            canonical_spans[canonical_key] = actual_key
+
         expected_keys = sorted(doc_to_keys.get(rel_path, []))
         required_keys = [key for key in expected_keys if key in SECTION_CONFIG]
         drilldown_expected = [key for key in expected_keys if key.startswith(SKILL_DRILLDOWN_PREFIX)]
-        drilldown_present = sorted(key for key in spans if key.startswith(SKILL_DRILLDOWN_PREFIX))
+        drilldown_present = sorted(
+            canonical_key for canonical_key in canonical_spans if canonical_key.startswith(SKILL_DRILLDOWN_PREFIX)
+        )
         stale_drilldowns = sorted(set(drilldown_present) - set(drilldown_expected))
         if stale_drilldowns:
             raise KeyError(f"{rel_path}: stale drilldown markers: {stale_drilldowns}")
 
         if rel_path == SKILLS_MAP_DOC and DRILLDOWN_LAYER_HEADING in text:
             required_keys.extend(drilldown_expected)
-        missing_keys = sorted(set(required_keys) - set(spans))
+        missing_keys = sorted(set(required_keys) - set(canonical_spans))
         if missing_keys:
             raise KeyError(f"{rel_path}: missing markers for sections: {missing_keys}")
-        replacements = {key: rendered[key] for key in sorted(set(required_keys))}
+        replacements = {canonical_spans[key]: rendered[key] for key in sorted(set(required_keys))}
         updates[path] = replace_marked_sections(text, replacements)
     return updates
 

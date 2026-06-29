@@ -13,29 +13,29 @@
 <!-- BEGIN GENERATED: agent-catalog-table -->
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
-| al-dev-al-pattern-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-commit-analyzer | haiku | Bash, Read | `/al-dev-commit-preflight` |
-| al-dev-commit-executor | haiku | Bash, Read | `/al-dev-commit-execute` |
-| al-dev-commit-group-drafter | haiku | (none) | `/al-dev-commit-preflight` |
-| al-dev-commit-hook-classifier | haiku | Read | `/al-dev-commit-execute` |
-| al-dev-commit-hook-fixer | sonnet | Read, Write, Bash | `/al-dev-commit-execute` |
-| al-dev-commit-lint-fixer | haiku | Bash, Read | `/al-dev-commit-execute` |
-| al-dev-commit-recover | sonnet | Write, Bash | `/commit-recover` |
-| al-dev-developer-tdd | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate` |
-| al-dev-developer-traditional | sonnet | Read, Write, Bash | `/al-dev-develop-orchestrate`, `/al-dev-fix` |
-| al-dev-diagnostics-resolver | sonnet | Read, Edit, Bash | `/al-dev-lint` |
-| al-dev-docs-writer | sonnet | Read, Write, Edit, Bash | (none found) |
-| al-dev-explore | haiku | Read, Glob, Grep, Write | (none found) |
-| al-dev-general-code-reviewer | sonnet | Read | (none found) |
-| al-dev-interview | sonnet | Read, Write, USER_GATE | `/al-dev-interview` |
-| al-dev-performance-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-release-notes-writer | sonnet | Read, Write, Bash, MCP: al-mcp-server | `/al-dev-release-notes` |
-| al-dev-script-engineer | sonnet | Read, Write, Bash | (none found) |
-| al-dev-security-reviewer | sonnet | Read | `/al-dev-review-develop` |
-| al-dev-solution-architect | opus | Read, Write, Glob, Grep | `/al-dev-fix`, `/al-dev-plan` |
-| al-dev-support-reply-drafter | sonnet | Write | `/al-dev-support-reply` |
-| al-dev-support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/al-dev-support-reply` |
-| al-dev-ticket-context-writer | haiku | Bash, Write | `/al-dev-ticket` |
+| al-pattern-reviewer | sonnet | Read | `/review-develop` |
+| commit-analyzer | haiku | Bash, Read | `/commit-preflight` |
+| commit-executor | haiku | Bash, Read | `/commit-execute` |
+| commit-group-drafter | haiku | (none) | `/commit-preflight` |
+| commit-hook-classifier | haiku | Read | `/commit-execute` |
+| commit-hook-fixer | sonnet | Read, Write, Bash | `/commit-execute` |
+| commit-lint-fixer | haiku | Bash, Read | `/commit-execute` |
+| corruption-recover | sonnet | Write, Bash | `/commit-recover` |
+| developer-tdd | sonnet | Read, Write, Bash | `/develop-orchestrate` |
+| developer-traditional | sonnet | Read, Write, Bash | `/develop-orchestrate`, `/fix` |
+| diagnostics-resolver | sonnet | Read, Edit, Bash | `/lint` |
+| docs-writer | sonnet | Read, Write, Edit, Bash | `/document` |
+| explore | haiku | Read, Glob, Grep, Write | `/explore`, `/investigate`, `/perf` |
+| general-code-reviewer | sonnet | Read | (none found) |
+| interview | sonnet | Read, Write, USER_GATE | `/interview` |
+| performance-reviewer | sonnet | Read | `/review-develop` |
+| release-notes-writer | sonnet | Read, Write, Bash, MCP: al-mcp-server | `/release-notes` |
+| script-engineer | sonnet | Read, Write, Bash | (none found) |
+| security-reviewer | sonnet | Read | `/review-develop` |
+| solution-architect | opus | Read, Write, Glob, Grep | `/fix`, `/plan` |
+| support-reply-drafter | sonnet | Write | `/support-reply` |
+| support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/support-reply` |
+| ticket-context-writer | haiku | Bash, Write | `/ticket` |
 <!-- END GENERATED: agent-catalog-table -->
 
 ---

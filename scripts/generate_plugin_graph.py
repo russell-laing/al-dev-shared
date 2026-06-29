@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate docs/plugin-graph.md from shared inventory helpers.
+"""Generate docs/plugin_graph.md from shared inventory helpers.
 
 This script is fail-closed: parse or inventory errors exit non-zero and leave
 the existing document untouched. It does not emit partial output.
@@ -26,7 +26,7 @@ from scripts.al_dev_tools.docs.map_doc_sections import (
 
 REPO = REPO_ROOT
 PLUGIN = REPO / "profile-al-dev-shared"
-OUTPUT = REPO / "docs" / "plugin-graph.md"
+OUTPUT = REPO / "docs" / "plugin_graph.md"
 
 # The three canonical workflow paths (from CLAUDE.md "Plugin Architecture").
 WORKFLOW_PATHS = {

@@ -73,7 +73,7 @@ def validate_all() -> dict[str, list[str]]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = list(sys.argv[1:] if argv is None else argv)
+    args = [] if argv is None else list(argv)
     if args:
         target = Path(args[0])
         issues = validate_file(target)
@@ -102,4 +102,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
