@@ -32,8 +32,11 @@ treated the same way.
 - Keep live resumable workflow state files tracked when current skills depend on
   them as stable paths, for example:
   - `.dev/progress.md`
-  - `.dev/sync-map-documentation-checkpoint.json`
+  - `.dev/health-loop-state.md`
   - `.dev/plugin-health-team-checkpoint.json`
+- Treat dated reports, completed handoff notes, one-off progress ledgers,
+  refuted-findings scratch files, and finished workflow checkpoint manifests as
+  historical artifacts unless a current workflow still reads that exact path.
 - Do not keep historical reports, one-off analyses, completed run manifests, or
   dated scratch notes tracked once their provenance has been summarized in a
   durable doc such as `docs/superpowers/history.md`.

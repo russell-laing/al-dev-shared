@@ -2,6 +2,23 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-06-30
+
+### Legacy Superpowers Artifact Retirement
+
+- Path: historical summary only; the final tracked raw handoff/spec set under
+  `docs/superpowers/plans/` and `docs/superpowers/specs/` was retired after
+  reference checks confirmed no tracked callers outside `docs/superpowers/`
+  still depended on those files.
+- Kind: cleanup
+- Status: implemented
+- Summary: 2026-06-30 | superpowers-history final raw-artifact retirement |
+  implemented; removed the last tracked raw Python handoff/spec artifacts plus
+  stale tracked `.dev/` reports and one-off checkpoint files, while preserving
+  the live breadcrumb set (`.dev/progress.md`, `.dev/health-loop-state.md`,
+  `.dev/plugin-health-team-checkpoint.json`) as the remaining stable tracked
+  workflow state.
+
 ## 2026-06-29
 
 ### Repo Hygiene and Artifact Lifecycle Implementation Plan
