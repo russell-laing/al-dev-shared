@@ -6,7 +6,8 @@ Current source of truth: active implementation guidance lives in the current sha
 
 ### Repo Hygiene and Artifact Lifecycle Implementation Plan
 
-- Path: `docs/superpowers/plans/2026-06-29-repo-hygiene-and-artifact-lifecycle.md`
+- Path: historical summary only; raw working plan remained gitignored under
+  `docs/superpowers/plans/`
 - Kind: plan
 - Status: implemented
 - Summary: 2026-06-29 | repo-hygiene artifact-lifecycle | implemented; repaired the `docs/superpowers/` ignore boundary, removed the known dated `.dev/` leak set and one stray tracked spec, added artifact-lifecycle guidance plus a staged-artifact validator, and tightened the validator/policy so raw plan/spec markdown and named scratch progress files are blocked from future commits.

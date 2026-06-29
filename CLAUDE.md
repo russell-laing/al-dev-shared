@@ -255,12 +255,11 @@ lifecycle rules:
 - [ ] All `.dev/YYYY-MM-DD-*.md` research/investigation files removed
 - [ ] All `.dev/*-work*.json` or `.dev/*-draft*` files removed
 - [ ] Progress checkpoints cleaned up (only `.dev/progress.md` remains if needed)
-- [ ] `docs/superpowers/specs/` directory empty except `.gitkeep`
-- [ ] No new raw markdown files are staged from `docs/superpowers/plans/` or
-  `docs/superpowers/specs/`
+- [ ] No new raw markdown files are staged from `docs/superpowers/plans/`,
+  `docs/superpowers/plans/archived/`, or `docs/superpowers/specs/`
 - [ ] Final outputs (plans, reports, dossiers) are in their persistent locations
-- [ ] If `git status` shows any `.dev/` or `docs/superpowers/specs/` files staged
-  for commit, verify they are intentional (usually they shouldn't be)
+- [ ] If `git status` shows any `.dev/` or raw `docs/superpowers/` artifact files
+  staged for commit, verify they are intentional (usually they shouldn't be)
 
 **Prevention:** The pre-commit hook (`.githooks/pre-commit`) runs
 `scripts/validate-artifact-leaks.py` to catch dated scratch files, named

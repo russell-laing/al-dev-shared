@@ -34,6 +34,14 @@ The hook runs, in order:
 - `python3 scripts/validate_lens_agents.py`
 - a projections-current check (regenerates to a temp dir and diffs against
   `profile-al-dev-shared/generated/`)
+- staged markdownlint for `profile-al-dev-shared/agents/**/*.md` and
+  `profile-al-dev-shared/skills/**/*.md`
+- a doc-map freshness warning when staged skill/agent changes omit the tracked
+  documentation maps
+- `python3 scripts/check_ledger_staleness.py --staged` (non-blocking warning on
+  execution failure)
+- `python3 scripts/validate_health_loop_state.py --staged`
+- `python3 scripts/validate_maintainer_contracts.py`
 - `python3 scripts/validate-artifact-leaks.py` to block staged scratch files and
   raw `docs/superpowers/plans|specs` markdown
 
