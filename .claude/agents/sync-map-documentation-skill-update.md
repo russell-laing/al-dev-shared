@@ -5,7 +5,7 @@ description: >-
   updated map to `<result_dir>/updates/skills-map.md` by following the shared
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
   staged for /sync-map-documentation-apply to copy into
-  docs/al-dev-skills-map.md. Called by /sync-map-documentation-collect update
+  docs/skills-map.md. Called by /sync-map-documentation-collect update
   dispatch phase. Halts without writing output if
   .claude/knowledge/sync-map-update-shared.md is absent.
 model: sonnet
@@ -50,7 +50,7 @@ Follow the canonical update procedure in
 
 - `{SURFACE}` = `skill`
 - `{AUDIT_JSON}` = `<result_dir>/audit/skill-audit.json`
-- `{MAP_PATH}` = `docs/al-dev-skills-map.md`
+- `{MAP_PATH}` = `docs/skills-map.md`
 - `{EDIT_CASE_SECTION}` = `Skill surface — edit cases (update)`
 - `{COVERAGE_MARKER}` = `skill-coverage`
 - `{MIN_LINES}` = `100`

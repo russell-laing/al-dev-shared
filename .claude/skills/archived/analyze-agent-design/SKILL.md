@@ -3,7 +3,7 @@ name: analyze-agent-design
 description: >-
   Analyze profile-al-dev-shared agents for design quality and write
   concrete Trim / Remodel / Split / Inline / Align suggestions to the
-  Observations section of docs/al-dev-agent-map.md. Use whenever you want
+  Observations section of docs/agent-map.md. Use whenever you want
   strategic recommendations for making agents leaner, better-modelled, or
   better-documented — including when someone asks "is this agent doing too
   much?", "what tools does this agent not need?", "are any agents over-
@@ -18,7 +18,7 @@ argument-hint: "[focus: trim|remodel|split|inline|align|all]"
 
 Strategic analysis of al-dev agent files. Reads the current agent map,
 applies five analytical lenses, and writes concrete improvement suggestions
-to the `## Observations` section of `docs/al-dev-agent-map.md`.
+to the `## Observations` section of `docs/agent-map.md`.
 
 Run `/review-agent-map` first if the map may be out of date.
 
@@ -57,11 +57,11 @@ Keep the raw findings lines — they form the basis of Phase 4 suggestions.
 Invoke `/draft-map-suggestions --type agent`. Pass as context:
 - The candidate lists from Phase 2 (Trim, Remodel, Split, Align, Inline candidates with raw finding lines)
 - The working lists from Phase 1 (tool inventory, model assignments, caller map,
-  single-use agents, undocumented agents, existing inline candidates from docs/al-dev-agent-map.md)
+  single-use agents, undocumented agents, existing inline candidates from docs/agent-map.md)
 
 `/draft-map-suggestions` handles: drafting suggestions, completing inventory tables,
 dispatching the diagram generator, selecting the highest-leverage suggestion, and
-writing to `docs/al-dev-agent-map.md`.
+writing to `docs/agent-map.md`.
 
 ---
 
@@ -72,5 +72,5 @@ After `/draft-map-suggestions` completes and both files are written:
 1. Print a one-line summary per suggestion (type + subject).
 2. `/draft-map-suggestions` owns highest-leverage selection; preserve its
    `← highest leverage` marker rather than re-scoring here.
-3. Print: `Workflow diagram written to docs/al-dev-workflow-diagrams.md`
+3. Print: `Workflow diagram written to docs/workflow-diagrams.md`
 4. Ask: "Would you like to act on any of these now?"

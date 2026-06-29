@@ -48,7 +48,7 @@ def render_skills_tables(contracts: list[WorkflowContract]) -> str:
 STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     "map-sync": (
         (
-            "docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md",
+            "docs/skills-map.md` and `docs/agent-map.md",
             "Canonical inventory maps audited and updated by the stage.",
         ),
         (
@@ -60,7 +60,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
         ),
         (
-            "docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/",
+            "docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/",
             "Derived documentation regenerated only after the canonical maps are applied.",
         ),
         (
@@ -70,7 +70,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     ),
     "discover": (
         (
-            "docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md",
+            "docs/skills-map.md` and `docs/agent-map.md",
             "Provide current inventory and relationship context to the audit-driven path.",
         ),
         (
@@ -152,7 +152,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Canonical shared guidance audited for structural and semantic quality.",
         ),
         (
-            "docs/al-dev-knowledge-quality.md",
+            "docs/knowledge-quality.md",
             "Records knowledge findings and the structured HIGH-severity fix task block.",
         ),
         (

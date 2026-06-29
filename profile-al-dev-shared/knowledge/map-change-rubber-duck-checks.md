@@ -625,7 +625,7 @@ Verdict:      proceed | modify [reason] | skip [reason]
 
 ## References
 
-- `docs/al-dev-skills-map.md` — Skill inventory and relationships
-- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments
+- `docs/skills-map.md` — Skill inventory and relationships
+- `docs/agent-map.md` — Agent inventory and tool assignments
 - `profile-al-dev-shared/knowledge/harness-concepts.md` — Shared vocabulary
 - `profile-al-dev-shared/knowledge/artifact-contracts.md` — Artifact handoff specs

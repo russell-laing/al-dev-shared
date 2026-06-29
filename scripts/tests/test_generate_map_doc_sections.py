@@ -17,10 +17,10 @@ for path in (REPO_ROOT, SCRIPTS_DIR):
 
 from scripts.al_dev_tools.docs import map_doc_sections as mod
 TARGET_DOCS = (
-    "docs/al-dev-skills-map.md",
-    "docs/al-dev-agent-map.md",
-    "docs/al-dev-plugin-graph.md",
-    "docs/al-dev-workflow-diagrams.md",
+    "docs/skills-map.md",
+    "docs/agent-map.md",
+    "docs/plugin-graph.md",
+    "docs/workflow-diagrams.md",
 )
 
 
@@ -110,7 +110,7 @@ def _build_fixture_repo(root: Path) -> Path:
     )
     (plugin / "knowledge" / "guide.md").write_text("guide\n", encoding="utf-8")
     (plugin / "knowledge" / "workflow.md").write_text("workflow\n", encoding="utf-8")
-    (repo / "docs" / "al-dev-skills-map.md").write_text(
+    (repo / "docs" / "skills-map.md").write_text(
         "# Skills Map\n\n"
         "<!-- BEGIN GENERATED: skill-coverage -->\n"
         "old coverage\n"
@@ -130,7 +130,7 @@ def _build_fixture_repo(root: Path) -> Path:
         "<!-- END GENERATED: skill-drilldown-skill-b -->\n",
         encoding="utf-8",
     )
-    (repo / "docs" / "al-dev-agent-map.md").write_text(
+    (repo / "docs" / "agent-map.md").write_text(
         "# Agent Map\n\n"
         "<!-- BEGIN GENERATED: agent-coverage -->\n"
         "old agent coverage\n"
@@ -140,7 +140,7 @@ def _build_fixture_repo(root: Path) -> Path:
         "<!-- END GENERATED: agent-catalog-table -->\n",
         encoding="utf-8",
     )
-    (repo / "docs" / "al-dev-plugin-graph.md").write_text(
+    (repo / "docs" / "plugin-graph.md").write_text(
         "# Plugin Graph\n\n"
         "<!-- BEGIN GENERATED: plugin-dependency-mermaid -->\n"
         "old dependency\n"
@@ -153,7 +153,7 @@ def _build_fixture_repo(root: Path) -> Path:
         "<!-- END GENERATED: plugin-health-callouts -->\n",
         encoding="utf-8",
     )
-    (repo / "docs" / "al-dev-workflow-diagrams.md").write_text(
+    (repo / "docs" / "workflow-diagrams.md").write_text(
         "# Workflow Diagrams\n\n"
         "<!-- BEGIN GENERATED: workflow-skills-agents-mermaid -->\n"
         "old skills agents\n"
@@ -178,7 +178,7 @@ def _build_missing_internal_skill_repo(root: Path) -> Path:
 
 def _build_bad_marker_repo(root: Path) -> Path:
     repo = _build_fixture_repo(root)
-    (repo / "docs" / "al-dev-agent-map.md").write_text(
+    (repo / "docs" / "agent-map.md").write_text(
         "# Agent Map\n\n"
         "<!-- BEGIN GENERATED: agent-catalog-table -->\n"
         "old content\n"
@@ -284,9 +284,9 @@ def test_generate_document_updates_renders_full_marker_set_without_external_skil
 
         updates = mod.generate_document_updates(repo)
 
-        plugin_graph = updates[repo / "docs" / "al-dev-plugin-graph.md"]
-        workflow = updates[repo / "docs" / "al-dev-workflow-diagrams.md"]
-        skills_map = updates[repo / "docs" / "al-dev-skills-map.md"]
+        plugin_graph = updates[repo / "docs" / "plugin-graph.md"]
+        workflow = updates[repo / "docs" / "workflow-diagrams.md"]
+        skills_map = updates[repo / "docs" / "skills-map.md"]
 
         assert "old dependency" not in plugin_graph
         assert "old overlays" not in plugin_graph
@@ -318,7 +318,7 @@ def test_real_repo_render_is_deterministic_without_mutating_tracked_docs() -> No
             temp_repo,
             ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache", ".mypy_cache"),
         )
-        skills_map = temp_repo / "docs" / "al-dev-skills-map.md"
+        skills_map = temp_repo / "docs" / "skills-map.md"
         text = skills_map.read_text(encoding="utf-8")
         text = re.sub(
             r"\n<!-- BEGIN GENERATED: skill-drilldown-verify-commits -->.*?"

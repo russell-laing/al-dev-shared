@@ -13,7 +13,7 @@ description: >-
 
 # Audit Agents Against Map
 
-Audit `profile-al-dev-shared/agents/` and verify `docs/al-dev-agent-map.md`
+Audit `profile-al-dev-shared/agents/` and verify `docs/agent-map.md`
 accurately reflects the current active agents, their models, tools, and caller
 relationships. **No file modifications** — findings only.
 
@@ -87,9 +87,9 @@ Record:
 
 ---
 
-## Phase 4: Compare Against `docs/al-dev-agent-map.md`
+## Phase 4: Compare Against `docs/agent-map.md`
 
-If `docs/al-dev-agent-map.md` does not exist, note: "Agent map does not exist yet." and stop.
+If `docs/agent-map.md` does not exist, note: "Agent map does not exist yet." and stop.
 
 Read the file. Check:
 

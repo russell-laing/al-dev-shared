@@ -2,7 +2,7 @@
 name: sync-documentation-maps-agent-audit
 description: >-
   Audits active agents in profile-al-dev-shared/agents/ against
-  docs/al-dev-agent-map.md — cross-referencing each agent's caller skills via
+  docs/agent-map.md — cross-referencing each agent's caller skills via
   scripts/derive-agent-callers.py — and writes a structured JSON discrepancy
   report to the run artifact directory. Called by /sync-documentation-maps
   dispatch phase.
@@ -38,7 +38,7 @@ the sole output. Do not summarise findings to the user — return only the path.
     {
       "type": "missing_from_map",
       "agent": "al-dev-example",
-      "detail": "Active agent has no Layer 2 section in docs/al-dev-agent-map.md"
+      "detail": "Active agent has no Layer 2 section in docs/agent-map.md"
     }
   ],
   "summary": "1 discrepancy found: 1 missing_from_map."
@@ -100,9 +100,9 @@ frontmatter, reference tables, and the maintainer surface) than the
 generator, and any mismatch they "find" is reverted when the write phase
 regenerates the catalog from this same parser.
 
-### Step 4 — Parse docs/al-dev-agent-map.md
+### Step 4 — Parse docs/agent-map.md
 
-Read `docs/al-dev-agent-map.md`. Extract:
+Read `docs/agent-map.md`. Extract:
 
 - **Layer 1 Catalog table rows:** agent names listed in the Layer 1 table.
 - **Layer 2 sections:** collect only `###` headings whose text starts with the
@@ -110,7 +110,7 @@ Read `docs/al-dev-agent-map.md`. Extract:
   only; maintainer-tooling agents are not mapped here.) Use:
 
   ```bash
-  grep "^### al-dev-" docs/al-dev-agent-map.md
+  grep "^### al-dev-" docs/agent-map.md
   ```
 
   Skip generic headings like "Quality suggestions", "Agents used by only one

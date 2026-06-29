@@ -80,10 +80,10 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-map-sync-artifacts -->
 | Artifact | Role |
 | --- | --- |
-| `docs/al-dev-skills-map.md` and `docs/al-dev-agent-map.md` | Canonical inventory maps audited and updated by the stage. |
+| `docs/skills-map.md` and `docs/agent-map.md` | Canonical inventory maps audited and updated by the stage. |
 | `.dev/sync-map-documentation-checkpoint.json` | Records the active run, team identifiers, and current async phase. |
 | `.dev/sync-map-documentation-runs/RUN_ID/` | Keeps raw audit results and validated update artifacts separate from the canonical maps. |
-| `docs/al-dev-workflow-diagrams.md`, `docs/al-dev-plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/` | Derived documentation regenerated only after the canonical maps are applied. |
+| `docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer-tooling.md`, and `docs/maintainer-tooling/` | Derived documentation regenerated only after the canonical maps are applied. |
 | `profile-al-dev-shared/generated/agents/` | Harness-native projections regenerated from canonical shared agent source. |
 <!-- END GENERATED: maintainer-stage-map-sync-artifacts -->
 

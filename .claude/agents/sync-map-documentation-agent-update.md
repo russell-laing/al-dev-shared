@@ -5,7 +5,7 @@ description: >-
   updated map to `<result_dir>/updates/agent-map.md` by following the shared
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
   staged for /sync-map-documentation-apply to copy into
-  docs/al-dev-agent-map.md. Called by /sync-map-documentation-collect update
+  docs/agent-map.md. Called by /sync-map-documentation-collect update
   dispatch phase.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -55,7 +55,7 @@ Follow the canonical update procedure in
 
 - `{SURFACE}` = `agent`
 - `{AUDIT_JSON}` = `<result_dir>/audit/agent-audit.json`
-- `{MAP_PATH}` = `docs/al-dev-agent-map.md`
+- `{MAP_PATH}` = `docs/agent-map.md`
 - `{EDIT_CASE_SECTION}` = `Agent surface — edit cases (update)`
 - `{COVERAGE_MARKER}` = `agent-coverage`
 - `{MIN_LINES}` = `50`

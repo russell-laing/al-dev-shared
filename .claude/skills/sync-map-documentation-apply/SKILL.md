@@ -19,8 +19,8 @@ workflow:
     - .dev/sync-map-documentation-checkpoint.json
     - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md
   outputs:
-    - docs/al-dev-skills-map.md
-    - docs/al-dev-agent-map.md
+    - docs/skills-map.md
+    - docs/agent-map.md
   next: [sync-map-documentation-write]
 ---
 
@@ -134,13 +134,13 @@ For each valid artifact, copy it to the canonical docs/ path:
 ```bash
 # Skills map:
 cp "${RUN_DIR}/updates/skills-map.md" \
-   /Users/russelllaing/al-dev-shared/docs/al-dev-skills-map.md
-wc -l /Users/russelllaing/al-dev-shared/docs/al-dev-skills-map.md
+   /Users/russelllaing/al-dev-shared/docs/skills-map.md
+wc -l /Users/russelllaing/al-dev-shared/docs/skills-map.md
 
 # Agent map:
 cp "${RUN_DIR}/updates/agent-map.md" \
-   /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md
-wc -l /Users/russelllaing/al-dev-shared/docs/al-dev-agent-map.md
+   /Users/russelllaing/al-dev-shared/docs/agent-map.md
+wc -l /Users/russelllaing/al-dev-shared/docs/agent-map.md
 ```
 
 Verify minimum line counts:

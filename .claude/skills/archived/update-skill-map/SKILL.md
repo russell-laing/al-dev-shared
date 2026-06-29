@@ -1,7 +1,7 @@
 ---
 name: update-skill-map
 description: >-
-  Use after /audit-skills-against-map to apply discrepancies to docs/al-dev-skills-map.md.
+  Use after /audit-skills-against-map to apply discrepancies to docs/skills-map.md.
   Writes/updates the skills map file, detects move candidates (project-local vs distributed),
   appends findings to Observations section, and commits changes.
 ---
@@ -12,7 +12,7 @@ description: >-
 
 # Update Skill Map
 
-Apply audit findings from `/audit-skills-against-map` to update `docs/al-dev-skills-map.md`.
+Apply audit findings from `/audit-skills-against-map` to update `docs/skills-map.md`.
 Writes changes, detects architectural candidates, commits to git.
 
 Usage: `/update-skill-map [skill-name]`.
@@ -33,7 +33,7 @@ Otherwise, use findings provided by previous audit run.
 
 ## Phase 2: Update Layer 1
 
-Make targeted edits to Layer 1 (Lifecycle Overview diagram) in `docs/al-dev-skills-map.md` to fix each discrepancy:
+Make targeted edits to Layer 1 (Lifecycle Overview diagram) in `docs/skills-map.md` to fix each discrepancy:
 
 **For each issue found in audit:**
 - To add a skill: add a node and edge in the flowchart, add a `style` directive
@@ -78,7 +78,7 @@ A skill scoring **2 or more signals** is a Move candidate.
 
 ### Output
 
-Ensure `docs/al-dev-skills-map.md` has a `## Observations` section. If not, create it.
+Ensure `docs/skills-map.md` has a `## Observations` section. If not, create it.
 
 Within `## Observations`, ensure an `### Architectural suggestions` subsection exists. Create if missing.
 
@@ -108,16 +108,16 @@ Run a quick sanity check:
 
 ```bash
 # Expect one section per active lifecycle skill
-grep -c "^### /" docs/al-dev-skills-map.md
+grep -c "^### /" docs/skills-map.md
 
 # Expect no archived skill names to appear
-grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/al-dev-skills-map.md
+grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/skills-map.md
 ```
 
 If checks pass, commit:
 
 ```bash
-git -C . add docs/al-dev-skills-map.md
+git -C . add docs/skills-map.md
 git -C . commit -m "docs: sync skills map with current plugin state"
 ```
 
@@ -127,6 +127,6 @@ Report what changed and what was verified as already correct.
 
 ## Notes
 
-- This skill only updates the **skills map** (docs/al-dev-skills-map.md)
+- This skill only updates the **skills map** (docs/skills-map.md)
 - For agent map updates, use `/update-agent-map`
 - For coordinated audit+update of both maps, use `/sync-documentation-maps`

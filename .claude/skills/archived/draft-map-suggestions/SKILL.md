@@ -19,8 +19,8 @@ Converts aggregated lens findings into structured map observations. Requires
 ## Phase 1 — Parse argument
 
 Read the required `--type` argument:
-- `--type agent` → writes to `docs/al-dev-agent-map.md`; uses Trim/Remodel/Split/Inline/Align vocabulary
-- `--type skill` → writes to `docs/al-dev-skills-map.md`; uses Atomise/Connect/Merge/Promote/Extend vocabulary
+- `--type agent` → writes to `docs/agent-map.md`; uses Trim/Remodel/Split/Inline/Align vocabulary
+- `--type skill` → writes to `docs/skills-map.md`; uses Atomise/Connect/Merge/Promote/Extend vocabulary
 
 If `--type` is missing or not `agent`/`skill`, report the error and stop.
 
@@ -73,7 +73,7 @@ Read `knowledge/map-suggestion-templates.md` for the exact template formats:
 
 ## Phase 5 — Write observations to the map file
 
-**For `--type agent`** — replace the entire `## Observations` section of `docs/al-dev-agent-map.md`:
+**For `--type agent`** — replace the entire `## Observations` section of `docs/agent-map.md`:
 
 ```markdown
 ## Observations
@@ -103,7 +103,7 @@ Read `knowledge/map-suggestion-templates.md` for the exact template formats:
 
 Update `**Last updated:**` in the document header to today's date.
 
-**For `--type skill`** — replace the entire `## Observations` section of `docs/al-dev-skills-map.md`:
+**For `--type skill`** — replace the entire `## Observations` section of `docs/skills-map.md`:
 
 ```markdown
 ## Observations

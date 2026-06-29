@@ -141,9 +141,9 @@ See `docs/development-commands.md` for the full command reference (validation, p
 
 ## Plugin Architecture Quick Reference
 
-**Start here:** `docs/al-dev-skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
+**Start here:** `docs/skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
-**Maintainer surface:** `docs/maintainer-tooling.md` (five-stage summary with detailed pages under `docs/maintainer-tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/al-dev-skills-map.md` scope note)
+**Maintainer surface:** `docs/maintainer-tooling.md` (five-stage summary with detailed pages under `docs/maintainer-tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/skills-map.md` scope note)
 
 **Active skills:** 24 distributed skills covering three main flows:
 
@@ -262,7 +262,7 @@ lifecycle rules:
   staged for commit, verify they are intentional (usually they shouldn't be)
 
 **Prevention:** The pre-commit hook (`.githooks/pre-commit`) runs
-`scripts/validate-artifact-leaks.py` to catch dated scratch files, named
+`scripts/validate_artifact_leaks.py` to catch dated scratch files, named
 progress files, and raw Superpowers plan/spec markdown before commit. If caught,
 abort commit and clean up before re-attempting.
 

@@ -129,7 +129,7 @@ Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowl
 | `profile-al-dev-shared/agents/` | Canonical authored agent source. |
 | `profile-al-dev-shared/generated/agents/` | Generated harness-native projections; never edit these files directly. |
 | `profile-al-dev-shared/knowledge/` | Canonical shared guidance audited for structural and semantic quality. |
-| `docs/al-dev-knowledge-quality.md` | Records knowledge findings and the structured HIGH-severity fix task block. |
+| `docs/knowledge-quality.md` | Records knowledge findings and the structured HIGH-severity fix task block. |
 | `scripts/validate_harness_neutrality.py` | Checks shared skills, agents, and knowledge for harness-specific leakage. |
 <!-- END GENERATED: maintainer-stage-derive-artifacts -->
 

@@ -3,7 +3,7 @@
 The context-extraction procedure run by `/discover-plugin-health` Phase 2 before
 lenses are dispatched. Lenses in Phase 3 consume the mappings built here.
 
-## Read and parse `docs/al-dev-agent-map.md`
+## Read and parse `docs/agent-map.md`
 
 - Extract the Agent Catalog table.
 - For each agent row: extract agent name, model, tools list, and "Spawned by" field.
@@ -11,7 +11,7 @@ lenses are dispatched. Lenses in Phase 3 consume the mappings built here.
 - "Spawned by" may contain comma-separated names or "(none found)" — treat the
   latter as an empty list.
 
-## Read and parse `docs/al-dev-skills-map.md`
+## Read and parse `docs/skills-map.md`
 
 - Extract the Layer 1 diagram block → `layer1_diagram_content`.
 - For each skill section: extract phase count, agent references, output files.

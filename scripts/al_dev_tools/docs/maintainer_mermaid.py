@@ -31,6 +31,9 @@ def _short_label(template: str) -> str:
             return parts[-1] + "/"
         return template
 
+    if len(parts) == 2 and parts[0] == "docs" and parts[1] != "maintainer-tooling.md":
+        return ".../" + parts[1]
+
     if len(template) <= 30:
         return template
     return ".../" + trimmed.rsplit("/", 1)[-1]
@@ -130,7 +133,7 @@ MAP_SYNC_REQUIRED_SKILLS = {
 }
 
 MAP_SYNC_REQUIRED_INPUTS = {
-    "sync-map-documentation": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-map-documentation": ("docs/skills-map.md", "docs/agent-map.md"),
     "sync-map-documentation-collect": (
         ".dev/sync-map-documentation-checkpoint.json",
         ".dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json",
@@ -141,8 +144,8 @@ MAP_SYNC_REQUIRED_INPUTS = {
     ),
     "sync-map-documentation-write": (
         ".dev/sync-map-documentation-checkpoint.json",
-        "docs/al-dev-skills-map.md",
-        "docs/al-dev-agent-map.md",
+        "docs/skills-map.md",
+        "docs/agent-map.md",
     ),
 }
 
@@ -154,10 +157,10 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
     "sync-map-documentation-collect": (
         ".dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md",
     ),
-    "sync-map-documentation-apply": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "sync-map-documentation-apply": ("docs/skills-map.md", "docs/agent-map.md"),
     "sync-map-documentation-write": (
-        "docs/al-dev-workflow-diagrams.md",
-        "docs/al-dev-plugin-graph.md",
+        "docs/workflow-diagrams.md",
+        "docs/plugin-graph.md",
         "docs/maintainer-tooling.md",
         "profile-al-dev-shared/generated/agents/",
     ),
@@ -181,10 +184,10 @@ DISCOVER_REQUIRED_INPUTS = {
         "~/friction-log/<session>-findings.md",
         "~/friction-log/<session>-signals.json",
     ),
-    "audit-plugin-health": ("docs/al-dev-skills-map.md", "docs/al-dev-agent-map.md"),
+    "audit-plugin-health": ("docs/skills-map.md", "docs/agent-map.md"),
     "discover-plugin-health": (
-        "docs/al-dev-skills-map.md",
-        "docs/al-dev-agent-map.md",
+        "docs/skills-map.md",
+        "docs/agent-map.md",
         "profile-al-dev-shared/knowledge/lens-invocation-patterns.md",
     ),
     "report-plugin-health": (
@@ -217,7 +220,7 @@ DERIVE_REQUIRED_SKILLS = {
 DERIVE_REQUIRED_INPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
-    "fix-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "fix-knowledge-quality": ("docs/knowledge-quality.md",),
     "validate-plugin-neutrality": (
         "profile-al-dev-shared/skills/",
         "profile-al-dev-shared/agents/",
@@ -227,7 +230,7 @@ DERIVE_REQUIRED_INPUTS = {
 
 DERIVE_REQUIRED_OUTPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/generated/agents/",),
-    "audit-knowledge-quality": ("docs/al-dev-knowledge-quality.md",),
+    "audit-knowledge-quality": ("docs/knowledge-quality.md",),
     "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
 }
 
@@ -378,8 +381,8 @@ def render_map_sync_stage_detail(
     del stage_contracts
     generated_class = _focused_artifact_class(
         orphans,
-        "docs/al-dev-workflow-diagrams.md",
-        "docs/al-dev-plugin-graph.md",
+        "docs/workflow-diagrams.md",
+        "docs/plugin-graph.md",
         "docs/maintainer-tooling.md",
         "docs/maintainer-tooling/",
         "profile-al-dev-shared/generated/agents/",
@@ -536,7 +539,7 @@ def render_derive_stage_detail(
         orphans,
         "profile-al-dev-shared/generated/agents/",
     )
-    knowledge_quality_class = _focused_artifact_class(orphans, "docs/al-dev-knowledge-quality.md")
+    knowledge_quality_class = _focused_artifact_class(orphans, "docs/knowledge-quality.md")
     knowledge_source_class = _focused_artifact_class(orphans, "profile-al-dev-shared/knowledge/")
     lines = [
         "flowchart TD",

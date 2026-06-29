@@ -22,50 +22,50 @@ from .map_markers import find_marker_spans, replace_marked_sections
 
 
 TARGET_DOCS = (
-    Path("docs/al-dev-skills-map.md"),
-    Path("docs/al-dev-agent-map.md"),
-    Path("docs/al-dev-plugin-graph.md"),
-    Path("docs/al-dev-workflow-diagrams.md"),
+    Path("docs/skills-map.md"),
+    Path("docs/agent-map.md"),
+    Path("docs/plugin-graph.md"),
+    Path("docs/workflow-diagrams.md"),
 )
 
-SKILLS_MAP_DOC = Path("docs/al-dev-skills-map.md")
+SKILLS_MAP_DOC = Path("docs/skills-map.md")
 DRILLDOWN_LAYER_HEADING = "## Layer 2: Per-Skill Drill-Downs"
 
 SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
     "skill-lifecycle-mermaid": {
-        "doc": Path("docs/al-dev-skills-map.md"),
+        "doc": Path("docs/skills-map.md"),
         "renderer": "render_skill_lifecycle",
     },
     "agent-catalog-table": {
-        "doc": Path("docs/al-dev-agent-map.md"),
+        "doc": Path("docs/agent-map.md"),
         "renderer": "render_agent_catalog",
     },
     "agent-coverage": {
-        "doc": Path("docs/al-dev-agent-map.md"),
+        "doc": Path("docs/agent-map.md"),
         "renderer": "render_agent_coverage",
     },
     "skill-coverage": {
-        "doc": Path("docs/al-dev-skills-map.md"),
+        "doc": Path("docs/skills-map.md"),
         "renderer": "render_skill_coverage",
     },
     "plugin-dependency-mermaid": {
-        "doc": Path("docs/al-dev-plugin-graph.md"),
+        "doc": Path("docs/plugin-graph.md"),
         "renderer": "render_plugin_dependency",
     },
     "plugin-workflow-overlays": {
-        "doc": Path("docs/al-dev-plugin-graph.md"),
+        "doc": Path("docs/plugin-graph.md"),
         "renderer": "render_plugin_workflow_overlays",
     },
     "plugin-health-callouts": {
-        "doc": Path("docs/al-dev-plugin-graph.md"),
+        "doc": Path("docs/plugin-graph.md"),
         "renderer": "render_plugin_health_callouts",
     },
     "workflow-skills-agents-mermaid": {
-        "doc": Path("docs/al-dev-workflow-diagrams.md"),
+        "doc": Path("docs/workflow-diagrams.md"),
         "renderer": "render_workflow_skills_agents",
     },
     "workflow-knowledge-mermaid": {
-        "doc": Path("docs/al-dev-workflow-diagrams.md"),
+        "doc": Path("docs/workflow-diagrams.md"),
         "renderer": "render_workflow_knowledge",
     },
 }
@@ -505,7 +505,7 @@ def build_section_registry(inv: Inventory) -> dict[str, SectionSpec]:
         key = f"{SKILL_DRILLDOWN_PREFIX}{skill_name}"
         registry[key] = SectionSpec(
             key=key,
-            doc=Path("docs/al-dev-skills-map.md"),
+            doc=Path("docs/skills-map.md"),
             renderer_name="render_skill_drilldown",
             context=skill_name,
         )

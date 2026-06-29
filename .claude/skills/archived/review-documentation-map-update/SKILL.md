@@ -28,17 +28,17 @@ Read `$ARGUMENTS`:
 
   > Which surface do you want to update?
   >
-  > 1. skills — update `docs/al-dev-skills-map.md` from `profile-al-dev-shared/skills/`
-  > 2. agents — update `docs/al-dev-agent-map.md` from `profile-al-dev-shared/agents/`
+  > 1. skills — update `docs/skills-map.md` from `profile-al-dev-shared/skills/`
+  > 2. agents — update `docs/agent-map.md` from `profile-al-dev-shared/agents/`
 
 Set variables based on SURFACE:
 
 - `SURFACE=skills` → `SCAN_DIR=profile-al-dev-shared/skills/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/skills/`,
-  `MAP_FILE=docs/al-dev-skills-map.md`
+  `MAP_FILE=docs/skills-map.md`
 - `SURFACE=agents` → `SCAN_DIR=profile-al-dev-shared/agents/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/agents/`,
-  `MAP_FILE=docs/al-dev-agent-map.md`
+  `MAP_FILE=docs/agent-map.md`
 
 ---
 
@@ -252,27 +252,27 @@ Update `**Last updated:**` to today's date.
 ### If SURFACE=skills
 
 ```bash
-grep -c "^### /" docs/al-dev-skills-map.md
-grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test)" docs/al-dev-skills-map.md
+grep -c "^### /" docs/skills-map.md
+grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test)" docs/skills-map.md
 ```
 
 Commit if any edits were made:
 
 ```bash
-git -C . add docs/al-dev-skills-map.md
+git -C . add docs/skills-map.md
 git -C . commit -m "docs: sync skill map with current plugin state"
 ```
 
 ### If SURFACE=agents
 
 ```bash
-wc -l docs/al-dev-agent-map.md
+wc -l docs/agent-map.md
 ```
 
 Commit if any edits were made:
 
 ```bash
-git -C . add docs/al-dev-agent-map.md
+git -C . add docs/agent-map.md
 git -C . commit -m "docs: sync agent map with current agent roster"
 ```
 

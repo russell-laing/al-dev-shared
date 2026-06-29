@@ -119,7 +119,7 @@ def test_main_writes_document_on_success() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         plugin = _build_fixture(root)
-        output = root / "docs" / "al-dev-plugin-graph.md"
+        output = root / "docs" / "plugin-graph.md"
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(_graph_doc_template(), encoding="utf-8")
         old_plugin = _mod.PLUGIN
@@ -144,7 +144,7 @@ def test_main_fails_closed_without_partial_write_on_inventory_error() -> None:
         root = Path(td)
         plugin = _build_fixture(root)
         (plugin / "agents" / "broken.md").write_text("no frontmatter\n", encoding="utf-8")
-        output = root / "docs" / "al-dev-plugin-graph.md"
+        output = root / "docs" / "plugin-graph.md"
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(_graph_doc_template(), encoding="utf-8")
         before = output.read_text(encoding="utf-8")

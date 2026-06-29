@@ -21,7 +21,7 @@ Source ledger: `docs/health/dispositions.md`
 | 10 | unknown | unknown | align-harness-repos | Step 5 permitted discretionary replacement path | 2026-06-04 | no live provenance match |
 | 11 | unknown | unknown | verify-map-suggestions | Phase 3 verification commands unmapped to finding verbs | 2026-06-04 | no live provenance match |
 | 12 | unknown | unknown | sync-documentation-maps-agent-audit | Step 3 grep union/dedup unsequenced (open since 2026-06-03) | 2026-06-05 | no live provenance match |
-| 13 | unknown | unknown | docs/al-dev-agent-map.md | Header count stale (22 vs 23 on disk) | 2026-06-05 | no live provenance match |
+| 13 | unknown | unknown | docs/agent-map.md | Header count stale (22 vs 23 on disk) | 2026-06-05 | no live provenance match |
 | 14 | unknown | unknown | align-harness-repos | Name implies alignment; behavior is validation-only | 2026-06-05 | no live provenance match |
 | 15 | unknown | unknown | al-dev-support-reply-drafter | Model fit: downgrade sonnet → haiku | 2026-06-05 | no live provenance match |
 | 16 | unknown | unknown | analyze-architectural-design, plugin-health-discover, plugin-health-report | Naming: not verb-first `{verb}-{object}-{aspect}` | 2026-06-05 | no live provenance match |
@@ -163,7 +163,7 @@ Source ledger: `docs/health/dispositions.md`
 | 152 | unknown | unknown | sync-documentation-maps audit/update agents | Shared backbone: background-dispatch pattern not canonicalized in one doc | 2026-06-07 | no live provenance match |
 | 153 | unknown | unknown | naming-convention-lens | Tool hygiene: Glob declared in frontmatter, unused in body | 2026-06-07 | no live provenance match |
 | 154 | unknown | unknown | profile-al-dev-shared/generated/agents/ | Handoff gap: no downstream projection-vs-source validation skill | 2026-06-07 | no live provenance match |
-| 155 | unknown | unknown | docs/al-dev-workflow-diagrams.md | Handoff gap: produced by diagram-generator/sync-write; no downstream consumer | 2026-06-07 | no live provenance match |
+| 155 | unknown | unknown | docs/workflow-diagrams.md | Handoff gap: produced by diagram-generator/sync-write; no downstream consumer | 2026-06-07 | no live provenance match |
 | 156 | unknown | unknown | plan-health-findings | Bloat: 7 top-level sections; Phase 2b ~35 lines | 2026-06-07 | no live provenance match |
 | 157 | unknown | unknown | sync-documentation-maps-write | Bloat: four near-identical regeneration blocks | 2026-06-07 | no live provenance match |
 | 158 | unknown | unknown | naming-convention-lens | Tool hygiene: Glob declared in frontmatter, unused in body | 2026-06-07 | no live provenance match |

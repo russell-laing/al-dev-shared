@@ -17,8 +17,8 @@ workflow:
   invoked-by: both
   repeatable: true
   inputs:
-    - docs/al-dev-skills-map.md
-    - docs/al-dev-agent-map.md
+    - docs/skills-map.md
+    - docs/agent-map.md
   outputs:
     - .dev/sync-map-documentation-checkpoint.json
     - .dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json

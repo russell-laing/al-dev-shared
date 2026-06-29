@@ -29,17 +29,17 @@ Read `$ARGUMENTS`:
 
   > Which surface do you want to review?
   >
-  > 1. skills — audit `profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md`
-  > 2. agents — audit `profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md`
+  > 1. skills — audit `profile-al-dev-shared/skills/` against `docs/skills-map.md`
+  > 2. agents — audit `profile-al-dev-shared/agents/` against `docs/agent-map.md`
 
 Set variables based on SURFACE:
 
 - `SURFACE=skills` → `SCAN_DIR=profile-al-dev-shared/skills/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/skills/`,
-  `MAP_FILE=docs/al-dev-skills-map.md`
+  `MAP_FILE=docs/skills-map.md`
 - `SURFACE=agents` → `SCAN_DIR=profile-al-dev-shared/agents/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/agents/`,
-  `MAP_FILE=docs/al-dev-agent-map.md`
+  `MAP_FILE=docs/agent-map.md`
 
 ---
 
@@ -273,27 +273,27 @@ Update `**Last updated:**` to today's date.
 ### Skills verification
 
 ```bash
-grep -c "^### /" docs/al-dev-skills-map.md
-grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test)" docs/al-dev-skills-map.md
+grep -c "^### /" docs/skills-map.md
+grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test)" docs/skills-map.md
 ```
 
 Commit if any edits were made:
 
 ```bash
-git -C . add docs/al-dev-skills-map.md
+git -C . add docs/skills-map.md
 git -C . commit -m "docs: sync skill map with current plugin state"
 ```
 
 ### Agent verification
 
 ```bash
-wc -l docs/al-dev-agent-map.md
+wc -l docs/agent-map.md
 ```
 
 Commit if any edits were made:
 
 ```bash
-git -C . add docs/al-dev-agent-map.md
+git -C . add docs/agent-map.md
 git -C . commit -m "docs: sync agent map with current agent roster"
 ```
 

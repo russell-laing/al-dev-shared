@@ -160,8 +160,8 @@ prompt. Otherwise, use a `USER_GATE` prompt:
 ```text
 Which documentation map would you like to update?
 
-[1] Skills map only (docs/al-dev-skills-map.md)
-[2] Agent map only (docs/al-dev-agent-map.md)
+[1] Skills map only (docs/skills-map.md)
+[2] Agent map only (docs/agent-map.md)
 [3] Both maps
 [4] Neither (skip updates)
 ```

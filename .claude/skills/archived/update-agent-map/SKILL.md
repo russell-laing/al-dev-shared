@@ -1,7 +1,7 @@
 ---
 name: update-agent-map
 description: >-
-  Use after /audit-agents-against-map to apply discrepancies to docs/al-dev-agent-map.md.
+  Use after /audit-agents-against-map to apply discrepancies to docs/agent-map.md.
   Writes/updates the agent map file, detects inline candidates (agents that could be absorbed),
   appends findings to Observations section, and commits changes.
 ---
@@ -12,7 +12,7 @@ description: >-
 
 # Update Agent Map
 
-Apply audit findings from `/audit-agents-against-map` to update `docs/al-dev-agent-map.md`.
+Apply audit findings from `/audit-agents-against-map` to update `docs/agent-map.md`.
 Writes changes, detects inline candidates, commits to git.
 
 Usage: `/update-agent-map [agent-name]`.
@@ -34,7 +34,7 @@ Otherwise, use findings provided by previous audit run.
 
 ## Phase 2: Create or Update Layer 1
 
-If `docs/al-dev-agent-map.md` does not exist, create it with this template:
+If `docs/agent-map.md` does not exist, create it with this template:
 
 ```markdown
 # AL Dev Agent Map
@@ -111,7 +111,7 @@ An agent scoring **2 or more signals** is an inline candidate.
 
 ### Output
 
-Ensure `docs/al-dev-agent-map.md` has an `## Observations` section. If not, create it.
+Ensure `docs/agent-map.md` has an `## Observations` section. If not, create it.
 
 Within `## Observations`, ensure an `### Inline candidates` subsection exists. Create if missing.
 
@@ -141,16 +141,16 @@ Run a quick sanity check:
 
 ```bash
 # Verify file structure (should have Layer 1 table and Layer 2 sections)
-grep -c "^### " docs/al-dev-agent-map.md
+grep -c "^### " docs/agent-map.md
 
 # Expect no archived agent names
-grep -E "(archived)" docs/al-dev-agent-map.md
+grep -E "(archived)" docs/agent-map.md
 ```
 
 If checks pass, commit:
 
 ```bash
-git -C . add docs/al-dev-agent-map.md
+git -C . add docs/agent-map.md
 git -C . commit -m "docs: sync agent map with current agent roster"
 ```
 
@@ -160,6 +160,6 @@ Report what changed and what was verified as already correct.
 
 ## Notes
 
-- This skill only updates the **agent map** (docs/al-dev-agent-map.md)
+- This skill only updates the **agent map** (docs/agent-map.md)
 - For skills map updates, use `/update-skill-map`
 - For coordinated audit+update of both maps, use `/sync-documentation-maps`

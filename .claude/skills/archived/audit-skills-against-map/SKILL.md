@@ -13,7 +13,7 @@ description: >-
 
 # Audit Skills Against Map
 
-Audit `profile-al-dev-shared` and verify `docs/al-dev-skills-map.md` accurately
+Audit `profile-al-dev-shared` and verify `docs/skills-map.md` accurately
 reflects the current active skills, agents, phases, file handoffs, and generated
 projection surfaces. **No file modifications** — findings only.
 
@@ -70,7 +70,7 @@ If `$ARGUMENTS` is a skill name, focus only on that skill and skip the rest.
 
 ## Phase 3: Compare Against Skills Map
 
-Read `docs/al-dev-skills-map.md`.
+Read `docs/skills-map.md`.
 
 Check each layer:
 

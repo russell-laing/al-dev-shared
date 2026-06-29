@@ -31,7 +31,7 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 
 ---
 
-## al-dev-naming-convention.md
+## naming-convention.md
 
 **Last updated:** 2026-05-29
 
@@ -139,11 +139,11 @@ Files reviewed: 6 | Skipped (auto-generated/reports): 8
 
 | File | Reason |
 | ------ | -------- |
-| al-dev-agent-map.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
-| al-dev-knowledge-quality.md | Quality report output (al-dev-*-quality.md pattern) |
-| al-dev-plugin-graph.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
-| al-dev-skills-map.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
-| al-dev-workflow-diagrams.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
+| agent-map.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
+| knowledge-quality.md | Quality report output (`*-quality.md` pattern) |
+| plugin-graph.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
+| skills-map.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
+| workflow-diagrams.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
 | development-commands.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
 | maintainer-tooling.md | Auto-generated (contains `<!-- BEGIN GENERATED:`) |
 

@@ -9,16 +9,16 @@ anything is committed.
 ```bash
 REPO=$(git rev-parse --show-toplevel)
 DISK_AGENTS=$(find "$REPO/profile-al-dev-shared/agents" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
-COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/al-dev-agent-map.md" | grep -o '[0-9]*')
+COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/agent-map.md" | grep -o '[0-9]*')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  "$REPO/docs/al-dev-agent-map.md" | grep -c '^| al-dev')
+  "$REPO/docs/agent-map.md" | grep -c '^| al-dev')
 echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
 ```
 
 The three values compared are:
 
 - **active files on disk** — `*.md` count under `profile-al-dev-shared/agents/`
-- **generated Coverage count** — the `N active agents` figure in `al-dev-agent-map.md`
+- **generated Coverage count** — the `N active agents` figure in `agent-map.md`
 - **generated catalog rows** — rows matching `^| al-dev` inside the
   `BEGIN/END GENERATED: agent-catalog-table` block
 

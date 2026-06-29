@@ -3,7 +3,7 @@ name: al-dev-diagram-generator
 description: >-
   Generate Mermaid workflow diagrams showing plugin skill, agent, and knowledge
   relationships. Dispatched by /analyze-agent-design and /analyze-skill-design.
-  Produces docs/al-dev-workflow-diagrams.md showing system architecture.
+  Produces docs/workflow-diagrams.md showing system architecture.
 argument-hint: "--caller-name <skill-name>"
 ---
 
@@ -135,7 +135,7 @@ The dispatcher (`/analyze-agent-design` or `/analyze-skill-design`) passes
 `--caller-name` with its own name so the generated file references the correct
 command for re-runs.
 
-Write `docs/al-dev-workflow-diagrams.md`:
+Write `docs/workflow-diagrams.md`:
 
 ```markdown
 # Plugin Workflow Diagrams

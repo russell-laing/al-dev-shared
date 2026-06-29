@@ -89,10 +89,10 @@ that matches the imported module and the documented command.
 
 ### Living docs — overwritten in place, no date
 
-Pattern: `al-dev-{object}-{kind}.md`
+Pattern: `{object}-{kind}.md`
 
-Examples: `al-dev-skills-map.md`, `al-dev-agent-map.md`, `al-dev-knowledge-quality.md`,
-`al-dev-plugin-graph.md`.
+Examples: `skills-map.md`, `agent-map.md`, `knowledge-quality.md`,
+`plugin-graph.md`.
 
 ### Point-in-time artifacts — dated
 

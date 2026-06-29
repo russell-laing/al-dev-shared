@@ -136,8 +136,8 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "  invoked-by: both\n"
         "  repeatable: true\n"
         "  inputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
+        "    - docs/skills-map.md\n"
+        "    - docs/agent-map.md\n"
         "  outputs:\n"
         "    - .dev/sync-map-documentation-checkpoint.json\n"
         "    - .dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json\n"
@@ -172,8 +172,8 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "    - .dev/sync-map-documentation-checkpoint.json\n"
         "    - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md\n"
         "  outputs:\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
+        "    - docs/skills-map.md\n"
+        "    - docs/agent-map.md\n"
         "  next: [sync-map-documentation-write]\n",
     )
     _write_skill(
@@ -187,11 +187,11 @@ def _build_map_sync_fixture(root: Path) -> Path:
         "  repeatable: false\n"
         "  inputs:\n"
         "    - .dev/sync-map-documentation-checkpoint.json\n"
-        "    - docs/al-dev-skills-map.md\n"
-        "    - docs/al-dev-agent-map.md\n"
+        "    - docs/skills-map.md\n"
+        "    - docs/agent-map.md\n"
         "  outputs:\n"
-        "    - docs/al-dev-workflow-diagrams.md\n"
-        "    - docs/al-dev-plugin-graph.md\n"
+        "    - docs/workflow-diagrams.md\n"
+        "    - docs/plugin-graph.md\n"
         "    - docs/maintainer-tooling.md\n"
         "    - profile-al-dev-shared/generated/agents/\n",
     )
@@ -299,8 +299,8 @@ def test_short_label_preserves_trailing_slash_directory_names() -> None:
     assert lib._short_label("profile-al-dev-shared/knowledge/") == "knowledge/"
     assert lib._short_label("profile-al-dev-shared/skills/") == "skills/"
     assert (
-        lib._short_label("docs/al-dev-workflow-diagrams.md")
-        == ".../al-dev-workflow-diagrams.md"
+        lib._short_label("docs/workflow-diagrams.md")
+        == ".../workflow-diagrams.md"
     )
 
 
@@ -453,8 +453,8 @@ def test_map_sync_stage_uses_entry_lanes_and_collapsed_downstream_outputs() -> N
             contracts,
             "map-sync",
             {
-                "docs/al-dev-workflow-diagrams.md",
-                "docs/al-dev-plugin-graph.md",
+                "docs/workflow-diagrams.md",
+                "docs/plugin-graph.md",
                 "docs/maintainer-tooling.md",
                 "profile-al-dev-shared/generated/agents/",
             },
@@ -487,13 +487,13 @@ def test_map_sync_stage_falls_back_when_retired_skill_still_exists() -> None:
             "  invoked-by: both\n"
             "  repeatable: true\n"
             "  inputs:\n"
-            "    - docs/al-dev-skills-map.md\n"
-            "    - docs/al-dev-agent-map.md\n"
+            "    - docs/skills-map.md\n"
+            "    - docs/agent-map.md\n"
             "    - profile-al-dev-shared/skills/\n"
             "    - profile-al-dev-shared/agents/\n"
             "  outputs:\n"
-            "    - docs/al-dev-skills-map.md\n"
-            "    - docs/al-dev-agent-map.md\n",
+            "    - docs/skills-map.md\n"
+            "    - docs/agent-map.md\n",
         )
         contracts, _ = lib.load_contracts(skills)
         text, node_count = lib.render_stage_detail(contracts, "map-sync", set())
@@ -604,7 +604,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "  inputs:\n"
             "    - profile-al-dev-shared/knowledge/\n"
             "  outputs:\n"
-            "    - docs/al-dev-knowledge-quality.md\n"
+            "    - docs/knowledge-quality.md\n"
             "  next: [fix-knowledge-quality]\n",
         )
         _write_skill(
@@ -617,7 +617,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "  invoked-by: user\n"
             "  repeatable: true\n"
             "  inputs:\n"
-            "    - docs/al-dev-knowledge-quality.md\n"
+            "    - docs/knowledge-quality.md\n"
             "  outputs:\n"
             "    - profile-al-dev-shared/knowledge/\n"
             "  next: [validate-plugin-neutrality]\n",
@@ -664,7 +664,7 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         write_skill = skills / "sync-map-documentation-write" / "SKILL.md"
         write_skill.write_text(
             write_skill.read_text(encoding="utf-8").replace(
-                "    - docs/al-dev-plugin-graph.md\n",
+                "    - docs/plugin-graph.md\n",
                 "",
             ),
             encoding="utf-8",
@@ -674,9 +674,9 @@ def test_focused_stage_renderer_falls_back_when_contract_shape_drifts() -> None:
         assert "flowchart LR" in text
         assert 'art_generated["generated docs + projections"]' not in text
         assert 'skill_sync_map_documentation_write["/sync-map-documentation-write"]' in text
-        assert 'art_docs_al_dev_workflow_diagrams_md[".../al-dev-workflow-diagrams.md"]' in text
+        assert 'art_docs_workflow_diagrams_md[".../workflow-diagrams.md"]' in text
         assert 'art__dev_sync_map_documentation_checkpoint_json[".../sync-map-documentation-checkpoint.json"]' in text
-        assert 'art_docs_al_dev_plugin_graph_md[".../al-dev-plugin-graph.md"]' not in text
+        assert 'art_docs_plugin_graph_md[".../plugin-graph.md"]' not in text
         assert 'art_docs_maintainer_tooling_md["docs/maintainer-tooling.md"]' in text
         assert 'art_profile_al_dev_shared_generated_agents_["generated/agents/"]' in text
         assert node_count >= 1

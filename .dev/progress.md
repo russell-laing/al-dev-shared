@@ -52,7 +52,7 @@ Next: /sync-documentation-maps-apply
 ## 2026-06-16 00:41 — sync-documentation-maps-apply
 
 Skill-update agent completed.
-Skills map (1146 lines) written to docs/al-dev-skills-map.md
+Skills map (1146 lines) written to docs/skills-map.md
 Checkpoint status: awaiting-write
 
 Next: /sync-documentation-maps-write

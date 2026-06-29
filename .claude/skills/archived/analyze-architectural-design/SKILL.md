@@ -21,7 +21,7 @@ synthesis** that relates the skill-layer findings to the agent-layer findings.
 It dispatches no lenses and edits no source. Its only output is the living
 synthesis doc `docs/al-dev-plugin-synthesis.md`, overwritten in place each run.
 
-> **Why not `al-dev-plugin-graph.md`?** That file is regenerated wholesale by
+> **Why not `plugin-graph.md`?** That file is regenerated wholesale by
 > `scripts/generate-plugin-graph.py` (run on every plugin-surface audit and map
 > sync), so any hand-written section there is silently clobbered. The synthesis
 > gets its own stable living doc instead.

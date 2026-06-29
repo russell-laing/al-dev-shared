@@ -84,7 +84,7 @@ from `scripts/derive-agent-callers.py`.
 Used by `sync-map-documentation-skill-compare` Step 3.
 
 - **`missing_from_map`** — an active skill has no `### /skill-name` section in
-  Layer 2 of `docs/al-dev-skills-map.md`.
+  Layer 2 of `docs/skills-map.md`.
 - **`stale_in_map`** — a `### /skill-name` Layer 2 section exists for an
   archived skill (not in the active list).
 - **`phase_count_mismatch`** — the phase count in `SKILL.md` (count of

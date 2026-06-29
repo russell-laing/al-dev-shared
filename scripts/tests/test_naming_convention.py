@@ -1,4 +1,4 @@
-"""Assert every .claude/ lens-agent name matches docs/al-dev-naming-convention.md."""
+"""Assert every .claude/ lens-agent name matches docs/naming-convention.md."""
 from __future__ import annotations
 
 import inspect
@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_DIR = REPO_ROOT / "scripts"
 AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
 SKILLS_DIR = REPO_ROOT / ".claude" / "skills"
-CONVENTION_DOC = REPO_ROOT / "docs" / "al-dev-naming-convention.md"
+CONVENTION_DOC = REPO_ROOT / "docs" / "naming-convention.md"
 
 LENS_PATTERN = re.compile(r"^(design|quality)-(agent|skill)-lens-[a-z0-9-]+$")
 LENS_EXCEPTIONS = {"naming-convention-lens"}

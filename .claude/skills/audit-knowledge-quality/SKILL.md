@@ -14,8 +14,8 @@ workflow:
     - profile-al-dev-shared/knowledge/
     - .claude/knowledge/
   outputs:
-    - docs/al-dev-knowledge-quality.md
-    - docs/al-dev-knowledge-quality-tooling.md
+    - docs/knowledge-quality.md
+    - docs/knowledge-quality-tooling.md
   next: [fix-knowledge-quality]
 ---
 
@@ -58,8 +58,8 @@ deterministically, and log `preferred → outcome → fallback → reason`.
 
 | Surface | Knowledge path | Agent/skill search paths | Report output |
 |---------|----------------|--------------------------|---------------|
-| `plugin` | `profile-al-dev-shared/knowledge/` | `profile-al-dev-shared/agents/`, `profile-al-dev-shared/skills/` | `docs/al-dev-knowledge-quality.md` |
-| `tooling` | `.claude/knowledge/` | `.claude/agents/`, `.claude/skills/` | `docs/al-dev-knowledge-quality-tooling.md` |
+| `plugin` | `profile-al-dev-shared/knowledge/` | `profile-al-dev-shared/agents/`, `profile-al-dev-shared/skills/` | `docs/knowledge-quality.md` |
+| `tooling` | `.claude/knowledge/` | `.claude/agents/`, `.claude/skills/` | `docs/knowledge-quality-tooling.md` |
 
 ## Implementation
 
@@ -119,7 +119,7 @@ search paths. For `--surface tooling`, replace those with `.claude/agents/` and
 
 ### Phase 3: Write Findings Report
 
-Determine the output path from the surface argument: `plugin` → `docs/al-dev-knowledge-quality.md`; `tooling` → `docs/al-dev-knowledge-quality-tooling.md`. Write to that path. The report **always** contains the
+Determine the output path from the surface argument: `plugin` → `docs/knowledge-quality.md`; `tooling` → `docs/knowledge-quality-tooling.md`. Write to that path. The report **always** contains the
 `## Fix Recommendations` and `## High-Priority Fix Tasks` blocks — they are written
 unconditionally. Whether they are re-presented interactively is governed by the
 USER_GATE in Phase 4.
@@ -216,7 +216,7 @@ Where `<knowledge-path>` and `<report-path>` are derived from the surface argume
 
 ## Success Criteria
 
-✅ All HIGH severity findings have concrete fix recommendations written to the surface-derived report path (`docs/al-dev-knowledge-quality.md` for `plugin`; `docs/al-dev-knowledge-quality-tooling.md` for `tooling`)
+✅ All HIGH severity findings have concrete fix recommendations written to the surface-derived report path (`docs/knowledge-quality.md` for `plugin`; `docs/knowledge-quality-tooling.md` for `tooling`)
 ✅ The report always contains `## Fix Recommendations` and `## High-Priority Fix Tasks` (written unconditionally)
 ✅ The USER_GATE in Phase 4 gates interactive re-presentation only — not generation of the report sections
 ✅ False positives (LOW severity) are clearly marked and explained

@@ -1,7 +1,7 @@
 ---
 name: sync-map-documentation-skill-compare
 description: >-
-  Compares skill metadata from skill-metadata.json against docs/al-dev-skills-map.md
+  Compares skill metadata from skill-metadata.json against docs/skills-map.md
   and writes a structured JSON discrepancy report to the run artifact directory.
   Called by /sync-map-documentation dispatch phase after
   sync-map-documentation-skill-metadata completes.
@@ -36,7 +36,7 @@ Do not summarise findings — return only the path.
     {
       "type": "missing_from_map",
       "skill": "al-dev-example",
-      "detail": "Active skill has no Layer 2 section in docs/al-dev-skills-map.md"
+      "detail": "Active skill has no Layer 2 section in docs/skills-map.md"
     }
   ],
   "summary": "1 discrepancy found: 1 missing_from_map."
@@ -59,12 +59,12 @@ for all subsequent comparisons. Each skill entry includes `phase_count` and
 `spawned_agents` — these are required for `phase_count_mismatch` and
 `agent_name_mismatch` detection.
 
-### Step 2 — Parse docs/al-dev-skills-map.md
+### Step 2 — Parse docs/skills-map.md
 
-Read `docs/al-dev-skills-map.md`. Extract:
+Read `docs/skills-map.md`. Extract:
 
 ```bash
-grep "^### " docs/al-dev-skills-map.md
+grep "^### " docs/skills-map.md
 ```
 
 - **Layer 1 node IDs:** flowchart node identifiers from the Layer 1 Mermaid diagram.

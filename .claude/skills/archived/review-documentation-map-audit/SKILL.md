@@ -27,17 +27,17 @@ Read `$ARGUMENTS`:
 
   > Which surface do you want to audit?
   >
-  > 1. skills — audit `profile-al-dev-shared/skills/` against `docs/al-dev-skills-map.md`
-  > 2. agents — audit `profile-al-dev-shared/agents/` against `docs/al-dev-agent-map.md`
+  > 1. skills — audit `profile-al-dev-shared/skills/` against `docs/skills-map.md`
+  > 2. agents — audit `profile-al-dev-shared/agents/` against `docs/agent-map.md`
 
 Set variables based on SURFACE:
 
 - `SURFACE=skills` → `SCAN_DIR=profile-al-dev-shared/skills/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/skills/`,
-  `MAP_FILE=docs/al-dev-skills-map.md`
+  `MAP_FILE=docs/skills-map.md`
 - `SURFACE=agents` → `SCAN_DIR=profile-al-dev-shared/agents/`,
   `ARCHIVED_DIR=profile-al-dev-shared/archived/agents/`,
-  `MAP_FILE=docs/al-dev-agent-map.md`
+  `MAP_FILE=docs/agent-map.md`
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: review-skill-map
 description: >-
-  Review profile-al-dev-shared for accuracy and update docs/al-dev-skills-map.md.
+  Review profile-al-dev-shared for accuracy and update docs/skills-map.md.
   Use whenever skills or agents are added, removed, or restructured in the plugin,
   or when you want to verify the map reflects the current state of the codebase.
   Pass --no-update to run audit-only mode: reports discrepancies and suggests
@@ -14,7 +14,7 @@ argument-hint: "[--no-update] [optional: skill name to focus on]"
 
 # Review Skill Map
 
-Audit `profile-al-dev-shared` and update `docs/al-dev-skills-map.md` so it
+Audit `profile-al-dev-shared` and update `docs/skills-map.md` so it
 accurately reflects the current active skills, agents, phases, file handoffs,
 and generated projection surfaces under `profile-al-dev-shared/generated/agents/`.
 
@@ -79,7 +79,7 @@ If `$ARGUMENTS` is a skill name, focus only on that skill and skip the rest.
 
 ## Phase 3: Compare Against Plugin Map
 
-Read `docs/al-dev-skills-map.md`.
+Read `docs/skills-map.md`.
 
 Check each layer:
 
@@ -147,7 +147,7 @@ Then stop. Do not proceed to Phase 5 or 6.
 
 ## Phase 5: Update the Map
 
-Make targeted edits to `docs/al-dev-skills-map.md` to fix each discrepancy.
+Make targeted edits to `docs/skills-map.md` to fix each discrepancy.
 
 **For Layer 1 fixes:**
 - To add a skill: add a node and edge in the flowchart, add a `style` directive
@@ -171,16 +171,16 @@ Run a quick sanity check:
 
 ```bash
 # Expect one section per active lifecycle skill
-grep -c "^### /" docs/al-dev-skills-map.md
+grep -c "^### /" docs/skills-map.md
 
 # Expect no archived skill names to appear
-grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/al-dev-skills-map.md
+grep -E "(al-dev-test|al-dev-unit-test|al-dev-integration-test|al-dev-scenario-test|al-dev-edge-case-test|al-dev-test-coverage)" docs/skills-map.md
 ```
 
 If checks pass, commit:
 
 ```bash
-git -C . add docs/al-dev-skills-map.md
+git -C . add docs/skills-map.md
 git -C . commit -m "docs: sync plugin map with current plugin state"
 ```
 

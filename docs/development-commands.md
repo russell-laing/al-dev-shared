@@ -42,7 +42,7 @@ The hook runs, in order:
   execution failure)
 - `python3 scripts/validate_health_loop_state.py --staged`
 - `python3 scripts/validate_maintainer_contracts.py`
-- `python3 scripts/validate-artifact-leaks.py` to block staged scratch files and
+- `python3 scripts/validate_artifact_leaks.py` to block staged scratch files and
   raw `docs/superpowers/plans|specs` markdown
 
 Bypass with `git commit --no-verify` only when intentionally committing a
@@ -57,7 +57,7 @@ python3 scripts/generate_agent_projections.py
 
 ## Documentation Maps (Mermaid Diagrams)
 
-The documentation maps (`docs/al-dev-skills-map.md`, `docs/al-dev-agent-map.md`, `docs/al-dev-plugin-graph.md`) and maintainer guide pages (`docs/maintainer-tooling.md`, `docs/maintainer-tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
+The documentation maps (`docs/skills-map.md`, `docs/agent-map.md`, `docs/plugin-graph.md`) and maintainer guide pages (`docs/maintainer-tooling.md`, `docs/maintainer-tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
 
 ```bash
 # Regenerate all documentation map sections
@@ -136,6 +136,6 @@ For audit-only map checks (no updates):
 
 These skills write to:
 
-- `docs/al-dev-skills-map.md` — Skill inventory and relationships (documentation only)
-- `docs/al-dev-agent-map.md` — Agent inventory and tool assignments (documentation only)
+- `docs/skills-map.md` — Skill inventory and relationships (documentation only)
+- `docs/agent-map.md` — Agent inventory and tool assignments (documentation only)
 - `docs/health/YYYY-MM-DD-<surface>-health.md` — the ranked findings dossier (all design, quality, and naming findings)

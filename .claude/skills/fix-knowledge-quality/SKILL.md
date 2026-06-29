@@ -16,8 +16,8 @@ workflow:
   invoked-by: user
   repeatable: true
   inputs:
-    - docs/al-dev-knowledge-quality.md
-    - docs/al-dev-knowledge-quality-tooling.md
+    - docs/knowledge-quality.md
+    - docs/knowledge-quality-tooling.md
   outputs:
     - profile-al-dev-shared/knowledge/
     - .claude/knowledge/
@@ -40,8 +40,8 @@ optionally dispatches fix agents.
 
 | Surface | Audit file | Target knowledge directory |
 |---------|------------|---------------------------|
-| `plugin` | `docs/al-dev-knowledge-quality.md` | `profile-al-dev-shared/knowledge/` |
-| `tooling` | `docs/al-dev-knowledge-quality-tooling.md` | `.claude/knowledge/` |
+| `plugin` | `docs/knowledge-quality.md` | `profile-al-dev-shared/knowledge/` |
+| `tooling` | `docs/knowledge-quality-tooling.md` | `.claude/knowledge/` |
 
 ## Maintainer Contracts
 
@@ -56,8 +56,8 @@ deterministically, and log `preferred → outcome → fallback → reason`.
 
 Resolve the audit file path from the `--surface` argument (default `plugin`):
 
-- `plugin` → `docs/al-dev-knowledge-quality.md`
-- `tooling` → `docs/al-dev-knowledge-quality-tooling.md`
+- `plugin` → `docs/knowledge-quality.md`
+- `tooling` → `docs/knowledge-quality-tooling.md`
 
 ```bash
 # AUDIT_FILE is resolved from --surface above

@@ -117,7 +117,7 @@ def test_repo_local_workflows_reference_plan_health_findings() -> unittest.Funct
         for path in [
             ".claude/skills/report-plugin-health/SKILL.md",
             ".claude/skills/audit-plugin-health/SKILL.md",
-            "docs/al-dev-naming-convention.md",
+            "docs/naming-convention.md",
         ]:
             text = read(path)
             assert "plan-plugin-findings" in text, f"{path} lacks renamed maintainer command"

@@ -2,7 +2,7 @@
 name: sync-documentation-maps-skill-audit
 description: >-
   Audits active skills in profile-al-dev-shared/skills/ against
-  docs/al-dev-skills-map.md and writes a structured JSON discrepancy report
+  docs/skills-map.md and writes a structured JSON discrepancy report
   to the run artifact directory. Called by /sync-documentation-maps dispatch phase.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -17,7 +17,7 @@ tools: ["Read", "Bash", "Write"]
 | run_id | The timestamp run ID (e.g. `20260531T143000`) |
 | result_dir | Absolute path to `.dev/sync-documentation-maps-runs/<run_id>/` |
 
-**Preconditions:** Repository root must contain `profile-al-dev-shared/skills/`, `profile-al-dev-shared/archived/skills/` (may be absent), and `docs/al-dev-skills-map.md`. All relative paths in instructions assume root `/Users/russelllaing/al-dev-shared`.
+**Preconditions:** Repository root must contain `profile-al-dev-shared/skills/`, `profile-al-dev-shared/archived/skills/` (may be absent), and `docs/skills-map.md`. All relative paths in instructions assume root `/Users/russelllaing/al-dev-shared`.
 
 ## Outputs
 
@@ -36,7 +36,7 @@ the sole output. Do not summarise findings to the user — return only the path.
     {
       "type": "missing_from_map",
       "skill": "al-dev-example",
-      "detail": "Active skill has no Layer 2 section in docs/al-dev-skills-map.md"
+      "detail": "Active skill has no Layer 2 section in docs/skills-map.md"
     }
   ],
   "summary": "1 discrepancy found: 1 missing_from_map."
@@ -83,9 +83,9 @@ Extract:
   This captures both literal-dated and `$(date ...)`-templated artifacts in the
   normalized `YYYY-MM-DD` form used by the map.
 
-### Step 3 — Parse docs/al-dev-skills-map.md
+### Step 3 — Parse docs/skills-map.md
 
-Read `docs/al-dev-skills-map.md`. Extract:
+Read `docs/skills-map.md`. Extract:
 
 - **Layer 1 node IDs:** flowchart node identifiers from the Layer 1 Mermaid diagram.
 - **Layer 2 sections:** collect all `### /skill-name` headings (the skill name

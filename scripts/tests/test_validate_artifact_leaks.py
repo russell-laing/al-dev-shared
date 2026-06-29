@@ -1,4 +1,4 @@
-"""Behavioral tests for scripts/validate-artifact-leaks.py."""
+"""Behavioral tests for scripts/validate_artifact_leaks.py."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SCRIPT = REPO_ROOT / "scripts" / "validate-artifact-leaks.py"
+SCRIPT = REPO_ROOT / "scripts" / "validate_artifact_leaks.py"
 
 
 def _load():

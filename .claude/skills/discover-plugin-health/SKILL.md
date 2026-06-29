@@ -21,8 +21,8 @@ workflow:
   invoked-by: both
   repeatable: true
   inputs:
-    - docs/al-dev-skills-map.md
-    - docs/al-dev-agent-map.md
+    - docs/skills-map.md
+    - docs/agent-map.md
     - profile-al-dev-shared/knowledge/lens-invocation-patterns.md
     - .dev/health-loop-state.md
   outputs:
@@ -192,8 +192,8 @@ subagent map-parse described below only for `--dimension design` or
 **Dispatch the map parse to a subagent — do not read the maps inline.** The two
 documentation maps total ~1800 lines; reading them into the orchestrating session
 front-loads context and risks compaction before the ~12-lens fan-out. Instead,
-dispatch one subagent (Agent tool) whose task is to read `docs/al-dev-agent-map.md`
-and `docs/al-dev-skills-map.md` in ITS OWN context, build the derived dispatch
+dispatch one subagent (Agent tool) whose task is to read `docs/agent-map.md`
+and `docs/skills-map.md` in ITS OWN context, build the derived dispatch
 mappings, and write the run manifest (per the layout below). Pass it the full
 procedure in `.claude/knowledge/health-discover-aggregation.md`. The subagent
 returns only a terse confirmation (manifest path + line count); the maps never

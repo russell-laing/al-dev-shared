@@ -8,7 +8,7 @@ the LLM lenses use, so discover Phase 4 assembly and `--resume` need no changes.
 Converted lenses (each emits one ``.dev/<date>-plugin-health-lens-<name>.json``):
 
 - ``naming-convention-lens`` (naming) — filename + distributed shared naming
-  checks against docs/al-dev-naming-convention.md.
+  checks against docs/naming-convention.md.
 - ``quality-agent-lens-structure`` (quality, agents) — frontmatter field presence,
   tool canonicality (canonical set read from the projection policy, not a marker),
   empty ``tools: []`` rejection, Inputs/Outputs sections, header numbering,
@@ -228,7 +228,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
                     name, "High",
                     f"`{path.name}:1` lens-agent filename does not match "
                     "`{design|quality}-{agent|skill}-lens-{aspect}`",
-                    "rename to the enforced lens pattern (see docs/al-dev-naming-convention.md)",
+                    "rename to the enforced lens pattern (see docs/naming-convention.md)",
                 ))
 
     for path in skill_paths:
@@ -247,7 +247,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
                 name, "Low",
                 f"`{path.parent.name}/SKILL.md:1` skill name is not kebab-case "
                 "`{verb}-{object}-{aspect}`",
-                "rename to the advisory pattern in docs/al-dev-naming-convention.md",
+                "rename to the advisory pattern in docs/naming-convention.md",
             ))
 
     return rows
@@ -308,13 +308,13 @@ def check_agent_structure(agent_paths: list[Path], surface: str) -> list[str]:
                         name, "Medium",
                         f"`{path.name}:1` lens-agent filename does not match "
                         "`{design|quality}-{agent|skill}-lens-{aspect}`",
-                        "rename to the enforced lens pattern (see docs/al-dev-naming-convention.md)",
+                        "rename to the enforced lens pattern (see docs/naming-convention.md)",
                     ))
             elif not _KEBAB_RE.match(name):
                 rows.append(_row(
                     name, "Medium",
                     f"`{path.name}:1` maintainer agent filename is not kebab-case",
-                    "rename to a kebab-case maintainer name (see docs/al-dev-naming-convention.md)",
+                    "rename to a kebab-case maintainer name (see docs/naming-convention.md)",
                 ))
 
         # Medium: description present.

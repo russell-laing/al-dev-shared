@@ -63,7 +63,7 @@ echo "pre-commit: validating maintainer-contract coverage..."
 python3 scripts/validate_maintainer_contracts.py
 
 echo "pre-commit: checking for staged temporary artifacts..."
-python3 scripts/validate-artifact-leaks.py
+python3 scripts/validate_artifact_leaks.py
 echo "pre-commit: artifact leak check passed"
 
 echo "pre-commit: all neutrality checks passed."

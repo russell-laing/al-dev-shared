@@ -20,7 +20,7 @@ that need design-agent lens results without full synthesis.
 
 ## Phase 1 — Read the Agent Map and Build Working Lists
 
-Read `docs/al-dev-agent-map.md` in full. Build these working lists:
+Read `docs/agent-map.md` in full. Build these working lists:
 
 1. **Tool inventory** — for every agent, record its tools list from the map.
 2. **Model assignments** — for every agent, record its model.
@@ -29,7 +29,7 @@ Read `docs/al-dev-agent-map.md` in full. Build these working lists:
 5. **Shared agents** — agents spawned by 2+ skills.
 6. **Undocumented agents** — agents with "Not documented" for both Inputs and Outputs.
 7. **Existing inline candidates** — agents already listed in `### Inline candidates`
-   in `docs/al-dev-agent-map.md`.
+   in `docs/agent-map.md`.
 
 If an argument was passed, restrict analysis to that lens:
 `trim`, `remodel`, `split`, `inline`, `align`, or `all` / no argument = `all`.
@@ -81,7 +81,7 @@ caller_map: {agent → [spawning skills]}
 Analyze the following agent files. Apply your lens and return a findings block.
 File list: [one path per line]
 single_use_agents: [list]
-already_inline_candidates: [agents already in ### Inline candidates in docs/al-dev-agent-map.md]
+already_inline_candidates: [agents already in ### Inline candidates in docs/agent-map.md]
 ```
 
 Agents to dispatch based on the focus argument:

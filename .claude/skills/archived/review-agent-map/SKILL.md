@@ -2,7 +2,7 @@
 name: review-agent-map
 description: >-
   Review profile-al-dev-shared agents for accuracy and update
-  docs/al-dev-agent-map.md. Use whenever agents are added, removed, or
+  docs/agent-map.md. Use whenever agents are added, removed, or
   restructured in the plugin, or when you want to verify the map reflects
   the current state of agent files. Pass --no-update to run audit-only mode:
   reports discrepancies and suggests fixes without modifying any files.
@@ -14,7 +14,7 @@ argument-hint: "[--no-update] [optional: agent name to focus on]"
 
 # Review Agent Map
 
-Audit `profile-al-dev-shared/agents/` and update `docs/al-dev-agent-map.md`
+Audit `profile-al-dev-shared/agents/` and update `docs/agent-map.md`
 so it accurately reflects the current active agents, their models, tools,
 and caller relationships.
 
@@ -96,9 +96,9 @@ Record:
 
 ---
 
-## Phase 4: Compare Against `docs/al-dev-agent-map.md`
+## Phase 4: Compare Against `docs/agent-map.md`
 
-If `docs/al-dev-agent-map.md` does not exist, skip to Phase 6 (write from
+If `docs/agent-map.md` does not exist, skip to Phase 6 (write from
 scratch).
 
 Read the file. Check:
@@ -166,7 +166,7 @@ Then stop. Do not proceed to Phase 6.
 
 ## Phase 6: Update the Map
 
-If `docs/al-dev-agent-map.md` does not exist, create it. Otherwise make
+If `docs/agent-map.md` does not exist, create it. Otherwise make
 targeted edits to fix each discrepancy found in Phase 5.
 
 **Document structure (full template for first-run creation):**
@@ -201,7 +201,7 @@ targeted edits to fix each discrepancy found in Phase 5.
 
 After writing or updating, confirm:
 ```bash
-wc -l docs/al-dev-agent-map.md
+wc -l docs/agent-map.md
 # Expected: roughly (active agent count × 5) lines minimum
 ```
 
@@ -210,7 +210,7 @@ Set `**Last updated:**` to today's date.
 Commit if any edits were made:
 
 ```bash
-git -C . add docs/al-dev-agent-map.md
+git -C . add docs/agent-map.md
 git -C . commit -m "docs: sync agent map with current agent roster"
 ```
 
