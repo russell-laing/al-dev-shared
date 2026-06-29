@@ -67,7 +67,7 @@ flowchart TD
 
     subgraph agent_lane["Agent source changed"]
         art_agent_source["agents/"]
-        skill_regenerate_agent_projections["/regenerate_agent_projections"]
+        skill_regenerate_agent_projections["/regenerate-agent-projections"]
         art_generated_agents["generated/agents/"]
     end
     subgraph knowledge_lane["Knowledge source changed"]
@@ -107,7 +107,7 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-derive-journey -->
 ### Agent source changed
 
-1. Run `/regenerate_agent_projections` to validate authored agents and regenerate harness-native projections.
+1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.
 2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.
 
 ### Knowledge source changed
