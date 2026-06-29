@@ -18,16 +18,19 @@ try:
         contains_any_marker,
         latest_runtime_artifact,
     )
+    from scripts.al_dev_tools.shared_surface_names import runtime_artifact_patterns
 except ModuleNotFoundError:  # pragma: no cover - exercised in direct script execution
     from al_dev_tools.runtime_artifacts import (
         RuntimeArtifactRule,
         contains_any_marker,
         latest_runtime_artifact,
     )
+    from al_dev_tools.shared_surface_names import runtime_artifact_patterns
 
 _REPO_ROOT = bootstrap_repo(__file__)
 _CROSS_REF_TOKEN = "knowledge/artifact-contracts.md"
 _FINAL_GATE_PHRASE = "success evidence named in"
+_RUNTIME_PATTERNS = runtime_artifact_patterns()
 
 
 @dataclass(frozen=True)
@@ -40,8 +43,8 @@ class Violation:
 
 RUNTIME_ARTIFACT_RULES = (
     RuntimeArtifactRule(
-        skill="al-dev-ticket",
-        pattern="*-al-dev-ticket-ticket-context.md",
+        skill="ticket",
+        pattern=_RUNTIME_PATTERNS["ticket"]["context"],
         markers=(
             "TICKET_ID",
             "STATUS",
@@ -53,26 +56,26 @@ RUNTIME_ARTIFACT_RULES = (
         problem="Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)",
     ),
     RuntimeArtifactRule(
-        skill="al-dev-interview",
-        pattern="*-al-dev-interview-requirements.md",
+        skill="interview",
+        pattern=_RUNTIME_PATTERNS["interview"]["requirements"],
         markers=("REQ:", "REQ-", "ACC:"),
         problem="Missing REQ/ACC tokens (formal requirements)",
     ),
     RuntimeArtifactRule(
-        skill="al-dev-explore",
-        pattern="*-al-dev-explore-findings.md",
+        skill="explore",
+        pattern=_RUNTIME_PATTERNS["explore"]["findings"],
         markers=("## ANSWER", "## FILES", "## SNIPPETS", "## Findings"),
         problem="Missing structured sections (ANSWER/FILES/SNIPPETS)",
     ),
     RuntimeArtifactRule(
-        skill="al-dev-investigate",
-        pattern="*-al-dev-investigate-findings.md",
+        skill="investigate",
+        pattern=_RUNTIME_PATTERNS["investigate"]["findings"],
         markers=("Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"),
         problem="Missing investigation markers (Root Cause/Hypotheses/VERDICT)",
     ),
     RuntimeArtifactRule(
-        skill="al-dev-handoff",
-        pattern="*-al-dev-handoff-handoff-prompt.md",
+        skill="handoff",
+        pattern=_RUNTIME_PATTERNS["handoff"]["prompt"],
         markers=("## Context", "Context files available", "Suggested first command", "Handoff Prompt"),
         problem="Missing handoff sections (Context/Context files available/Suggested first command)",
     ),

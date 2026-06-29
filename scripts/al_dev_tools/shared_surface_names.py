@@ -68,6 +68,19 @@ def runtime_artifact_patterns() -> dict[str, dict[str, str]]:
     """Runtime artifact globs keyed by canonical prefix-free shared skill name."""
 
     return {
+        "commit-execute": {
+            "analysis": "*-commit-analysis.md",
+        },
+        "develop-orchestrate": {
+            "progress": "*-develop-progress.md",
+            "checklist": "*-develop-checklist.md",
+            "scope": "*-develop-scope.md",
+            "phase4_handoff": "*-develop-phase4-handoff.md",
+        },
+        "developer-tdd": {
+            "test_plan": "*-test-test-plan.md",
+            "log": "*-developer-tdd-log.md",
+        },
         "ticket": {
             "context": "*-ticket-ticket-context.md",
             "reply": "*-ticket-reply.md",
@@ -83,7 +96,21 @@ def runtime_artifact_patterns() -> dict[str, dict[str, str]]:
             "findings": "*-investigate-findings.md",
         },
         "plan": {
+            "debate_summary": "*-plan-debate-summary.md",
             "solution_plan": "*-plan-solution-plan.md",
+        },
+        "review-develop": {
+            "code_review": "*-develop-code-review.md",
+            "preflight": "*-plugin-review-preflight.md",
+        },
+        "lint": {
+            "report": "*-lint-lint-report.md",
+        },
+        "perf": {
+            "analysis": "*-perf-perf-analysis.md",
+        },
+        "release-notes": {
+            "report": "*-plugin-release-notes.md",
         },
         "handoff": {
             "prompt": "*-handoff-handoff-prompt.md",

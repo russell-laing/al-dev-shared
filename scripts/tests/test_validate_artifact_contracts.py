@@ -15,7 +15,12 @@ from scripts.al_dev_tools.shared_surface_names import (
     LEGACY_SHARED_PREFIX,
     runtime_artifact_patterns,
 )
-from scripts.validate_artifact_contracts import main, run_artifact_tests, validate  # noqa: E402
+from scripts.validate_artifact_contracts import (  # noqa: E402
+    RUNTIME_ARTIFACT_RULES,
+    main,
+    run_artifact_tests,
+    validate,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -162,12 +167,13 @@ def test_unresolved_row(tmp_path: Path) -> None:
 def test_run_artifact_tests_passes_when_latest_runtime_artifacts_match(tmp_path: Path) -> None:
     contract = _make_contract([{"skill": "my-skill"}])
     repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    patterns = runtime_artifact_patterns()
     _make_runtime_artifacts(repo, {
-        "2026-06-28-al-dev-ticket-ticket-context.md": "TICKET_ID: 1",
-        "2026-06-28-al-dev-interview-requirements.md": "REQ: 1",
-        "2026-06-28-al-dev-explore-findings.md": "## ANSWER",
-        "2026-06-28-al-dev-investigate-findings.md": "Root Cause",
-        "2026-06-28-al-dev-handoff-handoff-prompt.md": "## Context",
+        f"2026-06-28-{patterns['ticket']['context'].lstrip('*-')}": "TICKET_ID: 1",
+        f"2026-06-28-{patterns['interview']['requirements'].lstrip('*-')}": "REQ: 1",
+        f"2026-06-28-{patterns['explore']['findings'].lstrip('*-')}": "## ANSWER",
+        f"2026-06-28-{patterns['investigate']['findings'].lstrip('*-')}": "Root Cause",
+        f"2026-06-28-{patterns['handoff']['prompt'].lstrip('*-')}": "## Context",
     })
 
     assert run_artifact_tests(repo) is True
@@ -176,8 +182,9 @@ def test_run_artifact_tests_passes_when_latest_runtime_artifacts_match(tmp_path:
 def test_run_artifact_tests_fails_when_latest_runtime_artifact_is_missing_marker(tmp_path: Path) -> None:
     contract = _make_contract([{"skill": "my-skill"}])
     repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    patterns = runtime_artifact_patterns()
     _make_runtime_artifacts(repo, {
-        "2026-06-28-al-dev-ticket-ticket-context.md": "plain body without markers",
+        f"2026-06-28-{patterns['ticket']['context'].lstrip('*-')}": "plain body without markers",
     })
 
     assert run_artifact_tests(repo) is False
@@ -193,6 +200,31 @@ def test_runtime_artifact_patterns_use_prefix_free_skill_names() -> None:
         for group in patterns.values()
         for value in group.values()
     )
+
+
+def test_runtime_artifact_patterns_cover_task1_artifact_canon() -> None:
+    patterns = runtime_artifact_patterns()
+    assert patterns["develop-orchestrate"]["progress"] == "*-develop-progress.md"
+    assert patterns["develop-orchestrate"]["checklist"] == "*-develop-checklist.md"
+    assert patterns["develop-orchestrate"]["scope"] == "*-develop-scope.md"
+    assert patterns["develop-orchestrate"]["phase4_handoff"] == "*-develop-phase4-handoff.md"
+    assert patterns["developer-tdd"]["test_plan"] == "*-test-test-plan.md"
+    assert patterns["developer-tdd"]["log"] == "*-developer-tdd-log.md"
+    assert patterns["review-develop"]["code_review"] == "*-develop-code-review.md"
+    assert patterns["perf"]["analysis"] == "*-perf-perf-analysis.md"
+
+
+def test_validator_runtime_rules_are_helper_backed() -> None:
+    patterns = runtime_artifact_patterns()
+    expected = {
+        ("ticket", patterns["ticket"]["context"]),
+        ("interview", patterns["interview"]["requirements"]),
+        ("explore", patterns["explore"]["findings"]),
+        ("investigate", patterns["investigate"]["findings"]),
+        ("handoff", patterns["handoff"]["prompt"]),
+    }
+    actual = {(rule.skill, rule.pattern) for rule in RUNTIME_ARTIFACT_RULES}
+    assert actual == expected
 
 
 def test_main_returns_zero_for_happy_fixture_when_runtime_tests_pass(tmp_path: Path) -> None:
