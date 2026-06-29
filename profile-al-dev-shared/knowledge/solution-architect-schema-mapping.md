@@ -1,6 +1,6 @@
 # Solution Architect Schema Mapping Decisions
 
-Decision guide for mapping AL object fields to the 5-column schema table. Used by al-dev-solution-architect during the Output Format step.
+Decision guide for mapping AL object fields to the 5-column schema table. Used by solution-architect during the Output Format step.
 
 Document all external field/table references with existence verification in your solution plans:
 

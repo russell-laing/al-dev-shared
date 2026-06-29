@@ -4,14 +4,14 @@ scenarios:
     status: golden
     user_prompt: "Fix the typo in the Caption: 'Custmer' should be 'Customer' on Customer Card field 50001."
     expected_artifacts: []
-    must_not_invoke_agent: al-dev-shared:al-dev-solution-architect
+    must_not_invoke_agent: al-dev-shared:solution-architect
     notes: "TRIVIAL fix — should edit in place without spinning up planning agents."
 
   - id: fix-non-trivial-spawns-architect
     status: golden
     user_prompt: "Something keeps causing posting to fail intermittently with no error — fix it."
     expected_artifacts: []
-    must_invoke_agent: al-dev-shared:al-dev-solution-architect
+    must_invoke_agent: al-dev-shared:solution-architect
     notes: "Ambiguous root cause. Per fix SKILL.md, NON-TRIVIAL classification (matches Step 1 example 'Posting fails intermittently') spawns solution-architect for quick analysis before delegating to a developer."
 
   - id: fix-rejects-review-only-misfire
@@ -19,7 +19,7 @@ scenarios:
     user_prompt: "Review this suspected posting bug and explain the likely cause. Do not change files."
     expected_artifacts: []
     must_not_invoke_agent:
-      - al-dev-shared:al-dev-solution-architect
+      - al-dev-shared:solution-architect
       - al-dev-shared:al-dev-developer
     notes: "Intent preflight regression. A review-only request must not silently enter the lightweight edit path."
 

@@ -280,10 +280,10 @@ If compile errors were found, spawn `fix` to fix them first,
 re-compile, then continue.
 
 If only warnings remain after a clean compile, spawn
-`al-dev-diagnostics-resolver`:
+`diagnostics-resolver`:
 
 ```text
-Dispatch agent: al-dev-shared:al-dev-diagnostics-resolver
+Dispatch agent: al-dev-shared:diagnostics-resolver
   description: "Resolve auto-fixable diagnostics from the current compile log"
   prompt: |
     Read `.dev/compile-errors.log` and `knowledge/al-linting-rules.md`.

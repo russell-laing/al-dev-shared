@@ -29,7 +29,7 @@ def run_sed_expression(expression: str) -> str:
 
 
 def test_lint_fixer_trailing_whitespace_command_preserves_terminal_t() -> None:
-    text = read("profile-al-dev-shared/agents/al-dev-commit-lint-fixer.md")
+    text = read("profile-al-dev-shared/agents/commit-lint-fixer.md")
     expression = extract_sed_expression(text)
     result = run_sed_expression(expression)
     assert result == "cat\ncar\ncap\n"
@@ -37,14 +37,10 @@ def test_lint_fixer_trailing_whitespace_command_preserves_terminal_t() -> None:
 
 def test_commit_agents_use_bsd_safe_blank_class() -> None:
     paths = [
-        "profile-al-dev-shared/agents/al-dev-commit-lint-fixer.md",
-        "profile-al-dev-shared/agents/al-dev-commit-hook-fixer.md",
-        "profile-al-dev-shared/generated/agents/claude/al-dev-commit-lint-fixer.md",
-        "profile-al-dev-shared/generated/agents/claude/al-dev-commit-hook-fixer.md",
-        "profile-al-dev-shared/generated/agents/copilot/al-dev-commit-lint-fixer.md",
-        "profile-al-dev-shared/generated/agents/copilot/al-dev-commit-hook-fixer.md",
-        "profile-al-dev-shared/generated/agents/codex/al-dev-commit-lint-fixer.toml",
-        "profile-al-dev-shared/generated/agents/codex/al-dev-commit-hook-fixer.toml",
+        "profile-al-dev-shared/agents/commit-lint-fixer.md",
+        "profile-al-dev-shared/generated/agents/claude/commit-lint-fixer.md",
+        "profile-al-dev-shared/generated/agents/copilot/commit-lint-fixer.md",
+        "profile-al-dev-shared/generated/agents/codex/commit-lint-fixer.toml",
     ]
     for path in paths:
         text = read(path)

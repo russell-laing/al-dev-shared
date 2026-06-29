@@ -5,7 +5,7 @@ building dispatch prompts in skills that invoke design lenses. Quality lenses
 need only a file list.
 
 See also: `knowledge/architect-invocation-patterns.md` (parallel pattern for
-`al-dev-solution-architect`).
+`solution-architect`).
 
 ## Deterministic lenses (static runner — not dispatched as agents)
 

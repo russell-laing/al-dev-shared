@@ -34,8 +34,8 @@ produced and read for the current run.
 
 Three specialist agents (sonnet):
 
-- **al-dev-security-reviewer** — permission/auth/data exposure
-- **al-dev-al-pattern-reviewer** — AL conventions/BC patterns
+- **security-reviewer** — permission/auth/data exposure
+- **al-pattern-reviewer** — AL conventions/BC patterns
 - **performance-reviewer** — N+1/SetLoadFields/efficiency
 
 ## Outputs
@@ -97,8 +97,8 @@ If no issues found in your specialty: return "NONE" under each severity.
 
 Spawn these three agents with the above prompt adapted to each specialty:
 
-- `al-dev-shared:al-dev-security-reviewer` — focus: permissions, data exposure, auth checks
-- `al-dev-shared:al-dev-al-pattern-reviewer` — focus: AL conventions, naming, BC patterns
+- `al-dev-shared:security-reviewer` — focus: permissions, data exposure, auth checks
+- `al-dev-shared:al-pattern-reviewer` — focus: AL conventions, naming, BC patterns
 - `al-dev-shared:performance-reviewer` — focus: N+1 queries, SetLoadFields, resource loops
 
 Collect all three outputs before proceeding to Phase 5. If any agent fails to

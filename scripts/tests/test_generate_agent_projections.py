@@ -68,17 +68,17 @@ def test_shared_agent_tools_use_normalized_vocabulary():
 
 
 def test_shared_agents_do_not_use_askuserquestion_literal():
-    text = Path("profile-al-dev-shared/agents/al-dev-interview.md").read_text(encoding="utf-8")
+    text = Path("profile-al-dev-shared/agents/interview.md").read_text(encoding="utf-8")
     assert "AskUserQuestion" not in text
     assert "USER_GATE" in text
 
 
 def test_project_claude_preserves_supported_shared_tools():
     agent = {
-        "name": "al-dev-interview",
+        "name": "interview",
         "description": "Collect requirements",
         "tools": ["Read", "Write", "USER_GATE"],
-        "body": "# Agent: al-dev-interview\nUse USER_GATE when blocked.\n",
+        "body": "# Agent: interview\nUse USER_GATE when blocked.\n",
     }
     rendered = mod.render_claude_projection(agent, mod.default_projection_policy())
     assert 'tools: ["Read", "Write", "AskUserQuestion"]' in rendered
@@ -86,10 +86,10 @@ def test_project_claude_preserves_supported_shared_tools():
 
 def test_project_copilot_translates_aliases():
     agent = {
-        "name": "al-dev-interview",
+        "name": "interview",
         "description": "Collect requirements",
         "tools": ["Read", "Write", "USER_GATE"],
-        "body": "# Agent: al-dev-interview\nUse USER_GATE when blocked.\n",
+        "body": "# Agent: interview\nUse USER_GATE when blocked.\n",
     }
     rendered = mod.render_copilot_projection(agent, mod.default_projection_policy())
     assert 'tools: ["read", "edit", "ask_user"]' in rendered
@@ -97,13 +97,13 @@ def test_project_copilot_translates_aliases():
 
 def test_project_codex_emits_toml():
     agent = {
-        "name": "al-dev-interview",
+        "name": "interview",
         "description": "Collect requirements",
         "tools": ["Read", "Write", "USER_GATE"],
-        "body": "# Agent: al-dev-interview\nUse USER_GATE when blocked.\n",
+        "body": "# Agent: interview\nUse USER_GATE when blocked.\n",
     }
     rendered = mod.render_codex_projection(agent, mod.default_projection_policy())
-    assert 'name = "al-dev-interview"' in rendered
+    assert 'name = "interview"' in rendered
     assert 'developer_instructions = """' in rendered
     assert "request_user_input" in rendered
     assert "projected_tools" not in rendered
@@ -151,10 +151,10 @@ def test_load_agent_supports_multiline_yaml_description(tmp_path):
 
 def test_unsupported_mapping_fails_closed():
     agent = {
-        "name": "al-dev-script-engineer",
+        "name": "script-engineer",
         "description": "Run scripts",
         "tools": ["ImaginaryTool"],
-        "body": "# Agent: al-dev-script-engineer\n",
+        "body": "# Agent: script-engineer\n",
     }
     try:
         mod.render_copilot_projection(agent, mod.default_projection_policy())
@@ -168,23 +168,23 @@ def test_generate_all_writes_expected_files(tmp_path):
     output_root = tmp_path / "generated" / "agents"
     agents = [
         {
-            "name": "al-dev-interview",
+            "name": "interview",
             "description": "Collect requirements",
             "tools": ["Read", "Write", "USER_GATE"],
-            "body": "# Agent: al-dev-interview\nUse USER_GATE when blocked.\n",
+            "body": "# Agent: interview\nUse USER_GATE when blocked.\n",
         },
         {
-            "name": "al-dev-explore",
+            "name": "explore",
             "description": "Explore a codebase",
             "tools": ["Read", "Bash"],
-            "body": "# Agent: al-dev-explore\nUse shell execution when needed.\n",
+            "body": "# Agent: explore\nUse shell execution when needed.\n",
         },
     ]
     mod.write_all_projections(output_root, agents, mod.default_projection_policy())
     assert (output_root / "README.md").exists()
-    assert (output_root / "claude" / "al-dev-interview.md").exists()
-    assert (output_root / "copilot" / "al-dev-explore.md").exists()
-    assert (output_root / "codex" / "al-dev-explore.toml").exists()
+    assert (output_root / "claude" / "interview.md").exists()
+    assert (output_root / "copilot" / "explore.md").exists()
+    assert (output_root / "codex" / "explore.toml").exists()
     assert list(output_root.rglob(".*.tmp")) == []
 
 
@@ -203,16 +203,16 @@ def test_generate_all_is_deterministic(tmp_path):
     output_root = tmp_path / "generated" / "agents"
     agents = [
         {
-            "name": "al-dev-interview",
+            "name": "interview",
             "description": "Collect requirements",
             "tools": ["Read", "Write", "USER_GATE"],
-            "body": "# Agent: al-dev-interview\nUse USER_GATE when blocked.\n",
+            "body": "# Agent: interview\nUse USER_GATE when blocked.\n",
         }
     ]
     mod.write_all_projections(output_root, agents, mod.default_projection_policy())
-    first = (output_root / "copilot" / "al-dev-interview.md").read_text(encoding="utf-8")
+    first = (output_root / "copilot" / "interview.md").read_text(encoding="utf-8")
     mod.write_all_projections(output_root, agents, mod.default_projection_policy())
-    second = (output_root / "copilot" / "al-dev-interview.md").read_text(encoding="utf-8")
+    second = (output_root / "copilot" / "interview.md").read_text(encoding="utf-8")
     assert first == second
 
 

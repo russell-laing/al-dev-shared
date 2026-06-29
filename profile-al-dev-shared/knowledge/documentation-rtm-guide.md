@@ -1,6 +1,6 @@
 # Documentation RTM Guide
 
-Referenced by: `al-dev-docs-writer` agent and `/document` skill
+Referenced by: `docs-writer` agent and `/document` skill
 
 ## Overview
 

@@ -4,12 +4,12 @@ scenarios:
     status: golden
     user_prompt: "Use /document to write reference documentation for the Sales Order posting workflow."
     expected_artifacts: []
-    must_invoke_agent: al-dev-shared:al-dev-docs-writer
+    must_invoke_agent: al-dev-shared:docs-writer
     notes: "Baseline generate path — explicit invocation dispatches the docs-writer specialist."
 
   - id: document-formatting-sweep
     status: golden
     user_prompt: "Use /document to bold the terms Sales Header, Sales Line, and Posting Date everywhere they appear in prose in docs/Features/SalesPosting.md."
     expected_artifacts: []
-    must_invoke_agent: al-dev-shared:al-dev-docs-writer
+    must_invoke_agent: al-dev-shared:docs-writer
     notes: "Formatting-Sweep Variant via explicit /document invocation. Natural-language auto-routing is out of scope, so this corpus drives Path 1 (execution) only — there is no trigger-corpus entry."

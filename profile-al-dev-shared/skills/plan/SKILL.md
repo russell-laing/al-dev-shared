@@ -155,7 +155,7 @@ defined (fits one page, all BC objects named, no architectural
 trade-offs) and only one viable approach exists. Use 3 if the scope is
 highly complex, contested, or spans multiple architectural concerns.
 
-Spawn 2–3 **al-dev-solution-architect** agents with DIFFERENT
+Spawn 2–3 **solution-architect** agents with DIFFERENT
 starting approaches to prevent convergence. Assign each
 a distinct approach derived above.
 
@@ -197,7 +197,7 @@ If `architect_model = sonnet` (set during preflight), include
 `model: sonnet` as a parameter in each Agent tool invocation.
 If `architect_model = opus`, omit the model parameter — the
 agent frontmatter default (`opus`, see
-`agents/al-dev-solution-architect.md`) applies.
+`agents/solution-architect.md`) applies.
 
 Each architect prompt must include:
 

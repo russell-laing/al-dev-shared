@@ -31,19 +31,19 @@ orchestrating parallel developer agents to implement it.
 
 - All assigned objects implemented and compiling cleanly
 - Session log updated
-- Code ready for review panel (al-dev-security-reviewer,
+- Code ready for review panel (security-reviewer,
 
-  al-dev-al-pattern-reviewer, performance-reviewer)
+  al-pattern-reviewer, performance-reviewer)
 
 **Routing decision:**
 
 ```text
 If a test plan file exists (.dev/*-test-test-plan.md is present and non-empty):
-  spawn al-dev-shared:al-dev-developer-tdd
+  spawn al-dev-shared:developer-tdd
   Include in prompt: TDD cycle expectations (RED-GREEN-REFACTOR),
     TDD_CYCLE_GATE approval gates after each phase
 Else:
-  spawn al-dev-shared:al-dev-developer-traditional
+  spawn al-dev-shared:developer-traditional
   Include in prompt: traditional build-verify workflow,
     compilation after each file or logical group
 ```
@@ -51,7 +51,7 @@ Else:
 **Example spawn block (Context 1 — TDD path):**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-tdd
+Agent: al-dev-shared:developer-tdd
 Prompt:
   Implement the following module from the approved solution plan.
 
@@ -67,7 +67,7 @@ Prompt:
 **Example spawn block (Context 1 — Traditional path):**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-traditional
+Agent: al-dev-shared:developer-traditional
 Prompt:
   Implement the following module from the approved solution plan.
 
@@ -116,13 +116,13 @@ implementation.
 
 **Routing decision:**
 
-Trivial fixes typically have no test plan — route to `al-dev-developer-traditional`.
-If a test plan is present, route to `al-dev-developer-tdd` (rare for trivial fixes).
+Trivial fixes typically have no test plan — route to `developer-traditional`.
+If a test plan is present, route to `developer-tdd` (rare for trivial fixes).
 
 **Example spawn block (Context 2 — Traditional path):**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-traditional
+Agent: al-dev-shared:developer-traditional
 Prompt:
   Fix [specific issue] in [file path].
   Issue: [description from fix context]
@@ -167,13 +167,13 @@ before the review panel runs.
 **Routing decision:**
 
 Error correction targets known failing cases from a code review. Route to
-`al-dev-developer-traditional` unless a regression test plan was written
+`developer-traditional` unless a regression test plan was written
 during the review phase.
 
 **Example spawn block (Context 3 — Traditional path):**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-traditional
+Agent: al-dev-shared:developer-traditional
 Prompt:
   Apply the following corrections from the code review.
 
@@ -320,7 +320,7 @@ if len(scope["files"]) == 1 and scope["risk_signals"] == []:
 
 # Spawn
 agent = spawn_developer(
-  agent: al-dev-shared:al-dev-developer-traditional,
+  agent: al-dev-shared:developer-traditional,
   model: claude-haiku-4-5,
   prompt: f"Fix: {description}. File: {scope['files'][0]}. Change: {scope['changes'][0]}"
 )
@@ -349,7 +349,7 @@ if len(scope["files"]) >= 3 or any(risk in scope["risk_signals"]):
 
 # Spawn
 agent = spawn_developer(
-  agent: al-dev-shared:al-dev-developer-traditional,
+  agent: al-dev-shared:developer-traditional,
   model: claude-sonnet-4-6,
   prompt: f"Implement credit limit validation. Files: {scope['files']}. Pattern: existing validation codeunit referenced. Stop before out-of-scope edits."
 )
@@ -465,7 +465,7 @@ expanded_scope = ["SalesOrderExt.al", "SalesHeaderExt.al", "PostingMgt.Codeunit.
 
 # Restart with sonnet
 agent = spawn_developer(
-  agent: al-dev-shared:al-dev-developer-traditional,
+  agent: al-dev-shared:developer-traditional,
   model: claude-sonnet-4-6,  # Upgraded from haiku
   context: "Previous scope was single-file. Scope has expanded; restarting with full context.",
   prompt: f"Implement across {expanded_scope}. Original assignment: {original_assignment}. Expand to handle: {expanded_changes}."
@@ -530,10 +530,10 @@ contexts. Note: the bare agent name below is a placeholder — resolve it
 based on test-plan presence:
 
 ```text
-Agent: al-dev-shared:al-dev-developer-tdd (test plan present)
-Agent: al-dev-shared:al-dev-developer-traditional (no test plan)
+Agent: al-dev-shared:developer-tdd (test plan present)
+Agent: al-dev-shared:developer-traditional (no test plan)
 
-For Context 3 (error correction): always use al-dev-developer-traditional.
+For Context 3 (error correction): always use developer-traditional.
 
 Context: [CONTEXT 1 | CONTEXT 2 | CONTEXT 3]
 

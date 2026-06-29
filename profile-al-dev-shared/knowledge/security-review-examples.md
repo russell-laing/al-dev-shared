@@ -1,6 +1,6 @@
 # Security Review Examples
 
-Used by: `al-dev-security-reviewer` agent
+Used by: `security-reviewer` agent
 
 These are review examples for spotting common security issues in AL/BC.
 Treat them as illustrative patterns, not production-ready snippets to copy verbatim.

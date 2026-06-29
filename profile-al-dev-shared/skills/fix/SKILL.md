@@ -56,7 +56,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 ## How This Command Works
 
 **Your Role:** Engineering Manager (but streamlined)
-**Teammates:** Usually 1 al-dev-shared:al-dev-developer-traditional (or -tdd if test plan), sometimes 1 al-dev-shared:al-dev-solution-architect for complex fixes
+**Teammates:** Usually 1 al-dev-shared:developer-traditional (or -tdd if test plan), sometimes 1 al-dev-shared:solution-architect for complex fixes
 **You:** Quick analysis, delegate implementation, verify fix, present
 
 ### ❌ DON'T
@@ -122,7 +122,7 @@ For trivial fixes:
    - Use Grep/Read to locate the problem
    - Verify you understand the issue
 
-2. Spawn single `al-dev-shared:al-dev-developer-traditional` using the
+2. Spawn single `al-dev-shared:developer-traditional` using the
    Context 2 (Traditional path) spawn block of
    `knowledge/developer-invocation-patterns.md` — it includes the `Return:`
    field (files changed + confirmation the fix resolves the issue) that the

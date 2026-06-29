@@ -4,7 +4,7 @@ scenarios:
     status: golden
     user_prompt: "Summarize the compile failures without fixing anything."
     expected_artifacts: []
-    must_not_invoke_agent: al-dev-shared:al-dev-diagnostics-resolver
+    must_not_invoke_agent: al-dev-shared:diagnostics-resolver
     notes: "Intent preflight regression."
 
   - id: lint-blocks-clean-claim-without-current-log
@@ -12,5 +12,5 @@ scenarios:
     user_prompt: "Run lint, but do not call it clean unless you read the current compile log."
     expected_artifacts:
       - ".dev/compile-errors.log"
-    must_invoke_agent: al-dev-shared:al-dev-diagnostics-resolver
+    must_invoke_agent: al-dev-shared:diagnostics-resolver
     notes: "Final-gate regression. A clean/complete claim must be tied to the current compile log and lint report."

@@ -44,7 +44,7 @@ Analyze the user request and classify:
 
 **Non-trivial escalation (10-20 min):** If ambiguity, multiple files, or integration risk appears at step 3, `fix` switches automatically to its built-in escalation branch:
 
-- Spawns `al-dev-solution-architect` for quick root-cause analysis (~5 min)
+- Spawns `solution-architect` for quick root-cause analysis (~5 min)
 - Reviews architect's hypothesis; presents to user for approval
 - Spawns `al-dev-developer` with confirmed approach
 - Runs compile/lint verification and presents result

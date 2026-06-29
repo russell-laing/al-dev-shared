@@ -7,11 +7,11 @@ harness's parallel agent capability.
 
 ## Composition
 
-**al-dev-security-reviewer:**
+**security-reviewer:**
 Review all implemented code for permission issues, data exposure
 risks, authentication gaps.
 
-**al-dev-al-pattern-reviewer:**
+**al-pattern-reviewer:**
 Review for AL naming conventions, BC best practices
 (SetLoadFields, FieldCaption), code organization, event patterns.
 
@@ -28,11 +28,11 @@ Dispatch all three simultaneously as one parallel batch. Use the active
 harness's native agent-dispatch mechanism:
 
 ```text
-Dispatch agent: al-dev-shared:al-dev-security-reviewer
+Dispatch agent: al-dev-shared:security-reviewer
   description: "Security review of implemented code"
   prompt: "Review these AL files for security issues: [CHANGED_FILES]. Use the supplied implementation context. Check permissions, data exposure, auth gaps."
 
-Dispatch agent: al-dev-shared:al-dev-al-pattern-reviewer
+Dispatch agent: al-dev-shared:al-pattern-reviewer
   description: "AL patterns and BC best practices review"
   prompt: "Review these AL files for naming, patterns, and BC conventions: [CHANGED_FILES]. Use the supplied implementation context. Check SetLoadFields, naming consistency, event patterns."
 

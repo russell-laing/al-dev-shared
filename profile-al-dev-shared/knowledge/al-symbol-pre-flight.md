@@ -1,6 +1,6 @@
 # AL Symbol Pre-Flight Checklist
 
-Referenced by: `al-dev-developer-tdd` and `al-dev-developer-traditional`
+Referenced by: `developer-tdd` and `developer-traditional`
 agents (`SYMBOL_PREFLIGHT_GATE`), `develop-orchestrate` skill Phase 3 spawn
 prompt.
 

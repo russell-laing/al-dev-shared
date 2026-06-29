@@ -1,7 +1,7 @@
 # Solution Plan Template
 
 Canonical authoring template for the solution plan written by
-`al-dev-solution-architect` and passed to downstream review/approval flows.
+`solution-architect` and passed to downstream review/approval flows.
 
 ```markdown
 ## Solution Plan: [Feature Name]

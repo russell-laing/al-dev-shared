@@ -1,7 +1,7 @@
 ---
 name: lint
 description: >-
-  Run AL compile, then dispatch al-dev-diagnostics-resolver to auto-fix
+  Run AL compile, then dispatch diagnostics-resolver to auto-fix
   AL code diagnostics if compile issues are found; exits cleanly with no
   dispatch if the compile log is clean.
 argument-hint: "[optional: path to existing compile-errors.log]"
@@ -81,7 +81,7 @@ Stop here.
 
 ## Step 2: Spawn diagnostics-resolver
 
-Spawn `al-dev-diagnostics-resolver`:
+Spawn `diagnostics-resolver`:
 
 ```text
 Read .dev/compile-errors.log and knowledge/al-linting-rules.md.

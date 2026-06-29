@@ -1,6 +1,6 @@
 # Architect Invocation Patterns
 
-`al-dev-solution-architect` is used through two structurally different
+`solution-architect` is used through two structurally different
 invocation styles: competitive planning in `/plan` and a bounded
 single-architect diagnostic pass in `/fix`. The domain-specific prompt
 content (what to analyse, what to produce) stays local to each skill; only the
@@ -10,7 +10,7 @@ structural mechanics are documented here.
 
 Used by /plan.
 
-Spawn 2-3 `al-dev-solution-architect` agents in parallel, each assigned a
+Spawn 2-3 `solution-architect` agents in parallel, each assigned a
 **meaningfully different starting approach** to prevent convergence. The goal
 is genuine diversity of design, not minor variations on the same idea.
 
@@ -31,7 +31,7 @@ Spawn count guidance: 2 for SIMPLE; 2-3 for MEDIUM / COMPLEX, matching
 ### Pattern 1 dispatch block
 
 ```text
-Agent: al-dev-shared:al-dev-solution-architect
+Agent: al-dev-shared:solution-architect
 Prompt:
   You are Architect {N} of {TOTAL}. Your assigned approach: {APPROACH_NAME}.
 
@@ -75,7 +75,7 @@ requirement.
 
 Used by `/fix` only for its bounded single-architect diagnostic path.
 
-Spawn **one** `al-dev-solution-architect` with a time-bounded prompt (5 min
+Spawn **one** `solution-architect` with a time-bounded prompt (5 min
 max) to diagnose a bounded fix issue, not to produce a full architecture plan.
 Ask for:
 
@@ -97,7 +97,7 @@ approach.
 ### Pattern 2 dispatch block
 
 ```text
-Agent: al-dev-shared:al-dev-solution-architect
+Agent: al-dev-shared:solution-architect
 Prompt:
   Analyse this issue and return a concise fix plan. Time budget: 5 minutes.
 

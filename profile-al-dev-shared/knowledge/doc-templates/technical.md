@@ -2,7 +2,7 @@
 audience: technical
 description: >-
   AL developer reference — objects, code, extension points, RTM.
-  Used by al-dev-docs-writer when AUDIENCE=technical.
+  Used by docs-writer when AUDIENCE=technical.
 ---
 
 # Feature: [Feature Name]

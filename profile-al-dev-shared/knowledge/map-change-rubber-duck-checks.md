@@ -560,8 +560,8 @@ profile-al-dev-shared/generated/agents/claude/al-dev-developer.md
 REJECT: "Fix typo in profile-al-dev-shared/generated/agents/claude/commit-analyzer.md"
 REASON: Edit source file profile-al-dev-shared/agents/commit-analyzer.md instead
 
-REJECT: "Reorganize tool list in profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md"
-REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd.md; regenerate projections
+REJECT: "Reorganize tool list in profile-al-dev-shared/generated/agents/copilot/developer-tdd.md"
+REASON: Make changes to source profile-al-dev-shared/agents/developer-tdd.md; regenerate projections
 
 # CORRECT WORKFLOW
 1. Edit the source artifact (e.g., profile-al-dev-shared/agents/commit-analyzer.md)
@@ -585,8 +585,8 @@ REASON: Make changes to source profile-al-dev-shared/agents/al-dev-developer-tdd
 - Duck suggests: "Fix typo in `profile-al-dev-shared/generated/agents/claude/commit-analyzer.md`"
   → REJECT: Edit the source file `profile-al-dev-shared/agents/commit-analyzer.md` instead
   
-- Duck suggests: "Reorganize tool list in `profile-al-dev-shared/generated/agents/copilot/al-dev-developer-tdd.md`"
-  → REJECT: Make changes to source `profile-al-dev-shared/agents/al-dev-developer-tdd.md`; regenerate projections afterward
+- Duck suggests: "Reorganize tool list in `profile-al-dev-shared/generated/agents/copilot/developer-tdd.md`"
+  → REJECT: Make changes to source `profile-al-dev-shared/agents/developer-tdd.md`; regenerate projections afterward
 
 **Correct workflow:**
 

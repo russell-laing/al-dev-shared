@@ -8,13 +8,14 @@ import unittest
 from pathlib import Path
 import sys
 
-SCRIPTS_DIR = Path(__file__).resolve().parents[1]
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+for path in (REPO_ROOT, SCRIPTS_DIR):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
 from scripts.al_dev_tools.docs import map_doc_sections as shared
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "generate_plugin_graph",
     REPO_ROOT / "scripts" / "generate_plugin_graph.py",
@@ -32,7 +33,7 @@ def _build_fixture(root: Path) -> Path:
     (plugin / "knowledge").mkdir(parents=True)
 
     (plugin / "skills" / "s-main" / "SKILL.md").write_text(
-        "Spawn al-dev-shared:al-dev-worker.\n"
+        "Spawn al-dev-shared:worker.\n"
         "See ../../knowledge/good.md and ../../knowledge/missing.md.\n"
         "Writes .dev/output.md.\n"
         "Then run /s-other to continue.\n"
@@ -43,9 +44,9 @@ def _build_fixture(root: Path) -> Path:
         "A second skill with no agent or knowledge refs.\n",
         encoding="utf-8",
     )
-    (plugin / "agents" / "al-dev-worker.md").write_text(
+    (plugin / "agents" / "worker.md").write_text(
         "---\n"
-        "name: al-dev-worker\n"
+        "name: worker\n"
         "description: Worker agent\n"
         "model: haiku\n"
         'tools: ["Read"]\n'
@@ -53,9 +54,9 @@ def _build_fixture(root: Path) -> Path:
         "Worker agent. Reads ../../knowledge/good.md.\n",
         encoding="utf-8",
     )
-    (plugin / "agents" / "al-dev-orphan.md").write_text(
+    (plugin / "agents" / "orphan.md").write_text(
         "---\n"
-        "name: al-dev-orphan\n"
+        "name: orphan\n"
         "description: Orphan agent\n"
         "model: sonnet\n"
         'tools: ["Read"]\n'
@@ -95,11 +96,11 @@ def test_build_document_preserves_fixture_edges_and_health() -> None:
         assert "flowchart LR" in rendered
         assert "skill_s_main[s-main]" in rendered
         assert "skill_s_main --> skill_s_other" in rendered
-        assert "skill_s_main --> agent_al_dev_worker" in rendered
-        assert "agent_al_dev_worker --> knowledge_good_md" in rendered
+        assert "agent_worker[worker]" in rendered
+        assert "agent_worker --> knowledge_good_md" in rendered
         assert "knowledge: missing.md" in rendered
         assert "Orphan agents" in rendered
-        assert "al-dev-orphan" in rendered
+        assert "orphan" in rendered
 
 
 def test_build_document_does_not_render_external_wrapper_nodes() -> None:
@@ -161,8 +162,8 @@ def test_main_fails_closed_without_partial_write_on_inventory_error() -> None:
 
 
 def test_node_id_uses_shared_mermaid_sanitization() -> None:
-    assert _mod.node_id("al-dev-worker") == "al_dev_worker"
-    assert _mod.node_id("al-dev-worker") == shared.mermaid_node_id("al-dev-worker")
+    assert _mod.node_id("worker") == "worker"
+    assert _mod.node_id("worker") == shared.mermaid_node_id("worker")
 
 
 def _run(func):

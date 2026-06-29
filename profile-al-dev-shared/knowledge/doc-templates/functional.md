@@ -2,7 +2,7 @@
 audience: functional
 description: >-
   Business analyst / consultant — workflows, validation rules,
-  plain language, reduced RTM. Used by al-dev-docs-writer
+  plain language, reduced RTM. Used by docs-writer
   when AUDIENCE=functional.
 ---
 

@@ -258,7 +258,7 @@ Even complex features: Describe the design comprehensively, but don't write the 
 5. Deep integration analysis
 6. Questions for clarification
 
-### al-dev-solution-architect / solution planning
+### solution-architect / solution planning
 
 **Output target by complexity:**
 - SIMPLE: 50-100 lines
@@ -445,7 +445,7 @@ Target planning: 100-150 lines total
 Spawning `/plan-preflight` with instruction:
 "Keep output to 50-75 lines. No user stories, brief requirements list only."
 
-Spawning `al-dev-solution-architect` with instruction:
+Spawning `solution-architect` with instruction:
 "Keep output to 50-100 lines. No ASCII diagrams, no alternatives section, describe file changes without full code."
 ```
 

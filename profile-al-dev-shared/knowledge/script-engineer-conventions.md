@@ -1,6 +1,6 @@
 # Script Engineer Conventions
 
-Referenced by: `al-dev-script-engineer` agent
+Referenced by: `script-engineer` agent
 
 ## Script Conventions (follow strictly)
 

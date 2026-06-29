@@ -85,10 +85,10 @@ approval.
 
 ---
 
-**If a non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-tdd`:**
+**If a non-empty test plan exists at `$TEST_PLAN` — use `developer-tdd`:**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-tdd
+Agent: al-dev-shared:developer-tdd
 
 Include the common dispatched prompt content above.
 
@@ -105,10 +105,10 @@ Route-specific workflow:
 
 ---
 
-**If no non-empty test plan exists at `$TEST_PLAN` — use `al-dev-developer-traditional`:**
+**If no non-empty test plan exists at `$TEST_PLAN` — use `developer-traditional`:**
 
 ```text
-Agent: al-dev-shared:al-dev-developer-traditional
+Agent: al-dev-shared:developer-traditional
 
 Include the common dispatched prompt content above.
 
@@ -136,11 +136,11 @@ Route-specific workflow:
    [ -n "$TEST_PLAN" ] && [ -s "$TEST_PLAN" ]
    ```
 
-   - If a non-empty test plan exists, route to `al-dev-developer-tdd`
+   - If a non-empty test plan exists, route to `developer-tdd`
      and include TDD cycle expectations and the `TDD_CYCLE_GATE`
      approval gates.
    - If no non-empty test plan exists, route to
-     `al-dev-developer-traditional` and include the traditional
+     `developer-traditional` and include the traditional
      build-verify workflow.
 4. **Dispatch** all developers (in parallel where modules own disjoint
    files), each with its instantiated prompt. See

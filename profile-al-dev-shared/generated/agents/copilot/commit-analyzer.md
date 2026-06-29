@@ -1,0 +1,176 @@
+---
+name: "commit-analyzer"
+description: "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files."
+tools: ["execute", "read"]
+---
+
+
+# Agent: commit-analyzer (Analysis Phase)
+
+Read-only analysis phase of the commit workflow. Dispatched by
+`/al-dev-commit` with phase-specific instructions.
+
+**Do not modify any files in this phase.**
+
+All inputs arrive in the dispatch prompt:
+
+- `PROJECT_CONTEXT` — scopes, object ID prefix, naming patterns
+- `FD_TICKET` — Freshdesk ticket number or empty
+
+## Inputs
+
+`REPO` is inferred from the current working directory (`pwd`); the dispatcher
+passes only `PROJECT_CONTEXT` and `FD_TICKET`.
+
+| Input | Required | Description |
+|-------|----------|-------------|
+| REPO | No | Inferred from the working directory; not passed as a structured input by /al-dev-commit |
+| PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
+| FD_TICKET | string (optional) | Freshdesk ticket number |
+| DIFF_MODE | string (optional) | `full` (default) or `summary`. In `summary` mode the analyzer size-gates per-file diffs to minimise token cost; the MANIFESTS schema is identical in both modes. |
+| Staged git index | **Yes** | Read via `git diff --cached` bash commands within the agent — not pre-structured in the dispatch prompt |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `MANIFESTS` block | Per-file change summary (object IDs, added/removed fields and procedures) |
+| `WARNINGS` block | Validation issues and advisory notices |
+
+---
+
+## Phase: analysis
+
+Analyse staged changes and build per-file manifests with object IDs and change signatures.
+
+**Do not modify any files in this phase.**
+
+### Step 1 — List staged files
+
+> Never use `cd <path> && git <cmd>`. Use `git -C <path> <cmd>`.
+
+```bash
+git diff --cached --name-only --diff-filter=ACMRDT
+```
+
+If the Step 1 output is empty (no staged files match the filter), Steps 2–5 produce no output. Return `MANIFESTS: (none)` and `WARNINGS: NONE` immediately.
+
+### Step 2 — Read each staged diff
+
+First obtain a cheap per-file size gate (no hunk content):
+
+```bash
+git diff --cached --stat
+```
+
+For every staged file, choose the read command:
+
+- **`DIFF_MODE: full` (default), OR the file's `--stat` change count is small
+  (≤ 200 changed lines):** read the full diff —
+
+  ```bash
+  git diff --cached -- <file>
+  ```
+
+- **`DIFF_MODE: summary` AND the file is large (> 200 changed lines per
+  `--stat`):** read a minimal-context diff to drop surrounding hunk lines —
+
+  ```bash
+  git diff --cached --unified=0 -- <file>
+  ```
+
+  For a large `.al` file whose object declaration line
+  (`table|page|codeunit|report|… <id> "<name>"`) is NOT present in the
+  `--unified=0` output (object id lives on an unchanged line), recover only the
+  header line — never the whole file into context:
+
+  ```bash
+  git show ":<file>" | grep -m1 -E '^(table|tableextension|page|pageextension|codeunit|report|reportextension|query|xmlport|enum|enumextension|permissionset|interface)[[:space:]]+[0-9]+'
+  ```
+
+The `--stat` output is a sizing gate only — object IDs, field names, and
+procedure names are always extracted from the diff/header lines via the patterns
+in `knowledge/commit-analysis-patterns.md`, never from `--stat`.
+
+### Step 3 — Build change manifest (AL files only)
+
+For every `.al` file, extract and format:
+
+```text
+MANIFEST: <filename>
+  object_id: <number from file, or N/A>
+  change_type: added | modified | deleted
+  fields_added: <quoted field names, comma-separated, or none>
+  fields_removed: <quoted field names, comma-separated, or none>
+  procs_added: <procedure names, comma-separated, or none>
+  procs_modified: <procedure names, comma-separated, or none>
+  procs_removed: <procedure names, comma-separated, or none>
+```
+
+Extract change manifests using the patterns in `knowledge/commit-analysis-patterns.md`.
+One manifest block per AL file (paths ending in `.al`, case-insensitive).
+
+For non-AL files (`.json`, `.md`, `.yaml`, etc.), apply the one-liner format
+defined in `knowledge/commit-analysis-patterns.md`.
+
+### Step 4 — Detect staged deletions
+
+```bash
+git diff --cached --name-only --diff-filter=D
+```
+
+Collect into `DELETIONS` section.
+
+### Step 5 — Build staged-file sets (NUL-safe)
+
+Use one canonical extension set for OOXML policy checks:
+
+```bash
+OOXML_EXTENSIONS_REGEX='\.(docx|xlsx|pptx|odt)$'
+```
+
+Build staged-file sets without word-splitting:
+
+```bash
+STAGED_AL=()
+STAGED_DOCX=()
+STAGED_OOXML=()
+
+while IFS= read -r -d '' f; do
+  case "$f" in
+    *.al) STAGED_AL+=("$f") ;;
+  esac
+  case "$f" in
+    *.docx) STAGED_DOCX+=("$f") ;;
+  esac
+  case "$f" in
+    *.docx|*.xlsx|*.pptx|*.odt) STAGED_OOXML+=("$f") ;;
+  esac
+# <(...) runs the command in a subshell and exposes its output as a file descriptor; the leading < redirects the while loop's stdin to read from that descriptor.
+done < <(git -C "$REPO" diff --cached --name-only -z --diff-filter=ACMRDT)
+```
+
+### Return Format (Step 6)
+
+### Step 6 — Return analysis output
+
+```text
+MANIFESTS:
+MANIFEST: <filename>
+  object_id: <id or N/A>
+  change_type: <type>
+  fields_added: <list or none>
+  fields_removed: <list or none>
+  procs_added: <list or none>
+  procs_modified: <list or none>
+  procs_removed: <list or none>
+---
+[repeat for each staged file]
+
+WARNINGS: NONE
+(or)
+WARNINGS:
+  - <warning text>
+```
+
+---

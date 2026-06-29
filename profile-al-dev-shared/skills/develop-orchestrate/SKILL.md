@@ -299,20 +299,20 @@ For each module in the solution plan, execute these routing steps:
    TEST_PLAN=$(ls .dev/*-test-test-plan.md 2>/dev/null | sort | tail -1)
    ```
 
-2. If a test plan exists, spawn **al-dev-developer-tdd**:
+2. If a test plan exists, spawn **developer-tdd**:
 
    ```text
-   Agent: al-dev-shared:al-dev-developer-tdd
+   Agent: al-dev-shared:developer-tdd
    ```
 
    Include in the prompt: reference to the test plan, TDD cycle
    expectations (RED-GREEN-REFACTOR), and the `TDD_CYCLE_GATE` approval
    gates after each phase.
 
-3. If no test plan exists, spawn **al-dev-developer-traditional**:
+3. If no test plan exists, spawn **developer-traditional**:
 
    ```text
-   Agent: al-dev-shared:al-dev-developer-traditional
+   Agent: al-dev-shared:developer-traditional
    ```
 
    Include in the prompt: the traditional build-verify workflow and

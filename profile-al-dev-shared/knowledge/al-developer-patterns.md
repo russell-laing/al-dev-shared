@@ -1,6 +1,6 @@
 # AL Developer Patterns and Conventions
 
-Referenced by: `al-dev-developer-tdd` and `al-dev-developer-traditional` agents
+Referenced by: `developer-tdd` and `developer-traditional` agents
 
 ## Standard AL Patterns
 

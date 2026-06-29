@@ -83,7 +83,7 @@ Available Specialist Agents (spawned by lead session via Agent tool):
 | performance-reviewer      | Query efficiency, N+1, resource usage           |
 | interview                 | Deep requirements gathering                     |
 | docs-writer               | Technical documentation                         |
-| al-dev-script-engineer    | Python and shell scripts for AL tooling          |
+| script-engineer    | Python and shell scripts for AL tooling          |
     ```
 
 This agents table is a capability reference. It does not mean

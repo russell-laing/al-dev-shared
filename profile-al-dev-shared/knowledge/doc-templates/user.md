@@ -2,7 +2,7 @@
 audience: user
 description: >-
   End user guide — navigation, step-by-step workflows, troubleshooting.
-  Used by al-dev-docs-writer when AUDIENCE=user.
+  Used by docs-writer when AUDIENCE=user.
 ---
 
 # [Feature Name] — User Guide

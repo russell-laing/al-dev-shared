@@ -16,14 +16,14 @@ scenarios:
     user_prompt: "Design how I'd add a tax-exemption certificate validation feature to the Sales Order workflow."
     expected_artifacts:
       - ".dev/*-plan-solution-plan.md"
-    must_invoke_agent: al-dev-shared:al-dev-solution-architect
+    must_invoke_agent: al-dev-shared:solution-architect
     notes: "Common entry path; should produce a solution plan with 2-3 architect options."
 
   - id: plan-trivial-routing
     status: golden
     user_prompt: "Plan a one-line fix to change a Caption from 'Cust' to 'Customer' on the Sales Header."
     expected_artifacts: []
-    must_not_invoke_agent: al-dev-shared:al-dev-solution-architect
+    must_not_invoke_agent: al-dev-shared:solution-architect
     notes: "Tests the TRIVIAL classification in workflow-routing.md."
 ```
 

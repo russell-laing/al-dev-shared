@@ -2,7 +2,7 @@
 audience: executive
 description: >-
   One-page executive summary — what was built, business problem,
-  key outcomes. Used by al-dev-docs-writer when AUDIENCE=executive.
+  key outcomes. Used by docs-writer when AUDIENCE=executive.
 ---
 
 # Feature: [Feature Name] — Summary

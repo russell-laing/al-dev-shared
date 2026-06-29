@@ -1,6 +1,6 @@
 # Solution Architect Research Patterns
 
-Reference for `al-dev-solution-architect`. Evidence hierarchy and MCP tool
+Reference for `solution-architect`. Evidence hierarchy and MCP tool
 selection for the research phase.
 
 ## Evidence hierarchy (strict — do not skip a higher tier when available)

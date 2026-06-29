@@ -1,8 +1,8 @@
 # Reviewer Findings Template
 
 Canonical output format and severity taxonomy shared by the four code-review
-specialist agents: al-dev-al-pattern-reviewer, al-dev-security-reviewer,
-performance-reviewer, and al-dev-general-code-reviewer.
+specialist agents: al-pattern-reviewer, security-reviewer,
+performance-reviewer, and general-code-reviewer.
 
 ## Findings Entry Format
 
