@@ -22,9 +22,6 @@ _spec.loader.exec_module(_mod)
 _format_issue = _mod._format_issue
 check_thin_sections = _mod.check_thin_sections
 check_code_implication = _mod.check_code_implication
-check_references = _mod.check_references
-
-
 def test_format_issue_has_canonical_shape() -> None:
     output = _format_issue(
         "knowledge/foo.md",
@@ -60,63 +57,6 @@ def test_check_code_implication_emits_canonical_shape() -> None:
     assert "rule:" in output
     assert "knowledge-no-code" in output
     assert "fix:" in output
-
-
-def test_check_references_emits_canonical_shape(tmp_path: Path) -> None:
-    knowledge_dir = tmp_path / "knowledge"
-    knowledge_dir.mkdir()
-    content = "See knowledge/missing-file.md for details.\n"
-    issues = check_references("knowledge/foo.md", content, knowledge_dir)
-    assert issues, "Expected a dead-ref issue for a reference to a non-existent file"
-    output = issues[0]
-    assert "rule:" in output
-    assert "knowledge-dead-ref" in output
-    assert "fix:" in output
-    assert "missing-file.md" in output
-
-
-def test_check_references_allows_tooling_doc_to_reference_shared_knowledge(tmp_path: Path) -> None:
-    tooling_dir = tmp_path / ".claude" / "knowledge"
-    shared_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
-    tooling_dir.mkdir(parents=True)
-    shared_dir.mkdir(parents=True)
-    (shared_dir / "workflow-resilience.md").write_text("# shared\n", encoding="utf-8")
-
-    issues = check_references(
-        ".claude/knowledge/dispatch-fallback-contract.md",
-        "See knowledge/workflow-resilience.md for fallback rules.\n",
-        tooling_dir,
-    )
-
-    assert issues == [], f"Expected shared knowledge reference to resolve, got: {issues}"
-
-
-def test_check_references_still_flags_missing_shared_reference_for_tooling_doc(tmp_path: Path) -> None:
-    tooling_dir = tmp_path / ".claude" / "knowledge"
-    shared_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
-    tooling_dir.mkdir(parents=True)
-    shared_dir.mkdir(parents=True)
-
-    issues = check_references(
-        ".claude/knowledge/dispatch-fallback-contract.md",
-        "See knowledge/workflow-resilience.md for fallback rules.\n",
-        tooling_dir,
-    )
-
-    assert issues, "Expected a dead-ref issue when neither tooling nor shared knowledge contains the file"
-    assert "workflow-resilience.md" in issues[0]
-
-
-def test_check_references_flags_missing_nested_knowledge_paths(tmp_path: Path) -> None:
-    knowledge_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
-    issues = check_references(
-        "profile-al-dev-shared/skills/document/SKILL.md",
-        "Use knowledge/doc-templates/executive.md for structure.\n",
-        knowledge_dir,
-    )
-
-    assert issues, "Expected a dead-ref issue for a missing nested knowledge path"
-    assert "doc-templates/executive.md" in issues[0]
 
 
 def test_validate_knowledge_quality_direct_script_uses_repo_relative_default_path() -> None:

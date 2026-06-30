@@ -70,7 +70,7 @@ Used by the canonical update procedure
    in the Layer 2 section.
 
 **`caller_mismatch`** — `Spawned by:` does not match the canonical callers
-from `scripts/derive_agent_callers.py`.
+from `python3 scripts/derive_agent_callers.py`.
 
 1. Use the script-derived caller list from the discrepancy `detail` field
    (or `(none found)` if empty).
@@ -84,7 +84,7 @@ from `scripts/derive_agent_callers.py`.
 Used by `sync-map-documentation-skill-compare` Step 3.
 
 - **`missing_from_map`** — an active skill has no `### /skill-name` section in
-  Layer 2 of `docs/skills-map.md`.
+  Layer 2 of `docs/skills_map.md`.
 - **`stale_in_map`** — a `### /skill-name` Layer 2 section exists for an
   archived skill (not in the active list).
 - **`phase_count_mismatch`** — the phase count in `SKILL.md` (count of

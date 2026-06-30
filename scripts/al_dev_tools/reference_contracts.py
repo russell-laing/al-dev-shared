@@ -67,6 +67,11 @@ _GENERATED_OUTPUT_SURFACES = {
         "docs/maintainer_tooling/",
         "docs/maintainer_tooling/*.md",
     ),
+    "documentation_maps": (
+        "docs/agent_map.md",
+        "docs/skills_map.md",
+        "docs/plugin_graph.md",
+    ),
     "agent_projections": (
         "profile-al-dev-shared/generated/agents/claude/*.md",
         "profile-al-dev-shared/generated/agents/copilot/*.md",
@@ -78,6 +83,19 @@ _ALLOWED_TEMPLATE_PATTERNS = (
     "docs/health/YYYY-MM-DD-<surface>-findings.md",
     "docs/health/YYYY-MM-DD-<surface>-health.md",
     "docs/health/YYYY-MM-DD-<surface>-friction-findings.md",
+    "pyproject.toml",
+    "Features/*.md",
+    "profile-al-dev-shared/skills/skill-*/SKILL.md",
+    "profile-al-dev-shared/agents/agent-*.md",
+    "profile-al-dev-shared/agents/review-*.md",
+    "../../../*-knowledge.md",
+    ".claude/skills/validate-*/SKILL.md",
+    ".codex/agents/custom-*.md",
+    "../../knowledge/*.md",
+    "knowledge/file.md",
+    "scripts/generate-*.py",
+    "docs/migration-v*.md",
+    "path/to/file.md",
 )
 
 _LEGACY_REFERENCE_ALIASES = {

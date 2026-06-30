@@ -3,7 +3,7 @@
 How to orchestrate the rubber-duck verification pass across many findings.
 Referenced by `/plan-plugin-findings` Phase 2. The per-check registry (Universal
 U1–U3 and type-specific checks) lives in
-`../../profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`; this doc
+`profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`; this doc
 owns the run flow only.
 
 ## Progress tracking

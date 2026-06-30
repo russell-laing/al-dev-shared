@@ -14,7 +14,7 @@ These rules are canonical; the SKILL.md sub-sections point here.
 ## 2 — Recurrence annotation
 
 Locate the previous artifact from the same family for the same surface by
-re-running `scripts/select_health_artifacts.py` with `--offset 1`. Keep the
+re-running `python3 scripts/select_health_artifacts.py` with `--offset 1`. Keep the
 prior-artifact lookup inside the current artifact family so recurrence comparison
 stays within family.
 

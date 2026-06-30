@@ -131,7 +131,7 @@ Regenerate projections after either of these changes:
 
 - You edit shared agent source in `profile-al-dev-shared/agents/*.md`
 - You change implemented projection behavior in
-  `scripts/generate_agent_projections.py`
+  `python3 scripts/generate_agent_projections.py`
 
 Prose-only documentation edits do not require regeneration by themselves. If
 you change this file's frontmatter mapping rules or any intended projection

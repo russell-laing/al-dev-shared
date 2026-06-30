@@ -11,7 +11,7 @@ Parameters supplied by the caller agent:
 | ------------- | -------------- | -------------- |
 | `{SURFACE}` | `agent` | `skill` |
 | `{AUDIT_JSON}` | `<result_dir>/audit/agent-audit.json` | `<result_dir>/audit/skill-audit.json` |
-| `{MAP_PATH}` | `docs/agent-map.md` | `docs/skills-map.md` |
+| `{MAP_PATH}` | `docs/agent_map.md` | `docs/skills_map.md` |
 | `{EDIT_CASE_SECTION}` | Agent surface — edit cases (update) | Skill surface — edit cases (update) |
 | `{COVERAGE_MARKER}` | `agent-coverage` | `skill-coverage` |
 | `{MIN_LINES}` | 50 | 100 |
