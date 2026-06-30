@@ -243,8 +243,9 @@ if [[ "$AL_COUNT" -le 4 && "$DEL_COUNT" -eq 0 ]]; then
     git diff --cached --name-only -- '*.al' | while IFS= read -r f; do
       echo "  $f:"
       git diff --cached --unified=0 -- "$f" | \
-        grep -E '^\+.*(procedure |trigger |field |event )' | \
-        sed 's/^\+/    + /' | head -10
+        grep -E '^\+.*(procedure |trigger |field |event |table |tabledata |codeunit |page |permissionset |tableelement )' | \
+        sed 's/^\+/    + /' | head -10 || \
+        { git diff --cached --unified=0 -- "$f" | sed 's/^\+/    + /' | head -10; echo "    # (permission-set grant lines; full diff shown)"; }
     done
   )"
   DELETIONS_INLINE=""
@@ -252,6 +253,8 @@ if [[ "$AL_COUNT" -le 4 && "$DEL_COUNT" -eq 0 ]]; then
   SKIP_ANALYZER=true
 fi
 ```
+
+**Manifest extraction fallback:** The inline manifest grep filters for AL object keywords (procedure, trigger, field, event, table, tabledata, codeunit, page, permissionset, tableelement). If keyword search returns no matches for a diff hunk (e.g., permission-set grant lines), the fallback shows the full diff hunk instead of returning empty.
 
 When `SKIP_ANALYZER` is set, use `MANIFESTS_INLINE`, `DELETIONS_INLINE`, and
 `WARNINGS_INLINE` in place of agent output throughout Phases 1.2 and 1.3,
