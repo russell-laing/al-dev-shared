@@ -14,6 +14,7 @@ __pycache__/
 *.html
 .dev/regenerate-agent-projections-progress.md
 .dev/implement-plugin-health-progress.md
+.dev/implement-plugin-health-procedure-log.jsonl
 .dev/sync-map-documentation-checkpoint.json
 docs/superpowers/plans/
 docs/superpowers/specs/
