@@ -8,6 +8,14 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - exercised in package imports
+    from scripts._entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+from scripts.al_dev_tools.io_utils import write_text_atomic
+
 
 SUPERPOWERS_DIRS = (Path("docs/superpowers/plans"), Path("docs/superpowers/specs"))
 EXCLUDED_SCAN_PARTS = {
@@ -292,8 +300,7 @@ def main(argv: list[str] | None = None) -> int:
         path.relative_to(root).as_posix(): refs
         for path, refs in ((Path(key), value) for key, value in references_by_path.items())
     }
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(render_history(artifacts, references), encoding="utf-8")
+    write_text_atomic(output_path, render_history(artifacts, references))
     print(f"Wrote {display_path(output_path, root)} with {len(artifacts)} artifacts")
     return 0
 

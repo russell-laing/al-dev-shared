@@ -10,6 +10,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - exercised in package imports
+    from scripts._entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+from scripts.al_dev_tools.io_utils import write_text_atomic
+
 
 LEDGER_HEADER = (
     "Surface",
@@ -655,7 +663,7 @@ def main() -> int:
     )
 
     if args.write is not None:
-        args.write.write_text(migrated_text, encoding="utf-8")
+        write_text_atomic(args.write, migrated_text)
     else:
         sys.stdout.write(migrated_text)
 
@@ -664,14 +672,14 @@ def main() -> int:
         report_path = args.ledger.parent / "dispositions-migration-audit.md"
     if report_path is not None:
         legacy_rows, _id_map = parse_legacy_rows(text)
-        report_path.write_text(
+        write_text_atomic(
+            report_path,
             render_report(
                 source_path=args.ledger,
                 migrated_count=len(legacy_rows),
                 unresolved=unresolved,
                 rewrites=rewrites if args.stamp_ids else None,
             ),
-            encoding="utf-8",
         )
 
     return 0

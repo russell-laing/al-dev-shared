@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import subprocess
 import sys
@@ -213,6 +214,51 @@ class HealthDispositionMigrationTest(unittest.TestCase):
             self.assertTrue(output.is_file())
             self.assertTrue(report.is_file())
             self.assertIn("Rows requiring manual provenance cleanup: 1", report.read_text(encoding="utf-8"))
+
+    def test_main_writes_outputs_via_atomic_helper(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            ledger = root / "dispositions.md"
+            output = root / "dispositions-migrated.md"
+            report = root / "dispositions-migration-audit.md"
+            ledger.write_text(
+                "\n".join(
+                    [
+                        "| Object | Issue | Disposition | Date | Evidence / note |",
+                        "|--------|-------|-------------|------|------------------|",
+                        "| mystery-skill | Unmatched issue | accepted | 2026-06-07 | note |",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            calls: list[Path] = []
+            original = getattr(MIGRATION, "write_text_atomic", None)
+
+            def fake_write_text_atomic(path: Path, text: str) -> None:
+                calls.append(path)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+
+            MIGRATION.write_text_atomic = fake_write_text_atomic
+            original_parse_args = MIGRATION.parse_args
+            try:
+                MIGRATION.parse_args = lambda: argparse.Namespace(
+                    ledger=ledger,
+                    write=output,
+                    report=report,
+                    inference_map=None,
+                    stamp_ids=False,
+                )
+                result = MIGRATION.main()
+            finally:
+                MIGRATION.parse_args = original_parse_args
+                if original is None:
+                    delattr(MIGRATION, "write_text_atomic")
+                else:
+                    MIGRATION.write_text_atomic = original
+
+            self.assertEqual(0, result)
+            self.assertEqual([output, report], calls)
 
 
 if __name__ == "__main__":

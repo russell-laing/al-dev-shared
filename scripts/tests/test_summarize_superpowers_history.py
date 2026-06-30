@@ -1,5 +1,6 @@
 import contextlib
 import io
+import subprocess
 import tempfile
 import sys
 import unittest
@@ -125,6 +126,53 @@ def test_main_prints_absolute_output_outside_root(tmp_path):
     assert output.exists()
     assert f"Wrote {output}" in stdout.getvalue()
     assert "with 1 artifacts" in stdout.getvalue()
+
+
+def test_main_writes_history_via_atomic_helper(tmp_path):
+    module = load_module()
+    root = tmp_path / "repo"
+    artifact = root / "docs" / "superpowers" / "plans" / "2026-05-31-example.md"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("# Example\n\nImplemented cleanup.\n", encoding="utf-8")
+    output = root / "docs" / "superpowers" / "history.md"
+    calls: list[tuple[Path, str]] = []
+
+    def fake_write_text_atomic(path: Path, text: str) -> None:
+        calls.append((path, text))
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    module.write_text_atomic = fake_write_text_atomic
+
+    result = module.main(["--root", str(root), "--output", str(output.relative_to(root))])
+
+    assert result == 0
+    assert calls, "Expected main() to write output through write_text_atomic"
+    assert calls[0][0].resolve() == output.resolve()
+    assert output.exists()
+
+
+def test_direct_script_runs_from_repo_root(tmp_path):
+    root = tmp_path / "repo"
+    artifact = root / "docs" / "superpowers" / "plans" / "2026-05-31-example.md"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("# Example\n\nImplemented cleanup.\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve().parents[1] / "summarize_superpowers_history.py"),
+            "--root",
+            str(root),
+        ],
+        cwd=Path(__file__).resolve().parents[2],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Wrote docs/superpowers/history.md" in result.stdout
 
 
 def test_reference_detection_excludes_superpowers_tree(tmp_path):
