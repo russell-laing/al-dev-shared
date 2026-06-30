@@ -67,7 +67,7 @@ exit 0  # 0 = success; non-zero = failure
 Parent process parses JSON from stdout, checks exit code:
 
 ```bash
-output=$(./deploy.sh)
+output=$(./<deploy-script>.sh)
 if [ $? -eq 0 ]; then
     version=$(echo "$output" | jq -r '.version')
     echo "Deployment succeeded: $version"
@@ -140,19 +140,19 @@ EOF
 }
 
 write_progress "compilation" 25 "in_progress"
-if ! ./compile-all.sh; then
+if ! ./<compile-all-script>.sh; then
     write_progress "compilation" 25 "failed"
     exit 1
 fi
 
 write_progress "linking" 50 "in_progress"
-if ! ./link-all.sh; then
+if ! ./<link-all-script>.sh; then
     write_progress "linking" 50 "failed"
     exit 1
 fi
 
 write_progress "packaging" 75 "in_progress"
-if ! ./package-app.sh; then
+if ! ./<package-app-script>.sh; then
     write_progress "packaging" 75 "failed"
     exit 1
 fi

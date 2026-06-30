@@ -65,7 +65,7 @@ skill to agent, agent to knowledge, and skill to skill.
 1. **Read the artifact:** Load the full markdown file content
 2. **Extract references:**
    - Agent invocations: `al-dev-shared:<name>`
-   - Knowledge links: `../../knowledge/<file>.md` or `../knowledge/<file>.md`
+   - Knowledge links: placeholder relative knowledge paths for the current artifact type
    - Skill references: `/skill-name` in prose
 3. **Validate each reference:**
    - For agents: Verify target agent file exists
@@ -77,8 +77,8 @@ skill to agent, agent to knowledge, and skill to skill.
 **Example pass:** Agent `develop-orchestrate` invokes agent `al-dev-shared:review-develop`.
 Target file exists at `profile-al-dev-shared/agents/review-develop.md`.
 
-**Example fail:** Skill reads `../../../nonexistent-knowledge.md`. Target file does
-not exist.
+**Example fail:** Skill reads `../../../<missing>-knowledge.md`. Target file does
+  not exist.
 
 ---
 
@@ -446,14 +446,14 @@ These patterns help duck agents recognize types of issues:
 A finding may reference a file using an absolute path from the developer's environment:
 
 ```
-Suggestion found: TRIM skill located at /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/old-skill/SKILL.md
+Suggestion found: TRIM skill located at /Users/russelllaing/al-dev-shared/profile-al-dev-shared/skills/skill-example/SKILL.md
 ```
 
 Normalize this for searching and verification by stripping the environment prefix:
 
 ```
-Normalized path: profile-al-dev-shared/skills/old-skill/SKILL.md
-Search command: ls -la profile-al-dev-shared/skills/old-skill/SKILL.md
+Normalized path: profile-al-dev-shared/skills/skill-example/SKILL.md
+Search command: ls -la profile-al-dev-shared/skills/skill-example/SKILL.md
 ```
 
 This matters because ducks run in different environments and may see different absolute prefixes. Relativizing ensures the finding is reproducible across runs and harnesses.
@@ -528,10 +528,10 @@ Extract change manifests using the patterns in `knowledge/commit-analysis-patter
 
 **Path variations to handle during verification:**
 
-- Backtracking paths from skill subdirectories: `../../knowledge/file.md`
-- Direct paths from agent files: `knowledge/file.md`
+  - Backtracking paths from skill subdirectories: `../../knowledge/<file>.md`
+  - Direct paths from agent files: `knowledge/<file>.md`
 - Paths in backticks and inline prose: `` `knowledge/artifact-contracts.md` ``
-- Paths in generated projections: Updated during projection to match location relative to the generated file
+  - Paths in generated projections: Updated during projection to match location relative to the generated file
 
 ### Pattern: Generated artifacts should not be edited
 
@@ -553,7 +553,7 @@ profile-al-dev-shared/knowledge/artifact-contracts.md
 # GENERATED ARTIFACTS (Read-Only)
 profile-al-dev-shared/generated/agents/claude/commit-analyzer.md
 profile-al-dev-shared/generated/agents/copilot/commit-analyzer.md
-profile-al-dev-shared/generated/agents/codex/commit-analyzer.md
+profile-al-dev-shared/generated/agents/codex/commit-analyzer.toml
 profile-al-dev-shared/generated/agents/claude/developer-traditional.md
 
 # REJECTION EXAMPLES
@@ -565,7 +565,7 @@ REASON: Make changes to source profile-al-dev-shared/agents/developer-tdd.md; re
 
 # CORRECT WORKFLOW
 1. Edit the source artifact (e.g., profile-al-dev-shared/agents/commit-analyzer.md)
-2. Run projection regeneration (scripts/generate-projections.py)
+2. Run projection regeneration (python3 scripts/generate_agent_projections.py)
 3. Generated artifacts in profile-al-dev-shared/generated/agents/*/ update automatically
 ```
 
@@ -591,7 +591,7 @@ REASON: Make changes to source profile-al-dev-shared/agents/developer-tdd.md; re
 **Correct workflow:**
 
 1. Edit the source artifact (e.g., `profile-al-dev-shared/agents/commit-analyzer.md`)
-2. Run the projection regeneration step (e.g., `scripts/generate-projections.py`)
+2. Run the projection regeneration step (e.g., `python3 scripts/generate_agent_projections.py`)
 3. Generated artifacts in `profile-al-dev-shared/generated/agents/*/` are updated automatically
 
 ---
@@ -625,7 +625,7 @@ Verdict:      proceed | modify [reason] | skip [reason]
 
 ## References
 
-- `docs/skills-map.md` — Skill inventory and relationships
-- `docs/agent-map.md` — Agent inventory and tool assignments
+- `docs/skills_map.md` — Skill inventory and relationships
+- `docs/agent_map.md` — Agent inventory and tool assignments
 - `profile-al-dev-shared/knowledge/harness-concepts.md` — Shared vocabulary
 - `profile-al-dev-shared/knowledge/artifact-contracts.md` — Artifact handoff specs

@@ -67,6 +67,10 @@ class ReferenceContractsTest(unittest.TestCase):
                 "docs/maintainer_tooling/*.md",
             ),
         )
+        self.assertEqual(
+            outputs["documentation_maps"],
+            ("docs/agent_map.md", "docs/skills_map.md", "docs/plugin_graph.md"),
+        )
 
     def test_allowed_template_patterns_classify_dated_health_templates(self) -> None:
         templates = allowed_template_patterns()

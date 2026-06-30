@@ -73,7 +73,7 @@ and are treated as completed lenses by the `remaining_lenses` check.
 
 `/ingest-plugin-friction` is a discover-stage source that is **not a lens**. Its
 findings files are named `YYYY-MM-DD-<surface>-friction-findings.md`. The
-`select_health_artifacts.py` selector regex intentionally does **not** match this
+`python3 scripts/select_health_artifacts.py` selector regex intentionally does **not** match this
 name (the `friction-findings` token fails the `(design|quality|naming)?-?(findings|health)`
 grammar), so friction findings are consumed only via
 `/report-plugin-health --findings <path>`, never by automatic selection.

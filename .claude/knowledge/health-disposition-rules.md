@@ -17,7 +17,7 @@ Read `.dev/health-loop-state.md` if present (schema:
   entry and proceed normally.
 - File absent → proceed normally.
 
-When adopting from loop-state, skip the `select_health_artifacts.py` calls;
+When adopting from loop-state, skip the `python3 scripts/select_health_artifacts.py` calls;
 the dossier path(s) are already resolved.
 
 ## Contradictory-Batch Guard
@@ -40,8 +40,8 @@ Any session that resolves an `accepted` event must close the ledger in the same
 session. Use `.claude/knowledge/ledger-closure-protocol.md` for the background
 and full rule set.
 
-- Append a `fixed` event via `scripts/health_disposition_store.py append_event`,
+- Append a `fixed` event via `python3 scripts/health_disposition_store.py append_event`,
   setting `closes_event_ids` to the accepted `event_id` being resolved.
-- Run `scripts/health_disposition_store.py regenerate` after appending.
+- Run `python3 scripts/health_disposition_store.py regenerate` after appending.
 - After the source change, run `python3 scripts/check_ledger_staleness.py` to
   confirm the event no longer appears as effectively open.

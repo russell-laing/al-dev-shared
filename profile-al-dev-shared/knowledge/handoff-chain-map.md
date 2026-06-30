@@ -269,7 +269,7 @@ plan-architect → .dev/*-plan-debate-summary.md → plan-synthesize
 
 - **Artifact Contracts:** `knowledge/artifact-contracts.md`
   (durable output matrix)
-- **Skills Map:** `docs/skills-map.md` (relationships & sequences)
+- **Skills Map:** `docs/skills_map.md` (relationships & sequences)
 - **Workflow Resilience:** `knowledge/workflow-resilience.md`
   (Phase 0 checkpointing)
 - **Scope Expansion Gate:** `knowledge/scope-expansion-gate.md`

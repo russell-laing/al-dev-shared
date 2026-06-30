@@ -24,6 +24,10 @@ try:
     from _entrypoint_bootstrap import bootstrap_repo
 except ModuleNotFoundError:  # pragma: no cover - exercised in package imports
     from scripts._entrypoint_bootstrap import bootstrap_repo
+try:
+    from scripts.validate_reference_integrity import validate_reference_path
+except ModuleNotFoundError:  # pragma: no cover - exercised in direct script execution
+    from validate_reference_integrity import validate_reference_path
 
 def _format_issue(path: str, rule: str, issue: str, fix: str) -> str:
     return (
@@ -148,23 +152,11 @@ assert has_emoji_or_checkmark("## Overview") == False
 
 
 def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
-    """Extract knowledge file references relative to a knowledge root."""
+    """Extract `knowledge/<file>.md` references for regression tests."""
+
     pattern = r"knowledge/([\w./-]+\.md)"
     matches = re.finditer(pattern, content)
     return [(match.group(1), match.start()) for match in matches]
-
-
-def _candidate_knowledge_roots(knowledge_dir: Path) -> List[Path]:
-    """Return the knowledge roots that should satisfy `knowledge/<file>.md` refs."""
-    roots = [knowledge_dir]
-    repo_root = knowledge_dir.parent.parent
-
-    if knowledge_dir.parts[-2:] == (".claude", "knowledge"):
-        shared_root = repo_root / "profile-al-dev-shared" / "knowledge"
-        if shared_root != knowledge_dir:
-            roots.append(shared_root)
-
-    return roots
 
 
 def check_thin_sections(filepath: str, sections: List) -> List[str]:
@@ -253,39 +245,6 @@ def check_code_implication(filepath: str, sections: List) -> List[str]:
     return issues
 
 
-def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[str]:
-    """Check for broken cross-references.
-
-    FALSE POSITIVES FIXED:
-    - Fixed path duplication: references like "knowledge/file.md" no longer produce
-      "knowledge/knowledge/file.md" lookups (extract filename only from pattern match)
-
-    REAL ISSUES DETECTED:
-    - References to files that don't exist in the knowledge directory
-    """
-    issues = []
-    refs = find_knowledge_references(content)
-
-    candidate_roots = _candidate_knowledge_roots(knowledge_dir)
-
-    for ref_path, _ in refs:
-        # Skip self-references (file referencing itself is fine)
-        if ref_path == Path(filepath).name:
-            continue
-
-        if not any((root / ref_path).exists() for root in candidate_roots):
-            issues.append(
-                _format_issue(
-                    filepath,
-                    "knowledge-dead-ref",
-                    f"reference to knowledge/{ref_path} does not resolve to an existing file",
-                    f"check the filename for typos or create the missing file at knowledge/{ref_path}",
-                )
-            )
-
-    return issues
-
-
 def validate_knowledge_dir(
     knowledge_dir: Path, verbose: bool = False
 ) -> Tuple[List[str], List[str]]:
@@ -328,7 +287,7 @@ def validate_knowledge_dir(
         file_warnings = []
         file_warnings.extend(check_thin_sections(str_path, sections))
         file_warnings.extend(check_code_implication(str_path, sections))
-        file_warnings.extend(check_references(str_path, content, knowledge_dir))
+        file_warnings.extend(validate_reference_path(filepath))
 
         if file_warnings:
             warnings.extend(file_warnings)

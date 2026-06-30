@@ -9,9 +9,9 @@ anything is committed.
 ```bash
 REPO=$(git rev-parse --show-toplevel)
 DISK_AGENTS=$(find "$REPO/profile-al-dev-shared/agents" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
-COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/agent-map.md" | grep -o '[0-9]*')
+COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/agent_map.md" | grep -o '[0-9]*')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  "$REPO/docs/agent-map.md" | grep -c '^| al-dev')
+  "$REPO/docs/agent_map.md" | grep -c '^| al-dev')
 echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
 ```
 

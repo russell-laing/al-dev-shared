@@ -8,21 +8,16 @@ Issues: HIGH: 0 | MEDIUM: 0 | LOW: 13 (all false positives or validator limitati
 
 ## Summary
 
-All 13 findings are false positives produced by a validator limitation: the
-`validate_knowledge_quality.py` script checks dead-refs by resolving paths
-relative to `.claude/knowledge/`, but cannot follow cross-surface references to
-`profile-al-dev-shared/knowledge/`. Every referenced file exists in the repo.
-No agent guidance is impaired.
+Reference validation now belongs to `scripts/validate_reference_integrity.py`.
+`validate_knowledge_quality.py` remains the structural-content gate for thin
+sections, missing code examples, and unreadable files. The typed reference
+validator now handles live paths, cross-surface references, bare prose refs,
+script entrypoints, generated outputs, placeholder templates, and legacy alias
+classification with one rule set shared across `.claude/knowledge/` and
+`profile-al-dev-shared/knowledge/`.
 
-There are two root causes:
-
-- **Category A (12 findings):** Tooling knowledge files explicitly reference
-  plugin-surface files using full-prefix paths (`profile-al-dev-shared/knowledge/…`)
-  or relative paths (`../../profile-al-dev-shared/knowledge/…`). All referenced
-  files exist; the validator simply cannot resolve across surfaces.
-- **Category B (1 finding):** `knowledge-audit-analysis.md` contains the phrase
-  `"Reference knowledge/X.md for examples"` in a schema description. This is
-  illustrative text, not a live reference.
+The old false positives in this report were driven by the split between the two
+validators, not by missing files in the knowledge surface.
 
 ---
 
@@ -145,13 +140,12 @@ _None._
 
 **File:** `.claude/knowledge/knowledge-audit-analysis.md`
 
-- **Reference:** `knowledge/X.md` (line 68)
+- **Reference:** `knowledge/<file>.md` (line 68)
 - **Issue:** DEAD-REF — validator treats illustrative text as a live path
-- **Assessment:** The phrase `"Reference knowledge/X.md for examples"` (line 68)
-  is an example within the HIGH severity criteria description. It is not a
-  cross-reference; it is illustrating what a severity-HIGH agent message looks
-  like. No navigation is implied.
-- **Fix:** No action needed. Validator false positive by design.
+- **Assessment:** The phrase now uses a placeholder token inside the severity
+  criteria description. It illustrates what a live-path example would look like
+  without naming a specific file. No navigation is implied.
+- **Fix:** No action needed. The text is intentionally illustrative.
 
 ---
 
@@ -165,18 +159,14 @@ _No HIGH-severity issues found. No immediate fixes required._
 
 _No MEDIUM-severity issues found._
 
-### Low Priority — Validator Enhancement (optional)
+### Tooling Split
 
-The `validate_knowledge_quality.py` dead-ref checker could be taught to
-recognise cross-surface references (paths starting with
-`profile-al-dev-shared/knowledge/` or resolving to that directory via `../../`)
-as valid, preventing the 13 recurring false-positive warnings in future audits.
-This is a cosmetic improvement — the current warnings are correctly classified
-LOW and do not block any agent guidance.
-
-Similarly, the validator could be taught to skip references embedded in schema
-examples (lines containing `"Reference knowledge/`-style quoted paths within
-bullet descriptions).
+- `python3 scripts/validate_knowledge_quality.py --path <knowledge-dir>`:
+  structural content checks only
+- `python3 scripts/validate_reference_integrity.py --path <surface>`:
+  typed reference checks for live paths, canonical commands, generated outputs,
+  template/example patterns, and legacy aliases
+- Run both validators after reference-sensitive edits to knowledge surfaces
 
 ---
 

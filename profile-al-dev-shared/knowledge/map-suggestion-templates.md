@@ -71,7 +71,7 @@ Trade-off: New skill to learn; each skill's scope becomes narrower and clearer.
 ```
 **Connect: /skill-a and /skill-b**
 Observation: Both spawn [agent-type] with the same pattern but define it independently.
-Suggestion: Document the canonical spawn pattern in knowledge/[pattern-name].md;
+Suggestion: Document the canonical spawn pattern in knowledge/<pattern-name>.md;
   have both skills reference it.
 Trade-off: Small authoring cost; drift is prevented when the pattern needs updating.
 ```
