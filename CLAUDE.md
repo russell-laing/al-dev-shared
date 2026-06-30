@@ -147,15 +147,15 @@ See `docs/development_commands.md` for the full command reference (validation, p
 
 **Active skills:** 24 distributed skills covering three main flows:
 
-1. **Ticket/Support flow** (`al-dev-ticket` → `al-dev-support-reply`)
-2. **Development flow** (`al-dev-investigate` → `al-dev-plan` → `al-dev-develop` → `al-dev-commit`)
-3. **Direct fix flow** (`al-dev-fix` for trivial changes)
+1. **Ticket/Support flow** (`ticket` → `support-reply`)
+2. **Development flow** (`investigate` → `plan` → `develop-orchestrate` → `commit`)
+3. **Direct fix flow** (`fix` for trivial changes)
 
-**Pre-planning tributaries (optional):** `al-dev-explore`, `al-dev-interview`, `al-dev-perf`
+**Pre-planning tributaries (optional):** `explore`, `interview`, `perf`
 
-**Post-commit outputs:** `al-dev-release-notes`, `al-dev-handoff`, `al-dev-document`, `commit-recover`
+**Post-commit outputs:** `release-notes`, `handoff`, `document`, `commit-recover`
 
-**Sub-skills & utilities:** `al-dev-plan-preflight`, `al-dev-plan-with-critics`, `al-dev-plan-final-review`, `al-dev-commit-preflight`, `al-dev-commit-execute`, `al-dev-review-develop-preflight`, `al-dev-help`, `verify-commits`
+**Sub-skills & utilities:** `plan-preflight`, `plan-with-critics`, `plan-final-review`, `commit-preflight`, `commit-execute`, `review-develop-preflight`, `help`, `verify-commits`
 
 ## Diagram Guidance
 

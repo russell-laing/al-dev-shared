@@ -61,6 +61,28 @@ DOC_CASES = {
         "al-dev-shared:al-dev-developer",
         "generated/agents/claude/al-dev-developer.md",
     ],
+    "CLAUDE.md": [
+        "al-dev-investigate",
+        "al-dev-ticket",
+        "al-dev-support-reply",
+        "al-dev-plan",
+        "al-dev-develop",
+        "al-dev-commit",
+        "al-dev-fix",
+        "al-dev-explore",
+        "al-dev-interview",
+        "al-dev-perf",
+        "al-dev-release-notes",
+        "al-dev-handoff",
+        "al-dev-document",
+        "al-dev-plan-preflight",
+        "al-dev-plan-with-critics",
+        "al-dev-plan-final-review",
+        "al-dev-commit-preflight",
+        "al-dev-commit-execute",
+        "al-dev-review-develop-preflight",
+        "al-dev-help",
+    ],
     "docs/skills_map.md": [
         "al-dev-shared:al-dev-developer-tdd",
         "complex fixes route through al-dev-solution-architect",
@@ -69,6 +91,9 @@ DOC_CASES = {
     ],
     "docs/harness_coverage_model.md": [
         "profile-al-dev-shared/skills/al-dev-develop-orchestrate/tests/scenarios.yaml",
+    ],
+    "docs/knowledge_quality.md": [
+        "skills/al-dev-investigate/SKILL.md",
     ],
     ".claude/agents/design-skill-lens-preplanning.md": [
         "/al-dev-interview",
@@ -108,6 +133,10 @@ class PrefixReferenceRegressionTests(unittest.TestCase):
     def test_authored_docs_have_no_retired_prefix_edge_cases(self) -> None:
         for rel_path, needles in DOC_CASES.items():
             text = (REPO_ROOT / rel_path).read_text(encoding="utf-8")
+            if rel_path == "CLAUDE.md":
+                start = text.index("**Active skills:**")
+                end = text.index("## Diagram Guidance")
+                text = text[start:end]
             for needle in needles:
                 self.assertNotIn(needle, text, f"{rel_path} still contains {needle!r}")
 

@@ -31,7 +31,7 @@ None identified.
 
 - **Section:** "Regression Timeline"
 - **Issue:** NO-CODE — Section heading contains "Timeline" which triggered the validator, but the section body contains only structured metadata fields (dates, status). Code examples for both investigation scenarios (recently-working and long-standing defect) are present in subsections "Example A" and "Example B" directly below.
-- **Reference:** `skills/al-dev-investigate/SKILL.md` — Skill reads this template before writing findings
+- **Reference:** `profile-al-dev-shared/skills/investigate/SKILL.md` — Skill reads this template before writing findings
 - **Assessment:** False positive. The code examples the validator expected at the `Regression Timeline` level exist in the child subsections. The parent-level metadata fields (dates, yes/no flags) are correctly prose-only. The validator fired on the heading keyword, not on a real gap.
 - **Fix:** None required. Optional: rename heading to "Regression Timeline Metadata" to clarify the parent section is metadata-only, with examples in subsections.
 
