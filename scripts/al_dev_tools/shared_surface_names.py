@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+from .reference_contracts import (
+    allowed_template_patterns as _allowed_template_patterns,
+    canonical_artifact_patterns as _canonical_artifact_patterns,
+    canonical_script_entrypoints as _canonical_script_entrypoints,
+    generated_output_surfaces as _generated_output_surfaces,
+    legacy_reference_aliases as _legacy_reference_aliases,
+)
+
 LEGACY_SHARED_PREFIX = "al-dev-"
 
 SHARED_SKILL_RENAMES = {
@@ -87,52 +95,83 @@ def strip_legacy_shared_prefix(name: str) -> str:
 def runtime_artifact_patterns() -> dict[str, dict[str, str]]:
     """Runtime artifact globs keyed by canonical prefix-free shared skill name."""
 
+    patterns = canonical_artifact_patterns()
     return {
         "commit-execute": {
-            "analysis": "*-commit-analysis.md",
+            "analysis": patterns["commit_analysis"],
         },
         "develop-orchestrate": {
-            "progress": "*-develop-progress.md",
-            "checklist": "*-develop-checklist.md",
-            "scope": "*-develop-scope.md",
-            "phase4_handoff": "*-develop-phase4-handoff.md",
+            "progress": patterns["develop_progress"],
+            "checklist": patterns["develop_checklist"],
+            "scope": patterns["develop_scope"],
+            "phase4_handoff": patterns["develop_phase4_handoff"],
         },
         "developer-tdd": {
-            "test_plan": "*-test-test-plan.md",
-            "log": "*-developer-tdd-log.md",
+            "test_plan": patterns["developer_tdd_test_plan"],
+            "log": patterns["developer_tdd_log"],
         },
         "ticket": {
-            "context": "*-ticket-ticket-context.md",
-            "reply": "*-ticket-reply.md",
+            "context": patterns["ticket_context"],
+            "reply": patterns["ticket_reply"],
         },
         "interview": {
-            "notes": "*-interview-notes.md",
-            "requirements": "*-interview-requirements.md",
+            "notes": patterns["interview_notes"],
+            "requirements": patterns["interview_requirements"],
         },
         "explore": {
-            "findings": "*-explore-findings.md",
+            "findings": patterns["explore_findings"],
         },
         "investigate": {
-            "findings": "*-investigate-findings.md",
+            "findings": patterns["investigate_findings"],
         },
         "plan": {
-            "debate_summary": "*-plan-debate-summary.md",
-            "solution_plan": "*-plan-solution-plan.md",
+            "debate_summary": patterns["plan_debate_summary"],
+            "solution_plan": patterns["plan_solution_plan"],
         },
         "review-develop": {
-            "code_review": "*-develop-code-review.md",
-            "preflight": "*-plugin-review-preflight.md",
+            "code_review": patterns["develop_code_review"],
+            "preflight": patterns["review_preflight"],
         },
         "lint": {
-            "report": "*-lint-lint-report.md",
+            "report": patterns["lint_report"],
         },
         "perf": {
-            "analysis": "*-perf-perf-analysis.md",
+            "analysis": patterns["perf_analysis"],
         },
         "release-notes": {
-            "report": "*-plugin-release-notes.md",
+            "report": patterns["release_notes"],
         },
         "handoff": {
-            "prompt": "*-handoff-handoff-prompt.md",
+            "prompt": patterns["handoff_prompt"],
         },
     }
+
+
+def canonical_artifact_patterns() -> dict[str, str]:
+    """Compatibility adapter for the canonical reference-contract registry."""
+
+    return _canonical_artifact_patterns()
+
+
+def canonical_script_entrypoints() -> dict[str, str]:
+    """Compatibility adapter for the canonical reference-contract registry."""
+
+    return _canonical_script_entrypoints()
+
+
+def generated_output_surfaces() -> dict[str, tuple[str, ...]]:
+    """Compatibility adapter for the canonical reference-contract registry."""
+
+    return _generated_output_surfaces()
+
+
+def allowed_template_patterns() -> tuple[str, ...]:
+    """Compatibility adapter for the canonical reference-contract registry."""
+
+    return _allowed_template_patterns()
+
+
+def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
+    """Compatibility adapter for the canonical reference-contract registry."""
+
+    return _legacy_reference_aliases()
