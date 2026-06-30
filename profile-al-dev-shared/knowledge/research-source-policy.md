@@ -14,8 +14,8 @@ it is available and relevant.
 2. `mcp-verified` - semantic or knowledge evidence returned by an available MCP
    source
 3. `curated-secondary` - curated guidance, maintained examples, or source
-   material that is not the primary system of record but is still controlled
-   and intentionally selected
+   material that is not the primary system of record but is still controlled and
+   intentionally selected
 4. `broad-web` - wider web sources used only when the curated set is
    insufficient for the question
 
@@ -66,7 +66,19 @@ If a single conclusion depends on mixed evidence, show the mix rather than
 collapsing it into an unlabeled statement. A brief qualifier such as "repo-
 verified with curated-secondary support" is preferred over an unqualified
 assertion.
+For Microsoft Docs URLs in research notes, `[verified]` and `[unverified]`
+describe fetch status only. They are a transport marker layered on top of the
+core evidence labels above and must not replace `mcp-verified`,
+`curated-secondary`, or `broad-web`.
 
+When AL symbol evidence matters, use the most specific available sublabel in
+the evidence note and keep the core tier visible:
+
+- `AL LSP` for workspace-semantic verification
+- `AL MCP` for object/member/package symbol verification through MCP
+- `text search` for tightly scoped text evidence when no semantic provider is
+  available
+- `unverified` when required symbol evidence was not established
 ## Confidence Downgrade Rules
 
 Missing evidence should lower confidence, not trigger speculation.
@@ -87,4 +99,3 @@ Confidence language should track the evidence:
 - tentative: the available evidence points in a direction, but the gap is
   material
 - unverified: insufficient evidence to support a substantive claim
-

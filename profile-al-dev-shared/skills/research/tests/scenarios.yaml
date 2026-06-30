@@ -1,0 +1,45 @@
+skill: research
+scenarios:
+  - id: research-repo-default-artifact-and-scope
+    status: golden
+    user_prompt: "research this repo's approval workflow and tell me how it works before you dig into anything else."
+    expected_artifacts:
+      - ".dev/*-research-findings.md"
+    must_invoke_agent: al-dev-shared:repo-researcher
+    must_not_invoke_agent: al-dev-shared:ecosystem-researcher
+    notes: "Repo-focused regression. Confirms the skill writes a durable artifact by default and states a narrow repo scope before any deep research."
+
+  - id: research-repo-curated-first-source-selection
+    status: golden
+    user_prompt: "research this repo's trigger corpus against the shared source policy and, if local evidence is incomplete, validate it with curated microsoft guidance before anything broader."
+    expected_artifacts:
+      - ".dev/*-research-findings.md"
+    must_invoke_agent:
+      - al-dev-shared:repo-researcher
+      - al-dev-shared:ecosystem-researcher
+    notes: "Curated-first regression. The local pass should lead, curated guidance should come next, and broad-web research should stay out unless the evidence gap demands it."
+
+  - id: research-greenfield-inline-only
+    status: golden
+    user_prompt: "research a lightweight way to structure a new al feature for a fresh project with no repo to inspect."
+    expected_artifacts: []
+    must_invoke_agent: al-dev-shared:ecosystem-researcher
+    must_not_invoke_agent: al-dev-shared:repo-researcher
+    notes: "Greenfield regression. Lightweight exploratory research should stay inline-only when repo discovery is unnecessary."
+
+  - id: research-version-history-route
+    status: golden
+    user_prompt: "research how this bc behavior changed across versions and call out the version boundaries."
+    expected_artifacts: []
+    must_invoke_agent: al-dev-shared:ecosystem-researcher
+    must_not_invoke_agent: al-dev-shared:repo-researcher
+    notes: "Version-history routing regression. The request should stay on the history-focused lane rather than treating it as repo exploration."
+
+  - id: research-ecosystem-wide-synthesis
+    status: golden
+    user_prompt: "research the broader microsoft ecosystem guidance for this pattern and synthesize it with the repo's local evidence into one answer."
+    expected_artifacts: []
+    must_invoke_agent:
+      - al-dev-shared:repo-researcher
+      - al-dev-shared:ecosystem-researcher
+    notes: "Dual-lane regression. The orchestrator should return one coherent synthesized answer rather than exposing two raw agent outputs."

@@ -57,6 +57,16 @@ corpus:
   - prompt: "i'm done — commit what's staged"
     expected: commit
 
+  # --- research ---------------------------------------------------
+  - prompt: "research this repo's approval workflow and tell me how it works"
+    expected: research
+  - prompt: "research a lightweight way to structure a new al feature for a fresh project"
+    expected: research
+  - prompt: "research how bc behavior changed across versions and call out the boundaries"
+    expected: research
+  - prompt: "research microsoft ecosystem guidance for this reporting pattern"
+    expected: research
+
   # --- intent preflight and near-miss prompts -----------------------------
   - prompt: "review this usage report and suggest possible plugin improvements without editing files"
     expected: NONE

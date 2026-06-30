@@ -84,4 +84,3 @@ mostly complete. Keep it brief and actionable.
   finding.
 - When evidence is incomplete, preserve the section order and lower the stated
   confidence instead of widening the conclusion.
-
