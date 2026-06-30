@@ -98,21 +98,37 @@ and contains no warnings or errors.
   Needed when symbols live outside the project root.
 - `--project <path>` — compile a project at a path other than the current directory.
 
-Output format (one diagnostic per line):
+### Output Format
 
-```text
-<severity> AL<code>: <message> [<file>(<line>,<col>)]
+`al-compile --output` produces SARIF-style JSON (see `/usr/local/bin/al-compile` implementation).
+A typical diagnostic object in `.diagnostics[]` looks like:
+
+```json
+{
+  "ruleId": "AL0220",
+  "message": {"text": "Ambiguous identifier"},
+  "severity": "error",
+  "locations": [{"physicalLocation": {"artifactLocation": {"uri": "file.al"}, "region": {"startLine": 42}}}]
+}
 ```
 
-Example:
+Use jq to parse counts. See examples below.
 
-```text
-Error AL0118: The name 'MyField' does not exist in the current context [src/MyCodeunit.al(42,5)]
-Warning AA0231: Replace Error(StrSubstNo(...)) with Error(label, args) [src/MyCodeunit.al(58,3)]
+An empty log (zero bytes or no diagnostics) means a clean compile.
+
+### Format Detection (Optional)
+
+If your build log may contain both plain-text and JSON output, add a format-detection step:
+
+```bash
+if head -c 1 .dev/compile-errors.log | grep -q '{'; then
+  echo "Detected JSON format. Using jq for parsing."
+  jq '.diagnostics | length' .dev/compile-errors.log
+else
+  echo "Detected plain-text format. Using line counting."
+  grep -c '^Error' .dev/compile-errors.log
+fi
 ```
-
-The severity token is always one of `Error`, `Warning`, or `Info`.
-An empty log (zero bytes or no `Error`/`Warning` lines) means a clean compile.
 
 ### ⚠️ Anti-Patterns: What NOT to Do
 
@@ -151,7 +167,9 @@ al-compile --output .dev/compile-errors.log
 rg -n -e "error|warning" .dev/compile-errors.log | rg '\.(Page|PageExt)\.al'
 
 # If you need a summary count:
-rg -c '^Error' .dev/compile-errors.log
+jq '.diagnostics | length' .dev/compile-errors.log
+jq '[.diagnostics[] | select(.severity == "error")] | length' .dev/compile-errors.log
+jq '[.diagnostics[] | select(.severity == "warning")] | length' .dev/compile-errors.log
 ```
 
 **Always include a short purpose note on tool calls invoking `al-compile`:**
@@ -183,11 +201,11 @@ update.
 
 Parse `.dev/compile-errors.log` to separate actionable items from noise:
 
-1. **Count errors and warnings separately:**
+1. **Count diagnostics per severity:**
 
    ```bash
-   rg -c '^Error' .dev/compile-errors.log   # must be 0 before merging
-   rg -c '^Warning' .dev/compile-errors.log  # drive lint-fix pass
+   jq 'group_by(.severity) | map({severity: .[0].severity, count: length})' .dev/compile-errors.log
+   jq 'group_by(.ruleId) | map({ruleId: .[0].ruleId, count: length}) | sort_by(.count) | reverse' .dev/compile-errors.log
    ```
 
 2. **Extract file and line references** for each diagnostic using the bracketed suffix
@@ -201,10 +219,11 @@ Parse `.dev/compile-errors.log` to separate actionable items from noise:
 Example parse pipeline:
 
 ```bash
-rg '^Error' .dev/compile-errors.log | sed 's/.*\[\(.*\)\]/\1/' | sort -u
+# Extract error locations (file:line)
+jq '.diagnostics[] | select(.severity == "error") | "\(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine)"' .dev/compile-errors.log
 ```
 
-This extracts unique `file(line,col)` locations for all errors.
+This extracts unique `file:line` locations for all errors.
 
 ### Diagnostic Categorization Rules
 
