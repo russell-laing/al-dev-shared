@@ -47,3 +47,15 @@ prohibition in `knowledge/compile-lint-procedure.md`.
 
 If `$AL_STAGED` is empty, no AL files are staged — skip the compile gate and
 continue to 0.4.
+
+## Cost Awareness (Future Enhancement)
+
+Currently, steps 1–2 above invoke a full-project `al-compile` regardless of how many AL files changed.
+When a single-file diff touches ≤20 lines, a full-project compile may be overkill.
+
+**Future:** If al-compile supports scoped or incremental modes (e.g., `al-compile --only-staged-files`),
+update step 1 to conditionally use scoped compilation for diffs ≤20 lines and defer to full-project
+compile for larger changes or multi-file diffs.
+
+For now: If you need faster feedback on a single-file AL fix, run `al-compile --file <path>` manually
+before committing to verify the error count locally.
