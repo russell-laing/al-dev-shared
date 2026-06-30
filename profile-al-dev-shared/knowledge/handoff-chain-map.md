@@ -79,7 +79,7 @@ Plugin surface.
 |---|---|---|---|---|
 | `ticket` | `.dev/*-ticket-ticket-context.md` | `plan` | Optional | Esc |
 | `ticket` | `.dev/*-ticket-ticket-context.md` | `support-reply` | **Mandatory** | Drft |
-| `support-reply` | `.dev/*-ticket-reply.md` | User | Output | Out |
+| `support-reply` | `.dev/*-plugin-support-reply-<slug>.md` | User | Output | Out |
 
 ---
 

@@ -21,7 +21,7 @@ Create scripts that automate AL development tasks, generate reports, validate co
 | Input | Description |
 |-------|-------------|
 | User request | Script goal + AL project context |
-| Latest `*-al-dev-plan-solution-plan.md` | If implementing a planned script |
+| Latest `*-plan-solution-plan.md` | If implementing a planned script |
 | AL project files | Project context for analysis tasks |
 
 ## Outputs
@@ -35,7 +35,7 @@ Create scripts that automate AL development tasks, generate reports, validate co
 ## Workflow
 
 1. **Detect project stack** — Check package.json, go.mod, requirements.txt, setup.py; default to Python
-2. **Read implementation plan** — Load latest `*-al-dev-plan-solution-plan.md` if available
+2. **Read implementation plan** — Load latest `*-plan-solution-plan.md` if available
 3. **Write script** — Follow language-specific conventions (async-first for Python, protocol-based extensibility, strict typing)
 4. **Generate tokens** — If applicable, emit REQ, OBJ, TEST, RISK tokens in comments
 5. **Validate and test** — Run script; confirm output matches spec

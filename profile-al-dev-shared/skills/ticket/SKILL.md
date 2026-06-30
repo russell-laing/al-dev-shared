@@ -313,6 +313,6 @@ if mode == "context-only":
 if mode == "full":
   └─ Dispatch /support-reply with the ticket context file
   └─ Read the returned REPLY block
-  └─ Write the REPLY block to .dev/$(date +%Y-%m-%d)-ticket-reply.md
+  └─ Write the REPLY block to .dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md
   └─ Output REPLY to caller
 ```
