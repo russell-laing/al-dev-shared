@@ -1,6 +1,6 @@
 ---
 name: "ticket-context-writer"
-description: "Fetch a Freshdesk ticket via API, write .dev/context file, and download attachments only when the dispatcher requests a separate download phase. Dispatched by the al-dev-ticket skill."
+description: "Fetch a Freshdesk ticket via API, write .dev/context file, and download attachments only when the dispatcher requests a separate download phase. Dispatched by the ticket skill."
 tools: ["execute", "edit"]
 ---
 

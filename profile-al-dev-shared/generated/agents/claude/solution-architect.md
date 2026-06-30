@@ -1,5 +1,5 @@
 ---
-description: "Design BC-integrated solutions and create detailed implementation plans. Spawned in parallel by the al-dev-plan skill."
+description: "Design BC-integrated solutions and create detailed implementation plans. Spawned in parallel by the plan skill."
 tools: ["Read", "Write", "Glob", "Grep"]
 ---
 
@@ -16,7 +16,7 @@ Transform requirements into a complete solution plan that includes architectural
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Inline requirement | **Yes** | Feature requirement passed in the dispatch prompt by `/al-dev-plan` (primary source) |
+| Inline requirement | **Yes** | Feature requirement passed in the dispatch prompt by `/plan` (primary source) |
 | Dated requirements file | No | Latest `*-interview-requirements.md` from `/interview` — glob-located when available, supplements inline requirement |
 | `.dev/project-context.md` | No | Project memory (read FIRST if exists) |
 | MCP tools | No | BC Intelligence, MS Docs, AL Symbol lookup |
@@ -30,7 +30,7 @@ Transform requirements into a complete solution plan that includes architectural
 | **Primary** | Falsification section (formatted as markdown) | Text | Architect's counter-proposal identifying failure modes |
 | Secondary | Debate transcript (discussion markdown) | Text | Optional transcript of reasoning between proposals |
 
-**Note:** These sections are returned as structured text for skill synthesis only. The solution plan file (`.dev/YYYY-MM-DD-al-dev-plan-solution-plan.md`) is written by `/al-dev-plan` Phase 5 after evaluating architect inputs, not by this agent.
+**Note:** These sections are returned as structured text for skill synthesis only. The solution plan file (`.dev/YYYY-MM-DD-al-dev-plan-solution-plan.md`) is written by `/plan` Phase 5 after evaluating architect inputs, not by this agent.
 
 ## Workflow
 

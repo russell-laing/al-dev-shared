@@ -24,8 +24,8 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
 | `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
 | `.dev/project-context.md` | No | Project memory and conventions, read when present |
 | `.dev/*-al-dev-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
-| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/al-dev-develop-orchestrate`. See `knowledge/al-dev-develop-spawn-prompt.md` for the canonical context-field list. |
-| Trivial-fix dispatch context | **Yes (fix path)** | When dispatched by `/al-dev-fix` (Steps 3–5), the fix scope, issue description, and `Return:` field are passed inline per Context 2 (Trivial Direct Fix) of `knowledge/developer-invocation-patterns.md`. |
+| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/develop-orchestrate`. See `knowledge/al-dev-develop-spawn-prompt.md` for the canonical context-field list. |
+| Trivial-fix dispatch context | **Yes (fix path)** | When dispatched by `/fix` (Steps 3–5), the fix scope, issue description, and `Return:` field are passed inline per Context 2 (Trivial Direct Fix) of `knowledge/developer-invocation-patterns.md`. |
 
 ## Outputs
 

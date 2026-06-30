@@ -1,6 +1,6 @@
 ---
 name: "docs-writer"
-description: "Generate and maintain AL project documentation — feature docs, API references, and setup guides. Spawned by the al-dev-document skill."
+description: "Generate and maintain AL project documentation — feature docs, API references, and setup guides. Spawned by the document skill."
 tools: ["read", "edit", "edit", "execute"]
 ---
 

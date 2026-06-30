@@ -1,5 +1,5 @@
 ---
-description: "Review AL code for adherence to naming conventions, AL patterns, and BC design patterns. Spawned in parallel by the al-dev-review-develop skill."
+description: "Review AL code for adherence to naming conventions, AL patterns, and BC design patterns. Spawned in parallel by the review-develop skill."
 tools: ["Read"]
 ---
 
@@ -10,7 +10,7 @@ Review AL code for adherence to naming conventions, AL patterns, and BC design p
 
 ## Role
 
-Specialist teammate for AL expertise and pattern adherence. Spawned by the `al-dev-review-develop` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
+Specialist teammate for AL expertise and pattern adherence. Spawned by the `review-develop` skill as part of a 3-reviewer team (security, AL expert, performance) to review implemented code in parallel. After independent review, you'll debate findings with other reviewers before the lead synthesizes results.
 
 ## Inputs
 

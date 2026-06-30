@@ -10,7 +10,7 @@
 **Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
 <!-- END GENERATED: skill-coverage -->
 
-**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/al-dev-help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
+**Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
 
 ---
 
@@ -89,9 +89,9 @@ Each skill is shown with its internal phases, spawned agents, and key outputs. A
 - **Pattern**: ×1 (serial), ×2-3 (parallel), ×N (variable count)
 - **Output**: File written to `.dev/` or code generated
 
-### /al-dev-ticket
+### /ticket
 
-**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/al-dev-support-reply`). Research and reply drafting are handled by `/al-dev-support-reply`. Phases: 0, 0.5, 5.
+**Two modes:** `--mode=context-only` (default fetch/context only) and `--mode=full` (fetch context then chains to `/support-reply`). Research and reply drafting are handled by `/support-reply`. Phases: 0, 0.5, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-ticket -->
 ```mermaid
@@ -153,9 +153,9 @@ flowchart LR
 Agents spawned: `al-dev-shared:ticket-context-writer`
 <!-- END GENERATED: skill-drilldown-ticket -->
 
-### /al-dev-support-reply
+### /support-reply
 
-Follow-on support workflow used after `/al-dev-ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0, 1, 2, 3, 4.
+Follow-on support workflow used after `/ticket --mode=full`. Researches the issue and drafts the customer-facing reply using the ticket context prepared upstream. Phases: 0, 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-support-reply -->
 ```mermaid
@@ -205,7 +205,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:support-reply-drafter`, `al-dev-shared:support-researcher`
 <!-- END GENERATED: skill-drilldown-support-reply -->
 
-### /al-dev-investigate
+### /investigate
 
 <!-- BEGIN GENERATED: skill-drilldown-investigate -->
 ```mermaid
@@ -258,7 +258,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-investigate -->
 
-### /al-dev-fix
+### /fix
 
 **Complexity routing:** Trivial fixes skip the analysis phase; complex fixes route through `solution-architect`.
 
@@ -316,9 +316,9 @@ flowchart LR
 Agents spawned: `al-dev-shared:developer-traditional`, `al-dev-shared:solution-architect`
 <!-- END GENERATED: skill-drilldown-fix -->
 
-### /al-dev-plan
+### /plan
 
-**Competitive design phase:** Dispatches `/al-dev-plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/al-dev-plan-final-review` for validation and user approval gate before handing off to `/al-dev-develop-orchestrate`. Phases: 0, 2, 3, 4, 5.
+**Competitive design phase:** Dispatches `/plan-preflight` first (context assembly + complexity triage), then multiple architects propose approaches in parallel; the skill synthesises the winner into a solution plan. Dispatches `/plan-final-review` for validation and user approval gate before handing off to `/develop-orchestrate`. Phases: 0, 2, 3, 4, 5.
 
 <!-- BEGIN GENERATED: skill-drilldown-plan -->
 ```mermaid
@@ -386,9 +386,9 @@ flowchart LR
 Agents spawned: `al-dev-shared:solution-architect`
 <!-- END GENERATED: skill-drilldown-plan -->
 
-### /al-dev-plan-final-review
+### /plan-final-review
 
-User approval gate for the solution plan written by `/al-dev-plan`. Runs validation and gates approval before implementation begins. Called by `/al-dev-plan` after Phase 5; can also be run standalone. Phases: 0–3.
+User approval gate for the solution plan written by `/plan`. Runs validation and gates approval before implementation begins. Called by `/plan` after Phase 5; can also be run standalone. Phases: 0–3.
 
 <!-- BEGIN GENERATED: skill-drilldown-plan-final-review -->
 ```mermaid
@@ -424,9 +424,9 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-plan-final-review -->
 
-### /al-dev-plan-preflight
+### /plan-preflight
 
-Preflight context-assembly workflow that `/al-dev-plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0–4.
+Preflight context-assembly workflow that `/plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0–4.
 
 <!-- BEGIN GENERATED: skill-drilldown-plan-preflight -->
 ```mermaid
@@ -486,7 +486,7 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-plan-preflight -->
 
-### /al-dev-plan-with-critics
+### /plan-with-critics
 
 Generate an implementation plan then dispatch 6 parallel critic agents to red-team it. Synthesizes findings, applies auto-fixes, and gates user approval before execution.
 
@@ -509,9 +509,9 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-plan-with-critics -->
 
-### /al-dev-develop-orchestrate
+### /develop-orchestrate
 
-**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/al-dev-review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4.
+**Pre-implementation orchestration:** Reads solution plan, validates scope, partitions work across developers, and dispatches parallel developers. Passes Phase 4 handoff to `/review-develop` for compilation, review, and code-review output. Phases: 0, 1, 2, 3, 4.
 
 <!-- BEGIN GENERATED: skill-drilldown-develop-orchestrate -->
 ```mermaid
@@ -579,9 +579,9 @@ flowchart LR
 Agents spawned: `al-dev-shared:developer-tdd`, `al-dev-shared:developer-traditional`
 <!-- END GENERATED: skill-drilldown-develop-orchestrate -->
 
-### /al-dev-review-develop-preflight
+### /review-develop-preflight
 
-Pre-review qualification workflow dispatched by `/al-dev-develop-orchestrate` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
+Pre-review qualification workflow dispatched by `/develop-orchestrate` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
 
 <!-- BEGIN GENERATED: skill-drilldown-review-develop-preflight -->
 ```mermaid
@@ -623,9 +623,9 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-review-develop-preflight -->
 
-### /al-dev-review-develop
+### /review-develop
 
-**Reviewer dispatch and synthesis:** Reads preflight context from `/al-dev-review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/al-dev-review-develop-preflight` first. Phases: 0, 4, 5, 6.
+**Reviewer dispatch and synthesis:** Reads preflight context from `/review-develop-preflight`, then dispatches the three-specialist panel in parallel and synthesises findings. Run `/review-develop-preflight` first. Phases: 0, 4, 5, 6.
 
 <!-- BEGIN GENERATED: skill-drilldown-review-develop -->
 ```mermaid
@@ -678,7 +678,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:al-pattern-reviewer`, `al-dev-shared:performance-reviewer`, `al-dev-shared:security-reviewer`
 <!-- END GENERATED: skill-drilldown-review-develop -->
 
-### /al-dev-commit
+### /commit
 
 **Multi-pass execution:** Setup and validation (Phase 0) checks project context, file integrity, staged files, acceptance criteria, and advisory alignment; analysis pass (Phase 1) builds manifests and proposes commit groups with message drafting; confirmation pass (Phase 2) gates user approval; preflight pass (Phase 3) runs lint fixes and OOXML validation; execution pass (Phase 4) runs the commits with hook support and presents the final summary. Five agents with focused responsibilities. Phases: 0, 1, 2.
 
@@ -713,7 +713,7 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-commit -->
 
-### /al-dev-commit-execute
+### /commit-execute
 
 Phases 0, 3, 4 of the atomic commit workflow. Loads the approved plan from `.dev/commit-preflight.md`, runs lint preflight and OOXML validation, dispatches the execution agent, handles hook failures via the classifier+fixer recovery pipeline, and summarises results.
 
@@ -768,7 +768,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:commit-executor`, `al-dev-shared:commit-hook-classifier`, `al-dev-shared:commit-hook-fixer`, `al-dev-shared:commit-lint-fixer`
 <!-- END GENERATED: skill-drilldown-commit-execute -->
 
-### /al-dev-commit-preflight
+### /commit-preflight
 
 Phases 0, 1, 2 of the atomic commit workflow. Validates staged files, dispatches the analysis and message-drafting agents, handles user confirmation gates, and persists the approved plan to `.dev/commit-preflight.md`.
 
@@ -922,7 +922,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:interview`
 <!-- END GENERATED: skill-drilldown-interview -->
 
-### /al-dev-lint
+### /lint
 
 <!-- BEGIN GENERATED: skill-drilldown-lint -->
 ```mermaid
@@ -960,7 +960,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:diagnostics-resolver`
 <!-- END GENERATED: skill-drilldown-lint -->
 
-### /al-dev-document
+### /document
 
 <!-- BEGIN GENERATED: skill-drilldown-document -->
 ```mermaid
@@ -986,7 +986,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:docs-writer`
 <!-- END GENERATED: skill-drilldown-document -->
 
-### /al-dev-release-notes
+### /release-notes
 
 Phases: 0–3.
 
@@ -1029,7 +1029,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:release-notes-writer`
 <!-- END GENERATED: skill-drilldown-release-notes -->
 
-### /al-dev-perf
+### /perf
 
 <!-- BEGIN GENERATED: skill-drilldown-perf -->
 ```mermaid
@@ -1064,7 +1064,7 @@ flowchart LR
 Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-perf -->
 
-### /al-dev-handoff
+### /handoff
 
 <!-- BEGIN GENERATED: skill-drilldown-handoff -->
 ```mermaid
@@ -1109,7 +1109,7 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-handoff -->
 
-### /al-dev-help
+### /help
 
 No agents spawned; no `.dev/` output. The skill reads available context files and presents contextual guidance inline.
 

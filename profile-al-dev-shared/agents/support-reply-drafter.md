@@ -3,7 +3,7 @@ name: support-reply-drafter
 description: >-
   Draft a customer-facing reply from internal BC support research findings.
   Writes the combined findings + reply file.
-  Dispatched by the al-dev-support-reply skill (reply phase).
+  Dispatched by the support-reply skill (reply phase).
   Pairs with support-researcher.
 model: sonnet
 tools: ["Write"]
@@ -37,7 +37,7 @@ Take structured research findings from support-researcher and produce a clear, a
 
 **Step 1:** Parse `RESEARCHER_FINDINGS` — extract root cause, evidence, workarounds, recommended resolution, BC_VERSION_SCOPE, SOURCES.
 
-**Tool Contract Note:** `RESEARCHER_FINDINGS` is embedded as a text block in the dispatch prompt (see `/al-dev-support-reply` Phase 2). Parse it directly from the prompt; no file I/O needed. Only `Write` tool is required to produce the output file.
+**Tool Contract Note:** `RESEARCHER_FINDINGS` is embedded as a text block in the dispatch prompt (see `/support-reply` Phase 2). Parse it directly from the prompt; no file I/O needed. Only `Write` tool is required to produce the output file.
 
 **Step 1.5:** Critical reading of researcher findings
 
@@ -98,7 +98,7 @@ Write both **Internal Findings** and **Draft Customer Reply** sections to this f
 
 ## Return Block
 
-Return to `/al-dev-support-reply` with:
+Return to `/support-reply` with:
 
 ```text
 FILE: .dev/YYYY-MM-DD-plugin-support-reply-<slug>.md

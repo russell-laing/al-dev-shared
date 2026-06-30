@@ -680,9 +680,9 @@ When development completes, finish the branch using the harness-specific workflo
 ### 4. Concrete Flow: Adding a Feature to al-dev-shared
 
 ```text
-User: /al-dev-plan "Add new skill for X"
+User: /plan "Add new skill for X"
 
-→ /al-dev-plan skill invokes:
+→ /plan skill invokes:
    - Solution architect agent (`solution-architect`) for design work
    - Dispatched via: `al-dev-shared:solution-architect`
   - Uses: AskUserQuestion (USER_GATE projected to Claude native tool)

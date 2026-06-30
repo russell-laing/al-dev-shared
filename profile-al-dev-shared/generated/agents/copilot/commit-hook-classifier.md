@@ -1,6 +1,6 @@
 ---
 name: "commit-hook-classifier"
-description: "Read-only classifier for pre-commit hook failures. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Never modifies files. Dispatched by al-dev-commit-execute (Phase 4.3) before commit-hook-fixer."
+description: "Read-only classifier for pre-commit hook failures. Reads hook failure logs and assigns each failure to fixable, transient, or non-fixable using the Failure Classification table in knowledge/commit-hook-recovery-patterns.md. Never modifies files. Dispatched by commit-execute (Phase 4.3) before commit-hook-fixer."
 tools: ["read"]
 ---
 
@@ -8,7 +8,7 @@ tools: ["read"]
 # Agent: commit-hook-classifier
 
 Classify each pre-commit hook failure by recoverability. Dispatched by
-`al-dev-commit-execute` (Phase 4.3) as the first of two recovery agents.
+`commit-execute` (Phase 4.3) as the first of two recovery agents.
 
 This agent isolates diagnosis from repair: it reads failure logs, classifies
 each failure, and returns a structured block — it never modifies files or runs

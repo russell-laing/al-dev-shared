@@ -1,5 +1,5 @@
 ---
-description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by the al-dev-support-reply skill (research phase). Pairs with support-reply-drafter."
+description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by the support-reply skill (research phase). Pairs with support-reply-drafter."
 tools: ["mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>", "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>"]
 ---
 
@@ -18,14 +18,14 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 |-------|----------|-------------|
 | QUERY_TYPE | **Yes** | `ticket`, `file`, or `freetext` — in dispatch prompt |
 | QUERY_CONTEXT | **Yes** | The customer's question or symptom |
-| TICKET_FILE | Yes (when available) | Path to ticket context file from `/al-dev-ticket`, or `NONE`. Always provided by `/al-dev-support-reply`; use to focus research on the reported issue context. |
+| TICKET_FILE | Yes (when available) | Path to ticket context file from `/ticket`, or `NONE`. Always provided by `/support-reply`; use to focus research on the reported issue context. |
 | BC version | No | Inferred from query context if mentioned; not required from caller |
 
 ## Outputs
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured internal findings returned inline to /al-dev-support-reply (return block only — no file writes) |
+| Return block | Structured internal findings returned inline to /support-reply (return block only — no file writes) |
 
 ## Research Process
 
@@ -67,7 +67,7 @@ Check whether `bc-code-history` appears in your active tool list before using th
 
 ## Return Block
 
-Return to `/al-dev-support-reply` with:
+Return to `/support-reply` with:
 
 ```text
 RESEARCH_COMPLETE: yes

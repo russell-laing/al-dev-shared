@@ -12,7 +12,7 @@ tools: ["Read", "Write", "Bash"]
 # Agent: commit-hook-fixer
 
 Apply scripted recovery fixes for classified pre-commit hook failures. Dispatched by
-`al-dev-commit-execute` (Phase 4.3) after `commit-hook-classifier` returns a
+`commit-execute` (Phase 4.3) after `commit-hook-classifier` returns a
 `HOOK_CLASSIFICATIONS` block with fixable or mixed failures.
 
 This agent isolates error recovery from commit execution: the execute agent

@@ -228,4 +228,4 @@ Where `<knowledge-path>` and `<report-path>` are derived from the surface argume
 - After `/audit-knowledge-quality` is invoked (user-triggered)
 - Periodically (e.g., before major plugin releases)
 - After significant knowledge file updates
-- If the `/al-dev-commit` advisory surfaces knowledge warnings
+- If the `/commit` advisory surfaces knowledge warnings

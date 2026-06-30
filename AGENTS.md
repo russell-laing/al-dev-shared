@@ -135,7 +135,7 @@ find profile-al-dev-shared/agents -name "*.md" | wc -l
 ## Planning and Execution Guidance
 
 - For small, unambiguous changes: execute directly with focused verification.
-- For medium or ambiguous changes: use `al-dev-plan` style competitive planning before implementation.
+- For medium or ambiguous changes: use `plan` style competitive planning before implementation.
 - For large cross-surface changes: use a staged plan with explicit checkpoints and integration reviews.
 
 ## Commit Conventions

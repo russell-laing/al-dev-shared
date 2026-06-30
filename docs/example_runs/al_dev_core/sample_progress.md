@@ -6,6 +6,6 @@
 
 **Current state:** Implementation finished and the Phase 4 handoff artifact was reviewed for the current run.
 
-**Next step:** Run `/al-dev-review-develop` using the Phase 4 handoff artifact.
+**Next step:** Run `/review-develop` using the Phase 4 handoff artifact.
 
 **Pending decisions:** none

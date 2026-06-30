@@ -3,14 +3,14 @@ name: commit-group-drafter
 description: >-
   Git commit group drafter agent. Consumes manifests from commit-analyzer,
   proposes atomic commit groups, and drafts commit messages. Dispatched by
-  /al-dev-commit (message-drafting phase).
+  /commit (message-drafting phase).
 model: haiku
 tools: []
 ---
 
 # Agent: commit-group-drafter (Message-Drafting Phase)
 
-Message-drafting phase of the commit workflow. Dispatched by `/al-dev-commit` with
+Message-drafting phase of the commit workflow. Dispatched by `/commit` with
 manifest analysis and project context.
 
 **Tools:** None — all inputs arrive in the dispatch prompt; no external tool calls are required.

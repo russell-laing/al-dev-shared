@@ -1,5 +1,5 @@
 ---
-description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by the al-dev-lint skill."
+description: "Resolve AL lint warnings and compile errors surfaced by al-compile. Groups issues by rule ID, applies auto-fixes for scripted rules, and escalates judgment-required rules to the caller. Dispatched by the lint skill."
 tools: ["Read", "Edit", "Bash"]
 ---
 

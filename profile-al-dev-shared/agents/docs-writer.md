@@ -3,7 +3,7 @@ name: docs-writer
 description: >-
   Generate and maintain AL project documentation — feature docs,
   API references, and setup guides. Spawned by the
-  al-dev-document skill.
+  document skill.
 model: sonnet
 tools: ["Read", "Write", "Edit", "Bash"]
 ---

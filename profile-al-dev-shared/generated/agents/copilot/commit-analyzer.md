@@ -1,6 +1,6 @@
 ---
 name: "commit-analyzer"
-description: "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by al-dev-commit (analysis phase). Read-only — never modifies files."
+description: "Git commit analyzer agent. Reads staged diffs and builds per-file manifests with object IDs and change signatures. Dispatched by commit (analysis phase). Read-only — never modifies files."
 tools: ["execute", "read"]
 ---
 
@@ -8,7 +8,7 @@ tools: ["execute", "read"]
 # Agent: commit-analyzer (Analysis Phase)
 
 Read-only analysis phase of the commit workflow. Dispatched by
-`/al-dev-commit` with phase-specific instructions.
+`/commit` with phase-specific instructions.
 
 **Do not modify any files in this phase.**
 
@@ -24,7 +24,7 @@ passes only `PROJECT_CONTEXT` and `FD_TICKET`.
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| REPO | No | Inferred from the working directory; not passed as a structured input by /al-dev-commit |
+| REPO | No | Inferred from the working directory; not passed as a structured input by /commit |
 | PROJECT_CONTEXT | string | Scopes, object ID prefix, naming patterns |
 | FD_TICKET | string (optional) | Freshdesk ticket number |
 | DIFF_MODE | string (optional) | `full` (default) or `summary`. In `summary` mode the analyzer size-gates per-file diffs to minimise token cost; the MANIFESTS schema is identical in both modes. |

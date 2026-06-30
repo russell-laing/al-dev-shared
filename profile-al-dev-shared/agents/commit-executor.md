@@ -2,7 +2,7 @@
 name: commit-executor
 description: >-
   Git commit execution agent. Executes git commits from an approved plan
-  (success path only). Dispatched by al-dev-commit (execute phase) after
+  (success path only). Dispatched by commit (execute phase) after
   commit-lint-fixer and commit-ooxml-validator complete. On
   pre-commit hook rejection, returns a HOOK_FAILURES block for the caller to
   hand off to commit-hook-fixer. Never attempts fixes or retries —
@@ -18,7 +18,7 @@ Execute approved commits from the analysis phase. This agent owns the
 SHAs. It does NOT diagnose or recover from pre-commit hook failures.
 
 If commits fail due to pre-commit hooks, return a `HOOK_FAILURES` block and
-stop. The caller (`al-dev-commit` Phase 4) will dispatch
+stop. The caller (`commit` Phase 4) will dispatch
 `commit-hook-fixer` for error diagnosis and recovery.
 
 ## Inputs
