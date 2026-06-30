@@ -5,7 +5,7 @@ description: >-
   multi-source research (AL symbols, MS Docs, BC history), synthesizes findings,
   and drafts a customer-facing reply. Input: ticket context
   from ticket Phase 5 (CONTEXT block, or auto-detected latest). Output: a REPLY
-  metadata block plus the full customer reply written to `.dev/YYYY-MM-DD-ticket-reply.md`.
+  metadata block plus the full customer reply written to `.dev/YYYY-MM-DD-plugin-support-reply-<slug>.md`.
 argument-hint: "[context-file-path | blank to auto-detect latest]"
 ---
 
@@ -14,7 +14,7 @@ argument-hint: "[context-file-path | blank to auto-detect latest]"
 Takes a loaded ticket context, runs multi-source BC research, then
 drafts a customer-facing reply. Consumes the CONTEXT block produced
 by `ticket` Phase 5 and emits a REPLY block written to
-`.dev/YYYY-MM-DD-ticket-reply.md`.
+`.dev/YYYY-MM-DD-plugin-support-reply-<slug>.md`.
 
 ## Usage
 
@@ -106,11 +106,11 @@ Prompt: <assembled prompt above>
 ## Phase 3 — Emit REPLY Block
 
 Parse the drafter agent's returned summary and write the REPLY block
-to `.dev/$(date +%Y-%m-%d)-ticket-reply.md`:
+to `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md`:
 
 ```text
 REPLY
-FILE: .dev/YYYY-MM-DD-ticket-reply.md
+FILE: .dev/YYYY-MM-DD-plugin-support-reply-<slug>.md
 QUERY_TYPE: <class>
 BC_VERSION_SCOPE: <scope or "not version-specific">
 SOURCES: MS Docs (<n> pages) | BC History (<n> commits or NONE)
@@ -122,7 +122,7 @@ Present to user:
 
 ```text
 Support research complete →
-.dev/YYYY-MM-DD-ticket-reply.md
+.dev/YYYY-MM-DD-plugin-support-reply-<slug>.md
 
 <SUMMARY value>
 <QUERY_TYPE> | <BC_VERSION_SCOPE>
@@ -135,13 +135,13 @@ the Draft Customer Reply section into Freshdesk.
 
 ## Phase 4 — Gated Post-Back to the Ticket
 
-Phase 3 leaves the drafted reply in `.dev/$(date +%Y-%m-%d)-ticket-reply.md`
+Phase 3 leaves the drafted reply in `.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md`
 with no downstream consumer. Phase 4 closes that loop. Posting a reply publishes
 content to the customer, so this phase never auto-posts — it always gates on the
 user.
 
 1. **Read the reply artifact** written in Phase 3
-   (`.dev/$(date +%Y-%m-%d)-ticket-reply.md`) and locate its
+   (`.dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md`) and locate its
    `Draft Customer Reply` section.
 
 2. **USER_GATE — confirm before posting.** Ask the user to confirm posting the
