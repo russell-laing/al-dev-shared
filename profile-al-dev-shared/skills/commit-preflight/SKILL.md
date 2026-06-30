@@ -361,6 +361,22 @@ Continue to Phase 2.
 
 ### 2.1 — Present Manifests and Confirm Plan
 
+**Validation: Staged-File Cross-Check** — Before presenting groups, verify that every file in PROPOSED_GROUPS is actually staged:
+
+```bash
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMRDT)
+for FILE in $PROPOSED_FILES; do
+  if ! echo "$STAGED_FILES" | grep -Fxq "$FILE"; then
+    echo "❌ VALIDATION FAILED: $FILE in PROPOSED_GROUPS but not staged"
+    echo "Staged files: $STAGED_FILES"
+    exit 1
+  fi
+done
+echo "✓ All proposed files are staged. Proceeding to presentation."
+```
+
+This hard-stop validation prevents hallucinated suggestions where the commit-group-drafter agent proposes files that were never in the dispatch prompt.
+
 Display the `MANIFESTS` block from the analysis agent output (Phase 1.1), then the
 `PROPOSED_GROUPS` block from the message-drafting agent output (Phase 1.3):
 
