@@ -1,6 +1,10 @@
-stage_completed: implement-plugin-health
+---
+stage_completed: record-plugin-dispositions
 completed_at: 2026-07-01
-next_command: none
-next_inputs: []
+next_command: /plan-plugin-findings
+next_inputs:
+  - docs/health/dispositions_open.md
+  - docs/health/2026-07-01-plugin-health.md
 fresh_session_recommended: false
-note: Loop closed; ledger staleness check passed. Health findings fixed and ledger entries closed (disp_20260701_000001 through 000004). Run /audit-plugin-health to start the next health loop. Skills updated; run /sync-map-documentation if skill map is out of sync.
+note: Recorded 42 accepted quality findings from plugin dossier. Backlog check shows T=942 total open accepted (all dimensions/surfaces across history), N=42 from this session — T > N indicates older backlog exists. Next step is /plan-plugin-findings to implement accepted rows.
+---
