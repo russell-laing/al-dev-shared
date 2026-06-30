@@ -37,11 +37,13 @@ def main() -> int:
         active = {contract.skill for contract in contracts} | set(missing)
         validate_contracts(contracts, active)
         sections, warnings = build_sections(contracts, missing, REPO)
+        updates: dict[Path, str] = {}
         for rel_path, keys in PAGE_KEYS.items():
             page_path = REPO / rel_path
             current = page_path.read_text(encoding="utf-8")
             replacements = {key: sections[key] for key in keys}
-            updated = replace_marked_sections(current, replacements)
+            updates[page_path] = replace_marked_sections(current, replacements)
+        for page_path, updated in updates.items():
             write_text_atomic(page_path, updated)
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(f"generate_maintainer_guide: {exc}\n")

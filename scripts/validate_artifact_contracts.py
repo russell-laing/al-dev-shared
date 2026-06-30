@@ -41,11 +41,20 @@ class Violation:
     fix: str
 
 
+def _runtime_rule(skill: str, artifact: str, markers: tuple[str, ...], problem: str) -> RuntimeArtifactRule:
+    return RuntimeArtifactRule(
+        skill=skill,
+        pattern=_RUNTIME_PATTERNS[skill][artifact],
+        markers=markers,
+        problem=problem,
+    )
+
+
 RUNTIME_ARTIFACT_RULES = (
-    RuntimeArtifactRule(
-        skill="ticket",
-        pattern=_RUNTIME_PATTERNS["ticket"]["context"],
-        markers=(
+    _runtime_rule(
+        "ticket",
+        "context",
+        (
             "TICKET_ID",
             "STATUS",
             "PRIORITY",
@@ -53,31 +62,91 @@ RUNTIME_ARTIFACT_RULES = (
             "**Status**",
             "**Priority**",
         ),
-        problem="Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)",
+        "Missing ticket metadata markers (TICKET_ID, STATUS, PRIORITY)",
     ),
-    RuntimeArtifactRule(
-        skill="interview",
-        pattern=_RUNTIME_PATTERNS["interview"]["requirements"],
-        markers=("REQ:", "REQ-", "ACC:"),
-        problem="Missing REQ/ACC tokens (formal requirements)",
+    _runtime_rule(
+        "interview",
+        "requirements",
+        ("REQ:", "REQ-", "ACC:"),
+        "Missing REQ/ACC tokens (formal requirements)",
     ),
-    RuntimeArtifactRule(
-        skill="explore",
-        pattern=_RUNTIME_PATTERNS["explore"]["findings"],
-        markers=("## ANSWER", "## FILES", "## SNIPPETS", "## Findings"),
-        problem="Missing structured sections (ANSWER/FILES/SNIPPETS)",
+    _runtime_rule(
+        "explore",
+        "findings",
+        ("## ANSWER", "## FILES", "## SNIPPETS", "## Findings"),
+        "Missing structured sections (ANSWER/FILES/SNIPPETS)",
     ),
-    RuntimeArtifactRule(
-        skill="investigate",
-        pattern=_RUNTIME_PATTERNS["investigate"]["findings"],
-        markers=("Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"),
-        problem="Missing investigation markers (Root Cause/Hypotheses/VERDICT)",
+    _runtime_rule(
+        "investigate",
+        "findings",
+        ("Root Cause", "Hypothes", "VERDICT", "CONFIRMED", "REJECTED"),
+        "Missing investigation markers (Root Cause/Hypotheses/VERDICT)",
     ),
-    RuntimeArtifactRule(
-        skill="handoff",
-        pattern=_RUNTIME_PATTERNS["handoff"]["prompt"],
-        markers=("## Context", "Context files available", "Suggested first command", "Handoff Prompt"),
-        problem="Missing handoff sections (Context/Context files available/Suggested first command)",
+    _runtime_rule(
+        "plan",
+        "solution_plan",
+        ("## Solution Plan:", "### Architecture", "### Acceptance Criteria"),
+        "Missing solution-plan sections (Solution Plan/Architecture/Acceptance Criteria)",
+    ),
+    _runtime_rule(
+        "develop-orchestrate",
+        "progress",
+        ("## Progress Checkpoint", "**Completed phases:**", "**Next step:**"),
+        "Missing progress-checkpoint sections (Progress Checkpoint/Completed phases/Next step)",
+    ),
+    _runtime_rule(
+        "develop-orchestrate",
+        "checklist",
+        ("File", "Module Variables / Objects", "Procedures / Triggers", "Integration Points"),
+        "Missing develop-checklist sections (File/Module Variables / Objects/Procedures / Triggers/Integration Points)",
+    ),
+    _runtime_rule(
+        "develop-orchestrate",
+        "scope",
+        ("Files in scope", "Permitted change types per file", "Files explicitly out of scope"),
+        "Missing develop-scope sections (Files in scope/Permitted change types/Files explicitly out of scope)",
+    ),
+    _runtime_rule(
+        "develop-orchestrate",
+        "phase4_handoff",
+        ("module assignments", "File ownership verification", "Ready for review team dispatch"),
+        "Missing Phase 4 handoff sections (module assignments/file ownership verification/review readiness)",
+    ),
+    _runtime_rule(
+        "review-develop",
+        "preflight",
+        ("# Review-Develop Preflight", "## CHANGED_FILES", "## PREREQUISITES_MET"),
+        "Missing review-preflight sections (Review-Develop Preflight/CHANGED_FILES/PREREQUISITES_MET)",
+    ),
+    _runtime_rule(
+        "review-develop",
+        "code_review",
+        ("# Code Review:", "## Review Panel Summary", "## Verdict"),
+        "Missing code-review sections (Code Review/Review Panel Summary/Verdict)",
+    ),
+    _runtime_rule(
+        "lint",
+        "report",
+        ("Fixed (scripted)", "Fixed (direct)", "Compile Status"),
+        "Missing lint-report sections (Fixed scripted/direct summary or Compile Status)",
+    ),
+    _runtime_rule(
+        "perf",
+        "analysis",
+        ("# Performance Analysis", "## Findings", "## Recommended Fix Order"),
+        "Missing perf-analysis sections (Performance Analysis/Findings/Recommended Fix Order)",
+    ),
+    _runtime_rule(
+        "release-notes",
+        "report",
+        ("# Release Notes", "## Summary", "## Bug Fixes"),
+        "Missing release-notes sections (Release Notes/Summary/Bug Fixes)",
+    ),
+    _runtime_rule(
+        "handoff",
+        "prompt",
+        ("## Context", "Context files available", "Suggested first command", "Handoff Prompt"),
+        "Missing handoff sections (Context/Context files available/Suggested first command)",
     ),
 )
 

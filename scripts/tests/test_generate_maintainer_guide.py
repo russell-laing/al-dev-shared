@@ -990,6 +990,28 @@ def test_cli_main_fails_closed_when_marker_pair_missing() -> None:
         assert guide.read_bytes() == before
 
 
+def test_cli_main_fails_closed_without_partial_stage_rewrites() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _build_skills_fixture(root)
+        guide = root / "docs" / "maintainer_tooling.md"
+        guide.parent.mkdir(parents=True)
+        guide.write_text(_guide_template(), encoding="utf-8")
+        detail_dir = root / "docs" / "maintainer_tooling"
+        detail_dir.mkdir(parents=True)
+        for stage in ("map-sync", "discover", "decide", "implement", "derive"):
+            stage_name = lib.STAGE_DOCS[stage].name
+            text = _stage_template(stage)
+            if stage == "derive":
+                text = _stage_template(stage, drop_key="maintainer-stage-derive-artifacts")
+            (detail_dir / stage_name).write_text(text, encoding="utf-8")
+        before = {path.name: path.read_bytes() for path in detail_dir.iterdir()}
+        cli = _patched_cli(root)
+        assert cli.main() == 1
+        after = {path.name: path.read_bytes() for path in detail_dir.iterdir()}
+        assert after == before
+
+
 def test_skills_tables_escapes_pipe_in_description() -> None:
     with tempfile.TemporaryDirectory() as td:
         skills = Path(td) / ".claude" / "skills"

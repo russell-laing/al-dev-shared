@@ -190,6 +190,27 @@ def test_run_artifact_tests_fails_when_latest_runtime_artifact_is_missing_marker
     assert run_artifact_tests(repo) is False
 
 
+def test_run_artifact_tests_fails_when_develop_handoff_artifact_is_missing_expected_sections(
+    tmp_path: Path,
+) -> None:
+    contract = _make_contract([{"skill": "my-skill"}])
+    repo = _make_repo(tmp_path, contract, {"my-skill": _GOOD_BODY})
+    patterns = runtime_artifact_patterns()
+    _make_runtime_artifacts(repo, {
+        f"2026-06-28-{patterns['develop-orchestrate']['phase4_handoff'].lstrip('*-')}": (
+            "Ready for review.\n"
+            "This file omits the required handoff structure.\n"
+        ),
+        f"2026-06-28-{patterns['ticket']['context'].lstrip('*-')}": "TICKET_ID: 1",
+        f"2026-06-28-{patterns['interview']['requirements'].lstrip('*-')}": "REQ: 1",
+        f"2026-06-28-{patterns['explore']['findings'].lstrip('*-')}": "## ANSWER",
+        f"2026-06-28-{patterns['investigate']['findings'].lstrip('*-')}": "Root Cause",
+        f"2026-06-28-{patterns['handoff']['prompt'].lstrip('*-')}": "## Context",
+    })
+
+    assert run_artifact_tests(repo) is False
+
+
 def test_runtime_artifact_patterns_use_prefix_free_skill_names() -> None:
     patterns = runtime_artifact_patterns()
     assert patterns["ticket"]["context"] == "*-ticket-ticket-context.md"
@@ -217,6 +238,16 @@ def test_runtime_artifact_patterns_cover_task1_artifact_canon() -> None:
 def test_validator_runtime_rules_are_helper_backed() -> None:
     patterns = runtime_artifact_patterns()
     expected = {
+        ("plan", patterns["plan"]["solution_plan"]),
+        ("develop-orchestrate", patterns["develop-orchestrate"]["progress"]),
+        ("develop-orchestrate", patterns["develop-orchestrate"]["checklist"]),
+        ("develop-orchestrate", patterns["develop-orchestrate"]["scope"]),
+        ("develop-orchestrate", patterns["develop-orchestrate"]["phase4_handoff"]),
+        ("review-develop", patterns["review-develop"]["preflight"]),
+        ("review-develop", patterns["review-develop"]["code_review"]),
+        ("lint", patterns["lint"]["report"]),
+        ("perf", patterns["perf"]["analysis"]),
+        ("release-notes", patterns["release-notes"]["report"]),
         ("ticket", patterns["ticket"]["context"]),
         ("interview", patterns["interview"]["requirements"]),
         ("explore", patterns["explore"]["findings"]),
