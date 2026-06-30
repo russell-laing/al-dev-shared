@@ -2,6 +2,15 @@
 
 from __future__ import annotations
 
+from .reference_contracts import (
+    allowed_template_patterns as _allowed_template_patterns,
+    canonical_artifact_patterns as _canonical_artifact_patterns,
+    canonical_script_entrypoints as _canonical_script_entrypoints,
+    generated_output_surfaces as _generated_output_surfaces,
+    legacy_reference_aliases as _legacy_reference_aliases,
+    runtime_artifact_pattern_groups as _runtime_artifact_pattern_groups,
+)
+
 LEGACY_SHARED_PREFIX = "al-dev-"
 
 SHARED_SKILL_RENAMES = {
@@ -87,52 +96,34 @@ def strip_legacy_shared_prefix(name: str) -> str:
 def runtime_artifact_patterns() -> dict[str, dict[str, str]]:
     """Runtime artifact globs keyed by canonical prefix-free shared skill name."""
 
-    return {
-        "commit-execute": {
-            "analysis": "*-commit-analysis.md",
-        },
-        "develop-orchestrate": {
-            "progress": "*-develop-progress.md",
-            "checklist": "*-develop-checklist.md",
-            "scope": "*-develop-scope.md",
-            "phase4_handoff": "*-develop-phase4-handoff.md",
-        },
-        "developer-tdd": {
-            "test_plan": "*-test-test-plan.md",
-            "log": "*-developer-tdd-log.md",
-        },
-        "ticket": {
-            "context": "*-ticket-ticket-context.md",
-            "reply": "*-ticket-reply.md",
-        },
-        "interview": {
-            "notes": "*-interview-notes.md",
-            "requirements": "*-interview-requirements.md",
-        },
-        "explore": {
-            "findings": "*-explore-findings.md",
-        },
-        "investigate": {
-            "findings": "*-investigate-findings.md",
-        },
-        "plan": {
-            "debate_summary": "*-plan-debate-summary.md",
-            "solution_plan": "*-plan-solution-plan.md",
-        },
-        "review-develop": {
-            "code_review": "*-develop-code-review.md",
-            "preflight": "*-plugin-review-preflight.md",
-        },
-        "lint": {
-            "report": "*-lint-lint-report.md",
-        },
-        "perf": {
-            "analysis": "*-perf-perf-analysis.md",
-        },
-        "release-notes": {
-            "report": "*-plugin-release-notes.md",
-        },
-        "handoff": {
-            "prompt": "*-handoff-handoff-prompt.md",
-        },
-    }
+    return _runtime_artifact_pattern_groups()
+
+
+def canonical_artifact_patterns() -> dict[str, str]:
+    """Return flattened runtime artifact patterns keyed by semantic family."""
+
+    return _canonical_artifact_patterns()
+
+
+def canonical_script_entrypoints() -> dict[str, str]:
+    """Return runnable script entrypoints keyed by stable semantic name."""
+
+    return _canonical_script_entrypoints()
+
+
+def generated_output_surfaces() -> dict[str, tuple[str, ...]]:
+    """Return generated output declarations keyed by output family."""
+
+    return _generated_output_surfaces()
+
+
+def allowed_template_patterns() -> tuple[str, ...]:
+    """Return template/example patterns that should not be treated as live refs."""
+
+    return _allowed_template_patterns()
+
+
+def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
+    """Return explicit legacy aliases that validators may classify separately."""
+
+    return _legacy_reference_aliases()
