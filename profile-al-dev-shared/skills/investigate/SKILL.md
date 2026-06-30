@@ -45,28 +45,22 @@ Do not claim the investigation is complete or ready for handoff until the succes
 
 ### Step 0 — Target Confirmation
 
-Before acting on any findings file or context document:
+Before acting on any findings file or context document, apply **Target
+Confirmation (Step 0)** from
+`knowledge/verification-and-planning.md`.
 
-1. **Identify targets:**
-   - Findings reference: target name/path from findings
-   - Your request: target from user request
-   - Output path: where investigation output will be written
-2. **Validate match:**
+For `/investigate`, use:
 
-   ```text
-   > **Target check:**
-   > - Findings reference: [extracted from findings]
-   > - Your request: [extracted from your message]
-   > - Output path: [absolute path where work will land]
-   >
-   > Do these match?
-   >
-   > **If all align:** Continue to Step 1.
-   >
-   > **If findings and request disagree:** STOP. Ask the user to confirm whether to:
-   > 1. Restart the investigation with clarified requirements, or
-   > 2. Proceed with the current scope despite the mismatch
-   ```
+- **Findings reference** — the target described in the prior findings or
+  ticket context
+- **User request** — the symptom or subsystem named in the user's
+  request
+- **Output path** — the investigation findings artifact that will be
+  written for this run
+
+If the findings reference and user request disagree, stop and ask the
+user whether to restart with clarified requirements or proceed with the
+current scope despite the mismatch.
 
 ### Step 1 — Load Context
 

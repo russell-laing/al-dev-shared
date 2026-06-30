@@ -132,14 +132,11 @@ proceeding with empty state.
 Classify the request before gathering full context.
 See `knowledge/plan-phase-routing.md` for full complexity classification rules and model assignment logic.
 
-Quick reference:
-
-| Signal | SIMPLE | MEDIUM / COMPLEX |
-| --- | --- | --- |
-| Estimated file count | ≤ 3 | 4+ or unclear |
-| Pattern in codebase (if known) | Yes | No / unclear |
-| New architecture needed | No | Yes |
-| Requirements ambiguous | No | Yes |
+Use the four canonical routing signals from that document:
+estimated file count, whether the pattern already exists in the codebase,
+whether new architecture is needed, and whether requirements are
+ambiguous. If any MEDIUM / COMPLEX signal is present, or the evidence is
+unclear, treat the request as MEDIUM / COMPLEX.
 
 When in doubt, default to `opus` (MEDIUM / COMPLEX tier).
 
@@ -232,27 +229,22 @@ Do NOT mark preflight complete if after 2 clarification attempts the description
 
 ### 1.5.6–1.5.8: Target Confirmation
 
-If Phase 1 discovers a target ambiguity or a specific resource constraint (e.g., a .dev/findings-file.md or external lint output that references a particular subsystem), cross-check the target interpretation before emitting context — run the steps below before acting on any findings file or context document. Otherwise, skip to the context write.
+If Phase 1 discovers a target ambiguity or a specific resource
+constraint (for example, a `.dev/findings-file.md` or external lint
+output that references a particular subsystem), apply **Target
+Confirmation (Step 0)** from
+`knowledge/verification-and-planning.md` before emitting context.
+Otherwise, skip to the context write.
 
-1. **Identify targets:**
-   - Findings reference: Extract the target name/path from the document
-   - Your request: Extract target from user message (skill, repo, file, or project)
-   - Output path: Absolute path where work will land
-2. **Validate match:**
+For `plan-preflight`, use:
 
-   ```text
-   > **Target check:**
-   > - Findings reference: [extracted from findings]
-   > - Your request: [extracted from your message]
-   > - Output path: [absolute path where work will land]
-   >
-   > Do these match? If findings and request disagree, stop and confirm before proceeding.
-   ```
+- **Findings reference** — the scoped subsystem, file, or findings
+  document discovered during Phase 1
+- **User request** — the target implied by `$ARGUMENTS`
+- **Output path** — `.dev/preflight-context.md`
 
-3. **Decision:**
-   - If all align → continue
-   - If findings/request disagree → flag mismatch and wait
-   - If mismatch is fundamental → stop and escalate to user
+If those targets do not align, stop and confirm the scope before
+continuing.
 
 ## Emit PREFLIGHT_CONTEXT
 

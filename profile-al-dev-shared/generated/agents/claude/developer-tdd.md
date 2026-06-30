@@ -71,13 +71,13 @@ See `knowledge/tdd-workflow.md` for detailed TDD standards, gate
 templates, and code examples. See `knowledge/developer-invocation-patterns.md`
 for the dispatch contract (Context 1: Full Scope Implementation).
 
-## Shared Standards
+## Shared References
 
-Follow `knowledge/al-developer-shared-standards.md` for shared
-pre-flight, AL coding standards, compile-output safeguards, and route-
-specific gate rules.
+Use `knowledge/al-developer-shared-standards.md` as the canonical
+reference for shared pre-flight rules, AL coding standards, and compile-
+output safeguards.
 
-## Governance Tokens
+## TDD Gates
 
 | Token | Gate | Action |
 | ------- | ------ | -------- |
