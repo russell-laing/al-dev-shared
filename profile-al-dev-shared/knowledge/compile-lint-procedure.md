@@ -288,7 +288,7 @@ Dispatch agent: al-dev-shared:diagnostics-resolver
   prompt: |
     Read `.dev/compile-errors.log` and `knowledge/al-linting-rules.md`.
     Fix all auto-fixable lint warnings and errors in the AL source files.
-    Write `.dev/lint-report.md` with a fixed/unresolved summary structured as:
+    Write the report to `.dev/*-lint-lint-report.md` with a fixed/unresolved summary structured as:
     - Fixed (scripted): rules fixed via Python script with count
     - Fixed (direct): rules fixed via direct file edits with file:line refs
     - Unresolved: rules requiring human judgment with reason

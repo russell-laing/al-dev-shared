@@ -13,10 +13,10 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `interview` | `requirements.md` | `plan` | Optional | Req |
-| `explore` | `findings.md` | `plan` | Optional | Ctx |
+| `interview` | `.dev/*-interview-requirements.md` | `plan` | Optional | Req |
+| `explore` | `.dev/*-explore-findings.md` | `plan` | Optional | Ctx |
 | `perf` | `perf-analysis.md` | `plan` | Optional | Perf |
-| `plan` | `solution-plan.md` | `develop-orchestrate` | **Mandatory** | Sp |
+| `plan` | `.dev/*-plan-solution-plan.md` | `develop-orchestrate` | **Mandatory** | Sp |
 
 ---
 
@@ -24,10 +24,10 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `plan` | `solution-plan.md` | `develop-orchestrate` | **Mandatory** | Sp |
-| `develop-orchestrate` (P4) | `phase4-handoff.md` | review | **Mandatory** | St |
-| `lint` | `lint-report.md` | `fix` | Optional | Fix |
-| review-develop | `code-review.md` | commit | **Mandatory** | Rev |
+| `plan` | `.dev/*-plan-solution-plan.md` | `develop-orchestrate` | **Mandatory** | Sp |
+| `develop-orchestrate` (P4) | `.dev/*-develop-phase4-handoff.md` | review | **Mandatory** | St |
+| `lint` | `.dev/*-lint-lint-report.md` | `fix` | Optional | Fix |
+| review-develop | `.dev/*-develop-code-review.md` | commit | **Mandatory** | Rev |
 | `commit` | Staged diff | verify | **Mandatory** | Msg |
 
 ---
@@ -36,7 +36,7 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `develop-orchestrate` (P4) | `phase4-handoff.md` | review | **Mandatory** | Files |
+| `develop-orchestrate` (P4) | `.dev/*-develop-phase4-handoff.md` | review | **Mandatory** | Files |
 | (Compile) | `compile-errors.log` | review | **Mandatory** | Sts |
 | `review-develop` (P6) | Synthesized | User | **Mandatory** | Out |
 
@@ -46,7 +46,7 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `review-develop` | `code-review.md` | commit | Optional | Ctx |
+| `review-develop` | `.dev/*-develop-code-review.md` | commit | Optional | Ctx |
 | (Staged state) | Staged diff | commit | **Mandatory** | Val |
 | `commit` | (Commit) | verify | **Mandatory** | Chk |
 | `verify-commits` | (Verified) | Git | **Final** | Rdy |
@@ -68,8 +68,8 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `investigate` | `findings.md` | `plan` | Optional | Inv |
-| `investigate` | `findings.md` | `fix` | Optional | Inv |
+| `investigate` | `.dev/*-investigate-findings.md` | `plan` | Optional | Inv |
+| `investigate` | `.dev/*-investigate-findings.md` | `fix` | Optional | Inv |
 
 ---
 
@@ -77,9 +77,9 @@ Plugin surface.
 
 | Skill | Artifact | Consumes | Type | Notes |
 |---|---|---|---|---|
-| `ticket` | `ticket-context.md` | `plan` | Optional | Esc |
-| `ticket` | `context.md` | drafter | **Mandatory** | Drft |
-| drafter | Research draft | User | Output | Out |
+| `ticket` | `.dev/*-ticket-ticket-context.md` | `plan` | Optional | Esc |
+| `ticket` | `.dev/*-ticket-ticket-context.md` | `support-reply` | **Mandatory** | Drft |
+| `support-reply` | `.dev/*-ticket-reply.md` | User | Output | Out |
 
 ---
 
@@ -113,7 +113,7 @@ These gaps exist in the currently active, deployed skill chains and require imme
 
 #### 2. Explore Findings Staleness
 
-**Issue:** `/explore` produces `findings.md` which persists across session boundaries without explicit refresh or invalidation checks. Phase 0 logic does not flag whether findings are stale relative to recent code changes or time elapsed.
+**Issue:** `/explore` produces `.dev/*-explore-findings.md`, which persists across session boundaries without explicit refresh or invalidation checks. Phase 0 logic does not flag whether those findings are stale relative to recent code changes or time elapsed.
 
 **Impact:** Plans built on outdated exploration may miss recent architectural changes, bug fixes, or refactoring. Users may commit decisions based on findings that no longer apply, leading to rework or technical debt.
 
@@ -121,7 +121,7 @@ These gaps exist in the currently active, deployed skill chains and require imme
 
 #### 3. Investigate Findings Dual Route
 
-**Issue:** `/investigate` produces `findings.md` that can route to both `/plan` and `/fix` (see chains, row: Investigate findings to fix). No documented criteria distinguish which downstream path is appropriate, and no artifact-level gating prevents misrouting.
+**Issue:** `/investigate` produces `.dev/*-investigate-findings.md` that can route to both `/plan` and `/fix` (see chains, row: Investigate findings to fix). No documented criteria distinguish which downstream path is appropriate, and no artifact-level gating prevents misrouting.
 
 **Impact:** Complex findings appropriate for full planning may be sent directly to fix, resulting in narrow patches instead of systemic solutions. Conversely, simple investigation results may be over-engineered through full planning when direct fixing would suffice.
 
@@ -234,9 +234,9 @@ Phase B extends all lifecycle skills with explicit Phase 0 handoff checks:
 
 | Skill | Check | Artifact | Action |
 |---|---|---|---|
-| `plan` | Plan exists | `*-solution-plan.md` | Continue/restart |
+| `plan` | Plan exists | `*-plan-solution-plan.md` | Continue/restart |
 | `develop-orchestrate` | Progress + plan | Phase 4 OR plan | Resume |
-| `review-develop` | Phase 4 | `*-phase4-handoff.md` | Run develop |
+| `review-develop` | Phase 4 | `*-develop-phase4-handoff.md` | Run develop |
 | `commit` | Staged state | None | Check diff |
 | `fix` | (None) | None | Ad-hoc |
 | `lint` | Log exists | Errors log | Fresh or path |

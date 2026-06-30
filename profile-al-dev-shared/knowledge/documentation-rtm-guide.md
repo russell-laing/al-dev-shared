@@ -37,6 +37,7 @@ ACC:ACC-002 Error message displayed if limit is exceeded
 ```
 
 The token examples above are internal parsing patterns, not output examples. Use the later RTM table templates and audience rules when rendering documentation.
+Keep requirements, plan, and review references aligned with `*-interview-requirements.md`, `*-plan-solution-plan.md`, and `*-develop-code-review.md`.
 
 ### Parsing Rules
 

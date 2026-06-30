@@ -116,9 +116,9 @@ After every file-write action:
 Treat the contrast below as the minimum bar for phrasing verified versus
 unverified completion claims.
 
-**Wrong:** "Code review written to `.dev/2026-05-19-code-review.md`" (claims without verifying)
+**Wrong:** "Develop code review written to `.dev/2026-05-19-develop-code-review.md`" (claims without verifying)
 
-**Right:** "Code review written to `.dev/2026-05-19-code-review.md` (verified: 187 lines, no forbidden patterns, all acceptance criteria present)"
+**Right:** "Develop code review written to `.dev/2026-05-19-develop-code-review.md` (verified: 187 lines, no forbidden patterns, all acceptance criteria present)"
 
 ### Verification Checkpoint Template
 

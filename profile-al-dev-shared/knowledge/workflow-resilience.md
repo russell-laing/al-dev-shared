@@ -67,7 +67,8 @@ Resume order:
 4. latest scope file
 
 Only re-read the full solution plan if one of the above files
-is missing or contradictory.
+is missing or contradictory; `/plan` resumes from
+`.dev/preflight-context.md` when that file exists.
 
 ### Read Protocol (Phase 0)
 
@@ -105,6 +106,10 @@ if it exists. If the file exists, display its contents and ask:
 
 If no file exists, proceed to Phase 1 normally.
 
+For `/plan`, treat `.dev/preflight-context.md` as the explicit resume input
+when it exists. Do not substitute `.dev/progress.md` for that preflight
+context; `.dev/progress.md` is only the checkpoint file for ongoing phase work.
+
 ## Subagent Fallback
 
 If an agent returns empty output or hits a usage limit:
@@ -112,13 +117,17 @@ If an agent returns empty output or hits a usage limit:
 1. Use any partial output the agent returned before failing
 2. If no output at all, synthesize from the relevant plan
    document:
-   - For develop phases: `.dev/02-solution-plan.md`
+   - For develop phases: latest `.dev/*-plan-solution-plan.md`
    - For plan phases: latest `.dev/*-interview-requirements.md`
 3. Log the fallback in `.dev/progress.md` under
    **Pending decisions**: `"Phase X synthesized directly
    (agent hit limit)"`
 4. For plan/develop waves, prefer single-agent execution if
    a parallel wave has already failed once
+
+If a `/plan` run needs a synthesized starting point, use the latest
+`.dev/*-interview-requirements.md` or `.dev/preflight-context.md` as the
+planning source instead of a legacy dated solution-plan fallback.
 
 ## Recovery After Working-Tree Loss
 

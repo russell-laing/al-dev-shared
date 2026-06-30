@@ -1,6 +1,6 @@
 # Exploration Findings Output Format
 
-When writing persistent findings, follow this structure:
+When writing persistent findings, use this ANSWER/FILES structure:
 
 ```markdown
 # Codebase Exploration Results
@@ -9,20 +9,18 @@ When writing persistent findings, follow this structure:
 **Date:** [Today's date]
 **Scope:** [Scope explored]
 
-## Findings
+## ANSWER
+[Direct answer to the question]
 
-### [Category 1]
+## FILES
 - **File:** path/to/file.al (lines X-Y)
-- **Finding:** What was discovered
+  - **Finding:** What was discovered
 
-### [Category 2]
-[Repeat]
+## PATTERNS
+[Optional supporting patterns or recurring observations]
 
-## Summary
-[Concise explanation of code organization relevant to question]
-
-## Recommendations
-[Next steps or related areas to explore]
+## RISKS
+[Optional risks, gaps, or follow-up items]
 ```
 
 **File path:** `.dev/$(date +%Y-%m-%d)-explore-findings.md`
