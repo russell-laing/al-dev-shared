@@ -2,7 +2,7 @@
 """Validate solution plan structure and requirements coverage.
 
 Usage:
-    python3 validate-plan.py <path-to-solution-plan.md> [path-to-requirements.md]
+    python3 validate-plan.py <path-to-plan-solution-plan.md> [path-to-interview-requirements.md]
 
 Validation outcome:
     0 means the plan passes structural and traceability checks.
@@ -105,10 +105,17 @@ def check_requirements_coverage(
 def main() -> int:
     if len(sys.argv) < 2:
         print(
-            f"Usage: {sys.argv[0]} <solution-plan.md> "
-            "[requirements.md]"
+            f"Usage: {sys.argv[0]} <path-to-plan-solution-plan.md> "
+            "[path-to-interview-requirements.md]"
         )
         return 1
+
+    if sys.argv[1] in {"-h", "--help"}:
+        print(
+            f"Usage: {sys.argv[0]} <path-to-plan-solution-plan.md> "
+            "[path-to-interview-requirements.md]"
+        )
+        return 0
 
     plan_path = sys.argv[1]
     req_path = sys.argv[2] if len(sys.argv) > 2 else None
@@ -142,9 +149,13 @@ def main() -> int:
                 all_issues.append("--- Traceability ---")
                 all_issues.extend(rtm_issues)
     else:
-        # Auto-detect requirements file
-        auto_path = Path(plan_path).parent / "01-requirements.md"
-        if auto_path.exists():
+        # Auto-detect the latest canonical interview requirements file.
+        auto_path = max(
+            Path(plan_path).parent.glob("*-interview-requirements.md"),
+            key=lambda p: p.stat().st_mtime,
+            default=None,
+        )
+        if auto_path:
             rtm_issues = check_requirements_coverage(
                 text, str(auto_path)
             )

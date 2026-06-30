@@ -2,7 +2,7 @@
 """Validate code review document structure and plan coverage.
 
 Usage:
-    python3 validate-code-review.py <code-review.md> [solution-plan.md]
+    python3 validate-code-review.py <path-to-develop-code-review.md> [path-to-plan-solution-plan.md]
 
 Validation outcome:
     0 means the code review passes structure, coverage, and resolution checks.
@@ -134,10 +134,17 @@ def check_plan_coverage(
 def main() -> int:
     if len(sys.argv) < 2:
         print(
-            f"Usage: {sys.argv[0]} <code-review.md> "
-            "[solution-plan.md]"
+            f"Usage: {sys.argv[0]} <path-to-develop-code-review.md> "
+            "[path-to-plan-solution-plan.md]"
         )
         return 1
+
+    if sys.argv[1] in {"-h", "--help"}:
+        print(
+            f"Usage: {sys.argv[0]} <path-to-develop-code-review.md> "
+            "[path-to-plan-solution-plan.md]"
+        )
+        return 0
 
     review_path = sys.argv[1]
     plan_path = sys.argv[2] if len(sys.argv) > 2 else None
@@ -181,10 +188,12 @@ def main() -> int:
                 all_issues.append("--- Plan Coverage ---")
                 all_issues.extend(plan_issues)
     else:
-        auto_path = (
-            Path(review_path).parent / "02-solution-plan.md"
+        auto_path = max(
+            Path(review_path).parent.glob("*-plan-solution-plan.md"),
+            key=lambda p: p.stat().st_mtime,
+            default=None,
         )
-        if auto_path.exists():
+        if auto_path:
             plan_issues = check_plan_coverage(
                 text, str(auto_path)
             )
