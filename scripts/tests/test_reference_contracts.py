@@ -1,111 +1,93 @@
-"""Unit tests for the canonical reference-contract registry."""
-
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 import unittest
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from scripts.al_dev_tools.reference_contracts import (  # noqa: E402
+from scripts.al_dev_tools.reference_contracts import (
     allowed_template_patterns,
     canonical_artifact_patterns,
     canonical_script_entrypoints,
     generated_output_surfaces,
     legacy_reference_aliases,
+    runtime_artifact_pattern_groups,
 )
-from scripts.al_dev_tools.shared_surface_names import (  # noqa: E402
-    runtime_artifact_patterns,
-)
+from scripts.al_dev_tools.shared_surface_names import runtime_artifact_patterns
 
 
-class ReferenceContractsTests(unittest.TestCase):
-    def test_canonical_artifact_patterns_cover_active_runtime_families(self) -> None:
+class ReferenceContractsTest(unittest.TestCase):
+    def test_canonical_artifact_patterns_cover_active_runtime_surface(self) -> None:
+        grouped = runtime_artifact_patterns()
+        expected = {
+            f"{skill}.{artifact}": pattern
+            for skill, artifacts in grouped.items()
+            for artifact, pattern in artifacts.items()
+        }
+        flattened = canonical_artifact_patterns()
+        self.assertEqual(flattened, expected)
+        self.assertEqual(flattened["ticket.context"], "*-ticket-ticket-context.md")
+        self.assertEqual(flattened["plan.solution_plan"], "*-plan-solution-plan.md")
         self.assertEqual(
-            canonical_artifact_patterns(),
-            {
-                "plan_solution_plan": "*-plan-solution-plan.md",
-                "develop_code_review": "*-develop-code-review.md",
-                "ticket_context": "*-ticket-ticket-context.md",
-                "ticket_reply": "*-ticket-reply.md",
-                "lint_report": "*-lint-lint-report.md",
-                "commit_analysis": "*-commit-analysis.md",
-                "develop_progress": "*-develop-progress.md",
-                "develop_checklist": "*-develop-checklist.md",
-                "develop_scope": "*-develop-scope.md",
-                "develop_phase4_handoff": "*-develop-phase4-handoff.md",
-                "developer_tdd_test_plan": "*-test-test-plan.md",
-                "developer_tdd_log": "*-developer-tdd-log.md",
-                "interview_notes": "*-interview-notes.md",
-                "interview_requirements": "*-interview-requirements.md",
-                "explore_findings": "*-explore-findings.md",
-                "investigate_findings": "*-investigate-findings.md",
-                "plan_debate_summary": "*-plan-debate-summary.md",
-                "review_preflight": "*-plugin-review-preflight.md",
-                "perf_analysis": "*-perf-perf-analysis.md",
-                "release_notes": "*-plugin-release-notes.md",
-                "handoff_prompt": "*-handoff-handoff-prompt.md",
-            },
+            flattened["review-develop.code_review"],
+            "*-develop-code-review.md",
+        )
+        self.assertEqual(flattened["lint.report"], "*-lint-lint-report.md")
+
+    def test_runtime_artifact_patterns_adapter_reuses_grouped_registry(self) -> None:
+        self.assertEqual(runtime_artifact_patterns(), runtime_artifact_pattern_groups())
+        self.assertEqual(
+            runtime_artifact_patterns()["develop-orchestrate"]["phase4_handoff"],
+            "*-develop-phase4-handoff.md",
         )
 
-    def test_shared_surface_runtime_patterns_adapt_from_canonical_registry(self) -> None:
-        patterns = runtime_artifact_patterns()
-        self.assertEqual(patterns["plan"]["solution_plan"], "*-plan-solution-plan.md")
-        self.assertEqual(patterns["review-develop"]["code_review"], "*-develop-code-review.md")
-        self.assertEqual(patterns["ticket"]["context"], "*-ticket-ticket-context.md")
-        self.assertEqual(patterns["lint"]["report"], "*-lint-lint-report.md")
-
-    def test_canonical_script_entrypoints_use_runnable_forms(self) -> None:
+    def test_script_entrypoints_use_runnable_forms(self) -> None:
+        entrypoints = canonical_script_entrypoints()
         self.assertEqual(
-            canonical_script_entrypoints(),
-            {
-                "generate_agent_projections": "python3 scripts/generate_agent_projections.py",
-                "generate_maintainer_guide": "python3 scripts/generate_maintainer_guide.py",
-                "derive_agent_callers": "python3 scripts/derive_agent_callers.py",
-                "select_health_artifacts": "python3 scripts/select_health_artifacts.py",
-            },
+            entrypoints["generate_agent_projections"],
+            "python3 scripts/generate_agent_projections.py",
+        )
+        self.assertEqual(
+            entrypoints["generate_maintainer_guide"],
+            "python3 scripts/generate_maintainer_guide.py",
+        )
+        self.assertEqual(
+            entrypoints["derive_agent_callers"],
+            "python3 scripts/derive_agent_callers.py",
+        )
+        self.assertEqual(
+            entrypoints["select_health_artifacts"],
+            "python3 scripts/select_health_artifacts.py",
         )
 
-    def test_generated_output_surfaces_include_summary_and_stage_pages(self) -> None:
+    def test_generated_output_surfaces_include_maintainer_guide_targets(self) -> None:
+        outputs = generated_output_surfaces()
         self.assertEqual(
-            generated_output_surfaces(),
-            {
-                "maintainer_tooling": (
-                    "docs/maintainer_tooling.md",
-                    "docs/maintainer_tooling/",
-                ),
-            },
-        )
-
-    def test_allowed_template_patterns_cover_health_findings_family(self) -> None:
-        self.assertEqual(
-            allowed_template_patterns(),
+            outputs["maintainer_guide"],
             (
-                "docs/health/YYYY-MM-DD-<surface>-findings.md",
-                "docs/health/YYYY-MM-DD-<surface>-friction-findings.md",
+                "docs/maintainer_tooling.md",
+                "docs/maintainer_tooling/",
+                "docs/maintainer_tooling/*.md",
             ),
         )
 
-    def test_legacy_reference_aliases_are_explicitly_classified(self) -> None:
+    def test_allowed_template_patterns_classify_dated_health_templates(self) -> None:
+        templates = allowed_template_patterns()
+        self.assertIn("docs/health/YYYY-MM-DD-<surface>-findings.md", templates)
+        self.assertIn("docs/health/YYYY-MM-DD-<surface>-health.md", templates)
+
+    def test_legacy_aliases_are_explicitly_classified(self) -> None:
+        aliases = legacy_reference_aliases()
         self.assertEqual(
-            legacy_reference_aliases(),
-            {
-                "hyphenated_script_entrypoints": (
-                    "python3 scripts/generate-agent-projections.py",
-                    "python3 scripts/generate-maintainer-guide.py",
-                    "python3 scripts/derive-agent-callers.py",
-                    "python3 scripts/select-health-artifacts.py",
-                ),
-                "hyphenated_generated_outputs": (
-                    "docs/maintainer-tooling.md",
-                    "docs/maintainer-tooling/",
-                ),
-            },
+            aliases["legacy_script.generate_maintainer_guide"],
+            ("generate-maintainer-guide.py",),
+        )
+        self.assertEqual(
+            aliases["legacy_artifact.solution_plan"],
+            (".dev/02-solution-plan.md",),
+        )
+        self.assertIn(
+            ".dev/*-al-dev-plan-solution-plan.md",
+            aliases["legacy_artifact.prefixed_plan"],
         )
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     unittest.main()

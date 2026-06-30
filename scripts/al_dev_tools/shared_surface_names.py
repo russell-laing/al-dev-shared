@@ -8,6 +8,7 @@ from .reference_contracts import (
     canonical_script_entrypoints as _canonical_script_entrypoints,
     generated_output_surfaces as _generated_output_surfaces,
     legacy_reference_aliases as _legacy_reference_aliases,
+    runtime_artifact_pattern_groups as _runtime_artifact_pattern_groups,
 )
 
 LEGACY_SHARED_PREFIX = "al-dev-"
@@ -95,83 +96,34 @@ def strip_legacy_shared_prefix(name: str) -> str:
 def runtime_artifact_patterns() -> dict[str, dict[str, str]]:
     """Runtime artifact globs keyed by canonical prefix-free shared skill name."""
 
-    patterns = canonical_artifact_patterns()
-    return {
-        "commit-execute": {
-            "analysis": patterns["commit_analysis"],
-        },
-        "develop-orchestrate": {
-            "progress": patterns["develop_progress"],
-            "checklist": patterns["develop_checklist"],
-            "scope": patterns["develop_scope"],
-            "phase4_handoff": patterns["develop_phase4_handoff"],
-        },
-        "developer-tdd": {
-            "test_plan": patterns["developer_tdd_test_plan"],
-            "log": patterns["developer_tdd_log"],
-        },
-        "ticket": {
-            "context": patterns["ticket_context"],
-            "reply": patterns["ticket_reply"],
-        },
-        "interview": {
-            "notes": patterns["interview_notes"],
-            "requirements": patterns["interview_requirements"],
-        },
-        "explore": {
-            "findings": patterns["explore_findings"],
-        },
-        "investigate": {
-            "findings": patterns["investigate_findings"],
-        },
-        "plan": {
-            "debate_summary": patterns["plan_debate_summary"],
-            "solution_plan": patterns["plan_solution_plan"],
-        },
-        "review-develop": {
-            "code_review": patterns["develop_code_review"],
-            "preflight": patterns["review_preflight"],
-        },
-        "lint": {
-            "report": patterns["lint_report"],
-        },
-        "perf": {
-            "analysis": patterns["perf_analysis"],
-        },
-        "release-notes": {
-            "report": patterns["release_notes"],
-        },
-        "handoff": {
-            "prompt": patterns["handoff_prompt"],
-        },
-    }
+    return _runtime_artifact_pattern_groups()
 
 
 def canonical_artifact_patterns() -> dict[str, str]:
-    """Compatibility adapter for the canonical reference-contract registry."""
+    """Return flattened runtime artifact patterns keyed by semantic family."""
 
     return _canonical_artifact_patterns()
 
 
 def canonical_script_entrypoints() -> dict[str, str]:
-    """Compatibility adapter for the canonical reference-contract registry."""
+    """Return runnable script entrypoints keyed by stable semantic name."""
 
     return _canonical_script_entrypoints()
 
 
 def generated_output_surfaces() -> dict[str, tuple[str, ...]]:
-    """Compatibility adapter for the canonical reference-contract registry."""
+    """Return generated output declarations keyed by output family."""
 
     return _generated_output_surfaces()
 
 
 def allowed_template_patterns() -> tuple[str, ...]:
-    """Compatibility adapter for the canonical reference-contract registry."""
+    """Return template/example patterns that should not be treated as live refs."""
 
     return _allowed_template_patterns()
 
 
 def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
-    """Compatibility adapter for the canonical reference-contract registry."""
+    """Return explicit legacy aliases that validators may classify separately."""
 
     return _legacy_reference_aliases()
