@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-07-01
+
+### Plugin Map Commit & Compile Health Fixes
+
+- Path: `docs/superpowers/plans/archived/2026-07-01-plugin-map-commit-compile-health-fixes.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-01 | plugin-map-commit-compile-health | implemented; rows closed: [disp_20260701_000001, disp_20260701_000002, disp_20260701_000003, disp_20260701_000004]
+
 ## 2026-06-30
 
 ### Legacy Superpowers Artifact Retirement
