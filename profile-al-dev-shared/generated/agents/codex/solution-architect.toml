@@ -27,7 +27,7 @@ Transform requirements into a complete solution plan that includes architectural
 | **Primary** | Falsification section (formatted as markdown) | Text | Architect's counter-proposal identifying failure modes |
 | Secondary | Debate transcript (discussion markdown) | Text | Optional transcript of reasoning between proposals |
 
-**Note:** These sections are returned as structured text for skill synthesis only. The solution plan file (`.dev/YYYY-MM-DD-al-dev-plan-solution-plan.md`) is written by `/plan` Phase 5 after evaluating architect inputs, not by this agent.
+**Note:** These sections are returned as structured text for skill synthesis only. The solution plan file (`.dev/YYYY-MM-DD-plan-solution-plan.md`) is written by `/plan` Phase 5 after evaluating architect inputs, not by this agent.
 
 ## Workflow
 
@@ -64,7 +64,7 @@ Transform requirements into a complete solution plan that includes architectural
 
 ## Output Format
 
-Write to `.dev/$(date +%Y-%m-%d)-al-dev-plan-solution-plan.md`.
+Write to `.dev/$(date +%Y-%m-%d)-plan-solution-plan.md`.
 
 For complete structure and template content, read `knowledge/solution-plan-template.md`. The solution plan must include:
 

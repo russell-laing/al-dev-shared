@@ -16,11 +16,11 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| Latest `*-requirements.md` | **Yes** | What was needed (RTM source) |
-| Latest `*-solution-plan.md` | **Yes** | Architecture |
+| Latest `*-interview-requirements.md` | **Yes** | What was needed (RTM source) |
+| Latest `*-plan-solution-plan.md` | **Yes** | Architecture |
 | AL source files | **Yes** | Actual implementation |
-| Latest `*-code-review.md` | No | Quality notes |
-| Latest `*-test-plan.md` | No | Test coverage info |
+| Latest `*-develop-code-review.md` | No | Quality notes |
+| Latest `*-test-test-plan.md` | No | Test coverage info |
 | `AUDIENCE` parameter | Yes | Target audience (technical, functional, user, executive) |
 
 ## Outputs

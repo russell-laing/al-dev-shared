@@ -27,11 +27,11 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/*-al-dev-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
-| `.dev/*-al-dev-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle, auto-located by glob |
+| `.dev/*-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
+| `.dev/*-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle, auto-located by glob |
 | `.dev/project-context.md` | No | Project memory and conventions, read when present |
-| `.dev/*-al-dev-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
-| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/develop-orchestrate`. See `knowledge/al-dev-develop-spawn-prompt.md` for the canonical context-field list. |
+| `.dev/*-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
+| Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/develop-orchestrate`. See `knowledge/develop-spawn-prompt.md` for the canonical context-field list. |
 
 ## Outputs
 
@@ -46,9 +46,9 @@ Callers do not pass these paths explicitly. The agent auto-locates the latest ma
 
 ### TDD Workflow
 
-1. **Read solution plan** — Load `.dev/*-al-dev-plan-solution-plan.md`.
+1. **Read solution plan** — Load `.dev/*-plan-solution-plan.md`.
    Enforced by `PLAN_READ_GATE`: read the plan before writing any code.
-2. **Read test specification** — Load `.dev/*-al-dev-test-test-plan.md`.
+2. **Read test specification** — Load `.dev/*-test-test-plan.md`.
 3. **Read project context** — Check `.dev/project-context.md` if it exists
    for naming prefixes, ID ranges, and established patterns.
 4. **Symbol pre-flight** — Complete the symbol pre-flight checklist

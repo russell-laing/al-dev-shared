@@ -24,7 +24,7 @@ Parse compile output, group lint issues by rule ID, apply fixes for auto-fixable
 | Output | Description |
 |--------|-------------|
 | Fixed AL source files | In-place fixes applied via Edit tool |
-| `.dev/$(date +%Y-%m-%d)-al-dev-lint-lint-report.md` | Lint report with fix summary |
+| `.dev/$(date +%Y-%m-%d)-lint-lint-report.md` | Lint report with fix summary |
 
 ## Fix Process
 
