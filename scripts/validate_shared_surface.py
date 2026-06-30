@@ -17,7 +17,24 @@ AGENTS_DIR = REPO / "profile-al-dev-shared" / "agents"
 SKILLS_DIR = REPO / "profile-al-dev-shared" / "skills"
 
 REQUIRED_AGENT_FIELDS = ("name", "description", "model", "tools")
-UNLABELED_FENCE = re.compile(r"(?m)^```[ \t]*$")
+FENCE_LINE = re.compile(r"^```([A-Za-z0-9_+-]+)?[ \t]*$")
+
+
+def _count_unlabeled_opening_fences(content: str) -> int:
+    unlabeled = 0
+    in_fence = False
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+        match = FENCE_LINE.match(line)
+        if not match:
+            continue
+        if in_fence:
+            in_fence = False
+            continue
+        if match.group(1) is None:
+            unlabeled += 1
+        in_fence = True
+    return unlabeled
 
 
 def _check_agent(path: Path) -> list[str]:
@@ -31,7 +48,7 @@ def _check_agent(path: Path) -> list[str]:
     for field in REQUIRED_AGENT_FIELDS:
         if field not in fm:
             issues.append(f"missing '{field}' in frontmatter")
-    unlabeled = len(UNLABELED_FENCE.findall(content))
+    unlabeled = _count_unlabeled_opening_fences(content)
     if unlabeled:
         issues.append(f"{unlabeled} unlabeled code block(s) — add language specifier after ```")
     return issues
@@ -40,7 +57,7 @@ def _check_agent(path: Path) -> list[str]:
 def _check_skill(path: Path) -> list[str]:
     issues = []
     content = path.read_text(encoding="utf-8")
-    unlabeled = len(UNLABELED_FENCE.findall(content))
+    unlabeled = _count_unlabeled_opening_fences(content)
     if unlabeled:
         issues.append(f"{unlabeled} unlabeled code block(s) — add language specifier after ```")
     return issues

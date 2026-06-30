@@ -15,8 +15,8 @@ _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 
 
-def test_main_reports_existing_repo_issues_without_crashing() -> None:
-    assert _mod.main() != 0
+def test_main_reports_clean_repo_when_surface_is_clean() -> None:
+    assert _mod.main() == 0
 
 
 def test_main_returns_zero_for_clean_agent_file() -> None:
@@ -50,6 +50,49 @@ def test_check_agent_accepts_valid_structured_frontmatter(tmp_path: Path) -> Non
     )
 
     assert _mod._check_agent(target) == []
+
+
+def test_check_agent_does_not_flag_labeled_closing_fence_as_unlabeled(tmp_path: Path) -> None:
+    target = tmp_path / "agent.md"
+    target.write_text(
+        "---\n"
+        "name: agent\n"
+        "description: >-\n"
+        "  Example agent.\n"
+        "model: haiku\n"
+        "tools:\n"
+        "  - Read\n"
+        "---\n"
+        "```bash\n"
+        "echo test\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    assert _mod._check_agent(target) == []
+
+
+def test_check_agent_flags_unlabeled_opening_fence(tmp_path: Path) -> None:
+    target = tmp_path / "agent.md"
+    target.write_text(
+        "---\n"
+        "name: agent\n"
+        "description: >-\n"
+        "  Example agent.\n"
+        "model: haiku\n"
+        "tools:\n"
+        "  - Read\n"
+        "---\n"
+        "```\n"
+        "echo test\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    issues = _mod._check_agent(target)
+
+    assert issues
+    assert any("unlabeled code block" in issue for issue in issues)
 
 
 def _run(func):
