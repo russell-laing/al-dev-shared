@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import inspect
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -106,6 +107,32 @@ def test_check_references_still_flags_missing_shared_reference_for_tooling_doc(t
     assert "workflow-resilience.md" in issues[0]
 
 
+def test_check_references_flags_missing_nested_knowledge_paths(tmp_path: Path) -> None:
+    knowledge_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
+    issues = check_references(
+        "profile-al-dev-shared/skills/document/SKILL.md",
+        "Use knowledge/doc-templates/executive.md for structure.\n",
+        knowledge_dir,
+    )
+
+    assert issues, "Expected a dead-ref issue for a missing nested knowledge path"
+    assert "doc-templates/executive.md" in issues[0]
+
+
+def test_validate_knowledge_quality_direct_script_uses_repo_relative_default_path() -> None:
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "validate_knowledge_quality.py")],
+        cwd=Path(tempfile.gettempdir()),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Validating" in result.stdout
+    assert str(REPO_ROOT / "profile-al-dev-shared" / "knowledge") in result.stdout
+
+
 def test_validate_knowledge_dir_reports_unreadable_file_with_same_rule(tmp_path: Path) -> None:
     knowledge_dir = tmp_path / "profile-al-dev-shared" / "knowledge"
     knowledge_dir.mkdir(parents=True)
@@ -126,6 +153,19 @@ def test_validate_knowledge_dir_reports_unreadable_file_with_same_rule(tmp_path:
     assert len(warnings) == 1
     assert "file-unreadable" in warnings[0]
     assert "could not read file: boom" in warnings[0]
+
+
+def test_false_positive_regression_script_runs() -> None:
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "test_validator_false_positives.py")],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "All regression tests passed" in result.stdout
 
 
 def _run(func):

@@ -255,6 +255,31 @@ class JsonlStoreCheckerTest(unittest.TestCase):
             self.assertNotIn("legacy-open", result.stdout)
 
 
+class RepoRootPathResolutionTest(unittest.TestCase):
+    def test_checker_maps_object_paths_relative_to_explicit_root(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            ledger = root / "docs" / "health"
+            ledger.mkdir(parents=True)
+            (ledger / "dispositions.md").write_text(
+                "| Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"
+                "|---------|-----------|--------|---------|-------------|------|------------------|\n"
+                "| tooling | quality | foo | example issue | accepted | 2026-06-01 | note |\n",
+                encoding="utf-8",
+            )
+            (root / "profile-al-dev-shared" / "skills" / "foo").mkdir(parents=True)
+            (root / "profile-al-dev-shared" / "skills" / "foo" / "SKILL.md").write_text(
+                "# test\n",
+                encoding="utf-8",
+            )
+
+            result = _run_checker(root)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn("object not mappable to repo paths", result.stdout)
+            self.assertIn("no commits since row date", result.stdout)
+
+
 class HealthLedgerFacadeTests(unittest.TestCase):
     def test_ledger_facade_keeps_public_helpers(self) -> None:
         self.assertTrue(hasattr(MODULE, "parse_ledger_text"))

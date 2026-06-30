@@ -9,15 +9,15 @@ import re
 from pathlib import Path
 
 # Import validator functions (assuming same directory)
-import sys
 import importlib.util
 
 script_dir = Path(__file__).parent
 spec = importlib.util.spec_from_file_location(
     "validate_knowledge_quality",
-    script_dir / "validate-knowledge-quality.py"
+    script_dir / "validate_knowledge_quality.py"
 )
 validator = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
 spec.loader.exec_module(validator)
 
 find_knowledge_references = validator.find_knowledge_references
@@ -73,11 +73,10 @@ def test_thin_goal_section_skip():
 
 
 def test_align_skill_mentions_generated_projection_surface():
-    text = Path(".claude/skills/validate-plugin-neutrality/SKILL.md").read_text(encoding="utf-8")
-    assert "profile-al-dev-shared/generated/agents/" in text
-    assert "repo-local `.claude` boundary issues" in text
-    review_text = Path(".claude/skills/review-skill-map/SKILL.md").read_text(encoding="utf-8")
-    assert "generated/agents" in review_text
+    regen_text = Path(".claude/skills/regenerate-agent-projections/SKILL.md").read_text(encoding="utf-8")
+    assert "profile-al-dev-shared/generated/agents/" in regen_text
+    sync_text = Path(".claude/skills/sync-map-documentation-write/SKILL.md").read_text(encoding="utf-8")
+    assert "profile-al-dev-shared/generated/agents/" in sync_text
     print("✓ Local projection-awareness skill text test passed")
 
 

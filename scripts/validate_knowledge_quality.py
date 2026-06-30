@@ -20,6 +20,11 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover - exercised in package imports
+    from scripts._entrypoint_bootstrap import bootstrap_repo
+
 def _format_issue(path: str, rule: str, issue: str, fix: str) -> str:
     return (
         f"{path}\n"
@@ -64,6 +69,7 @@ SUMMARY_SECTIONS = {
 
 # Knowledge directory relative to repo root
 KNOWLEDGE_DIR = "profile-al-dev-shared/knowledge"
+REPO_ROOT = bootstrap_repo(__file__)
 
 
 def should_exclude(filepath: str) -> bool:
@@ -142,8 +148,8 @@ assert has_emoji_or_checkmark("## Overview") == False
 
 
 def find_knowledge_references(content: str) -> List[Tuple[str, int]]:
-    """Extract all knowledge file references (filename only, no 'knowledge/' prefix)."""
-    pattern = r"knowledge/([\w\-]+\.md)"
+    """Extract knowledge file references relative to a knowledge root."""
+    pattern = r"knowledge/([\w./-]+\.md)"
     matches = re.finditer(pattern, content)
     return [(match.group(1), match.start()) for match in matches]
 
@@ -262,18 +268,18 @@ def check_references(filepath: str, content: str, knowledge_dir: Path) -> List[s
 
     candidate_roots = _candidate_knowledge_roots(knowledge_dir)
 
-    for ref_filename, _ in refs:
+    for ref_path, _ in refs:
         # Skip self-references (file referencing itself is fine)
-        if ref_filename == Path(filepath).name:
+        if ref_path == Path(filepath).name:
             continue
 
-        if not any((root / ref_filename).exists() for root in candidate_roots):
+        if not any((root / ref_path).exists() for root in candidate_roots):
             issues.append(
                 _format_issue(
                     filepath,
                     "knowledge-dead-ref",
-                    f"reference to knowledge/{ref_filename} does not resolve to an existing file",
-                    f"check the filename for typos or create the missing file at knowledge/{ref_filename}",
+                    f"reference to knowledge/{ref_path} does not resolve to an existing file",
+                    f"check the filename for typos or create the missing file at knowledge/{ref_path}",
                 )
             )
 
@@ -354,8 +360,7 @@ def main():
     # Resolve path
     knowledge_dir = Path(args.path)
     if not knowledge_dir.is_absolute():
-        # Make relative to current directory
-        knowledge_dir = Path.cwd() / knowledge_dir
+        knowledge_dir = REPO_ROOT / knowledge_dir
 
     print(f"Validating {knowledge_dir}...")
     try:

@@ -59,19 +59,19 @@ def norm_object(obj: str) -> str:
     return PAREN_RE.sub("", obj.replace("`", "")).strip().lower()
 
 
-def candidate_paths(obj: str) -> list[str]:
+def candidate_paths(obj: str, repo_root: Path) -> list[str]:
     paths: list[str] = []
     for token in norm_object(obj).split(","):
         token = token.strip()
         if not token:
             continue
         if "/" in token:
-            if glob.glob(token):
+            if glob.glob(str(repo_root / token)):
                 paths.append(token)
             continue
         for tpl in PATH_TEMPLATES:
             cand = tpl.format(name=token)
-            if glob.glob(cand):
+            if glob.glob(str(repo_root / cand)):
                 paths.append(cand)
     return paths
 
@@ -181,11 +181,12 @@ def integrity_warnings(rows: list[Row]) -> list[str]:
     return warnings
 
 
-def commits_since(date: str, paths: list[str]) -> list[str]:
+def commits_since(date: str, paths: list[str], repo_root: Path) -> list[str]:
     if not paths:
         return []
     out = subprocess.run(
         ["git", "log", f"--since={date} 00:00", "--format=%h %s", "--", *paths],
+        cwd=repo_root,
         capture_output=True,
         text=True,
         check=False,
@@ -193,9 +194,10 @@ def commits_since(date: str, paths: list[str]) -> list[str]:
     return out.splitlines() if out else []
 
 
-def staged_files() -> set[str]:
+def staged_files(repo_root: Path) -> set[str]:
     out = subprocess.run(
         ["git", "diff", "--cached", "--name-only"],
+        cwd=repo_root,
         capture_output=True,
         text=True,
         check=False,
