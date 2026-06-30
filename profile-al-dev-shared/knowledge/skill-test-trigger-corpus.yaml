@@ -79,6 +79,16 @@ corpus:
   - prompt: "research a customer ticket about g/l setup"
     expected: ticket
 
+  # --- research ---------------------------------------------------
+  - prompt: "research this repo's approval workflow and tell me what it does"
+    expected: research
+  - prompt: "research a greenfield way to structure a new al feature"
+    expected: research
+  - prompt: "research how this bc behavior changed across versions"
+    expected: research
+  - prompt: "research the broader microsoft ecosystem guidance for this pattern"
+    expected: research
+
   # --- spec/plan/review clarification near-misses ---------------------------
   # design spec document; clarify intent because review-only is not an
   # implementation trigger
