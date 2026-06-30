@@ -22,7 +22,7 @@ Used by `sync-map-documentation-agent-compare` Step 3.
   values differ.
 - **`caller_mismatch`** — the `Spawned by:` field in the Layer 2 section does
   not match the canonical caller list from
-  `python3 scripts/derive-agent-callers.py` (the same edge parser that
+  `python3 scripts/derive_agent_callers.py` (the same edge parser that
   generates the Layer 1 catalog). Never grep for callers — looser matching
   produces mismatches the write phase immediately reverts.
 
@@ -70,7 +70,7 @@ Used by the canonical update procedure
    in the Layer 2 section.
 
 **`caller_mismatch`** — `Spawned by:` does not match the canonical callers
-from `scripts/derive-agent-callers.py`.
+from `scripts/derive_agent_callers.py`.
 
 1. Use the script-derived caller list from the discrepancy `detail` field
    (or `(none found)` if empty).

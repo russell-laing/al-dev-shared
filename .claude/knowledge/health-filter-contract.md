@@ -99,7 +99,7 @@ For prior-artifact lookup when the report processes a friction findings file
 stays within the friction family:
 
 ```bash
-select_health_artifacts.py --directory docs/health --kind friction-findings --surface <surface> --offset 1
+python3 scripts/select_health_artifacts.py --directory docs/health --kind friction-findings --surface <surface> --offset 1
 ```
 
 ## Findings Metadata

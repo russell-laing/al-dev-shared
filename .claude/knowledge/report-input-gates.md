@@ -59,7 +59,7 @@ still open work), but the Summary must split the totals: new vs recurring.
 ## 1c — Staleness spot-check
 
 Apply the **staleness spot-check protocol** from
-`../../knowledge/health-audit-preconditions.md` (see its
+`.claude/knowledge/health-audit-preconditions.md` (see its
 "## Staleness spot-check protocol" section) to every High
 finding and every top-5 candidate before ranking.
 
@@ -177,7 +177,7 @@ apply the rules below to the confirmed set.
 
 Match each parsed finding against events by object + issue essence, then apply the
 **disposition suppression rules** from
-`../../knowledge/health-audit-preconditions.md`:
+`.claude/knowledge/health-audit-preconditions.md`:
 
 - **`declined` / `grandfathered`** → suppress (exclude from severity counts,
   dimension grouping, and top-5); list one line each under a

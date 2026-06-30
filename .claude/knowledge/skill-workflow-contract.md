@@ -1,7 +1,7 @@
 # Skill Workflow Contract
 
 The `workflow:` frontmatter block in `.claude/skills/*/SKILL.md` is a
-**repo-local extension** consumed by `scripts/generate-maintainer-guide.py`.
+**repo-local extension** consumed by `scripts/generate_maintainer_guide.py`.
 It is not consumed by Claude Code or any distributed harness.
 
 ## Schema
@@ -52,9 +52,10 @@ lens runs by `discover-plugin-health`.
 
 ## Generator
 
-`scripts/generate-maintainer-guide.py` reads all `workflow:` blocks from
+`scripts/generate_maintainer_guide.py` reads all `workflow:` blocks from
 `.claude/skills/*/SKILL.md` (excluding `archived/`) and rewrites the
-`<!-- BEGIN GENERATED: ... -->` sections of `docs/maintainer_tooling.md`.
+`<!-- BEGIN GENERATED: ... -->` sections of `docs/maintainer_tooling.md` and
+`docs/maintainer_tooling/*.md`.
 
 Validation rules (fail-closed):
 
