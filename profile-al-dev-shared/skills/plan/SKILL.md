@@ -317,3 +317,5 @@ Write `.dev/progress.md` per `knowledge/workflow-resilience.md`.
 
 After writing the solution plan, invoke **/plan-final-review** to run
 validation and gate user approval before implementation begins.
+
+**Mandatory gate:** Phase 5 is not complete until /plan-final-review has run and you have reviewed its output.
