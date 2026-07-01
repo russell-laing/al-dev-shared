@@ -22,7 +22,8 @@ tools: ["Read", "Bash", "Write"]
 ## Outputs
 
 Writes `<result_dir>/audit/agent-audit.json` and returns its absolute path.
-Do not summarise findings — return only the path.
+Return only the absolute path to the JSON report — do not include a prose summary,
+interpretations, or commentary on discrepancies found.
 
 **JSON schema:**
 
