@@ -69,7 +69,7 @@ If a requested surface returns no path, report: "No `<surface>` findings file
 found. Run /audit-plugin-health for that surface first." Skip only that surface.
 If neither requested surface returns a path, stop.
 
-### Incomplete Findings Check
+### Phase 0.5: Check for incomplete findings marker
 
 After reading the findings file, check for the marker `Status: INCOMPLETE` or `Status: IN_PROGRESS` in the file header.
 
