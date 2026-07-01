@@ -400,6 +400,24 @@ print('PASS')
 If `pytest` fails with a libexpat conflict, use this pattern as a fallback
 for Python test verification in al-dev-shared sessions.
 
+### No pytest module
+
+`python3 -m pytest` fails with "No module named pytest". The existing test files are
+`unittest`-based and run fine via `python3 -m unittest`. To run tests:
+
+```bash
+PYTHONPATH=scripts python3 -m unittest discover scripts/tests -v
+```
+
+Or run a specific test module:
+
+```bash
+PYTHONPATH=scripts python3 -m unittest scripts.tests.test_module_name
+```
+
+The `PYTHONPATH=scripts` is required for test imports to resolve correctly. Both
+patterns work on macOS and Linux.
+
 ## Tool Usage
 
 Use the Agent tool to dispatch audit and health teams. Do not use RemoteTrigger —
