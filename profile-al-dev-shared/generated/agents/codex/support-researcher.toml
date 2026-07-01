@@ -26,17 +26,27 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 ## Research Process
 
-### Step 1: Gather evidence
+### Phase 1: Gather Evidence
 
-Invoke evidence-gatherer to search across 3 MCP sources and collect findings.
+Invoke 3 MCP sources in parallel:
 
-### Step 2: Synthesize findings
+1. BC Code Intelligence: search for pattern matches
+2. Git History: search commit messages and diffs
+3. Markdown Docs: search documentation
 
-Read the evidence artifact and synthesize into:
+Collect raw evidence from all 3 sources into a structured list.
 
-1. Root cause (if identifiable)
-2. Workaround(s) if available
-3. Recommended resolution path
+### Phase 2: Synthesize Findings
+
+Dispatch findings-synthesizer agent with evidence from Phase 1.
+
+The synthesizer:
+
+- Deduplicates findings across sources
+- Ranks by severity and confidence
+- Produces single unified report
+
+Return the synthesized findings to the caller.
 
 ## Return Block
 
