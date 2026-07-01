@@ -4,6 +4,13 @@ Current source of truth: active implementation guidance lives in the current sha
 
 ## 2026-07-01
 
+### Plugin Health Backlog Findings
+
+- Path: `docs/superpowers/plans/archived/2026-07-01-plugin-health-backlog.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-01 | plugin-health-backlog | implemented; rows closed: [disp_20260701_000045, disp_20260701_000047, disp_20260701_000090, disp_20260701_000091, disp_20260701_000093]
+
 ### Plugin Map Commit & Compile Health Fixes
 
 - Path: `docs/superpowers/plans/archived/2026-07-01-plugin-map-commit-compile-health-fixes.md`
