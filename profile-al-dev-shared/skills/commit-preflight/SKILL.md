@@ -520,20 +520,6 @@ or /commit again to restart the full workflow.
 ```
 
 Return normally. Do not invoke `/commit-execute` from here — the caller
-(`/commit`) handles the handoff.
-
-## Phase B: Handoff to Execute
-
-After all preflight checks pass, invoke `/commit-execute` to perform the actual
-commit and ledger operations.
-
-Run: `/commit-execute`
-
-The executor skill:
-
-- Stages all verified changes
-- Commits with proper message formatting
-- Updates health loop ledger (if applicable)
-- Handles post-commit cleanup
-
-Do not manually invoke git commit; always use `/commit-execute`.
+(`/commit`) handles the handoff to execution after this skill returns, and a
+standalone `/commit-preflight` run intentionally stops here so the user can
+review the saved plan before executing.
