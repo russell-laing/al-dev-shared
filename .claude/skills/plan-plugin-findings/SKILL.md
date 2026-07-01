@@ -137,6 +137,27 @@ Pass as context to writing-plans all items listed in
   completes, this skill's Phase 2 routes execution to `/implement-plugin-health` so the
   ledger entries are properly closed. Writing-plans' own endings bypass that ledger close-back.
 
+- **Write filter provenance into the plan header.** Per
+  `../../knowledge/health-filter-contract.md`, every generated plan header must include a
+  `health_filters:` block listing the active surfaces and dimensions, derived from the
+  `surface` and `dimension` fields of the checkpoint findings (e.g. `surfaces: [plugin]`,
+  `dimensions: [quality, naming]`):
+
+  ```yaml
+  health_filters:
+    surfaces:
+      - tooling
+    dimensions:
+      - quality
+  ```
+
+  Apply filters in this order:
+
+  1. surface
+  2. dimension
+  3. object-type routing (`--skills` or `--agents`)
+  4. finding-type routing
+
 Plan saves to:
 `docs/superpowers/plans/YYYY-MM-DD-<surface>-<short-label>.md`
 
