@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-07-02
+
+### Agent Inputs/Outputs Structure
+
+- Path: `docs/superpowers/plans/archived/2026-07-02-10-51-15-agent-inputs-outputs-structure.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-02 | agent-inputs-outputs-structure | implemented; events closed: [disp_20260702_000043, disp_20260702_000044, disp_20260702_000046, disp_20260702_000047, disp_20260702_000048, disp_20260702_000049, disp_20260702_000050, disp_20260702_000051, disp_20260702_000052, disp_20260702_000053, disp_20260702_000054, disp_20260702_000055, disp_20260702_000056, disp_20260702_000057, disp_20260702_000058, disp_20260702_000059, disp_20260702_000016] + 17 declined (batch)
+
 ## 2026-07-01
 
 ### Plugin Health Backlog Findings
