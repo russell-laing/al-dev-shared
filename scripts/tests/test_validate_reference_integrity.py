@@ -240,6 +240,20 @@ def test_foo_placeholder_is_allowed(tmp_path: Path) -> None:
     assert validate_reference_path(doc) == []
 
 
+def test_bare_plugin_root_relative_ref_resolves(tmp_path: Path) -> None:
+    # `markdown/X.md` / `agents/X.md` cited from a profile file resolve against
+    # the authored roots instead of being flagged dead.
+    root = tmp_path / "repo"
+    _write(root / "profile-al-dev-shared" / "markdown" / "helper.md", "# h\n")
+    _write(root / "profile-al-dev-shared" / "agents" / "architect.md", "# a\n")
+    doc = _write(
+        root / "profile-al-dev-shared" / "skills" / "s" / "SKILL.md",
+        "See `markdown/helper.md` and `agents/architect.md`.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
 def test_direct_script_runs_with_repo_relative_path() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)

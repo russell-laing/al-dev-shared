@@ -229,6 +229,10 @@ def _resolve_reference(file_path: Path, token: str) -> Path | None:
         candidates.append(REPO_ROOT / ".claude" / "knowledge" / token)
     candidates.append(REPO_ROOT / "docs" / token)
     candidates.append(REPO_ROOT / token)
+    # Bare plugin-root-relative refs (e.g. `markdown/md-helper.md`,
+    # `agents/solution-architect.md`) resolve against the two authored roots.
+    candidates.append(REPO_ROOT / "profile-al-dev-shared" / token)
+    candidates.append(REPO_ROOT / ".claude" / token)
 
     for candidate in candidates:
         if candidate.exists():
