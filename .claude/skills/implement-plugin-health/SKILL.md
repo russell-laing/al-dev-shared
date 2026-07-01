@@ -500,8 +500,11 @@ is needed in this skill.
 > `fatal: not under version control`).
 
 ```bash
-mv <plan-path> docs/superpowers/plans/archived/
+PLAN_ARCHIVE="docs/superpowers/plans/archived/$(date +%Y-%m-%d-%H-%M-%S)-$(basename "<plan-path>")"
+mv <plan-path> "$PLAN_ARCHIVE"
 ```
+
+This prevents same-day plan collisions by adding HH-MM-SS timestamp to the archive filename.
 
 ### Archive the dossier and findings file
 
