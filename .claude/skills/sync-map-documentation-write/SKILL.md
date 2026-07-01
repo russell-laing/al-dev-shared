@@ -248,3 +248,14 @@ not a lifecycle stage accepted by `scripts/validate_health_loop_state.py`.
 - If the file exists, report its current `next_command` and leave it unchanged.
   The maintainer can intentionally restart from `/audit-plugin-health` after the
   map-sync commit, but map sync must not replace an in-flight durable handoff.
+
+## Phase 5.1: Standalone Handoff
+
+When the sync workflow runs independently (not as part of the health loop):
+
+1. Check `.dev/health-loop-state.md` — if `next_command` is set, follow that
+   command instead (health loop owns the next step).
+2. If no health-loop state, standalone run is complete. User may manually
+   review updated maps at `docs/skills_map.md` and `docs/agent_map.md`.
+3. Next-step breadcrumb: If maps now have discrepancies from actual sources,
+   run `/sync-map-documentation` again in a future session to refresh.
