@@ -1,33 +1,51 @@
 # Critic Dispatch Template
 
-Used by `/plan-with-critics` and similar multi-critic skills. Documents how critics are assigned, how their outputs are deduplicated, and how severity consensus is resolved.
+This template documents the parallel critic/reviewer agent dispatch pattern
+used by `/plan-with-critics` (6-critic panel) and `/review-develop` 
+(3-reviewer panel). Both skills use identical structure: dispatch agents in
+parallel, aggregate findings, dedupe by severity, synthesize into unified report.
 
-## Critic Batch Composition (6 critics)
+## Pattern Overview
 
-1. **Correctness critic** — Does the implementation behave correctly?
-2. **Type-safety critic** — Does the code maintain type contracts?
-3. **Test coverage critic** — Are edge cases tested?
-4. **Performance critic** — Is the implementation efficient?
-5. **API-contract critic** — Does the implementation honor public interfaces?
-6. **Rollback-safety critic** — Can this be safely reverted if needed?
+1. **Dispatch Phase:** Launch N independent agents in parallel (each critic/reviewer 
+   operates independently, no shared state). Each agent reads the same context 
+   (spec/code) and generates a findings list with severity ratings.
 
-## Deduplication by Severity
+2. **Aggregation Phase:** Collect all agent outputs into a single list.
 
-After all critics return, group findings by severity (Critical, High, Medium, Low) and location (file:line). For duplicates across critics:
+3. **Deduplication Phase:** Dedupe findings by (file, line, class) tuple — if 
+   two agents report the same issue, keep highest severity, discard duplicates.
 
-- Keep the most specific finding (one with the clearest remediation)
-- Record which critics agreed (2-6)
-- Discard generic repeats
+4. **Synthesis Phase:** Rank deduplicated findings by severity (HIGH → MEDIUM → LOW) 
+   and synthesize into a single report document with a unified severity distribution.
 
-## Consensus on Disagreements
+## Implementation Variants
 
-If critics disagree on severity, use this tiebreaker:
+### 6-Critic Variant (plan-with-critics)
+- **Agents:** 6 independent critic agents (approach-A, approach-B, etc.)
+- **Dispatch:** Parallel invocation, all in same skill phase
+- **Dedup strategy:** Severity-based (keep highest severity per issue)
+- **Output:** Unified findings report with 6-critic consensus
 
-- 5-6 critics agree → accept majority severity
-- 4 critics agree → escalate to High (conservative)
-- 3 critics agree → escalate to Medium
-- <3 critics → record dissent and ask for clarification
+### 3-Reviewer Variant (review-develop)
+- **Agents:** 3 independent reviewer agents (correctness, testing, architecture)
+- **Dispatch:** Parallel invocation, all in same skill phase
+- **Dedup strategy:** Severity-based (keep highest severity per issue)
+- **Output:** Unified review report with 3-reviewer consensus
 
-## Output Format
+## When to Use
 
-Final report groups by severity (Critical, then High, then Medium, then Low) and is reviewable as a single document.
+Use this template when:
+- A skill needs independent parallel agent evaluation (no inter-agent communication)
+- Multiple agents assess the same context and produce independent findings
+- Findings must be deduplicated and re-ranked before synthesis
+- Output should be a single unified report combining all perspectives
+
+## Common Implementation Gotchas
+
+- **Shared state:** Ensure agents have NO shared mutable state; each must 
+  independently assess the input
+- **Dedup correctness:** When two agents find the same issue at the same location 
+  but with different severity, keep the higher severity rating
+- **Synthesis order:** Re-sort by severity AFTER dedup, not before (else lower-severity 
+  duplicates may be sorted ahead of higher-severity unique findings)
