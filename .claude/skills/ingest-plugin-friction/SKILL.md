@@ -136,6 +136,12 @@ systemic finding (e.g. "Write-before-Read across N sessions"). Surface-classify
 it by where the erroring skill/tool lives; assign dimension `quality` and a
 severity reflecting how often it blocked work.
 
+**Severity mapping by session frequency:**
+
+- High: if ≥3 sessions
+- Medium: if ≥2 sessions
+- Low: if single-session pattern
+
 Severity grading rule:
 
 - **High** if the friction pattern appears in ≥3 sessions
