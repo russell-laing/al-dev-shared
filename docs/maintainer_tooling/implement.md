@@ -73,7 +73,7 @@ flowchart TD
     class skill_implement_health_plan userSkill
     class art_plan,art_ledger,art_changed artifact
     class art_progress orphanArtifact
-    class art_closed orphanArtifact
+    class art_closed artifact
 ```
 <!-- END GENERATED: maintainer-stage-implement-diagram -->
 

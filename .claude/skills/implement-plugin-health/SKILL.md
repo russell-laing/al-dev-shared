@@ -24,7 +24,7 @@ workflow:
     - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-plugin-health-progress.md
     - .dev/health-loop-state.md
-  next: [regenerate-agent-projections, validate-plugin-neutrality, audit-plugin-health]
+  next: [regenerate-agent-projections, audit-plugin-neutrality, audit-plugin-health]
 ---
 
 # Implement Health Plan
@@ -37,7 +37,7 @@ Loop position:
 
 `/audit-plugin-health` → dossier → `/record-plugin-dispositions` →
 `/plan-plugin-findings` → plan → **`/implement-plugin-health`** → fixed events →
-`/regenerate-agent-projections` / `/validate-plugin-neutrality`
+`/regenerate-agent-projections` / `/audit-plugin-neutrality`
 
 ---
 
@@ -55,7 +55,7 @@ summarizes against `docs/health/expected_phases.md`.
 Use this record shape:
 
 ```json
-{"skill":"implement-plugin-health","phase":"0","status":"complete","proof":"plan_located","artifact":".dev/implement-plugin-health-progress.md","recorded_at":"2026-06-29T00:00:00Z"}
+{"skill":"implement-plugin-health","phase":"0","status":"complete","proof":"plan_located","artifact":".dev/implement-plugin-health-progress.md","run_id":"<8-hex>","recorded_at":"2026-06-29T00:00:00+13:00"}
 ```
 
 Append the record after the phase-proof block and before advancing to the next
@@ -179,6 +179,7 @@ plan_path: <path>
 tasks_total: <N>
 tasks_completed: []
 executor_revision: <git short-hash of .claude/skills/implement-plugin-health/SKILL.md at run start>
+run_id: <8-hex generated once at Phase 0 start, e.g. via `python3 -c "import uuid; print(uuid.uuid4().hex[:8])"`>
 ```
 
 Append the Phase 0 procedure-log record immediately after writing the
@@ -187,15 +188,34 @@ checkpoint:
 ```bash
 python3 - <<'PY'
 import json
-from datetime import datetime, timezone
+import yaml
+from datetime import datetime
 from pathlib import Path
+# Read run_id from checkpoint
+checkpoint_path = Path(".dev/implement-plugin-health-progress.md")
+if checkpoint_path.exists():
+    with checkpoint_path.open() as f:
+        lines = f.read().split("---")
+        checkpoint = yaml.safe_load(lines[1]) if len(lines) > 1 else {}
+        run_id = checkpoint.get("run_id", "")
+else:
+    import uuid
+    run_id = uuid.uuid4().hex[:8]
+    # Generate checkpoint with run_id
+    checkpoint = {
+        "phase": "0",
+        "status": "complete",
+        "result": "plan_located",
+        "run_id": run_id,
+    }
 record = {
     "skill": "implement-plugin-health",
     "phase": "0",
     "status": "complete",
     "proof": "plan_located",
     "artifact": ".dev/implement-plugin-health-progress.md",
-    "recorded_at": datetime.now(timezone.utc).isoformat(),
+    "run_id": run_id,
+    "recorded_at": datetime.now().astimezone().isoformat(),
 }
 path = Path(".dev/implement-plugin-health-procedure-log.jsonl")
 path.parent.mkdir(parents=True, exist_ok=True)
@@ -205,7 +225,7 @@ PY
 ```
 
 Repeat the same append pattern after each later phase boundary, changing
-`phase` and `proof` to the values listed above.
+`phase` and `proof` to the values listed above, and reuse the same `run_id` read back from the checkpoint file — do not generate a new one.
 
 ---
 
@@ -556,7 +576,7 @@ execution.
 - If any `profile-al-dev-shared/agents/*.md` changed → invoke
   `regenerate-agent-projections`
 - If any skills, agents, or knowledge files under `profile-al-dev-shared/`
-  changed → invoke `validate-plugin-neutrality`
+  changed → invoke `audit-plugin-neutrality`
 
 Check by inspecting the task commits. `<first-task-commit>` is the `commit`
 value of the first entry in `tasks_completed` from the checkpoint file
@@ -572,6 +592,18 @@ If no `profile-al-dev-shared/` files changed, skip this phase entirely.
 ---
 
 ## Phase 5: Commit and Report
+
+### Pre-flight clean-tree check
+
+Before proceeding, confirm Phase 3 left no uncommitted residue in the
+repository:
+
+```bash
+git status --short
+```
+
+Expected: empty. A non-empty result means a Phase 3 task under-committed —
+return to Phase 2/3 and resolve the residue before continuing Phase 5.
 
 ### Close the loop breadcrumb
 
@@ -592,7 +624,7 @@ closed:
 - `fresh_session_recommended: false`
 - `note:` loop closed; ledger staleness check passed. If source under
   `profile-al-dev-shared/` changed, run `/regenerate-agent-projections` and
-  `/validate-plugin-neutrality` next (see Phase 4 "Regenerate derived artifacts").
+  `/audit-plugin-neutrality` next (see Phase 4 "Regenerate derived artifacts").
   If any task changed a skill or agent that the documentation maps describe, a
   `/sync-map-documentation` refresh is **owed** — record it here so the deferred
   map update is not lost. Then run `/audit-plugin-health` to start the next health

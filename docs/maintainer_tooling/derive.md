@@ -77,7 +77,7 @@ flowchart TD
         skill_fix_knowledge_quality["/fix-knowledge-quality"]
     end
     art_shared_surface["shared authored surface"]
-    skill_align_harness_repos["/validate-plugin-neutrality"]
+    skill_align_harness_repos["/audit-plugin-neutrality"]
 
     art_agent_source --> skill_regenerate_agent_projections
     skill_regenerate_agent_projections --> art_generated_agents
@@ -108,7 +108,7 @@ flowchart TD
 ### Agent source changed
 
 1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.
-2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.
+2. Run `/audit-plugin-neutrality` to verify the shared source remains harness-neutral.
 
 ### Knowledge source changed
 
@@ -118,7 +118,7 @@ flowchart TD
 
 ### Any shared source changed
 
-Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.
+Run `/audit-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.
 <!-- END GENERATED: maintainer-stage-derive-journey -->
 
 ## Key Artifacts
