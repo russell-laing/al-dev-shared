@@ -11,7 +11,9 @@ description: >-
 Reviewer dispatch and synthesis for post-implementation code review.
 
 Reads the preflight context written by `/generic-preflight --context-type review`,
-then dispatches the three-specialist review panel in parallel and synthesises
+then adds template reference. See `../../knowledge/critic-dispatch-template.md` for the pattern documentation (parallel dispatch + dedup + synthesize). The following implementation uses the 3-reviewer variant.
+
+Dispatches the three-specialist review panel in parallel and synthesises
 findings into a single code-review artifact.
 
 > **Run from a low-context state.** This skill dispatches a parallel reviewer
