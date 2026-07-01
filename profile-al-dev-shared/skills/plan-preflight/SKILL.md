@@ -21,6 +21,8 @@ skills (e.g. `fix`, `investigate`) can invoke it to avoid
 duplicating context assembly. It does NOT design the solution or spawn
 architects.
 
+See generic-preflight for the parameterized pattern this skill specializes for plan context.
+
 ## Intent Preflight
 
 Before assembling context or writing the `PREFLIGHT_CONTEXT` artifact, apply

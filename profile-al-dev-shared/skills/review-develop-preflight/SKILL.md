@@ -13,6 +13,8 @@ Pre-review qualification for `/review-develop`. Run this first to locate
 the develop handoff, identify changed AL files, verify compile status, and write
 the preflight context file that the reviewer dispatch phase reads.
 
+See generic-preflight for the parameterized pattern this skill specializes for review context.
+
 ## Phase 0: Resume Check
 
 Read `.dev/progress.md`.
