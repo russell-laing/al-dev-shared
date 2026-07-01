@@ -329,6 +329,8 @@ Ready for review?"
 
 ## Formatting-Sweep Variant
 
+**Scope note:** This section describes four phases of a single conceptual operation (formatting sweep). The four sub-steps (format, verify, cleanup, summary) are internal phases of this operation and are intentionally kept together for cohesion. This structure is appropriate for a unified operation and should not be extracted into separate sections.
+
 Use this variant when the task is **formatting or bolding terms across an existing document**
 rather than writing a new document from scratch. This variant is reached by explicit
 `/document` invocation; it is not auto-routed from free-form requests.
