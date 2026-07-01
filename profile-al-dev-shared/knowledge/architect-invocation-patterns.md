@@ -55,6 +55,7 @@ Prompt:
   4. Testability (dependency injection, interfaces)
   5. Performance implications
   6. Upgrade considerations
+  7. SaaS environment — If designing for BC SaaS, exclude SQL-based queries, direct database access, and stored procedures. Require AL-based SetFilter, Query objects, and AL logic for all data operations. See `solution-plan-template.md` for enforcement patterns.
 
   Produce three sections in exactly this order:
   1. Design proposal — existing objects to modify, new objects required, data flow
