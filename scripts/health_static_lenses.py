@@ -200,6 +200,16 @@ def _row(obj: str, sev: str, obs: str, fix: str) -> str:
     return f"- **{obj}** | {sev} | {obs} | {fix}"
 
 
+def _disambiguate_object(name: str, is_agent: bool) -> str:
+    """Append (agent) or (skill) tag for names that exist in both surfaces."""
+    # Names that exist as both agents and skills
+    OVERLAPPING_NAMES = {"explore", "interview"}
+    if name in OVERLAPPING_NAMES:
+        tag = "(agent)" if is_agent else "(skill)"
+        return f"{name} {tag}"
+    return name
+
+
 # ---------------------------------------------------------------------------
 # Lens: naming-convention-lens
 # ---------------------------------------------------------------------------
@@ -213,10 +223,11 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 
     for path in agent_paths:
         name = path.stem
+        disamb_name = _disambiguate_object(name, is_agent=True)
         if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
             target = SHARED_AGENT_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
             rows.append(_row(
-                name, "High",
+                disamb_name, "High",
                 f"`{path.name}:1` distributed agent filename still uses the retired `al-dev-` prefix",
                 f"rename to the canonical prefix-free shared agent name `{target}`",
             ))
@@ -225,7 +236,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
         if "-lens-" in name and name != "naming-convention-lens":
             if not _LENS_NAME_RE.match(name):
                 rows.append(_row(
-                    name, "High",
+                    disamb_name, "High",
                     f"`{path.name}:1` lens-agent filename does not match "
                     "`{design|quality}-{agent|skill}-lens-{aspect}`",
                     "rename to the enforced lens pattern (see docs/naming_convention.md)",
@@ -233,10 +244,11 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 
     for path in skill_paths:
         name = path.parent.name
+        disamb_name = _disambiguate_object(name, is_agent=False)
         if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
             target = SHARED_SKILL_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
             rows.append(_row(
-                name, "High",
+                disamb_name, "High",
                 f"`{path.parent.name}/SKILL.md:1` distributed skill directory still uses the retired `al-dev-` prefix",
                 f"rename to the canonical prefix-free shared skill name `{target}`",
             ))
@@ -244,7 +256,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
         # names are advisory findings with no grandfathered exceptions.
         if "profile-al-dev-shared" not in path.parts and not _MAINTAINER_SKILL_RE.match(name):
             rows.append(_row(
-                name, "Low",
+                disamb_name, "Low",
                 f"`{path.parent.name}/SKILL.md:1` skill name is not kebab-case "
                 "`{verb}-{object}-{aspect}`",
                 "rename to the advisory pattern in docs/naming_convention.md",
