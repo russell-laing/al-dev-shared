@@ -63,6 +63,8 @@ Check the `model` frontmatter field and evaluate against the task described in t
 
 Return exactly this structure (no additional prose before or after the block):
 
+**Output Format Example:**
+
 ### Model Fit Findings
 
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
