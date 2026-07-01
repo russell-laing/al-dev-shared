@@ -49,7 +49,19 @@ AS0016: 3 occurrences → judgment-required (do not auto-fix)
 
 ### Step 3: Classify and fix each rule group
 
-Invoke diagnostics-classifier to classify each lint rule group. Based on the classification (judgment-required | direct-fix), proceed with either escalation or direct fix.
+Dispatch diagnostics-decision agent with rule + code context to classify as safe or judgment-required. This agent handles:
+
+- Deterministic rule assessment
+- Reversibility evaluation
+- Confidence scoring
+
+Receive verdict + confidence in return.
+
+### Step 3.5: If judgment-required (per agent verdict), SKIP fix application
+
+If agent returns `classification: judgment-required`, skip fix and record the rule in a judgment-required list for manual review.
+
+### Step 3.6: If safe (per agent verdict), proceed with fix application
 
 #### 3b: Direct edit path
 
