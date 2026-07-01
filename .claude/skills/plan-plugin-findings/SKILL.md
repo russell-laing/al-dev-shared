@@ -41,6 +41,9 @@ deterministically, and log `preferred → outcome → fallback → reason`.
 - `.dev/plan-plugin-findings-verify-checkpoint.jsonl` exists with verified findings from plan-plugin-findings-verify
 - `.dev/health-loop-state.md` confirms the previous stage is `plan-plugin-findings-verify`
 - At least one verified finding in the checkpoint has a `proceed` or `modify` verdict
+- Health plan context template: `../../knowledge/health-plan-context-template.md` — defines what context to pass to `superpowers:writing-plans`
+
+The plan writing phase depends on having read health-plan-context-template.md to understand required context blocks for implementation tasks.
 
 ---
 
