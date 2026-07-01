@@ -108,7 +108,7 @@ If a phase blocks, append the same shape with `status:"blocked"` and a
 
 ## Phase 0: Locate Plan and Resume
 
-### Locate the target plan
+### Step 0.1: Locate the plan file
 
 First read `.dev/health-loop-state.md` if it exists (schema:
 `.claude/knowledge/health-loop-state-contract.md`). If its `next_command` names
@@ -136,7 +136,7 @@ If no plan passes the filter, stop with:
 > `/plan-plugin-findings` first to produce an accepted plan, or pass
 > `--plan <path>` to target a specific file.
 
-### Resume check
+### Step 0.2: Evaluate resume/restart state
 
 **If the checkpoint file exists,** first check whether it belongs to the current
 plan. If the checkpoint's `plan_path` differs from the plan selected above
@@ -168,6 +168,8 @@ to Phase 2. This enforces a clean phase boundary when a task has marked restart
 as blocked (e.g., after a mid-run self-edit that requires a restart).
 
 **If the checkpoint file does not exist:** proceed to Phase 1.
+
+### Step 0.3: Write execution checkpoint
 
 Write initial checkpoint before proceeding:
 
