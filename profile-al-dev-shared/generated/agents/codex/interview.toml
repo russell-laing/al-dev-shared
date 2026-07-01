@@ -10,6 +10,15 @@ Coordinates the interview workflow:
 
 See question-gatherer and spec-writer agents for implementation details.
 
+## Inputs
+
+- The user's implementation request/context that motivated the interview
+
+## Outputs
+
+- `.dev/$(date +%Y-%m-%d)-interview-requirements.md` — the synthesized
+  specification produced via spec-writer
+
 Codex capability notes:
 - read files available in the active Codex session
 - edit files available in the active Codex session

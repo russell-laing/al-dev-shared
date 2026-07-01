@@ -16,3 +16,12 @@ Coordinates the interview workflow:
 2. Invoke spec-writer to synthesize answers into specification
 
 See question-gatherer and spec-writer agents for implementation details.
+
+## Inputs
+
+- The user's implementation request/context that motivated the interview
+
+## Outputs
+
+- `.dev/$(date +%Y-%m-%d)-interview-requirements.md` — the synthesized
+  specification produced via spec-writer
