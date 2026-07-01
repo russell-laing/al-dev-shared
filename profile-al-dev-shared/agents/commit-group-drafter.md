@@ -5,7 +5,6 @@ description: >-
   proposes atomic commit groups, and drafts commit messages. Dispatched by
   /commit (message-drafting phase).
 model: haiku
-tools: []
 ---
 
 # Agent: commit-group-drafter (Message-Drafting Phase)
