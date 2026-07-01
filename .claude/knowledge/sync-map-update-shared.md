@@ -17,6 +17,29 @@ Parameters supplied by the caller agent:
 | `{MIN_LINES}` | 50 | 100 |
 | `{OUTPUT}` | `<result_dir>/updates/agent_map.md` | `<result_dir>/updates/skills_map.md` |
 
+## Error handling
+
+**Halt conditions:** If any of the following occur during plan generation, halt
+immediately without writing output and report the error to the user:
+
+1. **Missing source document** — The audit findings file referenced in Phase 1 does
+   not exist or is empty. Report: "No audit findings found at <path>; run
+   /discover-plugin-health first."
+
+2. **Malformed JSON in audit report** — The JSON structure from the audit agent
+   does not match the expected schema (missing `findings` array, invalid verdict
+   values, etc.). Report: "Audit report malformed at <path>; regenerate with
+   /discover-plugin-health."
+
+3. **Empty findings after filter** — The dimensional or surface filter produces
+   zero results. This may indicate over-filtering or stale audit data. Report:
+   "No findings match filter <filter>; check surface/dimension values and audit
+   recency."
+
+**Logging:** Include the absolute path to the blocking file and the exact
+conditional that triggered the halt in your error message so users can diagnose
+and fix without re-running the entire audit.
+
 ## Step 1 — Read audit findings
 
 For artifact verification, follow `.claude/skills/sync-map-documentation/sync-agent-patterns.md`.
