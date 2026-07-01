@@ -69,6 +69,17 @@ If a requested surface returns no path, report: "No `<surface>` findings file
 found. Run /audit-plugin-health for that surface first." Skip only that surface.
 If neither requested surface returns a path, stop.
 
+### Incomplete Findings Check
+
+After reading the findings file, check for the marker `Status: INCOMPLETE` or `Status: IN_PROGRESS` in the file header.
+
+If found:
+
+- **Option A:** Resume discovery — Run `/discover-plugin-health --resume` to complete the discovery phase, then re-run `/report-plugin-health` on the completed findings.
+- **Option B:** Proceed with partial findings — Continue with the current findings; report will be based on incomplete discovery. Annotate the report with "⚠️ Based on incomplete discovery — some findings may be missing."
+
+If not found: Proceed normally to Phase 1 (filter findings).
+
 ## Phase 1 — Parse findings
 
 Read the findings file. Extract each `### <Lens Name> Findings` block.
