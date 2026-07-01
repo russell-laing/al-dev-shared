@@ -65,7 +65,7 @@ The health dossier spans both skills and agents within a surface, so routing fil
   - **Promote** — Elevate a sub-skill or helper agent to top-level
   - **Move** — Relocate a file between surfaces (plugin ↔ tooling)
   - **Extend** — Add new downstream consumer or output stage
-- **Rubber-duck reads:** `.claude/skills/<name>/SKILL.md` or `profile-al-dev-shared/skills/<name>/SKILL.md`
+- **Rubber-duck reads:** `.claude/skills/<name>/SKILL.md` (tooling); if not found, read `profile-al-dev-shared/skills/<name>/SKILL.md` (distributed)
 - **Plan task file paths:** reference skill file paths
 
 **`--agents`:** keep only agent-design findings.
