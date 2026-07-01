@@ -97,15 +97,10 @@ Offer resume via USER_GATE:
 > with `/plan --resume-from=phase2` (Mode A), provided
 > `.dev/preflight-context.md` is current.
 
-**Mode C — no `--resume-from` and no context file:**
-Dispatch `/plan-preflight` with the same $ARGUMENTS. That
-skill runs the full context-gathering flow (resume check, complexity
-triage, context loading, claims verification, target confirmation),
-writes `.dev/preflight-context.md`, and emits the `PREFLIGHT_CONTEXT`
-block. When it returns, load that block into the working state used by
-Phase 2 and continue. If preflight stops at its input-validation gate
-(no substantive requirement), it has already asked the user — do not
-proceed to Phase 2 until preflight completes and emits context.
+**Mode C (fresh run):** YOU MUST dispatch `/plan-preflight` with the same $ARGUMENTS
+before proceeding to architect spawn. Preflight is non-optional; it produces the scope
+triage and evidence gathering that architects consume. No fast-path exists that skips
+preflight.
 
 ### PREFLIGHT_CONTEXT schema
 
@@ -129,6 +124,25 @@ If a required field is missing from the context, re-dispatch
 `/plan-preflight` rather than proceeding with empty state.
 
 ## Phase 2: Spawn Architect Team (2-3 agents)
+
+### Preflight Mandatory Gate
+
+Before spawning architect agents, verify that `.dev/preflight-context.md` exists and is
+readable:
+
+```bash
+if [ ! -f .dev/preflight-context.md ]; then
+  echo "ERROR: Preflight context missing. Run /plan-preflight first."
+  exit 1
+fi
+```
+
+If Phase 0 did not complete (check `.dev/progress.md` for Phase 0 checkmark), STOP and
+re-dispatch `/plan-preflight` rather than proceeding directly to architect dispatch.
+Skipping preflight invalidates the scope triage, complexity assessment, and symbol-evidence
+gathering that architects depend on. There is no documented fast-path bypass; preflight is
+mandatory in all three dispatch modes (Mode A resumes existing context, Mode B offers
+resume/restart, Mode C mandates fresh dispatch).
 
 **State source:** Phase 2 draws on exactly the `PREFLIGHT_CONTEXT`
 fields obtained in Phase 0 — requirement (`requirements`),
