@@ -5,7 +5,7 @@ description: >-
   object context for those changes, and write release notes.
   Dispatched by the release-notes skill.
 model: sonnet
-tools: ["Read", "Write", "Bash", "MCP: al-mcp-server"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 # Agent: release-notes-writer
