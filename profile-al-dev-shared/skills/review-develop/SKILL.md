@@ -2,7 +2,7 @@
 name: review-develop
 description: >-
   Dispatches the three-reviewer panel and synthesizes findings. Run
-  /review-develop-preflight first to locate the develop handoff,
+  /generic-preflight --context-type review first to locate the develop handoff,
   identify changed files, and verify compile status.
 ---
 
@@ -10,7 +10,7 @@ description: >-
 
 Reviewer dispatch and synthesis for post-implementation code review.
 
-Reads the preflight context written by `/review-develop-preflight`,
+Reads the preflight context written by `/generic-preflight --context-type review`,
 then dispatches the three-specialist review panel in parallel and synthesises
 findings into a single code-review artifact.
 
@@ -61,7 +61,7 @@ Extract `CHANGED_FILES` and `COMPILE_STATUS` from the file.
 ```text
 No preflight context found.
 
-Run /review-develop-preflight first to locate the develop handoff,
+Run /generic-preflight --context-type review first to locate the develop handoff,
 identify changed files, and verify compile status.
 ```
 

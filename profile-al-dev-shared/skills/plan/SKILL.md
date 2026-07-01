@@ -8,7 +8,7 @@ description: >-
   when they describe a requirement, ask "how should I build
   this", or say "plan this" or "design this". Runs the architect
   debate (phases 2–7); context gathering (phases 0–1.6) is
-  handled by /plan-preflight, which this skill dispatches
+  handled by /generic-preflight --context-type planning, which this skill dispatches
   automatically. Produces
   .dev/$(date +%Y-%m-%d)-plan-solution-plan.md. Prefer this
   over ad-hoc planning. Supports resuming directly to Phase 2
@@ -26,7 +26,7 @@ the winning approach. You do NOT design the solution yourself.
 This skill runs the architect-debate phases (2–7). Context
 gathering and verification (phases 0–1.6 — resume check,
 complexity triage, context loading, claims verification, target
-confirmation) live in the reusable `/plan-preflight`
+confirmation) live in the reusable `/generic-preflight --context-type planning`
 skill. Phase 0 below dispatches preflight automatically (or reads
 its `PREFLIGHT_CONTEXT` output when resuming), so direct
 invocation of `/plan` still performs the full flow
@@ -58,7 +58,7 @@ When shell search or structured-file inspection is required, prefer `rg` and
 ## Phase 0: Obtain Preflight Context
 
 The architect debate (phases 2–7) consumes only the
-`PREFLIGHT_CONTEXT` state produced by `/plan-preflight`. That
+`PREFLIGHT_CONTEXT` state produced by `/generic-preflight --context-type planning`. That
 state — requirements, scope, `architect_model`, project context, and
 the **External findings status:** block — is written to
 `.dev/preflight-context.md`. Phase 0 obtains that context, then jumps
@@ -97,14 +97,14 @@ Offer resume via USER_GATE:
 > with `/plan --resume-from=phase2` (Mode A), provided
 > `.dev/preflight-context.md` is current.
 
-**Mode C (fresh run):** YOU MUST dispatch `/plan-preflight` with the same $ARGUMENTS
+**Mode C (fresh run):** YOU MUST dispatch `/generic-preflight --context-type planning` with the same $ARGUMENTS
 before proceeding to architect spawn. Preflight is non-optional; it produces the scope
 triage and evidence gathering that architects consume. No fast-path exists that skips
 preflight.
 
 ### PREFLIGHT_CONTEXT schema
 
-`/plan-preflight` writes `.dev/preflight-context.md`. The
+`/generic-preflight --context-type planning` writes `.dev/preflight-context.md`. The
 canonical schema and field semantics are defined in
 `../../knowledge/preflight-context-schema.md` — read that file before
 loading the context block.
@@ -121,7 +121,7 @@ Treat these fields as the authoritative inputs to Phase 2:
   block forwarded to architects; skip if null.
 
 If a required field is missing from the context, re-dispatch
-`/plan-preflight` rather than proceeding with empty state.
+`/generic-preflight --context-type planning` rather than proceeding with empty state.
 
 ## Phase 2: Spawn Architect Team (2-3 agents)
 
@@ -132,13 +132,13 @@ readable:
 
 ```bash
 if [ ! -f .dev/preflight-context.md ]; then
-  echo "ERROR: Preflight context missing. Run /plan-preflight first."
+  echo "ERROR: Preflight context missing. Run /generic-preflight --context-type planning first."
   exit 1
 fi
 ```
 
 If Phase 0 did not complete (check `.dev/progress.md` for Phase 0 checkmark), STOP and
-re-dispatch `/plan-preflight` rather than proceeding directly to architect dispatch.
+re-dispatch `/generic-preflight --context-type planning` rather than proceeding directly to architect dispatch.
 Skipping preflight invalidates the scope triage, complexity assessment, and symbol-evidence
 gathering that architects depend on. There is no documented fast-path bypass; preflight is
 mandatory in all three dispatch modes (Mode A resumes existing context, Mode B offers
