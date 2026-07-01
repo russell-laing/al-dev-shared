@@ -52,6 +52,15 @@ detected as pre-planning is **out of scope** — skip it and emit no finding for
    tributary-label match (the node label text — not the node ID — equals the
    skill name), not a substring match — `explore` must not be counted as present merely because
    `explore-deep` appears in the diagram.
+
+   **Example:** In Mermaid diagram syntax:
+
+   ```mermaid
+   graph TD
+       explore["explore"]  <!-- node label (visible in diagram) -->
+       explore-deep["explore-deep"]  <!-- different label, same node ID format -->
+   ```
+
 2. Check whether its output filename is referenced in Layer 1 handoff labels.
 3. Check whether a downstream skill explicitly names it as an input in its body.
 
