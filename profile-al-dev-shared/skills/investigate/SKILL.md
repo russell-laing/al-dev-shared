@@ -141,7 +141,9 @@ Each hypothesis must be:
 - **Specific**: not "event subscriber issue" but "subscriber exits
   early when Item Nominal Weight = 0"
 - **Testable**: a code path or data state must be able to confirm
-  or reject it
+  or reject it. Example: testable = grep finds the code path that would
+  produce the symptom; inconclusive = the behavior depends on runtime
+  data state that cannot be inspected statically.
 - **Bounded**: points to a specific codeunit, table, or event
 
 Example hypothesis set for a "Total Kg overstated" bug:
