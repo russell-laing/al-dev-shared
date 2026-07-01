@@ -13,7 +13,7 @@ tools: ["Read"]
 
 This lens derives the handoff chain **from the skill bodies themselves**. It does
 not consume a pre-built `handoff_chains` context field — that field is built from
-`docs/skills-map.md`, whose Layer 1 diagram intentionally excludes the
+`docs/skills_map.md`, whose Layer 1 diagram intentionally excludes the
 `.claude/` maintainer tooling, so it never describes maintainer chains.
 
 ## Outputs

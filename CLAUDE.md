@@ -141,9 +141,9 @@ See `docs/development_commands.md` for the full command reference (validation, p
 
 ## Plugin Architecture Quick Reference
 
-**Start here:** `docs/skills-map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
+**Start here:** `docs/skills_map.md` (Layer 1 lifecycle diagram shows the three entry points and how skills connect)
 
-**Maintainer surface:** `docs/maintainer_tooling.md` (five-stage summary with detailed pages under `docs/maintainer_tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/skills-map.md` scope note)
+**Maintainer surface:** `docs/maintainer_tooling.md` (five-stage summary with detailed pages under `docs/maintainer_tooling/` for the repo-local `.claude/` tooling, which the Layer 1 distributed-skills diagram intentionally excludes — see `docs/skills_map.md` scope note)
 
 **Active skills:** 24 distributed skills covering three main flows:
 

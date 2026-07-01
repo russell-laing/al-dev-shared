@@ -293,8 +293,8 @@ Or remove the entire `[[plugin_sources]]` block for that plugin.
 ## Documentation
 
 - **Getting Started:** See `CLAUDE.md`, `AGENTS.md`, or `CODEX.md` for harness-specific setup
-- **Skill Reference:** `docs/skills-map.md`
-- **Agent Reference:** `docs/agent-map.md`
+- **Skill Reference:** `docs/skills_map.md`
+- **Agent Reference:** `docs/agent_map.md`
 - **Development Guide:** `docs/development_commands.md`
 
 ---

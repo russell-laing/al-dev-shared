@@ -15,8 +15,8 @@ workflow:
   invoked-by: user
   repeatable: true
   inputs:
-    - docs/skills-map.md
-    - docs/agent-map.md
+    - docs/skills_map.md
+    - docs/agent_map.md
     - .dev/health-loop-state.md
   outputs:
     - .dev/health-loop-state.md

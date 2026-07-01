@@ -101,7 +101,7 @@ flowchart TD
 <!-- BEGIN GENERATED: maintainer-stage-discover-artifacts -->
 | Artifact | Role |
 | --- | --- |
-| `docs/skills-map.md` and `docs/agent-map.md` | Provide current inventory and relationship context to the audit-driven path. |
+| `docs/skills_map.md` and `docs/agent_map.md` | Provide current inventory and relationship context to the audit-driven path. |
 | `docs/health/<date>-<surface>-findings.md` | Stores raw lens findings before report-time evidence checks and ranking. |
 | `docs/health/<date>-<surface>-friction-findings.md` | Carries friction-derived findings into report through an explicit `--findings` path. |
 | `.dev/health-loop-state.md` | Persists the exact report handoff across sessions. |

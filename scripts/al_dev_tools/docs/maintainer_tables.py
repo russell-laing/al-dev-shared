@@ -48,7 +48,7 @@ def render_skills_tables(contracts: list[WorkflowContract]) -> str:
 STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     "map-sync": (
         (
-            "docs/skills-map.md` and `docs/agent-map.md",
+            "docs/skills_map.md` and `docs/agent_map.md",
             "Canonical inventory maps audited and updated by the stage.",
         ),
         (
@@ -60,7 +60,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
         ),
         (
-            "docs/workflow-diagrams.md`, `docs/plugin-graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/",
+            "docs/workflow_diagrams.md`, `docs/plugin_graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/",
             "Derived documentation regenerated only after the canonical maps are applied.",
         ),
         (
@@ -70,7 +70,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     ),
     "discover": (
         (
-            "docs/skills-map.md` and `docs/agent-map.md",
+            "docs/skills_map.md` and `docs/agent_map.md",
             "Provide current inventory and relationship context to the audit-driven path.",
         ),
         (

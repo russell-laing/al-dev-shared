@@ -132,8 +132,8 @@ The run directory is
 `.dev/sync-map-documentation-runs/${RUN_ID}`. The dispatcher creates
 `${RUN_DIR}/audit` and `${RUN_DIR}/updates`; audit teams write
 `${RUN_DIR}/audit/skill-audit.json` and `${RUN_DIR}/audit/agent-audit.json`,
-and update teams write `${RUN_DIR}/updates/skills-map.md` and
-`${RUN_DIR}/updates/agent-map.md` before finalize copies valid update artifacts
+and update teams write `${RUN_DIR}/updates/skills_map.md` and
+`${RUN_DIR}/updates/agent_map.md` before finalize copies valid update artifacts
 to their canonical documentation paths.
 
 Future async workflows may reuse the read-preserve-update pattern, but should
@@ -160,7 +160,7 @@ The catalog count check uses:
 ```bash
 DISK_AGENTS=$(ls /path/to/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  "${RUN_DIR}/updates/agent-map.md" | grep -c '^| al-dev')
+  "${RUN_DIR}/updates/agent_map.md" | grep -c '^| al-dev')
 echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
 ```
 

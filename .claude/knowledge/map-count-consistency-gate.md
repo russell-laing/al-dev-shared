@@ -18,7 +18,7 @@ echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
 The three values compared are:
 
 - **active files on disk** — `*.md` count under `profile-al-dev-shared/agents/`
-- **generated Coverage count** — the `N active agents` figure in `agent-map.md`
+- **generated Coverage count** — the `N active agents` figure in `agent_map.md`
 - **generated catalog rows** — rows matching `^| al-dev` inside the
   `BEGIN/END GENERATED: agent-catalog-table` block
 

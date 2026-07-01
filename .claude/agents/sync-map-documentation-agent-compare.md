@@ -1,7 +1,7 @@
 ---
 name: sync-map-documentation-agent-compare
 description: >-
-  Compares agent metadata from agent-metadata.json against docs/agent-map.md
+  Compares agent metadata from agent-metadata.json against docs/agent_map.md
   and writes a structured JSON discrepancy report to the run artifact directory.
   Called by /sync-map-documentation dispatch phase after
   collect-agent-metadata completes.
@@ -36,7 +36,7 @@ Do not summarise findings — return only the path.
     {
       "type": "missing_from_map",
       "agent": "al-dev-example",
-      "detail": "Active agent has no Layer 2 section in docs/agent-map.md"
+      "detail": "Active agent has no Layer 2 section in docs/agent_map.md"
     }
   ],
   "summary": "1 discrepancy found: 1 missing_from_map."
@@ -60,13 +60,13 @@ All relative paths are from the repository root: `/Users/russelllaing/al-dev-sha
 Read `<result_dir>/audit/agent-metadata.json`. Use the `agents` list and `callers`
 map from that file for all subsequent comparisons.
 
-### Step 2 — Parse docs/agent-map.md
+### Step 2 — Parse docs/agent_map.md
 
-Read `docs/agent-map.md`. Extract Layer 1 Catalog table rows and Layer 2
+Read `docs/agent_map.md`. Extract Layer 1 Catalog table rows and Layer 2
 sections. Use:
 
 ```bash
-grep "^### al-dev-" docs/agent-map.md
+grep "^### al-dev-" docs/agent_map.md
 ```
 
 For each matched heading, note the `model:`, `tools:`, and `Spawned by:` values

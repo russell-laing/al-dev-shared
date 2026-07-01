@@ -203,7 +203,7 @@ See `AGENTS.md` (Copilot CLI), `CLAUDE.md` (Claude Code), and the generated proj
 ## Documentation
 
 - `docs/al-dev-plugin-map.md` — Skill inventory, Layer 1 lifecycle diagram, skill relationships
-- `docs/agent-map.md` — Agent inventory, tool assignments, agent relationships
+- `docs/agent_map.md` — Agent inventory, tool assignments, agent relationships
 - `profile-al-dev-shared/markdown/md-mermaid-helper.md` — Mermaid diagram style guide
 
 ## Code Review & Planning

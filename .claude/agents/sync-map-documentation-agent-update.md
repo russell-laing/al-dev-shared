@@ -2,10 +2,10 @@
 name: sync-map-documentation-agent-update
 description: >-
   Reads agent audit findings from the run artifact directory and writes the
-  updated map to `<result_dir>/updates/agent-map.md` by following the shared
+  updated map to `<result_dir>/updates/agent_map.md` by following the shared
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
   staged for /sync-map-documentation-apply to copy into
-  docs/agent-map.md. Called by /sync-map-documentation-collect update
+  docs/agent_map.md. Called by /sync-map-documentation-collect update
   dispatch phase.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
@@ -20,7 +20,7 @@ tools: ["Read", "Bash", "Write"]
 
 ## Outputs
 
-Writes `<result_dir>/updates/agent-map.md` (full updated map content).
+Writes `<result_dir>/updates/agent_map.md` (full updated map content).
 File must be ≥50 lines and begin with `# AL Dev`.
 Returns absolute path only — no other prose.
 
@@ -55,8 +55,8 @@ Follow the canonical update procedure in
 
 - `{SURFACE}` = `agent`
 - `{AUDIT_JSON}` = `<result_dir>/audit/agent-audit.json`
-- `{MAP_PATH}` = `docs/agent-map.md`
+- `{MAP_PATH}` = `docs/agent_map.md`
 - `{EDIT_CASE_SECTION}` = `Agent surface — edit cases (update)`
 - `{COVERAGE_MARKER}` = `agent-coverage`
 - `{MIN_LINES}` = `50`
-- `{OUTPUT}` = `<result_dir>/updates/agent-map.md`
+- `{OUTPUT}` = `<result_dir>/updates/agent_map.md`

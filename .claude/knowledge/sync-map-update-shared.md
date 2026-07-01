@@ -15,7 +15,7 @@ Parameters supplied by the caller agent:
 | `{EDIT_CASE_SECTION}` | Agent surface — edit cases (update) | Skill surface — edit cases (update) |
 | `{COVERAGE_MARKER}` | `agent-coverage` | `skill-coverage` |
 | `{MIN_LINES}` | 50 | 100 |
-| `{OUTPUT}` | `<result_dir>/updates/agent-map.md` | `<result_dir>/updates/skills-map.md` |
+| `{OUTPUT}` | `<result_dir>/updates/agent_map.md` | `<result_dir>/updates/skills_map.md` |
 
 ## Step 1 — Read audit findings
 

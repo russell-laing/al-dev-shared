@@ -133,7 +133,7 @@ MAP_SYNC_REQUIRED_SKILLS = {
 }
 
 MAP_SYNC_REQUIRED_INPUTS = {
-    "sync-map-documentation": ("docs/skills-map.md", "docs/agent-map.md"),
+    "sync-map-documentation": ("docs/skills_map.md", "docs/agent_map.md"),
     "sync-map-documentation-collect": (
         ".dev/sync-map-documentation-checkpoint.json",
         ".dev/sync-map-documentation-runs/RUN_ID/audit/<surface>-audit.json",
@@ -144,8 +144,8 @@ MAP_SYNC_REQUIRED_INPUTS = {
     ),
     "sync-map-documentation-write": (
         ".dev/sync-map-documentation-checkpoint.json",
-        "docs/skills-map.md",
-        "docs/agent-map.md",
+        "docs/skills_map.md",
+        "docs/agent_map.md",
     ),
 }
 
@@ -157,10 +157,10 @@ MAP_SYNC_REQUIRED_OUTPUTS = {
     "sync-map-documentation-collect": (
         ".dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md",
     ),
-    "sync-map-documentation-apply": ("docs/skills-map.md", "docs/agent-map.md"),
+    "sync-map-documentation-apply": ("docs/skills_map.md", "docs/agent_map.md"),
     "sync-map-documentation-write": (
-        "docs/workflow-diagrams.md",
-        "docs/plugin-graph.md",
+        "docs/workflow_diagrams.md",
+        "docs/plugin_graph.md",
         "docs/maintainer_tooling.md",
         "profile-al-dev-shared/generated/agents/",
     ),
@@ -184,10 +184,10 @@ DISCOVER_REQUIRED_INPUTS = {
         "~/friction-log/<session>-findings.md",
         "~/friction-log/<session>-signals.json",
     ),
-    "audit-plugin-health": ("docs/skills-map.md", "docs/agent-map.md"),
+    "audit-plugin-health": ("docs/skills_map.md", "docs/agent_map.md"),
     "discover-plugin-health": (
-        "docs/skills-map.md",
-        "docs/agent-map.md",
+        "docs/skills_map.md",
+        "docs/agent_map.md",
         "profile-al-dev-shared/knowledge/lens-invocation-patterns.md",
     ),
     "report-plugin-health": (
@@ -381,8 +381,8 @@ def render_map_sync_stage_detail(
     del stage_contracts
     generated_class = _focused_artifact_class(
         orphans,
-        "docs/workflow-diagrams.md",
-        "docs/plugin-graph.md",
+        "docs/workflow_diagrams.md",
+        "docs/plugin_graph.md",
         "docs/maintainer_tooling.md",
         "docs/maintainer_tooling/",
         "profile-al-dev-shared/generated/agents/",

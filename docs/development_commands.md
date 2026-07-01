@@ -57,7 +57,7 @@ python3 scripts/generate_agent_projections.py
 
 ## Documentation Maps (Mermaid Diagrams)
 
-The documentation maps (`docs/skills-map.md`, `docs/agent-map.md`, `docs/plugin-graph.md`) and maintainer guide pages (`docs/maintainer_tooling.md`, `docs/maintainer_tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
+The documentation maps (`docs/skills_map.md`, `docs/agent_map.md`, `docs/plugin_graph.md`) and maintainer guide pages (`docs/maintainer_tooling.md`, `docs/maintainer_tooling/*.md`) contain auto-generated sections with Mermaid diagrams. These are regenerated from the shared plugin source:
 
 ```bash
 # Regenerate all documentation map sections
@@ -136,6 +136,6 @@ For audit-only map checks (no updates):
 
 These skills write to:
 
-- `docs/skills-map.md` — Skill inventory and relationships (documentation only)
-- `docs/agent-map.md` — Agent inventory and tool assignments (documentation only)
+- `docs/skills_map.md` — Skill inventory and relationships (documentation only)
+- `docs/agent_map.md` — Agent inventory and tool assignments (documentation only)
 - `docs/health/YYYY-MM-DD-<surface>-health.md` — the ranked findings dossier (all design, quality, and naming findings)

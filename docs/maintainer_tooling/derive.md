@@ -75,8 +75,8 @@ flowchart LR
     art__claude_[".claude/"]
     art__claude_knowledge_["knowledge/"]
     art_docs_health_dispositions_events_["health/dispositions_events/"]
-    art_docs_knowledge_quality_tooling_md[".../knowledge-quality-tooling.md"]
-    art_docs_knowledge_quality_md[".../knowledge-quality.md"]
+    art_docs_knowledge_quality_md[".../knowledge_quality.md"]
+    art_docs_knowledge_quality_tooling_md[".../knowledge_quality_tooling.md"]
     art_profile_al_dev_shared_["profile-al-dev-shared/"]
     art_profile_al_dev_shared_agents_["agents/"]
     art_profile_al_dev_shared_generated_agents_["generated/agents/"]
@@ -89,8 +89,8 @@ flowchart LR
     skill_audit_disposition_ledger -. "repeat" .-> skill_audit_disposition_ledger
     art__claude_knowledge_ --> skill_audit_knowledge_quality
     art_profile_al_dev_shared_knowledge_ --> skill_audit_knowledge_quality
-    skill_audit_knowledge_quality --> art_docs_knowledge_quality_tooling_md
     skill_audit_knowledge_quality --> art_docs_knowledge_quality_md
+    skill_audit_knowledge_quality --> art_docs_knowledge_quality_tooling_md
     skill_audit_knowledge_quality --> skill_fix_knowledge_quality
     skill_audit_knowledge_quality -. "repeat" .-> skill_audit_knowledge_quality
     art_profile_al_dev_shared_agents_ --> skill_audit_plugin_neutrality
@@ -98,8 +98,8 @@ flowchart LR
     art_profile_al_dev_shared_skills_ --> skill_audit_plugin_neutrality
     skill_audit_plugin_neutrality --> skill_audit_knowledge_quality
     skill_audit_plugin_neutrality -. "repeat" .-> skill_audit_plugin_neutrality
-    art_docs_knowledge_quality_tooling_md --> skill_fix_knowledge_quality
     art_docs_knowledge_quality_md --> skill_fix_knowledge_quality
+    art_docs_knowledge_quality_tooling_md --> skill_fix_knowledge_quality
     skill_fix_knowledge_quality --> art__claude_knowledge_
     skill_fix_knowledge_quality --> art_profile_al_dev_shared_knowledge_
     skill_fix_knowledge_quality --> skill_audit_plugin_neutrality
@@ -117,8 +117,8 @@ flowchart LR
     class art__claude_ artifact
     class art__claude_knowledge_ artifact
     class art_docs_health_dispositions_events_ artifact
-    class art_docs_knowledge_quality_tooling_md artifact
     class art_docs_knowledge_quality_md artifact
+    class art_docs_knowledge_quality_tooling_md artifact
     class art_profile_al_dev_shared_ artifact
     class art_profile_al_dev_shared_agents_ artifact
     class art_profile_al_dev_shared_generated_agents_ orphanArtifact

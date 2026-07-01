@@ -43,7 +43,7 @@ echo "pre-commit: checking doc-map freshness..."
 stale_files=$(git diff --cached --name-only --diff-filter=ACM \
   | grep -E '^profile-al-dev-shared/(skills|agents)/' || true)
 staged_maps=$(git diff --cached --name-only \
-  | grep -E 'docs/al-dev-(skills|agent)-map\.md' || true)
+  | grep -E 'docs/(skills|agent)_map\.md' || true)
 if [ -n "$stale_files" ] && [ -z "$staged_maps" ]; then
   echo "WARN: skill/agent files staged but doc maps not updated." >&2
   echo "  Run /sync-map-documentation after this commit." >&2

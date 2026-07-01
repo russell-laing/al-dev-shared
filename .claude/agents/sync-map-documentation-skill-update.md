@@ -2,10 +2,10 @@
 name: sync-map-documentation-skill-update
 description: >-
   Reads skill audit findings from the run artifact directory and writes the
-  updated map to `<result_dir>/updates/skills-map.md` by following the shared
+  updated map to `<result_dir>/updates/skills_map.md` by following the shared
   canonical update procedure in .claude/knowledge/sync-map-update-shared.md,
   staged for /sync-map-documentation-apply to copy into
-  docs/skills-map.md. Called by /sync-map-documentation-collect update
+  docs/skills_map.md. Called by /sync-map-documentation-collect update
   dispatch phase. Halts without writing output if
   .claude/knowledge/sync-map-update-shared.md is absent.
 model: sonnet
@@ -21,7 +21,7 @@ tools: ["Read", "Bash", "Write"]
 
 ## Outputs
 
-Writes `<result_dir>/updates/skills-map.md` (full updated map content).
+Writes `<result_dir>/updates/skills_map.md` (full updated map content).
 File must be ≥100 lines and begin with `# AL Dev`.
 Returns absolute path only — no other prose.
 
@@ -50,8 +50,8 @@ Follow the canonical update procedure in
 
 - `{SURFACE}` = `skill`
 - `{AUDIT_JSON}` = `<result_dir>/audit/skill-audit.json`
-- `{MAP_PATH}` = `docs/skills-map.md`
+- `{MAP_PATH}` = `docs/skills_map.md`
 - `{EDIT_CASE_SECTION}` = `Skill surface — edit cases (update)`
 - `{COVERAGE_MARKER}` = `skill-coverage`
 - `{MIN_LINES}` = `100`
-- `{OUTPUT}` = `<result_dir>/updates/skills-map.md`
+- `{OUTPUT}` = `<result_dir>/updates/skills_map.md`

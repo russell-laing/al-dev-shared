@@ -12,11 +12,11 @@ workflow:
   repeatable: false
   inputs:
     - .dev/sync-map-documentation-checkpoint.json
-    - docs/skills-map.md
-    - docs/agent-map.md
+    - docs/skills_map.md
+    - docs/agent_map.md
   outputs:
-    - docs/workflow-diagrams.md
-    - docs/plugin-graph.md
+    - docs/workflow_diagrams.md
+    - docs/plugin_graph.md
     - docs/maintainer_tooling.md
     - docs/maintainer_tooling/
     - profile-al-dev-shared/generated/agents/
@@ -70,8 +70,8 @@ artifacts and write the maps to docs/, then re-run this step.
 Confirm the docs/ maps exist and are non-empty:
 
 ```bash
-ls -la /Users/russelllaing/al-dev-shared/docs/skills-map.md
-ls -la /Users/russelllaing/al-dev-shared/docs/agent-map.md
+ls -la /Users/russelllaing/al-dev-shared/docs/skills_map.md
+ls -la /Users/russelllaing/al-dev-shared/docs/agent_map.md
 ```
 
 ---
@@ -141,8 +141,8 @@ Sync finalized.
   Run ID: RUN_ID
 
   Updated files:
-    docs/skills-map.md       — <N> lines  (or "skipped")
-    docs/agent-map.md        — <N> lines  (or "skipped")
+    docs/skills_map.md       — <N> lines  (or "skipped")
+    docs/agent_map.md        — <N> lines  (or "skipped")
 
   Derived artifacts:
     Mermaid diagrams: regenerated   (or "regeneration failed — see above")
@@ -169,12 +169,12 @@ Otherwise, stage and commit:
 ```bash
 git -C /Users/russelllaing/al-dev-shared status
 git -C /Users/russelllaing/al-dev-shared add \
-    docs/skills-map.md \
-    docs/agent-map.md \
+    docs/skills_map.md \
+    docs/agent_map.md \
     docs/maintainer_tooling.md \
     docs/maintainer_tooling/ \
-    docs/workflow-diagrams.md \
-    docs/plugin-graph.md
+    docs/workflow_diagrams.md \
+    docs/plugin_graph.md
 git -C /Users/russelllaing/al-dev-shared add \
     profile-al-dev-shared/generated/ 2>/dev/null || true
 git -C /Users/russelllaing/al-dev-shared diff --cached --stat

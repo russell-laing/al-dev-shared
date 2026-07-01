@@ -19,8 +19,8 @@ workflow:
     - .dev/sync-map-documentation-checkpoint.json
     - .dev/sync-map-documentation-runs/RUN_ID/updates/<surface>-map.md
   outputs:
-    - docs/skills-map.md
-    - docs/agent-map.md
+    - docs/skills_map.md
+    - docs/agent_map.md
   next: [sync-map-documentation-write]
 ---
 
@@ -114,9 +114,9 @@ For each artifact gated by `UPDATE_CHOICE`:
 Artifact gates by `UPDATE_CHOICE`:
 
 - `UPDATE_CHOICE=skills` or `UPDATE_CHOICE=both` → check
-  `"${RUN_DIR}/updates/skills-map.md"`
+  `"${RUN_DIR}/updates/skills_map.md"`
 - `UPDATE_CHOICE=agents` or `UPDATE_CHOICE=both` → check
-  `"${RUN_DIR}/updates/agent-map.md"`
+  `"${RUN_DIR}/updates/agent_map.md"`
 
 Apply the validation rules and all-surfaces-invalid stop rule from the
 "Apply-stage artifact validation" section in `checkpoint-patterns.md`.
@@ -133,14 +133,14 @@ For each valid artifact, copy it to the canonical docs/ path:
 
 ```bash
 # Skills map:
-cp "${RUN_DIR}/updates/skills-map.md" \
-   /Users/russelllaing/al-dev-shared/docs/skills-map.md
-wc -l /Users/russelllaing/al-dev-shared/docs/skills-map.md
+cp "${RUN_DIR}/updates/skills_map.md" \
+   /Users/russelllaing/al-dev-shared/docs/skills_map.md
+wc -l /Users/russelllaing/al-dev-shared/docs/skills_map.md
 
 # Agent map:
-cp "${RUN_DIR}/updates/agent-map.md" \
-   /Users/russelllaing/al-dev-shared/docs/agent-map.md
-wc -l /Users/russelllaing/al-dev-shared/docs/agent-map.md
+cp "${RUN_DIR}/updates/agent_map.md" \
+   /Users/russelllaing/al-dev-shared/docs/agent_map.md
+wc -l /Users/russelllaing/al-dev-shared/docs/agent_map.md
 ```
 
 Verify minimum line counts:
