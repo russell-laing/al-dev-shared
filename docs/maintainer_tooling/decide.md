@@ -49,67 +49,32 @@ the plan and ledger, and prepares for Implement.
 ```mermaid
 flowchart TD
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef internalSkill fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 5,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
-    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    skill_plan_plugin_findings["/plan-plugin-findings"]
-    skill_plan_plugin_findings_verify["/plan-plugin-findings-verify"]
+    art_dossier["ranked health dossier"]
     skill_record_plugin_dispositions["/record-plugin-dispositions"]
+    art_ledger["accepted rows in disposition ledger"]
+    skill_plan_plugin_findings["/plan-plugin-findings"]
+    art_plan["verified plan with closes_event_ids"]
+    art_commentary["optional review commentary"]
     skill_revise_plugin_plan["/revise-plugin-plan"]
-    art__dev_health_loop_state_md[".dev/health-loop-state.md"]
-    art__dev_plan_plugin_findings_verify_checkpoint_jsonl[".../plan-plugin-findings-verify-checkpoint.jsonl"]
-    art_docs_health_____health_md["docs/health/*-*-health.md"]
-    art_docs_health_dispositions_events_______jsonl[".../*-*.jsonl"]
-    art_docs_health_dispositions_index_json[".../dispositions_index.json"]
-    art_docs_health_dispositions_open_md[".../dispositions_open.md"]
-    art_docs_superpowers_plans_____commentary_md[".../*-*-commentary.md"]
-    art_docs_superpowers_plans_____md["docs/superpowers/plans/*-*.md"]
-    art_profile_al_dev_shared_knowledge_map_change_rubber_duck_checks_md[".../map-change-rubber-duck-checks.md"]
 
-    art__dev_health_loop_state_md --> skill_plan_plugin_findings
-    art__dev_plan_plugin_findings_verify_checkpoint_jsonl --> skill_plan_plugin_findings
-    art_docs_health_dispositions_open_md --> skill_plan_plugin_findings
-    skill_plan_plugin_findings --> art__dev_health_loop_state_md
-    skill_plan_plugin_findings --> art_docs_superpowers_plans_____md
-    skill_plan_plugin_findings -. "repeat" .-> skill_plan_plugin_findings
-    art__dev_health_loop_state_md --> skill_plan_plugin_findings_verify
-    art_docs_health_____health_md --> skill_plan_plugin_findings_verify
-    art_docs_health_dispositions_index_json --> skill_plan_plugin_findings_verify
-    art_docs_health_dispositions_open_md --> skill_plan_plugin_findings_verify
-    art_profile_al_dev_shared_knowledge_map_change_rubber_duck_checks_md --> skill_plan_plugin_findings_verify
-    skill_plan_plugin_findings_verify --> art__dev_health_loop_state_md
-    skill_plan_plugin_findings_verify --> art__dev_plan_plugin_findings_verify_checkpoint_jsonl
-    skill_plan_plugin_findings_verify --> skill_plan_plugin_findings
-    skill_plan_plugin_findings_verify -. "repeat" .-> skill_plan_plugin_findings_verify
-    art__dev_health_loop_state_md --> skill_record_plugin_dispositions
-    art_docs_health_____health_md --> skill_record_plugin_dispositions
-    art_docs_health_dispositions_open_md --> skill_record_plugin_dispositions
-    skill_record_plugin_dispositions --> art__dev_health_loop_state_md
-    skill_record_plugin_dispositions --> art_docs_health_dispositions_events_______jsonl
-    skill_record_plugin_dispositions --> skill_plan_plugin_findings
-    skill_record_plugin_dispositions -. "repeat" .-> skill_record_plugin_dispositions
-    art_docs_health_dispositions_open_md --> skill_revise_plugin_plan
-    art_docs_superpowers_plans_____commentary_md --> skill_revise_plugin_plan
-    art_docs_superpowers_plans_____md --> skill_revise_plugin_plan
-    skill_revise_plugin_plan --> art_docs_health_dispositions_events_______jsonl
-    skill_revise_plugin_plan --> art_docs_superpowers_plans_____md
-    skill_revise_plugin_plan -. "repeat" .-> skill_revise_plugin_plan
+    art_dossier --> skill_record_plugin_dispositions
+    skill_record_plugin_dispositions --> art_ledger
+    art_ledger --> skill_plan_plugin_findings
+    skill_plan_plugin_findings --> art_plan
+    art_commentary -.-> skill_revise_plugin_plan
+    art_plan -.-> skill_revise_plugin_plan
+    skill_revise_plugin_plan -. "reconciled plan + ledger" .-> art_plan
 
-    class skill_plan_plugin_findings userSkill
-    class skill_plan_plugin_findings_verify userSkill
     class skill_record_plugin_dispositions userSkill
+    class skill_plan_plugin_findings userSkill
     class skill_revise_plugin_plan userSkill
-    class art__dev_health_loop_state_md artifact
-    class art__dev_plan_plugin_findings_verify_checkpoint_jsonl artifact
-    class art_docs_health_____health_md artifact
-    class art_docs_health_dispositions_events_______jsonl orphanArtifact
-    class art_docs_health_dispositions_index_json artifact
-    class art_docs_health_dispositions_open_md artifact
-    class art_docs_superpowers_plans_____commentary_md artifact
-    class art_docs_superpowers_plans_____md artifact
-    class art_profile_al_dev_shared_knowledge_map_change_rubber_duck_checks_md artifact
+    class art_dossier artifact
+    class art_ledger orphanArtifact
+    class art_plan artifact
+    class art_commentary artifact
 ```
 <!-- END GENERATED: maintainer-stage-decide-diagram -->
 

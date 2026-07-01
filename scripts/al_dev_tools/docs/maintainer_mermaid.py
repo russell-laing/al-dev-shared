@@ -470,24 +470,24 @@ def render_decide_stage_detail(orphans: set[str]) -> tuple[str, int]:
         *FOCUSED_DETAIL_CLASSDEFS,
         "",
         '    art_dossier["ranked health dossier"]',
-        '    skill_record_health_dispositions["/record-plugin-dispositions"]',
+        '    skill_record_plugin_dispositions["/record-plugin-dispositions"]',
         '    art_ledger["accepted rows in disposition ledger"]',
-        '    skill_plan_health_findings["/plan-plugin-findings"]',
+        '    skill_plan_plugin_findings["/plan-plugin-findings"]',
         '    art_plan["verified plan with closes_event_ids"]',
         '    art_commentary["optional review commentary"]',
-        '    skill_revise_health_plan["/revise-plugin-plan"]',
+        '    skill_revise_plugin_plan["/revise-plugin-plan"]',
         "",
-        "    art_dossier --> skill_record_health_dispositions",
-        "    skill_record_health_dispositions --> art_ledger",
-        "    art_ledger --> skill_plan_health_findings",
-        "    skill_plan_health_findings --> art_plan",
-        "    art_commentary -.-> skill_revise_health_plan",
-        "    art_plan -.-> skill_revise_health_plan",
-        '    skill_revise_health_plan -. "reconciled plan + ledger" .-> art_plan',
+        "    art_dossier --> skill_record_plugin_dispositions",
+        "    skill_record_plugin_dispositions --> art_ledger",
+        "    art_ledger --> skill_plan_plugin_findings",
+        "    skill_plan_plugin_findings --> art_plan",
+        "    art_commentary -.-> skill_revise_plugin_plan",
+        "    art_plan -.-> skill_revise_plugin_plan",
+        '    skill_revise_plugin_plan -. "reconciled plan + ledger" .-> art_plan',
         "",
-        "    class skill_record_health_dispositions userSkill",
-        "    class skill_plan_health_findings userSkill",
-        "    class skill_revise_health_plan userSkill",
+        "    class skill_record_plugin_dispositions userSkill",
+        "    class skill_plan_plugin_findings userSkill",
+        "    class skill_revise_plugin_plan userSkill",
         "    class art_dossier artifact",
         f"    class art_ledger {ledger_class}",
         f"    class art_plan {plan_class}",
@@ -649,11 +649,14 @@ def render_stage_detail(
                 for name in DERIVE_REQUIRED_SKILLS
             ):
                 return render_derive_stage_detail(stage_contracts, orphans)
-    if stage == "decide" and {contract.skill for contract in stage_contracts} == {
+    if stage == "decide" and {contract.skill for contract in stage_contracts} >= {
         "record-plugin-dispositions",
         "plan-plugin-findings",
         "revise-plugin-plan",
     }:
+        # Superset, not equality: the focused view renders the primary
+        # ledger-to-plan path even when the stage grows extra sub-phase skills
+        # (e.g. plan-plugin-findings-verify), which the curated diagram omits.
         return render_decide_stage_detail(orphans)
     if stage == "implement" and {contract.skill for contract in stage_contracts} == {
         "implement-plugin-health",

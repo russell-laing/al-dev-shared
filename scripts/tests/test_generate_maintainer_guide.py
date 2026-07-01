@@ -544,9 +544,9 @@ def test_live_decide_and_implement_diagrams_show_outcomes_not_contract_plumbing(
         {"docs/health/dispositions_events/*/*-*.jsonl"},
     )
     assert "flowchart TD" in decide_text
-    assert 'skill_record_health_dispositions["/record-plugin-dispositions"]' in decide_text
-    assert 'skill_plan_health_findings["/plan-plugin-findings"]' in decide_text
-    assert 'skill_revise_health_plan["/revise-plugin-plan"]' in decide_text
+    assert 'skill_record_plugin_dispositions["/record-plugin-dispositions"]' in decide_text
+    assert 'skill_plan_plugin_findings["/plan-plugin-findings"]' in decide_text
+    assert 'skill_revise_plugin_plan["/revise-plugin-plan"]' in decide_text
     assert 'art_commentary["optional review commentary"]' in decide_text
     assert "class art_ledger orphanArtifact" in decide_text
     assert "repeat" not in decide_text
