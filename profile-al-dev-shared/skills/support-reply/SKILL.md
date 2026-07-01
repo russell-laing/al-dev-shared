@@ -2,11 +2,13 @@
 name: support-reply
 description: >-
   Research and draft customer replies for Freshdesk support tickets. Runs
-  multi-source research (AL symbols, MS Docs, BC history), synthesizes findings,
-  and drafts a customer-facing reply. Input: ticket context
-  from ticket Phase 5 (CONTEXT block, or auto-detected latest). Output: a REPLY
-  metadata block plus the full customer reply written to `.dev/YYYY-MM-DD-plugin-support-reply-<slug>.md`.
-argument-hint: "[context-file-path | blank to auto-detect latest]"
+  multi-source research (AL symbols, MS Docs, BC history), synthesizes
+  findings, and drafts a customer-facing reply. Presents the draft for
+  review and posts it to the ticket on user confirmation (Phase 4 gated
+  posting). Input: ticket context from Phase 5 CONTEXT block or auto-detected
+  latest. Output: REPLY metadata block plus customer reply markdown.
+  Requires Freshdesk API credentials in user global settings for posting.
+argument-hint: "[optional: --ticket=<id>]"
 ---
 
 # Support Reply Researcher and Drafter
