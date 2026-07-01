@@ -10,11 +10,11 @@ tools: ["Read", "Write"]
 
 Transform interview Q&A into a formal requirements specification.
 
-## Input
+## Inputs
 
 Read `.dev/YYYY-MM-DD-interview-answers.md` with collected Q&A.
 
-## Output
+## Outputs
 
 Write refined specification with:
 
