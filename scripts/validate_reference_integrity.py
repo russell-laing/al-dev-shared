@@ -172,9 +172,16 @@ def _resolve_reference(file_path: Path, token: str) -> Path | None:
     if token.startswith("knowledge/"):
         relative = Path(token[len("knowledge/") :])
         local_root = file_path.parent
-        candidates = [local_root / relative]
-        if file_path.parent.parts[-2:] == (".claude", "knowledge"):
-            candidates.append(REPO_ROOT / "profile-al-dev-shared" / "knowledge" / relative)
+        # A bare `knowledge/X` token is usually the tail of a longer path
+        # (e.g. `.claude/knowledge/X`). Resolve it against the local dir and
+        # both canonical knowledge roots so a valid citation is not mistaken
+        # for a dead path when the referencing file lives outside a knowledge
+        # directory (e.g. a skill under .claude/skills/).
+        candidates = [
+            local_root / relative,
+            REPO_ROOT / ".claude" / "knowledge" / relative,
+            REPO_ROOT / "profile-al-dev-shared" / "knowledge" / relative,
+        ]
         for candidate in candidates:
             if candidate.exists():
                 return candidate
@@ -244,6 +251,7 @@ def _reference_issue_for_token(file_path: Path, token: str) -> ReferenceIssue | 
         or "YYYY-MM-DD" in token
         or "YYYY" in token
         or "*" in token
+        or "${" in token
     ):
         return None
 
@@ -294,8 +302,14 @@ def _reference_issue_for_token(file_path: Path, token: str) -> ReferenceIssue | 
     )
 
 
-def validate_reference_path(root: Path) -> list[str]:
-    """Validate markdown reference integrity for a file or directory."""
+def validate_reference_path(root: Path, match: str | None = None) -> list[str]:
+    """Validate markdown reference integrity for a file or directory.
+
+    When ``match`` is given, only issues whose formatted text contains that
+    substring are returned. This lets callers scope the scan to one concern
+    (e.g. ``dispositions`` for the disposition-ledger references) instead of
+    the whole documentation surface.
+    """
 
     issues: list[str] = []
     for file_path in _iter_markdown_files(root):
@@ -311,6 +325,12 @@ def validate_reference_path(root: Path) -> list[str]:
             if key in seen:
                 continue
             seen.add(key)
+            # Match against the issue text (which embeds the offending token),
+            # NOT the formatted block — the file path can contain the substring
+            # incidentally (e.g. a skill named *-dispositions) and would leak
+            # unrelated findings through the filter.
+            if match is not None and match not in issue.issue:
+                continue
             issues.append(_format_issue(issue))
     return issues
 
@@ -318,6 +338,11 @@ def validate_reference_path(root: Path) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate markdown reference integrity")
     parser.add_argument("--path", required=True, help="Markdown file or directory to validate")
+    parser.add_argument(
+        "--match",
+        default=None,
+        help="Only report issues whose text contains this substring (e.g. 'dispositions').",
+    )
     args = parser.parse_args(argv)
 
     target = Path(args.path)
@@ -328,7 +353,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Error: path not found: {target}")
         return 1
 
-    issues = validate_reference_path(target)
+    issues = validate_reference_path(target, match=args.match)
     if issues:
         print(f"FAIL ({len(issues)} issues)\n")
         print("\n\n".join(issues))

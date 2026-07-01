@@ -103,6 +103,62 @@ def test_flags_legacy_alias_on_active_surface_but_allows_archived_surface(tmp_pa
     assert archived_issues == []
 
 
+def test_flags_legacy_disposition_hyphen_alias(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    doc = _write(
+        root / ".claude" / "skills" / "s" / "SKILL.md",
+        "Read `docs/health/dispositions-open.md` for open rows.\n",
+    )
+
+    _MOD.REPO_ROOT = root
+    issues = validate_reference_path(doc)
+
+    assert any("reference-legacy-alias" in issue for issue in issues)
+    assert any("dispositions-open.md" in issue for issue in issues)
+
+
+def test_match_filters_on_issue_text_not_file_path(tmp_path: Path) -> None:
+    # File name contains "dispositions"; the broken ref does NOT. The --match
+    # filter must key off the issue token, not the incidental path substring.
+    root = tmp_path / "repo"
+    doc = _write(
+        root / ".claude" / "skills" / "record-plugin-dispositions" / "SKILL.md",
+        "See knowledge/missing.md for details.\n",
+    )
+
+    _MOD.REPO_ROOT = root
+    unscoped = validate_reference_path(doc)
+    scoped = validate_reference_path(doc, match="dispositions")
+
+    assert any("knowledge/missing.md" in issue for issue in unscoped)
+    assert scoped == []
+
+
+def test_skips_shell_template_placeholder_path(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    doc = _write(
+        root / ".claude" / "skills" / "s" / "SKILL.md",
+        "Shard: `docs/health/dispositions_events/${YEAR}/${YEAR}-${MONTH}.jsonl`.\n",
+    )
+
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_bare_knowledge_ref_resolves_from_non_knowledge_dir(tmp_path: Path) -> None:
+    # A skill (outside a knowledge/ dir) citing a bare knowledge/X token should
+    # resolve against the canonical knowledge roots, not be flagged dead.
+    root = tmp_path / "repo"
+    _write(root / ".claude" / "knowledge" / "contract.md", "# contract\n")
+    doc = _write(
+        root / ".claude" / "skills" / "s" / "SKILL.md",
+        "Follows `knowledge/contract.md`.\n",
+    )
+
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
 def test_direct_script_runs_with_repo_relative_path() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)

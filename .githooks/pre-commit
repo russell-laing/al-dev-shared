@@ -56,6 +56,35 @@ python3 scripts/check_ledger_staleness.py --staged \
   || echo "WARN: ledger staleness check failed to run (non-blocking)" >&2
 echo "pre-commit: ledger check complete"
 
+echo "pre-commit: checking disposition-ledger path drift..."
+python3 scripts/check_ledger_path_drift.py
+echo "pre-commit: ledger path-drift check complete"
+
+echo "pre-commit: scanning staged surface markdown for broken ledger references..."
+staged_ref_md=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && staged_ref_md+=("$line")
+done < <(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^(\.claude|profile-al-dev-shared)/.*\.md$' || true)
+if [ ${#staged_ref_md[@]} -gt 0 ]; then
+  ref_issues=0
+  for f in "${staged_ref_md[@]}"; do
+    [ -f "$f" ] || continue
+    # Scoped to disposition-ledger references only — the corruption class this
+    # gate protects. The broader documentation-reference backlog is out of
+    # scope here; use /audit-disposition-ledger for a full ledger sweep.
+    if ! python3 scripts/validate_reference_integrity.py --path "$f" --match dispositions >/dev/null 2>&1; then
+      python3 scripts/validate_reference_integrity.py --path "$f" --match dispositions >&2 || true
+      ref_issues=$((ref_issues + 1))
+    fi
+  done
+  if [ "$ref_issues" -gt 0 ]; then
+    echo "WARN: ${ref_issues} staged file(s) reference a renamed/deleted ledger view (non-blocking)." >&2
+    echo "  Fix the paths above (underscore spelling) before they silently disable a gate." >&2
+  fi
+fi
+echo "pre-commit: ledger reference scan complete"
+
 echo "pre-commit: validating health-loop state breadcrumb..."
 python3 scripts/validate_health_loop_state.py --staged
 

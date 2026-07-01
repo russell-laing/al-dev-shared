@@ -108,6 +108,14 @@ _LEGACY_REFERENCE_ALIASES = {
     "legacy_artifact.prefixed_plan": (".dev/*-al-dev-plan-solution-plan.md",),
     "legacy_artifact.prefixed_review": (".dev/*-al-dev-develop-code-review.md",),
     "legacy_artifact.prefixed_lint": (".dev/*-al-dev-lint-lint-report.md",),
+    # Pre-2026-07-02 hyphen spellings of the generated disposition-ledger views.
+    # The store now writes underscore names (see paths.py); these hyphen forms
+    # are deleted on disk, so any surviving reference is a drift bug. Listing
+    # them here upgrades the diagnostic from generic dead-path to a clear
+    # legacy-alias fix hint.
+    "legacy_artifact.dispositions_open": ("docs/health/dispositions-open.md",),
+    "legacy_artifact.dispositions_current": ("docs/health/dispositions-current.md",),
+    "legacy_artifact.dispositions_index": ("docs/health/dispositions-index.json",),
 }
 
 
