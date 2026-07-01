@@ -167,8 +167,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     _INDEX_DEFAULT = dispositions_index_path()
 
     pm = sub.add_parser("match", help="Classify findings against the disposition ledger.")
-    pm.add_argument("findings", type=Path, help="Path to health findings file (e.g., docs/health/2026-07-01-plugin-health.md)")
-    pm.add_argument("ledger", type=Path, help="Path to disposition ledger file (e.g., docs/health/dispositions-open.md)")
+    pm.add_argument("findings", type=Path, help="Findings file containing health-audit findings (FINDINGS SOURCE)")
+    pm.add_argument("ledger", type=Path, help="Disposition ledger file for recording decisions (LEDGER DEST)")
     pm.add_argument("--events-root", type=Path, default=_EVENTS_DEFAULT)
 
     ap = sub.add_parser(
