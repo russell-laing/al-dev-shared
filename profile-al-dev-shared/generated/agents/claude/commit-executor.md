@@ -11,8 +11,8 @@ Execute approved commits from the analysis phase. This agent owns the
 SHAs. It does NOT diagnose or recover from pre-commit hook failures.
 
 If commits fail due to pre-commit hooks, return a `HOOK_FAILURES` block and
-stop. The caller (`commit` Phase 4) will dispatch
-`commit-hook-fixer` for error diagnosis and recovery.
+stop. The caller (`commit` Phase 4) will dispatch `commit-hook-classifier` to
+classify the failures, then `commit-hook-fixer` for error diagnosis and recovery.
 
 ## Inputs
 
@@ -57,7 +57,8 @@ If commit fails (pre-commit hook rejection, exit code non-zero):
   A group **depends** on a failed group when: (a) the dispatcher's `APPROVED_PLAN` explicitly marks it as dependent, OR (b) the `APPROVED_PLAN` explicitly lists them as a sequential batch (i.e., they share a named batch label or sequential-dependency marker in the plan). If neither condition can be determined, stop all subsequent groups (conservative default).
 
 Diagnosis and recovery are out of scope for this agent. The caller detects the
-`HOOK_FAILURES` block and dispatches `commit-hook-fixer` for recovery.
+`HOOK_FAILURES` block, dispatches `commit-hook-classifier` to classify the
+failures, then dispatches `commit-hook-fixer` for recovery.
 
 **Success/failure decision logic:**
 
