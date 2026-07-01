@@ -1,17 +1,17 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 5,
+      "current_rows": 6,
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 61,
+      "current_rows": 67,
       "open_accepted": 0
     }
   },
   "by_disposition": {
     "declined": 36,
-    "fixed": 30
+    "fixed": 37
   },
   "by_surface": {
     "plugin": {
@@ -19,14 +19,14 @@
       "open_accepted": 0
     },
     "tooling": {
-      "current_rows": 16,
+      "current_rows": 23,
       "open_accepted": 0
     }
   },
-  "current_rows": 66,
-  "generated_at": "2026-07-01T04:14:37.690269+00:00",
+  "current_rows": 73,
+  "generated_at": "2026-07-01T04:47:44.519009+00:00",
   "integrity_warnings": 0,
   "open_accepted": 0,
-  "source_hash": "5c6ac6510d3e8230fcfb9b6d26720a7487ad90d5a9999c889153fb63e326a8d6",
-  "total_events": 132
+  "source_hash": "bb15affa57e343f32dd1f049685dbce246296f15a3d4eede248803c6ca64b309",
+  "total_events": 146
 }

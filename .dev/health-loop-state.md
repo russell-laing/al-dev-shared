@@ -4,6 +4,15 @@ next_command: none
 next_inputs: []
 fresh_session_recommended: false
 note: |
-  Loop closed; ledger staleness check passed. 9 substantiated findings implemented, 9 refuted findings declined.
-  Run `/sync-map-documentation` next to regenerate agent/skill documentation maps (profile-al-dev-shared/skills/plan and document were edited).
-  Then run `/audit-plugin-health` to start the next health loop.
+  Loop closed; all 7 plan tasks executed and verified, ledger events written fixed.
+  
+  Closure summary:
+  - disp_20260701_000133 (disposition-ledger-filename-rename-drift) → fixed
+  - disp_20260701_000134 (dispositions-open-empty-view-confusion) → fixed
+  - disp_20260701_000135 (plan-plugin-findings-match-cli-mismatch) → fixed
+  - disp_20260701_000136 (dossier-ledger-name-ambiguity) → fixed
+  - disp_20260701_000137 (test-environment-pytest-missing) → fixed
+  - disp_20260701_000138 (ask-user-question-opt-limit) → fixed
+  - disp_20260701_000139 (dossier-summary-divergence) → fixed
+  
+  Run `/audit-plugin-health` to start the next health loop if new changes have been made to the shared plugin surface.

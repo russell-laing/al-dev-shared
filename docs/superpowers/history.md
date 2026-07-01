@@ -25,6 +25,13 @@ Current source of truth: active implementation guidance lives in the current sha
 - Status: implemented
 - Summary: 2026-07-01 | plugin-map-quality | implemented; rows closed: [disp_20260701_000009, disp_20260701_000010, disp_20260701_000011, disp_20260701_000025, disp_20260701_000027, disp_20260701_000028, disp_20260701_000030, disp_20260701_000031, disp_20260701_000035, disp_20260701_000036, disp_20260701_000041, disp_20260701_000042]
 
+### Tooling Friction Health Findings
+
+- Path: `docs/superpowers/plans/archived/2026-07-01-tooling-friction-health.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-01 | tooling-friction-health | implemented; rows closed: [disp_20260701_000133, disp_20260701_000134, disp_20260701_000135, disp_20260701_000136, disp_20260701_000137, disp_20260701_000138, disp_20260701_000139]
+
 ## 2026-06-30
 
 ### Legacy Superpowers Artifact Retirement
