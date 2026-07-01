@@ -10,6 +10,11 @@ tools: ["read"]
 Receives a lint rule and code context; determines whether the fix is safe to apply
 automatically or requires manual judgment.
 
+## Inputs
+
+- Lint rule definition (rule ID, message, severity)
+- Code snippet the rule fired on
+
 ## Decision Framework
 
 1. **Safe auto-fix:** Rule is deterministic, fix is fully reversible (whitespace,
@@ -25,7 +30,7 @@ automatically or requires manual judgment.
 - Return classification + confidence level
 - If judgment-required, explain why (behavioral impact, missing context, etc.)
 
-## Output Format
+## Outputs
 
 ```json
 {
