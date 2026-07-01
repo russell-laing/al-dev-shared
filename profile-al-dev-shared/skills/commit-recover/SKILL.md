@@ -1,6 +1,6 @@
 ---
 name: commit-recover
-description: Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns.
+description: Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns from `.dev/learnings.md`, which is read for known patterns and updated with recovery records after each run.
 argument-hint: "[--auto-fix] [--file=path]"
 ---
 
@@ -60,7 +60,7 @@ Prompt:
    Baseline lines: [original line count from log]
    Current lines: [wc -l output]
    Git history (last 3-5 commits for this file):
-$(git log --oneline -n 5 -- <file path from log>)
+$(git log --oneline -n 5 -- [file path from log])
    Known patterns from .dev/learnings.md: [learnings content]
 
    Return:
