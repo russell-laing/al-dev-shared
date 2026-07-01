@@ -1,16 +1,16 @@
 # Ledger Closure Protocol
 
 > See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions-events/` is the
-> append-only source of truth; `docs/health/dispositions-open.md` and
-> `docs/health/dispositions-index.json` are generated read artifacts.
+> authoritative storage layout. `docs/health/dispositions_events/` is the
+> append-only source of truth; `docs/health/dispositions_open.md` and
+> `docs/health/dispositions_index.json` are generated read artifacts.
 > Never append rows directly to `docs/health/dispositions.md`.
 
 Use this protocol when a fix session resolves an `accepted` health finding.
 
 ## Why closure matters
 
-`docs/health/dispositions-open.md` is the small generated view of open accepted
+`docs/health/dispositions_open.md` is the small generated view of open accepted
 events. A code change without same-session ledger closure leaves the event open
 and causes later sweeps to re-rank fixed work.
 
@@ -26,8 +26,8 @@ Do not use Markdown table row numbers or `legacy_id` values for new closures.
 1. Append a new `fixed` event via `scripts/health_disposition_store.py append_event`,
    setting `closes_event_ids` to list the accepted `event_id` it resolves.
 2. Run `scripts/health_disposition_store.py regenerate` after every append to
-   update `dispositions-open.md`, `dispositions-current.md`, and
-   `dispositions-index.json`.
+   update `dispositions_open.md`, `dispositions_current.md`, and
+   `dispositions_index.json`.
 3. Keep closure auditability in the appended event and its
    `closes_event_ids`; do not rely on extra commit-message identifiers.
 

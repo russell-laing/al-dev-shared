@@ -13,9 +13,9 @@ Every delegated maintainer task ships a scope pack in its dispatch prompt:
 - **Allowed paths:** the exact files/globs the task may create or modify.
 - **Do-not-touch list:** surfaces the task must never write outside Allowed
   paths; manual ledger edits are never allowed. Disposition store artifacts
-  (`docs/health/dispositions-events/`, `docs/health/dispositions-open.md`,
-  `docs/health/dispositions-current.md`,
-  `docs/health/dispositions-index.json`, and the generated compatibility view
+  (`docs/health/dispositions_events/`, `docs/health/dispositions_open.md`,
+  `docs/health/dispositions_current.md`,
+  `docs/health/dispositions_index.json`, and the generated compatibility view
   `docs/health/dispositions.md`) are protected surfaces and may only be
   modified when they are explicitly included in Allowed paths for a close-back
   flow. Validator scripts remain out of scope unless explicitly listed.

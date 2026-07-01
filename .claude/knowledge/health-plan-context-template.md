@@ -34,7 +34,7 @@ Phase 3 of `plan-plugin-findings`. Pass all items in this list as context to
     - disp_20260619_000002
   ```
 
-  Use `closes_event_ids` from `docs/health/dispositions-open.md` or targeted store
+  Use `closes_event_ids` from `docs/health/dispositions_open.md` or targeted store
   queries; do not use Markdown row numbers or legacy IDs.
 
   Place this block **inside the verification block**, not in the task title or

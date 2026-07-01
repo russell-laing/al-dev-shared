@@ -19,10 +19,10 @@ workflow:
   inputs:
     - docs/superpowers/plans/<date>-<topic>-commentary.md
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions-open.md
+    - docs/health/dispositions_open.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
+    - docs/health/dispositions_events/<year>/<year>-<month>.jsonl
   next: [implement-plugin-health]
 ---
 
@@ -53,7 +53,7 @@ This skill follows `../../knowledge/phase-proof-contract.md` — emit a phase-pr
 ## Phase 1 — Read inputs and classify
 
 1. **Read all three inputs in full:** the review document, the target plan, and
-   `docs/health/dispositions-open.md` (the accepted events the plan covers and
+   `docs/health/dispositions_open.md` (the accepted events the plan covers and
    their `event_id` values used in `closes_event_ids:`).
 2. **Classify every finding** (see the decision below) into in-scope vs
    out-of-scope. List them before editing anything.

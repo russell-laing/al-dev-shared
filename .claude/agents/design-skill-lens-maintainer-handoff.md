@@ -35,7 +35,7 @@ list is from the distributed surface, return the empty findings block
 Read every file path provided in `file_list` before scoring. For each skill,
 extract from the **instruction prose** (numbered/bulleted steps; exclude YAML
 frontmatter and fenced example blocks) the maintainer artifacts it **writes**
-(e.g. `docs/health/<date>-<surface>-health.md`, `dispositions-open.md`, a
+(e.g. `docs/health/<date>-<surface>-health.md`, `dispositions_open.md`, a
 `<result_dir>/` artifact) and the artifacts it **reads**, plus any explicit
 next-step pointer ("run `/report-plugin-health` next", "consumed by
 `/plan-plugin-findings`").
@@ -44,7 +44,7 @@ next-step pointer ("run `/report-plugin-health` next", "consumed by
 
 1. **Orphaned maintainer artifact** — an artifact written by one maintainer skill
    that no other maintainer skill in `file_list` reads. To decide "never read":
-   match the bare artifact name (e.g. `dispositions-open.md`) in the prose body
+   match the bare artifact name (e.g. `dispositions_open.md`) in the prose body
    of the *other* paths in `file_list`; zero matches = orphaned. A match only
    inside a fenced example block or comment does not count.
 2. **Broken next-step link** — a skill names a successor step or skill that does

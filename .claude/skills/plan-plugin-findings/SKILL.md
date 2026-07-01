@@ -11,7 +11,7 @@ workflow:
   repeatable: true
   inputs:
     - .dev/plan-plugin-findings-verify-checkpoint.jsonl
-    - docs/health/dispositions-open.md
+    - docs/health/dispositions_open.md
     - .dev/health-loop-state.md
   outputs:
     - docs/superpowers/plans/<date>-<topic>.md
@@ -170,7 +170,7 @@ steps below.
    Character count, not bytes — one emoji counts as one character.
 
 3. **Coverage reconciliation (mandatory gate).** Every accepted event in
-   `docs/health/dispositions-open.md` must be resolved **exactly once** across
+   `docs/health/dispositions_open.md` must be resolved **exactly once** across
    `(plan-task closes_event_ids)` ∪ `(decline/grandfather ledger tasks)` — none
    missing, none in both. Compute it explicitly and state the arithmetic in the
    handoff summary (e.g. "15 plan events + 1 grandfathered + 3 declined = 19
@@ -184,7 +184,7 @@ steps below.
    - `stage_completed: plan-plugin-findings`
    - `completed_at:` today's ISO date
    - `next_command: /implement-plugin-health --plan <plan-path>`
-   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions-open.md`
+   - `next_inputs:` the `<plan-path>` plus `docs/health/dispositions_open.md`
    - `fresh_session_recommended: true`
    - `note:` run `/implement-plugin-health` to execute AND close the ledger; do
      NOT use the writing-plans Subagent-Driven/Inline options — they skip

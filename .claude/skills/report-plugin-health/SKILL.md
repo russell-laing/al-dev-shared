@@ -16,7 +16,7 @@ workflow:
   inputs:
     - docs/health/<date>-<surface>-findings.md
     - docs/health/<date>-<surface>-friction-findings.md
-    - docs/health/dispositions-open.md
+    - docs/health/dispositions_open.md
     - .dev/health-loop-state.md
   outputs:
     - docs/health/<date>-<surface>-health.md
@@ -296,7 +296,7 @@ Write `.dev/health-loop-state.md` (schema:
 - `completed_at:` today's ISO date
 - `next_command: /record-plugin-dispositions`
 - `next_inputs:` the dossier path(s) just written, plus
-  `docs/health/dispositions-index.json` and `docs/health/dispositions-open.md`
+  `docs/health/dispositions_index.json` and `docs/health/dispositions_open.md`
 - `fresh_session_recommended: false`
 - `note:` recording dispositions is what stops the next sweep from re-ranking
   the same findings as new.

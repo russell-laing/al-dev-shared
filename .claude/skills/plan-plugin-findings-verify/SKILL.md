@@ -11,8 +11,8 @@ workflow:
   invoked-by: user
   repeatable: true
   inputs:
-    - docs/health/dispositions-open.md
-    - docs/health/dispositions-index.json
+    - docs/health/dispositions_open.md
+    - docs/health/dispositions_index.json
     - docs/health/<date>-<surface>-health.md
     - profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md
     - .dev/health-loop-state.md
@@ -98,7 +98,7 @@ Read `.dev/health-loop-state.md` if it exists (schema: `../../knowledge/health-l
 
 Also read `docs/superpowers/history.md` if it exists. Scan the last five lines matching the format `<date> | <topic> | implemented; rows closed: [...]` (the tail-appended history entries; not the older `- Summary:` bullet lines). For a single-dimension run, warn if any matched line's topic contains both the current surface keyword (e.g. `tooling` or `plugin`) and the current dimension keyword (e.g. `design` or `quality`). For a `--dimension all` run, warn if the topic contains the current surface keyword and any concrete dimension keyword (`design`, `quality`, or `naming`). Emit:
 
-> Note: `<surface>/<dimension>` findings were recently implemented on `<date>` (plan: `<topic>`). Verify that `docs/health/dispositions-open.md` and `docs/health/dispositions-index.json` reflect those closures before planning again.
+> Note: `<surface>/<dimension>` findings were recently implemented on `<date>` (plan: `<topic>`). Verify that `docs/health/dispositions_open.md` and `docs/health/dispositions_index.json` reflect those closures before planning again.
 
 This is an informational check — do not block planning.
 
@@ -147,16 +147,16 @@ Then consult the disposition ledger using the deterministic matcher. Locate the 
 ```bash
 python3 scripts/health_disposition_store.py match \
   docs/health/YYYY-MM-DD-<surface>-findings.md \
-  docs/health/dispositions-open.md
+  docs/health/dispositions_open.md
 ```
 
-The matcher returns a **high-precision candidate shortlist** classifying each finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify` candidate against the cited ledger row before acting. Read the specific flagged events from the JSONL event store by event ID (e.g., `grep -r '"event_id": "disp_YYYYMMDD_NNNNNN"' docs/health/dispositions-events/`) — do not read the full event store or the generated dispositions.md view directly.
+The matcher returns a **high-precision candidate shortlist** classifying each finding as `suppress`, `verify`, or `keep`. Confirm each `suppress`/`verify` candidate against the cited ledger row before acting. Read the specific flagged events from the JSONL event store by event ID (e.g., `grep -r '"event_id": "disp_YYYYMMDD_NNNNNN"' docs/health/dispositions_events/`) — do not read the full event store or the generated dispositions.md view directly.
 
-Read `docs/health/dispositions-index.json` first. If `open_accepted` is zero, stop: there are no accepted findings to verify. If it is nonzero, read `docs/health/dispositions-open.md` and carry only the relevant `event_id` values as close-back IDs into the checkpoint.
+Read `docs/health/dispositions_index.json` first. If `open_accepted` is zero, stop: there are no accepted findings to verify. If it is nonzero, read `docs/health/dispositions_open.md` and carry only the relevant `event_id` values as close-back IDs into the checkpoint.
 
-- **`keep` with `accepted` status:** the primary input — keep it. **Capture the `event_id`** from `docs/health/dispositions-open.md` for each accepted event. Carry this `event_id` forward to the checkpoint so each verified finding can record which event it closes.
-- **`suppress`** (declined/grandfathered match): before skipping, check `docs/health/dispositions-open.md` for an `accepted`-status row whose `(surface, dimension, object)` triple matches the candidate. If such a row exists, override the verdict to `keep` and use that row's `event_id` as the close-back ID (the finding was re-accepted after the prior decline/grandfather). If no override row exists, skip (note the skip count).
-- **`verify`** (fixed match): apply the same override check — if a later `accepted` row for the same `(surface, dimension, object)` triple exists in `dispositions-open.md`, override to `keep` and use its `event_id`. If no override, skip (note the skip count).
+- **`keep` with `accepted` status:** the primary input — keep it. **Capture the `event_id`** from `docs/health/dispositions_open.md` for each accepted event. Carry this `event_id` forward to the checkpoint so each verified finding can record which event it closes.
+- **`suppress`** (declined/grandfathered match): before skipping, check `docs/health/dispositions_open.md` for an `accepted`-status row whose `(surface, dimension, object)` triple matches the candidate. If such a row exists, override the verdict to `keep` and use that row's `event_id` as the close-back ID (the finding was re-accepted after the prior decline/grandfather). If no override row exists, skip (note the skip count).
+- **`verify`** (fixed match): apply the same override check — if a later `accepted` row for the same `(surface, dimension, object)` triple exists in `dispositions_open.md`, override to `keep` and use its `event_id`. If no override, skip (note the skip count).
 - **No matched event** (`keep` with no ledger entry): undispositioned — list them and ask the user whether to include them or record dispositions first via `/record-plugin-dispositions`.
 
 Apply filters in this order:
@@ -333,7 +333,7 @@ completed_at: 2026-07-01
 next_command: /plan-plugin-findings
 next_inputs:
   - .dev/plan-plugin-findings-verify-checkpoint.jsonl
-  - docs/health/dispositions-open.md
+  - docs/health/dispositions_open.md
 fresh_session_recommended: false
 note: Phase 1-3 verification complete. Findings verified and checkpoint written. Run /plan-plugin-findings to execute Phase 4-5 (plan writing and implementation handoff).
 ```

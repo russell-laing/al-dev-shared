@@ -6,18 +6,18 @@ Keep the human-facing ledger small without losing append-only provenance.
 
 ## Canonical Artifacts
 
-- `docs/health/dispositions-events/YYYY/YYYY-MM.jsonl`
+- `docs/health/dispositions_events/YYYY/YYYY-MM.jsonl`
   - append-only event log; one JSON object per disposition event
   - **Year-partitioned:** the top level contains `YYYY/` subdirectories, not JSONL files
     directly. Format-reference lookups must use
-    `find docs/health/dispositions-events/ -name "*.jsonl"` (or
-    `ls docs/health/dispositions-events/YYYY/` once the year is known);
-    `ls docs/health/dispositions-events/ | tail -1` returns a year directory, not a JSONL file.
-- `docs/health/dispositions-open.md`
+    `find docs/health/dispositions_events/ -name "*.jsonl"` (or
+    `ls docs/health/dispositions_events/YYYY/` once the year is known);
+    `ls docs/health/dispositions_events/ | tail -1` returns a year directory, not a JSONL file.
+- `docs/health/dispositions_open.md`
   - generated small read for open accepted events; Claude reads this by default
-- `docs/health/dispositions-current.md`
+- `docs/health/dispositions_current.md`
   - generated human current-state view
-- `docs/health/dispositions-index.json`
+- `docs/health/dispositions_index.json`
   - generated totals, source hash, open counts, integrity counts, and breakdowns
 - `docs/health/dispositions.md`
   - temporary compatibility view during rollout; generated, not hand-edited
