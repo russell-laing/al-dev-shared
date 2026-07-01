@@ -25,6 +25,13 @@ Current source of truth: active implementation guidance lives in the current sha
 - Status: implemented
 - Summary: 2026-07-01 | plugin-map-commit-compile-health | implemented; rows closed: [disp_20260701_000001, disp_20260701_000002, disp_20260701_000003, disp_20260701_000004]
 
+### Tooling Health Verify Findings
+
+- Path: `docs/superpowers/plans/archived/2026-07-02-00-20-50-tooling-verify-health-finding.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-02 | tooling-verify-health-finding | implemented; rows closed: [disp_20260701_000223, disp_20260701_000224, disp_20260701_000225, disp_20260701_000227, disp_20260701_000235, disp_20260701_000238, disp_20260701_000239, disp_20260701_000247]
+
 ### Plugin Map Quality Fixes
 
 - Path: `docs/superpowers/plans/archived/2026-07-01-plugin-map-quality-fixes.md`
