@@ -115,9 +115,19 @@ regression — count it as **Medium** severity and flag as "verdict missing".
 
 Note any "Failed lenses" listed at the foot of the file.
 
+**Verdict-missing handling:** Findings without a recorded verdict (from cases where
+verification agent returned null or timed out) are excluded from the summary table
+and reported only in the 'Failed lenses' section at the end of the dossier. They do not
+feed into finding counts or ranked severity ordering. See Phase 3 'Failed lenses' section
+(line 149) for the exact formatting and line-number citations.
+
 ## Phase 2 — Filter and verify findings
 
 Full procedures are in `.claude/knowledge/report-input-gates.md`.
+
+**Disposition suppression:** Findings previously declined or grandfathered by the user
+in the disposition ledger are filtered out before ranking and reporting. These represent
+user decisions to accept or defer the finding, so they should not reappear.
 
 **Gate order (token efficiency):** Execute the Phase 2 gates in this order —
 **(1) disposition suppression** (the deterministic `health_disposition_store.py
