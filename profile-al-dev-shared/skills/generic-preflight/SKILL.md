@@ -1,36 +1,69 @@
 ---
 name: generic-preflight
 description: >-
-  Parameterized preflight context gathering. Accepts a `context-type` argument
-  (plan | review) and writes the corresponding context artifact.
-argument-hint: "[--context-type plan|review]"
+  Parameterized preflight skill for plan and review phases. Handles resume
+  logic, context gathering, and state checkpointing for both /plan and
+  /review-develop flows via context-type argument.
+argument-hint: "[context-type: planning|review]"
 ---
 
-# Generic Preflight
+# Generic Preflight Skill
 
-Parameterized context gathering for multi-context workflows. Invoked by skills that need standardized resume-checking and artifact writing without duplication.
+Shared Phase 0 resume-check + context-gathering logic for `/plan-preflight` and
+`/review-develop-preflight`. Reduces duplication by parameterizing the context
+type (planning vs review).
 
-## Supported context types
+## Phase 0: Resume Check & Initialization
 
-- **plan** → writes `.dev/plan-context.md`
-- **review** → writes `.dev/review-context.md`
+Check `.dev/<context-type>-preflight-checkpoint.md` for resume capability.
 
-## Phase 0: Resume check
+If exists, read checkpoint and present resume option:
 
-Check `.dev/progress.md` for prior incomplete work:
+```text
+Resume previous work on [context]? Run:
+  /generic-preflight --resume --context-type <type>
 
-- If exists: offer resume or restart options
-- If absent: proceed to Phase 1
+```
 
-## Phase 1: Gather context
+If not exists, proceed to Phase 1 (context gathering).
 
-Based on `context-type`:
+## Phase 1: Gather Planning Context (context-type: planning)
 
-- **plan**: Read the latest plan artifact and prepare edit context
-- **review**: Read the latest code changes and prepare review context
+For `context-type: planning`, collect:
 
-Write appropriate context file.
+1. Spec file (if exists in `.dev/spec-*.md`)
+2. Prior plan artifacts (if any)
+3. Current branch state (`git log`, `git diff`)
+4. Test status (if applicable)
 
-## Phase 2: Report
+Write to `.dev/planning-preflight-context.md`.
 
-Return the context artifact path to the calling skill.
+## Phase 2: Gather Review Context (context-type: review)
+
+For `context-type: review`, collect:
+
+1. Current branch state (`git log`, `git diff`)
+2. Test results (run test suite if applicable)
+3. Linter status (if applicable)
+4. Code review checkpoint (prior findings if any)
+
+Write to `.dev/review-preflight-context.md`.
+
+## Phase 3: Emit Preflight Checkpoint
+
+Write `.dev/<context-type>-preflight-checkpoint.md` with:
+
+- Timestamp
+- Context file path
+- Ready/blocked status
+- Next command (downstream skill to invoke)
+
+## Implementation Notes
+
+This skill is invoked by:
+
+- `/plan` (context-type: planning)
+- `/review-develop` (context-type: review)
+
+Each caller receives the context in their expected output file. The skill handles
+both paths via the `context-type` argument.
