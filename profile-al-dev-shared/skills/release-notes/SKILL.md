@@ -75,6 +75,29 @@ Prompt:
    AMBIGUOUS: <change title(s)> (or NONE)"
 ```
 
+**Worked example** (dispatch with real-looking substituted values):
+
+```text
+Agent tool:
+  agent: al-dev-shared:release-notes-writer
+  description: "Generate release notes v2.1.0: a1b2c3d..e4f5a6b"
+
+Prompt:
+  "Generate release notes from the git diff between two commits.
+
+   START_HASH: a1b2c3d
+   END_HASH: e4f5a6b
+   RELEASE_TYPE: prod
+   VERSION: v2.1.0
+
+   PROJECT_CONTEXT:
+   App: Kembla-AU. Sales order posting extensions.
+
+   Follow the instructions in your agent definition exactly.
+   Return output in this format:
+   ..."
+```
+
 ---
 
 ## Phase 3: Present to User
