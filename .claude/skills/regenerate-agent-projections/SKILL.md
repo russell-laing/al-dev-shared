@@ -13,7 +13,6 @@ workflow:
   outputs:
     - profile-al-dev-shared/generated/agents/
   next: [validate-plugin-neutrality]
-argument-hint: "[--agents | --skills]"
 ---
 
 # Projection Sync Skill
