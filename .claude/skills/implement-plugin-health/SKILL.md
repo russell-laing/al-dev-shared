@@ -389,6 +389,8 @@ new `fixed` event with `closes_event_ids` containing that `event_id`, then run
 
 Work through one Resolve → Verify → Append pass before moving to the next event_id:
 
+**Note:** `dispositions-open.md` may appear empty if accepted events have not yet been synced to the markdown history shard. This is expected behavior (file is gitignored; only live-accepted rows appear). If the file appears empty but the plan lists `closes_event_ids:`, proceed to step 1.b (JSONL store lookup) to locate the events.
+
 1. **Resolve** — `closes_event_ids:` lists `event_id` values. Locate the
    event and extract its surface, dimension, object, and finding verbatim
    using this two-step lookup:
