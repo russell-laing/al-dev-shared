@@ -136,6 +136,12 @@ systemic finding (e.g. "Write-before-Read across N sessions"). Surface-classify
 it by where the erroring skill/tool lives; assign dimension `quality` and a
 severity reflecting how often it blocked work.
 
+Severity grading rule:
+
+- **High** if the friction pattern appears in ≥3 sessions
+- **Medium** if appearing in ≥2 sessions
+- **Low** if single-session pattern (one-time incident)
+
 ## Phase 3 — Write findings files, manifest, breadcrumb
 
 1. **Findings files.** For each surface that has at least one finding, write
