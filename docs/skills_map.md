@@ -34,7 +34,6 @@ flowchart TD
     skill_lint[lint]
     skill_perf[perf]
     skill_plan[plan]
-    skill_plan_preflight[plan-preflight]
     skill_release_notes[release-notes]
     skill_review_develop[review-develop]
     skill_support_reply[support-reply]
@@ -52,7 +51,6 @@ flowchart TD
     skill_investigate -.-> skill_plan
     skill_perf -.-> |perf-analysis.md| skill_plan
     skill_plan --> skill_develop_orchestrate
-    skill_plan_preflight -.-> |preflight-context.md| skill_plan
     skill_review_develop --> skill_commit
     skill_ticket --> skill_support_reply
 
@@ -68,7 +66,6 @@ flowchart TD
     class skill_lint skillNode
     class skill_perf skillNode
     class skill_plan skillNode
-    class skill_plan_preflight skillNode
     class skill_release_notes skillNode
     class skill_review_develop skillNode
     class skill_support_reply skillNode
@@ -113,7 +110,6 @@ flowchart LR
     Phase5["Phase 5"]
     skill_interview[interview]
     skill_plan[plan]
-    skill_support_reply[support-reply]
     agent_ticket_context_writer[ticket-context-writer]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
@@ -128,7 +124,6 @@ flowchart LR
     skill_ticket --> Phase5
     skill_ticket -.-> skill_interview
     skill_ticket -.-> skill_plan
-    skill_ticket -.-> skill_support_reply
     skill_ticket --> agent_ticket_context_writer
     skill_ticket --> knowledge_artifact_contracts_md
     skill_ticket --> knowledge_ticket_agent_invocation_pattern_md
@@ -144,7 +139,6 @@ flowchart LR
     class Phase5 phaseNode
     class skill_interview skillNode
     class skill_plan skillNode
-    class skill_support_reply skillNode
     class agent_ticket_context_writer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
@@ -176,7 +170,6 @@ flowchart LR
     agent_support_reply_drafter[support-reply-drafter]
     agent_support_researcher[support-researcher]
     artifact_2026_06_01_ticket_ticket_context_md[.dev/2026-06-01-ticket-ticket-context.md]
-    artifact_YYYY_MM_DD_ticket_reply_md[.dev/YYYY-MM-DD-ticket-reply.md]
 
     skill_support_reply --> Phase0
     skill_support_reply --> Phase1
@@ -187,7 +180,6 @@ flowchart LR
     skill_support_reply --> agent_support_reply_drafter
     skill_support_reply --> agent_support_researcher
     skill_support_reply --> artifact_2026_06_01_ticket_ticket_context_md
-    skill_support_reply --> artifact_YYYY_MM_DD_ticket_reply_md
 
     class skill_support_reply skillNode
     class Phase0 phaseNode
@@ -199,7 +191,6 @@ flowchart LR
     class agent_support_reply_drafter agentNode
     class agent_support_researcher agentNode
     class artifact_2026_06_01_ticket_ticket_context_md artifactNode
-    class artifact_YYYY_MM_DD_ticket_reply_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:support-reply-drafter`, `al-dev-shared:support-researcher`
@@ -224,6 +215,7 @@ flowchart LR
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_investigate_findings_template_md[investigate-findings-template]
+    knowledge_verification_and_planning_md[verification-and-planning]
     knowledge_workflow_resilience_md[workflow-resilience]
     artifact_YYYY_MM_DD_investigate_findings_md[.dev/YYYY-MM-DD-investigate-findings.md]
     artifact_investigate_errors_log[.dev/investigate-errors.log]
@@ -236,6 +228,7 @@ flowchart LR
     skill_investigate --> knowledge_artifact_contracts_md
     skill_investigate --> knowledge_explore_subagent_pattern_md
     skill_investigate --> knowledge_investigate_findings_template_md
+    skill_investigate --> knowledge_verification_and_planning_md
     skill_investigate --> knowledge_workflow_resilience_md
     skill_investigate --> artifact_YYYY_MM_DD_investigate_findings_md
     skill_investigate --> artifact_investigate_errors_log
@@ -249,6 +242,7 @@ flowchart LR
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_investigate_findings_template_md knowledgeNode
+    class knowledge_verification_and_planning_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
     class artifact_YYYY_MM_DD_investigate_findings_md artifactNode
     class artifact_investigate_errors_log artifactNode
@@ -273,6 +267,7 @@ flowchart LR
 
     skill_fix[fix]
     skill_develop_orchestrate[develop-orchestrate]
+    skill_investigate[investigate]
     skill_plan[plan]
     agent_developer_traditional[developer-traditional]
     agent_solution_architect[solution-architect]
@@ -283,9 +278,9 @@ flowchart LR
     knowledge_fix_examples_md[fix-examples]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_scope_expansion_gate_md[scope-expansion-gate]
-    artifact_test_plan_md[.dev/test-plan.md]
 
     skill_fix -.-> skill_develop_orchestrate
+    skill_fix -.-> skill_investigate
     skill_fix -.-> skill_plan
     skill_fix --> agent_developer_traditional
     skill_fix --> agent_solution_architect
@@ -296,10 +291,10 @@ flowchart LR
     skill_fix --> knowledge_fix_examples_md
     skill_fix --> knowledge_intent_preflight_md
     skill_fix --> knowledge_scope_expansion_gate_md
-    skill_fix --> artifact_test_plan_md
 
     class skill_fix skillNode
     class skill_develop_orchestrate skillNode
+    class skill_investigate skillNode
     class skill_plan skillNode
     class agent_developer_traditional agentNode
     class agent_solution_architect agentNode
@@ -310,7 +305,6 @@ flowchart LR
     class knowledge_fix_examples_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode
-    class artifact_test_plan_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:developer-traditional`, `al-dev-shared:solution-architect`
@@ -335,7 +329,8 @@ flowchart LR
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     Phase5["Phase 5"]
-    skill_plan_preflight[plan-preflight]
+    skill_generic_preflight[generic-preflight]
+    skill_plan_final_review[plan-final-review]
     agent_solution_architect[solution-architect]
     knowledge_architect_evaluation_criteria_md[architect-evaluation-criteria]
     knowledge_architect_invocation_patterns_md[architect-invocation-patterns]
@@ -352,7 +347,8 @@ flowchart LR
     skill_plan --> Phase3
     skill_plan --> Phase4
     skill_plan --> Phase5
-    skill_plan -.-> skill_plan_preflight
+    skill_plan -.-> skill_generic_preflight
+    skill_plan -.-> skill_plan_final_review
     skill_plan --> agent_solution_architect
     skill_plan --> knowledge_architect_evaluation_criteria_md
     skill_plan --> knowledge_architect_invocation_patterns_md
@@ -370,7 +366,8 @@ flowchart LR
     class Phase3 phaseNode
     class Phase4 phaseNode
     class Phase5 phaseNode
-    class skill_plan_preflight skillNode
+    class skill_generic_preflight skillNode
+    class skill_plan_final_review skillNode
     class agent_solution_architect agentNode
     class knowledge_architect_evaluation_criteria_md knowledgeNode
     class knowledge_architect_invocation_patterns_md knowledgeNode
@@ -424,68 +421,6 @@ flowchart LR
 ```
 <!-- END GENERATED: skill-drilldown-plan-final-review -->
 
-### /plan-preflight
-
-Preflight context-assembly workflow that `/plan` dispatches before the architect debate. Gathers scope, prior findings, and verified context into `.dev/preflight-context.md`. Phases: 0–4.
-
-<!-- BEGIN GENERATED: skill-drilldown-plan-preflight -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_plan_preflight[plan-preflight]
-    Phase0["Phase 0"]
-    Phase0_5["Phase 0.5"]
-    Phase1["Phase 1"]
-    Phase1_5["Phase 1.5"]
-    knowledge_artifact_contracts_md[artifact-contracts]
-    knowledge_companion_context_ownership_md[companion-context-ownership]
-    knowledge_intent_preflight_md[intent-preflight]
-    knowledge_plan_phase_routing_md[plan-phase-routing]
-    knowledge_preflight_context_schema_md[preflight-context-schema]
-    knowledge_workflow_resilience_md[workflow-resilience]
-    artifact_findings_file_md[.dev/findings-file.md]
-    artifact_preflight_context_md[.dev/preflight-context.md]
-    artifact_progress_md[.dev/progress.md]
-    artifact_project_context_md[.dev/project-context.md]
-
-    skill_plan_preflight --> Phase0
-    skill_plan_preflight --> Phase0_5
-    skill_plan_preflight --> Phase1
-    skill_plan_preflight --> Phase1_5
-    skill_plan_preflight --> knowledge_artifact_contracts_md
-    skill_plan_preflight --> knowledge_companion_context_ownership_md
-    skill_plan_preflight --> knowledge_intent_preflight_md
-    skill_plan_preflight --> knowledge_plan_phase_routing_md
-    skill_plan_preflight --> knowledge_preflight_context_schema_md
-    skill_plan_preflight --> knowledge_workflow_resilience_md
-    skill_plan_preflight --> artifact_findings_file_md
-    skill_plan_preflight --> artifact_preflight_context_md
-    skill_plan_preflight --> artifact_progress_md
-    skill_plan_preflight --> artifact_project_context_md
-
-    class skill_plan_preflight skillNode
-    class Phase0 phaseNode
-    class Phase0_5 phaseNode
-    class Phase1 phaseNode
-    class Phase1_5 phaseNode
-    class knowledge_artifact_contracts_md knowledgeNode
-    class knowledge_companion_context_ownership_md knowledgeNode
-    class knowledge_intent_preflight_md knowledgeNode
-    class knowledge_plan_phase_routing_md knowledgeNode
-    class knowledge_preflight_context_schema_md knowledgeNode
-    class knowledge_workflow_resilience_md knowledgeNode
-    class artifact_findings_file_md artifactNode
-    class artifact_preflight_context_md artifactNode
-    class artifact_progress_md artifactNode
-    class artifact_project_context_md artifactNode
-```
-<!-- END GENERATED: skill-drilldown-plan-preflight -->
-
 ### /plan-with-critics
 
 Generate an implementation plan then dispatch 6 parallel critic agents to red-team it. Synthesizes findings, applies auto-fixes, and gates user approval before execution.
@@ -500,14 +435,55 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_plan_with_critics[plan-with-critics]
+    knowledge_critic_dispatch_template_md[critic-dispatch-template]
     artifact_plan_critique_YYYY_MM_DD_md[.dev/plan-critique-YYYY-MM-DD.md]
 
+    skill_plan_with_critics --> knowledge_critic_dispatch_template_md
     skill_plan_with_critics --> artifact_plan_critique_YYYY_MM_DD_md
 
     class skill_plan_with_critics skillNode
+    class knowledge_critic_dispatch_template_md knowledgeNode
     class artifact_plan_critique_YYYY_MM_DD_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-plan-with-critics -->
+
+### /generic-preflight
+
+Parameterized preflight for both `/plan` and `/review-develop`: handles resume logic, context gathering, and state checkpointing based on a context-type argument (`planning` or `review`).
+
+<!-- BEGIN GENERATED: skill-drilldown-generic-preflight -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_generic_preflight[generic-preflight]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    artifact_planning_preflight_context_md[.dev/planning-preflight-context.md]
+    artifact_review_preflight_context_md[.dev/review-preflight-context.md]
+
+    skill_generic_preflight --> Phase0
+    skill_generic_preflight --> Phase1
+    skill_generic_preflight --> Phase2
+    skill_generic_preflight --> Phase3
+    skill_generic_preflight --> artifact_planning_preflight_context_md
+    skill_generic_preflight --> artifact_review_preflight_context_md
+
+    class skill_generic_preflight skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class artifact_planning_preflight_context_md artifactNode
+    class artifact_review_preflight_context_md artifactNode
+```
+<!-- END GENERATED: skill-drilldown-generic-preflight -->
 
 ### /develop-orchestrate
 
@@ -533,6 +509,8 @@ flowchart LR
     agent_developer_traditional[developer-traditional]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_companion_context_ownership_md[companion-context-ownership]
+    knowledge_develop_orchestrate_signature_decision_tree_md[develop-orchestrate-signature-decision-tree]
+    knowledge_develop_spawn_prompt_md[develop-spawn-prompt]
     knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
     knowledge_intent_preflight_md[intent-preflight]
     knowledge_scope_expansion_gate_md[scope-expansion-gate]
@@ -550,6 +528,8 @@ flowchart LR
     skill_develop_orchestrate --> agent_developer_traditional
     skill_develop_orchestrate --> knowledge_artifact_contracts_md
     skill_develop_orchestrate --> knowledge_companion_context_ownership_md
+    skill_develop_orchestrate --> knowledge_develop_orchestrate_signature_decision_tree_md
+    skill_develop_orchestrate --> knowledge_develop_spawn_prompt_md
     skill_develop_orchestrate --> knowledge_developer_invocation_patterns_md
     skill_develop_orchestrate --> knowledge_intent_preflight_md
     skill_develop_orchestrate --> knowledge_scope_expansion_gate_md
@@ -568,6 +548,8 @@ flowchart LR
     class agent_developer_traditional agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_companion_context_ownership_md knowledgeNode
+    class knowledge_develop_orchestrate_signature_decision_tree_md knowledgeNode
+    class knowledge_develop_spawn_prompt_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode
@@ -578,50 +560,6 @@ flowchart LR
 
 Agents spawned: `al-dev-shared:developer-tdd`, `al-dev-shared:developer-traditional`
 <!-- END GENERATED: skill-drilldown-develop-orchestrate -->
-
-### /review-develop-preflight
-
-Pre-review qualification workflow dispatched by `/develop-orchestrate` before the reviewer panel. Locates the develop handoff, identifies changed AL files, verifies compile, and writes the preflight context file. Phases: 0, 1, 2, 3.
-
-<!-- BEGIN GENERATED: skill-drilldown-review-develop-preflight -->
-```mermaid
-flowchart LR
-    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
-    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
-    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
-    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
-    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
-
-    skill_review_develop_preflight[review-develop-preflight]
-    Phase0["Phase 0"]
-    Phase1["Phase 1"]
-    Phase2["Phase 2"]
-    Phase3["Phase 3"]
-    skill_develop_orchestrate[develop-orchestrate]
-    skill_review_develop[review-develop]
-    artifact_compile_errors_log[.dev/compile-errors.log]
-    artifact_progress_md[.dev/progress.md]
-
-    skill_review_develop_preflight --> Phase0
-    skill_review_develop_preflight --> Phase1
-    skill_review_develop_preflight --> Phase2
-    skill_review_develop_preflight --> Phase3
-    skill_review_develop_preflight -.-> skill_develop_orchestrate
-    skill_review_develop_preflight -.-> skill_review_develop
-    skill_review_develop_preflight --> artifact_compile_errors_log
-    skill_review_develop_preflight --> artifact_progress_md
-
-    class skill_review_develop_preflight skillNode
-    class Phase0 phaseNode
-    class Phase1 phaseNode
-    class Phase2 phaseNode
-    class Phase3 phaseNode
-    class skill_develop_orchestrate skillNode
-    class skill_review_develop skillNode
-    class artifact_compile_errors_log artifactNode
-    class artifact_progress_md artifactNode
-```
-<!-- END GENERATED: skill-drilldown-review-develop-preflight -->
 
 ### /review-develop
 
@@ -642,11 +580,12 @@ flowchart LR
     Phase5["Phase 5"]
     Phase6["Phase 6"]
     skill_commit[commit]
-    skill_review_develop_preflight[review-develop-preflight]
+    skill_generic_preflight[generic-preflight]
     agent_al_pattern_reviewer[al-pattern-reviewer]
     agent_performance_reviewer[performance-reviewer]
     agent_security_reviewer[security-reviewer]
     knowledge_artifact_contracts_md[artifact-contracts]
+    knowledge_critic_dispatch_template_md[critic-dispatch-template]
     artifact_progress_md[.dev/progress.md]
 
     skill_review_develop --> Phase0
@@ -654,11 +593,12 @@ flowchart LR
     skill_review_develop --> Phase5
     skill_review_develop --> Phase6
     skill_review_develop -.-> skill_commit
-    skill_review_develop -.-> skill_review_develop_preflight
+    skill_review_develop -.-> skill_generic_preflight
     skill_review_develop --> agent_al_pattern_reviewer
     skill_review_develop --> agent_performance_reviewer
     skill_review_develop --> agent_security_reviewer
     skill_review_develop --> knowledge_artifact_contracts_md
+    skill_review_develop --> knowledge_critic_dispatch_template_md
     skill_review_develop --> artifact_progress_md
 
     class skill_review_develop skillNode
@@ -667,11 +607,12 @@ flowchart LR
     class Phase5 phaseNode
     class Phase6 phaseNode
     class skill_commit skillNode
-    class skill_review_develop_preflight skillNode
+    class skill_generic_preflight skillNode
     class agent_al_pattern_reviewer agentNode
     class agent_performance_reviewer agentNode
     class agent_security_reviewer agentNode
     class knowledge_artifact_contracts_md knowledgeNode
+    class knowledge_critic_dispatch_template_md knowledgeNode
     class artifact_progress_md artifactNode
 ```
 
@@ -694,21 +635,15 @@ flowchart LR
     skill_commit[commit]
     skill_commit_execute[commit-execute]
     skill_commit_preflight[commit-preflight]
-    knowledge_artifact_contracts_md[artifact-contracts]
-    knowledge_commit_intent_preflight_md[commit-intent-preflight]
     artifact_commit_preflight_md[.dev/commit-preflight.md]
 
     skill_commit -.-> skill_commit_execute
     skill_commit -.-> skill_commit_preflight
-    skill_commit --> knowledge_artifact_contracts_md
-    skill_commit --> knowledge_commit_intent_preflight_md
     skill_commit --> artifact_commit_preflight_md
 
     class skill_commit skillNode
     class skill_commit_execute skillNode
     class skill_commit_preflight skillNode
-    class knowledge_artifact_contracts_md knowledgeNode
-    class knowledge_commit_intent_preflight_md knowledgeNode
     class artifact_commit_preflight_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-commit -->
@@ -921,6 +856,58 @@ flowchart LR
 
 Agents spawned: `al-dev-shared:interview`
 <!-- END GENERATED: skill-drilldown-interview -->
+
+### /research
+
+Research a BC/AL question using curated-first evidence, local repo discovery, and specialist research synthesis. Covers greenfield, repo-focused, version-history, and broader Microsoft-ecosystem questions.
+
+<!-- BEGIN GENERATED: skill-drilldown-research -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_research[research]
+    Phase0["Phase 0"]
+    Phase1["Phase 1"]
+    Phase2["Phase 2"]
+    Phase3["Phase 3"]
+    Phase4["Phase 4"]
+    agent_ecosystem_researcher[ecosystem-researcher]
+    agent_repo_researcher[repo-researcher]
+    knowledge_research_output_format_md[research-output-format]
+    knowledge_research_source_policy_md[research-source-policy]
+    artifact_YYYY_MM_DD_research_findings_md[.dev/YYYY-MM-DD-research-findings.md]
+
+    skill_research --> Phase0
+    skill_research --> Phase1
+    skill_research --> Phase2
+    skill_research --> Phase3
+    skill_research --> Phase4
+    skill_research --> agent_ecosystem_researcher
+    skill_research --> agent_repo_researcher
+    skill_research --> knowledge_research_output_format_md
+    skill_research --> knowledge_research_source_policy_md
+    skill_research --> artifact_YYYY_MM_DD_research_findings_md
+
+    class skill_research skillNode
+    class Phase0 phaseNode
+    class Phase1 phaseNode
+    class Phase2 phaseNode
+    class Phase3 phaseNode
+    class Phase4 phaseNode
+    class agent_ecosystem_researcher agentNode
+    class agent_repo_researcher agentNode
+    class knowledge_research_output_format_md knowledgeNode
+    class knowledge_research_source_policy_md knowledgeNode
+    class artifact_YYYY_MM_DD_research_findings_md artifactNode
+```
+
+Agents spawned: `al-dev-shared:ecosystem-researcher`, `al-dev-shared:repo-researcher`
+<!-- END GENERATED: skill-drilldown-research -->
 
 ### /lint
 
