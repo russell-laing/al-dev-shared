@@ -38,6 +38,14 @@ Use this document when:
 | `investigate` | symptom or bug description, repo context, `.dev/` write access; optional latest `.dev/*-ticket-ticket-context.md`, `.dev/project-context.md`, latest `.dev/*-explore-findings.md` | `.dev/*-investigate-findings.md` (confirmed/rejected hypotheses with evidence, regression timeline, root cause) | `.dev/*-investigate-findings.md` (latest) | `.dev/*-investigate-findings.md` | latest investigate findings file exists, is non-empty, contains a Root Cause section and at least one CONFIRMED or REJECTED hypothesis verdict, and was read after write in the current run |
 | `handoff` | target repository path, latest `.dev/*-explore-findings.md` or `.dev/*-investigate-findings.md`, `.dev/` source artifacts to copy | copied `.dev/source-*.md` files in the target repo, `.dev/*-handoff-handoff-prompt.md` in the source repo | `.dev/*-handoff-handoff-prompt.md` (latest) | `.dev/*-handoff-handoff-prompt.md` | latest handoff-prompt file exists, is non-empty, contains a Context section and a Suggested first command section, and was read after write in the current run |
 
+## Handoff Pairs
+
+Documented handoffs between workflows, including optional artifacts that may be present:
+
+| From | To | Artifact | Behavior |
+| --- | --- | --- | --- |
+| `/investigate` | `/fix` | `.dev/YYYY-MM-DD-investigate-findings.md` | Optional — /fix reads findings if present; if absent, /fix proceeds with fresh context |
+
 ## Failure Handling
 
 - Missing required input artifact: stop and report the missing file pattern.
