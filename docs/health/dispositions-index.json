@@ -9,8 +9,8 @@
       "open_accepted": 0
     },
     "design": {
-      "current_rows": 15,
-      "open_accepted": 2
+      "current_rows": 18,
+      "open_accepted": 1
     },
     "extract": {
       "current_rows": 1,
@@ -29,8 +29,8 @@
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 74,
-      "open_accepted": 4
+      "current_rows": 94,
+      "open_accepted": 11
     },
     "split": {
       "current_rows": 4,
@@ -42,9 +42,9 @@
     }
   },
   "by_disposition": {
-    "accepted": 6,
+    "accepted": 12,
     "declined": 38,
-    "fixed": 59
+    "fixed": 76
   },
   "by_surface": {
     "design": {
@@ -52,18 +52,18 @@
       "open_accepted": 0
     },
     "plugin": {
-      "current_rows": 51,
-      "open_accepted": 1
+      "current_rows": 66,
+      "open_accepted": 5
     },
     "tooling": {
-      "current_rows": 38,
-      "open_accepted": 5
+      "current_rows": 46,
+      "open_accepted": 7
     }
   },
-  "current_rows": 103,
-  "generated_at": "2026-07-01T09:25:50.397802+00:00",
+  "current_rows": 126,
+  "generated_at": "2026-07-01T10:43:10.354265+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 6,
-  "source_hash": "4d96a53af140f769df2d584896301dc3ec44f5cc8d046b16fff841519522f97b",
-  "total_events": 202
+  "open_accepted": 12,
+  "source_hash": "aac858dd8128addb59ddb1c5c18c486d2b2982525f901de1e14ba3dde85cd4af",
+  "total_events": 232
 }
