@@ -1,9 +1,11 @@
 ---
 name: sync-map-documentation-write
 description: >-
-  Regenerate derived diagrams and projections from canonical source files,
-  then commit all generated artifacts. Final step after map updates (apply skill)
-  completes; regenerates and commits the generated product, not the maps.
+  Execute the `write` (regeneration) phase of sync-map-documentation. Orchestrates regeneration
+  of all derived artifacts (Mermaid diagrams, agent projections, relationship graph, maintainer guide)
+  in sequence, reports results, commits outputs, and updates checkpoint and health-loop breadcrumb.
+  Single integrated workflow: validation → regeneration → reporting → commit → breadcrumb. No separable concerns.
+  Runs only after audit and update phases complete.
 workflow:
   stage: map-sync
   invoked-by: user
