@@ -39,7 +39,7 @@ completion, so the user is free to work meanwhile.
 3. `/sync-map-documentation-apply --team-ids <ids>` — validate artifacts, write maps
 4. `/sync-map-documentation-write` — regenerate diagrams/projections/graph, commit
 
-**Design note:** This skill orchestrates 4 async sub-skills (dispatcher, collect, apply, write) with checkpoint handoff between stages. The split boundary (audit phase isolated, compare isolated, update isolated, regen isolated) is intentional: each stage can be re-run independently if prior stages succeed. See `knowledge/sync-map-documentation-design-decisions.md` for design rationale on async dispatch handling.
+**Design note:** This skill orchestrates 4 async sub-skills (dispatcher, collect, apply, write) with checkpoint handoff between stages. See `.claude/knowledge/sync-map-documentation-design-decisions.md` for design rationale on phase isolation.
 
 ## Maintainer Contracts
 

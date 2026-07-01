@@ -1,22 +1,25 @@
-# Sync Map Documentation — Design Decisions
+# Design Decisions: Async Dispatch in sync-map-documentation
 
-## Phase 2 async-dispatch handling
+## Overview
 
-**Decision:** The sync workflow dispatches audit agents asynchronously (Phase 2), allowing
-audit completion to happen in the background while the user continues work. This design
-trades reduced interaction latency (audit runs headlessly) against deferral of result
-presentation to Phase 2 collect.
+This document records the design rationale for splitting the documentation map sync workflow into four independent phases, each with checkpoint isolation.
 
-**Rationale:** Audit agents run for 5-10 minutes; blocking the user in Phase 1 would
-exceed interactive feedback windows. Async dispatch allows fast Phase 1 completion and
-separate Phase 2 collection without coupling the audit logic to the user's session state.
+## Decision: Four-Phase Checkpoint Isolation
 
-**Tradeoffs:**
+**Split boundary:** Audit phase isolated, compare isolated, update isolated, regen isolated.
 
-- **Benefit:** User can work while audit runs; collect phase can run in separate session
-- **Cost:** Requires deterministic audit-completion state machine and robust checkpoint handling
-- **Alternative considered:** Synchronous dispatch with long-poll; rejected due to session
-  timeout risk and poor UX (users waiting 10+ minutes for "collecting results")
+**Rationale:**
 
-**See also:** `knowledge/health-filter-contract.md` (filter state propagation),
-`knowledge/dispatch-fallback-contract.md` (failure handling)
+- Each stage can be re-run independently if prior stages succeed.
+- Failures in early stages (e.g., audit) do not require re-running later stages (e.g., write).
+- Checkpoints provide resume capability for long-running workflows.
+- Skill surface area remains testable in isolation.
+
+## Related Skills
+
+- `/sync-map-documentation` — dispatcher, writes initial checkpoint
+- `/sync-map-documentation-collect` — collects audit results, spawns update agents
+- `/sync-map-documentation-apply` — applies updates to maps
+- `/sync-map-documentation-write` — regenerates diagrams and commits
+
+See `./sync-map-update-shared.md` for shared procedure documentation.
