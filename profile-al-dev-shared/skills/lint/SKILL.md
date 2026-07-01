@@ -58,7 +58,8 @@ block so the lint skill stays aligned with the canonical compile flow.
 (See `markdown/compile-output-best-practices.md` for critical safeguards on compile output handling — never pipe to terminal viewers.)
 
 If the log is absent, empty, or contains no lines matching
-`Warning` or `Error`:
+`Warning` or `Error` (case-insensitive substring match — e.g. this also
+matches `error AL0012`):
 
 ```text
 No lint issues found in the current compile output. Current-run success evidence read from `.dev/compile-errors.log` and the lint report when one is produced.
