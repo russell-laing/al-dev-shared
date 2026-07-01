@@ -66,3 +66,11 @@ If the file exists and is non-empty: use the Skill tool to invoke
 If the file is missing or empty: stop. Tell the user: "No approved commit plan
 found in `.dev/commit-preflight.md`. Re-run `/commit` to restart the full
 workflow, or run `/commit-preflight` manually then `/commit-execute`."
+
+## Optional Next Steps
+
+After commit completes, you can optionally:
+
+- **Release notes:** Run `/release-notes` to auto-generate changelog from commits
+- **Handoff documentation:** Run `/handoff` to create handoff summary for downstream teams
+- **Code documentation:** Run `/document` to update inline docs and generate API reference
