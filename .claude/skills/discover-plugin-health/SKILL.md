@@ -313,11 +313,9 @@ Execute the following state machine in order:
 
    Net effect: `surface-placement` runs for `plugin` only, and
    `maintainer-handoff` runs for `tooling` only; every other LLM lens runs for
-   both. Beyond these formal bindings, several remaining design-skill lenses
-   carry reduced semantic signal for tooling skills. Tooling skills with ≥3 use cases
-   that do not document complexity classification carry reduced semantic signal in
-   their corpus (intent becomes ambiguous). Apply the lens to these skills to identify
-   and document complexity for ambiguous cases.
+   both. Beyond these formal bindings, tooling skills carry reduced semantic signal
+   unless they serve >3 active use cases in the current corpus. Apply design lenses
+   to these skills to identify ambiguity and scope drift.
 
    **Quality-dimension bundling:** When the requested dimension includes
    `quality`, the four agent-quality lenses and four skill-quality lenses are NOT
