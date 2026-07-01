@@ -13,7 +13,7 @@ tools: ["Read"]
 | --- | --- |
 | file_list | Newline-separated absolute paths to agent `.md` files |
 | caller_map | Mapping of agent-name → list of skill names that spawn it (provided in dispatch prompt) |
-| (scope guard) | Tooling-surface agents (path contains `.claude/agents/`) are **excluded** from this lens — their callers live in `.claude/skills/` (out of scope for caller-alignment). Skip the analysis and emit no finding. |
+| (scope guard) | Tooling-surface agents (those in `.claude/agents/` with primary use in maintainer tooling) are **out of scope** — return an empty findings block with the heading `### <Lens Name> Findings` followed by `_No issues found._` for these agents; do not skip the entire output. |
 
 **Implicit dependency:** For distributed-surface agents, the lens looks up
 callers from the `caller_map` provided in the dispatch context. For
