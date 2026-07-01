@@ -3,7 +3,7 @@ name: sync-map-documentation-agent-metadata
 description: >-
   Builds the active agent list from profile-al-dev-shared/agents/ and extracts
   frontmatter metadata (model, tools, description, callers); caller derivation
-  is optional and may be skipped on script failure. Writes a structured
+  may be skipped if script-derive-callers.py fails; see Step 3 for fallback behavior. Writes a structured
   JSON snapshot to the run artifact directory. Called by /sync-map-documentation
   dispatch phase; its output is consumed by sync-map-documentation-agent-compare.
   Empty tool lists ([]) are normalized to the string "(none)" before output.
