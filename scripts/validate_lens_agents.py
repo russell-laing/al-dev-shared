@@ -64,6 +64,7 @@ SONNET_AGENTS = {
     "design-skill-lens-shared-backbone",
     "design-skill-lens-handoff-gaps",
     "design-agent-lens-model-fit",
+    "design-agent-lens-scope-isolation",
     "design-skill-lens-complexity",
     "design-skill-lens-near-duplicates",
     "design-skill-lens-maintainer-handoff",

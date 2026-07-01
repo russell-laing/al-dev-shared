@@ -1,7 +1,7 @@
 ---
 name: design-agent-lens-scope-isolation
 description: Apply Scope Isolation lens to agent files — identifies agents with two clearly separable concerns in their system prompt body. Returns a findings block for Split suggestions.
-model: haiku
+model: sonnet
 tools: ["Read"]
 ---
 
@@ -26,6 +26,7 @@ Read the system prompt body. Ask: does it describe two clearly separable concern
 that could be individual agents?
 
 **Signals of separable concerns:**
+
 - System prompt contains two distinct `## Phase` or `## Mission` sections
   addressing unrelated outputs or different downstream consumers
 - The Inputs and Outputs tables serve two different callers or produce two
@@ -37,6 +38,7 @@ that could be individual agents?
 A system prompt with two separable concerns is a Split candidate.
 
 **Severity rules:**
+
 - High: two completely unrelated concerns with separate output destinations
 - Medium: two related concerns that could be cleanly separated with clear benefits
 - Low: minor scope overlap that could be separated but may not be worth the
@@ -49,9 +51,11 @@ A system prompt with two separable concerns is a Split candidate.
 Return exactly this structure (no additional prose before or after the block):
 
 ### Scope Isolation Findings
+
 - **[agent-name]** | [High|Medium|Low] | [observation] | [fix]
 
 If no issues found:
 
 ### Scope Isolation Findings
+
 _No issues found._
