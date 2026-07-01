@@ -53,7 +53,7 @@ beyond the short evidence snippet a record needs.
 
 2. **Read the subject file(s)** at `subject_path` in full. Normalise absolute
    paths to the `profile-al-dev-shared/` (or `.claude/`) base when searching, per
-   the doc's "File reference is absolute path" pattern.
+   the doc's "File reference is absolute path" pattern (e.g., `sed 's|^.*/al-dev-shared/||'` to normalize paths before matching against the pattern).
 
 3. **Run the checks** for each finding:
 
