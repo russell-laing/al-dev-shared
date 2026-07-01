@@ -31,7 +31,7 @@ def _load_store():
 def run(events_root: Path) -> int:
     """Check JSONL event store consistency. Returns 0 if consistent, 1 if not."""
     if not events_root.exists():
-        print("JSONL store: no dispositions-events directory found — skipping check")
+        print("JSONL store: no dispositions_events directory found — skipping check")
         return 0
 
     mod = _load_store()

@@ -15,6 +15,7 @@ from .ledger_queries import (
     resolve_closures,
     staged_files,
 )
+from .paths import dispositions_history_root
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -29,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     repo_root = Path(args.root).resolve()
-    if not (repo_root / LEDGER).exists() and not (repo_root / "docs" / "health" / "dispositions-history").exists():
+    if not (repo_root / LEDGER).exists() and not dispositions_history_root(repo_root).exists():
         print(f"ledger-check: {LEDGER} not found (run from repo root)", file=sys.stderr)
         return 0 if args.staged else 1
 

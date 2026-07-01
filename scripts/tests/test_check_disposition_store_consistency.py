@@ -78,7 +78,7 @@ class ConsistentStoreTest(unittest.TestCase):
     def test_subprocess_root_override_uses_temporary_repo(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d) / "repo"
-            events_dir = root / "docs" / "health" / "dispositions-events" / "2026"
+            events_dir = root / "docs" / "health" / "dispositions_events" / "2026"
             _write_jsonl(events_dir, [_ACCEPTED_EVENT, _FIXED_EVENT])
             result = subprocess.run(
                 [
@@ -150,7 +150,7 @@ class PathsAbsoluteTest(unittest.TestCase):
 
     def test_events_root_cwd_independent(self) -> None:
         mod = _load_script()
-        expected = REPO_ROOT / "docs" / "health" / "dispositions-events"
+        expected = REPO_ROOT / "docs" / "health" / "dispositions_events"
         cwd = os.getcwd()
         try:
             with tempfile.TemporaryDirectory() as tmp:

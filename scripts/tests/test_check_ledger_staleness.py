@@ -211,7 +211,7 @@ class ShardedStoreCheckerTest(unittest.TestCase):
     def test_checker_reads_history_store_and_reports_zero_open(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            history = root / "docs" / "health" / "dispositions-history" / "2026"
+            history = root / "docs" / "health" / "dispositions_history" / "2026"
             history.mkdir(parents=True)
 
             (history / "2026-06.md").write_text(
@@ -233,14 +233,14 @@ class JsonlStoreCheckerTest(unittest.TestCase):
     def test_checker_reads_jsonl_store_before_markdown_history(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            events = root / "docs" / "health" / "dispositions-events" / "2026"
+            events = root / "docs" / "health" / "dispositions_events" / "2026"
             events.mkdir(parents=True)
             (events / "2026-06.jsonl").write_text(
                 '{"event_id":"disp_20260619_000001","surface":"tooling","dimension":"quality","object":"obj","finding":"issue","disposition":"accepted","date":"2026-06-19","closes_event_ids":[],"evidence":"queued","source":"test"}\n'
                 '{"event_id":"disp_20260619_000002","surface":"tooling","dimension":"quality","object":"obj","finding":"issue","disposition":"fixed","date":"2026-06-19","closes_event_ids":["disp_20260619_000001"],"evidence":"fixed","source":"test"}\n',
                 encoding="utf-8",
             )
-            legacy = root / "docs" / "health" / "dispositions-history" / "2026"
+            legacy = root / "docs" / "health" / "dispositions_history" / "2026"
             legacy.mkdir(parents=True)
             (legacy / "2026-06.md").write_text(
                 "| ID | Surface | Dimension | Object | Finding | Disposition | Date | Evidence / note |\n"

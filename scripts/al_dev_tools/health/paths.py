@@ -6,14 +6,14 @@ from pathlib import Path
 
 
 DOCS_HEALTH = Path("docs") / "health"
-DISPOSITIONS_EVENTS = DOCS_HEALTH / "dispositions-events"
-DISPOSITIONS_HISTORY = DOCS_HEALTH / "dispositions-history"
+DISPOSITIONS_EVENTS = DOCS_HEALTH / "dispositions_events"
+DISPOSITIONS_HISTORY = DOCS_HEALTH / "dispositions_history"
 DISPOSITIONS_LEDGER = DOCS_HEALTH / "dispositions.md"
-DISPOSITIONS_OPEN = DOCS_HEALTH / "dispositions-open.md"
-DISPOSITIONS_CURRENT = DOCS_HEALTH / "dispositions-current.md"
-DISPOSITIONS_INDEX = DOCS_HEALTH / "dispositions-index.json"
+DISPOSITIONS_OPEN = DOCS_HEALTH / "dispositions_open.md"
+DISPOSITIONS_CURRENT = DOCS_HEALTH / "dispositions_current.md"
+DISPOSITIONS_INDEX = DOCS_HEALTH / "dispositions_index.json"
 DISPOSITIONS_ARCHIVED = DOCS_HEALTH / "archived"
-DISPOSITIONS_JSONL_MIGRATION_AUDIT = DOCS_HEALTH / "dispositions-jsonl-migration-audit.md"
+DISPOSITIONS_JSONL_MIGRATION_AUDIT = DOCS_HEALTH / "dispositions_jsonl_migration_audit.md"
 
 
 def docs_health_root(root: Path = Path(".")) -> Path:

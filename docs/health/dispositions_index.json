@@ -1,7 +1,31 @@
 {
   "by_dimension": {
+    "atomise": {
+      "current_rows": 2,
+      "open_accepted": 0
+    },
+    "consolidate": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
     "design": {
-      "current_rows": 129,
+      "current_rows": 150,
+      "open_accepted": 1
+    },
+    "extract": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
+    "handoff": {
+      "current_rows": 3,
+      "open_accepted": 0
+    },
+    "merge": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
+    "model-fit": {
+      "current_rows": 1,
       "open_accepted": 0
     },
     "naming": {
@@ -9,7 +33,15 @@
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 720,
+      "current_rows": 825,
+      "open_accepted": 11
+    },
+    "split": {
+      "current_rows": 4,
+      "open_accepted": 0
+    },
+    "tool-hygiene": {
+      "current_rows": 1,
       "open_accepted": 0
     },
     "unknown": {
@@ -18,28 +50,33 @@
     }
   },
   "by_disposition": {
-    "declined": 172,
-    "fixed": 869,
+    "accepted": 12,
+    "declined": 217,
+    "fixed": 952,
     "grandfathered": 71
   },
   "by_surface": {
-    "plugin": {
-      "current_rows": 334,
+    "design": {
+      "current_rows": 14,
       "open_accepted": 0
     },
+    "plugin": {
+      "current_rows": 402,
+      "open_accepted": 1
+    },
     "tooling": {
-      "current_rows": 520,
-      "open_accepted": 0
+      "current_rows": 578,
+      "open_accepted": 11
     },
     "unknown": {
       "current_rows": 258,
       "open_accepted": 0
     }
   },
-  "current_rows": 1112,
-  "generated_at": "2026-06-28T03:16:10.325953+00:00",
+  "current_rows": 1252,
+  "generated_at": "2026-07-01T12:35:27.039259+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 0,
-  "source_hash": "5d09030a353ab678ae5a5a284f6691108021b9e51c4af78f46f5b2e4e0088ab1",
-  "total_events": 2085
+  "open_accepted": 12,
+  "source_hash": "71647eb06d8017ec72b20158478dcfdefe3a40e17d1f56463235bedffc737ad8",
+  "total_events": 2347
 }
