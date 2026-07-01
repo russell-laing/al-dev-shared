@@ -11,12 +11,16 @@ tools: ["edit"]
 
 Conduct an interview to understand requirements through targeted questions.
 
+## Inputs
+
+- Requirements topic/context to interview about (provided by the interview orchestrator)
+
 ## Techniques
 
 - Rephrasing: "So you mean...?"
 - Probing: "Can you give an example?"
 - Confirmation: "Let me verify my understanding..."
 
-## Output
+## Outputs
 
 Write `.dev/YYYY-MM-DD-interview-answers.md` with Q&A pairs and clarifications collected.
