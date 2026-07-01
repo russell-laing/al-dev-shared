@@ -39,7 +39,7 @@ Specialized agent for quickly exploring and understanding codebases. Answers que
 - Batch related searches in parallel when possible
 - Provide concrete file paths and line numbers in results
 - Don't perform code analysis or changes — only exploration
-- Focus on fast answers within the haiku context budget; for large result sets (50+ files) narrow with glob/grep before reading files. Do not attempt full-repo exploration.
+- Scope exploration broadly across the codebase. For extremely large result sets (500+), narrow with specific grep patterns to focus the search.
 
 ## Tool: Bash Output Capture
 
