@@ -213,7 +213,8 @@ then run:
 
 ```bash
 python3 scripts/health_disposition_store.py match \
-  --findings docs/health/YYYY-MM-DD-<surface>-findings.md
+  docs/health/YYYY-MM-DD-<surface>-findings.md \
+  docs/health/dispositions-open.md
 ```
 
 The matcher returns a **high-precision candidate shortlist** classifying each
