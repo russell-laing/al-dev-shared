@@ -1,12 +1,10 @@
 ---
 name: validate-plugin-neutrality
 description: >-
-  Validate harness neutrality in the al-dev-shared single shared plugin surface
-  by running validate_harness_neutrality.py, which checks for forbidden
-  harness-specific tokens across seven classes (Claude tool tokens, dispatch
-  tokens, and settings paths; Copilot tool tokens and settings paths; Claude MCP
-  tokens; and harness-specific session wording) that could break distributable
-  content. Run after changes to skills, agents, or knowledge.
+  Apply Harness Neutrality lens to knowledge files — finds harness-specific tokens or conventions
+  that should be generic. Single-concern validation pipeline: runs validator script, parses and groups
+  findings, gates user approval, applies fixes if approved, and re-validates. No separable concerns;
+  each phase depends on the previous phase's output. Scoped to a single knowledge file or recursive directory.
 workflow:
   stage: derive
   invoked-by: user
