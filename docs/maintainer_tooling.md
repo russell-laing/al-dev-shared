@@ -194,6 +194,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/record-plugin-dispositions` | decide | user | Disposition phase of the health-audit loop. |
 | `/revise-plugin-plan` | decide | user | Reconciles a health-loop implementation plan against a review document and re-dispositions out-of-scope findings to the ledger. |
 | `/implement-plugin-health` | implement | user | Closes the health-audit loop: executes an accepted implementation plan, verifies each change, and appends `fixed` events to the JSONL event store for every **verified** `closes_event_ids:` entry (the distinguishing ledger close-back); tasks that declare no `closes_event_ids:` are skipped. |
+| `/audit-disposition-ledger` | derive | user | Use when you suspect the health disposition ledger is corrupted, forked, or mis-read; after any rename or path change under docs/health/ or paths.py; when disposition counts look implausibly low or high; or when a skill/knowledge file may reference a renamed or deleted ledger artifact. |
 | `/audit-knowledge-quality` | derive | user | Audit knowledge files for stub sections and structural issues. |
 | `/audit-plugin-neutrality` | derive | user | Apply Harness Neutrality lens to knowledge files — finds harness-specific tokens or conventions that should be generic. |
 | `/fix-knowledge-quality` | derive | user | Reads HIGH-severity knowledge quality tasks from the fix-task block produced by /audit-knowledge-quality, presents the HIGH-only task list, and conditionally dispatches one `docs-writer` agent per issue when the user approves (or when --auto-fix is passed). |
@@ -210,12 +211,13 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/audit-plugin-health` | `docs/skills-map.md`, `docs/agent-map.md`, `.dev/health-loop-state.md` | `.dev/health-loop-state.md` | `/discover-plugin-health` |
 | `/discover-plugin-health` | `docs/skills-map.md`, `docs/agent-map.md`, `profile-al-dev-shared/knowledge/lens-invocation-patterns.md`, `.dev/health-loop-state.md` | `docs/health/<date>-<surface>-findings.md`, `.dev/health-loop-state.md` | `/report-plugin-health` |
 | `/ingest-plugin-friction` | `~/friction-log/<session>-findings.md`, `~/friction-log/<session>-signals.json`, `.dev/health-loop-state.md` | `docs/health/<date>-<surface>-friction-findings.md`, `.dev/health-loop-state.md` | `/report-plugin-health` |
-| `/report-plugin-health` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/<date>-<surface>-health.md`, `.dev/health-loop-state.md` | `/record-plugin-dispositions` |
-| `/plan-plugin-findings` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/superpowers/plans/<date>-<topic>.md`, `.dev/health-loop-state.md` | `/implement-plugin-health` |
-| `/plan-plugin-findings-verify` | `docs/health/dispositions-open.md`, `docs/health/dispositions-index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`, `.dev/health-loop-state.md` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
-| `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
-| `/revise-plugin-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-events/<year>/<year>-<month>.jsonl` | `/implement-plugin-health` |
-| `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions-open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions-events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md`, `.dev/health-loop-state.md` | `/regenerate-agent-projections`, `/audit-plugin-neutrality`, `/audit-plugin-health` |
+| `/report-plugin-health` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/<date>-<surface>-health.md`, `.dev/health-loop-state.md` | `/record-plugin-dispositions` |
+| `/plan-plugin-findings` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/superpowers/plans/<date>-<topic>.md`, `.dev/health-loop-state.md` | `/implement-plugin-health` |
+| `/plan-plugin-findings-verify` | `docs/health/dispositions_open.md`, `docs/health/dispositions_index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`, `.dev/health-loop-state.md` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
+| `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions_events/<year>/<year>-<month>.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
+| `/revise-plugin-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_events/<year>/<year>-<month>.jsonl` | `/implement-plugin-health` |
+| `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions_events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md`, `.dev/health-loop-state.md` | `/regenerate-agent-projections`, `/audit-plugin-neutrality`, `/audit-plugin-health` |
+| `/audit-disposition-ledger` | `docs/health/dispositions_events/`, `.claude/`, `profile-al-dev-shared/` | — | — |
 | `/audit-knowledge-quality` | `profile-al-dev-shared/knowledge/`, `.claude/knowledge/` | `docs/knowledge-quality.md`, `docs/knowledge-quality-tooling.md` | `/fix-knowledge-quality` |
 | `/audit-plugin-neutrality` | `profile-al-dev-shared/skills/`, `profile-al-dev-shared/agents/`, `profile-al-dev-shared/knowledge/` | — | `/audit-knowledge-quality` |
 | `/fix-knowledge-quality` | `docs/knowledge-quality.md`, `docs/knowledge-quality-tooling.md` | `profile-al-dev-shared/knowledge/`, `.claude/knowledge/` | `/audit-plugin-neutrality` |
@@ -238,14 +240,15 @@ artifact signal.
 | Signal | Item | Detail |
 | --- | --- | --- |
 | Orphaned artifact | `.dev/implement-plugin-health-progress.md` | produced by /implement-plugin-health; consumed by no skill |
-| Orphaned artifact | `docs/health/dispositions-events/*/*-*.jsonl` | produced by /implement-plugin-health, /record-plugin-dispositions, /revise-plugin-plan; consumed by no skill |
+| Orphaned artifact | `docs/health/dispositions_events/*/*-*.jsonl` | produced by /implement-plugin-health, /record-plugin-dispositions, /revise-plugin-plan; consumed by no skill |
 | Orphaned artifact | `docs/maintainer_tooling.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/maintainer_tooling/` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/plugin-graph.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `docs/workflow-diagrams.md` | produced by /sync-map-documentation-write; consumed by no skill |
 | Orphaned artifact | `profile-al-dev-shared/generated/agents/` | produced by /regenerate-agent-projections, /sync-map-documentation-write; consumed by no skill |
-| Sourceless input | `docs/health/dispositions-index.json` | consumed by /plan-plugin-findings-verify; produced by no skill |
-| Sourceless input | `docs/health/dispositions-open.md` | consumed by /implement-plugin-health, /plan-plugin-findings, /plan-plugin-findings-verify, /record-plugin-dispositions, /report-plugin-health, /revise-plugin-plan; produced by no skill |
+| Sourceless input | `docs/health/dispositions_events/` | consumed by /audit-disposition-ledger; produced by no skill |
+| Sourceless input | `docs/health/dispositions_index.json` | consumed by /plan-plugin-findings-verify; produced by no skill |
+| Sourceless input | `docs/health/dispositions_open.md` | consumed by /implement-plugin-health, /plan-plugin-findings, /plan-plugin-findings-verify, /record-plugin-dispositions, /report-plugin-health, /revise-plugin-plan; produced by no skill |
 | Sourceless input | `docs/superpowers/plans/*-*-commentary.md` | consumed by /revise-plugin-plan; produced by no skill |
 | Sourceless input | `~/friction-log/*-findings.md` | consumed by /ingest-plugin-friction; produced by no skill |
 | Sourceless input | `~/friction-log/*-signals.json` | consumed by /ingest-plugin-friction; produced by no skill |
@@ -260,16 +263,16 @@ artifact signal.
 | Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-06-30 |
 | Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | latest 2026-06-28 |
 | Artifact freshness | `docs/agent-map.md` | never produced |
-| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-07-01 |
+| Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-07-02 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | never produced |
-| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-07-01 |
-| Artifact freshness | `docs/health/dispositions-events/*/*-*.jsonl` | latest 2026-07-02 |
+| Artifact freshness | `docs/health/*-*-health.md` | latest 2026-07-02 |
+| Artifact freshness | `docs/health/dispositions_events/*/*-*.jsonl` | latest 2026-07-02 |
 | Artifact freshness | `docs/knowledge-quality-tooling.md` | never produced |
 | Artifact freshness | `docs/knowledge-quality.md` | never produced |
 | Artifact freshness | `docs/maintainer_tooling/` | present |
 | Artifact freshness | `docs/plugin-graph.md` | never produced |
 | Artifact freshness | `docs/skills-map.md` | never produced |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-07-02 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-07-01 |
 | Artifact freshness | `docs/workflow-diagrams.md` | never produced |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |

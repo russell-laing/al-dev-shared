@@ -60,45 +60,70 @@ quality path directly when the task is specifically to audit or repair shared kn
 
 <!-- BEGIN GENERATED: maintainer-stage-derive-diagram -->
 ```mermaid
-flowchart TD
+flowchart LR
     classDef userSkill fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef internalSkill fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 5,font-weight:bold
     classDef artifact fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
     classDef orphanArtifact fill:#ede9fe,stroke:#dc2626,color:#4c1d95,stroke-dasharray:4 4,font-weight:bold
+    classDef manualStep fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
 
-    subgraph agent_lane["Agent source changed"]
-        art_agent_source["agents/"]
-        skill_regenerate_agent_projections["/regenerate-agent-projections"]
-        art_generated_agents["generated/agents/"]
-    end
-    subgraph knowledge_lane["Knowledge source changed"]
-        art_knowledge_source["knowledge/"]
-        skill_audit_knowledge_quality["/audit-knowledge-quality"]
-        art_knowledge_quality_report[".../knowledge-quality.md"]
-        skill_fix_knowledge_quality["/fix-knowledge-quality"]
-    end
-    art_shared_surface["shared authored surface"]
-    skill_align_harness_repos["/audit-plugin-neutrality"]
+    skill_audit_disposition_ledger["/audit-disposition-ledger"]
+    skill_audit_knowledge_quality["/audit-knowledge-quality"]
+    skill_audit_plugin_neutrality["/audit-plugin-neutrality"]
+    skill_fix_knowledge_quality["/fix-knowledge-quality"]
+    skill_regenerate_agent_projections["/regenerate-agent-projections"]
+    art__claude_[".claude/"]
+    art__claude_knowledge_["knowledge/"]
+    art_docs_health_dispositions_events_["health/dispositions_events/"]
+    art_docs_knowledge_quality_tooling_md[".../knowledge-quality-tooling.md"]
+    art_docs_knowledge_quality_md[".../knowledge-quality.md"]
+    art_profile_al_dev_shared_["profile-al-dev-shared/"]
+    art_profile_al_dev_shared_agents_["agents/"]
+    art_profile_al_dev_shared_generated_agents_["generated/agents/"]
+    art_profile_al_dev_shared_knowledge_["knowledge/"]
+    art_profile_al_dev_shared_skills_["skills/"]
 
-    art_agent_source --> skill_regenerate_agent_projections
-    skill_regenerate_agent_projections --> art_generated_agents
-    skill_regenerate_agent_projections --> skill_align_harness_repos
-    art_knowledge_source --> skill_audit_knowledge_quality
-    skill_audit_knowledge_quality --> art_knowledge_quality_report
-    art_knowledge_quality_report -- "if HIGH" --> skill_fix_knowledge_quality
-    skill_audit_knowledge_quality -. "if clean" .-> skill_align_harness_repos
-    skill_fix_knowledge_quality --> art_knowledge_source
-    skill_fix_knowledge_quality --> skill_align_harness_repos
-    art_shared_surface --> skill_align_harness_repos
+    art__claude_ --> skill_audit_disposition_ledger
+    art_docs_health_dispositions_events_ --> skill_audit_disposition_ledger
+    art_profile_al_dev_shared_ --> skill_audit_disposition_ledger
+    skill_audit_disposition_ledger -. "repeat" .-> skill_audit_disposition_ledger
+    art__claude_knowledge_ --> skill_audit_knowledge_quality
+    art_profile_al_dev_shared_knowledge_ --> skill_audit_knowledge_quality
+    skill_audit_knowledge_quality --> art_docs_knowledge_quality_tooling_md
+    skill_audit_knowledge_quality --> art_docs_knowledge_quality_md
+    skill_audit_knowledge_quality --> skill_fix_knowledge_quality
+    skill_audit_knowledge_quality -. "repeat" .-> skill_audit_knowledge_quality
+    art_profile_al_dev_shared_agents_ --> skill_audit_plugin_neutrality
+    art_profile_al_dev_shared_knowledge_ --> skill_audit_plugin_neutrality
+    art_profile_al_dev_shared_skills_ --> skill_audit_plugin_neutrality
+    skill_audit_plugin_neutrality --> skill_audit_knowledge_quality
+    skill_audit_plugin_neutrality -. "repeat" .-> skill_audit_plugin_neutrality
+    art_docs_knowledge_quality_tooling_md --> skill_fix_knowledge_quality
+    art_docs_knowledge_quality_md --> skill_fix_knowledge_quality
+    skill_fix_knowledge_quality --> art__claude_knowledge_
+    skill_fix_knowledge_quality --> art_profile_al_dev_shared_knowledge_
+    skill_fix_knowledge_quality --> skill_audit_plugin_neutrality
+    skill_fix_knowledge_quality -. "repeat" .-> skill_fix_knowledge_quality
+    art_profile_al_dev_shared_agents_ --> skill_regenerate_agent_projections
+    skill_regenerate_agent_projections --> art_profile_al_dev_shared_generated_agents_
+    skill_regenerate_agent_projections --> skill_audit_plugin_neutrality
+    skill_regenerate_agent_projections -. "repeat" .-> skill_regenerate_agent_projections
 
-    class skill_regenerate_agent_projections userSkill
+    class skill_audit_disposition_ledger userSkill
     class skill_audit_knowledge_quality userSkill
+    class skill_audit_plugin_neutrality userSkill
     class skill_fix_knowledge_quality userSkill
-    class skill_align_harness_repos userSkill
-    class art_agent_source artifact
-    class art_generated_agents orphanArtifact
-    class art_knowledge_source artifact
-    class art_knowledge_quality_report artifact
-    class art_shared_surface artifact
+    class skill_regenerate_agent_projections userSkill
+    class art__claude_ artifact
+    class art__claude_knowledge_ artifact
+    class art_docs_health_dispositions_events_ artifact
+    class art_docs_knowledge_quality_tooling_md artifact
+    class art_docs_knowledge_quality_md artifact
+    class art_profile_al_dev_shared_ artifact
+    class art_profile_al_dev_shared_agents_ artifact
+    class art_profile_al_dev_shared_generated_agents_ orphanArtifact
+    class art_profile_al_dev_shared_knowledge_ artifact
+    class art_profile_al_dev_shared_skills_ artifact
 ```
 <!-- END GENERATED: maintainer-stage-derive-diagram -->
 
