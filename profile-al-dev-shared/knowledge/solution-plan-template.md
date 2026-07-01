@@ -9,6 +9,26 @@ Canonical authoring template for the solution plan written by
 ### Overview
 [1-2 paragraphs: what we're building, why this approach]
 
+### BC SaaS Data-Access Constraints
+
+Business Central SaaS does **not** support direct SQL queries or database access. All data validation, querying, and manipulation must use AL constructs:
+
+- **SetFilter** — Filter records by field conditions
+- **Query objects** — Define and execute structured data queries
+- **AL logic** — Inline validation and data transformation
+
+#### Red Flags (SQL Hazards)
+
+- ❌ "Query the database directly" → Use AL Query object instead
+- ❌ "Run SQL to validate..." → Use SetFilter + FINDSET/FIND instead
+- ❌ "Stored procedures" → Not available in SaaS; use AL codeunits
+
+#### Pattern
+
+When the plan says "validate data," ask: "In SaaS or on-prem?" If SaaS, require AL-based validation in the spec.
+
+See `bash-safe-patterns.md` for SQL-safety patterns in plan task descriptions.
+
 ### Architecture
 
 #### Component Design
