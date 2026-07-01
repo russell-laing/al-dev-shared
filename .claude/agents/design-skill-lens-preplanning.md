@@ -30,14 +30,12 @@ this block verbatim in the aggregated dossier.
 
 ---
 
-## Reference: Canonical pre-planning skills
+## Lens: Pre-planning and Brainstorming Skills
+
+**Canonical pre-planning skills:**
 
 - `/interview` — produces `interview-requirements.md`
 - `/explore` — produces `explore-findings.md`
-
----
-
-## Lens: Pre-planning and Brainstorming Skills
 
 For each skill in `preplanning_skills` and any additional pre-planning skills
 found in the file list:
