@@ -38,43 +38,12 @@ feature/#CU86d0dnfx2-FD1234-description
 
 ---
 
-## Phase 0.5: Mode Routing
+## Phase 0.5: Determine ticket-handling mode
 
-The skill supports two modes via the `--research-reply` flag:
+Check the `MODE` parameter:
 
-**Mode 1: Context-only (default)**
-`ticket` with no flag or `--research-reply=false`
-
-Behavior: Load and present ticket only. User gates next step to research/reply or other downstream skill.
-
-**Mode 2: Research + Reply (bundled)**
-`ticket --research-reply` or `--research-reply=true`
-
-Behavior: Load ticket, then dispatch the full support-reply workflow (Phases 0–4 of support-reply skill):
-
-- Phase 0: Resolve CONTEXT input (ticket context reused)
-- Phase 1: Dispatch research agent
-- Phase 2: Dispatch reply-draft agent
-- Phase 3: Return draft
-- Phase 4: Gated post-back to Freshdesk
-
-This consolidates the common workflow ("load ticket, research, draft reply") while preserving support-reply as a standalone skill for independent research/re-draft on existing ticket context.
-
-- [ ] **Step 4.1:** Check incoming `--research-reply` flag
-
-Run: `[[ "$1" == "--research-reply" || "$2" == "--research-reply=true" ]]` (pseudocode)
-
-If flag present, continue to Step 4.2. Otherwise, skip to Phase 1 (context-only mode).
-
-- [ ] **Step 4.2:** (If research-reply) Dispatch support-reply workflow
-
-Pattern: `Agent: "dispatch /support-reply with CONTEXT from Phase X"`
-
-Await completion and capture REPLY block.
-
-- [ ] **Step 4.3:** Continue to Phase 5 with dispatch result
-
-If research-reply mode: REPLY block from support-reply is used. If context-only: proceed without dispatch.
+- If `MODE=--research-reply`: Invoke `/support-reply` with the ticket context, then exit
+- Otherwise (context-only mode): Proceed to Phase 1
 
 ---
 
@@ -298,21 +267,6 @@ Attachments saved to .dev/attachments/ ([count] files).
 
 ---
 
-## Phase 5: Mode Branching
+## Phase 5: Deliver result
 
-Branch on `MODE` as parsed in Phase 0.5:
-
-```text
-mode ∈ {context-only, full}
-
-if mode == "context-only":
-  └─ Ticket context already written by Phase 3 to
-     .dev/$(date +%Y-%m-%d)-ticket-ticket-context.md
-  └─ Exit workflow (no further phases)
-
-if mode == "full":
-  └─ Dispatch /support-reply with the ticket context file
-  └─ Read the returned REPLY block
-  └─ Write the REPLY block to .dev/$(date +%Y-%m-%d)-plugin-support-reply-<slug>.md
-  └─ Output REPLY to caller
-```
+Present the context or research-reply output to the user based on the mode selected in Phase 0.5. If research-reply was delegated, `/support-reply` has already completed that flow.
