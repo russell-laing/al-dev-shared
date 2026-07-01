@@ -604,7 +604,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "  inputs:\n"
             "    - profile-al-dev-shared/knowledge/\n"
             "  outputs:\n"
-            "    - docs/knowledge-quality.md\n"
+            "    - docs/knowledge_quality.md\n"
             "  next: [fix-knowledge-quality]\n",
         )
         _write_skill(
@@ -617,7 +617,7 @@ def test_derive_stage_uses_agent_and_knowledge_lanes_with_optional_fix() -> None
             "  invoked-by: user\n"
             "  repeatable: true\n"
             "  inputs:\n"
-            "    - docs/knowledge-quality.md\n"
+            "    - docs/knowledge_quality.md\n"
             "  outputs:\n"
             "    - profile-al-dev-shared/knowledge/\n"
             "  next: [audit-plugin-neutrality]\n",

@@ -152,7 +152,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Canonical shared guidance audited for structural and semantic quality.",
         ),
         (
-            "docs/knowledge-quality.md",
+            "docs/knowledge_quality.md",
             "Records knowledge findings and the structured HIGH-severity fix task block.",
         ),
         (

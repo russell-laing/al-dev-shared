@@ -220,7 +220,7 @@ DERIVE_REQUIRED_SKILLS = {
 DERIVE_REQUIRED_INPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
-    "fix-knowledge-quality": ("docs/knowledge-quality.md",),
+    "fix-knowledge-quality": ("docs/knowledge_quality.md",),
     "audit-plugin-neutrality": (
         "profile-al-dev-shared/skills/",
         "profile-al-dev-shared/agents/",
@@ -230,7 +230,7 @@ DERIVE_REQUIRED_INPUTS = {
 
 DERIVE_REQUIRED_OUTPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/generated/agents/",),
-    "audit-knowledge-quality": ("docs/knowledge-quality.md",),
+    "audit-knowledge-quality": ("docs/knowledge_quality.md",),
     "fix-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
 }
 
@@ -539,7 +539,7 @@ def render_derive_stage_detail(
         orphans,
         "profile-al-dev-shared/generated/agents/",
     )
-    knowledge_quality_class = _focused_artifact_class(orphans, "docs/knowledge-quality.md")
+    knowledge_quality_class = _focused_artifact_class(orphans, "docs/knowledge_quality.md")
     knowledge_source_class = _focused_artifact_class(orphans, "profile-al-dev-shared/knowledge/")
     lines = [
         "flowchart TD",
@@ -553,7 +553,7 @@ def render_derive_stage_detail(
         '    subgraph knowledge_lane["Knowledge source changed"]',
         '        art_knowledge_source["knowledge/"]',
         '        skill_audit_knowledge_quality["/audit-knowledge-quality"]',
-        '        art_knowledge_quality_report[".../knowledge-quality.md"]',
+        '        art_knowledge_quality_report[".../knowledge_quality.md"]',
         '        skill_fix_knowledge_quality["/fix-knowledge-quality"]',
         "    end",
         '    art_shared_surface["shared authored surface"]',
@@ -633,7 +633,11 @@ def render_stage_detail(
         return render_discover_stage_detail(stage_contracts, orphans)
     if stage == "derive":
         by_name = {contract.skill: contract for contract in stage_contracts}
-        if set(by_name) == DERIVE_REQUIRED_SKILLS:
+        # Superset, not equality: the focused view renders the primary
+        # source-change-to-neutrality path even when the stage grows extra
+        # skills (e.g. audit-disposition-ledger), which the curated diagram
+        # omits. Mirrors the decide-stage gate below.
+        if DERIVE_REQUIRED_SKILLS <= set(by_name):
             if all(
                 _has_required_templates(
                     by_name[name].inputs,
