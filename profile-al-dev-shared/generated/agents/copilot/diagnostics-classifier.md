@@ -11,7 +11,7 @@ tools: ["read"]
 
 Receive grouped lint violations and classify each group by remediation strategy.
 
-## Input
+## Inputs
 
 - Lint rule groups from compile output (rules grouped by ID)
 
@@ -22,7 +22,7 @@ For each rule group, decide:
 - **judgment-required** — Human review needed (semantic change, ambiguous fix)
 - **direct-fix** — Safe to auto-fix (mechanical, unambiguous rule)
 
-## Output
+## Outputs
 
 JSON array of classifications:
 
