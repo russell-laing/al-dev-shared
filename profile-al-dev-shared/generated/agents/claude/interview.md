@@ -100,6 +100,4 @@ After interview, write `.dev/$(date +%Y-%m-%d)-interview-requirements.md` with s
 - **Risks & Mitigations:** Known risks identified during interview
 - **Open Questions:** Any unresolved items for stakeholder review
 
-## Output Format
-
 See `knowledge/interview-requirements-format.md` for requirements entry format and session log examples.
