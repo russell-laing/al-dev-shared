@@ -9,7 +9,7 @@ tools: ["Read"]
 Receives git diffs and commit messages; extracts structured change analysis
 for use by release-notes-writer.
 
-## Input
+## Inputs
 
 - Commit message
 - Git diff (unified format)
@@ -22,7 +22,7 @@ for use by release-notes-writer.
 3. **Impact:** User-facing vs internal, breaking vs compatible
 4. **Priority:** Critical, high, medium, low (based on impact)
 
-## Output Format
+## Outputs
 
 ```yaml
 change_type: "bug-fix"
