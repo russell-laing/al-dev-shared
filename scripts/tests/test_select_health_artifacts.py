@@ -16,7 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SELECTOR = REPO_ROOT / "scripts" / "select_health_artifacts.py"
 HEALTH_SKILLS = [
     ".claude/skills/report-plugin-health/SKILL.md",
-    ".claude/skills/plan-plugin-findings/SKILL.md",
+    ".claude/skills/plan-plugin-findings-verify/SKILL.md",
     ".claude/skills/record-plugin-dispositions/SKILL.md",
 ]
 
@@ -205,7 +205,7 @@ class HealthArtifactSelectionContractTest(unittest.TestCase):
     def test_multi_surface_consumers_select_plugin_and_tooling_explicitly(self) -> None:
         for path in [
             ".claude/skills/report-plugin-health/SKILL.md",
-            ".claude/skills/plan-plugin-findings/SKILL.md",
+            ".claude/skills/plan-plugin-findings-verify/SKILL.md",
         ]:
             with self.subTest(path=path):
                 text = self.read(path)
