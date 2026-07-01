@@ -34,37 +34,13 @@ When a customer reports a BC/AL issue, research across AL symbols, MS Docs, and 
 
 ## Research Process
 
-**Step 1:** Parse customer query — Identify problem statement, affected features, error messages, BC version.
+### Step 1: Gather evidence
 
-**Step 2: Research** — Investigate across 3 MCP-based sources (no web search):
+Invoke evidence-gatherer to search across 3 MCP sources and collect findings.
 
-### Source 1: AL Symbols
+### Step 2: Synthesize findings
 
-Invoke the `bc-code-intelligence` MCP tool to search for relevant symbols:
-
-- Search for error messages or class names mentioned in the issue
-- Find related procedures, tables, fields
-- Check procedure signatures and documentation
-
-### Source 2: MS Docs
-
-Invoke the `microsoft-docs` MCP tool to search official documentation:
-
-- Search for the feature or error mentioned in the ticket
-- Look for known issues or breaking changes
-- Find configuration/setup requirements
-- Search for API documentation if relevant
-- For each URL in the results: mark it `[verified]` if a full document was fetched (title + content returned); mark it `[unverified]` if only a search-result snippet was returned and the full page was not fetched
-
-### Source 3: BC Code History *(conditional — check availability first)*
-
-Check whether `bc-code-history` appears in your active tool list before using this source. If it is **not available**, skip this source entirely and record `BC History: not available` in the SOURCES line of the return block. If it **is available**, invoke the `bc-code-history` MCP tool to search BC history for:
-
-- Recent changes to related functionality
-- Known bugs or fixes in specific versions
-- Patterns from similar issues
-
-**Step 3:** Synthesize findings — Combine evidence from all 3 sources into:
+Read the evidence artifact and synthesize into:
 
 1. Root cause (if identifiable)
 2. Workaround(s) if available

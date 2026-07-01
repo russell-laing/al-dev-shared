@@ -32,13 +32,13 @@ Generate release notes from the git diff between two commits. Audience: business
 
 ## Workflow
 
-### Phase 1: Extract Changes
+### Phase 1: Analyze changes
 
-1. Run `git diff START_HASH..END_HASH --name-only` to find changed files
-2. Read each file to understand changes (AL objects, features, fixes)
-3. Categorize changes: new features, bug fixes, improvements, breaking changes
+Invoke change-analyzer to extract and categorize changes from git history.
 
-### Phase 2: Write Notes
+### Phase 2: Compose release notes
+
+Read the change-analysis artifact and write release notes markdown sections with descriptions for each category.
 
 1. Research AL objects using AL MCP Server (get object definitions, understand context)
 2. Identify diagrams — If changes include architecture or data model updates, read `md-mermaid-helper.md` (using the auto-detect pattern below) and include a flowchart or sequence diagram only when the workflow has 3 or more decision points OR involves 3 or more distinct actors. If no architecture or data model changes are present, set `DIAGRAMS: none` in the return block — do not include any Mermaid section.

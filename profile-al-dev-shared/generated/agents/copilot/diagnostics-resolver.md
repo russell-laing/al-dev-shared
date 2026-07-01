@@ -45,11 +45,7 @@ AS0016: 3 occurrences → judgment-required (do not auto-fix)
 
 ### Step 3: Classify and fix each rule group
 
-#### 3a: Judgment-required check
-
-Check if the rule requires human judgment. These rules never auto-fix — see the
-Judgment-Required Rules Reference table below. If judgment-required: mark
-unresolved, add to report.
+Invoke diagnostics-classifier to classify each lint rule group. Based on the classification (judgment-required | direct-fix), proceed with either escalation or direct fix.
 
 #### 3b: Direct edit path
 
