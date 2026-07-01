@@ -1,29 +1,33 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 3,
+      "current_rows": 5,
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 43,
-      "open_accepted": 3
+      "current_rows": 61,
+      "open_accepted": 9
     }
   },
   "by_disposition": {
-    "accepted": 3,
-    "declined": 27,
-    "fixed": 16
+    "accepted": 9,
+    "declined": 36,
+    "fixed": 21
   },
   "by_surface": {
     "plugin": {
-      "current_rows": 46,
-      "open_accepted": 3
+      "current_rows": 50,
+      "open_accepted": 2
+    },
+    "tooling": {
+      "current_rows": 16,
+      "open_accepted": 7
     }
   },
-  "current_rows": 46,
-  "generated_at": "2026-07-01T03:01:12.175816+00:00",
+  "current_rows": 66,
+  "generated_at": "2026-07-01T04:13:59.481651+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 3,
-  "source_hash": "88637cbfa9722ae4b1158be5317d96c11da82b0c80d2d0865336d57f5f568522",
-  "total_events": 89
+  "open_accepted": 9,
+  "source_hash": "e7a96a3301ce11a788a6ec668b7135faf01563c261eaa7db131e690a66333626",
+  "total_events": 123
 }
