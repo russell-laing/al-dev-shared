@@ -49,7 +49,7 @@ chain analysis.
 **Severity rules:**
 
 - Medium: well-established chain with an obvious gap that would serve a frequent use case
-- Low: orphaned output or possible extension that serves an infrequent use case (appearing in <1% of typical workflows)
+- Low: orphaned output or possible extension that serves an infrequent use case (appearing in fewer than 5 active distributed workflows in the current corpus)
 
 ---
 
