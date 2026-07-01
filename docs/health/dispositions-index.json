@@ -1,8 +1,8 @@
 {
   "by_dimension": {
     "design": {
-      "current_rows": 6,
-      "open_accepted": 0
+      "current_rows": 13,
+      "open_accepted": 7
     },
     "quality": {
       "current_rows": 67,
@@ -10,6 +10,7 @@
     }
   },
   "by_disposition": {
+    "accepted": 7,
     "declined": 36,
     "fixed": 37
   },
@@ -19,14 +20,14 @@
       "open_accepted": 0
     },
     "tooling": {
-      "current_rows": 23,
-      "open_accepted": 0
+      "current_rows": 30,
+      "open_accepted": 7
     }
   },
-  "current_rows": 73,
-  "generated_at": "2026-07-01T04:47:44.519009+00:00",
+  "current_rows": 80,
+  "generated_at": "2026-07-01T05:29:01.630461+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 0,
-  "source_hash": "bb15affa57e343f32dd1f049685dbce246296f15a3d4eede248803c6ca64b309",
-  "total_events": 146
+  "open_accepted": 7,
+  "source_hash": "025e20f3ffffb799e30bf3266bb0ac203161eab467f066b216425fc7376c9cbc",
+  "total_events": 153
 }

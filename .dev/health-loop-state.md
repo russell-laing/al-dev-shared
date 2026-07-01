@@ -1,18 +1,8 @@
-stage_completed: implement-plugin-health
+stage_completed: plan-plugin-findings
 completed_at: 2026-07-01
-next_command: none
-next_inputs: []
-fresh_session_recommended: false
-note: |
-  Loop closed; all 7 plan tasks executed and verified, ledger events written fixed.
-  
-  Closure summary:
-  - disp_20260701_000133 (disposition-ledger-filename-rename-drift) → fixed
-  - disp_20260701_000134 (dispositions-open-empty-view-confusion) → fixed
-  - disp_20260701_000135 (plan-plugin-findings-match-cli-mismatch) → fixed
-  - disp_20260701_000136 (dossier-ledger-name-ambiguity) → fixed
-  - disp_20260701_000137 (test-environment-pytest-missing) → fixed
-  - disp_20260701_000138 (ask-user-question-opt-limit) → fixed
-  - disp_20260701_000139 (dossier-summary-divergence) → fixed
-  
-  Run `/audit-plugin-health` to start the next health loop if new changes have been made to the shared plugin surface.
+next_command: /implement-plugin-health --plan docs/superpowers/plans/2026-07-01-tooling-design-health-findings.md
+next_inputs:
+  - docs/superpowers/plans/2026-07-01-tooling-design-health-findings.md
+  - docs/health/dispositions-open.md
+fresh_session_recommended: true
+note: Plan written with 6 tasks closing all 7 accepted events (5 proceed/modify findings + 1 batch-decline refuted-skip ledger action). All tasks carry closes_event_ids for ledger closure. Run /implement-plugin-health in a fresh session to execute plan and close ledger.
