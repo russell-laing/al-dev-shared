@@ -109,6 +109,21 @@ Report before the gate: "N open findings; M already dispositioned
 
 ## Phase 2 — Disposition gate
 
+### User gate strategy
+
+When disposing 5+ findings, the user gate splits them into sequential
+AskUserQuestion calls (up to 4 per call) to stay within the 4-option limit
+while keeping the UI structured. Answers from each batch are collected
+and merged before proceeding.
+
+**If finding count ≤ 4:** Use single AskUserQuestion call (existing behavior).
+
+**If finding count > 4:** Split findings into groups of up to 4, run sequential
+AskUserQuestion calls per group, collect all answers and merge them before
+proceeding to Phase 3.
+
+### Disposition categories
+
 Present the worklist in dossier rank order (top actions first, then
 High → Medium → Low). For each finding show: object, severity, one-line
 issue, proposed fix. Collect one decision per finding from the user:
