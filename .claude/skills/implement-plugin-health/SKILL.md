@@ -233,11 +233,9 @@ Repeat the same append pattern after each later phase boundary, changing
 
 ### Phase 1–3: Execution and Verification Structure
 
-**Sequential, not coupled:** Phase 1 executes tasks and writes a checkpoint with `tasks_completed[].commit` entries and `closes_event_ids` from the plan. Phase 2 verifies each task's changes against the live repository state. Phase 3 reads the Phase 2 verification results and appends `fixed` events to the ledger.
+Phase 1 executes tasks and writes a checkpoint with `tasks_completed[].commit` entries and `closes_event_ids` from the plan. Phase 2 verifies each task's changes against the live repository state. Phase 3 reads the Phase 2 verification results and appends `fixed` events to the ledger.
 
-These phases are **sequential** — each reads the previous phase's output — but they are **not tightly coupled** by design. The checkpoint stores fully self-describing task data (plan task definition + commit hash + closes_event_ids). Phase 3 could logically be separated into a standalone skill, but the current structure keeps execution and ledger closure together for clarity: a single skill owns the complete lifecycle from task execution to ledger closure, with verification as an intermediate gate.
-
-**No atomization needed:** The phases are ordered correctly, and the checkpoint design already supports potential future separation if needed.
+See `knowledge/implementation-skill-phase-structure.md` for design rationale on phase sequencing.
 
 ---
 
