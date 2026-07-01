@@ -176,7 +176,15 @@ For trivial fixes:
 
 **No approval gate - present fix directly.**
 
-### Step 3: Test-Plan Routing
+### Step 3: Stage and Commit Changes
+
+After the fix is verified and ready, stage and commit it:
+
+Run: `/commit` to stage all modified files and create a git commit with a descriptive message.
+
+This is the standard next step after fix verification. See `/commit` skill for details on commit conventions and optional post-commit workflows.
+
+### Step 4: Test-Plan Routing
 
 After classification (Step 1):
 
