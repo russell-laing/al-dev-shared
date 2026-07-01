@@ -1,7 +1,12 @@
 ---
 name: commit-recover
-description: Recover corrupted AL files flagged in `.dev/commit-integrity.log` using fallback strategies and learned patterns from `.dev/learnings.md`, which is read for known patterns and updated with recovery records after each run.
-argument-hint: "[--auto-fix] [--file=path]"
+description: >-
+  Recover corrupted AL files when a commit is rejected by the pre-commit
+  integrity hook. Reads `.dev/commit-integrity.log` to identify failures
+  and attempts recovery using learned fallback strategies from
+  `.dev/learnings.md`. Use when: `commit-integrity` hook rejects with
+  CORRUPTION or SYNTAX_ERROR status.
+argument-hint: "[optional args: --auto-fix, --file=<path>]"
 ---
 
 # Skill: /commit-recover
