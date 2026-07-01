@@ -184,41 +184,12 @@ A procedure is "required" if it is named in the approved solution plan's
 **Procedures/Triggers** section (or equivalent implementation-step) and the assigned
 developer task must call it. Acceptance criteria alone do not qualify.
 
-**Decision tree if any required external procedure is NOT VERIFIED:**
-
-1. Stop developer spawn immediately — do not proceed to Phase 3
-2. Generate report block with exact procedure name and reason for non-verification:
-
-   ```text
-   SIGNATURE_VERIFICATION_FAILED
-   
-   Unverified required signature: [ProcedureName]
-   Evidence source attempted: [AL LSP / AL MCP / text search]
-   Reason: [not found / ambiguous match / no provider available]
-   
-   Impact: This procedure is required for the implementation plan.
-   Cannot proceed without verification.
-   
-   Resolution required: 
-   - Verify the procedure exists and signature is correct
-   - Consult BC documentation or base app source
-   - Confirm exact parameter names and types (including var modifiers)
-   - Rerun /develop-orchestrate with --autonomous after verification
-   ```
-
-3. Escalate to user with this report
-4. Do NOT spawn developers until signature is verified
-
-Only carry a NOT VERIFIED item forward as a documented risk when the
-procedure is explicitly optional or no assigned developer task depends on
-calling it. If an optional item is carried forward, include this block in the
-developer spawn prompt:
-
-```text
-Optional unverified signatures — do NOT guess these:
-- [ProcedureName]: [reason not verified; not required for assigned task]
-STOP and report back if the implementation would need to call this procedure.
-```
+**If any required external procedure is NOT VERIFIED:** apply the decision
+tree and `SIGNATURE_VERIFICATION_FAILED` report-block template in
+`knowledge/develop-orchestrate-signature-decision-tree.md` — stop developer
+spawn immediately, escalate to the user with the report, and do not spawn
+developers until the signature is verified (or the item is explicitly
+optional and carried forward as a documented risk per that doc).
 
 If not in autonomous mode, skip this step and proceed to Phase 2.
 
