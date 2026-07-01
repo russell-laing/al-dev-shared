@@ -69,8 +69,8 @@ def test_review_develop_code_review_artifact_is_terminal_output_optional_commit_
     def body() -> None:
         handoff_map = read("profile-al-dev-shared/knowledge/handoff-chain-map.md")
 
-        assert "`review-develop` | `code-review.md` | commit | Optional | Ctx" in handoff_map
-        assert "`review-develop` | `code-review.md` | commit | **Mandatory**" not in handoff_map
+        assert "`review-develop` | `.dev/*-develop-code-review.md` | commit | Optional | Ctx" in handoff_map
+        assert "`review-develop` | `.dev/*-develop-code-review.md` | commit | **Mandatory**" not in handoff_map
 
     if _called_from_unittest_loader():
         return unittest.FunctionTestCase(body)
