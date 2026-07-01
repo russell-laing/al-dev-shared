@@ -23,6 +23,8 @@ it as the starting specification rather than generating a competing plan.
 
 ## Steps
 
+See ../../knowledge/critic-dispatch-template.md for the standard 6-critic batch pattern and deduplication rules.
+
 1. **Generate draft plan** using superpowers:writing-plans skill with the provided spec
 2. **Dispatch 6 parallel critics** via Agent tool:
    - **Security Critic:** Check for auth/permission issues, data exposure, input validation
