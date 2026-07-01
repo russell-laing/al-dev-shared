@@ -168,7 +168,9 @@ def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str
                 ]
                 by_legacy_id.pop(legacy_id, None)
                 continue
-        if str(event["disposition"]) in ("declined", "grandfathered"):
+        if str(event["disposition"]) in ("declined", "grandfathered") and not event.get(
+            "closes_event_ids"
+        ):
             for accepted in list(open_accepted):
                 if str(accepted["object"]).strip() == str(event["object"]).strip():
                     closed_ids.add(str(accepted["event_id"]))

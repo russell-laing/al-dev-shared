@@ -24,11 +24,12 @@ docs/health/*
 !docs/health/dispositions.md
 !docs/health/dispositions_migration_audit.md
 !docs/health/dispositions_id_migration_audit.md
-!docs/health/dispositions_history/
-!docs/health/dispositions_events/
-!docs/health/dispositions_open.md
-!docs/health/dispositions_current.md
-!docs/health/dispositions_index.json
+!docs/health/dispositions-history/
+!docs/health/dispositions-events/
+!docs/health/dispositions-open.md
+!docs/health/dispositions-current.md
+!docs/health/dispositions-index.json
 !docs/health/dispositions_jsonl_migration_audit.md
+!docs/health/dispositions-jsonl-migration-audit.md
 !docs/health/false_positive_classes.md
 !docs/health/expected_phases.md
