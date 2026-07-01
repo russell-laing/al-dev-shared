@@ -6,28 +6,27 @@
     },
     "quality": {
       "current_rows": 61,
-      "open_accepted": 9
+      "open_accepted": 0
     }
   },
   "by_disposition": {
-    "accepted": 9,
     "declined": 36,
-    "fixed": 21
+    "fixed": 30
   },
   "by_surface": {
     "plugin": {
       "current_rows": 50,
-      "open_accepted": 2
+      "open_accepted": 0
     },
     "tooling": {
       "current_rows": 16,
-      "open_accepted": 7
+      "open_accepted": 0
     }
   },
   "current_rows": 66,
-  "generated_at": "2026-07-01T04:13:59.481651+00:00",
+  "generated_at": "2026-07-01T04:14:37.690269+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 9,
-  "source_hash": "e7a96a3301ce11a788a6ec668b7135faf01563c261eaa7db131e690a66333626",
-  "total_events": 123
+  "open_accepted": 0,
+  "source_hash": "5c6ac6510d3e8230fcfb9b6d26720a7487ad90d5a9999c889153fb63e326a8d6",
+  "total_events": 132
 }
