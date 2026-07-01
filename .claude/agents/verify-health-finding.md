@@ -61,7 +61,7 @@ beyond the short evidence snippet a record needs.
      Map the duck verdict to the record vocabulary: `ACCEPT → proceed`,
      `REJECT → skip`, `DEFER → skip` (record the deferral reason).
    - **evidence mode:** open the cited `file:line`, confirm the quoted snippet
-     still exists at or near that location **and** the claimed problem still
+     is present within ±5 lines of the cited line number and the claimed problem still
      holds. Snippet present AND claimed problem still holds → `verified`.
      Snippet absent OR claim no longer true → `dropped: <reason>`. Partial or
      ambiguous cases → `dropped: ambiguous claim`.
