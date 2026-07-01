@@ -1,7 +1,7 @@
 ---
 name: document
 description: >-
-  Orchestrate, review, and present comprehensive technical documentation
+  Dispatch, review, and present comprehensive technical documentation
   including a requirements traceability matrix (RTM) with inline requirement
   references. Spawns a docs-writer specialist, reviews its output for technical
   accuracy and completeness, then presents it — does not write the documentation
