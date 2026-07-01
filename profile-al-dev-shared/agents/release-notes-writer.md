@@ -1,9 +1,9 @@
 ---
 name: release-notes-writer
 description: >-
-  Run git diff analysis between two hashes, research AL object
-  context, and write release notes. Dispatched by the
-  release-notes skill.
+  Extract changes from a git diff between two hashes, research AL
+  object context for those changes, and write release notes.
+  Dispatched by the release-notes skill.
 model: sonnet
 tools: ["Read", "Write", "Bash", "MCP: al-mcp-server"]
 ---
