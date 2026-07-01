@@ -1,32 +1,69 @@
 {
   "by_dimension": {
+    "atomise": {
+      "current_rows": 2,
+      "open_accepted": 0
+    },
+    "consolidate": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
     "design": {
-      "current_rows": 13,
+      "current_rows": 14,
+      "open_accepted": 1
+    },
+    "extract": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
+    "handoff": {
+      "current_rows": 3,
+      "open_accepted": 0
+    },
+    "merge": {
+      "current_rows": 1,
+      "open_accepted": 0
+    },
+    "model-fit": {
+      "current_rows": 1,
       "open_accepted": 0
     },
     "quality": {
       "current_rows": 67,
       "open_accepted": 0
+    },
+    "split": {
+      "current_rows": 4,
+      "open_accepted": 0
+    },
+    "tool-hygiene": {
+      "current_rows": 1,
+      "open_accepted": 0
     }
   },
   "by_disposition": {
+    "accepted": 1,
     "declined": 38,
-    "fixed": 42
+    "fixed": 56
   },
   "by_surface": {
-    "plugin": {
-      "current_rows": 50,
+    "design": {
+      "current_rows": 14,
       "open_accepted": 0
+    },
+    "plugin": {
+      "current_rows": 51,
+      "open_accepted": 1
     },
     "tooling": {
       "current_rows": 30,
       "open_accepted": 0
     }
   },
-  "current_rows": 80,
-  "generated_at": "2026-07-01T05:57:58.163348+00:00",
+  "current_rows": 95,
+  "generated_at": "2026-07-01T07:03:33.214591+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 0,
-  "source_hash": "6286818f3ea824df9d73e4d7af7f3fabaa97a4dff59d439b43647964b2856169",
-  "total_events": 160
+  "open_accepted": 1,
+  "source_hash": "fd5a5566eb6a2b86f154c0f4784092f8a50525f7b9938a4eff6c053fc5401702",
+  "total_events": 189
 }
