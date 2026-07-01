@@ -140,14 +140,14 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
             "regenerate-agent-projections",
             "audit-knowledge-quality",
             "fix-knowledge-quality",
-            "validate-plugin-neutrality",
+            "audit-plugin-neutrality",
         } <= set(by_name):
             return "\n".join(
                 [
                     "### Agent source changed",
                     "",
                     "1. Run `/regenerate-agent-projections` to validate authored agents and regenerate harness-native projections.",
-                    "2. Run `/validate-plugin-neutrality` to verify the shared source remains harness-neutral.",
+                    "2. Run `/audit-plugin-neutrality` to verify the shared source remains harness-neutral.",
                     "",
                     "### Knowledge source changed",
                     "",
@@ -157,7 +157,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                     "",
                     "### Any shared source changed",
                     "",
-                    "Run `/validate-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.",
+                    "Run `/audit-plugin-neutrality` after edits to shared skills, agents, or knowledge. In a health-plan run, Implement handles its supported projection and neutrality checks before loop closure; Derive is not another breadcrumb-controlled step.",
                 ]
             )
 

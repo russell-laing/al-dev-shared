@@ -1,5 +1,5 @@
 ---
-name: validate-plugin-neutrality
+name: audit-plugin-neutrality
 description: >-
   Apply Harness Neutrality lens to knowledge files — finds harness-specific tokens or conventions
   that should be generic. Single-concern validation pipeline: runs validator script, parses and groups
@@ -17,7 +17,7 @@ workflow:
   next: [audit-knowledge-quality]
 ---
 
-# Skill: /validate-plugin-neutrality
+# Skill: /audit-plugin-neutrality
 
 Validate that the shared plugin surface (`profile-al-dev-shared/`) contains no
 harness-specific tokens or leakage. This ensures the authored content remains
@@ -147,6 +147,6 @@ If exit 0, report: "✓ All harness-neutrality issues resolved."
 If exit 1, present remaining findings and note which require manual review.
 
 **Knowledge-quality loop:** This is the final step of the
-`/audit-knowledge-quality` → `/fix-knowledge-quality` → `/validate-plugin-neutrality`
+`/audit-knowledge-quality` → `/fix-knowledge-quality` → `/audit-plugin-neutrality`
 loop. On exit 0, re-run `/audit-knowledge-quality` to confirm the fixes are
 clean.

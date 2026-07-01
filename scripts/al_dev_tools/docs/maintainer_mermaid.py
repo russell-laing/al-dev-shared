@@ -214,14 +214,14 @@ DERIVE_REQUIRED_SKILLS = {
     "regenerate-agent-projections",
     "audit-knowledge-quality",
     "fix-knowledge-quality",
-    "validate-plugin-neutrality",
+    "audit-plugin-neutrality",
 }
 
 DERIVE_REQUIRED_INPUTS = {
     "regenerate-agent-projections": ("profile-al-dev-shared/agents/",),
     "audit-knowledge-quality": ("profile-al-dev-shared/knowledge/",),
     "fix-knowledge-quality": ("docs/knowledge-quality.md",),
-    "validate-plugin-neutrality": (
+    "audit-plugin-neutrality": (
         "profile-al-dev-shared/skills/",
         "profile-al-dev-shared/agents/",
         "profile-al-dev-shared/knowledge/",
@@ -235,9 +235,9 @@ DERIVE_REQUIRED_OUTPUTS = {
 }
 
 DERIVE_REQUIRED_NEXT = {
-    "regenerate-agent-projections": ("validate-plugin-neutrality",),
+    "regenerate-agent-projections": ("audit-plugin-neutrality",),
     "audit-knowledge-quality": ("fix-knowledge-quality",),
-    "fix-knowledge-quality": ("validate-plugin-neutrality",),
+    "fix-knowledge-quality": ("audit-plugin-neutrality",),
 }
 
 
@@ -557,7 +557,7 @@ def render_derive_stage_detail(
         '        skill_fix_knowledge_quality["/fix-knowledge-quality"]',
         "    end",
         '    art_shared_surface["shared authored surface"]',
-        '    skill_align_harness_repos["/validate-plugin-neutrality"]',
+        '    skill_align_harness_repos["/audit-plugin-neutrality"]',
         "",
         "    art_agent_source --> skill_regenerate_agent_projections",
         "    skill_regenerate_agent_projections --> art_generated_agents",

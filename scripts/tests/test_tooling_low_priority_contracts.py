@@ -161,8 +161,8 @@ class ToolingLowPriorityContractsTest(unittest.TestCase):
 
     def test_low_priority_name_fit_descriptions_are_explicit(self) -> None:
         expected_fragments = {
-            ".claude/skills/validate-plugin-neutrality/SKILL.md": [
-                "single shared plugin surface"
+            ".claude/skills/audit-plugin-neutrality/SKILL.md": [
+                "shared plugin surface"
             ],
             ".claude/skills/audit-knowledge-quality/SKILL.md": [
                 "the HIGH-severity fix guidance interactively "

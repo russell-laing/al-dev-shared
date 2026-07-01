@@ -1,6 +1,6 @@
 # Harness Token Map
 
-Use this map when `/validate-plugin-neutrality` finds harness-branded wording in the
+Use this map when `/audit-plugin-neutrality` finds harness-branded wording in the
 shared authored surface.
 
 ## Replacement rules
