@@ -3,7 +3,8 @@ name: perf
 description: >-
   Analyze AL codeunits for performance anti-patterns; classifies codeunit
   type (Entry Point, Batch Processor, Hot Path, Utility) and escalates
-  finding severity for high-impact contexts.
+  finding severity by one level (LOW→MEDIUM, MEDIUM→HIGH, HIGH→CRITICAL)
+  for Entry Point, Hot Path, or Batch Processor codeunits.
 argument-hint: "[codeunit name, file path, or 'scan all']"
 ---
 
@@ -61,7 +62,7 @@ codeunit file list from Step 1:
 
 ```bash
 rg -n \
-  "trigger OnRun\\(|\\[EventSubscriber\\]|codeunit [0-9]+ .*(Batch|Process|Import|Post|Transfer|Run)" \
+  "trigger OnRun\\(|\\[EventSubscriber\\]|codeunit [0-9]+ .*(Batch|Process|Import|Post|Transfer|Run\\b(?!ner))" \
   [codeunit files from Step 1]
 ```
 
@@ -69,7 +70,7 @@ rg -n \
 | --- | --- | --- |
 | Has `OnRun()` | Entry Point | +1 level |
 | Has `[EventSubscriber]` attribute | Hot Path | +1 level |
-| Name contains Batch/Process/Import/Post/Transfer/Run | Batch Processor | +1 level |
+| Name contains Batch/Process/Import/Post/Transfer, or ends in `Run` as a whole word (not a substring like `JobRun`, `TestRun`, `Rerun`) | Batch Processor | +1 level |
 | None of the above | Utility | none |
 
 When a codeunit matches multiple indicators, apply the highest-priority
