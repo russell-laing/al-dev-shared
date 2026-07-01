@@ -159,6 +159,87 @@ def test_bare_knowledge_ref_resolves_from_non_knowledge_dir(tmp_path: Path) -> N
     assert validate_reference_path(doc) == []
 
 
+def test_strips_file_line_citation_suffix(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    _write(root / "scripts" / "store.py", "x = 1\n")
+    doc = _write(
+        root / ".claude" / "knowledge" / "k.md",
+        "See `scripts/store.py:802` for the loop.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_strips_anchor_suffix(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    _write(root / ".claude" / "knowledge" / "guide.md", "# guide\n")
+    doc = _write(
+        root / ".claude" / "knowledge" / "k.md",
+        "See `knowledge/guide.md#section-two`.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_strips_shell_var_assignment_prefix(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    _write(root / "docs" / "map.md", "# map\n")
+    doc = _write(
+        root / ".claude" / "knowledge" / "k.md",
+        "Run with `MAP_FILE=docs/map.md` set.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_skips_bracket_placeholder_and_ellipsis(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    doc = _write(
+        root / ".claude" / "knowledge" / "k.md",
+        "Example `docs/API/[name].md` and `.../skills/x/SKILL.md`.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_skips_archived_and_generated_surfaces(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    _write(
+        root / "profile-al-dev-shared" / "archived" / "skills" / "old" / "SKILL.md",
+        "Dead ref `docs/gone.md`.\n",
+    )
+    _write(
+        root / "profile-al-dev-shared" / "generated" / "agents" / "claude" / "a.md",
+        "Dead ref `docs/gone.md`.\n",
+    )
+    _MOD.REPO_ROOT = root
+    # Directory scan must skip both frozen surfaces entirely.
+    assert validate_reference_path(root / "profile-al-dev-shared") == []
+
+
+def test_bare_reference_regex_does_not_double_capture_dotdot(tmp_path: Path) -> None:
+    # `../../knowledge/real.md` must yield ONE resolvable token, not also a
+    # spurious `./../knowledge/real.md` mid-path capture.
+    root = tmp_path / "repo"
+    _write(root / ".claude" / "knowledge" / "real.md", "# real\n")
+    doc = _write(
+        root / ".claude" / "skills" / "s" / "SKILL.md",
+        "Follows ../../knowledge/real.md here.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
+def test_foo_placeholder_is_allowed(tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    doc = _write(
+        root / ".claude" / "knowledge" / "k.md",
+        "For example `knowledge/foo.md` or `scripts/foo.py`.\n",
+    )
+    _MOD.REPO_ROOT = root
+    assert validate_reference_path(doc) == []
+
+
 def test_direct_script_runs_with_repo_relative_path() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)

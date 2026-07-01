@@ -96,6 +96,9 @@ _ALLOWED_TEMPLATE_PATTERNS = (
     "scripts/generate-*.py",
     "docs/migration-v*.md",
     "path/to/file.md",
+    "*/foo.md",
+    "*/foo.py",
+    "*/foo.toml",
 )
 
 _LEGACY_REFERENCE_ALIASES = {

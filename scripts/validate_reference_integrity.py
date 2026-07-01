@@ -38,7 +38,7 @@ REPO_ROOT = bootstrap_repo(__file__)
 _INLINE_CODE_RE = re.compile(r"`([^`\n]+)`")
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 _BARE_REFERENCE_RE = re.compile(
-    r"(?<![`<])(?<!python3 )(?P<ref>(?:python3\s+)?(?:\.{1,2}/|\.claude/|profile-al-dev-shared/|docs/|scripts/|knowledge/)[^\s`<>\")]*)"
+    r"(?<![`<])(?<!python3 )(?<![./\w-])(?P<ref>(?:python3\s+)?(?:\.{1,2}/|\.claude/|profile-al-dev-shared/|docs/|scripts/|knowledge/)[^\s`<>\")]*)"
 )
 _PATH_PREFIXES = (
     ".claude/",
@@ -83,19 +83,44 @@ def _repo_relative(path: Path) -> str:
         return str(path)
 
 
+def _is_excluded_surface(path: Path) -> bool:
+    # Archived surfaces are frozen history and generated surfaces are derived
+    # output — neither is a hand-maintained reference surface, so stale paths
+    # in them are expected and not actionable.
+    return "archived" in path.parts or "generated" in path.parts
+
+
 def _iter_markdown_files(root: Path) -> list[Path]:
     if root.is_file():
         return [root]
-    return sorted(root.rglob("*.md"))
+    return sorted(p for p in root.rglob("*.md") if not _is_excluded_surface(p))
+
+
+_VAR_ASSIGN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+_LINE_SUFFIX_RE = re.compile(r":\d+(?:,\d+)*$")
+
+
+def _normalize_token(token: str) -> str:
+    """Strip incidental decorations that are not part of the referenced path.
+
+    Handles shell assignments (``MAP_FILE=docs/x.md``), markdown anchors
+    (``guide.md#section``), and file:line citations (``store.py:802``) so the
+    underlying path is what gets resolved. Without this the decoration makes a
+    valid path look dead.
+    """
+    token = _VAR_ASSIGN_RE.sub("", token)
+    token = token.split("#", 1)[0]
+    token = _LINE_SUFFIX_RE.sub("", token)
+    return token
 
 
 def _iter_reference_candidates(content: str) -> Iterable[str]:
     for match in _MARKDOWN_LINK_RE.finditer(content):
-        yield match.group(1).strip()
+        yield _normalize_token(match.group(1).strip())
     for match in _INLINE_CODE_RE.finditer(content):
-        yield match.group(1).strip()
+        yield _normalize_token(match.group(1).strip())
     for match in _BARE_REFERENCE_RE.finditer(content):
-        token = match.group("ref").rstrip(").,;:!?\"'`")
+        token = _normalize_token(match.group("ref").rstrip(").,;:!?\"'`"))
         if token:
             yield token
 
@@ -252,6 +277,8 @@ def _reference_issue_for_token(file_path: Path, token: str) -> ReferenceIssue | 
         or "YYYY" in token
         or "*" in token
         or "${" in token
+        or ("[" in token and "]" in token)
+        or token.startswith(".../")  # ellipsis shorthand for an elided path
     ):
         return None
 
