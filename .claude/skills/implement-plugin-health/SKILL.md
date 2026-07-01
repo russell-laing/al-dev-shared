@@ -18,10 +18,10 @@ workflow:
   repeatable: true
   inputs:
     - docs/superpowers/plans/<date>-<topic>.md
-    - docs/health/dispositions_open.md
+    - docs/health/dispositions-open.md
     - .dev/health-loop-state.md
   outputs:
-    - docs/health/dispositions_events/<year>/<year>-<month>.jsonl
+    - docs/health/dispositions-events/<year>/<year>-<month>.jsonl
     - .dev/implement-plugin-health-progress.md
     - .dev/health-loop-state.md
   next: [regenerate-agent-projections, validate-plugin-neutrality, audit-plugin-health]
@@ -79,14 +79,14 @@ If a phase blocks, append the same shape with `status:"blocked"` and a
 
 - `docs/superpowers/plans/<date>-*.md` — the accepted plan (must contain
   `closes_event_ids:` entries)
-- `docs/health/dispositions_open.md` — the live open accepted events
-- `docs/health/dispositions_index.json` — for count verification
+- `docs/health/dispositions-open.md` — the live open accepted events
+- `docs/health/dispositions-index.json` — for count verification
 - Live subject files named in the plan tasks (skills, agents, knowledge docs)
 
 **Outputs:**
 
 - Edited subject files (from task execution)
-- `fixed` JSONL events appended to `docs/health/dispositions_events/`
+- `fixed` JSONL events appended to `docs/health/dispositions-events/`
 - Regenerated views: `dispositions-open.md`, `dispositions-current.md`, `dispositions-index.json`
 - Archived plan → `docs/superpowers/plans/archived/`
 - Archived dossier + findings → `docs/health/archived/`
@@ -100,7 +100,7 @@ If a phase blocks, append the same shape with `status:"blocked"` and a
 
 - A plan file exists in `docs/superpowers/plans/` that contains at least one
   `closes_event_ids:` entry (produced by `/plan-plugin-findings`)
-- `docs/health/dispositions_open.md` exists with the relevant `accepted` events
+- `docs/health/dispositions-open.md` exists with the relevant `accepted` events
 - The pre-commit gate passes: `python3 scripts/check_ledger_staleness.py`
   exits 0 before this skill begins
 
@@ -393,7 +393,7 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    event and extract its surface, dimension, object, and finding verbatim
    using this two-step lookup:
 
-   a. **Open-view lookup (primary):** search `docs/health/dispositions_open.md`
+   a. **Open-view lookup (primary):** search `docs/health/dispositions-open.md`
       for a row with that `event_id`. This covers the common case where the
       accepted event is still visible.
 
@@ -406,7 +406,7 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
       # Extract YYYY and MM; e.g. disp_20260619_000001 → 2026/2026-06.jsonl
       YEAR=$(echo "$EVENT_ID" | sed 's/disp_\([0-9]\{4\}\).*/\1/')
       MONTH=$(echo "$EVENT_ID" | sed 's/disp_[0-9]\{4\}\([0-9]\{2\}\).*/\1/')
-      SHARD="docs/health/dispositions_events/${YEAR}/${YEAR}-${MONTH}.jsonl"
+      SHARD="docs/health/dispositions-events/${YEAR}/${YEAR}-${MONTH}.jsonl"
       grep "\"event_id\": \"$EVENT_ID\"" "$SHARD"
       ```
 
@@ -438,7 +438,7 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
    `dispositions-open.md`, `dispositions-current.md`, and `dispositions-index.json`.
 4. **Sync the history shard** — after `append_event`/`regenerate`, run
    `sync_shard --since` to copy all events from today's date into the
-   markdown month shard under `docs/health/dispositions_history/`:
+   markdown month shard under `docs/health/dispositions-history/`:
 
    ```bash
    python3 scripts/health_disposition_store.py sync_shard --since <today's ISO date>
@@ -450,7 +450,7 @@ Work through one Resolve → Verify → Append pass before moving to the next ev
 
 **Post-loop close gate (scoped to this plan)** — after all `fixed` events are
 appended, confirm each `event_id` in the plan's `closes_event_ids` lists no
-longer appears in `docs/health/dispositions_open.md`. This scoped check is the
+longer appears in `docs/health/dispositions-open.md`. This scoped check is the
 closure gate — not a global pass.
 
 The global checker is run for INFORMATION only; an unrelated open backlog does
@@ -588,8 +588,8 @@ closed:
 The per-task implementation commits were already created in Phase 1. Add ONE
 dedicated commit covering:
 
-- The `fixed` events appended to `docs/health/dispositions_events/`
-- The synced history shard under `docs/health/dispositions_history/` (the
+- The `fixed` events appended to `docs/health/dispositions-events/`
+- The synced history shard under `docs/health/dispositions-history/` (the
   `append_row` rows from Phase 3 step 4)
 - The regenerated views — `dispositions-current.md`, `dispositions-index.json`,
   and `dispositions.md` (the compatibility view). `dispositions-open.md` may show
@@ -601,9 +601,9 @@ Stage these paths explicitly (the archived dossier/findings are gitignored, so
 there is no deletion to stage):
 
 ```bash
-git add docs/health/dispositions_open.md docs/health/dispositions_events/ \
-        docs/health/dispositions_history/ docs/health/dispositions_current.md \
-        docs/health/dispositions_index.json docs/health/dispositions.md \
+git add docs/health/dispositions-open.md docs/health/dispositions-events/ \
+        docs/health/dispositions-history/ docs/health/dispositions-current.md \
+        docs/health/dispositions-index.json docs/health/dispositions.md \
         docs/superpowers/history.md .dev/health-loop-state.md
 git commit -m "📦 chore(health): close disposition events for <plan-topic>"
 ```

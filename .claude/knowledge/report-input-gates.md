@@ -1,9 +1,9 @@
 # Report Input Gates
 
 > See `.claude/knowledge/health-disposition-storage-contract.md` for the
-> authoritative storage layout. `docs/health/dispositions_events/` is the
-> append-only source of truth; `docs/health/dispositions_open.md` and
-> `docs/health/dispositions_index.json` are generated read artifacts.
+> authoritative storage layout. `docs/health/dispositions-events/` is the
+> append-only source of truth; `docs/health/dispositions-open.md` and
+> `docs/health/dispositions-index.json` are generated read artifacts.
 > Never append rows directly to `docs/health/dispositions.md`.
 
 Operative procedures for the `/report-plugin-health` Phase 2 filter stages (sub-sections 1c and 1d).
@@ -146,8 +146,8 @@ Record the count of dropped findings so the filter is auditable, not silent.
 ## 1d — Disposition suppression
 
 Run `python3 scripts/health_disposition_store.py match` against the JSONL event
-store and generated views. Read `docs/health/dispositions_index.json` first for
-counts, then read `docs/health/dispositions_open.md` only when open accepted
+store and generated views. Read `docs/health/dispositions-index.json` first for
+counts, then read `docs/health/dispositions-open.md` only when open accepted
 events need inspection. New decisions are appended with `append_event` and
 views are regenerated; do not call `append_row`, read
 `docs/health/dispositions.md` for ordinary suppression, or use
