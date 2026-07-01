@@ -2,7 +2,7 @@
   "by_dimension": {
     "design": {
       "current_rows": 13,
-      "open_accepted": 5
+      "open_accepted": 0
     },
     "quality": {
       "current_rows": 67,
@@ -10,9 +10,8 @@
     }
   },
   "by_disposition": {
-    "accepted": 5,
     "declined": 38,
-    "fixed": 37
+    "fixed": 42
   },
   "by_surface": {
     "plugin": {
@@ -21,13 +20,13 @@
     },
     "tooling": {
       "current_rows": 30,
-      "open_accepted": 5
+      "open_accepted": 0
     }
   },
   "current_rows": 80,
-  "generated_at": "2026-07-01T05:56:31.164376+00:00",
+  "generated_at": "2026-07-01T05:57:58.163348+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 5,
-  "source_hash": "5f12540744a6a8908864c6d4bc35e9bf6300e7f7ad431b5144cfd9991d195468",
-  "total_events": 155
+  "open_accepted": 0,
+  "source_hash": "6286818f3ea824df9d73e4d7af7f3fabaa97a4dff59d439b43647964b2856169",
+  "total_events": 160
 }
