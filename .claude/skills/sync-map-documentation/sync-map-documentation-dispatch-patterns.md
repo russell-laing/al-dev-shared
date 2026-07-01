@@ -34,7 +34,7 @@ Prompt:
 | Surface | `<SUBAGENT_TYPE>` | `<TARGET_DESCRIPTION>` | `<OUTPUT_FILE>` |
 |---------|-------------------|------------------------|-----------------|
 | Skills  | `sync-map-documentation-skill-metadata` | `skills in profile-al-dev-shared/skills/` | `skill-metadata.json` |
-| Agents  | `sync-map-documentation-agent-metadata` | `agents in profile-al-dev-shared/agents/` | `agent-metadata.json` |
+| Agents  | `collect-agent-metadata` | `agents in profile-al-dev-shared/agents/` | `agent-metadata.json` |
 
 **Wait for both metadata agents to complete before proceeding to Step 3.2.**
 

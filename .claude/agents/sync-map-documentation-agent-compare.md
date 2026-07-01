@@ -4,7 +4,7 @@ description: >-
   Compares agent metadata from agent-metadata.json against docs/agent-map.md
   and writes a structured JSON discrepancy report to the run artifact directory.
   Called by /sync-map-documentation dispatch phase after
-  sync-map-documentation-agent-metadata completes.
+  collect-agent-metadata completes.
 model: sonnet
 tools: ["Read", "Bash", "Write"]
 ---
@@ -17,7 +17,7 @@ tools: ["Read", "Bash", "Write"]
 | result_dir | Absolute path to `.dev/sync-map-documentation-runs/<run_id>/` |
 
 **Precondition:** `<result_dir>/audit/agent-metadata.json` must exist (written by
-`sync-map-documentation-agent-metadata`).
+`collect-agent-metadata`).
 
 ## Outputs
 

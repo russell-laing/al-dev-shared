@@ -1,5 +1,5 @@
 ---
-name: sync-map-documentation-agent-metadata
+name: collect-agent-metadata
 description: >-
   Builds the active agent list from profile-al-dev-shared/agents/ and extracts
   frontmatter metadata (model, tools, description, callers); caller derivation

@@ -136,7 +136,7 @@ ls profile-al-dev-shared/archived/agents/ 2>/dev/null
 
 Dispatch in parallel:
 
-- `al-dev-shared:sync-map-documentation-agent-metadata` (writes `agent-metadata.json`)
+- `al-dev-shared:collect-agent-metadata` (writes `agent-metadata.json`)
 - `al-dev-shared:sync-map-documentation-skill-metadata` (writes `skill-metadata.json`)
 
 Pass `run_id` and `result_dir` to both. Wait for both to complete.
