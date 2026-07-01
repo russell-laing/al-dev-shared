@@ -56,6 +56,13 @@ For distributed-surface agents, classify into three states:
 - Agent Outputs table names a file the spawning skill never reads or references
 - Inputs table says "Not documented" but caller passes structured fields
 
+**Note on severity scope:** The three-state classification above applies to
+whole-block presence — an entire Inputs/Outputs context block missing is
+always High. The severity rules below apply to field-level completeness
+*within* an already-present block (e.g., a single field marked "Not
+documented") — those follow the graduated Medium/Low scale, not the blanket
+High threshold.
+
 **Severity rules:**
 
 - High: caller passes structured data the Inputs table explicitly contradicts
