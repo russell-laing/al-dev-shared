@@ -26,8 +26,8 @@ class DispositionWorkflowContractTest(unittest.TestCase):
 
         self.assertIn("event_id", combined)
         self.assertIn("closes_event_ids", combined)
-        self.assertIn("dispositions-open.md", combined)
-        self.assertIn("dispositions-index.json", combined)
+        self.assertIn("dispositions_open.md", combined)
+        self.assertIn("dispositions_index.json", combined)
 
     def test_stale_closes_rows_term_is_removed(self) -> None:
         for path in FILES:
