@@ -109,7 +109,7 @@ Pass as context to writing-plans all items listed in
     **For agent or script edits, regenerate projections first, then test:**
 
     ```bash
-    python3 scripts/generate-projections.py --agents .claude/agents/verify-health-finding.md
+    python3 scripts/generate_agent_projections.py --agents .claude/agents/verify-health-finding.md
     pytest tests/test_verify_health_finding.py -v
     ```
 

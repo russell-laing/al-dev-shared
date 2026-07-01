@@ -258,7 +258,7 @@ not memory alone.
 See `knowledge/developer-invocation-patterns.md` for dispatcher consistency
 across all developer spawns.
 
-See `knowledge/al-dev-develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
+See `knowledge/develop-spawn-prompt.md` for the developer spawn prompt template and instructions for instantiating it per module assignment.
 
 ### Developer Spawn Routing: Detailed Steps
 

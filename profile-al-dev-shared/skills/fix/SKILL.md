@@ -287,7 +287,7 @@ bounded to the confirmed root-cause scope before presenting to the user.
 
 ## Examples
 
-For detailed walkthroughs of two common fix scenarios, see [`knowledge/fix-examples.md`](../knowledge/fix-examples.md).
+For detailed walkthroughs of two common fix scenarios, see [`knowledge/fix-examples.md`](../../knowledge/fix-examples.md).
 
 ---
 

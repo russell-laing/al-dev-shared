@@ -342,7 +342,7 @@ Execute the following state machine in order:
    2 combined quality). For the quality dimension, the 2 combined readers replace
    what were 8 individual lenses and still produce 8 per-lens result-sets (via the
    Phase 4 split). The four deterministic lenses run as the Phase 2.5 script. The
-   on-disk 13 is the count `scripts/validate-lens-agents.py` asserts.
+   on-disk 13 is the count `scripts/validate_lens_agents.py` asserts.
 
 2. **Filter `remaining_lenses` and dispatch:**
    - If `--resume` is absent: `remaining_lenses = ALL_LENSES`.

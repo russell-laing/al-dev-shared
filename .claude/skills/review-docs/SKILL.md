@@ -175,7 +175,7 @@ Flag as `[STALE?]` with the actual date.
 
 ## Phase 5: Write Findings Report
 
-After reviewing all files, write to `docs/docs-quality.md`:
+After reviewing all files, write to `docs/docs_quality.md`:
 
 ```markdown
 # Docs Quality Review
@@ -219,7 +219,7 @@ the auto-generated and report files that were excluded, with a one-line reason e
 Verify the report was written:
 
 ```bash
-ls -la docs/docs-quality.md
+ls -la docs/docs_quality.md
 ```
 
 ## Phase 6: Report and Offer Fixes
@@ -227,7 +227,7 @@ ls -la docs/docs-quality.md
 Print a brief summary:
 
 ```text
-Docs review complete. Report: docs/docs-quality.md
+Docs review complete. Report: docs/docs_quality.md
 BROKEN references: N
 Readability warnings: N
 ```
@@ -253,4 +253,4 @@ Do not auto-apply fixes without user confirmation.
 ✅ Missing code-block language tags flagged with line numbers  
 ✅ Stale "Last updated" dates surfaced  
 ✅ Auto-generated and report files excluded from review  
-✅ Report written to `docs/docs-quality.md` and verified on disk
+✅ Report written to `docs/docs_quality.md` and verified on disk
