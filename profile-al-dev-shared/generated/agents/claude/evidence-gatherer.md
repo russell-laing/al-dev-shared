@@ -10,13 +10,18 @@ tools: ["Read", "Write", "Bash"]
 
 Conduct parallel searches across 3 information sources.
 
+## Inputs
+
+- Search query
+- The 3 MCP source identifiers to query (documentation, code samples, support resources)
+
 ## Sources
 
 1. **Documentation** — Official product documentation
 2. **Code samples** — Example implementations
 3. **Support resources** — FAQ, troubleshooting guides
 
-## Output
+## Outputs
 
 Write `.dev/YYYY-MM-DD-support-evidence.md` with findings grouped by source.
 
