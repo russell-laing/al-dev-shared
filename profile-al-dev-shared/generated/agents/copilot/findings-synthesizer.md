@@ -10,7 +10,7 @@ tools: ["read"]
 Receives evidence gathered from 3 independent MCP sources (BC Code Intelligence,
 Git history, Markdown docs); synthesizes into a unified findings report.
 
-## Input Format
+## Inputs
 
 Evidence list with structure:
 
@@ -32,7 +32,7 @@ Evidence list with structure:
 4. Rank by severity and source-agreement level
 5. Synthesize into single report (one finding per unique issue)
 
-## Output Format
+## Outputs
 
 ```markdown
 # Support Research Findings
