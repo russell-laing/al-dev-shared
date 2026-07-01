@@ -15,7 +15,7 @@ ACTIVE_TOOLING_SKILLS = sorted(
 )
 
 SYNC_MAP_AGENTS = [
-    REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-agent-metadata.md",
+    REPO_ROOT / ".claude" / "agents" / "collect-agent-metadata.md",
     REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-agent-compare.md",
     REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-skill-metadata.md",
     REPO_ROOT / ".claude" / "agents" / "sync-map-documentation-skill-compare.md",
