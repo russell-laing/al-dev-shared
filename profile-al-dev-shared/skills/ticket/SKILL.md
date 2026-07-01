@@ -38,12 +38,21 @@ feature/#CU86d0dnfx2-FD1234-description
 
 ---
 
-## Phase 0.5: Determine ticket-handling mode
+## Phase 0.5: Mode Gate (research-reply delegation)
 
-Check the `MODE` parameter:
+Determine ticket mode:
 
-- If `MODE=--research-reply`: Invoke `/support-reply` with the ticket context, then exit
-- Otherwise (context-only mode): Proceed to Phase 1
+- **Research mode:** If ticket requires supportive research (customer documentation,
+  troubleshooting guide, FAQ), delegate to `/support-reply` skill
+
+- **Support-reply flow:** If ticket is support-request or documentation-pull,
+  invoke `/support-reply` and stop here
+
+- **Context-loading mode:** If ticket is internal task or development request,
+  continue to Phases 1-4 (context gathering + response)
+
+**Decision criterion:** Does this ticket need external research (docs, community knowledge)?
+If YES → delegate to `/support-reply`. If NO → continue with context-loading.
 
 ---
 
