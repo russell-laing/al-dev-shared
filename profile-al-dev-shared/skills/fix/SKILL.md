@@ -83,6 +83,8 @@ When shell search or structured-file inspection is required, prefer `rg` and
 investigation findings and read them when present — they often name the exact
 file and confirmed root cause:
 
+<!-- Cross-skill dependency: /investigate → /fix artifact handoff documented in knowledge/artifact-contracts.md -->
+
 `$(ls .dev/*-investigate-findings.md 2>/dev/null | sort | tail -1)`
 
 If a findings file exists, read it and use its confirmed root cause to scope the

@@ -22,8 +22,10 @@ This is a thin orchestration wrapper. For details on the preflight validation an
 
 ## Optional Next Steps
 
-After commit completes, you can optionally:
+After commit completes, your changes are committed to the local branch. You may optionally continue with:
 
-- **Release notes:** Run `/release-notes` to auto-generate changelog from commits
-- **Handoff documentation:** Run `/handoff` to create handoff summary for downstream teams
-- **Code documentation:** Run `/document` to update inline docs and generate API reference
+- **`/document`** — Generate or update relevant documentation (if changes include API, workflow, or user-facing updates)
+- **`/handoff`** — Prepare a handoff artifact for the next phase (knowledge transfer, runbook, or team notes)
+- **`/release-notes`** — Write release notes summarizing this change for end users (for release-ready commits)
+
+All three steps read `.dev/commit-artifacts/` as context. See the skill descriptions for details on when each step applies.
