@@ -114,7 +114,8 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
     shard.parent.mkdir(parents=True, exist_ok=True)
 
     # Atomically write to shard with exclusive file lock to prevent concurrent duplicates
-    with shard.open("a", encoding="utf-8") as f:
+    # "a+" (not "a"): the re-check below reads the file back before writing.
+    with shard.open("a+", encoding="utf-8") as f:
         fcntl.flock(f.fileno(), fcntl.LOCK_EX)
         try:
             # Re-check for duplicates under lock before writing (stale check above could race)

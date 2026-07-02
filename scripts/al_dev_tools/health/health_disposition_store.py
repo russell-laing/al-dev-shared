@@ -166,13 +166,18 @@ def _cli_show(event_id: str, events_root: Path) -> int:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    # Peek at --root with a throwaway parser before the real subparsers exist —
+    # calling parse_known_args on `parser` itself here would match the "command"
+    # positional against zero registered subparser choices and always fail.
+    root_peek = argparse.ArgumentParser(add_help=False)
+    root_peek.add_argument("--root", type=Path, default=bootstrap_repo(__file__))
+    root = root_peek.parse_known_args(argv)[0].root
+
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
     parser.add_argument("--root", type=Path, default=bootstrap_repo(__file__), help="Repository root (default: auto-detected repo root)")
     sub = parser.add_subparsers(dest="command", required=True)
     # Note: defaults are computed from the --root argument, which defaults to cwd but can be overridden
     # to ensure ledger operations are never cwd-relative.
-    args_temp = parser.parse_known_args(argv)[0]
-    root = args_temp.root
     _HISTORY_DEFAULT = dispositions_history_root(root)
     _EVENTS_DEFAULT = dispositions_events_root(root)
     _LEDGER_DEFAULT = compatibility_ledger_path(root)
