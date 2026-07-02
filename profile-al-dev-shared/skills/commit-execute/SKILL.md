@@ -2,7 +2,7 @@
 name: commit-execute
 description: >-
   Execute an approved commit plan from `.dev/commit-preflight.md`. Runs lint
-  preflight and OOXML validation, dispatches the commit executor, and
+  preflight and OOXML validation, dispatches the commit-executor agent, and
   completes the approved commits. Use this after `/commit-preflight` or when
   an approved plan already exists.
 ---
