@@ -134,6 +134,8 @@ def canonical_tools() -> set[str]:
 
     Same source validate-lens-agents.py uses; no marker-comment coupling.
     """
+    if not POLICY_PATH.exists():
+        raise ValueError(f"policy file not found: {POLICY_PATH}")
     data, _ = _split_frontmatter(POLICY_PATH.read_text(encoding="utf-8"))
     return set(data["projection_rules"]["claude"].keys())
 
@@ -604,6 +606,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     surface_root = SURFACE_ROOTS[args.surface]
+    if not surface_root.exists():
+        raise ValueError(f"surface_root not found: {surface_root}")
     agents = agent_files(surface_root)
     skills = skill_files(surface_root)
 

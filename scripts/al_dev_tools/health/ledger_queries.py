@@ -90,6 +90,11 @@ def resolve_closures(rows: list[Row]) -> None:
             continue
         for m in CLOSES_ID_RE.finditer(r.note):
             target_id = m.group(1)
+            # Try both ID formats (legacy sans-# and auto-generated with-#) to maintain
+            # backwards compatibility. Note: if both variants exist in by_id, this will
+            # match the first one tried. Expected format: auto-generated IDs are always
+            # lowercase-normalized in norm_object(); legacy IDs should follow the same
+            # normalization to avoid collisions.
             target = by_id.get(f"#{target_id}") or by_id.get(target_id)
             if target and target.disposition == "accepted" and target.number < r.number:
                 target.closed_by = r.number

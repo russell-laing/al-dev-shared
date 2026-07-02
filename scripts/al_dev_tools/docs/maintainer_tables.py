@@ -48,7 +48,7 @@ def render_skills_tables(contracts: list[WorkflowContract]) -> str:
 STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     "map-sync": (
         (
-            "docs/skills_map.md` and `docs/agent_map.md",
+            "`docs/skills_map.md` and `docs/agent_map.md`",
             "Canonical inventory maps audited and updated by the stage.",
         ),
         (
@@ -70,7 +70,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
     ),
     "discover": (
         (
-            "docs/skills_map.md` and `docs/agent_map.md",
+            "`docs/skills_map.md` and `docs/agent_map.md`",
             "Provide current inventory and relationship context to the audit-driven path.",
         ),
         (
@@ -100,7 +100,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Presents the verified findings that require a maintainer decision.",
         ),
         (
-            "docs/health/dispositions_events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions_open.md",
+            "`docs/health/dispositions_events/YYYY/YYYY-MM.jsonl` (canonical) + `docs/health/dispositions_open.md`",
             "Canonical event store for decisions; dispositions-open.md is the generated open-items read view.",
         ),
         (
@@ -134,7 +134,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Closes the core loop with `next_command: none` in the ledger-close commit.",
         ),
         (
-            "docs/health/archived/` and `docs/superpowers/plans/archived/",
+            "`docs/health/archived/` and `docs/superpowers/plans/archived/`",
             "Retain consumed findings, dossiers, plans, and review evidence outside live selectors.",
         ),
     ),

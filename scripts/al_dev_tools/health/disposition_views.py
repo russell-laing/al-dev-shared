@@ -56,15 +56,17 @@ def materialize_current_view(rows: list[dict[str, str]]) -> list[dict[str, str]]
 
 def write_shard(shard: Path, shard_rows: list[dict[str, str]]) -> None:
     shard.parent.mkdir(parents=True, exist_ok=True)
-    header = "" if shard.exists() else TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
+    if shard.exists():
+        existing_content = shard.read_text(encoding="utf-8")
+    else:
+        existing_content = TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
     body_lines = [
         f"| {r['id']} | {r['surface']} | {r['dimension']} | {r['object']} | "
         f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
         for r in shard_rows
     ]
-    mode = "a" if shard.exists() else "w"
-    with shard.open(mode, encoding="utf-8") as f:
-        f.write(header + "\n".join(body_lines) + "\n")
+    new_content = existing_content + "\n".join(body_lines) + "\n"
+    write_text_atomic(shard, new_content)
 
 
 def append_row(history_root: Path, row: dict[str, str]) -> Path:
