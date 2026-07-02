@@ -1,6 +1,6 @@
 ---
 description: "Draft a customer-facing reply from internal BC support research findings. Writes the combined findings + reply file. Dispatched by the support-reply skill (reply phase). Pairs with bc-support-researcher."
-tools: ["Read", "Write", "Bash", "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 

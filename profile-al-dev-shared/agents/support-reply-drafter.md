@@ -6,7 +6,7 @@ description: >-
   Dispatched by the support-reply skill (reply phase).
   Pairs with bc-support-researcher.
 model: sonnet
-tools: ["Read", "Write", "Bash", "MCP: bc-code-intelligence"]
+tools: ["Read", "Write", "Bash"]
 ---
 
 # Agent: support-reply-drafter
