@@ -210,6 +210,13 @@ evidence needed for that claim.
 
 ## Validation Before Completion
 
+For skill changes, also run:
+
+```bash
+python3 /Users/russelllaing/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/validate-health-loop-second-opinion
+npx --yes markdownlint-cli2 .codex/skills/validate-health-loop-second-opinion/SKILL.md
+```
+
 Before saying the review is complete, run:
 
 ```bash
