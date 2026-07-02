@@ -1,7 +1,7 @@
 ---
 name: "support-reply-drafter"
 description: "Draft a customer-facing reply from internal BC support research findings. Writes the combined findings + reply file. Dispatched by the support-reply skill (reply phase). Pairs with bc-support-researcher."
-tools: ["edit"]
+tools: ["read", "edit", "execute", "bc-code-intelligence-mcp-<tool>"]
 ---
 
 
