@@ -28,27 +28,40 @@ Resume previous work on [context]? Run:
 
 If not exists, proceed to Phase 1 (context gathering).
 
-## Phase 1: Gather Planning Context (context-type: planning)
+## Phase 1: Gather Project Context
 
-For `context-type: planning`, collect:
+- [ ] Check for `.dev/project-context.md`
 
-1. Spec file (if exists in `.dev/spec-*.md`)
-2. Prior plan artifacts (if any)
-3. Current branch state (`git log`, `git diff`)
-4. Test status (if applicable)
+```bash
+if [ -f .dev/project-context.md ]; then
+    echo "Project context found"
+else
+    echo "ERROR: .dev/project-context.md missing"
+    exit 1
+fi
+```
 
-Write to `.dev/planning-preflight-context.md`.
+- [ ] Extract project type (AL/Python/etc) from context
 
-## Phase 2: Gather Review Context (context-type: review)
+```bash
+grep -o "project_type: [^,]*" .dev/project-context.md
+```
 
-For `context-type: review`, collect:
+## Phase 2: Validate Environment
 
-1. Current branch state (`git log`, `git diff`)
-2. Test results (run test suite if applicable)
-3. Linter status (if applicable)
-4. Code review checkpoint (prior findings if any)
+- [ ] Confirm required tools installed
 
-Write to `.dev/review-preflight-context.md`.
+```bash
+for tool in git jq grep; do
+    command -v $tool >/dev/null 2>&1 || { echo "ERROR: $tool not found"; exit 1; }
+done
+```
+
+- [ ] Check git remotes
+
+```bash
+git remote -v | grep -q origin || { echo "ERROR: no origin remote"; exit 1; }
+```
 
 ## Phase 3: Emit Preflight Checkpoint
 
