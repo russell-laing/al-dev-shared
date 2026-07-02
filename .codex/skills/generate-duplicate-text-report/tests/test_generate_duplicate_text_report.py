@@ -111,6 +111,36 @@ class DuplicateTextReportTests(unittest.TestCase):
         self.assertEqual(inclusive.scanned_files, 4)
         self.assertEqual(len(default.excluded_files), 5)
 
+    def test_default_excludes_claude_worktree_copies(self):
+        duplicate = duplicate_lines()
+        write_lines(self.root / ".claude" / "skills" / "active-a.md", duplicate)
+        write_lines(self.root / ".claude" / "skills" / "active-b.md", duplicate)
+        write_lines(
+            self.root
+            / ".claude"
+            / "worktrees"
+            / "feature-a"
+            / "copied-a.md",
+            duplicate,
+        )
+        write_lines(
+            self.root
+            / ".claude"
+            / "worktrees"
+            / "feature-b"
+            / "copied-b.md",
+            duplicate,
+        )
+
+        result = self.scan()
+
+        self.assertEqual(result.scanned_files, 2)
+        self.assertEqual(len(result.matches), 1)
+        self.assertEqual(
+            {reason for _, reason in result.excluded_files},
+            {"worktree"},
+        )
+
     def test_detects_non_overlapping_duplicates_within_one_file(self):
         duplicate = duplicate_lines()
         write_lines(

@@ -129,14 +129,17 @@ def exclusion_reason(
     include_archived: bool,
     include_generated: bool,
 ) -> str | None:
-    parts = set(path.parts)
+    parts = path.parts
+    part_set = set(parts)
     if path.name == ".DS_Store":
         return ".DS_Store"
-    if "__pycache__" in parts:
+    if "__pycache__" in part_set:
         return "cache"
-    if not include_archived and "archived" in parts:
+    if ".claude" in part_set and "worktrees" in part_set:
+        return "worktree"
+    if not include_archived and "archived" in part_set:
         return "archived"
-    if not include_generated and "generated" in parts:
+    if not include_generated and "generated" in part_set:
         return "generated"
     return None
 

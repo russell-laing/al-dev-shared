@@ -20,8 +20,9 @@ From the repository root:
 python3 .codex/skills/generate-duplicate-text-report/scripts/generate_duplicate_text_report.py
 ```
 
-The default scan covers `.claude` and `profile-al-dev-shared`, requires at
-least eight matching lines, and writes:
+The default scan covers `.claude` and `profile-al-dev-shared`, excludes copied
+checkout snapshots under `.claude/worktrees`, requires at least eight matching
+lines, and writes:
 
 ```text
 docs/reviews/YYYY-MM-DD-duplicate-text-report.md
@@ -46,8 +47,8 @@ options.
 ## Defaults and Guardrails
 
 - Normalize line endings and trailing whitespace only.
-- Exclude `archived`, `generated`, `__pycache__`, `.DS_Store`, binary, and
-  non-UTF-8 files by default.
+- Exclude `archived`, `generated`, `.claude/worktrees`, `__pycache__`,
+  `.DS_Store`, binary, and non-UTF-8 files by default.
 - Use `--include-archived` or `--include-generated` only when the user wants
   intentional historical or projection duplication included.
 - Collapse overlapping windows into maximal blocks and group all occurrences.
