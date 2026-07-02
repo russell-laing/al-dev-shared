@@ -18,12 +18,14 @@ approval gate.
 
 Callers do not pass these paths explicitly. The agent auto-locates the latest matching files in `.dev/` by glob before implementation begins. When multiple files match, select the most recent by modification time (`ls -t <glob> | head -1`).
 
+_Note: rows marked "(auto-located)" below follow this same discovery rule._
+
 | Input | Required | Description |
 |-------|----------|-------------|
-| `.dev/*-plan-solution-plan.md` | **Yes** | Latest implementation plan, auto-located by glob |
-| `.dev/*-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle, auto-located by glob |
+| `.dev/*-plan-solution-plan.md` | **Yes** | Latest implementation plan (auto-located) |
+| `.dev/*-test-test-plan.md` | **Yes** | Latest test plan that drives the TDD cycle (auto-located) |
 | `.dev/project-context.md` | No | Project memory and conventions, read when present |
-| `.dev/*-develop-code-review.md` | No | Latest review findings for iteration, auto-located by glob when present |
+| `.dev/*-develop-code-review.md` | No | Latest review findings for iteration (auto-located when present) |
 | Inline dispatch context | **Yes** | Module scope, assigned object ID range, naming prefix, and pre-verified symbol evidence — passed inline in the dispatch prompt by `/develop-orchestrate`. See `knowledge/develop-spawn-prompt.md` for the canonical context-field list. |
 
 ## Outputs
