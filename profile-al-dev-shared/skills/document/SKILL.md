@@ -59,13 +59,15 @@ Create complete documentation for implemented features:
 
 ### Step 0: Select Audience (< 1 min)
 
-**Context-continuation check:** If the current session opens with a
-continuation summary (the harness prefix "This session is being continued
-from a previous conversation"), read that summary now — before the
-audience prompt and before any `.dev/` file reads. The summary may
-already contain the audience selection, prior scope findings, and RTM
-status; use it as the primary source and load `.dev/` files in Step 1
-only to fill gaps.
+## Context-Continuation Verification
+
+Before proceeding, verify the continuation context:
+
+- [ ] `.dev/<source>-context.md` exists
+- [ ] `audience:` field is populated (target reader role)
+- [ ] `rtm_status:` field is present (Requirements Traceability status)
+
+If any check fails, stop and request missing context from prior phase.
 
 Ask the user which audience they are writing for:
 
