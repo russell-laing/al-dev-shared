@@ -1,8 +1,8 @@
 ---
 name: commit-recover
 description: >-
-  Recover corrupted AL files when a commit is rejected by the pre-commit
-  integrity hook. Reads `.dev/commit-integrity.log` to identify failures
+  Recover from failed commits by reading .dev/commit-integrity.log
+  (file may be absent if no integrity incident occurred).
   and attempts recovery using learned fallback strategies from
   `.dev/learnings.md`. Use when: `commit-integrity` hook rejects with
   CORRUPTION or SYNTAX_ERROR status.
