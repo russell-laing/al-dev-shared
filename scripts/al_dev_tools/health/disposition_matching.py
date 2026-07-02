@@ -197,6 +197,16 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
     parsed_count = 0
     for line in text.splitlines():
         header = re.match(r"^#{2,4}\s+(.*?)\s+Findings\b", line)
+        if not header:
+            # Bare-type headers (skill-lens output, e.g. "## Bloat") carry no
+            # "Findings" suffix. Only treat them as section headers when the
+            # title resolves to a known finding type — this excludes
+            # unrelated headers like "## Raw lens output" or "## Failed lenses".
+            bare = re.match(r"^#{2,4}\s+(.+?)\s*$", line)
+            if bare:
+                bare_title = re.sub(r"\s*\([^)]*\)\s*$", "", bare.group(1)).strip().lower()
+                if normalize_type(bare_title):
+                    header = bare
         if header:
             raw_title = header.group(1)
             title = re.sub(r"\s*\([^)]*\)\s*$", "", raw_title).lower()
@@ -213,6 +223,25 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
             obj = item.group(1).strip()
             cells = [c.strip() for c in item.group(2).split("|")]
             observation = cells[1] if len(cells) >= 2 else (cells[0] if cells else "")
+            findings.append(
+                {
+                    "surface": surface,
+                    "dimension": dimension,
+                    "object": obj,
+                    "finding": observation,
+                    "type": ftype,
+                }
+            )
+            parsed_count += 1
+            continue
+        # Em-dash bullet format (skill-lens output), e.g.:
+        #   - **document/SKILL.md:330-433** — text
+        # No pipe separator; object is a file:line citation rather than a
+        # bare name, so take the leading path segment as the object.
+        dash_item = re.match(r"^- \*\*(.+?)\*\*\s*[—–]\s*(.*)$", line)
+        if dash_item:
+            obj = dash_item.group(1).strip().split("/")[0].strip()
+            observation = dash_item.group(2).strip()
             findings.append(
                 {
                     "surface": surface,

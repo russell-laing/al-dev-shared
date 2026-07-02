@@ -516,6 +516,97 @@ surface: plugin
         assert result[0]["classification"] == "suppress", result[0]
 
 
+def test_parse_findings_file_bare_header_em_dash_bullet_format() -> None:
+    """Skill-lens output uses bare '## Bloat' headers (no 'Findings' suffix) and
+    em-dash bullets (no pipe) — a format the header/item regexes originally missed.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        findings_path = tmp_path / "findings.md"
+        findings_path.write_text(
+            """\
+surface: plugin
+
+## Raw lens output
+
+## Bloat
+
+- **document/SKILL.md:330-433** — "Formatting-Sweep Variant" section is a separate workflow path
+
+## Failed lenses
+
+None
+""",
+            encoding="utf-8",
+        )
+
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            results = hds.parse_findings_file(findings_path)
+
+        assert len(results) == 1, results
+        finding = results[0]
+        assert finding.get("surface") == "plugin", finding
+        assert finding.get("dimension") == "quality", finding
+        assert finding.get("type") == "bloat", finding
+        # Object is the leading path segment, not the full file:line citation.
+        assert finding.get("object") == "document", finding
+        assert "Formatting-Sweep Variant" in finding.get("finding", ""), finding
+
+
+def test_parse_findings_file_bare_header_ignores_unrelated_sections() -> None:
+    """Headers like '## Raw lens output' and '## Failed lenses' must not be
+    mistaken for a finding-type section (they don't resolve via normalize_type).
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        findings_path = tmp_path / "findings.md"
+        findings_path.write_text(
+            """\
+surface: plugin
+
+## Resume information
+
+- Total lenses in scope: 10
+- Status: COMPLETE
+""",
+            encoding="utf-8",
+        )
+
+        results = hds.parse_findings_file(findings_path)
+        assert results == [], results
+
+
+def test_parse_findings_file_mixed_agent_and_skill_formats() -> None:
+    """A single findings file mixing '### X Findings' pipe-bullets (agents) and
+    '## X' em-dash bullets (skills) must recover findings from both formats.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        findings_path = tmp_path / "findings.md"
+        findings_path.write_text(
+            """\
+surface: plugin
+
+### Bloat Findings
+
+- **my-agent.md** | Medium | Agent-format finding text | fix suggestion
+
+## Bloat
+
+- **my-skill/SKILL.md:10-20** — Skill-format finding text
+""",
+            encoding="utf-8",
+        )
+
+        results = hds.parse_findings_file(findings_path)
+        assert len(results) == 2, results
+        assert results[0]["object"] == "my-agent.md", results[0]
+        assert results[0]["type"] == "bloat", results[0]
+        assert results[1]["object"] == "my-skill", results[1]
+        assert results[1]["type"] == "bloat", results[1]
+
+
 def _run(func):
     sig = inspect.signature(func)
     if sig.parameters:
