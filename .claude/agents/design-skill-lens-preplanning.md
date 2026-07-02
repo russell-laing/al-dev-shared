@@ -68,9 +68,7 @@ detected as pre-planning is **out of scope** — skip it and emit no finding for
   tributary representation in the Layer 1 diagram
 - Pre-planning skill feeds a downstream step but its output is unnamed in the diagram
 
----
-
-## Severity Rules
+### Severity Rules
 
 Treat occurrence states explicitly:
 
