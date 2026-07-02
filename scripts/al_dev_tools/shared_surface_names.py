@@ -145,21 +145,21 @@ def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
 
 from .companion_surface_contract import (
     canonical_companion_surfaces as _canonical_companion_surfaces,
-    legacy_surface_aliases as _companion_legacy_surface_aliases,
-    surface_root_map as _companion_surface_root_map,
+    legacy_surface_aliases as _legacy_surface_aliases,
+    surface_root_map as _surface_root_map,
 )
 
 
-def canonical_companion_surfaces_wrapper() -> tuple[str, ...]:
+def canonical_companion_surfaces() -> tuple[str, ...]:
     """Return canonical companion surface names."""
     return _canonical_companion_surfaces()
 
 
-def legacy_surface_aliases_wrapper() -> dict[str, tuple[str, ...]]:
+def legacy_surface_aliases() -> dict[str, tuple[str, ...]]:
     """Return legacy surface aliases for companion surfaces."""
-    return _companion_legacy_surface_aliases()
+    return _legacy_surface_aliases()
 
 
-def surface_root_map_wrapper(repo_root: Path) -> dict[str, Path]:
+def surface_root_map(repo_root: Path) -> dict[str, Path]:
     """Return surface root paths for companion surfaces."""
-    return _companion_surface_root_map(repo_root)
+    return _surface_root_map(repo_root)

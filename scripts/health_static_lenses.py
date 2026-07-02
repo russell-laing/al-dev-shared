@@ -56,9 +56,7 @@ per surface, inside the per-surface loop, never with ``--surface both``.
 from __future__ import annotations
 
 import argparse
-import json
 import re
-import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -69,15 +67,13 @@ from _entrypoint_bootstrap import bootstrap_repo
 REPO_ROOT = bootstrap_repo(__file__)
 
 from scripts.al_dev_tools.io_utils import write_json_atomic
+from scripts.al_dev_tools.git_utils import get_changed_paths
 from scripts.al_dev_tools.shared_surface_names import (
     LEGACY_SHARED_PREFIX,
     SHARED_AGENT_RENAMES,
     SHARED_SKILL_RENAMES,
 )
-from scripts.al_dev_tools.companion_surface_contract import (
-    canonical_companion_surfaces,
-    surface_root_map,
-)
+from scripts.al_dev_tools.companion_surface_contract import surface_root_map
 
 
 POLICY_PATH = REPO_ROOT / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
@@ -167,29 +163,12 @@ def skill_files(surface_root: Path) -> list[Path]:
     )
 
 
-def _git_changed_paths(repo_root: Path, since_ref: str) -> set[Path]:
-    """Canonical helper: resolve changed paths from git diff output.
-
-    This implementation is shared with the discover SKILL. Keep both in sync.
-    ``git diff --name-only <ref>`` emits repo-root-relative paths; prepend the
-    repo root so the intersection with absolute corpus paths is correct.
-    """
-    actual_root = Path(
-        subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            cwd=repo_root, capture_output=True, text=True, check=True,
-        ).stdout.strip()
-    )
-    out = subprocess.run(
-        ["git", "diff", "--name-only", since_ref],
-        cwd=repo_root, capture_output=True, text=True, check=True,
-    ).stdout.splitlines()
-    return {(actual_root / line.strip()).resolve() for line in out if line.strip()}
-
-
 def changed_paths(since_ref: str) -> set[Path]:
-    """Resolved-to-absolute set of files changed since ``since_ref``."""
-    return _git_changed_paths(REPO_ROOT, since_ref)
+    """Resolved-to-absolute set of files changed since ``since_ref``.
+
+    Uses canonical git path resolution from shared git_utils module.
+    """
+    return get_changed_paths(REPO_ROOT, since_ref)
 
 
 # ---------------------------------------------------------------------------
