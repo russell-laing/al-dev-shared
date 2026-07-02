@@ -1,8 +1,8 @@
 ---
 name: release-notes-writer
 description: >-
-  Extract changes from a git diff between two hashes, research AL
-  object context for those changes, and write release notes.
+  Orchestrates release notes generation by dispatching change-analyzer
+  to extract changes, then compiling notes into user-facing format.
   Dispatched by the release-notes skill.
 model: sonnet
 tools: ["Read", "Write", "Bash"]
