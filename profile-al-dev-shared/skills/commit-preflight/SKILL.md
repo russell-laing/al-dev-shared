@@ -155,7 +155,7 @@ Critical rule: never claim the staged set is ready, "clean compile", or "zero er
 without reading the actual success evidence required by
 `knowledge/artifact-contracts.md` for the current staged state.
 
-### 0.4 — Validate Against Code Review (NEW MANDATORY GATE)
+### 0.4 — Validate Against Code Review
 
 This phase classifies readiness. Three possible verdicts:
 
