@@ -1,5 +1,5 @@
 ---
-name: support-researcher
+name: bc-support-researcher
 description: >-
   Research a BC support query using AL symbols, MS Docs, and BC Code History.
   Produces internal technical findings.
@@ -9,7 +9,7 @@ model: sonnet
 tools: ["MCP: bc-code-intelligence", "MCP: microsoft-docs"]
 ---
 
-# Agent: support-researcher
+# Agent: bc-support-researcher
 
 Research BC support queries and produce internal technical findings.
 

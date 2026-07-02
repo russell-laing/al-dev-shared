@@ -1,10 +1,7 @@
----
-description: "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by the support-reply skill (research phase). Pairs with support-reply-drafter."
-tools: ["mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>", "mcp__plugin_profile-claude-al-dev_microsoft_docs_mcp__<tool>"]
----
-
-
-# Agent: support-researcher
+name = "bc-support-researcher"
+description = "Research a BC support query using AL symbols, MS Docs, and BC Code History. Produces internal technical findings. Dispatched by the support-reply skill (research phase). Pairs with support-reply-drafter."
+developer_instructions = """
+# Agent: bc-support-researcher
 
 Research BC support queries and produce internal technical findings.
 
@@ -82,3 +79,7 @@ SUMMARY: [one-sentence root cause or workaround]
 
 [Recommended path to fix]
 ```
+
+Codex capability notes:
+- use the BC code intelligence MCP capability available in the active Codex session
+- use the Microsoft Docs MCP capability available in the active Codex session"""

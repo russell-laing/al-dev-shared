@@ -1,5 +1,5 @@
 ---
-name: evidence-synthesizer
+name: findings-synthesizer
 description: Synthesize evidence from BC Code Intelligence, Git history, and Markdown docs into unified findings report
 model: haiku
 tools:
