@@ -91,6 +91,15 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
     }
     if event_id in existing_ids:
         raise ValueError(f"duplicate event_id: {event_id}")
+
+    # Validate that all referenced closes_event_ids exist
+    closes_ids = event.get("closes_event_ids", [])
+    if isinstance(closes_ids, list):
+        for close_id in closes_ids:
+            close_id_str = str(close_id)
+            if close_id_str not in existing_ids and close_id_str != event_id:
+                raise ValueError(f"closes_event_ids references unknown event_id: {close_id_str}")
+
     shard = events_root / event_shard_path_for_date(str(event["date"]))
     shard.parent.mkdir(parents=True, exist_ok=True)
     with shard.open("a", encoding="utf-8") as f:

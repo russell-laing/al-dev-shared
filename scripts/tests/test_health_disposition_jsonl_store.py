@@ -87,6 +87,25 @@ class JsonlAppendTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate event_id"):
                 STORE.append_event(root, event)
 
+    def test_append_event_rejects_unknown_closes_target(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "events"
+            event = {
+                "event_id": "disp_20260619_000001",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "obj",
+                "finding": "finding",
+                "disposition": "accepted",
+                "date": "2026-06-19",
+                "closes_event_ids": ["disp_20260619_000099"],
+                "evidence": "queued",
+                "source": "test",
+            }
+
+            with self.assertRaisesRegex(ValueError, "closes_event_ids references unknown event_id"):
+                STORE.append_event(root, event)
+
 
 class JsonlValidationTest(unittest.TestCase):
     def test_validate_event_requires_event_id_and_known_disposition(self) -> None:
