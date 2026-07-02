@@ -411,6 +411,30 @@ class JsonlRenderTest(unittest.TestCase):
             self.assertEqual("tooling", parsed[0]["surface"])
 
 
+class JsonlRoundTripTest(unittest.TestCase):
+    def test_event_with_unicode_line_separator_round_trips(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            events_root = Path(d)
+            event = {
+                "event_id": "disp_20260702_000002",
+                "legacy_id": "",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "some-object",
+                # U+2028 LINE SEPARATOR inside the finding text.
+                "finding": "line one line two",
+                "disposition": "accepted",
+                "date": "2026-07-02",
+                "closes_event_ids": [],
+                "evidence": "queued",
+                "source": "test",
+            }
+            STORE.append_event(events_root, event)
+            events = list(STORE.iter_event_rows(events_root))
+            self.assertEqual(1, len(events))
+            self.assertEqual(event["finding"], events[0]["finding"])
+
+
 class JsonlCliTest(unittest.TestCase):
     def test_cli_append_event_and_regenerate(self) -> None:
         with tempfile.TemporaryDirectory() as d:

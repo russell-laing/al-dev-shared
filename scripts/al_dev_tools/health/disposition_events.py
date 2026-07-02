@@ -57,7 +57,10 @@ def parse_event_file(path: Path) -> list[dict[str, object]]:
     events: list[dict[str, object]] = []
     if not path.exists():
         return events
-    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    # Split ONLY on "\n" to match the writer (json.dumps + "\n"). str.splitlines()
+    # also breaks on U+2028/U+2029/U+0085, which json.dumps(ensure_ascii=False)
+    # writes literally inside string values — using it here corrupts the store.
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").split("\n"), start=1):
         if not line.strip():
             continue
         try:
