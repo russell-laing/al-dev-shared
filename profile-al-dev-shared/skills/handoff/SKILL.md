@@ -85,46 +85,26 @@ Exclude: `compile-errors.log`, `test-results.txt`,
 TARGET="[target-repo-path]"
 mkdir -p "$TARGET/.dev"
 
-TICKET=$(ls .dev/*-ticket-ticket-context.md 2>/dev/null | \
-  sort | tail -1)
-[ -n "$TICKET" ] && \
-  cp "$TICKET" "$TARGET/.dev/source-ticket-context.md" && \
-  echo "✅ source-ticket-context.md" || \
-  echo "⏭ source-ticket-context.md (not found)"
+report_copy() {
+  # $1: resolved source path (may be empty)  $2: destination filename  $3: label for echo
+  if [ -n "$1" ]; then
+    cp "$1" "$TARGET/.dev/$2" && echo "✅ $3"
+  else
+    echo "⏭ $3 (not found)"
+  fi
+}
 
-EXPLORE=$(ls .dev/*-explore-findings.md 2>/dev/null | \
-  sort | tail -1)
-[ -n "$EXPLORE" ] && \
-  cp "$EXPLORE" "$TARGET/.dev/source-explore-findings.md" && \
-  echo "✅ source-explore-findings.md" || \
-  echo "⏭ source-explore-findings.md (not found)"
+report_copy "$(ls .dev/*-ticket-ticket-context.md 2>/dev/null | sort | tail -1)" "source-ticket-context.md" "source-ticket-context.md"
+report_copy "$(ls .dev/*-explore-findings.md 2>/dev/null | sort | tail -1)" "source-explore-findings.md" "source-explore-findings.md"
+report_copy "$(ls .dev/*-plan-solution-plan.md 2>/dev/null | sort | tail -1)" "source-solution-plan.md" "solution-plan.md → source-solution-plan.md"
+report_copy "$(ls .dev/*-interview-requirements.md 2>/dev/null | sort | tail -1)" "source-requirements.md" "requirements.md → source-requirements.md"
+report_copy "$(ls .dev/*-plugin-release-notes.md 2>/dev/null | sort | tail -1)" "source-release-notes.md" "source-release-notes.md"
 
 [ -f .dev/project-context.md ] && \
   cp .dev/project-context.md \
   "$TARGET/.dev/source-project-context.md" && \
   echo "✅ project-context.md → source-project-context.md" || \
   echo "⏭ project-context.md (not found)"
-
-PLAN=$(ls .dev/*-plan-solution-plan.md 2>/dev/null | \
-  sort | tail -1)
-[ -n "$PLAN" ] && cp "$PLAN" \
-  "$TARGET/.dev/source-solution-plan.md" && \
-  echo "✅ solution-plan.md → source-solution-plan.md" || \
-  echo "⏭ solution-plan.md (not found)"
-
-REQUIREMENTS=$(ls .dev/*-interview-requirements.md \
-  2>/dev/null | sort | tail -1)
-[ -n "$REQUIREMENTS" ] && cp "$REQUIREMENTS" \
-  "$TARGET/.dev/source-requirements.md" && \
-  echo "✅ requirements.md → source-requirements.md" || \
-  echo "⏭ requirements.md (not found)"
-
-RELEASE_NOTES=$(ls .dev/*-plugin-release-notes.md 2>/dev/null | \
-  sort | tail -1)
-[ -n "$RELEASE_NOTES" ] && \
-  cp "$RELEASE_NOTES" "$TARGET/.dev/source-release-notes.md" && \
-  echo "✅ source-release-notes.md" || \
-  echo "⏭ source-release-notes.md (not found)"
 
 ls "$TARGET/.dev/"
 ```
