@@ -272,7 +272,7 @@ Store: `EXPECTED_COMMITS=<count>`
 
 - [ ] **Step 4.4.3:** Compare against actual commits since base branch
 
-Run: `git log --oneline --since="$PLAN_DATE" -- | wc -l`
+Run: `git log --oneline --since="$PLAN_DATE" | wc -l`
 
 Store: `ACTUAL_COMMITS=<count>`
 
@@ -295,14 +295,14 @@ Expected: Commits consolidated to match plan.
 
 - [ ] **Step 4.4.6:** Final verification — confirm commit presence
 
-Run: `git log --oneline --since="$PLAN_DATE" -- | head -5`
+Run: `git log --oneline --since="$PLAN_DATE" | head -5`
 
 Expected: Commit subjects match plan exactly
 
 - [ ] **Step 4.4.7:** Log final SHAs for handoff
 
 ```bash
-git log --oneline --since="$PLAN_DATE" -- > ".dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
+git log --oneline --since="$PLAN_DATE" > ".dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
 echo "Commits verified and logged to .dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
 ```
 
