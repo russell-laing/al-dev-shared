@@ -11,6 +11,29 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
+class InvokeMainAndHelperContractTest(unittest.TestCase):
+    def test_var_positional_main_receives_unpacked_argv(self) -> None:
+        import _compat_entrypoint as compat
+
+        calls = []
+
+        class _Mod:
+            @staticmethod
+            def main(*argv):
+                calls.append(argv)
+                return 0
+
+        rc = compat._invoke_main(_Mod, ["a", "b"])
+        self.assertEqual(0, rc)
+        self.assertEqual([("a", "b")], calls)
+
+    def test_run_main_entrypoint_alias_removed(self) -> None:
+        import _compat_entrypoint as compat
+
+        self.assertFalse(hasattr(compat, "run_main_entrypoint"))
+        self.assertTrue(hasattr(compat, "run_module_entrypoint"))
+
+
 class CompatEntrypointTest(unittest.TestCase):
     def _run_help(self, script_name: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

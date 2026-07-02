@@ -3,7 +3,7 @@
 
 from importlib import import_module
 
-from _compat_entrypoint import resolve_module_name, run_main_entrypoint
+from _compat_entrypoint import resolve_module_name, run_module_entrypoint
 
 _module = import_module(
     resolve_module_name("al_dev_tools.health.migrate_health_disposition_store")
@@ -15,5 +15,5 @@ globals().update(
 
 if __name__ == "__main__":
     raise SystemExit(
-        run_main_entrypoint("al_dev_tools.health.migrate_health_disposition_store")
+        run_module_entrypoint("al_dev_tools.health.migrate_health_disposition_store")
     )
