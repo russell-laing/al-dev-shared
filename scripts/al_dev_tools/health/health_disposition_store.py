@@ -310,10 +310,23 @@ def main(argv: list[str] | None = None) -> int:
         if not events:
             print("sync_shard: no matching events found", file=sys.stderr)
             return 1
+        # Build set of existing row IDs to skip duplicates
+        existing_ids: set[str] = set()
+        for row in iter_history_rows(args.history_root):
+            existing_ids.add(row.get("id", ""))
         synced_shards: set[str] = set()
+        written = 0
+        skipped = 0
         for ev in events:
+            row_id = ev.get("legacy_id") or ev["event_id"]
+            # Skip if this ID already exists in history
+            if row_id in existing_ids:
+                skipped += 1
+                if args.verbose:
+                    print(f"sync_shard: skipped duplicate row for {ev['event_id']}")
+                continue
             row = {
-                "id": ev.get("legacy_id") or ev["event_id"],
+                "id": row_id,
                 "surface": ev["surface"],
                 "dimension": ev["dimension"],
                 "object": ev["object"],
@@ -324,10 +337,11 @@ def main(argv: list[str] | None = None) -> int:
             }
             shard = append_row(args.history_root, row)
             synced_shards.add(str(shard))
+            written += 1
             if args.verbose:
                 print(f"sync_shard: wrote shard row for {ev['event_id']}")
-        shard_list = ", ".join(sorted(synced_shards))
-        print(f"sync_shard: synced {len(events)} row(s) to {shard_list}")
+        shard_list = ", ".join(sorted(synced_shards)) if synced_shards else "(none)"
+        print(f"sync_shard: {written} new row(s), {skipped} already present → {shard_list}")
         return 0
     return 1
 

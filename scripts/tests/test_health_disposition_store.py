@@ -242,5 +242,41 @@ class MigrateStoreTest(unittest.TestCase):
             self.assertEqual(report["current_rows"], 1)
 
 
+class SyncShardIdempotencyTest(unittest.TestCase):
+    def test_sync_shard_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            events_root = root / "dispositions_events"
+            history_root = root / "dispositions_history"
+            events_root.mkdir(parents=True)
+            history_root.mkdir(parents=True)
+            (events_root / "2026").mkdir()
+            (events_root / "2026" / "2026-07.jsonl").write_text(
+                '{"event_id":"disp_20260702_000001","legacy_id":"","surface":"tooling",'
+                '"dimension":"quality","object":"obj","finding":"f","disposition":"accepted",'
+                '"date":"2026-07-02","closes_event_ids":[],"evidence":"e","source":"t"}\n',
+                encoding="utf-8",
+            )
+
+            rc1 = STORE.main([
+                "sync_shard", "--since", "2026-07-01",
+                "--events-root", str(events_root),
+                "--history-root", str(history_root),
+            ])
+            shard = history_root / "2026" / "2026-07.md"
+            first = shard.read_text(encoding="utf-8")
+
+            rc2 = STORE.main([
+                "sync_shard", "--since", "2026-07-01",
+                "--events-root", str(events_root),
+                "--history-root", str(history_root),
+            ])
+            second = shard.read_text(encoding="utf-8")
+
+            self.assertEqual(0, rc1)
+            self.assertEqual(0, rc2)
+            self.assertEqual(first, second, "second sync_shard must be a no-op")
+
+
 if __name__ == "__main__":
     unittest.main()
