@@ -3,12 +3,8 @@ name: sync-map-documentation
 description: >-
   Use when plugin documentation maps are out of sync with the current codebase,
   or to verify accuracy after adding/removing skills or agents. Dispatches
-  parallel background audit agents and writes a checkpoint; the harness notifies
-  on completion. Runs a Phase 0 cadence guard that refuses to dispatch over an
-  unfinished prior run unless `--force` is given. Collect results with
-  /sync-map-documentation-collect. A `--no-update` preview mode prints the
-  four-skill sync sequence and stops without dispatching agents or writing a
-  checkpoint.
+  parallel background audit agents and writes a checkpoint. Collect results with
+  /sync-map-documentation-collect using the checkpoint reference.
   Triggers: "sync documentation maps", "review maps", "update maps", "sync maps",
   "are the maps accurate", "check the maps".
 argument-hint: "[--all] [--skip-commit] [--force] [--no-update]"

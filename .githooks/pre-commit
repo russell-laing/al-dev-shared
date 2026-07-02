@@ -12,6 +12,10 @@ python3 scripts/validate_harness_neutrality.py profile-al-dev-shared
 echo "pre-commit: validating lens agents (incl. lens-policy sync)..."
 python3 scripts/validate_lens_agents.py
 
+echo "pre-commit: validating skill descriptions..."
+python3 scripts/validate_skill_descriptions.py \
+  || echo "WARN: skill description violations detected (non-blocking). Run: python3 scripts/validate_skill_descriptions.py" >&2
+
 echo "pre-commit: checking projections are current..."
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
