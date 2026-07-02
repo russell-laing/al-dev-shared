@@ -1,0 +1,17 @@
+skill: review-scripts
+scenarios:
+  - request: "perform a python quality review of scripts"
+    expect: trigger
+    rationale: Canonical invocation — the phrasing this skill was created for.
+  - request: "review the scripts/ folder for bugs"
+    expect: trigger
+    rationale: Direct scripts-surface quality review.
+  - request: "review my pending diff before I commit"
+    expect: no-trigger
+    rationale: Diff review is /code-review, not a whole-surface scripts audit.
+  - request: "are the documentation maps accurate?"
+    expect: no-trigger
+    rationale: Map accuracy is /sync-map-documentation.
+  - request: "audit the knowledge files for stubs"
+    expect: no-trigger
+    rationale: Knowledge-quality is /audit-knowledge-quality.
