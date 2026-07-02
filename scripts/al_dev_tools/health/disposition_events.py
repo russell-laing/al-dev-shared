@@ -119,7 +119,17 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
         try:
             # Re-check for duplicates under lock before writing (stale check above could race)
             f.seek(0)
-            shard_ids = {line.split("|")[0].strip('{"') for line in f if line.strip()}
+            shard_ids = set()
+            for line in f:
+                if not line.strip():
+                    continue
+                try:
+                    existing_event = json.loads(line)
+                    eid = existing_event.get("event_id")
+                    if eid:
+                        shard_ids.add(str(eid))
+                except (json.JSONDecodeError, ValueError):
+                    pass
             if event_id in shard_ids:
                 raise ValueError(f"duplicate event_id under lock: {event_id}")
             f.seek(0, 2)  # Seek to end
@@ -139,12 +149,12 @@ def batch_decline(
 ) -> list[tuple[str, Path]]:
     required = ("surface", "dimension", "object", "finding", "reason", "closes_event_id")
     written: list[tuple[str, Path]] = []
+    all_events = list(iter_event_rows(events_root))
     for i, row in enumerate(rows):
         missing = [k for k in required if not str(row.get(k, "")).strip()]
         if missing:
             raise ValueError(f"row {i}: missing required field(s): {', '.join(missing)}")
-        # Reload max sequence for EACH event to ensure uniqueness under concurrent calls
-        all_events = list(iter_event_rows(events_root))
+        # Generate next event_id based on accumulated events (including previously-created in this batch)
         next_seq = next_event_id(all_events, date).split("_")[-1]
         seq_counter = int(next_seq)
         event_id = f"disp_{date.replace('-', '')}_{seq_counter:06d}"
@@ -162,6 +172,7 @@ def batch_decline(
             "source": source,
         }
         shard = append_event(events_root, event)
+        all_events.append(event)
         written.append((event_id, shard))
     return written
 

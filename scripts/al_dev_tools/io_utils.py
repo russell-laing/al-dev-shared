@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import tempfile
 
@@ -19,6 +20,8 @@ def write_text_atomic(path: Path, text: str) -> None:
         delete=False,
     ) as handle:
         handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
         temp_path = Path(handle.name)
     try:
         temp_path.replace(path)
