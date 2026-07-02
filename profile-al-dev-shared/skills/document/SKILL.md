@@ -73,7 +73,8 @@ Before proceeding, verify the continuation context:
 - [ ] `audience:` field is populated (target reader role)
 - [ ] `rtm_status:` field is present (Requirements Traceability status)
 
-If any check fails, stop and request missing context from prior phase.
+If any check fails: **STOP** — request the missing context from the prior
+phase. Do not proceed to audience selection until all three checks pass.
 
 Ask the user which audience they are writing for:
 
