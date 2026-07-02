@@ -25,6 +25,12 @@ it as the starting specification rather than generating a competing plan.
 
 See ../../knowledge/critic-dispatch-template.md for the standard 6-critic batch pattern and deduplication rules.
 
+Expected outputs from critics:
+
+- Ranked list of approaches (N approaches, each scored 1-5)
+- Pros/cons per approach (3-4 bullets each)
+- Winner recommendation with justification
+
 1. **Generate draft plan** using superpowers:writing-plans skill with the provided spec
 See `../../knowledge/critic-dispatch-template.md` for the pattern documentation
 (parallel dispatch + dedup + synthesize). The following implementation uses the
