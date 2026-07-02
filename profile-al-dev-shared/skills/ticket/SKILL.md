@@ -3,8 +3,8 @@ name: ticket
 description: >-
   Fetch and contextualise a Freshdesk ticket, optionally research
   and draft a support reply. Use without flag to load ticket context only
-  (default), or --research-reply to include research and reply drafting.
-argument-hint: "[ticket#|--research-reply|search-term|none]"
+  (default), or --mode=full to include research and reply drafting.
+argument-hint: "[ticket#|--mode=full|search-term|none]"
 ---
 
 # Freshdesk Ticket Context Loader
