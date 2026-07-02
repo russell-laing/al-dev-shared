@@ -6,6 +6,10 @@ from bisect import insort
 
 from .maintainer_analysis import is_user_invocable
 from .maintainer_contracts import CORE_STAGES, STAGE_TITLES, WorkflowContract
+from .maintainer_mermaid import (
+    MAP_SYNC_REQUIRED_SKILLS,
+    DISCOVER_REQUIRED_SKILLS,
+)
 
 
 def _first_sentence(description: str) -> str:
@@ -77,7 +81,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
         contract = by_name[name]
         return f"`/{name}{suffix}` — {_first_sentence(contract.description)}"
 
-    if stage == "map-sync" and {"sync-map-documentation", "sync-map-documentation-collect", "sync-map-documentation-apply", "sync-map-documentation-write"} <= set(by_name):
+    if stage == "map-sync" and MAP_SYNC_REQUIRED_SKILLS <= set(by_name):
         return "\n".join(
             [
                 "### Primary path",
@@ -88,12 +92,7 @@ def render_stage_journey(contracts: list[WorkflowContract], stage: str) -> str:
                 "4. " + command("sync-map-documentation-write"),
             ]
         )
-    if stage == "discover" and {
-        "ingest-plugin-friction",
-        "audit-plugin-health",
-        "discover-plugin-health",
-        "report-plugin-health",
-    } <= set(by_name):
+    if stage == "discover" and DISCOVER_REQUIRED_SKILLS <= set(by_name):
         return "\n".join(
             [
                 "### Audit-driven path",
