@@ -26,5 +26,3 @@
 | disp_20260703_000028 | plugin | quality | commit-execute-vars | Prompt clarity: references undefined variables | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000029 | plugin | quality | document.md-bash | Prompt clarity: template bash has invalid syntax | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000030 | plugin | quality | commit-preflight-criteria | Prompt clarity: vague filtering criteria | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000035 | plugin | quality | fix.md-scope | Scope: post-fix code review out of scope | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000036 | plugin | quality | explore.md-guidance | Bloat: off-topic tool guidance unrelated to main workflow | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
