@@ -207,15 +207,42 @@ def _parse_agent_meta(path: Path) -> AgentMeta:
 
 
 def _discover_skills(plugin_dir: Path) -> list[str]:
-    return sorted(path.parent.name for path in (plugin_dir / "skills").glob("*/SKILL.md"))
+    skills_dir = plugin_dir / "skills"
+    if not skills_dir.exists():
+        import sys
+        print(f"⚠ Skills directory not found: {skills_dir}", file=sys.stderr)
+        return []
+    skills = sorted(path.parent.name for path in skills_dir.glob("*/SKILL.md"))
+    if not skills:
+        import sys
+        print(f"⚠ No SKILL.md files found in {skills_dir}", file=sys.stderr)
+    return skills
 
 
 def _discover_agents(plugin_dir: Path) -> list[str]:
-    return sorted(path.stem for path in (plugin_dir / "agents").glob("*.md"))
+    agents_dir = plugin_dir / "agents"
+    if not agents_dir.exists():
+        import sys
+        print(f"⚠ Agents directory not found: {agents_dir}", file=sys.stderr)
+        return []
+    agents = sorted(path.stem for path in agents_dir.glob("*.md"))
+    if not agents:
+        import sys
+        print(f"⚠ No agent .md files found in {agents_dir}", file=sys.stderr)
+    return agents
 
 
 def _discover_knowledge(plugin_dir: Path) -> list[str]:
-    return sorted(path.name for path in (plugin_dir / "knowledge").glob("*.md"))
+    knowledge_dir = plugin_dir / "knowledge"
+    if not knowledge_dir.exists():
+        import sys
+        print(f"⚠ Knowledge directory not found: {knowledge_dir}", file=sys.stderr)
+        return []
+    knowledge = sorted(path.name for path in knowledge_dir.glob("*.md"))
+    if not knowledge:
+        import sys
+        print(f"⚠ No .md files found in {knowledge_dir}", file=sys.stderr)
+    return knowledge
 
 
 def _looks_like_shell_line(line: str) -> bool:
