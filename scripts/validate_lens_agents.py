@@ -34,34 +34,23 @@ AGENTS_DIR = REPO / ".claude" / "agents"
 STATIC_LENS_SCRIPT = REPO / "scripts" / "health_static_lenses.py"
 
 
-# The 13 LLM lens agents still dispatched on disk (11 design + 2 combined
-# quality readers). The four deterministic lenses converted to
-# scripts/health_static_lenses.py are intentionally absent, and the eight
-# individual quality lenses are now bundled into quality-agent-multilens and
-# quality-skill-multilens (each reads its corpus once and applies all four
-# quality rubrics).
-#
-# MAINTENANCE NOTE: This list must be manually kept in sync with the active
-# lens agents under .claude/agents/. It cannot be auto-derived because:
-# 1. The list intentionally excludes converted static lenses (naming-convention-lens, etc.)
-# 2. The list intentionally excludes archived agents
-# If an agent is renamed, created, or archived, update this list and SONNET_AGENTS below.
-# Canonical source: .claude/agents/ directory (filter for lens agents only).
-EXPECTED_AGENTS = [
-    "quality-agent-multilens",
-    "quality-skill-multilens",
-    "design-agent-lens-model-fit",
-    "design-agent-lens-scope-isolation",
-    "design-agent-lens-caller-alignment",
-    "design-agent-lens-usage-patterns",
-    "design-skill-lens-shared-backbone",
-    "design-skill-lens-complexity",
-    "design-skill-lens-near-duplicates",
-    "design-skill-lens-handoff-gaps",
-    "design-skill-lens-preplanning",
-    "design-skill-lens-surface-placement",
-    "design-skill-lens-maintainer-handoff",
-]
+def _get_lens_agents() -> list[str]:
+    """Discover active lens agents from .claude/agents/ directory.
+
+    Filters for agents with 'lens' in their name (both individual and bundled
+    multilens agents). Excludes archived subdirectories.
+    """
+    agents = []
+    if AGENTS_DIR.exists():
+        for item in sorted(AGENTS_DIR.iterdir()):
+            if item.is_dir() or item.name == "archived":
+                continue
+            if item.suffix == ".md" and "lens" in item.stem:
+                agents.append(item.stem)
+    return agents
+
+
+EXPECTED_AGENTS = _get_lens_agents()
 
 SKILLS_TO_CHECK = [
     REPO / ".claude" / "skills" / "discover-plugin-health" / "SKILL.md",

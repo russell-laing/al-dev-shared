@@ -210,10 +210,10 @@ def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str
                     file=sys.stderr,
                 )
 
-    latest: OrderedDict[tuple[str, str, str, str], dict[str, object]] = OrderedDict()
+    latest: OrderedDict[str, dict[str, object]] = OrderedDict()
     for event in events:
         if str(event["event_id"]) not in closed_ids:
-            latest[_event_key(event)] = event
+            latest[str(event["event_id"])] = event
     return list(latest.values())
 
 
