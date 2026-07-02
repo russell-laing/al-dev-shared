@@ -13,12 +13,13 @@ Read `.dev/YYYY-MM-DD-interview-answers.md` with collected Q&A.
 
 ## Outputs
 
-Write refined specification with:
+Write a single file, `.dev/<date>-interview-spec.md`, with these sections in
+order (all required, level-2 headings):
 
-- Functional requirements
-- Non-functional requirements
-- Constraints
-- Use cases
+- `## Functional Requirements` — bulleted list
+- `## Non-Functional Requirements` — bulleted list (perf, compat)
+- `## Constraints` — bulleted list
+- `## Use Cases` — numbered list
 
 Codex capability notes:
 - read files available in the active Codex session
