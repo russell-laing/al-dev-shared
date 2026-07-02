@@ -1,0 +1,64 @@
+version: 1
+legacy_surface_aliases:
+  both:
+    - plugin
+    - tooling
+  companions:
+    - companion-codex-al-dev
+    - companion-claude-al-dev
+    - companion-copilot-al-dev
+packages:
+  - surface_id: companion-codex-al-dev
+    harness: codex
+    package: al-dev
+    scope: in-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/codex-configs/plugins/codex-al-dev
+    current_manifest: .codex-plugin/plugin.json
+    target_root: companions/codex/al-dev
+    target_manifest: companions/codex/al-dev/.codex-plugin/plugin.json
+    current_registry: ${AL_DEV_HARNESS_HOME}/codex-configs/.agents/plugins/marketplace.json
+    verify_command: codex plugin list
+    migration_status:
+      old_root_status: pending
+      decommission_target_date: 2026-08-31
+  - surface_id: companion-claude-al-dev
+    harness: claude
+    package: al-dev
+    scope: in-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/claude-configs/profile-claude-al-dev
+    current_manifest: .claude-plugin/plugin.json
+    target_root: companions/claude/al-dev
+    target_manifest: companions/claude/al-dev/.claude-plugin/plugin.json
+    current_registry: ${AL_DEV_HARNESS_HOME}/claude-configs/.claude-plugin/marketplace.json
+    verify_command: claude plugin list
+    migration_status:
+      old_root_status: pending
+      decommission_target_date: 2026-08-31
+  - surface_id: companion-copilot-al-dev
+    harness: copilot
+    package: al-dev
+    scope: in-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/copilot-configs/profile-copilot-al-dev
+    current_manifest: .plugin/plugin.json
+    target_root: companions/copilot/al-dev
+    target_manifest: companions/copilot/al-dev/.plugin/plugin.json
+    current_registry: ${AL_DEV_HARNESS_HOME}/copilot-configs/.plugin/marketplace.json
+    verify_command: copilot plugin list
+    migration_status:
+      old_root_status: pending
+      decommission_target_date: 2026-08-31
+  - surface_id: companion-codex-vault
+    harness: codex
+    package: vault
+    scope: out-of-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/codex-configs/codex-vault
+  - surface_id: companion-claude-vault
+    harness: claude
+    package: vault
+    scope: out-of-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/claude-configs/claude-vault
+  - surface_id: companion-copilot-vault
+    harness: copilot
+    package: vault
+    scope: out-of-scope
+    current_root: ${AL_DEV_HARNESS_HOME}/copilot-configs/copilot-vault
