@@ -74,16 +74,17 @@ from scripts.al_dev_tools.shared_surface_names import (
     SHARED_AGENT_RENAMES,
     SHARED_SKILL_RENAMES,
 )
+from scripts.al_dev_tools.companion_surface_contract import (
+    canonical_companion_surfaces,
+    surface_root_map,
+)
 
 
 REPO = Path(__file__).resolve().parents[1]
 POLICY_PATH = REPO / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
 
 # Surface → corpus roots (mirrors discover Phase 0/1; do not re-derive).
-SURFACE_ROOTS = {
-    "plugin": REPO / "profile-al-dev-shared",
-    "tooling": REPO / ".claude",
-}
+SURFACE_ROOTS = surface_root_map(REPO)
 
 # Dimension membership for each converted lens.
 LENS_DIMENSION = {
@@ -589,7 +590,7 @@ def write_lens_json(out_dir: Path, date: str, lens: str, findings: str, count: i
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--surface", choices=("plugin", "tooling"), required=True,
+    parser.add_argument("--surface", choices=("plugin", "tooling", "companion-codex-al-dev", "companion-claude-al-dev", "companion-copilot-al-dev"), required=True,
                         help="single surface only — never `both` (see module docstring)")
     parser.add_argument("--dimension", choices=("design", "quality", "naming", "all"),
                         default="all")

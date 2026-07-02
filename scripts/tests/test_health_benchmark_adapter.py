@@ -193,6 +193,16 @@ class FalsePositiveClassParserTest(unittest.TestCase):
         self.assertIn("Candidate", report["false_positive_status_counts"])
 
 
+class SurfaceAliasTest(unittest.TestCase):
+    def test_both_alias_still_expands_and_companions_alias_is_accepted(self) -> None:
+        from scripts.al_dev_tools.companion_surface_contract import legacy_surface_aliases
+
+        aliases = legacy_surface_aliases()
+        assert adapter.resolve_surfaces("both") == aliases["both"]
+        assert adapter.resolve_surfaces("companions") == aliases["companions"]
+        assert adapter.resolve_surfaces("companion-codex-al-dev") == ("companion-codex-al-dev",)
+
+
 class SelfHealingSignalTest(unittest.TestCase):
     def test_cascade_prevention_rate_uses_available_counts_only(self) -> None:
         records = [

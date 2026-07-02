@@ -32,6 +32,10 @@ from .paths import (
     docs_health_root,
 )
 from .select_health_artifacts import select_artifacts
+from ..companion_surface_contract import (
+    canonical_companion_surfaces,
+    legacy_surface_aliases,
+)
 
 METRIC_FIELDS = (
     "raw_count",
@@ -51,6 +55,7 @@ TOKEN_FIELDS = (
 )
 
 NOT_AVAILABLE = "not available"
+LEGACY_ALIASES = legacy_surface_aliases()
 FALSE_POSITIVE_CLASS_PATH = Path("docs/health/false_positive_classes.md")
 FALSE_POSITIVE_STATUSES = ("Candidate", "Monitor", "Suppress")
 PROCEDURE_LOG_PATH = Path(".dev/implement-plugin-health-procedure-log.jsonl")
@@ -385,8 +390,12 @@ def jsonl_views_present(root: Path) -> bool:
     )
 
 
+def resolve_surfaces(surface: str) -> tuple[str, ...]:
+    return LEGACY_ALIASES.get(surface, (surface,))
+
+
 def collect_dossiers(root: Path, surface: str, limit: int) -> list[Path]:
-    surfaces = ("plugin", "tooling") if surface == "both" else (surface,)
+    surfaces = resolve_surfaces(surface)
     directories = [docs_health_root(root), dispositions_archived_root(root)]
     selected: list[Path] = []
     for surf in surfaces:
@@ -528,7 +537,7 @@ def render_markdown(report: dict) -> str:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--surface", choices=("plugin", "tooling", "both"), default="both"
+        "--surface", choices=("plugin", "tooling", "both", "companions", "everything", *canonical_companion_surfaces()), default="both"
     )
     parser.add_argument("--limit", type=int, default=1, help="dossiers per surface")
     parser.add_argument("--format", choices=("json", "markdown"), default="json")
