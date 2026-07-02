@@ -61,6 +61,18 @@ def test_inventory_loader_expands_harness_home_placeholder() -> None:
                 )
 
 
+def test_in_scope_packages_are_decommissioned_after_cutover() -> None:
+    inventory = load_companion_inventory(REPO_ROOT)
+    for entry in inventory["packages"]:
+        if entry["scope"] != "in-scope":
+            continue
+        status = entry["migration_status"]["old_root_status"]
+        assert status in {"archived", "removed"}, (
+            f"{entry['surface_id']} still has old_root_status={status!r}; "
+            "run the cutover in Task 10 before closing this task"
+        )
+
+
 def load_tests(loader, tests, pattern):  # noqa: ARG001
     """Wire bare-function tests into unittest discovery."""
     suite = unittest.TestSuite()

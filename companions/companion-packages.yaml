@@ -19,8 +19,8 @@ packages:
     current_registry: ${AL_DEV_HARNESS_HOME}/codex-configs/.agents/plugins/marketplace.json
     verify_command: codex plugin list
     migration_status:
-      old_root_status: pending
-      decommission_target_date: 2026-08-31
+      old_root_status: archived
+      decommission_date: 2026-07-02
   - surface_id: companion-claude-al-dev
     harness: claude
     package: al-dev
@@ -36,8 +36,8 @@ packages:
       manifest: companions/claude/al-dev/.claude-plugin/plugin.json
       verify_command: claude plugin list
     migration_status:
-      old_root_status: pending
-      decommission_target_date: 2026-08-31
+      old_root_status: archived
+      decommission_date: 2026-07-02
   - surface_id: companion-copilot-al-dev
     harness: copilot
     package: al-dev
@@ -53,8 +53,8 @@ packages:
       manifest: companions/copilot/al-dev/.plugin/plugin.json
       verify_command: copilot plugin list
     migration_status:
-      old_root_status: pending
-      decommission_target_date: 2026-08-31
+      old_root_status: archived
+      decommission_date: 2026-07-02
   - surface_id: companion-codex-vault
     harness: codex
     package: vault
