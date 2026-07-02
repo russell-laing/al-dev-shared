@@ -31,6 +31,10 @@ packages:
     target_manifest: companions/claude/al-dev/.claude-plugin/plugin.json
     current_registry: ${AL_DEV_HARNESS_HOME}/claude-configs/.claude-plugin/marketplace.json
     verify_command: claude plugin list
+    target_registry:
+      source: ./companions/claude/al-dev
+      manifest: companions/claude/al-dev/.claude-plugin/plugin.json
+      verify_command: claude plugin list
     migration_status:
       old_root_status: pending
       decommission_target_date: 2026-08-31
@@ -44,6 +48,10 @@ packages:
     target_manifest: companions/copilot/al-dev/.plugin/plugin.json
     current_registry: ${AL_DEV_HARNESS_HOME}/copilot-configs/.plugin/marketplace.json
     verify_command: copilot plugin list
+    target_registry:
+      source: ./companions/copilot/al-dev
+      manifest: companions/copilot/al-dev/.plugin/plugin.json
+      verify_command: copilot plugin list
     migration_status:
       old_root_status: pending
       decommission_target_date: 2026-08-31

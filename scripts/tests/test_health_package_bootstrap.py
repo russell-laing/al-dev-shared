@@ -85,6 +85,17 @@ class HealthPackageBootstrapTest(unittest.TestCase):
         ]:
             self.assertTrue((REPO_ROOT / relative).is_file(), relative)
 
+    def test_claude_and_copilot_companion_manifests_exist(self) -> None:
+        pairs = [
+            ("companions/claude/al-dev/.claude-plugin/plugin.json", "claude-al-dev"),
+            ("companions/copilot/al-dev/.plugin/plugin.json", "copilot-al-dev"),
+        ]
+        for relative, expected_name in pairs:
+            manifest = REPO_ROOT / relative
+            self.assertTrue(manifest.is_file(), relative)
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            self.assertEqual(data["name"], expected_name)
+
 
 if __name__ == "__main__":
     unittest.main()
