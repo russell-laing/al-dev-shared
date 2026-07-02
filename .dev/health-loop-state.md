@@ -1,25 +1,31 @@
 ---
-stage_completed: plan-plugin-findings
+stage_completed: implement-plugin-health
 completed_at: 2026-07-03
-next_command: /implement-plugin-health --plan docs/superpowers/plans/2026-07-03-health-quality-sweep.md
-next_inputs:
-  - docs/superpowers/plans/2026-07-03-health-quality-sweep.md
-  - docs/health/dispositions_open.md
-fresh_session_recommended: true
+next_command: none
+next_inputs: []
+fresh_session_recommended: false
 note: |
-  Implementation plan written with 47 atomic tasks covering 66 verified findings.
-  
-  Breakdown:
-    - Tooling surface refactors: 7 tasks (structural, orchestration, tool hygiene, model fit)
-    - Plugin skill quality: 20 tasks (clarity, naming, bloat, conditionals)
-    - Plugin agent quality: 15 tasks (headers, notation, clarity, naming)
-    - Cross-layer sync: 3 tasks (diagrams, handoffs, references)
-    - Validation gate: 2 tasks (validators, ledger handoff)
-  
-  Plan path: docs/superpowers/plans/2026-07-03-health-quality-sweep.md
-  Event IDs to close: 59-62 unique disp_* events (some multi-event tasks)
-  
-  Next: Run /implement-plugin-health --plan docs/superpowers/plans/2026-07-03-health-quality-sweep.md
-  in a FRESH SESSION to execute the plan and close the disposition ledger.
-  Do NOT use the writing-plans Subagent-Driven/Inline handoff — it skips ledger close-back.
+  Loop closed; ledger staleness check passed. All 47 tasks of
+  2026-07-03-health-quality-sweep resolved: 24 fixed, 30 declined
+  (54 unique disp_* events closed). Plan and its source dossier
+  (2026-07-03-plugin-health.md + findings) archived.
+
+  Two blocking infrastructure bugs were found and fixed mid-run because
+  they made the ledger CLI entirely non-functional: health_disposition_store.py's
+  parse_args() peeked at --root before any subparsers existed, and
+  append_event() opened its JSONL shard in write-only mode while trying
+  to read it back. Also fixed 3 unrelated broken knowledge-file
+  references from an earlier research->bc-research rename that blocked
+  scripts/generate_map_doc_sections.py outright.
+
+  profile-al-dev-shared/ sources changed (multiple agents and skills) —
+  regenerate-agent-projections and audit-plugin-neutrality were both
+  run inline this session (projections regenerated after every agent
+  edit; validate_harness_neutrality.py passed clean at finalization).
+  No deferred /sync-map-documentation is owed — docs/agent_map.md,
+  docs/skills_map.md, docs/plugin_graph.md, and docs/workflow_diagrams.md
+  were all regenerated via generate_map_doc_sections.py as part of
+  Phase 4 finalization.
+
+  Next: run /audit-plugin-health to start the next health loop.
 ---
