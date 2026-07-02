@@ -160,14 +160,17 @@ The catalog count check uses:
 ```bash
 DISK_AGENTS=$(ls /path/to/profile-al-dev-shared/agents/*.md | wc -l | tr -d ' ')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  "${RUN_DIR}/updates/agent_map.md" | grep -c '^| al-dev')
+  "${RUN_DIR}/updates/agent_map.md" | grep -Ec '^\| [a-z]')
 echo "disk=${DISK_AGENTS} catalog=${CATALOG_ROWS}"
 ```
 
-The `grep -c '^| al-dev'` pattern is whitespace- and prefix-sensitive: each
-catalog row must begin with `| al-dev` (one space after the pipe) — the format
-the agent-map catalog generator emits. If the generator changes row prefix or
-spacing, update this pattern here and in any skill that reuses it.
+The `grep -Ec '^\| [a-z]'` pattern matches any data row (agent names are
+lowercase kebab-case) while excluding the header row (`| Agent | ...`,
+capitalized) and the separator row (`|---|...`). Agent names no longer share
+a common `al-dev` prefix — an earlier version of this pattern (`^| al-dev`)
+assumed that prefix and silently matched zero rows once agents were renamed
+away from it, making every catalog-count check fail. If the generator changes
+row format, update this pattern here and in any skill that reuses it.
 
 ### All-surfaces-invalid Stop Rule
 

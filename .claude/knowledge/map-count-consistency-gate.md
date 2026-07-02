@@ -11,7 +11,7 @@ REPO=$(git rev-parse --show-toplevel)
 DISK_AGENTS=$(find "$REPO/profile-al-dev-shared/agents" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
 COVERAGE_COUNT=$(grep -o '[0-9][0-9]* active agents' "$REPO/docs/agent_map.md" | grep -o '[0-9]*')
 CATALOG_ROWS=$(awk '/BEGIN GENERATED: agent-catalog-table/,/END GENERATED: agent-catalog-table/' \
-  "$REPO/docs/agent_map.md" | grep -c '^| al-dev')
+  "$REPO/docs/agent_map.md" | grep -Ec '^\| [a-z]')
 echo "disk=${DISK_AGENTS} coverage=${COVERAGE_COUNT} catalog=${CATALOG_ROWS}"
 ```
 
@@ -19,8 +19,12 @@ The three values compared are:
 
 - **active files on disk** — `*.md` count under `profile-al-dev-shared/agents/`
 - **generated Coverage count** — the `N active agents` figure in `agent_map.md`
-- **generated catalog rows** — rows matching `^| al-dev` inside the
-  `BEGIN/END GENERATED: agent-catalog-table` block
+- **generated catalog rows** — data rows (lowercase kebab-case agent names)
+  matching `^\| [a-z]` inside the `BEGIN/END GENERATED: agent-catalog-table`
+  block, excluding the capitalized header row and the `|---` separator row.
+  An earlier version of this pattern (`^| al-dev`) assumed every agent name
+  shared an `al-dev` prefix; once agents were renamed away from that prefix,
+  the pattern silently matched zero rows and the gate failed on every run.
 
 ## On Mismatch — Stop and Report
 
