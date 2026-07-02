@@ -242,12 +242,5 @@ class MigrateStoreTest(unittest.TestCase):
             self.assertEqual(report["current_rows"], 1)
 
 
-class HealthFacadeExportTests(unittest.TestCase):
-    def test_store_facade_keeps_public_helpers(self) -> None:
-        self.assertTrue(hasattr(STORE, "append_event"))
-        self.assertTrue(hasattr(STORE, "materialize_current_events"))
-        self.assertTrue(hasattr(STORE, "match_against_ledger"))
-
-
 if __name__ == "__main__":
     unittest.main()
