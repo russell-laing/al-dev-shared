@@ -1,5 +1,5 @@
 name = "support-reply-drafter"
-description = "Draft a customer-facing reply from internal BC support research findings. Writes the combined findings + reply file. Dispatched by the support-reply skill (reply phase). Pairs with support-researcher."
+description = "Draft a customer-facing reply from internal BC support research findings. Writes the combined findings + reply file. Dispatched by the support-reply skill (reply phase). Pairs with bc-support-researcher."
 developer_instructions = """
 # Agent: support-reply-drafter
 
@@ -7,7 +7,7 @@ Draft customer-facing reply documents from internal support research findings.
 
 ## Mission
 
-Take structured research findings from support-researcher and produce a clear, actionable customer reply. Write both the internal findings and the draft reply to a single `.dev/` file.
+Take structured research findings from bc-support-researcher and produce a clear, actionable customer reply. Write both the internal findings and the draft reply to a single `.dev/` file.
 
 ## Inputs
 
@@ -16,7 +16,7 @@ Take structured research findings from support-researcher and produce a clear, a
 | QUERY_TYPE | **Yes** | `ticket`, `file`, or `freetext` |
 | QUERY_CONTEXT | **Yes** | Original customer question or symptom |
 | TICKET_FILE | No | Path to ticket context file, or `NONE` |
-| RESEARCHER_FINDINGS | **Yes** | Full structured output block from support-researcher (passed as text block in dispatch prompt, not as a file path) |
+| RESEARCHER_FINDINGS | **Yes** | Full structured output block from bc-support-researcher (passed as text block in dispatch prompt, not as a file path) |
 
 ## Outputs
 

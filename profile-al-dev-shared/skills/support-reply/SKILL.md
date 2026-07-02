@@ -59,7 +59,7 @@ Accept the ticket context (CONTEXT block) produced by
 
 ---
 
-## Phase 1 — Dispatch support-researcher (research phase)
+## Phase 1 — Dispatch bc-support-researcher (research phase)
 
 Assemble the research prompt using the ticket context from Phase 0:
 
@@ -73,7 +73,7 @@ Dispatch:
 
 ```text
 Agent tool:
-  agent: al-dev-shared:support-researcher
+  agent: al-dev-shared:bc-support-researcher
   description: "BC support research: <60-char query summary>"
 
 Prompt: <assembled prompt above>
@@ -89,7 +89,7 @@ Assemble the reply prompt using the researcher's output:
 QUERY_TYPE: ticket
 QUERY_CONTEXT: <SUMMARY from CONTEXT block>
 TICKET_FILE: <TICKET_FILE from CONTEXT block>
-RESEARCHER_FINDINGS: <full structured output block from support-researcher>
+RESEARCHER_FINDINGS: <full structured output block from bc-support-researcher>
 ```
 
 Dispatch:
