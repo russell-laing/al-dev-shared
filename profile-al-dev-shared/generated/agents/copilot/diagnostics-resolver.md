@@ -81,14 +81,9 @@ Document:
 - Unresolved rules: Rule ID, count, reason (judgment-required or error)
 - Any delegation notes
 
-### Judgment-Required Rules Reference
+### Judgment-Required Rules
 
-| Rule | Category | Why |
-|------|----------|-----|
-| AS0016 | DataClassification | Value requires explicit choice (CustomerContent, OrganizationIdentifiableInformation, AccountData, EndUserPseudonymousIdentifiers, EndUserIdentifiableInformation, EndUserContent, SystemMetadata) |
-| AS0013 | ID Range | Object ID is a design decision; may conflict with existing objects |
-| PTE0001 | Page Type | Page type (List, Card, etc.) is a design decision |
-| PTE0002 | Page Type | Page type extension target is a design decision |
+See `knowledge/diagnostic-rules-reference.md` for the decision matrix used in violations classification.
 
 ### Output Report Format
 
