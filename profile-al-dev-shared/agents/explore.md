@@ -5,7 +5,7 @@ description: >-
   symbols, answers structural questions about code organization.
   Use when exploration results need to persist as a shareable artifact.
 model: sonnet
-tools: ["Read", "Glob", "Grep", "Write"]
+tools: ["Bash", "Read", "Glob", "Grep", "Write"]
 ---
 
 # Agent: explore

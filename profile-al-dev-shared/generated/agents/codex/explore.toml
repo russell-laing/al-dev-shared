@@ -65,6 +65,7 @@ When running build, compile, test, or other tools that produce verbose output:
 When writing persistent findings, follow the structure defined in `knowledge/explore-findings-format.md`.
 
 Codex capability notes:
+- run shell commands allowed by the active Codex session
 - read files available in the active Codex session
 - search files available in the active Codex session
 - search file contents available in the active Codex session

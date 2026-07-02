@@ -1,7 +1,7 @@
 ---
 name: "explore"
 description: "Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization. Use when exploration results need to persist as a shareable artifact."
-tools: ["read", "glob", "grep", "edit"]
+tools: ["execute", "read", "glob", "grep", "edit"]
 ---
 
 
