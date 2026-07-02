@@ -48,6 +48,13 @@ Three specialist agents (sonnet):
 
 ---
 
+**Phase Numbering Note:** This skill starts at Phase 0 (verify preflight) because
+Phase 0 preflight itself — locating the develop handoff, identifying changed
+files, and verifying compile status — is performed by
+`/generic-preflight --context-type review`, run before this skill and read via
+`.dev/*-plugin-review-preflight.md`. There is no separate `review-develop-preflight`
+skill; the numbering reflects that upstream dependency, not missing phases.
+
 ## Phase 0: Verify Preflight
 
 Read the most recent preflight context file:
