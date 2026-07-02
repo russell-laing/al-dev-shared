@@ -1,5 +1,5 @@
 ---
-description: "Interview the user to extract complete BC/AL implementation details through structured questioning. Spawned by the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`."
+description: "Coordinate the interview workflow by orchestrating question-gatherer and spec-writer agents to extract implementation details. Spawned by the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`."
 tools: ["Read", "Write", "AskUserQuestion"]
 ---
 
