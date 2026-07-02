@@ -64,6 +64,8 @@ git diff --cached --stat
 
 For every staged file, choose the read command:
 
+Each bash block below is a literal, runnable command for the branch described immediately above it — not pseudo-code.
+
 - **`DIFF_MODE: full` (default), OR the file's `--stat` change count is small
   (≤ 200 changed lines):** read the full diff —
 
