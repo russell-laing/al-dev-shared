@@ -14,8 +14,6 @@ __all__ = [
     "disposition_views",
     "health_benchmark_adapter",
     "health_disposition_store",
-    "migrate_health_disposition_jsonl",
-    "migrate_health_disposition_store",
     "ledger_cli",
     "ledger_models",
     "ledger_queries",
