@@ -1,3 +1,4 @@
+import unittest
 from pathlib import Path
 
 from scripts.al_dev_tools.companion_surface_contract import (
@@ -58,3 +59,12 @@ def test_inventory_loader_expands_harness_home_placeholder() -> None:
                 assert "${AL_DEV_HARNESS_HOME}" not in entry[key], (
                     f"{entry['surface_id']}.{key} was not expanded"
                 )
+
+
+def load_tests(loader, tests, pattern):  # noqa: ARG001
+    """Wire bare-function tests into unittest discovery."""
+    suite = unittest.TestSuite()
+    for name, fn in sorted(globals().items()):
+        if name.startswith("test_") and callable(fn):
+            suite.addTest(unittest.FunctionTestCase(fn))
+    return suite
