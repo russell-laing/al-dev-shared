@@ -59,14 +59,9 @@ Repo-local skill names should follow the same verb-first convention used by the 
 Current repo-local Codex skills:
 
 - `.codex/skills/generate-usage-report/` — converts harness-specific usage artifacts into neutral markdown reports and can optionally add Codex-derived local usage observations.
-- `.codex/skills/cleanup-docs-health/` — removes dated health clutter without rewriting live evidence or current aliases.
-- `.codex/skills/implement-plugin-map-findings/` — implements corrected plugin-map and tooling-surface findings plans.
-- `.codex/skills/maintain-shared-knowledge/` — keeps shared knowledge and harness instruction docs aligned with current capabilities.
-- `.codex/skills/maintain-skill-naming-conventions/` — keeps local skill names, descriptions, and inventory docs aligned with the intent they express.
 - `.codex/skills/review-improvement-reports/` — reviews supplied usage or improvement reports and writes evidence-backed assessments without editing the shared plugin profile directly.
 - `.codex/skills/research-harness-improvements/` — researches current AI harness practices and produces source-backed briefings for evidence-gated improvement review.
 - `.codex/skills/heal-surface/` — performs a small, surface-specific self-heal pass near the end of a session.
-- `.codex/skills/repeat-plan-execution/` — runs an established implementation plan task-by-task with isolated execution and review gates.
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy reports against live repo state before trusting rankings or counts.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates, appends, or losslessly consolidates review-only findings for Superpowers plans after live repo checks.

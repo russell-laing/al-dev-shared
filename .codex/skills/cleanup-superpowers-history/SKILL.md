@@ -38,7 +38,7 @@ Use this when `docs/superpowers/` or tracked `.dev/` execution artifacts have be
 ## Cleanup Order
 
 | Artifact type | Default action | Extra guard |
-|---|---|---|
+| --- | --- | --- |
 | Raw plans | Remove from tracking after history exists | No external references outside `docs/superpowers/` |
 | Raw specs | Keep unless clearly superseded or migrated | Migrate or preserve any referenced spec |
 | Tracked `.dev/` reports and logs | Remove only after summarizing or relocating durable content | Keep active workflow state and current handoff artifacts |

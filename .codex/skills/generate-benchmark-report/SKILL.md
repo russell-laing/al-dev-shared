@@ -31,7 +31,7 @@ Do not use this for:
 ## Output Convention
 
 Write the final report to
-`docs/reviews/YYYY-MM-DD-<topic>-benchmark-baseline.md`, for example
+`docs/reviews/2026-07-02-<topic>-benchmark-baseline.md`, for example
 `docs/reviews/2026-06-20-claude-self-healing-benchmark-baseline.md`.
 
 ## Required Inputs
@@ -237,11 +237,11 @@ python3 scripts/validate_health_loop_state.py
 python3 scripts/health_benchmark_adapter.py --surface tooling --limit 1 --format markdown
 ```
 
-Append this section to the existing baseline report, replacing the date with
-the current ISO date:
+Append this section to the existing baseline report. Use the current ISO date
+in the heading, following this format:
 
 ```markdown
-## Delta - <current ISO date>
+## Delta - 2026-07-02
 
 ### Trigger
 

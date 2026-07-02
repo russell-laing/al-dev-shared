@@ -13,12 +13,12 @@ This skill is an assessment and planning aid only. It must not edit `profile-al-
 
 Write one markdown report to:
 
-- `.dev/YYYY-MM-DD-plugin-improvement-assessment.md`
+- `.dev/2026-07-02-plugin-improvement-assessment.md`
 
 If that file already exists for the current day, append a short suffix that identifies the source, for example:
 
-- `.dev/YYYY-MM-DD-plugin-improvement-assessment-claude-insights.md`
-- `.dev/YYYY-MM-DD-plugin-improvement-assessment-codex-summary.md`
+- `.dev/2026-07-02-plugin-improvement-assessment-claude-insights.md`
+- `.dev/2026-07-02-plugin-improvement-assessment-codex-summary.md`
 
 ## Required Inputs
 
@@ -86,7 +86,7 @@ Use `keep` only when the candidate passes the suggestion-of-merit gate.
 For every `keep` item, answer all five questions:
 
 | Gate Question | Required Answer |
-|---|---|
+| --- | --- |
 | What report evidence supports it? | Cite the source section, metric, quote summary, or observed failure mode. |
 | Which existing shared-profile file already covers part of the behavior? | Name the current file path and the relevant behavior already present. |
 | Why does this belong in the shared plugin rather than repo-local tooling? | Explain why it is durable, harness-neutral AL/BC workflow behavior. |
@@ -106,7 +106,7 @@ Write the final report with this structure:
 
 - Artifact: state the exact source path, or write `conversation-supplied content`
 - Reporting window: state the exact reporting window, or write `not stated`
-- Assessment date: YYYY-MM-DD
+- Assessment date: use the current ISO date, for example `2026-07-02`
 
 ## Executive Summary
 

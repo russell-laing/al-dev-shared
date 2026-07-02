@@ -19,18 +19,19 @@ do not edit shared plugin files.
 - Current vendor capabilities or ecosystem practices may have changed.
 
 Use `review-improvement-reports` after this skill when the user wants candidate
-findings classified as shared-plugin changes. Use `maintain-shared-knowledge`
-only after a reviewed change has been approved.
+findings classified as shared-plugin changes. After a reviewed change is
+approved, follow the approved implementation plan or explicitly create/restore
+any repo-local skill needed for that follow-up work.
 
 ## Output
 
 Write one briefing to:
 
-- `.dev/YYYY-MM-DD-harness-improvement-research.md`
+- `.dev/2026-07-02-harness-improvement-research.md`
 
 If that path already exists, add a short topic suffix:
 
-- `.dev/YYYY-MM-DD-harness-improvement-research-agent-evaluation.md`
+- `.dev/2026-07-02-harness-improvement-research-agent-evaluation.md`
 
 Never overwrite an unrelated same-day briefing.
 
@@ -111,7 +112,7 @@ Rebuild the Phase 1 baseline manifests there before continuing, and record the
 rebuild and new path in `.dev/progress.md`.
 
 Use `.dev/progress.md` as the authoritative resume state. The dated
-`.dev/YYYY-MM-DD-harness-improvement-research-progress*.md` file is a durable
+`.dev/2026-07-02-harness-improvement-research-progress*.md` file is a durable
 narrative only and does not override `.dev/progress.md`.
 
 ### Phase 1: Establish The Live Repo Baseline
@@ -216,7 +217,7 @@ After Phase 1, overwrite the authoritative checkpoint and refresh the durable
 narrative:
 
 - `.dev/progress.md`
-- `.dev/YYYY-MM-DD-harness-improvement-research-progress.md`
+- `.dev/2026-07-02-harness-improvement-research-progress.md`
 
 Run `mkdir -p .dev` before writing the checkpoint.
 Keep both files short and aligned. Record the scope, completed phases, current

@@ -20,12 +20,12 @@ Use this skill when the user asks to:
 
 Write the final artifact to:
 
-- `.dev/YYYY-MM-DD-ai-harness-neutral-usage-report.md`
+- `.dev/2026-07-02-ai-harness-neutral-usage-report.md`
 
 If that filename already exists for the current day, append a short suffix that reflects the scope, for example:
 
-- `.dev/YYYY-MM-DD-ai-harness-neutral-usage-report-claude-only.md`
-- `.dev/YYYY-MM-DD-ai-harness-neutral-usage-report-cross-harness.md`
+- `.dev/2026-07-02-ai-harness-neutral-usage-report-claude-only.md`
+- `.dev/2026-07-02-ai-harness-neutral-usage-report-cross-harness.md`
 
 ## Supported Inputs
 

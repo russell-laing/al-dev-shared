@@ -25,7 +25,7 @@ checkout snapshots under `.claude/worktrees`, requires at least eight matching
 lines, and writes:
 
 ```text
-docs/reviews/YYYY-MM-DD-duplicate-text-report.md
+docs/reviews/2026-07-02-duplicate-text-report.md
 ```
 
 Run `--help` for threshold, path, output, archive, and generated-content
