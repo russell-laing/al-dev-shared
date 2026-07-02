@@ -8,8 +8,15 @@ from pathlib import Path
 
 from .paths import compatibility_ledger_path
 
+# Module-level constant computed at import time using repo root
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+    REPO_ROOT = Path(bootstrap_repo(__file__))
+except Exception:
+    # Fallback for direct module imports
+    REPO_ROOT = Path(__file__).resolve().parents[3]
 
-LEDGER = compatibility_ledger_path()
+LEDGER = compatibility_ledger_path(REPO_ROOT)
 
 
 @dataclass
