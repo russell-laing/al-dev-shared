@@ -20,6 +20,10 @@ from scripts.al_dev_tools.markdown_frontmatter import parse_required_frontmatter
 
 SCAN_DIRS = ("skills", "agents", "knowledge", "markdown", "bc-code-intel-knowledge")
 SCAN_SUFFIXES = {".md", ".yaml", ".yml"}
+ALLOWED_PACKAGING_METADATA = {
+    "profile-al-dev-shared/.claude-plugin/plugin.json",
+    "profile-al-dev-shared/.plugin/plugin.json",
+}
 ALLOWLIST = {
     "knowledge/harness-concepts.md",
     "knowledge/agent-tool-projection-policy.md",

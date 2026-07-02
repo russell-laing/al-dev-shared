@@ -42,3 +42,7 @@ create an implicit runtime dependency.
 `profile-al-dev-shared/.plugin/plugin.json` remain thin distribution adapters until
 their companion replacements are proven. They may contain packaging metadata only,
 never harness-specific workflow behavior.
+
+The neutrality validator (`scripts/validate_harness_neutrality.py`) explicitly allows
+these packaging metadata files via the `ALLOWED_PACKAGING_METADATA` constant while
+enforcing the behavioral harness-leakage boundary across the rest of the shared surface.

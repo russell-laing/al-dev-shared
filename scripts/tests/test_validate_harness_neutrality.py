@@ -179,6 +179,16 @@ def test_formatted_output_has_canonical_shape() -> None:
     assert "harness-concepts.md" in output, "Fix must reference the rule document"
 
 
+def test_packaging_adapters_are_allowed_but_behavioral_harness_leakage_is_not() -> None:
+    allowed = {
+        "profile-al-dev-shared/.claude-plugin/plugin.json",
+        "profile-al-dev-shared/.plugin/plugin.json",
+    }
+    text = (REPO_ROOT / "scripts/validate_harness_neutrality.py").read_text(encoding="utf-8")
+    for relative in allowed:
+        assert relative.split("/")[-2] in text
+
+
 def _run_pytest_style_test(func):
     signature = inspect.signature(func)
     if not signature.parameters:
