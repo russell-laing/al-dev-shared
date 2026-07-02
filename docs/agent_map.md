@@ -34,7 +34,7 @@
 | evidence-gatherer | sonnet | Read, Write, Bash, MCP: bc-code-intelligence | (none found) |
 | findings-synthesizer | haiku | Read | (none found) |
 | general-code-reviewer | sonnet | Read | (none found) |
-| interview | sonnet | Read, Write, USER_GATE | `/interview` |
+| interview | sonnet | Read, USER_GATE | `/interview` |
 | performance-reviewer | sonnet | Read | `/review-develop` |
 | question-gatherer | sonnet | Write | (none found) |
 | release-notes-writer | sonnet | Read, Write, Bash | `/release-notes` |

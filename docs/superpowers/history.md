@@ -2,6 +2,15 @@
 
 Current source of truth: active implementation guidance lives in the current shared plugin source and knowledge documents.
 
+## 2026-07-03
+
+### Health Findings Quality Sweep
+
+- Path: `docs/superpowers/plans/archived/2026-07-03-09-11-43-2026-07-03-health-quality-sweep.md`
+- Kind: plan
+- Status: implemented
+- Summary: 2026-07-03 | health-quality-sweep | implemented; events closed: [disp_20260702_000016, disp_20260702_000110, disp_20260702_000111, disp_20260702_000116, disp_20260702_000117, disp_20260702_000120, disp_20260702_000125, disp_20260702_000126, disp_20260702_000127, disp_20260702_000130, disp_20260702_000131, disp_20260702_000135, disp_20260702_000137, disp_20260702_000185, disp_20260702_000186, disp_20260702_000191, disp_20260702_000192, disp_20260702_000193, disp_20260702_000195, disp_20260702_000211, disp_20260702_000215, disp_20260702_000217, disp_20260702_000218, disp_20260702_000219, disp_20260702_000220, disp_20260703_000001, disp_20260703_000002, disp_20260703_000005, disp_20260703_000006, disp_20260703_000007, disp_20260703_000008, disp_20260703_000009, disp_20260703_000010, disp_20260703_000011, disp_20260703_000012, disp_20260703_000013, disp_20260703_000014, disp_20260703_000015, disp_20260703_000016, disp_20260703_000017, disp_20260703_000018, disp_20260703_000019, disp_20260703_000020, disp_20260703_000021, disp_20260703_000022, disp_20260703_000023, disp_20260703_000025, disp_20260703_000027, disp_20260703_000031, disp_20260703_000032, disp_20260703_000033, disp_20260703_000034, disp_20260703_000035, disp_20260703_000036] (24 fixed, 30 declined). Also fixed 2 blocking infrastructure bugs discovered mid-run (health_disposition_store.py CLI entirely non-functional; bootstrap_repo() repo-root resolution for nested scripts) and 3 unrelated broken knowledge-file references from an earlier research->bc-research rename that blocked the map-doc generator.
+
 ## 2026-07-02
 
 ### Agent Inputs/Outputs Structure
