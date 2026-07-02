@@ -45,7 +45,7 @@ When `/bc-research` needs product guidance beyond the current repository, gather
 
 **Step 3: Check behavioral evolution when available** — If version or regression history matters, use `https://github.com/StefanMaron/MSDyn365BC.Code.History` as the first curated anchor when the active environment exposes it, or check whether `bc-code-history` appears in your active tool list before using it. If neither is available, skip historical confirmation and record `BC History: not available` in the `SOURCES` section rather than implying historical confirmation.
 
-**Step 4: Widen only when the question requires it** — Expand into adjacent Microsoft services such as Power Platform, Power BI, Excel, Azure, or Microsoft Graph only when the research question crosses those boundaries. Keep the source set curated-first and explicitly note when official BC/AL sources were insufficient for the final conclusion.
+**Step 4: Widen only when the question requires it** — Expand into adjacent Microsoft services such as Power Platform, Power BI, Excel, Azure, or Microsoft Graph when either condition holds: the question explicitly names one of these services, or the BC/AL-native sources from Steps 1-3 cannot fully answer the question without referencing one of them. Keep the source set curated-first and explicitly note when official BC/AL sources were insufficient for the final conclusion.
 
 **Step 5: Prepare findings for `/bc-research`** — Return structured lane-local findings that explain what the broader ecosystem guidance means for the orchestrator's final answer. Follow `knowledge/research-source-policy.md` for evidence labels and `knowledge/research-output-format.md` for section order.
 
