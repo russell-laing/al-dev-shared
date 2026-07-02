@@ -1,5 +1,5 @@
 ---
-name: explore
+name: codebase-explorer
 description: >-
   Fast codebase exploration — finds files by pattern, searches for
   symbols, answers structural questions about code organization.
