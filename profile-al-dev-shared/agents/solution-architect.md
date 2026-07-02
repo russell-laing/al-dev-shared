@@ -1,8 +1,8 @@
 ---
 name: solution-architect
 description: >-
-  Design BC-integrated solutions and create detailed implementation
-  plans. Spawned in parallel by the plan skill.
+  Synthesize design solutions and implementation plans from architect
+  debate. Spawned in parallel by the plan skill.
 model: opus
 tools: ["Read", "Write", "Glob", "Grep"]
 ---
@@ -71,16 +71,7 @@ or modify `.dev/project-context.md` — those are written by the `/plan` skill i
 after evaluating architect inputs. Architect output is consumed by the skill's synthesis
 phase, not by downstream callers directly.
 
-**Rogue File Guard:** Do NOT write shared `.dev/` paths (e.g., `.dev/project-context.md`,
-`.dev/preflight-context.md`, `.dev/YYYY-MM-DD-*.md` without agent-name prefix). All
-architect artifacts must be scoped to this agent instance:
-
-- Temporary scratch: `.dev/solution-architect-<date>-draft-*.md`
-- Long-lived state: `.dev/solution-architect-<date>-context.md` (if needed for resumption)
-
-This prevents rogue files from conflicting with `/plan` skill synthesis or concurrent
-architect dispatches. See `knowledge/agent-tool-projection-policy.md` for harness-wide
-scoping rules.
+**Rogue File Guard:** Confine all artifacts to agent-scoped paths: `.dev/solution-architect-<date>-*`. See policy in `knowledge/agent-tool-projection-policy.md`.
 
 ## Output Format
 
