@@ -116,6 +116,26 @@ Example: "Event subscriber not triggering"
 Example: "Performance degradation after upgrade"
 ```
 
+## Complexity Thresholds (Quantified)
+
+**TRIVIAL (<10% of scope):**
+
+- ≤1 file affected
+- ≤50 lines of changes total
+- No cross-file dependencies
+
+**SIMPLE (10-40% of scope):**
+
+- 2-5 files affected
+- 50-300 lines of changes
+- ≤2 functions modified per file
+
+**MEDIUM+ (>40% of scope):**
+>
+- >5 files affected OR
+- >300 lines of changes OR
+- Refactoring across multiple modules
+
 ### Step 2: Trivial Fix (2-5 min)
 
 For trivial fixes:
