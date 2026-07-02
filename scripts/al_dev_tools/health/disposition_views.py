@@ -65,6 +65,9 @@ def write_shard(shard: Path, shard_rows: list[dict[str, str]]) -> None:
         f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
         for r in shard_rows
     ]
+    # Ensure existing_content ends with newline so appended rows don't merge
+    if existing_content and not existing_content.endswith("\n"):
+        existing_content += "\n"
     new_content = existing_content + "\n".join(body_lines) + "\n"
     write_text_atomic(shard, new_content)
 

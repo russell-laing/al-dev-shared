@@ -71,7 +71,8 @@ def _strip_passing_bullets(block: str) -> str:
     inserted = False
     for ln in kept:
         out.append(ln)
-        if not inserted and ln.strip().startswith("### "):
+        if not inserted and ln.strip().startswith("#"):
+            # Insert sentinel after any heading (handles ### or #### etc.)
             out.append("")
             out.append("_No issues found._")
             inserted = True

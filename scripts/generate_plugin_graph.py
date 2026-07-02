@@ -20,7 +20,6 @@ from scripts.al_dev_tools.docs.map_doc_sections import (
     collect_inventory,
     mermaid_node_id,
     replace_marked_sections,
-    summarize_plugin_health,
 )
 
 
@@ -58,8 +57,6 @@ def build_document(inventory, health, *, today: str) -> str:  # noqa: ANN001
 def main() -> int:
     try:
         inventory = collect_inventory(PLUGIN)
-        health = summarize_plugin_health(inventory, workflow_paths=WORKFLOW_PATHS)
-        del health
         rendered = build_all_sections(inventory)
         replacements = {
             key: rendered[key]
