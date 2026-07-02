@@ -28,6 +28,21 @@ Defaults:
 `/report-plugin-health` preserves and validates the filter metadata written by
 `/discover-plugin-health`; it does not expose a public `--dimension` argument.
 
+### Companion surfaces
+
+Companion package surfaces extend the public `--surface` vocabulary without changing legacy
+`plugin|tooling|both` semantics:
+
+`--surface companions|companion-codex-al-dev|companion-claude-al-dev|companion-copilot-al-dev|everything`
+
+- `both` = legacy alias for `plugin` + `tooling` only
+- `companions` = all canonical companion package surfaces
+- `everything` = `plugin` + `tooling` + `companions`
+
+`all` remains exclusive to `--dimension` (`design|quality|naming|all`) and must never be
+accepted as a `--surface` value — see the Cross-axis token rule in
+`docs/architecture/companion-monorepo-contract.md`.
+
 ## Surface Mapping
 
 - `plugin` -> `profile-al-dev-shared/`
