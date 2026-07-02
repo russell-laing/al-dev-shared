@@ -14,7 +14,9 @@
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-pattern-reviewer | sonnet | Read | `/review-develop` |
+| bc-support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/support-reply` |
 | change-analyzer | haiku | Read | (none found) |
+| codebase-explorer | sonnet | Bash, Read, Glob, Grep, Write | (none found) |
 | commit-analyzer | haiku | Bash, Read | `/commit-preflight` |
 | commit-executor | haiku | Bash, Read | `/commit-execute` |
 | commit-group-drafter | haiku | (none) | `/commit-preflight` |
@@ -24,26 +26,24 @@
 | corruption-recover | sonnet | Write, Bash | `/commit-recover` |
 | developer-tdd | sonnet | Read, Write, Bash | `/develop-orchestrate` |
 | developer-traditional | sonnet | Read, Write, Bash | `/develop-orchestrate`, `/fix` |
-| diagnostics-classifier | sonnet | Read | (none found) |
+| diagnostics-classifier | haiku | Read | (none found) |
 | diagnostics-decision | haiku | Read | (none found) |
 | diagnostics-resolver | sonnet | Read, Edit, Bash | `/lint` |
-| docs-writer | sonnet | Read, Write, Edit, Bash | `/document` |
-| ecosystem-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/research` |
-| evidence-gatherer | sonnet | Read, Write, Bash | (none found) |
-| explore | sonnet | Read, Glob, Grep, Write | `/explore`, `/investigate`, `/perf` |
+| docs-writer | sonnet | Read, Write, Edit, Bash | `/document`, `/document-format` |
+| ecosystem-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/bc-research` |
+| evidence-gatherer | sonnet | Read, Write, Bash, MCP: bc-code-intelligence | (none found) |
 | findings-synthesizer | haiku | Read | (none found) |
 | general-code-reviewer | sonnet | Read | (none found) |
 | interview | sonnet | Read, Write, USER_GATE | `/interview` |
 | performance-reviewer | sonnet | Read | `/review-develop` |
 | question-gatherer | sonnet | Write | (none found) |
 | release-notes-writer | sonnet | Read, Write, Bash | `/release-notes` |
-| repo-researcher | sonnet | Read, Glob, Grep, MCP: al-mcp-server, MCP: bc-code-intelligence | `/research` |
+| repo-researcher | sonnet | Read, Glob, Grep, MCP: al-mcp-server, MCP: bc-code-intelligence | `/bc-research` |
 | script-engineer | sonnet | Read, Write, Bash | (none found) |
 | security-reviewer | sonnet | Read | `/review-develop` |
 | solution-architect | opus | Read, Write, Glob, Grep | `/fix`, `/plan` |
 | spec-writer | sonnet | Read, Write | (none found) |
-| support-reply-drafter | sonnet | Write | `/support-reply` |
-| support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/support-reply` |
+| support-reply-drafter | sonnet | Read, Write, Bash | `/support-reply` |
 | ticket-context-writer | haiku | Bash, Write | `/ticket` |
 <!-- END GENERATED: agent-catalog-table -->
 

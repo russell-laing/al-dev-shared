@@ -7,7 +7,7 @@
 **Last updated:** 2026-07-02
 
 <!-- BEGIN GENERATED: skill-coverage -->
-**Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
+**Coverage:** 24 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
 <!-- END GENERATED: skill-coverage -->
 
 **Scope:** Active skill directories only. Archived items (`al-dev-test`, test-engineer agents, `al-dev-test-coverage-reviewer`, `al-dev-align`) excluded. Layer 1 contains 21 primary lifecycle skills. Layer 2 includes 1 additional distributed utility (`/help`). Maintainer-surface skills (e.g. `al-dev-consolidate`, relocated to `.claude/skills/`) and tools are documented in separate tracking systems.
@@ -50,7 +50,7 @@ flowchart TD
     skill_fix --> skill_commit
     skill_generic_preflight -.-> |preflight-context.md| skill_plan
     skill_interview -.-> |interview-requirements.md| skill_plan
-    skill_investigate -.-> skill_plan
+    skill_investigate -.-> |investigate-findings.md| skill_plan
     skill_perf -.-> |perf-analysis.md| skill_plan
     skill_plan --> skill_develop_orchestrate
     skill_review_develop --> skill_commit
@@ -104,10 +104,10 @@ flowchart LR
 
     skill_ticket[ticket]
     Phase0["Phase 0"]
-    Phase0_5["Phase 0.5"]
     Phase1["Phase 1"]
     Phase1_5["Phase 1.5"]
     Phase2["Phase 2"]
+    Phase2_5["Phase 2.5"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     Phase5["Phase 5"]
@@ -118,10 +118,10 @@ flowchart LR
     knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
 
     skill_ticket --> Phase0
-    skill_ticket --> Phase0_5
     skill_ticket --> Phase1
     skill_ticket --> Phase1_5
     skill_ticket --> Phase2
+    skill_ticket --> Phase2_5
     skill_ticket --> Phase3
     skill_ticket --> Phase4
     skill_ticket --> Phase5
@@ -133,10 +133,10 @@ flowchart LR
 
     class skill_ticket skillNode
     class Phase0 phaseNode
-    class Phase0_5 phaseNode
     class Phase1 phaseNode
     class Phase1_5 phaseNode
     class Phase2 phaseNode
+    class Phase2_5 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
     class Phase5 phaseNode
@@ -170,8 +170,8 @@ flowchart LR
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     skill_ticket[ticket]
+    agent_bc_support_researcher[bc-support-researcher]
     agent_support_reply_drafter[support-reply-drafter]
-    agent_support_researcher[support-researcher]
     artifact_2026_06_01_ticket_ticket_context_md[.dev/2026-06-01-ticket-ticket-context.md]
 
     skill_support_reply --> Phase0
@@ -180,8 +180,8 @@ flowchart LR
     skill_support_reply --> Phase3
     skill_support_reply --> Phase4
     skill_support_reply -.-> skill_ticket
+    skill_support_reply --> agent_bc_support_researcher
     skill_support_reply --> agent_support_reply_drafter
-    skill_support_reply --> agent_support_researcher
     skill_support_reply --> artifact_2026_06_01_ticket_ticket_context_md
 
     class skill_support_reply skillNode
@@ -191,12 +191,12 @@ flowchart LR
     class Phase3 phaseNode
     class Phase4 phaseNode
     class skill_ticket skillNode
+    class agent_bc_support_researcher agentNode
     class agent_support_reply_drafter agentNode
-    class agent_support_researcher agentNode
     class artifact_2026_06_01_ticket_ticket_context_md artifactNode
 ```
 
-Agents spawned: `al-dev-shared:support-reply-drafter`, `al-dev-shared:support-researcher`
+Agents spawned: `al-dev-shared:bc-support-researcher`, `al-dev-shared:support-reply-drafter`
 <!-- END GENERATED: skill-drilldown-support-reply -->
 
 ### /investigate
@@ -214,7 +214,6 @@ flowchart LR
     skill_fix[fix]
     skill_handoff[handoff]
     skill_plan[plan]
-    agent_explore[explore]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_investigate_findings_template_md[investigate-findings-template]
@@ -227,7 +226,6 @@ flowchart LR
     skill_investigate -.-> skill_fix
     skill_investigate -.-> skill_handoff
     skill_investigate -.-> skill_plan
-    skill_investigate --> agent_explore
     skill_investigate --> knowledge_artifact_contracts_md
     skill_investigate --> knowledge_explore_subagent_pattern_md
     skill_investigate --> knowledge_investigate_findings_template_md
@@ -241,7 +239,6 @@ flowchart LR
     class skill_fix skillNode
     class skill_handoff skillNode
     class skill_plan skillNode
-    class agent_explore agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_investigate_findings_template_md knowledgeNode
@@ -251,8 +248,6 @@ flowchart LR
     class artifact_investigate_errors_log artifactNode
     class artifact_project_context_md artifactNode
 ```
-
-Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-investigate -->
 
 ### /fix
@@ -332,7 +327,6 @@ flowchart LR
     Phase3["Phase 3"]
     Phase4["Phase 4"]
     Phase5["Phase 5"]
-    skill_generic_preflight[generic-preflight]
     skill_plan_final_review[plan-final-review]
     agent_solution_architect[solution-architect]
     knowledge_architect_evaluation_criteria_md[architect-evaluation-criteria]
@@ -350,7 +344,6 @@ flowchart LR
     skill_plan --> Phase3
     skill_plan --> Phase4
     skill_plan --> Phase5
-    skill_plan -.-> skill_generic_preflight
     skill_plan -.-> skill_plan_final_review
     skill_plan --> agent_solution_architect
     skill_plan --> knowledge_architect_evaluation_criteria_md
@@ -369,7 +362,6 @@ flowchart LR
     class Phase3 phaseNode
     class Phase4 phaseNode
     class Phase5 phaseNode
-    class skill_generic_preflight skillNode
     class skill_plan_final_review skillNode
     class agent_solution_architect agentNode
     class knowledge_architect_evaluation_criteria_md knowledgeNode
@@ -406,6 +398,7 @@ flowchart LR
     Phase3["Phase 3"]
     skill_plan[plan]
     skill_plan_with_critics[plan-with-critics]
+    knowledge_validator_fix_patterns_md[validator-fix-patterns]
 
     skill_plan_final_review --> Phase1
     skill_plan_final_review --> Phase2
@@ -413,6 +406,7 @@ flowchart LR
     skill_plan_final_review --> Phase3
     skill_plan_final_review -.-> skill_plan
     skill_plan_final_review -.-> skill_plan_with_critics
+    skill_plan_final_review --> knowledge_validator_fix_patterns_md
 
     class skill_plan_final_review skillNode
     class Phase1 phaseNode
@@ -421,6 +415,7 @@ flowchart LR
     class Phase3 phaseNode
     class skill_plan skillNode
     class skill_plan_with_critics skillNode
+    class knowledge_validator_fix_patterns_md knowledgeNode
 ```
 <!-- END GENERATED: skill-drilldown-plan-final-review -->
 
@@ -468,23 +463,26 @@ flowchart LR
     Phase1["Phase 1"]
     Phase2["Phase 2"]
     Phase3["Phase 3"]
-    artifact_planning_preflight_context_md[.dev/planning-preflight-context.md]
-    artifact_review_preflight_context_md[.dev/review-preflight-context.md]
+    artifact_preflight_context_md[.dev/preflight-context.md]
+    artifact_project_context_md[.dev/project-context.md]
+    artifact_review_preflight_checkpoint_md[.dev/review-preflight-checkpoint.md]
 
     skill_generic_preflight --> Phase0
     skill_generic_preflight --> Phase1
     skill_generic_preflight --> Phase2
     skill_generic_preflight --> Phase3
-    skill_generic_preflight --> artifact_planning_preflight_context_md
-    skill_generic_preflight --> artifact_review_preflight_context_md
+    skill_generic_preflight --> artifact_preflight_context_md
+    skill_generic_preflight --> artifact_project_context_md
+    skill_generic_preflight --> artifact_review_preflight_checkpoint_md
 
     class skill_generic_preflight skillNode
     class Phase0 phaseNode
     class Phase1 phaseNode
     class Phase2 phaseNode
     class Phase3 phaseNode
-    class artifact_planning_preflight_context_md artifactNode
-    class artifact_review_preflight_context_md artifactNode
+    class artifact_preflight_context_md artifactNode
+    class artifact_project_context_md artifactNode
+    class artifact_review_preflight_checkpoint_md artifactNode
 ```
 <!-- END GENERATED: skill-drilldown-generic-preflight -->
 
@@ -668,7 +666,6 @@ flowchart LR
     Phase0["Phase 0"]
     Phase3["Phase 3"]
     Phase4["Phase 4"]
-    skill_commit[commit]
     agent_commit_executor[commit-executor]
     agent_commit_hook_classifier[commit-hook-classifier]
     agent_commit_hook_fixer[commit-hook-fixer]
@@ -680,7 +677,6 @@ flowchart LR
     skill_commit_execute --> Phase0
     skill_commit_execute --> Phase3
     skill_commit_execute --> Phase4
-    skill_commit_execute -.-> skill_commit
     skill_commit_execute --> agent_commit_executor
     skill_commit_execute --> agent_commit_hook_classifier
     skill_commit_execute --> agent_commit_hook_fixer
@@ -693,7 +689,6 @@ flowchart LR
     class Phase0 phaseNode
     class Phase3 phaseNode
     class Phase4 phaseNode
-    class skill_commit skillNode
     class agent_commit_executor agentNode
     class agent_commit_hook_classifier agentNode
     class agent_commit_hook_fixer agentNode
@@ -783,7 +778,6 @@ flowchart LR
 
     skill_explore[explore]
     skill_plan[plan]
-    agent_explore[explore]
     knowledge_artifact_contracts_md[artifact-contracts]
     knowledge_bash_safe_patterns_md[bash-safe-patterns]
     knowledge_companion_context_ownership_md[companion-context-ownership]
@@ -792,7 +786,6 @@ flowchart LR
     artifact_project_context_md[.dev/project-context.md]
 
     skill_explore -.-> skill_plan
-    skill_explore --> agent_explore
     skill_explore --> knowledge_artifact_contracts_md
     skill_explore --> knowledge_bash_safe_patterns_md
     skill_explore --> knowledge_companion_context_ownership_md
@@ -802,7 +795,6 @@ flowchart LR
 
     class skill_explore skillNode
     class skill_plan skillNode
-    class agent_explore agentNode
     class knowledge_artifact_contracts_md knowledgeNode
     class knowledge_bash_safe_patterns_md knowledgeNode
     class knowledge_companion_context_ownership_md knowledgeNode
@@ -810,8 +802,6 @@ flowchart LR
     class artifact_2026_05_19_explore_findings_md artifactNode
     class artifact_project_context_md artifactNode
 ```
-
-Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-explore -->
 
 ### /interview
@@ -860,11 +850,11 @@ flowchart LR
 Agents spawned: `al-dev-shared:interview`
 <!-- END GENERATED: skill-drilldown-interview -->
 
-### /research
+### /bc-research
 
 Research a BC/AL question using curated-first evidence, local repo discovery, and specialist research synthesis. Covers greenfield, repo-focused, version-history, and broader Microsoft-ecosystem questions.
 
-<!-- BEGIN GENERATED: skill-drilldown-research -->
+<!-- BEGIN GENERATED: skill-drilldown-bc-research -->
 ```mermaid
 flowchart LR
     classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
@@ -873,7 +863,7 @@ flowchart LR
     classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
-    skill_research[research]
+    skill_bc_research[bc-research]
     Phase0["Phase 0"]
     Phase1["Phase 1"]
     Phase2["Phase 2"]
@@ -885,18 +875,18 @@ flowchart LR
     knowledge_research_source_policy_md[research-source-policy]
     artifact_YYYY_MM_DD_research_findings_md[.dev/YYYY-MM-DD-research-findings.md]
 
-    skill_research --> Phase0
-    skill_research --> Phase1
-    skill_research --> Phase2
-    skill_research --> Phase3
-    skill_research --> Phase4
-    skill_research --> agent_ecosystem_researcher
-    skill_research --> agent_repo_researcher
-    skill_research --> knowledge_research_output_format_md
-    skill_research --> knowledge_research_source_policy_md
-    skill_research --> artifact_YYYY_MM_DD_research_findings_md
+    skill_bc_research --> Phase0
+    skill_bc_research --> Phase1
+    skill_bc_research --> Phase2
+    skill_bc_research --> Phase3
+    skill_bc_research --> Phase4
+    skill_bc_research --> agent_ecosystem_researcher
+    skill_bc_research --> agent_repo_researcher
+    skill_bc_research --> knowledge_research_output_format_md
+    skill_bc_research --> knowledge_research_source_policy_md
+    skill_bc_research --> artifact_YYYY_MM_DD_research_findings_md
 
-    class skill_research skillNode
+    class skill_bc_research skillNode
     class Phase0 phaseNode
     class Phase1 phaseNode
     class Phase2 phaseNode
@@ -910,7 +900,7 @@ flowchart LR
 ```
 
 Agents spawned: `al-dev-shared:ecosystem-researcher`, `al-dev-shared:repo-researcher`
-<!-- END GENERATED: skill-drilldown-research -->
+<!-- END GENERATED: skill-drilldown-bc-research -->
 
 ### /lint
 
@@ -963,18 +953,41 @@ flowchart LR
 
     skill_document[document]
     agent_docs_writer[docs-writer]
-    artifact_format_sweep_progress_md[.dev/format-sweep-progress.md]
 
     skill_document --> agent_docs_writer
-    skill_document --> artifact_format_sweep_progress_md
 
     class skill_document skillNode
+    class agent_docs_writer agentNode
+```
+
+Agents spawned: `al-dev-shared:docs-writer`
+<!-- END GENERATED: skill-drilldown-document -->
+
+### /document-format
+
+<!-- BEGIN GENERATED: skill-drilldown-document-format -->
+```mermaid
+flowchart LR
+    classDef skillNode fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,font-weight:bold
+    classDef agentNode fill:#d1fae5,stroke:#059669,color:#064e3b,font-weight:bold
+    classDef knowledgeNode fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
+    classDef artifactNode fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,font-weight:bold
+    classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
+
+    skill_document_format[document-format]
+    agent_docs_writer[docs-writer]
+    artifact_format_sweep_progress_md[.dev/format-sweep-progress.md]
+
+    skill_document_format --> agent_docs_writer
+    skill_document_format --> artifact_format_sweep_progress_md
+
+    class skill_document_format skillNode
     class agent_docs_writer agentNode
     class artifact_format_sweep_progress_md artifactNode
 ```
 
 Agents spawned: `al-dev-shared:docs-writer`
-<!-- END GENERATED: skill-drilldown-document -->
+<!-- END GENERATED: skill-drilldown-document-format -->
 
 ### /release-notes
 
@@ -1031,27 +1044,22 @@ flowchart LR
     classDef phaseNode fill:#e0e7ff,stroke:#6366f1,color:#312e81,font-weight:bold
 
     skill_perf[perf]
-    agent_explore[explore]
     knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
     knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
     knowledge_perf_report_template_md[perf-report-template]
     artifact_project_context_md[.dev/project-context.md]
 
-    skill_perf --> agent_explore
     skill_perf --> knowledge_explore_subagent_pattern_md
     skill_perf --> knowledge_perf_anti_patterns_prompt_md
     skill_perf --> knowledge_perf_report_template_md
     skill_perf --> artifact_project_context_md
 
     class skill_perf skillNode
-    class agent_explore agentNode
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
     class knowledge_perf_report_template_md knowledgeNode
     class artifact_project_context_md artifactNode
 ```
-
-Agents spawned: `al-dev-shared:explore`
 <!-- END GENERATED: skill-drilldown-perf -->
 
 ### /handoff

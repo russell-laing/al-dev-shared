@@ -34,7 +34,7 @@ produced and read for the current run.
 
 ## Review Panel
 
-See ../../knowledge/critic-dispatch-template.md and ../../knowledge/reviewer-dispatch-template.md for multi-agent synthesis patterns.
+See ../../knowledge/critic-dispatch-template.md for multi-agent synthesis patterns.
 
 Three specialist agents (sonnet):
 

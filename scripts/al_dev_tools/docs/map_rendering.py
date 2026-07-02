@@ -76,7 +76,7 @@ SECTION_CONFIG: dict[str, dict[str, str | Path]] = {
 LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
     ("explore", "plan", "optional", "explore-findings.md"),
     ("interview", "plan", "optional", "interview-requirements.md"),
-    ("investigate", "plan", "optional", None),
+    ("investigate", "plan", "optional", "investigate-findings.md"),
     ("perf", "plan", "optional", "perf-analysis.md"),
     ("generic-preflight", "plan", "optional", "preflight-context.md"),
     ("develop-orchestrate", "lint", "optional", None),

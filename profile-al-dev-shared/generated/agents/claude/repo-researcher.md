@@ -26,7 +26,7 @@ When `/bc-research` needs repository-grounded evidence, inspect the local struct
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured findings returned inline to `/bc-research` using `knowledge/bc-research-output-format.md`; no file writes |
+| Return block | Structured findings returned inline to `/bc-research` using `knowledge/research-output-format.md`; no file writes |
 
 ## Research Process
 
@@ -40,7 +40,7 @@ When `/bc-research` needs repository-grounded evidence, inspect the local struct
 - Otherwise use `al-mcp-server` to confirm object definitions, members, and references
 - Use `bc-code-intelligence` when local behavior needs BC-specific pattern context, architectural guidance, or risk interpretation
 - If no semantic or MCP provider is available for a required symbol claim, fall back to tightly scoped text evidence and record the semantic verification gap explicitly
-- Follow `knowledge/bc-research-source-policy.md` for the evidence labels used in the final finding
+- Follow `knowledge/research-source-policy.md` for the evidence labels used in the final finding
 
 **Step 4: Identify implementation seams and constraints** — Surface the details that matter to `/bc-research` synthesis:
 
@@ -49,10 +49,10 @@ When `/bc-research` needs repository-grounded evidence, inspect the local struct
 - coupling, missing abstractions, version-sensitive assumptions, and likely regression risks
 - places where local docs or code appear to diverge from BC-oriented patterns or expectations
 
-**Step 5: Prepare findings for `/bc-research`** — Return concise lane-local findings that help the orchestrator combine repo evidence with broader guidance. Follow `knowledge/bc-research-source-policy.md` for evidence labels and `knowledge/bc-research-output-format.md` for section order.
+**Step 5: Prepare findings for `/bc-research`** — Return concise lane-local findings that help the orchestrator combine repo evidence with broader guidance. Follow `knowledge/research-source-policy.md` for evidence labels and `knowledge/research-output-format.md` for section order.
 
 ## Return Block
 
 Return to `/bc-research` with structured findings that follow
-`knowledge/bc-research-output-format.md`. Keep the output repo-focused, evidence
+`knowledge/research-output-format.md`. Keep the output repo-focused, evidence
 labeled, and internal-only.

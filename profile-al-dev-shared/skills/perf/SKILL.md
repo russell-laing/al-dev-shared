@@ -139,7 +139,7 @@ Prompt:
 
 ### Step 3 — Write Analysis Report
 
-Write `.dev/$(date +%Y-%m-%d)-perf-perf-analysis.md`:
+Write `.dev/$(date +%Y-%m-%d)-perf-analysis.md`:
 
 Produce the performance report using the structure in
 `knowledge/perf-report-template.md` (read it before writing).
@@ -148,7 +148,7 @@ Produce the performance report using the structure in
 
 ### Step 4 — Present to User
 
-**Handoff artifact:** `.dev/$(date +%Y-%m-%d)-perf-perf-analysis.md`
+**Handoff artifact:** `.dev/$(date +%Y-%m-%d)-perf-analysis.md`
 is the handoff artifact for downstream plan/fix routing.
 
 ```text

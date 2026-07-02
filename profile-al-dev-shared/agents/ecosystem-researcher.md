@@ -30,7 +30,7 @@ When `/bc-research` needs product guidance beyond the current repository, gather
 
 | Output | Description |
 |--------|-------------|
-| Return block | Structured findings returned inline to `/bc-research` using `knowledge/bc-research-output-format.md`; no file writes |
+| Return block | Structured findings returned inline to `/bc-research` using `knowledge/research-output-format.md`; no file writes |
 
 ## Research Process
 
@@ -39,7 +39,7 @@ When `/bc-research` needs product guidance beyond the current repository, gather
 - prefer fetched documents over search-result snippets
 - use official docs to confirm setup requirements, behavioral constraints, version notes, and API semantics
 - if Microsoft Docs MCP is unavailable, continue with the curated guidance sources below and record the official-doc gap explicitly
-- when citing a docs URL or recording fetch status, follow `knowledge/bc-research-source-policy.md`
+- when citing a docs URL or recording fetch status, follow `knowledge/research-source-policy.md`
 
 **Step 2: Add curated BC/AL guidance** — Use `bc-code-intelligence` when BC-specific expert context, implementation guidance, or pattern interpretation is needed. Treat `https://github.com/microsoft/alguidelines` as the first curated anchor for AL coding and design guidance when the active environment exposes it or an equivalent curated mirror; if it is not available, record that gap and continue with the strongest available evidence.
 
@@ -47,10 +47,10 @@ When `/bc-research` needs product guidance beyond the current repository, gather
 
 **Step 4: Widen only when the question requires it** — Expand into adjacent Microsoft services such as Power Platform, Power BI, Excel, Azure, or Microsoft Graph only when the research question crosses those boundaries. Keep the source set curated-first and explicitly note when official BC/AL sources were insufficient for the final conclusion.
 
-**Step 5: Prepare findings for `/bc-research`** — Return structured lane-local findings that explain what the broader ecosystem guidance means for the orchestrator's final answer. Follow `knowledge/bc-research-source-policy.md` for evidence labels and `knowledge/bc-research-output-format.md` for section order.
+**Step 5: Prepare findings for `/bc-research`** — Return structured lane-local findings that explain what the broader ecosystem guidance means for the orchestrator's final answer. Follow `knowledge/research-source-policy.md` for evidence labels and `knowledge/research-output-format.md` for section order.
 
 ## Return Block
 
 Return to `/bc-research` with structured findings that follow
-`knowledge/bc-research-output-format.md`. Keep the output ecosystem-focused,
+`knowledge/research-output-format.md`. Keep the output ecosystem-focused,
 evidence labeled, and internal-only.
