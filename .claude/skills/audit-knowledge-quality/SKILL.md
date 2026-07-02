@@ -2,9 +2,8 @@
 name: audit-knowledge-quality
 description: >-
   Audit knowledge files for stub sections and structural issues. Dispatches
-  parallel agents for large audit scopes (4+ files). It always writes
-  HIGH-severity fix-guidance blocks to the report and optionally re-presents
-  the HIGH-severity fix guidance interactively when the user opts in after reporting.
+  parallel agents for large audit scopes (4+ files). Writes HIGH-severity
+  fix-guidance blocks to the report.
 argument-hint: "[--surface plugin|tooling] [--path <directory>] [--verbose]"
 workflow:
   stage: derive

@@ -1,10 +1,8 @@
 ---
 name: regenerate-agent-projections
 description: >-
-  Validates shared agent source and unidirectionally regenerates harness-native agent projections
-  from the canonical agent source, summarizes changes, and asks before committing.
-  Use after editing profile-al-dev-shared/agents/*.md files.
-  Supports checkpoint-based recovery from prior interrupted runs.
+  Regenerates harness-native agent projections from the canonical agent source,
+  summarizes changes, and asks before committing.
 workflow:
   stage: derive
   invoked-by: user

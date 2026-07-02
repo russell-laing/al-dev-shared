@@ -2,14 +2,10 @@
 name: record-plugin-dispositions
 description: >-
   Disposition phase of the health-audit loop. Walks the open findings in the
-  latest health dossier(s), collects an accept / decline / grandfather / fixed / skip decision per finding
-  at a user gate (recorded as `accepted`, `declined`, `grandfathered`, `fixed`, or
-  omitted for `skip`), and appends JSONL disposition events through
-  scripts/health_disposition_store.py append_event, followed by regenerate to
-  update the generated Markdown views. Run after /audit-plugin-health and
-  before /plan-plugin-findings. Triggers on: "record dispositions",
-  "disposition the findings", "accept decline health findings", "triage the
-  dossier", "record health decisions".
+  latest dossier(s) and collects user disposition decisions (accept/decline/grandfather/fixed/skip)
+  per finding, then appends events to the ledger.
+  Triggers on: "record dispositions", "disposition the findings", "accept decline
+  health findings", "triage the dossier", "record health decisions".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--top]"
 workflow:
   stage: decide

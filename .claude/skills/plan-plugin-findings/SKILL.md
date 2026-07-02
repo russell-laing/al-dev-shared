@@ -1,9 +1,8 @@
 ---
 name: plan-plugin-findings
 description: >-
-  Phase 4-5 planning portion of health-finding planning. Reads verified findings checkpoint
-  (output from plan-plugin-findings-verify), writes implementation plan using superpowers:writing-plans,
-  and hands off to /implement-plugin-health. Assumes Phase 1-3 verification is complete.
+  Write implementation plan from verified findings checkpoint. Reads
+  plan-plugin-findings-verify output and hands off to /implement-plugin-health.
 argument-hint: "(no arguments; reads .dev/plan-plugin-findings-verify-checkpoint.jsonl)"
 workflow:
   stage: decide

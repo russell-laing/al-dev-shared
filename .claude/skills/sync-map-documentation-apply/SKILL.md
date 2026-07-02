@@ -2,14 +2,7 @@
 name: sync-map-documentation-apply
 description: >-
   Applies validated update artifacts to docs/. Third step of the async sync
-  flow. Validates update-agent artifacts (including a mandatory agent-artifact
-  catalog count check that confirms the generated agent-catalog rows match the
-  live agent files), reads updated map content from
-  the run directory, and writes both documentation maps to docs/. Each surface
-  is validated independently — an invalid or missing artifact for one map does
-  not block writing the other — except when both surfaces fail validation, in
-  which case the skill reports the validation failure and stops without writing either map. Run
-  /sync-map-documentation-write next to regenerate diagrams and commit.
+  flow. Validates and writes both documentation maps.
 argument-hint: "--team-ids <update-team-id>[,<update-team-id>] [--skip-commit]"
 workflow:
   stage: map-sync

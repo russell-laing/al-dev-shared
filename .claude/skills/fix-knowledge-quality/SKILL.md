@@ -1,15 +1,11 @@
 ---
 name: fix-knowledge-quality
 description: >-
-  Reads HIGH-severity knowledge quality tasks from the fix-task block produced
-  by /audit-knowledge-quality, presents the HIGH-only task list, and
-  conditionally dispatches one `docs-writer` agent per issue when the
-  user approves (or when --auto-fix is passed). Scope: HIGH severity only;
-  execution is user-gated. A mandatory neutrality gate validates any
-  shared-surface edits and blocks completion if forbidden harness tokens are
-  found. Run /audit-knowledge-quality first if no audit file
-  exists. Triggers on: "fix knowledge quality", "fix knowledge issues",
-  "implement knowledge fixes", "address high knowledge findings".
+  Reads HIGH-severity knowledge quality tasks from /audit-knowledge-quality
+  and conditionally dispatches fix agents when approved. Execution is user-gated;
+  HIGH severity only.
+  Triggers on: "fix knowledge quality", "fix knowledge issues", "implement
+  knowledge fixes", "address high knowledge findings".
 argument-hint: "[--surface plugin|tooling] [--auto-fix]"
 workflow:
   stage: derive

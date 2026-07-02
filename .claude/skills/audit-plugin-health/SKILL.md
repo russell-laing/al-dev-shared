@@ -1,14 +1,10 @@
 ---
 name: audit-plugin-health
 description: >-
-  Standing suggestions-only entry point for the al-dev-shared plugin surfaces. Dispatches
-  the two-phase internal workflow `/discover-plugin-health` then
-  `/report-plugin-health` across two separate sessions (mandatory fresh session
-  boundary between discover and report) to dispatch design + quality + naming lenses with a
-  per-surface file list, rank findings, and write one dossier per surface to
-  docs/health/. Never auto-edits source — all outputs are read-only observations. Supports
-  --resume to continue an interrupted sweep. Triggers on:
-  "plugin health", "health sweep", "audit the plugin", "check plugin health".
+  Standing entry point for plugin surface audits. Dispatches discovery and
+  reporting phases across sessions to generate findings dossiers. Supports
+  --resume for interrupted runs. Triggers on: "plugin health", "health sweep",
+  "audit the plugin", "check plugin health".
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume]"
 workflow:
   stage: discover

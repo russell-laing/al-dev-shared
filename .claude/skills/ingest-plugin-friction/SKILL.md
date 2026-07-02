@@ -1,17 +1,9 @@
 ---
 name: ingest-plugin-friction
 description: >-
-  Ingest friction logs from ~/friction-log/ (curated session-analysis findings
-  plus aggregated tool-error signals) into the self-healing health loop as a
-  discover-stage source, then archive the consumed logs. Routes findings by the
-  surface they implicate; breadcrumb next_command
-    construction orders plugin surface first. Writes per-surface
-  YYYY-MM-DD-<surface>-friction-findings.md artifacts consumed by
-  /report-plugin-health via --findings, and records local runtime provenance in
-  docs/health/friction_ingest_log.md (gitignored). Run when friction logs have
-  accumulated. This skill writes intermediate findings files that
-  `/report-plugin-health` consumes via --findings; it is not itself an audit
-  step.
+  Ingest friction logs from ~/friction-log/ into the health loop as a
+  discover-stage source, then archive consumed logs. Writes per-surface
+  findings to docs/health/YYYY-MM-DD-<surface>-friction-findings.md.
   Triggers on: "ingest friction logs", "ingest the friction log", "process
   friction logs", "fold friction into the health loop", "archive friction logs".
 argument-hint: "[--source <path>] [--surface plugin|tooling|both] [--since YYYY-MM-DD]"

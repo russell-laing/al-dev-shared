@@ -1,13 +1,9 @@
 ---
 name: report-plugin-health
 description: >-
-  Report phase of the plugin health sweep. Reads a findings file written by
-  /discover-plugin-health, filters out stale and disposition-suppressed
-  findings, runs an evidence-verification gate (dispatching verify-health-finding
-  in evidence mode to drop unverified findings), ranks the remainder, writes the
-  dossier, and presents results to the user.
-  Called by /audit-plugin-health; can also be run standalone against an existing
-  findings file to re-rank or reformat without re-dispatching lenses.
+  Report phase of the plugin health sweep. Reads a findings file, filters out
+  stale and suppressed findings, verifies each claim, ranks the remainder, and
+  writes the dossier.
 argument-hint: "[--findings <path>] [--surface plugin|tooling]"
 workflow:
   stage: discover

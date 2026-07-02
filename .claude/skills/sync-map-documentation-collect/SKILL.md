@@ -1,14 +1,9 @@
 ---
 name: sync-map-documentation-collect
 description: >-
-  Collect audit results and dispatch background update agents for the
-  /sync-map-documentation flow. Reads audit
-  artifacts, presents discrepancy findings, asks which maps to update (skipped when `--all`/auto-update is set), then
-  dispatches the background update agents. Supports Resume/Restart when a prior
-  collect state exists (decision table in
-  `.claude/skills/sync-map-documentation/collect-resume-patterns.md`);
-  `--wait` polls for both audit artifacts for up to 30
-  minutes before reading them. Second step of the async sync workflow.
+  Collect audit results and dispatch background update agents for
+  /sync-map-documentation. Reads audit artifacts, presents findings, and
+  conditionally dispatches update agents. Supports resume and polling via --wait.
 argument-hint: "--team-ids <skill-id>,<agent-id> [--wait]"
 workflow:
   stage: map-sync

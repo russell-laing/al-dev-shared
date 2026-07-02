@@ -3,13 +3,8 @@ name: revise-plugin-plan
 description: >-
   Reconciles a health-loop implementation plan against a review document and
   re-dispositions out-of-scope findings to the ledger. Use when a plan in
-  docs/superpowers/plans/ has a paired review or commentary document critiquing
-  it — in-scope findings become plan edits, out-of-scope findings become
-  `declined`/`grandfathered` ledger rows. This skill never auto-executes the
-  plan — it reconciles, re-dispositions, and hands off to /implement-plugin-health
-  in a fresh session, including a mandatory coverage-reconciliation gate that verifies
-  every accepted event lands in exactly one place (plan task or decline/grandfather
-  ledger entry). Triggers on:
+  docs/superpowers/plans/ has paired review documentation critiquing it.
+  Triggers on:
   "apply the review to the plan", "improve the plan using the findings",
   "reconcile the consolidated findings", "revise the health plan",
   "use the commentary to update the plan", "act on the plan review".

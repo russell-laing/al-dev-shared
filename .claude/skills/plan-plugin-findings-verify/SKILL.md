@@ -1,10 +1,8 @@
 ---
 name: plan-plugin-findings-verify
 description: >-
-  Phase 1-3 verification portion of health-finding planning. Extracts findings from dossier/backlog,
-  runs staleness gate, and rubber-ducks each finding. Writes verified findings checkpoint and hands
-  off to plan-plugin-findings for Phase 4-5 (plan writing and handoff). Scoped by surface and dimension
-  (accepts --skills/--agents, --surface plugin|tooling, --dimension design|quality|naming|all, --backlog flags).
+  Verify findings from the latest dossier by rubber-ducking each claim against
+  live code. Writes verified findings checkpoint for plan-plugin-findings.
 argument-hint: "[--surface plugin|tooling] [--dimension design|quality|naming|all] [--skills|--agents] [--backlog]"
 workflow:
   stage: decide

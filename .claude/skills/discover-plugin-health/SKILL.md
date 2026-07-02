@@ -1,20 +1,11 @@
 ---
 name: discover-plugin-health
 description: >-
-  Discovery phase of the plugin health sweep. Builds file lists, aggregates
-  context from documentation maps, dispatches design, quality, and naming lenses
-  (surface-scoped — one design lens is excluded per surface; see Phase 3 for
-    the per-surface exclusion conditions),
-  and writes RAW (unranked) lens findings to
-  docs/health/YYYY-MM-DD-<surface>-findings.md, which also carries a
-  `## Failed lenses` section and a `## Resume information` block tracking
-  completion status. Before lens dispatch, a deterministic static-lens phase
-  (Phase 2.5) runs the non-LLM lenses via scripts/health_static_lenses.py,
-  emitting the same findings JSON as the dispatched lenses. The ranked dossier
-  is produced separately by /report-plugin-health. Called by /audit-plugin-health; can also
-  be run standalone to refresh findings without re-running the report phase, but it requires the same
-  pre-conditions as a full audit run. Discovery is via parallel lens dispatch
-  (not direct file scanning).
+  Discovery phase of the plugin health sweep. Builds file lists, dispatches
+  design, quality, and naming lenses per surface, and writes raw (unranked)
+  lens findings to docs/health/YYYY-MM-DD-<surface>-findings.md. Called by
+  /audit-plugin-health; can also run standalone to refresh findings without
+  re-running the report phase.
 argument-hint: "[--surface plugin|tooling|both] [--dimension design|quality|naming|all] [--resume] [--since <ref>]"
 workflow:
   stage: discover

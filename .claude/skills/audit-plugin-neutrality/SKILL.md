@@ -1,10 +1,9 @@
 ---
 name: audit-plugin-neutrality
 description: >-
-  Apply Harness Neutrality lens to knowledge files — finds harness-specific tokens or conventions
-  that should be generic. Single-concern validation pipeline: runs validator script, parses and groups
-  findings, gates user approval, applies fixes if approved, and re-validates. No separable concerns;
-  each phase depends on the previous phase's output. Scoped to a single knowledge file or recursive directory.
+  Apply Harness Neutrality lens to knowledge files — finds harness-specific
+  tokens or conventions that should be generic. Scoped to a single file or
+  recursive directory.
 workflow:
   stage: derive
   invoked-by: user
