@@ -76,7 +76,7 @@ LIFECYCLE_BRANCHES: tuple[tuple[str, str, str, str | None], ...] = (
     ("interview", "plan", "optional", "interview-requirements.md"),
     ("investigate", "plan", "optional", None),
     ("perf", "plan", "optional", "perf-analysis.md"),
-    ("plan-preflight", "plan", "optional", "preflight-context.md"),
+    ("generic-preflight", "plan", "optional", "preflight-context.md"),
     ("develop-orchestrate", "lint", "optional", None),
     ("commit", "release-notes", "optional", None),
     ("commit", "handoff", "optional", None),

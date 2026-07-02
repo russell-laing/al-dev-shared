@@ -29,11 +29,11 @@ SHARED_SKILL_RENAMES = {
     "al-dev-perf": "perf",
     "al-dev-plan": "plan",
     "al-dev-plan-final-review": "plan-final-review",
-    "al-dev-plan-preflight": "plan-preflight",
+    "al-dev-plan-preflight": "generic-preflight",
     "al-dev-plan-with-critics": "plan-with-critics",
     "al-dev-release-notes": "release-notes",
     "al-dev-review-develop": "review-develop",
-    "al-dev-review-develop-preflight": "review-develop-preflight",
+    "al-dev-review-develop-preflight": "generic-preflight",
     "al-dev-support-reply": "support-reply",
     "al-dev-ticket": "ticket",
 }

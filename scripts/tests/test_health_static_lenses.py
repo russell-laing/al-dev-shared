@@ -87,6 +87,25 @@ def test_shared_rename_maps_cover_every_prefixed_entry():
     assert SHARED_AGENT_RENAMES["al-dev-solution-architect"] == "solution-architect"
 
 
+def test_shared_skill_renames_values_reference_live_skill_directories():
+    skills_dir = REPO_ROOT / "profile-al-dev-shared" / "skills"
+    live_skills = {p.name for p in skills_dir.iterdir() if p.is_dir()}
+    stale = {
+        legacy: current
+        for legacy, current in SHARED_SKILL_RENAMES.items()
+        if current not in live_skills
+    }
+    assert not stale, f"SHARED_SKILL_RENAMES has stale entries: {stale}"
+
+
+def test_legacy_preflight_renames_resolve_to_generic_preflight():
+    # A live-directory check alone can't tell "resolves to the correct
+    # merged skill" from "happens to resolve to some other live skill" —
+    # pin both legacy keys to the exact merged target.
+    assert SHARED_SKILL_RENAMES["al-dev-plan-preflight"] == "generic-preflight"
+    assert SHARED_SKILL_RENAMES["al-dev-review-develop-preflight"] == "generic-preflight"
+
+
 def test_naming_fires_on_prefixed_distributed_shared_names():
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
