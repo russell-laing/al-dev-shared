@@ -9,7 +9,6 @@ discover Phase 4 assembly and `--resume` logic already consume — nothing
 downstream changes.
 """
 import argparse
-import json
 import os
 import re
 from datetime import datetime, timezone

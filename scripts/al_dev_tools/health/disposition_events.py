@@ -14,7 +14,6 @@ from .disposition_models import (
     EVENT_ID_RE,
     EVENT_REQUIRED_FIELDS,
     VALID_DISPOSITIONS,
-    disposition_key,
     normalize_finding,
 )
 
