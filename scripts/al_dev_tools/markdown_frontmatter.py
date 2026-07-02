@@ -44,14 +44,23 @@ def find_markdown_heading(text: str, heading: str) -> bool:
     # Strip ALL leading '#' so a caller passing "## Output Format" matches a
     # heading at any level, which is the point of the level-insensitive compare.
     target = target.lstrip("#").strip()
-    in_fence = False
+    fence_char = None
 
     for line in text.splitlines():
         stripped = line.lstrip()
-        if stripped.startswith("```") or stripped.startswith("~~~"):
-            in_fence = not in_fence
+        if stripped.startswith("```"):
+            if fence_char == "`":
+                fence_char = None
+            elif not fence_char:
+                fence_char = "`"
             continue
-        if in_fence or stripped.startswith(">"):
+        if stripped.startswith("~~~"):
+            if fence_char == "~":
+                fence_char = None
+            elif not fence_char:
+                fence_char = "~"
+            continue
+        if fence_char or stripped.startswith(">"):
             continue
         match = _HEADING_RE.match(line)
         if not match:

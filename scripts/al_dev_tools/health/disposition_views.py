@@ -60,11 +60,27 @@ def write_shard(shard: Path, shard_rows: list[dict[str, str]]) -> None:
         existing_content = shard.read_text(encoding="utf-8")
     else:
         existing_content = TABLE_HEADER + "\n" + TABLE_DIVIDER + "\n"
-    body_lines = [
-        f"| {r['id']} | {r['surface']} | {r['dimension']} | {r['object']} | "
-        f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
-        for r in shard_rows
-    ]
+    # Check for duplicates before writing
+    existing_ids = set()
+    for line in existing_content.splitlines():
+        if line.startswith("|") and line.count("|") >= 8:
+            cells = [c.strip() for c in line.split("|")[1:-1]]
+            if cells:
+                existing_ids.add(cells[0])
+    
+    body_lines = []
+    for r in shard_rows:
+        if r['id'] in existing_ids:
+            continue
+        existing_ids.add(r['id'])
+        body_lines.append(
+            f"| {r['id']} | {r['surface']} | {r['dimension']} | {r['object']} | "
+            f"{r['finding']} | {r['disposition']} | {r['date']} | {r['note']} |"
+        )
+    
+    if not body_lines:
+        return
+    
     # Ensure existing_content ends with newline so appended rows don't merge
     if existing_content and not existing_content.endswith("\n"):
         existing_content += "\n"

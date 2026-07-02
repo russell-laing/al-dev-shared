@@ -88,6 +88,9 @@ def candidate_paths(obj: str, repo_root: Path) -> list[str]:
         if "/" in token:
             if _has_valid_content(repo_root, token):
                 paths.append(token)
+            else:
+                import sys
+                print(f"WARNING: Object path not found: {token}", file=sys.stderr)
             continue
         for tpl in PATH_TEMPLATES:
             cand = tpl.format(name=token)
@@ -99,9 +102,15 @@ def candidate_paths(obj: str, repo_root: Path) -> list[str]:
 def resolve_closures(rows: list[Row]) -> None:
     by_number = {r.number: r for r in rows}
     by_id: dict[str, Row] = {}
+    duplicates: dict[str, list[Row]] = {}
     for r in rows:
-        if r.id and r.id not in by_id:
-            by_id[r.id] = r
+        if r.id:
+            if r.id in by_id:
+                if r.id not in duplicates:
+                    duplicates[r.id] = [by_id[r.id]]
+                duplicates[r.id].append(r)
+            else:
+                by_id[r.id] = r
     accepted = [r for r in rows if r.disposition == "accepted"]
     explicit_fixed_rows: set[int] = set()
 

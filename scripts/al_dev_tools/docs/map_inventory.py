@@ -209,9 +209,7 @@ def _parse_agent_meta(path: Path) -> AgentMeta:
 def _discover_skills(plugin_dir: Path) -> list[str]:
     skills_dir = plugin_dir / "skills"
     if not skills_dir.exists():
-        import sys
-        print(f"⚠ Skills directory not found: {skills_dir}", file=sys.stderr)
-        return []
+        raise ValueError(f"Skills directory not found: {skills_dir}")
     skills = sorted(path.parent.name for path in skills_dir.glob("*/SKILL.md"))
     if not skills:
         import sys
@@ -222,9 +220,7 @@ def _discover_skills(plugin_dir: Path) -> list[str]:
 def _discover_agents(plugin_dir: Path) -> list[str]:
     agents_dir = plugin_dir / "agents"
     if not agents_dir.exists():
-        import sys
-        print(f"⚠ Agents directory not found: {agents_dir}", file=sys.stderr)
-        return []
+        raise ValueError(f"Agents directory not found: {agents_dir}")
     agents = sorted(path.stem for path in agents_dir.glob("*.md"))
     if not agents:
         import sys
@@ -235,9 +231,7 @@ def _discover_agents(plugin_dir: Path) -> list[str]:
 def _discover_knowledge(plugin_dir: Path) -> list[str]:
     knowledge_dir = plugin_dir / "knowledge"
     if not knowledge_dir.exists():
-        import sys
-        print(f"⚠ Knowledge directory not found: {knowledge_dir}", file=sys.stderr)
-        return []
+        raise ValueError(f"Knowledge directory not found: {knowledge_dir}")
     knowledge = sorted(path.name for path in knowledge_dir.glob("*.md"))
     if not knowledge:
         import sys

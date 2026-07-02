@@ -145,6 +145,8 @@ def load_model_aliases(plugin_root: Path) -> set[str]:
         data, _body = parse_required_frontmatter(policy.read_text(encoding="utf-8"))
     except ValueError as e:
         raise ValueError(f"malformed YAML in policy file {policy}: {e}") from e
+    if "shared_model_aliases" not in data:
+        raise ValueError(f"policy file {policy} missing 'shared_model_aliases' key")
     return set(data.get("shared_model_aliases", []))
 
 
@@ -153,7 +155,7 @@ def scan_models(plugin_root: Path) -> list[Finding]:
     findings: list[Finding] = []
     aliases = load_model_aliases(plugin_root)
     agents_dir = plugin_root / "agents"
-    if not aliases or not agents_dir.exists():
+    if not agents_dir.exists():
         return findings
     for path in sorted(agents_dir.glob("*.md")):
         relative_path = path.relative_to(plugin_root).as_posix()
