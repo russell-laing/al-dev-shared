@@ -1,12 +1,8 @@
 ---
 name: document
 description: >-
-  Dispatch, review, and present comprehensive technical documentation
-  including a requirements traceability matrix (RTM) with inline requirement
-  references. Spawns a docs-writer specialist, reviews its output for technical
-  accuracy and completeness, then presents it — does not write the documentation
-  directly. Supports two modes: (1) generating new documentation from
-  implemented code, and (2) formatting and bolding terms in an existing document.
+  Generate documentation from implemented code. Optional Mode: format and bold
+  terms in existing documents.
 argument-hint: "[feature name or file path to document]"
 ---
 
