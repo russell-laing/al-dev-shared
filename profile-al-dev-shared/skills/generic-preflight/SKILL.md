@@ -16,7 +16,9 @@ parameterizing the context type.
 
 ## Phase 0: Resume Check & Initialization
 
-Check `.dev/<context-type>-preflight-checkpoint.md` for resume capability.
+Check the checkpoint file for resume capability: `.dev/preflight-context.md` for
+`context-type planning`, or `.dev/review-preflight-checkpoint.md` for
+`context-type review`.
 
 If exists, read checkpoint and present resume option:
 
@@ -65,17 +67,19 @@ git remote -v | grep -q origin || { echo "ERROR: no origin remote"; exit 1; }
 
 ## Phase 3: Emit Preflight Checkpoint
 
-Write `.dev/<context-type>-preflight-checkpoint.md` with:
+Write the checkpoint file (path per the filename contract below) with:
 
 - Timestamp
 - Context file path
 - Ready/blocked status
 - Next command (downstream skill to invoke)
 
-**Checkpoint filename contract:** The filename follows the pattern `.dev/<context-type>-preflight-checkpoint.md` where `<context-type>` is:
+**Checkpoint filename contract:** the filename depends on `<context-type>`:
 
-- `planning` when called from `/plan` (resulting in `.dev/planning-preflight-checkpoint.md`)
-- `review` when called from `/review-develop` (resulting in `.dev/review-preflight-checkpoint.md`)
+- `planning` when called from `/plan` — writes `.dev/preflight-context.md`
+  (the fixed filename `/plan` Phase 0 reads directly)
+- `review` when called from `/review-develop` — writes
+  `.dev/review-preflight-checkpoint.md`
 
 ## Implementation Notes
 
