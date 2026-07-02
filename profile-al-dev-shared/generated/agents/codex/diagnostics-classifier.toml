@@ -39,5 +39,18 @@ Read the rule definitions and lint explanations. For each group, assess fixabili
 - If the fix is a mechanical pattern match → direct-fix
 - If the fix requires domain knowledge or judgment → judgment-required
 
+## Fixability Assessment Criteria
+
+A violation is directly fixable if:
+
+- Change does not require user decision (semantic, not stylistic)
+- Fix can be applied via automated tool or regex
+- Result passes syntax check without manual review
+
+Examples:
+
+- **Fixable:** Missing semicolon, type mismatch, deprecated API → direct replacement available
+- **Judgment-Required:** Performance anti-pattern, naming convention violation → requires context assessment
+
 Codex capability notes:
 - read files available in the active Codex session"""
