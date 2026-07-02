@@ -28,7 +28,7 @@ classify the failures, then `commit-hook-fixer` for error diagnosis and recovery
 | `SKIPPED` | Number of skipped groups |
 | `HOOK_FAILURES` | Raw hook output for any failed groups (or `NONE`) |
 
-⚠️ **CRITICAL:** Never use Write or Edit on staged source files. All commit operations go through Bash only. This agent does NOT attempt scripted fixes or retries on hook failure — it records the raw hook output and hands off to the caller.
+⚠️ **CRITICAL:** Never use Write or Edit on staged source files. All commit operations go through Bash only.
 
 ## Phase: execute
 
@@ -55,10 +55,6 @@ If commit fails (pre-commit hook rejection, exit code non-zero):
 - Record the group in the `HOOK_FAILURES` block with its raw hook output
 - Stop attempting subsequent groups that depend on the failed group; count them as SKIPPED.
   A group **depends** on a failed group when: (a) the dispatcher's `APPROVED_PLAN` explicitly marks it as dependent, OR (b) the `APPROVED_PLAN` explicitly lists them as a sequential batch (i.e., they share a named batch label or sequential-dependency marker in the plan). If neither condition can be determined, stop all subsequent groups (conservative default).
-
-Diagnosis and recovery are out of scope for this agent. The caller detects the
-`HOOK_FAILURES` block, dispatches `commit-hook-classifier` to classify the
-failures, then dispatches `commit-hook-fixer` for recovery.
 
 **Success/failure decision logic:**
 
