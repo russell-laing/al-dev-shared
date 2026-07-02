@@ -203,11 +203,20 @@ def _row(obj: str, sev: str, obs: str, fix: str) -> str:
     return f"- **{obj}** | {sev} | {obs} | {fix}"
 
 
-def _disambiguate_object(name: str, is_agent: bool) -> str:
+def _compute_overlapping_names(agent_paths: list[Path], skill_paths: list[Path]) -> set[str]:
+    """Derive names that exist in both agent and skill surfaces.
+
+    This prevents hardcoded name lists from becoming stale when skills are
+    renamed or new overlapping names are added.
+    """
+    agent_names = {p.stem for p in agent_paths}
+    skill_names = {p.parent.name for p in skill_paths}
+    return agent_names & skill_names
+
+
+def _disambiguate_object(name: str, is_agent: bool, overlapping_names: set[str]) -> str:
     """Append (agent) or (skill) tag for names that exist in both surfaces."""
-    # Names that exist as both agents and skills
-    OVERLAPPING_NAMES = {"explore", "interview"}
-    if name in OVERLAPPING_NAMES:
+    if name in overlapping_names:
         tag = "(agent)" if is_agent else "(skill)"
         return f"{name} {tag}"
     return name
@@ -223,10 +232,11 @@ _MAINTAINER_SKILL_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 
 def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
     rows: list[str] = []
+    overlapping_names = _compute_overlapping_names(agent_paths, skill_paths)
 
     for path in agent_paths:
         name = path.stem
-        disamb_name = _disambiguate_object(name, is_agent=True)
+        disamb_name = _disambiguate_object(name, is_agent=True, overlapping_names=overlapping_names)
         if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
             target = SHARED_AGENT_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
             rows.append(_row(
@@ -247,7 +257,7 @@ def check_naming(agent_paths: list[Path], skill_paths: list[Path]) -> list[str]:
 
     for path in skill_paths:
         name = path.parent.name
-        disamb_name = _disambiguate_object(name, is_agent=False)
+        disamb_name = _disambiguate_object(name, is_agent=False, overlapping_names=overlapping_names)
         if "profile-al-dev-shared" in path.parts and name.startswith(LEGACY_SHARED_PREFIX):
             target = SHARED_SKILL_RENAMES.get(name, name[len(LEGACY_SHARED_PREFIX):])
             rows.append(_row(

@@ -168,7 +168,8 @@ def render_stage_artifacts(contracts: list[WorkflowContract], stage: str) -> str
         return "No key artifacts are declared for this stage."
     lines = ["| Artifact | Role |", "| --- | --- |"]
     for artifact, role in STAGE_ARTIFACTS[stage]:
-        lines.append(f"| `{artifact}` | {role} |")
+        # Artifacts already have backticks from STAGE_ARTIFACTS definition
+        lines.append(f"| {artifact} | {role} |")
     return "\n".join(lines)
 
 

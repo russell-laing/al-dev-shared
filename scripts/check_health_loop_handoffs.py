@@ -15,6 +15,9 @@ import sys
 
 STATE = ".dev/health-loop-state.md"
 
+# Loop skill sequence (must stay in sync with the documented health-loop order).
+# Source of truth: docs/maintainer_tooling.md and .claude/knowledge/health-loop-state-contract.md
+# When skills are renamed or reordered, update this list and the contract docs.
 LOOP = [
     "discover-plugin-health",
     "report-plugin-health",

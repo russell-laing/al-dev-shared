@@ -189,12 +189,16 @@ def inspect_artifact(path: Path, root: Path) -> Artifact:
 
 def collect_artifacts(root: Path) -> list[Artifact]:
     artifacts: list[Artifact] = []
+    found_dirs = 0
     for directory in SUPERPOWERS_DIRS:
         full_directory = root / directory
         if not full_directory.exists():
             continue
+        found_dirs += 1
         for path in sorted(full_directory.glob("*.md")):
             artifacts.append(inspect_artifact(path, root))
+    if found_dirs == 0:
+        raise ValueError(f"no superpowers directories found under {root} (checked: {SUPERPOWERS_DIRS})")
     return sorted(artifacts, key=lambda item: (item.date, item.kind, item.title, item.path), reverse=True)
 
 

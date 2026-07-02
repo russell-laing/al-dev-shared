@@ -659,9 +659,11 @@ def render_stage_detail(
         # ledger-to-plan path even when the stage grows extra sub-phase skills
         # (e.g. plan-plugin-findings-verify), which the curated diagram omits.
         return render_decide_stage_detail(orphans)
-    if stage == "implement" and {contract.skill for contract in stage_contracts} == {
+    if stage == "implement" and {contract.skill for contract in stage_contracts} >= {
         "implement-plugin-health",
     }:
+        # Superset, not equality: allows the stage to grow with extra sub-phase skills
+        # (e.g. implement-plugin-health-preflight) without breaking the focused view.
         return render_implement_stage_detail(orphans)
 
     stage_names = {c.skill for c in stage_contracts}

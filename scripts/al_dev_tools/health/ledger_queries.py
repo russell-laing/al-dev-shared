@@ -59,6 +59,24 @@ def norm_object(obj: str) -> str:
     return PAREN_RE.sub("", obj.replace("`", "")).strip().lower()
 
 
+def _has_valid_content(repo_root: Path, glob_pattern: str) -> bool:
+    """Check if glob pattern matches and directory contains expected files."""
+    matches = glob.glob(str(repo_root / glob_pattern))
+    if not matches:
+        return False
+    # Verify that at least one matched directory contains expected content:
+    # skills/ have SKILL.md, agents/ have *.md files
+    for match in matches:
+        path = Path(match)
+        if "skills" in glob_pattern and (path / "SKILL.md").exists():
+            return True
+        elif "agents" in glob_pattern and any(path.glob("*.md")):
+            return True
+        elif "/" not in glob_pattern:  # Direct file path
+            return True
+    return False
+
+
 def candidate_paths(obj: str, repo_root: Path) -> list[str]:
     paths: list[str] = []
     for token in norm_object(obj).split(","):
@@ -66,12 +84,12 @@ def candidate_paths(obj: str, repo_root: Path) -> list[str]:
         if not token:
             continue
         if "/" in token:
-            if glob.glob(str(repo_root / token)):
+            if _has_valid_content(repo_root, token):
                 paths.append(token)
             continue
         for tpl in PATH_TEMPLATES:
             cand = tpl.format(name=token)
-            if glob.glob(str(repo_root / cand)):
+            if _has_valid_content(repo_root, cand):
                 paths.append(cand)
     return paths
 

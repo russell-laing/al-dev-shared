@@ -33,6 +33,8 @@ SKILLS_DIR = REPO_ROOT / ".claude" / "skills"
 
 def main() -> int:
     try:
+        if not SKILLS_DIR.exists():
+            raise ValueError(f"SKILLS_DIR not found: {SKILLS_DIR}")
         contracts, missing = load_contracts(SKILLS_DIR)
         active = {contract.skill for contract in contracts} | set(missing)
         validate_contracts(contracts, active)

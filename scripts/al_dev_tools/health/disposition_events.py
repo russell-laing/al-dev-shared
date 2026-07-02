@@ -123,11 +123,16 @@ def batch_decline(
 ) -> list[tuple[str, Path]]:
     required = ("surface", "dimension", "object", "finding", "reason", "closes_event_id")
     written: list[tuple[str, Path]] = []
+    # Load events once before loop to avoid O(n²) complexity
+    all_events = list(iter_event_rows(events_root))
+    next_seq = next_event_id(all_events, date).split("_")[-1]
+    seq_counter = int(next_seq)
     for i, row in enumerate(rows):
         missing = [k for k in required if not str(row.get(k, "")).strip()]
         if missing:
             raise ValueError(f"row {i}: missing required field(s): {', '.join(missing)}")
-        event_id = next_event_id(list(iter_event_rows(events_root)), date)
+        seq_counter += 1
+        event_id = f"disp_{date.replace('-', '')}_{seq_counter:06d}"
         event = {
             "event_id": event_id,
             "legacy_id": "",
