@@ -9,9 +9,10 @@ argument-hint: "[context-type: planning|review]"
 
 # Generic Preflight Skill
 
-Shared Phase 0 resume-check + context-gathering logic for `/plan-preflight` and
-`/review-develop-preflight`. Reduces duplication by parameterizing the context
-type (planning vs review).
+Shared Phase 0 resume-check + context-gathering logic for the planning and
+review preflight flows — invoked as `/generic-preflight --context-type planning`
+or `/generic-preflight --context-type review`. Reduces duplication by
+parameterizing the context type.
 
 ## Phase 0: Resume Check & Initialization
 

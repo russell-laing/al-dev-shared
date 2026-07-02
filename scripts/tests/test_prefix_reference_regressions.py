@@ -29,6 +29,16 @@ SHARED_SURFACE_CASES = {
     "profile-al-dev-shared/skills/fix/tests/scenarios.yaml": [
         "al-dev-shared:al-dev-developer",
     ],
+    "profile-al-dev-shared/skills/develop-orchestrate/SKILL.md": [
+        "/review-develop-preflight",
+    ],
+    "profile-al-dev-shared/skills/fix/SKILL.md": [
+        "/review-develop-preflight",
+    ],
+    "profile-al-dev-shared/skills/generic-preflight/SKILL.md": [
+        "/plan-preflight",
+        "/review-develop-preflight",
+    ],
 }
 
 TOOLING_CASES = {

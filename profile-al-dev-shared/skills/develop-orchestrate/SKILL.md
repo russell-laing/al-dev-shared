@@ -441,13 +441,13 @@ This document is created at Phase 4 completion and includes:
 have to type the next skill name manually):
 
 ```text
-All developers complete — running /review-develop-preflight, then
+All developers complete — running /generic-preflight --context-type review, then
 dispatching /review-develop once prerequisites are confirmed.
 ```
 
 **Next step:**
 
-1. Run `/review-develop-preflight` and wait for the preflight output.
+1. Run `/generic-preflight --context-type review` and wait for the preflight output.
    Confirm it reports "Prerequisites: all met" before proceeding.
 
 2. Then dispatch `/review-develop` — only after reading the current

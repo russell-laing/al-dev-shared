@@ -336,7 +336,7 @@ decide to run the full three-reviewer panel after a non-trivial fix (for
 example, because the change touches critical business logic), use the two-step
 pattern:
 
-1. Run `/review-develop-preflight` and wait for the preflight output.
+1. Run `/generic-preflight --context-type review` and wait for the preflight output.
    Confirm it reports "Prerequisites: all met" before proceeding.
 
 2. Then run `/review-develop` to dispatch the reviewer panel.
