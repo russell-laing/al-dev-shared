@@ -7,7 +7,9 @@ from importlib import import_module
 __all__ = [
     "assemble_health_findings",
     "check_disposition_store_consistency",
+    "check_ledger_path_drift",
     "check_ledger_staleness",
+    "check_view_drift",
     "disposition_events",
     "disposition_matching",
     "disposition_models",
@@ -17,6 +19,8 @@ __all__ = [
     "ledger_cli",
     "ledger_models",
     "ledger_queries",
+    "paths",
+    "precision_gate_fixture",
     "select_health_artifacts",
     "split_multilens_findings",
     "validate_health_loop_state",
