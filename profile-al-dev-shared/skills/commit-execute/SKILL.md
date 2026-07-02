@@ -258,31 +258,25 @@ Read the returned `recovery_status` and act:
 
 ### 4.4 — Final Verification (Commit Count & History Integrity)
 
-- [ ] **Step 4.4.1:** Read approved commit plan artifact
+- [ ] **Step 4.4.1:** Count expected commit groups from the approved plan
 
-Run: `cat ".dev/$(date +%Y-%m-%d)-plan-solution-plan.md" | grep -A 100 "## Commits" | head -50`
-
-Expected: List of expected commit subjects and files
-
-- [ ] **Step 4.4.2:** Count expected commit groups from plan
-
-Run: `grep -c "^### Commit" ".dev/$(date +%Y-%m-%d)-plan-solution-plan.md"`
+Run: `grep -c "^GROUP_[0-9]*:" .dev/commit-preflight.md`
 
 Store: `EXPECTED_COMMITS=<count>`
 
-- [ ] **Step 4.4.3:** Compare against actual commits since base branch
+- [ ] **Step 4.4.2:** Compare against actual commits since the plan was approved
 
 Run: `git log --oneline --since="$PLAN_DATE" | wc -l`
 
 Store: `ACTUAL_COMMITS=<count>`
 
-- [ ] **Step 4.4.4:** Safety gate — unpublished commits only
+- [ ] **Step 4.4.3:** Safety gate — unpublished commits only
 
 Run: `git log --oneline origin/main.. 2>/dev/null | wc -l`
 
 If result = 0, commit is publishable. If greater, warn user: "Commits already pushed; history rewrite blocked."
 
-- [ ] **Step 4.4.5:** (Optional) Reset and re-commit if user confirms
+- [ ] **Step 4.4.4:** (Optional) Reset and re-commit if user confirms
 
 If ACTUAL_COMMITS ≠ EXPECTED_COMMITS and user confirms rewrite:
 
@@ -293,17 +287,13 @@ git commit -m "<consolidated message from plan>"
 
 Expected: Commits consolidated to match plan.
 
-- [ ] **Step 4.4.6:** Final verification — confirm commit presence
-
-Run: `git log --oneline --since="$PLAN_DATE" | head -5`
-
-Expected: Commit subjects match plan exactly
-
-- [ ] **Step 4.4.7:** Log final SHAs for handoff
+- [ ] **Step 4.4.5:** Final verification — confirm commit presence and log SHAs
 
 ```bash
-git log --oneline --since="$PLAN_DATE" > ".dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
+git log --oneline --since="$PLAN_DATE" | tee ".dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
 echo "Commits verified and logged to .dev/$(date +%Y-%m-%d)-commit-verified-shas.txt"
 ```
+
+Expected: Commit subjects match the approved plan exactly.
 
 Summary: `COMMIT_VERIFICATION_STATUS="READY"` (present in summary output for next step)
