@@ -25,12 +25,8 @@
 | disp_20260702_000221 | plugin | quality | document | Description de-prioritizes formatting as optional but implementation is substantial (100+ lines) | accepted | 2026-07-02 | User decision: disposition batch, quality dimension |  |
 | disp_20260703_000003 | plugin | design | bc-support-researcher-toolhyg | Tool-hygiene: declares bc-code-intelligence and microsoft-docs MCP but unused | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000004 | plugin | design | evidence-gatherer-toolhyg | Tool-hygiene: declares bc-code-intelligence MCP but unused | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000019 | plugin | quality | evidence-gatherer-mcp | Prompt clarity: vague reference to 'the 3 MCP tools' | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000020 | plugin | quality | solution-architect.md-cond | Prompt clarity: three nested conditions with negation logic | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000021 | plugin | quality | bc-support-researcher-name | Agent naming: name lacks BC context | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000024 | plugin | quality | findings-synthesizer.md | Clarity: terminology inconsistency between evidence and findings | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000026 | plugin | quality | interview-conductor-name | Name fit: file path vs frontmatter name conflict | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000027 | plugin | quality | evidence-gatherer-bc | Naming/scope: lacks BC-domain qualification | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000028 | plugin | quality | commit-execute-vars | Prompt clarity: references undefined variables | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000029 | plugin | quality | document.md-bash | Prompt clarity: template bash has invalid syntax | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000030 | plugin | quality | commit-preflight-criteria | Prompt clarity: vague filtering criteria | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
