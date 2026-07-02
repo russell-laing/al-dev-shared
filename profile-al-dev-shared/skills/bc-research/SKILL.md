@@ -1,5 +1,5 @@
 ---
-name: research
+name: bc-research
 description: >-
   Research a BC/AL question using curated-first evidence, local repo
   discovery, and specialist research synthesis. Use for greenfield
