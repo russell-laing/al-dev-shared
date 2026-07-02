@@ -72,6 +72,11 @@ Write `.dev/<context-type>-preflight-checkpoint.md` with:
 - Ready/blocked status
 - Next command (downstream skill to invoke)
 
+**Checkpoint filename contract:** The filename follows the pattern `.dev/<context-type>-preflight-checkpoint.md` where `<context-type>` is:
+
+- `planning` when called from `/plan` (resulting in `.dev/planning-preflight-checkpoint.md`)
+- `review` when called from `/review-develop` (resulting in `.dev/review-preflight-checkpoint.md`)
+
 ## Implementation Notes
 
 This skill is invoked by:
