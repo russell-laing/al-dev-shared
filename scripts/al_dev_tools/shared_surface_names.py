@@ -17,6 +17,7 @@ SHARED_SKILL_RENAMES = {
     "al-dev-commit": "commit",
     "al-dev-commit-execute": "commit-execute",
     "al-dev-commit-preflight": "commit-preflight",
+    "al-dev-commit-recover": "commit-recover",
     "al-dev-develop-orchestrate": "develop-orchestrate",
     "al-dev-document": "document",
     "al-dev-explore": "explore",
@@ -36,6 +37,7 @@ SHARED_SKILL_RENAMES = {
     "al-dev-review-develop-preflight": "generic-preflight",
     "al-dev-support-reply": "support-reply",
     "al-dev-ticket": "ticket",
+    "bc-research": "bc-research",
 }
 
 SHARED_AGENT_RENAMES = {
@@ -60,8 +62,18 @@ SHARED_AGENT_RENAMES = {
     "al-dev-security-reviewer": "security-reviewer",
     "al-dev-solution-architect": "solution-architect",
     "al-dev-support-reply-drafter": "support-reply-drafter",
-    "al-dev-support-researcher": "support-researcher",
+    "al-dev-support-researcher": "bc-support-researcher",
     "al-dev-ticket-context-writer": "ticket-context-writer",
+    # Native-named agents (no legacy al-dev- prefix)
+    "change-analyzer": "change-analyzer",
+    "diagnostics-classifier": "diagnostics-classifier",
+    "diagnostics-decision": "diagnostics-decision",
+    "ecosystem-researcher": "ecosystem-researcher",
+    "evidence-gatherer": "evidence-gatherer",
+    "findings-synthesizer": "findings-synthesizer",
+    "interview-conductor": "interview-conductor",
+    "repo-researcher": "repo-researcher",
+    "spec-writer": "spec-writer",
 }
 
 CANONICAL_SHARED_SKILLS = tuple(SHARED_SKILL_RENAMES.values())

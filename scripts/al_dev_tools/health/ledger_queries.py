@@ -73,7 +73,9 @@ def _has_valid_content(repo_root: Path, glob_pattern: str) -> bool:
         elif "agents" in glob_pattern and any(path.glob("*.md")):
             return True
         elif "/" not in glob_pattern:  # Direct file path
-            return True
+            # Verify file actually exists, don't assume
+            if path.exists():
+                return True
     return False
 
 

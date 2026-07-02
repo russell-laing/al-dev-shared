@@ -171,16 +171,19 @@ def write_all_projections(output_root: Path, agents: list[dict], policy: dict) -
 
     # Remove orphaned projection files (agent renamed or deleted since last run)
     # Only delete if we found agents to keep (guard against empty glob due to wrong cwd)
-    if desired_claude or desired_copilot or desired_codex:
-        for fname in (output_root / "claude").glob("*.md"):
-            if fname.name not in desired_claude:
-                fname.unlink()
-        for fname in (output_root / "copilot").glob("*.md"):
-            if fname.name not in desired_copilot:
-                fname.unlink()
-        for fname in (output_root / "codex").glob("*.toml"):
-            if fname.name not in desired_codex:
-                fname.unlink()
+    # Always clean up orphaned projections, even if no agents to generate (fail-open guard)
+    if not (desired_claude or desired_copilot or desired_codex):
+        import sys
+        print("⚠ No agents to project — cleaning up all generated outputs", file=sys.stderr)
+    for fname in (output_root / "claude").glob("*.md"):
+        if fname.name not in desired_claude:
+            fname.unlink()
+    for fname in (output_root / "copilot").glob("*.md"):
+        if fname.name not in desired_copilot:
+            fname.unlink()
+    for fname in (output_root / "codex").glob("*.toml"):
+        if fname.name not in desired_codex:
+            fname.unlink()
 
     for agent in agents:
         write_projection_set(output_root, agent, policy)
