@@ -139,18 +139,14 @@ def batch_decline(
 ) -> list[tuple[str, Path]]:
     required = ("surface", "dimension", "object", "finding", "reason", "closes_event_id")
     written: list[tuple[str, Path]] = []
-    # Reload events before each allocation to ensure uniqueness under concurrent calls
-    seq_counter = None
     for i, row in enumerate(rows):
         missing = [k for k in required if not str(row.get(k, "")).strip()]
         if missing:
             raise ValueError(f"row {i}: missing required field(s): {', '.join(missing)}")
-        # Reload max sequence for each event to ensure uniqueness under concurrent calls
+        # Reload max sequence for EACH event to ensure uniqueness under concurrent calls
         all_events = list(iter_event_rows(events_root))
-        if seq_counter is None:
-            next_seq = next_event_id(all_events, date).split("_")[-1]
-            seq_counter = int(next_seq) - 1
-        seq_counter += 1
+        next_seq = next_event_id(all_events, date).split("_")[-1]
+        seq_counter = int(next_seq)
         event_id = f"disp_{date.replace('-', '')}_{seq_counter:06d}"
         event = {
             "event_id": event_id,

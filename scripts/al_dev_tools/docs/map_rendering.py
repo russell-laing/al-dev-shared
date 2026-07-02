@@ -17,6 +17,7 @@ from .map_inventory import (
     WORKFLOW_ORDER,
     assert_unique_node_ids,
     collect_inventory,
+    validate_inventory_references,
     validate_inventory_skill_references,
 )
 from .map_markers import find_marker_spans, replace_marked_sections
@@ -585,6 +586,7 @@ def plan_document_updates(repo: Path, rendered: dict[str, str], inv: Inventory) 
 def generate_document_updates(repo: Path) -> dict[Path, str]:
     """Prepare map-document updates without mutating any files."""
     inv = collect_inventory(repo / "profile-al-dev-shared")
+    validate_inventory_references(inv)  # Check agent/knowledge/skill edges
     validate_inventory_skill_references(inv)
     _validate_inventory_for_rendering(inv)
     rendered = build_all_sections(inv)
@@ -606,8 +608,9 @@ def apply_document_updates(updates: dict[Path, str]) -> None:
                 delete=False,
             ) as handle:
                 backup_path = Path(handle.name)
-            shutil.copy2(path, backup_path)
+            # Add to tracking dict BEFORE copy in case copy fails
             backup_paths[path] = backup_path
+            shutil.copy2(path, backup_path)
             write_text_atomic(path, new_text)
             committed.append(path)
 

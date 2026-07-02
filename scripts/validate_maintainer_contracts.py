@@ -91,6 +91,21 @@ def has_markdown_heading(text: str, heading: str) -> bool:
 def check_coverage(skills_root: Path) -> list[str]:
     if not skills_root.exists():
         raise ValueError(f"SKILLS_ROOT not found: {skills_root}")
+
+    # Verify that all hardcoded skill names exist (prevent stale references)
+    all_skill_sets = (
+        MULTI_PHASE_SKILLS | DISPATCHING_SKILLS | DELEGATING_EXECUTION_SKILLS |
+        FALSE_POSITIVE_CLASS_TRACKING_SKILLS | TOKEN_USAGE_BLOCK_SKILLS |
+        PROCEDURE_LOG_SKILLS
+    )
+    for skill_name in all_skill_sets:
+        skill_md = skills_root / skill_name / "SKILL.md"
+        if not skill_md.exists():
+            raise ValueError(
+                f"Hardcoded skill name '{skill_name}' not found in {skills_root}. "
+                f"Update the skill set constants to match current filesystem."
+            )
+
     violations: list[str] = []
     for skill_set, doc in REQUIREMENTS:
         for name in sorted(skill_set):

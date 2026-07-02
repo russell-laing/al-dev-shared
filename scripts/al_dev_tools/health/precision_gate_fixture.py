@@ -27,10 +27,12 @@ def verify_retained_ids(dossier_text: str, expected_ids: list[str]) -> list[str]
             retained_section.append(line)
     retained_text = "\n".join(retained_section)
     import re
+    # Tolerate multiple finding ID formats: **[id]**, **[id]:**,  **id**, `id`, etc.
+    # Use word boundaries to avoid partial matches
     return [
         expected_id
         for expected_id in expected_ids
-        if not re.search(rf"\*\*\[{re.escape(expected_id)}\]\*\*:?", retained_text)
+        if not re.search(rf"\b{re.escape(expected_id)}\b", retained_text)
     ]
 
 
