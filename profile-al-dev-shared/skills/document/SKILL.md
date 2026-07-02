@@ -1,8 +1,7 @@
 ---
 name: document
 description: >-
-  Generate documentation from implemented code. Optional Mode: format and bold
-  terms in existing documents.
+  Generate documentation from implemented code.
 argument-hint: "[feature name or file path to document]"
 ---
 
@@ -412,7 +411,8 @@ Consider including:
 - You want technical reference documentation
 - Onboarding new developers
 - Preparing for handoff
-- Formatting or bolding key terms in an existing document (Formatting-Sweep variant)
+
+**Formatting or bolding key terms in an existing document?** Use `/document-format` instead.
 
 **❌ Don't use /document when:**
 
