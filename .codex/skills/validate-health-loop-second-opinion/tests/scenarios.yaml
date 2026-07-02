@@ -1,0 +1,28 @@
+skill: validate-health-loop-second-opinion
+scenarios:
+  - id: second-opinion-plugin-health-findings
+    status: golden
+    user_prompt: "Give me a second opinion on docs/health/2026-07-02-plugin-health-findings.md before I act on it."
+    expected_artifacts:
+      - ".dev/*-health-loop-second-opinion-*.md"
+    notes: "Must classify the source as a plugin-health findings report, run artifact-first checks, verify only consequential live-state claims, and end with exactly one trust recommendation."
+
+  - id: external-validator-health-plan
+    status: golden
+    user_prompt: "Use Codex as an external validator for docs/superpowers/plans/2026-07-02-plugin-quality-findings.md and tell me if the Claude health-loop plan is trustworthy enough to execute."
+    expected_artifacts:
+      - ".dev/*-health-loop-second-opinion-*.md"
+    notes: "Must stay report-only, not patch the source plan, and distinguish artifact defects from live-state drift."
+
+  - id: unsupported-fixed-validated-claims
+    status: golden
+    user_prompt: "Review this plugin-health report that says every finding is fixed and validated, and verify whether I can trust that claim."
+    expected_artifacts:
+      - ".dev/*-health-loop-second-opinion-*.md"
+    notes: "Must flag unsupported fixed or validated claims unless current artifact evidence or targeted live-state checks support them, and should recommend rework before use when the claim is consequential and unsupported."
+
+  - id: out-of-scope-generic-review
+    status: negative
+    user_prompt: "Use the health-loop second-opinion validator to review this unrelated README rewrite for grammar."
+    expected_artifacts: []
+    notes: "Must stop as out of scope instead of broadening into a generic review tool."

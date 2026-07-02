@@ -49,6 +49,9 @@ Current repo-local skills:
   pass near the end of a session.
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy
   reports against live repo state before trusting rankings or counts.
+- `.codex/skills/validate-health-loop-second-opinion/` — performs bounded,
+  report-only second-opinion validation of one Claude-produced plugin-health
+  artifact before the maintainer acts on it.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for
   `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates, appends, or

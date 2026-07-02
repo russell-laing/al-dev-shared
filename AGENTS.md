@@ -63,6 +63,7 @@ Current repo-local Codex skills:
 - `.codex/skills/research-harness-improvements/` — researches current AI harness practices and produces source-backed briefings for evidence-gated improvement review.
 - `.codex/skills/heal-surface/` — performs a small, surface-specific self-heal pass near the end of a session.
 - `.codex/skills/review-self-healing-report/` — rechecks recommendation-heavy reports against live repo state before trusting rankings or counts.
+- `.codex/skills/validate-health-loop-second-opinion/` — performs bounded, report-only second-opinion validation of one Claude-produced plugin-health artifact before the maintainer acts on it.
 - `.codex/skills/cleanup-superpowers-history/` — preserves provenance for `docs/superpowers/` history while removing obsolete raw artifacts.
 - `.codex/skills/write-superpowers-plan-commentary/` — creates, appends, or losslessly consolidates review-only findings for Superpowers plans after live repo checks.
 - `.codex/skills/extract-mermaid-diagrams/` — extracts Mermaid diagrams from Markdown and renders image artifacts plus metadata for AI visual analysis.
