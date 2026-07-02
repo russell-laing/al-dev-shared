@@ -75,7 +75,10 @@ phase, not by downstream callers directly.
 
 ## Output Format
 
-Write to `.dev/$(date +%Y-%m-%d)-plan-solution-plan.md`.
+This section defines the content structure your returned proposal sections
+(`## Outputs` above) must satisfy — it is the spec `/plan` Phase 5 uses to
+assemble `.dev/$(date +%Y-%m-%d)-plan-solution-plan.md` from your text output.
+You do not write this file yourself.
 
 For complete structure and template content, read `knowledge/solution-plan-template.md`. The solution plan must include:
 
