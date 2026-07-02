@@ -1,5 +1,5 @@
 ---
-description: "Synthesize evidence from multiple MCP sources into unified findings report"
+description: "Synthesize evidence from BC Code Intelligence, Git history, and Markdown docs into unified findings report"
 tools: ["Read"]
 ---
 
