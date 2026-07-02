@@ -1,5 +1,5 @@
 ---
-name: "findings-synthesizer"
+name: "evidence-synthesizer"
 description: "Synthesize evidence from BC Code Intelligence, Git history, and Markdown docs into unified findings report"
 tools: ["read"]
 ---
