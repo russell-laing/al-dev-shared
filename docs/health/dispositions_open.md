@@ -25,8 +25,6 @@
 | disp_20260702_000221 | plugin | quality | document | Description de-prioritizes formatting as optional but implementation is substantial (100+ lines) | accepted | 2026-07-02 | User decision: disposition batch, quality dimension |  |
 | disp_20260703_000003 | plugin | design | bc-support-researcher-toolhyg | Tool-hygiene: declares bc-code-intelligence and microsoft-docs MCP but unused | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000004 | plugin | design | evidence-gatherer-toolhyg | Tool-hygiene: declares bc-code-intelligence MCP but unused | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000017 | plugin | quality | commit-analyzer.md | Prompt clarity: duplicate Step 1 headers at lines 51 and 61 | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
-| disp_20260703_000018 | plugin | quality | diagnostics-resolver.md | Prompt clarity: mixed step numbering notation at lines 62-74 | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000019 | plugin | quality | evidence-gatherer-mcp | Prompt clarity: vague reference to 'the 3 MCP tools' | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000020 | plugin | quality | solution-architect.md-cond | Prompt clarity: three nested conditions with negation logic | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
 | disp_20260703_000021 | plugin | quality | bc-support-researcher-name | Agent naming: name lacks BC context | accepted | 2026-07-03 | User decision from record-plugin-dispositions 2026-07-03 |  |
