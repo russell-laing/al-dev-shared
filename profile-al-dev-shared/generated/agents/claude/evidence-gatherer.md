@@ -1,6 +1,6 @@
 ---
 description: "Search 3 MCP sources (documentation, code samples, support resources) for evidence relevant to a query. Returns raw findings per source."
-tools: ["Read", "Write", "Bash"]
+tools: ["Read", "Write", "Bash", "mcp__plugin_profile-claude-al-dev_bc-code-intelligence-mcp__<tool>"]
 ---
 
 

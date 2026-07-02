@@ -1,7 +1,7 @@
 ---
 name: "evidence-gatherer"
 description: "Search 3 MCP sources (documentation, code samples, support resources) for evidence relevant to a query. Returns raw findings per source."
-tools: ["read", "edit", "execute"]
+tools: ["read", "edit", "execute", "bc-code-intelligence-mcp-<tool>"]
 ---
 
 

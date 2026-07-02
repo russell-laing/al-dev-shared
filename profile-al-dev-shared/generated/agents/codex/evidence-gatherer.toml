@@ -29,4 +29,5 @@ Invoke each MCP source in parallel. Collect raw results without synthesis.
 Codex capability notes:
 - read files available in the active Codex session
 - edit files available in the active Codex session
-- run shell commands allowed by the active Codex session"""
+- run shell commands allowed by the active Codex session
+- use the BC code intelligence MCP capability available in the active Codex session"""

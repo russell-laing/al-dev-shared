@@ -8,6 +8,7 @@ tools:
   - Read
   - Write
   - Bash
+  - "MCP: bc-code-intelligence"
 ---
 
 # Evidence Gatherer
