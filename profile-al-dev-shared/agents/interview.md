@@ -1,7 +1,7 @@
 ---
 name: interview
 description: >-
-  Coordinate the interview workflow by orchestrating interview-conductor
+  Coordinate the interview workflow by orchestrating question-gatherer
   and spec-writer agents to extract implementation details. Spawned by
   the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`.
 model: sonnet
@@ -12,10 +12,10 @@ tools: ["Read", "Write", "USER_GATE"]
 
 Coordinates the interview workflow:
 
-1. Invoke interview-conductor to conduct interview and collect answers
+1. Invoke question-gatherer to conduct interview and collect answers
 2. Invoke spec-writer to synthesize answers into specification
 
-See interview-conductor and spec-writer agents for implementation details.
+See question-gatherer and spec-writer agents for implementation details.
 
 ## Inputs
 
