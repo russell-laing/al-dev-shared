@@ -129,7 +129,7 @@ For formal requirements documentation using governance tokens:
    BC Integration, UI/UX Requirements, Constraints,
    Success Criteria, Out of Scope, Open Questions.
 
-3. Validate the output:
+- [ ] **Step 3.4:** Validate the output:
 
    ```bash
    # AL_DEV_SHARED_PLUGIN_ROOT is set by the harness to the plugin root directory.
