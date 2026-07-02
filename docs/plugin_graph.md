@@ -22,6 +22,7 @@ flowchart LR
         skill_document[document]
         skill_explore[explore]
         skill_fix[fix]
+        skill_generic_preflight[generic-preflight]
         skill_handoff[handoff]
         skill_help[help]
         skill_interview[interview]
@@ -30,16 +31,16 @@ flowchart LR
         skill_perf[perf]
         skill_plan[plan]
         skill_plan_final_review[plan-final-review]
-        skill_plan_preflight[plan-preflight]
         skill_plan_with_critics[plan-with-critics]
         skill_release_notes[release-notes]
+        skill_research[research]
         skill_review_develop[review-develop]
-        skill_review_develop_preflight[review-develop-preflight]
         skill_support_reply[support-reply]
         skill_ticket[ticket]
     end
     subgraph Agents[Agents]
         agent_al_pattern_reviewer[al-pattern-reviewer]
+        agent_change_analyzer[change-analyzer]
         agent_commit_analyzer[commit-analyzer]
         agent_commit_executor[commit-executor]
         agent_commit_group_drafter[commit-group-drafter]
@@ -49,21 +50,30 @@ flowchart LR
         agent_corruption_recover[corruption-recover]
         agent_developer_tdd[developer-tdd]
         agent_developer_traditional[developer-traditional]
+        agent_diagnostics_classifier[diagnostics-classifier]
+        agent_diagnostics_decision[diagnostics-decision]
         agent_diagnostics_resolver[diagnostics-resolver]
         agent_docs_writer[docs-writer]
+        agent_ecosystem_researcher[ecosystem-researcher]
+        agent_evidence_gatherer[evidence-gatherer]
         agent_explore[explore]
+        agent_findings_synthesizer[findings-synthesizer]
         agent_general_code_reviewer[general-code-reviewer]
         agent_interview[interview]
         agent_performance_reviewer[performance-reviewer]
+        agent_question_gatherer[question-gatherer]
         agent_release_notes_writer[release-notes-writer]
+        agent_repo_researcher[repo-researcher]
         agent_script_engineer[script-engineer]
         agent_security_reviewer[security-reviewer]
         agent_solution_architect[solution-architect]
+        agent_spec_writer[spec-writer]
         agent_support_reply_drafter[support-reply-drafter]
         agent_support_researcher[support-researcher]
         agent_ticket_context_writer[ticket-context-writer]
     end
     subgraph Knowledge[Knowledge Files]
+        knowledge_agent_tool_projection_policy_md[agent-tool-projection-policy]
         knowledge_al_developer_patterns_md[al-developer-patterns]
         knowledge_al_developer_shared_standards_md[al-developer-shared-standards]
         knowledge_al_linting_rules_md[al-linting-rules]
@@ -80,6 +90,9 @@ flowchart LR
         knowledge_commit_workflow_orchestration_md[commit-workflow-orchestration]
         knowledge_companion_context_ownership_md[companion-context-ownership]
         knowledge_compile_lint_procedure_md[compile-lint-procedure]
+        knowledge_critic_dispatch_template_md[critic-dispatch-template]
+        knowledge_develop_orchestrate_signature_decision_tree_md[develop-orchestrate-signature-decision-tree]
+        knowledge_develop_spawn_prompt_md[develop-spawn-prompt]
         knowledge_developer_invocation_patterns_md[developer-invocation-patterns]
         knowledge_diagnostics_report_format_md[diagnostics-report-format]
         knowledge_documentation_rtm_guide_md[documentation-rtm-guide]
@@ -87,15 +100,14 @@ flowchart LR
         knowledge_explore_subagent_pattern_md[explore-subagent-pattern]
         knowledge_fix_examples_md[fix-examples]
         knowledge_intent_preflight_md[intent-preflight]
-        knowledge_interview_question_bank_md[interview-question-bank]
-        knowledge_interview_requirements_format_md[interview-requirements-format]
         knowledge_investigate_findings_template_md[investigate-findings-template]
         knowledge_perf_anti_patterns_prompt_md[perf-anti-patterns-prompt]
         knowledge_perf_report_template_md[perf-report-template]
         knowledge_performance_review_examples_md[performance-review-examples]
-        knowledge_plan_phase_routing_md[plan-phase-routing]
         knowledge_preflight_context_schema_md[preflight-context-schema]
         knowledge_release_notes_template_md[release-notes-template]
+        knowledge_research_output_format_md[research-output-format]
+        knowledge_research_source_policy_md[research-source-policy]
         knowledge_reviewer_findings_template_md[reviewer-findings-template]
         knowledge_scope_expansion_gate_md[scope-expansion-gate]
         knowledge_script_engineer_conventions_md[script-engineer-conventions]
@@ -108,6 +120,7 @@ flowchart LR
         knowledge_ticket_agent_invocation_pattern_md[ticket-agent-invocation-pattern]
         knowledge_ticket_context_output_format_md[ticket-context-output-format]
         knowledge_ticket_image_patterns_md[ticket-image-patterns]
+        knowledge_verification_and_planning_md[verification-and-planning]
         knowledge_workflow_resilience_md[workflow-resilience]
         knowledge_workflow_routing_md[workflow-routing]
     end
@@ -119,22 +132,23 @@ flowchart LR
         artifact_2026_06_01_ticket_ticket_context_md[.dev/2026-06-01-ticket-ticket-context.md]
         artifact_YYYY_MM_DD_investigate_findings_md[.dev/YYYY-MM-DD-investigate-findings.md]
         artifact_YYYY_MM_DD_plugin_release_notes_md[.dev/YYYY-MM-DD-plugin-release-notes.md]
-        artifact_YYYY_MM_DD_ticket_reply_md[.dev/YYYY-MM-DD-ticket-reply.md]
+        artifact_YYYY_MM_DD_research_findings_md[.dev/YYYY-MM-DD-research-findings.md]
         artifact_commit_integrity_log[.dev/commit-integrity.log]
         artifact_commit_preflight_md[.dev/commit-preflight.md]
         artifact_commits_json[.dev/commits.json]
         artifact_compile_errors_log[.dev/compile-errors.log]
         artifact_explore_findings_md[.dev/explore-findings.md]
         artifact_file_sizes_json[.dev/file-sizes.json]
-        artifact_findings_file_md[.dev/findings-file.md]
         artifact_format_sweep_progress_md[.dev/format-sweep-progress.md]
         artifact_hook_failures_json[.dev/hook-failures.json]
         artifact_investigate_errors_log[.dev/investigate-errors.log]
         artifact_learnings_md[.dev/learnings.md]
         artifact_plan_critique_YYYY_MM_DD_md[.dev/plan-critique-YYYY-MM-DD.md]
+        artifact_planning_preflight_context_md[.dev/planning-preflight-context.md]
         artifact_preflight_context_md[.dev/preflight-context.md]
         artifact_progress_md[.dev/progress.md]
         artifact_project_context_md[.dev/project-context.md]
+        artifact_review_preflight_context_md[.dev/review-preflight-context.md]
         artifact_session_log_md[.dev/session-log.md]
         artifact_source_explore_findings_md[.dev/source-explore-findings.md]
         artifact_source_project_context_md[.dev/source-project-context.md]
@@ -142,7 +156,6 @@ flowchart LR
         artifact_source_requirements_md[.dev/source-requirements.md]
         artifact_source_solution_plan_md[.dev/source-solution-plan.md]
         artifact_source_ticket_context_md[.dev/source-ticket-context.md]
-        artifact_test_plan_md[.dev/test-plan.md]
     end
 
     skill_commit --> skill_commit_execute
@@ -152,6 +165,7 @@ flowchart LR
     skill_develop_orchestrate --> skill_review_develop
     skill_explore --> skill_plan
     skill_fix --> skill_develop_orchestrate
+    skill_fix --> skill_investigate
     skill_fix --> skill_plan
     skill_help --> skill_develop_orchestrate
     skill_help --> skill_plan
@@ -159,17 +173,15 @@ flowchart LR
     skill_investigate --> skill_fix
     skill_investigate --> skill_handoff
     skill_investigate --> skill_plan
-    skill_plan --> skill_plan_preflight
+    skill_plan --> skill_generic_preflight
+    skill_plan --> skill_plan_final_review
     skill_plan_final_review --> skill_plan
     skill_plan_final_review --> skill_plan_with_critics
     skill_review_develop --> skill_commit
-    skill_review_develop --> skill_review_develop_preflight
-    skill_review_develop_preflight --> skill_develop_orchestrate
-    skill_review_develop_preflight --> skill_review_develop
+    skill_review_develop --> skill_generic_preflight
     skill_support_reply --> skill_ticket
     skill_ticket --> skill_interview
     skill_ticket --> skill_plan
-    skill_ticket --> skill_support_reply
     skill_commit_execute --> agent_commit_executor
     skill_commit_execute --> agent_commit_hook_classifier
     skill_commit_execute --> agent_commit_hook_fixer
@@ -189,14 +201,14 @@ flowchart LR
     skill_perf --> agent_explore
     skill_plan --> agent_solution_architect
     skill_release_notes --> agent_release_notes_writer
+    skill_research --> agent_ecosystem_researcher
+    skill_research --> agent_repo_researcher
     skill_review_develop --> agent_al_pattern_reviewer
     skill_review_develop --> agent_performance_reviewer
     skill_review_develop --> agent_security_reviewer
     skill_support_reply --> agent_support_reply_drafter
     skill_support_reply --> agent_support_researcher
     skill_ticket --> agent_ticket_context_writer
-    skill_commit --> knowledge_artifact_contracts_md
-    skill_commit --> knowledge_commit_intent_preflight_md
     skill_commit_preflight --> knowledge_artifact_contracts_md
     skill_commit_preflight --> knowledge_commit_compile_gate_md
     skill_commit_preflight --> knowledge_commit_intent_preflight_md
@@ -205,6 +217,8 @@ flowchart LR
     skill_commit_preflight --> knowledge_workflow_resilience_md
     skill_develop_orchestrate --> knowledge_artifact_contracts_md
     skill_develop_orchestrate --> knowledge_companion_context_ownership_md
+    skill_develop_orchestrate --> knowledge_develop_orchestrate_signature_decision_tree_md
+    skill_develop_orchestrate --> knowledge_develop_spawn_prompt_md
     skill_develop_orchestrate --> knowledge_developer_invocation_patterns_md
     skill_develop_orchestrate --> knowledge_intent_preflight_md
     skill_develop_orchestrate --> knowledge_scope_expansion_gate_md
@@ -226,6 +240,7 @@ flowchart LR
     skill_investigate --> knowledge_artifact_contracts_md
     skill_investigate --> knowledge_explore_subagent_pattern_md
     skill_investigate --> knowledge_investigate_findings_template_md
+    skill_investigate --> knowledge_verification_and_planning_md
     skill_investigate --> knowledge_workflow_resilience_md
     skill_lint --> knowledge_al_linting_rules_md
     skill_lint --> knowledge_artifact_contracts_md
@@ -241,13 +256,11 @@ flowchart LR
     skill_plan --> knowledge_preflight_context_schema_md
     skill_plan --> knowledge_solution_plan_template_md
     skill_plan --> knowledge_workflow_resilience_md
-    skill_plan_preflight --> knowledge_artifact_contracts_md
-    skill_plan_preflight --> knowledge_companion_context_ownership_md
-    skill_plan_preflight --> knowledge_intent_preflight_md
-    skill_plan_preflight --> knowledge_plan_phase_routing_md
-    skill_plan_preflight --> knowledge_preflight_context_schema_md
-    skill_plan_preflight --> knowledge_workflow_resilience_md
+    skill_plan_with_critics --> knowledge_critic_dispatch_template_md
+    skill_research --> knowledge_research_output_format_md
+    skill_research --> knowledge_research_source_policy_md
     skill_review_develop --> knowledge_artifact_contracts_md
+    skill_review_develop --> knowledge_critic_dispatch_template_md
     skill_ticket --> knowledge_artifact_contracts_md
     skill_ticket --> knowledge_ticket_agent_invocation_pattern_md
     agent_al_pattern_reviewer --> knowledge_code_review_patterns_md
@@ -258,25 +271,30 @@ flowchart LR
     agent_commit_lint_fixer --> knowledge_bash_safe_patterns_md
     agent_developer_tdd --> knowledge_al_developer_shared_standards_md
     agent_developer_tdd --> knowledge_al_symbol_pre_flight_md
+    agent_developer_tdd --> knowledge_develop_spawn_prompt_md
     agent_developer_tdd --> knowledge_developer_invocation_patterns_md
     agent_developer_tdd --> knowledge_tdd_workflow_md
     agent_developer_traditional --> knowledge_al_developer_shared_standards_md
     agent_developer_traditional --> knowledge_al_symbol_pre_flight_md
+    agent_developer_traditional --> knowledge_develop_spawn_prompt_md
     agent_developer_traditional --> knowledge_developer_invocation_patterns_md
     agent_diagnostics_resolver --> knowledge_bash_safe_patterns_md
     agent_diagnostics_resolver --> knowledge_diagnostics_report_format_md
     agent_docs_writer --> knowledge_documentation_rtm_guide_md
+    agent_ecosystem_researcher --> knowledge_research_output_format_md
+    agent_ecosystem_researcher --> knowledge_research_source_policy_md
     agent_explore --> knowledge_explore_findings_format_md
     agent_general_code_reviewer --> knowledge_reviewer_findings_template_md
-    agent_interview --> knowledge_interview_question_bank_md
-    agent_interview --> knowledge_interview_requirements_format_md
     agent_performance_reviewer --> knowledge_perf_anti_patterns_prompt_md
     agent_performance_reviewer --> knowledge_performance_review_examples_md
     agent_performance_reviewer --> knowledge_reviewer_findings_template_md
     agent_release_notes_writer --> knowledge_release_notes_template_md
+    agent_repo_researcher --> knowledge_research_output_format_md
+    agent_repo_researcher --> knowledge_research_source_policy_md
     agent_script_engineer --> knowledge_script_engineer_conventions_md
     agent_security_reviewer --> knowledge_reviewer_findings_template_md
     agent_security_reviewer --> knowledge_security_review_examples_md
+    agent_solution_architect --> knowledge_agent_tool_projection_policy_md
     agent_solution_architect --> knowledge_al_developer_patterns_md
     agent_solution_architect --> knowledge_solution_architect_research_patterns_md
     agent_solution_architect --> knowledge_solution_architect_schema_mapping_md
@@ -299,7 +317,8 @@ flowchart LR
     skill_document --> artifact_format_sweep_progress_md
     skill_explore --> artifact_2026_05_19_explore_findings_md
     skill_explore --> artifact_project_context_md
-    skill_fix --> artifact_test_plan_md
+    skill_generic_preflight --> artifact_planning_preflight_context_md
+    skill_generic_preflight --> artifact_review_preflight_context_md
     skill_handoff --> artifact_explore_findings_md
     skill_handoff --> artifact_project_context_md
     skill_handoff --> artifact_source_explore_findings_md
@@ -320,18 +339,12 @@ flowchart LR
     skill_perf --> artifact_project_context_md
     skill_plan --> artifact_preflight_context_md
     skill_plan --> artifact_progress_md
-    skill_plan_preflight --> artifact_findings_file_md
-    skill_plan_preflight --> artifact_preflight_context_md
-    skill_plan_preflight --> artifact_progress_md
-    skill_plan_preflight --> artifact_project_context_md
     skill_plan_with_critics --> artifact_plan_critique_YYYY_MM_DD_md
     skill_release_notes --> artifact_YYYY_MM_DD_plugin_release_notes_md
     skill_release_notes --> artifact_project_context_md
+    skill_research --> artifact_YYYY_MM_DD_research_findings_md
     skill_review_develop --> artifact_progress_md
-    skill_review_develop_preflight --> artifact_compile_errors_log
-    skill_review_develop_preflight --> artifact_progress_md
     skill_support_reply --> artifact_2026_06_01_ticket_ticket_context_md
-    skill_support_reply --> artifact_YYYY_MM_DD_ticket_reply_md
 
     class skill_commit skillNode
     class skill_commit_execute skillNode
@@ -341,6 +354,7 @@ flowchart LR
     class skill_document skillNode
     class skill_explore skillNode
     class skill_fix skillNode
+    class skill_generic_preflight skillNode
     class skill_handoff skillNode
     class skill_help skillNode
     class skill_interview skillNode
@@ -349,14 +363,14 @@ flowchart LR
     class skill_perf skillNode
     class skill_plan skillNode
     class skill_plan_final_review skillNode
-    class skill_plan_preflight skillNode
     class skill_plan_with_critics skillNode
     class skill_release_notes skillNode
+    class skill_research skillNode
     class skill_review_develop skillNode
-    class skill_review_develop_preflight skillNode
     class skill_support_reply skillNode
     class skill_ticket skillNode
     class agent_al_pattern_reviewer agentNode
+    class agent_change_analyzer agentNode
     class agent_commit_analyzer agentNode
     class agent_commit_executor agentNode
     class agent_commit_group_drafter agentNode
@@ -366,19 +380,28 @@ flowchart LR
     class agent_corruption_recover agentNode
     class agent_developer_tdd agentNode
     class agent_developer_traditional agentNode
+    class agent_diagnostics_classifier agentNode
+    class agent_diagnostics_decision agentNode
     class agent_diagnostics_resolver agentNode
     class agent_docs_writer agentNode
+    class agent_ecosystem_researcher agentNode
+    class agent_evidence_gatherer agentNode
     class agent_explore agentNode
+    class agent_findings_synthesizer agentNode
     class agent_general_code_reviewer agentNode
     class agent_interview agentNode
     class agent_performance_reviewer agentNode
+    class agent_question_gatherer agentNode
     class agent_release_notes_writer agentNode
+    class agent_repo_researcher agentNode
     class agent_script_engineer agentNode
     class agent_security_reviewer agentNode
     class agent_solution_architect agentNode
+    class agent_spec_writer agentNode
     class agent_support_reply_drafter agentNode
     class agent_support_researcher agentNode
     class agent_ticket_context_writer agentNode
+    class knowledge_agent_tool_projection_policy_md knowledgeNode
     class knowledge_al_developer_patterns_md knowledgeNode
     class knowledge_al_developer_shared_standards_md knowledgeNode
     class knowledge_al_linting_rules_md knowledgeNode
@@ -395,6 +418,9 @@ flowchart LR
     class knowledge_commit_workflow_orchestration_md knowledgeNode
     class knowledge_companion_context_ownership_md knowledgeNode
     class knowledge_compile_lint_procedure_md knowledgeNode
+    class knowledge_critic_dispatch_template_md knowledgeNode
+    class knowledge_develop_orchestrate_signature_decision_tree_md knowledgeNode
+    class knowledge_develop_spawn_prompt_md knowledgeNode
     class knowledge_developer_invocation_patterns_md knowledgeNode
     class knowledge_diagnostics_report_format_md knowledgeNode
     class knowledge_documentation_rtm_guide_md knowledgeNode
@@ -402,15 +428,14 @@ flowchart LR
     class knowledge_explore_subagent_pattern_md knowledgeNode
     class knowledge_fix_examples_md knowledgeNode
     class knowledge_intent_preflight_md knowledgeNode
-    class knowledge_interview_question_bank_md knowledgeNode
-    class knowledge_interview_requirements_format_md knowledgeNode
     class knowledge_investigate_findings_template_md knowledgeNode
     class knowledge_perf_anti_patterns_prompt_md knowledgeNode
     class knowledge_perf_report_template_md knowledgeNode
     class knowledge_performance_review_examples_md knowledgeNode
-    class knowledge_plan_phase_routing_md knowledgeNode
     class knowledge_preflight_context_schema_md knowledgeNode
     class knowledge_release_notes_template_md knowledgeNode
+    class knowledge_research_output_format_md knowledgeNode
+    class knowledge_research_source_policy_md knowledgeNode
     class knowledge_reviewer_findings_template_md knowledgeNode
     class knowledge_scope_expansion_gate_md knowledgeNode
     class knowledge_script_engineer_conventions_md knowledgeNode
@@ -423,6 +448,7 @@ flowchart LR
     class knowledge_ticket_agent_invocation_pattern_md knowledgeNode
     class knowledge_ticket_context_output_format_md knowledgeNode
     class knowledge_ticket_image_patterns_md knowledgeNode
+    class knowledge_verification_and_planning_md knowledgeNode
     class knowledge_workflow_resilience_md knowledgeNode
     class knowledge_workflow_routing_md knowledgeNode
     class artifact_2026_05_19_develop_code_review_md artifactNode
@@ -432,22 +458,23 @@ flowchart LR
     class artifact_2026_06_01_ticket_ticket_context_md artifactNode
     class artifact_YYYY_MM_DD_investigate_findings_md artifactNode
     class artifact_YYYY_MM_DD_plugin_release_notes_md artifactNode
-    class artifact_YYYY_MM_DD_ticket_reply_md artifactNode
+    class artifact_YYYY_MM_DD_research_findings_md artifactNode
     class artifact_commit_integrity_log artifactNode
     class artifact_commit_preflight_md artifactNode
     class artifact_commits_json artifactNode
     class artifact_compile_errors_log artifactNode
     class artifact_explore_findings_md artifactNode
     class artifact_file_sizes_json artifactNode
-    class artifact_findings_file_md artifactNode
     class artifact_format_sweep_progress_md artifactNode
     class artifact_hook_failures_json artifactNode
     class artifact_investigate_errors_log artifactNode
     class artifact_learnings_md artifactNode
     class artifact_plan_critique_YYYY_MM_DD_md artifactNode
+    class artifact_planning_preflight_context_md artifactNode
     class artifact_preflight_context_md artifactNode
     class artifact_progress_md artifactNode
     class artifact_project_context_md artifactNode
+    class artifact_review_preflight_context_md artifactNode
     class artifact_session_log_md artifactNode
     class artifact_source_explore_findings_md artifactNode
     class artifact_source_project_context_md artifactNode
@@ -455,7 +482,6 @@ flowchart LR
     class artifact_source_requirements_md artifactNode
     class artifact_source_solution_plan_md artifactNode
     class artifact_source_ticket_context_md artifactNode
-    class artifact_test_plan_md artifactNode
 ```
 <!-- END GENERATED: plugin-dependency-mermaid -->
 
@@ -516,28 +542,38 @@ flowchart LR
 <!-- BEGIN GENERATED: plugin-health-callouts -->
 **Orphan agents (spawned by no skill):**
 
+- `change-analyzer`
+- `diagnostics-classifier`
+- `diagnostics-decision`
+- `evidence-gatherer`
+- `findings-synthesizer`
 - `general-code-reviewer`
+- `question-gatherer`
 - `script-engineer`
+- `spec-writer`
 
 **Dead knowledge (referenced by nothing):**
 
-- `agent-tool-projection-policy.md`
 - `anti-patterns.md`
 - `artifact-freshness-gate.md`
 - `background-agent-dispatch.md`
+- `code-block-language-specifiers.md`
 - `code-review-template.md`
 - `commit-conventions.md`
 - `commit-dispatch-template.md`
+- `commit-subject-validation.md`
 - `compile-output-safeguard.md`
-- `develop-spawn-prompt.md`
 - `discover-plugin-health-multi-surface-complexity.md`
 - `dispatching-parallel-agents-patterns.md`
 - `feedback-resolution.md`
 - `handoff-chain-map.md`
 - `harness-concepts.md`
+- `interview-question-bank.md`
+- `interview-requirements-format.md`
 - `lens-invocation-patterns.md`
 - `map-change-rubber-duck-checks.md`
 - `map-suggestion-templates.md`
+- `plan-phase-routing.md`
 - `proportional-planning.md`
 - `publish-workflow-opportunity.md`
 - `quality-checklist.md`
@@ -548,7 +584,6 @@ flowchart LR
 - `subagent-dispatch-batching.md`
 - `sync-map-checkpoint-state-machine.md`
 - `tdd-credit-limit-example.md`
-- `verification-and-planning.md`
 - `verify-health-finding-invocation-contract.md`
 
 **Off-path skills (not on any configured workflow path):**
@@ -558,6 +593,7 @@ flowchart LR
 - `commit-recover`
 - `document`
 - `explore`
+- `generic-preflight`
 - `handoff`
 - `help`
 - `interview`
@@ -565,12 +601,11 @@ flowchart LR
 - `lint`
 - `perf`
 - `plan-final-review`
-- `plan-preflight`
 - `plan-with-critics`
 - `release-notes`
-- `review-develop-preflight`
+- `research`
 
 **Missing refs (referenced but not on disk):**
 
-- `knowledge: al-dev-develop-spawn-prompt.md`
+- `knowledge: reviewer-dispatch-template.md`
 <!-- END GENERATED: plugin-health-callouts -->

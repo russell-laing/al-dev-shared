@@ -4,7 +4,7 @@
 >
 > **Generated sections** are refreshed by `scripts/generate_map_doc_sections.py`. Layer 2 drill-downs include Phase<N> nodes extracted from each skill's SKILL.md file. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers.
 
-**Last updated:** 2026-06-28
+**Last updated:** 2026-07-02
 
 <!-- BEGIN GENERATED: skill-coverage -->
 **Coverage:** 23 active skills in `profile-al-dev-shared/skills/` (count derived from disk at generation time).
@@ -28,6 +28,7 @@ flowchart TD
     skill_document[document]
     skill_explore[explore]
     skill_fix[fix]
+    skill_generic_preflight[generic-preflight]
     skill_handoff[handoff]
     skill_interview[interview]
     skill_investigate[investigate]
@@ -47,6 +48,7 @@ flowchart TD
     skill_develop_orchestrate -.-> skill_lint
     skill_explore -.-> |explore-findings.md| skill_plan
     skill_fix --> skill_commit
+    skill_generic_preflight -.-> |preflight-context.md| skill_plan
     skill_interview -.-> |interview-requirements.md| skill_plan
     skill_investigate -.-> skill_plan
     skill_perf -.-> |perf-analysis.md| skill_plan
@@ -60,6 +62,7 @@ flowchart TD
     class skill_document skillNode
     class skill_explore skillNode
     class skill_fix skillNode
+    class skill_generic_preflight skillNode
     class skill_handoff skillNode
     class skill_interview skillNode
     class skill_investigate skillNode

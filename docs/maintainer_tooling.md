@@ -214,7 +214,7 @@ primarily for contract maintenance; the stage pages are the primary reading path
 | `/report-plugin-health` | `docs/health/<date>-<surface>-findings.md`, `docs/health/<date>-<surface>-friction-findings.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/<date>-<surface>-health.md`, `.dev/health-loop-state.md` | `/record-plugin-dispositions` |
 | `/plan-plugin-findings` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/superpowers/plans/<date>-<topic>.md`, `.dev/health-loop-state.md` | `/implement-plugin-health` |
 | `/plan-plugin-findings-verify` | `docs/health/dispositions_open.md`, `docs/health/dispositions_index.json`, `docs/health/<date>-<surface>-health.md`, `profile-al-dev-shared/knowledge/map-change-rubber-duck-checks.md`, `.dev/health-loop-state.md` | `.dev/plan-plugin-findings-verify-checkpoint.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
-| `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions_events/<year>/<year>-<month>.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings` |
+| `/record-plugin-dispositions` | `docs/health/<date>-<surface>-health.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions_events/<year>/<year>-<month>.jsonl`, `.dev/health-loop-state.md` | `/plan-plugin-findings-verify` |
 | `/revise-plugin-plan` | `docs/superpowers/plans/<date>-<topic>-commentary.md`, `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_open.md` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_events/<year>/<year>-<month>.jsonl` | `/implement-plugin-health` |
 | `/implement-plugin-health` | `docs/superpowers/plans/<date>-<topic>.md`, `docs/health/dispositions_open.md`, `.dev/health-loop-state.md` | `docs/health/dispositions_events/<year>/<year>-<month>.jsonl`, `.dev/implement-plugin-health-progress.md`, `.dev/health-loop-state.md` | `/regenerate-agent-projections`, `/audit-plugin-neutrality`, `/audit-plugin-health` |
 | `/audit-disposition-ledger` | `docs/health/dispositions_events/`, `.claude/`, `profile-al-dev-shared/` | — | — |
@@ -258,11 +258,11 @@ artifact signal.
 | Artifact freshness | `.claude/knowledge/` | present |
 | Artifact freshness | `.dev/health-loop-state.md` | latest 2026-07-02 |
 | Artifact freshness | `.dev/implement-plugin-health-progress.md` | latest 2026-07-02 |
-| Artifact freshness | `.dev/plan-plugin-findings-verify-checkpoint.jsonl` | latest 2026-07-01 |
-| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | latest 2026-06-28 |
-| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-06-30 |
+| Artifact freshness | `.dev/plan-plugin-findings-verify-checkpoint.jsonl` | latest 2026-07-02 |
+| Artifact freshness | `.dev/sync-map-documentation-checkpoint.json` | latest 2026-07-02 |
+| Artifact freshness | `.dev/sync-map-documentation-runs/*/audit/*-audit.json` | latest 2026-07-02 |
 | Artifact freshness | `.dev/sync-map-documentation-runs/*/updates/*-map.md` | latest 2026-06-28 |
-| Artifact freshness | `docs/agent_map.md` | latest 2026-06-30 |
+| Artifact freshness | `docs/agent_map.md` | latest 2026-07-02 |
 | Artifact freshness | `docs/health/*-*-findings.md` | latest 2026-07-02 |
 | Artifact freshness | `docs/health/*-*-friction-findings.md` | never produced |
 | Artifact freshness | `docs/health/*-*-health.md` | latest 2026-07-02 |
@@ -270,10 +270,10 @@ artifact signal.
 | Artifact freshness | `docs/knowledge_quality.md` | latest 2026-06-30 |
 | Artifact freshness | `docs/knowledge_quality_tooling.md` | latest 2026-06-30 |
 | Artifact freshness | `docs/maintainer_tooling/` | present |
-| Artifact freshness | `docs/plugin_graph.md` | latest 2026-06-30 |
-| Artifact freshness | `docs/skills_map.md` | latest 2026-06-30 |
-| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-07-01 |
-| Artifact freshness | `docs/workflow_diagrams.md` | latest 2026-06-30 |
+| Artifact freshness | `docs/plugin_graph.md` | latest 2026-07-02 |
+| Artifact freshness | `docs/skills_map.md` | latest 2026-07-02 |
+| Artifact freshness | `docs/superpowers/plans/*-*.md` | latest 2026-07-02 |
+| Artifact freshness | `docs/workflow_diagrams.md` | latest 2026-07-02 |
 | Artifact freshness | `profile-al-dev-shared/generated/agents/` | present |
 | Artifact freshness | `profile-al-dev-shared/knowledge/` | present |
 | Internal-only skill | none | — |

@@ -1,9 +1,9 @@
 # AL Dev Agent Map
 
-**Last updated:** 2026-06-28
+**Last updated:** 2026-07-02
 
 <!-- BEGIN GENERATED: agent-coverage -->
-**Coverage:** 23 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
+**Coverage:** 32 active agents in `profile-al-dev-shared/agents/` (count derived from disk at generation time).
 <!-- END GENERATED: agent-coverage -->
 
 > **Generated sections** are refreshed by `scripts/generate_map_doc_sections.py`. Do not hand-edit inside `<!-- BEGIN/END GENERATED -->` markers. The Coverage count above is generator-owned — never edit or copy it by hand.
@@ -14,6 +14,7 @@
 | Agent | Model | Tools | Spawned by |
 |-------|-------|-------|------------|
 | al-pattern-reviewer | sonnet | Read | `/review-develop` |
+| change-analyzer | haiku | Read | (none found) |
 | commit-analyzer | haiku | Bash, Read | `/commit-preflight` |
 | commit-executor | haiku | Bash, Read | `/commit-execute` |
 | commit-group-drafter | haiku | (none) | `/commit-preflight` |
@@ -23,16 +24,24 @@
 | corruption-recover | sonnet | Write, Bash | `/commit-recover` |
 | developer-tdd | sonnet | Read, Write, Bash | `/develop-orchestrate` |
 | developer-traditional | sonnet | Read, Write, Bash | `/develop-orchestrate`, `/fix` |
+| diagnostics-classifier | sonnet | Read | (none found) |
+| diagnostics-decision | haiku | Read | (none found) |
 | diagnostics-resolver | sonnet | Read, Edit, Bash | `/lint` |
 | docs-writer | sonnet | Read, Write, Edit, Bash | `/document` |
-| explore | haiku | Read, Glob, Grep, Write | `/explore`, `/investigate`, `/perf` |
+| ecosystem-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/research` |
+| evidence-gatherer | sonnet | Read, Write, Bash | (none found) |
+| explore | sonnet | Read, Glob, Grep, Write | `/explore`, `/investigate`, `/perf` |
+| findings-synthesizer | haiku | Read | (none found) |
 | general-code-reviewer | sonnet | Read | (none found) |
 | interview | sonnet | Read, Write, USER_GATE | `/interview` |
 | performance-reviewer | sonnet | Read | `/review-develop` |
-| release-notes-writer | sonnet | Read, Write, Bash, MCP: al-mcp-server | `/release-notes` |
+| question-gatherer | sonnet | Write | (none found) |
+| release-notes-writer | sonnet | Read, Write, Bash | `/release-notes` |
+| repo-researcher | sonnet | Read, Glob, Grep, MCP: al-mcp-server, MCP: bc-code-intelligence | `/research` |
 | script-engineer | sonnet | Read, Write, Bash | (none found) |
 | security-reviewer | sonnet | Read | `/review-develop` |
 | solution-architect | opus | Read, Write, Glob, Grep | `/fix`, `/plan` |
+| spec-writer | sonnet | Read, Write | (none found) |
 | support-reply-drafter | sonnet | Write | `/support-reply` |
 | support-researcher | sonnet | MCP: bc-code-intelligence, MCP: microsoft-docs | `/support-reply` |
 | ticket-context-writer | haiku | Bash, Write | `/ticket` |
@@ -68,6 +77,29 @@
 | Output | Description |
 | -------- | ------------- |
 | Code Review Findings | Text report returned to calling skill; structured as Critical / High / Medium / Low |
+
+---
+
+### change-analyzer
+
+**Description:** Analyze code changes to extract change type, scope, and user-facing impact. Produces structured change analysis for release-notes-writer.
+**Model:** haiku
+**Tools:** Read
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Commit message | **Yes** | Description of the change |
+| Git diff | **Yes** | Unified format diff showing what changed |
+| Prior version context | No | Version reference for impact assessment |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Change analysis block | Structured YAML with change_type, scope, impact, priority, summary, breaking flag |
 
 ---
 
@@ -281,12 +313,55 @@
 
 ---
 
+### diagnostics-classifier
+
+**Description:** Classify lint rule violations by remediation strategy. Decides whether each rule group requires human judgment or can be auto-fixed.
+**Model:** sonnet
+**Tools:** Read
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Lint rule groups | **Yes** | Rule violations grouped by rule ID from compile output |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Classification block | JSON array with decision per rule group: judgment-required or direct-fix |
+
+---
+
+### diagnostics-decision
+
+**Description:** Classify lint rules and determine fix reversibility. Receives a rule and code context; determines whether the fix is safe to apply automatically or requires manual judgment.
+**Model:** haiku
+**Tools:** Read
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Lint rule definition | **Yes** | Rule ID, message, severity |
+| Code snippet | **Yes** | Code context where the rule fired |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Decision block | Classification as safe-auto-fix or judgment-required with reasoning |
+
+---
+
 ### docs-writer
 
 **Description:** Generate and maintain AL project documentation — feature docs, API references, and setup guides.
 **Model:** sonnet
 **Tools:** Read, Write, Edit, Bash
-**Spawned by:** (none found)
+**Spawned by:** /document
 
 **Inputs:**
 
@@ -308,6 +383,74 @@
 | `docs/API/[name].md` | API reference (if public procedures) |
 | `CHANGELOG.md` | Updated changelog |
 | `.dev/session-log.md` | Append entry with summary |
+
+---
+
+### ecosystem-researcher
+
+**Description:** Research official Microsoft and curated ecosystem guidance for BC/AL questions. Produces structured findings for research synthesis.
+**Model:** sonnet
+**Tools:** MCP: bc-code-intelligence, MCP: microsoft-docs
+**Spawned by:** /research
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| RESEARCH_QUESTION | **Yes** | Research question or hypothesis |
+| RESEARCH_SCOPE | **Yes** | Product area, API, workflow, or comparison target |
+| VERSION_SCOPE | No | BC or service version focus if known |
+| LOCAL_FINDINGS | No | Repo-grounded findings to validate or contrast |
+| ADJACENT_SERVICES | No | Specific Microsoft surfaces (Power Platform, Power BI, Excel, Azure, Graph) |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Findings block | Structured research findings from official sources |
+
+---
+
+### evidence-gatherer
+
+**Description:** Search multiple sources for evidence relevant to a query. Returns raw findings per source across documentation, code samples, and support resources.
+**Model:** sonnet
+**Tools:** Read, Write, Bash
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Search query | **Yes** | The evidence topic to search |
+| Source identifiers | **Yes** | Which 3 sources to query (documentation, code samples, support resources) |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Evidence findings | Per-source findings block with raw results from each source |
+
+---
+
+### findings-synthesizer
+
+**Description:** Synthesize evidence from multiple sources into a unified findings report. Combines results from parallel evidence-gathering operations.
+**Model:** haiku
+**Tools:** Read
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Evidence list | **Yes** | Structured evidence from multiple sources (BC Code Intelligence, Git history, Markdown docs) |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Unified findings | Synthesized report combining evidence from all sources |
 
 ---
 
@@ -336,9 +479,9 @@
 ### explore
 
 **Description:** Fast codebase exploration — finds files by pattern, searches for symbols, answers structural questions about code organization.
-**Model:** haiku
+**Model:** sonnet
 **Tools:** Read, Glob, Grep, Write
-**Spawned by:** (none found)
+**Spawned by:** /explore, /investigate, /perf
 
 **Inputs:**
 
@@ -405,11 +548,32 @@
 
 ---
 
+### question-gatherer
+
+**Description:** Ask clarifying questions to understand requirements. Applies clarification techniques (probing, rephrasing, examples) and writes collected answers to handoff artifact.
+**Model:** sonnet
+**Tools:** Write
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| Requirements topic | **Yes** | Context or topic to interview about |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| `.dev/YYYY-MM-DD-interview-answers.md` | Q&A pairs and clarifications collected from the interview |
+
+---
+
 ### release-notes-writer
 
 **Description:** Run git diff analysis between two hashes, research AL object context, and write .dev/release-notes-\<version\>.md.
 **Model:** sonnet
-**Tools:** Bash, Write, Read, MCP: al-mcp-server
+**Tools:** Read, Write, Bash
 **Spawned by:** /release-notes
 
 **Inputs:**
@@ -428,6 +592,31 @@
 | -------- | ------------- |
 | `.dev/$(date +%Y-%m-%d)-release-notes-<VERSION or short-hash>.md` | **Primary** — formatted release notes file |
 | Return block | `RELEASE_NOTES_WRITTEN`, `VERSION`, `CHANGES`, `SUMMARY`, `EXCLUDED`, `DIAGRAMS`, `AMBIGUOUS` |
+
+---
+
+### repo-researcher
+
+**Description:** Research repository structure, local implementation patterns, and extension seams for BC/AL questions. Produces structured findings for research synthesis.
+**Model:** sonnet
+**Tools:** Read, Glob, Grep, MCP: al-mcp-server, MCP: bc-code-intelligence
+**Spawned by:** /research
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| RESEARCH_QUESTION | **Yes** | Research question or hypothesis |
+| RESEARCH_SCOPE | **Yes** | Target feature area, file set, object names, or comparison goal |
+| CONTEXT_PATHS | No | Starting files, folders, or documents to inspect first |
+| VERSION_SCOPE | No | BC version focus if the caller already knows it matters |
+| PRIOR_FINDINGS | No | Findings from other research lanes to check against the repo |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Findings block | Repo-verified implementation findings and patterns |
 
 ---
 
@@ -451,6 +640,27 @@
 | -------- | ------------- |
 | Python script file(s) | In `scripts/` following toolkit conventions (Python default) |
 | Governance tokens | Inline in documentation or `.dev/` files |
+
+---
+
+### spec-writer
+
+**Description:** Synthesize interview answers into a requirements specification. Produces a refined, structured spec from collected Q&A.
+**Model:** sonnet
+**Tools:** Read, Write
+**Spawned by:** (none found)
+
+**Inputs:**
+
+| Input | Required | Description |
+| ------- | ---------- | ------------- |
+| `.dev/YYYY-MM-DD-interview-answers.md` | **Yes** | Collected Q&A from question-gatherer |
+
+**Outputs:**
+
+| Output | Description |
+| -------- | ------------- |
+| Refined specification | Functional requirements, non-functional requirements, constraints, use cases |
 
 ---
 
