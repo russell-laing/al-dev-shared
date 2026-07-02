@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 from importlib import import_module
 from pathlib import Path
@@ -68,6 +69,12 @@ class HealthPackageBootstrapTest(unittest.TestCase):
             text = (REPO_ROOT / rel_path).read_text(encoding="utf-8")
             self.assertNotIn("importlib.util", text, rel_path)
             self.assertNotIn("sys.path.insert", text, rel_path)
+
+    def test_codex_companion_manifest_exists(self) -> None:
+        manifest = REPO_ROOT / "companions/codex/al-dev/.codex-plugin/plugin.json"
+        self.assertTrue(manifest.is_file())
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        self.assertEqual(data["name"], "codex-al-dev")
 
     def test_in_scope_companion_readmes_exist(self) -> None:
         for relative in [
