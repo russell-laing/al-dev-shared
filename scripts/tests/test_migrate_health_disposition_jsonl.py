@@ -60,6 +60,21 @@ class MigrationTest(unittest.TestCase):
             self.assertIn("#600", audit.read_text(encoding="utf-8"))
             self.assertEqual(["#600"], report["duplicate_legacy_ids"])
 
+    def test_migrate_refuses_to_wipe_store_when_history_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            repo_root = Path(d)
+            # Pre-existing event store with a real shard that must NOT be wiped.
+            events_root = dispositions_events_root(repo_root)
+            shard_dir = events_root / "2026"
+            shard_dir.mkdir(parents=True)
+            shard = shard_dir / "2026-07.jsonl"
+            shard.write_text("{}\n", encoding="utf-8")
+            # No history rows exist (dispositions_history absent/empty).
+            with self.assertRaises(ValueError) as ctx:
+                migrate.migrate_to_jsonl(repo_root)
+            self.assertIn("no history rows", str(ctx.exception))
+            self.assertTrue(shard.exists(), "existing store must be preserved")
+
 
 if __name__ == "__main__":
     unittest.main()

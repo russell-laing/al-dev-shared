@@ -70,10 +70,18 @@ def migrate_to_jsonl(repo_root: Path = REPO_ROOT) -> dict[str, object]:
     compatibility_output = compatibility_ledger_path(repo_root)
     audit_output = dispositions_jsonl_migration_audit_path(repo_root)
 
+    # Read and validate the source BEFORE any destructive delete. An empty or
+    # missing markdown history must not silently wipe the event store — that is
+    # the ledger-loss failure class the drift checkers exist to catch.
+    markdown_rows = list(store.iter_history_rows(history_root))
+    if not markdown_rows:
+        raise ValueError(
+            "refusing to migrate: no history rows found under "
+            f"{history_root} — the event store was left untouched"
+        )
+
     if events_root.exists():
         shutil.rmtree(events_root)
-
-    markdown_rows = list(store.iter_history_rows(history_root))
     legacy_counts = Counter(row.get("id", "") for row in markdown_rows if row.get("id"))
     duplicate_legacy_ids = sorted(k for k, v in legacy_counts.items() if v > 1)
 
