@@ -7,6 +7,12 @@ import json
 import sys
 from pathlib import Path
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
 from .disposition_events import (
     append_event,
     batch_decline,
@@ -109,8 +115,11 @@ def _cli_match(
     findings_path: Path,
     ledger_path: Path,
     events_root: Path | None = None,
+    root: Path | None = None,
 ) -> int:
-    _DEFAULT_EVENTS_ROOT = dispositions_events_root()
+    if root is None:
+        root = bootstrap_repo(__file__)
+    _DEFAULT_EVENTS_ROOT = dispositions_events_root(root)
     resolved_events_root = events_root if events_root is not None else _DEFAULT_EVENTS_ROOT
 
     if resolved_events_root.exists() and any(resolved_events_root.rglob("*.jsonl")):
@@ -158,7 +167,7 @@ def _cli_show(event_id: str, events_root: Path) -> int:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
-    parser.add_argument("--root", type=Path, default=Path.cwd(), help="Repository root (default: current working directory)")
+    parser.add_argument("--root", type=Path, default=bootstrap_repo(__file__), help="Repository root (default: auto-detected repo root)")
     sub = parser.add_subparsers(dest="command", required=True)
     # Note: defaults are computed from the --root argument, which defaults to cwd but can be overridden
     # to ensure ledger operations are never cwd-relative.
@@ -250,7 +259,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     if args.command == "match":
-        return _cli_match(args.findings, args.ledger, args.events_root)
+        return _cli_match(args.findings, args.ledger, args.events_root, args.root)
     if args.command == "append_row":
         row = {
             f: getattr(args, f)

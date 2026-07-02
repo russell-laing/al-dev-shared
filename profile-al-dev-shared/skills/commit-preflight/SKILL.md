@@ -1,12 +1,9 @@
 ---
 name: commit-preflight
 description: >-
-  Validate staged changes, dispatch analysis and message-drafting agents,
-  collect user approval, and persist the approved commit plan to
-  .dev/commit-preflight.md. Phases 0–2 of the commit workflow. Called by
-  /commit; can also run standalone when a user wants to plan commits
-  without immediately executing them.
-  Triggers on: "plan these commits", "draft commit messages", "analyse staged changes".
+  Review staged changes, draft commit messages, collect approval, and write
+  the approved plan to `.dev/commit-preflight.md`. Use this to prepare
+  atomic commits before execution by `/commit-execute`.
 argument-hint: "[--ticket-id=<id>]"
 ---
 

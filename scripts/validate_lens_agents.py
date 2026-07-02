@@ -1,5 +1,6 @@
 """Validates all lens agent files and refactored skills meet the spec."""
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -39,6 +40,13 @@ STATIC_LENS_SCRIPT = REPO / "scripts" / "health_static_lenses.py"
 # individual quality lenses are now bundled into quality-agent-multilens and
 # quality-skill-multilens (each reads its corpus once and applies all four
 # quality rubrics).
+#
+# MAINTENANCE NOTE: This list must be manually kept in sync with the active
+# lens agents under .claude/agents/. It cannot be auto-derived because:
+# 1. The list intentionally excludes converted static lenses (naming-convention-lens, etc.)
+# 2. The list intentionally excludes archived agents
+# If an agent is renamed, created, or archived, update this list and SONNET_AGENTS below.
+# Canonical source: .claude/agents/ directory (filter for lens agents only).
 EXPECTED_AGENTS = [
     "quality-agent-multilens",
     "quality-skill-multilens",
@@ -202,7 +210,7 @@ def main() -> int:
                 'no "Phase 2" section — parallel agent dispatch not implemented',
                 f"add a Phase 2 section with parallel agent dispatch to {skill_path}",
             ))
-        if "parallel" not in content.lower() and "simultaneously" not in content.lower():
+        if not re.search(r'\b(?:parallel|simultaneously)\b', content, re.IGNORECASE):
             failures.append(_format_failure(
                 str(skill_path),
                 "skill-parallel-language",

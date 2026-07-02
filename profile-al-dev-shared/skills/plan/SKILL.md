@@ -1,19 +1,11 @@
 ---
 name: plan
 description: >-
-  Design a complete AL/BC solution using competitive solution
-  design (2-3 architect agents debate approaches, you pick the
-  winner). Use this skill whenever the user wants to plan,
-  design, or architect a Business Central feature — including
-  when they describe a requirement, ask "how should I build
-  this", or say "plan this" or "design this". Runs the architect
-  debate (phases 2–7); context gathering (phases 0–1.6) is
-  handled by /generic-preflight --context-type planning, which this skill dispatches
-  automatically. Produces
-  .dev/$(date +%Y-%m-%d)-plan-solution-plan.md. Prefer this
-  over ad-hoc planning. Supports resuming directly to Phase 2
-  (architect debate) if you already have finalized preflight
-  context: `--resume-from=phase2`.
+  Design an AL/BC solution when the user wants a feature plan or
+  architecture. Gathers preflight context, runs an architect debate, and
+  writes `.dev/$(date +%Y-%m-%d)-plan-solution-plan.md`. Prefer this over
+  ad-hoc planning and resume at architect debate when finalized preflight
+  context already exists.
 argument-hint: "[feature description] [--resume-from=phase2]"
 ---
 

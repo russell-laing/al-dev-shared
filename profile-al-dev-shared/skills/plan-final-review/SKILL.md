@@ -1,12 +1,10 @@
 ---
 name: plan-final-review
 description: >-
-  Validates and presents an plan solution plan for user approval before
-  implementation begins. Runs validate-plan.py against the latest solution plan,
-  presents results, validates structural completeness and scenario coverage, surfaces optional critic findings (plan-critique-*.md) when present, and gates approval. Called by /plan after Phase 5;
-  can also be run standalone to re-validate an existing plan.
-  Triggers on: "validate the plan", "approve the plan", "review the solution
-  plan", "plan final review".
+  Validate the latest solution plan and present it for user approval before
+  implementation. Runs `validate-plan.py`, checks structure and scenario
+  coverage, surfaces critic findings when present, and can re-validate an
+  existing plan on demand.
 ---
 
 # AL Dev Plan — Final Review

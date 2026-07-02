@@ -126,7 +126,7 @@ def batch_decline(
     # Load events once before loop to avoid O(n²) complexity
     all_events = list(iter_event_rows(events_root))
     next_seq = next_event_id(all_events, date).split("_")[-1]
-    seq_counter = int(next_seq)
+    seq_counter = int(next_seq) - 1
     for i, row in enumerate(rows):
         missing = [k for k in required if not str(row.get(k, "")).strip()]
         if missing:

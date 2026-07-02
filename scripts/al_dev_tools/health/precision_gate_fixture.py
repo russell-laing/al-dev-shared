@@ -21,15 +21,16 @@ def verify_retained_ids(dossier_text: str, expected_ids: list[str]) -> list[str]
     for line in dossier_text.splitlines():
         stripped = line.strip()
         if stripped.startswith("## "):
-            in_quality_findings = stripped == "## Quality findings"
+            in_quality_findings = stripped.lower() == "## quality findings"
             continue
         if in_quality_findings:
             retained_section.append(line)
     retained_text = "\n".join(retained_section)
+    import re
     return [
         expected_id
         for expected_id in expected_ids
-        if f"**[{expected_id}]**" not in retained_text
+        if not re.search(rf"\*\*\[{re.escape(expected_id)}\]\*?\*?:?", retained_text)
     ]
 
 

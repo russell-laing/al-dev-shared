@@ -186,6 +186,9 @@ def scan_paths(plugin_root: Path) -> list[Finding]:
 def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
     plugin_root = Path(args[0]) if args else Path("profile-al-dev-shared")
+    if not plugin_root.exists():
+        print(f"ERROR: plugin root not found: {plugin_root}", file=sys.stderr)
+        return 1
     findings = scan_paths(plugin_root)
 
     if not findings:

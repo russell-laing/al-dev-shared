@@ -207,6 +207,8 @@ def main() -> None:
     policy_path = Path(args.policy_path)
     if not policy_path.is_absolute():
         policy_path = REPO_ROOT / policy_path
+    if not policy_path.exists():
+        raise ValueError(f"policy_path not found: {policy_path}")
     policy = load_projection_policy(policy_path)
     agents = [load_agent(path) for path in sorted(agents_root.glob("*.md"))]
     write_all_projections(output_root, agents, policy)

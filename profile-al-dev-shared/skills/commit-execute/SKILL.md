@@ -1,11 +1,10 @@
 ---
 name: commit-execute
 description: >-
-  Run lint preflight, OOXML validation, and git commits for an approved commit
-  plan. Reads .dev/commit-preflight.md written by /commit-preflight.
-  Phases 3–4 of the commit workflow; dispatches commit-executor to perform the commits. Called by /commit; can also run
-  standalone when an approved plan already exists in .dev/commit-preflight.md.
-  Triggers on: "execute the commits", "run the commit plan", "commit now".
+  Execute an approved commit plan from `.dev/commit-preflight.md`. Runs lint
+  preflight and OOXML validation, dispatches the commit executor, and
+  completes the approved commits. Use this after `/commit-preflight` or when
+  an approved plan already exists.
 ---
 
 # `/commit-execute` — Commit Execution

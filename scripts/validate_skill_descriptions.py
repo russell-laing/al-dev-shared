@@ -22,6 +22,14 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
+REPO_ROOT = bootstrap_repo(__file__)
+
 # Validation rules
 RULES = {
     "phase_reference": {
@@ -151,12 +159,20 @@ def find_skills() -> list[tuple[Path, str]]:
     skills = []
 
     # Distributed skills
-    for f in Path("profile-al-dev-shared/skills").glob("*/SKILL.md"):
+    distributed_dir = REPO_ROOT / "profile-al-dev-shared" / "skills"
+    if not distributed_dir.exists():
+        print(f"ERROR: distributed skills directory not found: {distributed_dir}", file=sys.stderr)
+        return []
+    for f in distributed_dir.glob("*/SKILL.md"):
         if f.exists():
             skills.append((f, "distributed"))
 
     # Maintainer skills
-    for f in Path(".claude/skills").glob("*/SKILL.md"):
+    maintainer_dir = REPO_ROOT / ".claude" / "skills"
+    if not maintainer_dir.exists():
+        print(f"ERROR: maintainer skills directory not found: {maintainer_dir}", file=sys.stderr)
+        return []
+    for f in maintainer_dir.glob("*/SKILL.md"):
         if f.exists():
             skills.append((f, "maintainer"))
 
