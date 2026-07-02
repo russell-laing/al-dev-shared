@@ -11,7 +11,8 @@ disk, not only in conversation context.
 
 `/audit-plugin-health` → `/discover-plugin-health` → fresh session →
 `/report-plugin-health` → dossier → `/record-plugin-dispositions` →
-`/plan-plugin-findings` → plan → `/implement-plugin-health` → ledger closed
+`/plan-plugin-findings-verify` → checkpoint → `/plan-plugin-findings` →
+plan → `/implement-plugin-health` → ledger closed
 
 ## File location
 
@@ -61,8 +62,9 @@ the table below).
 | `/ingest-plugin-friction` | loop breadcrumb (warn if later step in flight) | `/report-plugin-health` |
 | `/discover-plugin-health` | loop breadcrumb (adopt when resuming) | `/report-plugin-health --findings <path>` |
 | `/report-plugin-health` | breadcrumb (warn if a loop is already in flight) | `/record-plugin-dispositions` |
-| `/record-plugin-dispositions` | breadcrumb | `/plan-plugin-findings` |
-| `/plan-plugin-findings` | breadcrumb | `/implement-plugin-health --plan <path>` |
+| `/record-plugin-dispositions` | breadcrumb | `/plan-plugin-findings-verify` |
+| `/plan-plugin-findings-verify` | breadcrumb; `dispositions_open.md` | `/plan-plugin-findings` |
+| `/plan-plugin-findings` | breadcrumb; verify checkpoint | `/implement-plugin-health --plan <path>` |
 | `/implement-plugin-health` | breadcrumb | `none` (loop closed) |
 
 ## Phase-0 read rule (every loop skill)

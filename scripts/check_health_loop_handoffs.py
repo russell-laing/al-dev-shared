@@ -19,6 +19,7 @@ LOOP = [
     "discover-plugin-health",
     "report-plugin-health",
     "record-plugin-dispositions",
+    "plan-plugin-findings-verify",
     "plan-plugin-findings",
     "implement-plugin-health",
 ]

@@ -67,7 +67,34 @@ Read `.dev/plan-plugin-findings-verify-checkpoint.jsonl` line by line. Each line
 
 If the checkpoint file does not exist or is empty, stop and run `/plan-plugin-findings-verify` first.
 
-Also read `.dev/health-loop-state.md` to confirm the previous stage is `plan-plugin-findings-verify` and the checkpoint path matches.
+### Staleness gate (HARD STOP — do not proceed on failure)
+
+The checkpoint is produced by `/plan-plugin-findings-verify`. If that stage was
+skipped, a **stale checkpoint from a prior loop** can linger on disk — planning
+it wastes a whole session on findings that are already `fixed`. Both checks
+below must pass before collecting findings. On either failure, **stop** and tell
+the user to run `/plan-plugin-findings-verify` to regenerate the checkpoint; do
+not fall back to planning the existing checkpoint.
+
+1. **Stage check.** Read `.dev/health-loop-state.md`. Its `stage_completed` MUST
+   be exactly `plan-plugin-findings-verify`. Any other value (e.g.
+   `record-plugin-dispositions`) means the verify stage was skipped — STOP:
+   "Checkpoint stage is `<stage>`, not `plan-plugin-findings-verify`. The verify
+   stage was skipped; run `/plan-plugin-findings-verify` first."
+
+2. **Freshness check.** Every `proceed`/`modify` `event_id` in the checkpoint
+   MUST still be an open `accepted` row in `docs/health/dispositions_open.md`. Run:
+
+   ```bash
+   for id in $(python3 -c "import json,sys; [print(json.loads(l)['event_id']) for l in open('.dev/plan-plugin-findings-verify-checkpoint.jsonl') if l.strip().startswith('{') and json.loads(l).get('verdict') in ('proceed','modify')]"); do
+     grep -q "$id" docs/health/dispositions_open.md || echo "STALE: $id not open-accepted"
+   done
+   ```
+
+   Any `STALE:` line means the checkpoint predates the current ledger state
+   (those events were already closed) — STOP: "Checkpoint is stale (N event IDs
+   already closed in dispositions_open.md); run `/plan-plugin-findings-verify` to
+   regenerate it against the current open backlog."
 
 Collect all findings with verdict `proceed` or `modify` (skip `skip` verdicts; they are handled by plan-plugin-findings-verify). If no `proceed` or `modify` findings remain, stop with: "No verified findings ready for planning; all findings were skipped."
 

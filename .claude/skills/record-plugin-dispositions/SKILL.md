@@ -22,7 +22,7 @@ workflow:
   outputs:
     - docs/health/dispositions_events/<year>/<year>-<month>.jsonl
     - .dev/health-loop-state.md
-  next: [plan-plugin-findings]
+  next: [plan-plugin-findings-verify]
 ---
 
 # Record Health Dispositions
@@ -199,18 +199,19 @@ rule** in the same session. Full procedure in
 
    - `stage_completed: record-plugin-dispositions`
    - `completed_at:` today's ISO date
-   - `next_command: /plan-plugin-findings`
+   - `next_command: /plan-plugin-findings-verify`
    - `next_inputs: docs/health/dispositions_open.md` plus the dossier path(s)
    - `fresh_session_recommended: false`
-   - `note:` plan the `accepted` rows. When the backlog guard fired (step 4
-     — T > N), add `run with --backlog to drain all T open accepted rows,
+   - `note:` verify then plan the `accepted` rows. When the backlog guard fired
+     (step 4 — T > N), add `run with --backlog to drain all T open accepted rows,
      not only this dossier's N`.
 
    Then tell the user: "Recorded N accepted rows. Next in the loop:
-   `/plan-plugin-findings` (pointer saved in `.dev/health-loop-state.md`)" — and
-   when the backlog guard fired (T > N), add: "consider `--backlog` to drain
-   the full open backlog." If no row is `accepted`, do not write the breadcrumb; report
-   that there is nothing to plan.
+   `/plan-plugin-findings-verify` (rubber-ducks the accepted rows and writes a
+   fresh checkpoint that `/plan-plugin-findings` then plans; pointer saved in
+   `.dev/health-loop-state.md`)" — and when the backlog guard fired (T > N),
+   add: "consider `--backlog` to drain the full open backlog." If no row is
+   `accepted`, do not write the breadcrumb; report that there is nothing to plan.
 
 Do not edit any plugin source file from this skill. Committing the ledger
 change is left to the user's normal commit flow.
