@@ -288,10 +288,7 @@ Fix → Compilation Check → Present to User → User Tests
 
 This skill uses `knowledge/compile-lint-procedure.md` for compile and lint
 passes. For trivial fixes, compile once after the minimal edit and report a
-concise result. If compilation fails, fix only errors caused by the small change
-and re-run compile once; do not expand into a broad compile-fix loop. For
-non-trivial fixes, keep compile correction bounded to the confirmed root-cause
-scope.
+concise result. See Step 2 for compile-failure handling.
 
 ```text
 ✅ Compilation successful
@@ -299,9 +296,7 @@ scope.
 ⚠️  Compilation not verified (al-compile unavailable)
 ```
 
-If compilation fails: for trivial fixes, fix only errors caused by the small
-change and re-run compile once; for non-trivial fixes, keep compile correction
-bounded to the confirmed root-cause scope before presenting to the user.
+See Step 2 for compile-failure handling.
 
 ---
 
