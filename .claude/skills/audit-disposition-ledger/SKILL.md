@@ -63,7 +63,26 @@ python3 scripts/check_disposition_store_consistency.py
 Verifies every `closes_event_ids` resolves and no event is unparseable. Exit 1 =
 **HIGH** (dangling close-back reference or corrupt event line).
 
-### Phase 2 — Broken ledger references
+### Phase 2 — Store-vs-view drift
+
+```bash
+python3 scripts/check_view_drift.py
+```
+
+Re-derives the four generated views (`dispositions_open.md`,
+`dispositions_current.md`, `dispositions.md`, `dispositions_index.json`) in
+memory from the JSONL event store and compares them to the on-disk files. Exit 1
+= **HIGH** — a view no longer matches the store. This is the only phase that
+catches a view that was hand-edited or a commit that appended/closed events
+without running `regenerate` (e.g. a finding "closed" by deleting its
+`dispositions_open.md` row while the store still holds it as open-accepted).
+Phases 0 and 1 pass on that state because the JSONL store stays internally
+consistent — the drift is store-vs-view, which only this phase compares. The fix
+is always `python3 scripts/health_disposition_store.py regenerate` (a store
+mutation — out of this read-only skill's scope; hand off to the user's commit
+flow).
+
+### Phase 3 — Broken ledger references
 
 Scan the surfaces for references to renamed/deleted ledger artifacts. The
 `--match dispositions` filter scopes output to the ledger class (the broader
@@ -83,7 +102,7 @@ reference feeds.
 To sweep every reference on a surface (not just ledger ones), drop `--match` —
 expect unrelated pre-existing findings that are out of scope here.
 
-### Phase 3 — Report
+### Phase 4 — Report
 
 Summarize findings severity-ranked (CRITICAL → HIGH → MEDIUM), each with its
 file/path and the exact command that surfaced it. If everything passes, say so
@@ -95,11 +114,15 @@ plainly and note the verified event count from Phase 1.
 |---|---|---|
 | Path drift (fork) | `check_ledger_path_drift.py` | CRITICAL |
 | Store consistency | `check_disposition_store_consistency.py` | HIGH |
+| Store-vs-view drift | `check_view_drift.py` | HIGH |
 | Broken references | `validate_reference_integrity.py --path <dir>` | CRITICAL / MEDIUM |
 
-Phase 0 and the Phase 2 scan on staged surface markdown also run automatically in
-`.githooks/pre-commit` (drift blocking; reference scan as a WARN), so routine
-drift is caught at commit time — this skill is the on-demand deep audit.
+Phase 0 and the Phase 3 reference scan on staged surface markdown also run
+automatically in `.githooks/pre-commit` (drift blocking; reference scan as a
+WARN), so routine drift is caught at commit time — this skill is the on-demand
+deep audit. `check_view_drift.py` is a candidate for the same hook: it exits 1 on
+any store-vs-view mismatch, so wiring it into the commit gate would block a
+stale-view commit (the `regenerate`-was-skipped case) before it lands.
 
 ## Common mistakes
 
@@ -109,3 +132,9 @@ drift is caught at commit time — this skill is the on-demand deep audit.
   `/record-plugin-dispositions` or a deliberate `paths.py`/reference correction.
 - **Skipping Phase 0 when Phase 1 passes.** Consistency can pass on a *forked*
   store that is internally coherent but detached from the canonical path.
+- **Trusting a green Phase 1 as "views are correct".** Store consistency (Phase 1)
+  only checks the JSONL store's internal integrity. A view can silently disagree
+  with a consistent store — e.g. a row deleted from `dispositions_open.md` to
+  "close" a finding without a `fixed` event, or a commit that skipped
+  `regenerate`. Phase 2 is what catches that; run it before trusting any open
+  count or `/plan-plugin-findings --backlog`.

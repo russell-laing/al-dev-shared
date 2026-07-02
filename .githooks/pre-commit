@@ -60,6 +60,24 @@ echo "pre-commit: checking disposition-ledger path drift..."
 python3 scripts/check_ledger_path_drift.py
 echo "pre-commit: ledger path-drift check complete"
 
+echo "pre-commit: checking disposition store-vs-view drift..."
+staged_ledger=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^docs/health/dispositions' || true)
+if [ -n "$staged_ledger" ]; then
+  # Only when ledger files are staged: the generated views must match the JSONL
+  # store. Catches a commit that edited a view by hand or staged events without
+  # running `regenerate` (the drift class path-drift and store-consistency miss).
+  if ! python3 scripts/check_view_drift.py; then
+    echo "ERROR: generated disposition views are out of sync with the JSONL store." >&2
+    echo "  Run: python3 scripts/health_disposition_store.py regenerate" >&2
+    echo "  then stage docs/health/ and commit again." >&2
+    exit 1
+  fi
+  echo "pre-commit: store-vs-view drift check complete (views match store)"
+else
+  echo "pre-commit: store-vs-view drift check skipped (no staged ledger changes)"
+fi
+
 echo "pre-commit: scanning staged surface markdown for broken ledger references..."
 staged_ref_md=()
 while IFS= read -r line; do
