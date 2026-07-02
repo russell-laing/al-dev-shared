@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 from .check_ledger_staleness import load_rows_from_store, resolve_closures
@@ -338,7 +339,8 @@ def count_close_back(root: Path) -> int:
                 continue
             try:
                 event = json.loads(line)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
+                print(f"Warning: Skipping malformed JSON in {shard}: {e}", file=sys.stderr)
                 continue
             if event.get("disposition") == "fixed" and event.get("closes_event_ids"):
                 total += 1

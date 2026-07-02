@@ -173,7 +173,7 @@ def main() -> int:
     breadcrumb = root / BREADCRUMB
 
     if args.staged:
-        if str(BREADCRUMB) not in _staged_files():
+        if BREADCRUMB.as_posix() not in _staged_files():
             return 0  # breadcrumb not staged — nothing to check
 
     if not breadcrumb.exists():

@@ -158,13 +158,18 @@ def _cli_show(event_id: str, events_root: Path) -> int:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Health disposition store utilities.")
+    parser.add_argument("--root", type=Path, default=Path.cwd(), help="Repository root (default: current working directory)")
     sub = parser.add_subparsers(dest="command", required=True)
-    _HISTORY_DEFAULT = dispositions_history_root()
-    _EVENTS_DEFAULT = dispositions_events_root()
-    _LEDGER_DEFAULT = compatibility_ledger_path()
-    _OPEN_VIEW_DEFAULT = dispositions_open_view_path()
-    _CURRENT_VIEW_DEFAULT = dispositions_current_view_path()
-    _INDEX_DEFAULT = dispositions_index_path()
+    # Note: defaults are computed from the --root argument, which defaults to cwd but can be overridden
+    # to ensure ledger operations are never cwd-relative.
+    args_temp = parser.parse_known_args(argv)[0]
+    root = args_temp.root
+    _HISTORY_DEFAULT = dispositions_history_root(root)
+    _EVENTS_DEFAULT = dispositions_events_root(root)
+    _LEDGER_DEFAULT = compatibility_ledger_path(root)
+    _OPEN_VIEW_DEFAULT = dispositions_open_view_path(root)
+    _CURRENT_VIEW_DEFAULT = dispositions_current_view_path(root)
+    _INDEX_DEFAULT = dispositions_index_path(root)
 
     pm = sub.add_parser("match", help="Classify findings against the disposition ledger.")
     pm.add_argument("findings", type=Path, help="Findings file containing health-audit findings (FINDINGS SOURCE)")

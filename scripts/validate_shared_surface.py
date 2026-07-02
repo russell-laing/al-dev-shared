@@ -39,7 +39,11 @@ def _count_unlabeled_opening_fences(content: str) -> int:
 
 def _check_agent(path: Path) -> list[str]:
     issues = []
-    content = path.read_text(encoding="utf-8")
+    try:
+        content = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        issues.append(f"cannot read file: {exc}")
+        return issues
     try:
         fm, _body = parse_required_frontmatter(content)
     except ValueError as exc:
@@ -56,7 +60,11 @@ def _check_agent(path: Path) -> list[str]:
 
 def _check_skill(path: Path) -> list[str]:
     issues = []
-    content = path.read_text(encoding="utf-8")
+    try:
+        content = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        issues.append(f"cannot read file: {exc}")
+        return issues
     unlabeled = _count_unlabeled_opening_fences(content)
     if unlabeled:
         issues.append(f"{unlabeled} unlabeled code block(s) — add language specifier after ```")
@@ -76,6 +84,10 @@ def validate_file(path: str | Path) -> list[str]:
 
 def validate_all() -> dict[str, list[str]]:
     """Validate all agents and skills. Returns {path: [issues]} for files with issues."""
+    if not AGENTS_DIR.exists():
+        raise ValueError(f"AGENTS_DIR not found: {AGENTS_DIR}")
+    if not SKILLS_DIR.exists():
+        raise ValueError(f"SKILLS_DIR not found: {SKILLS_DIR}")
     results = {}
     for path in sorted(AGENTS_DIR.glob("*.md")):
         if path.name.endswith(".md"):

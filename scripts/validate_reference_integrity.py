@@ -344,7 +344,11 @@ def validate_reference_path(root: Path, match: str | None = None) -> list[str]:
 
     issues: list[str] = []
     for file_path in _iter_markdown_files(root):
-        content = file_path.read_text(encoding="utf-8")
+        try:
+            content = file_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            issues.append(f"{_repo_relative(file_path)}\n  error: cannot read file ({type(e).__name__})")
+            continue
         seen: set[tuple[str, str]] = set()
         for token in _iter_reference_candidates(content):
             if not _is_candidate_reference(token):

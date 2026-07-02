@@ -38,7 +38,16 @@ def load_companion_inventory(repo_root: Path) -> dict:
     import os
 
     inventory_path = repo_root / "companions/companion-packages.yaml"
-    data = yaml.safe_load(inventory_path.read_text(encoding="utf-8"))
+    try:
+        content = inventory_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as e:
+        raise ValueError(f"Cannot read companion inventory at {inventory_path}: {type(e).__name__}: {e}") from e
+    try:
+        data = yaml.safe_load(content)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Malformed YAML in {inventory_path}: {e}") from e
+    if not isinstance(data, dict):
+        raise ValueError(f"Companion inventory must be a YAML dict, got {type(data).__name__}")
     harness_home = os.environ.get("AL_DEV_HARNESS_HOME", str(Path.home()))
     for entry in data.get("packages", []):
         for key in ("current_root", "current_registry"):

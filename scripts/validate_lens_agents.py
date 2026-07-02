@@ -108,7 +108,16 @@ def main() -> int:
             ))
             continue
 
-        content = path.read_text(encoding="utf-8")
+        try:
+            content = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            failures.append(_format_failure(
+                str(path),
+                "agent-read-error",
+                f"cannot read agent file ({type(e).__name__})",
+                f"ensure {path} is readable and not corrupted",
+            ))
+            continue
         try:
             frontmatter, _body = parse_required_frontmatter(content)
         except ValueError as exc:
@@ -176,7 +185,16 @@ def main() -> int:
                 f"create {skill_path} or remove it from SKILLS_TO_CHECK in the validator",
             ))
             continue
-        content = skill_path.read_text(encoding="utf-8")
+        try:
+            content = skill_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            failures.append(_format_failure(
+                str(skill_path),
+                "skill-read-error",
+                f"cannot read skill file ({type(e).__name__})",
+                f"ensure {skill_path} is readable and not corrupted",
+            ))
+            continue
         if not _has_phase_two_heading(content):
             failures.append(_format_failure(
                 str(skill_path),

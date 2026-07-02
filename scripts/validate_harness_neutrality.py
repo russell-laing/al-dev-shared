@@ -132,11 +132,11 @@ def load_model_aliases(plugin_root: Path) -> set[str]:
     """Load the allowed model tier aliases from the projection policy."""
     policy = plugin_root / "knowledge" / "agent-tool-projection-policy.md"
     if not policy.exists():
-        return set()
+        raise ValueError(f"policy file not found: {policy}")
     try:
         data, _body = parse_required_frontmatter(policy.read_text(encoding="utf-8"))
-    except ValueError:
-        return set()
+    except ValueError as e:
+        raise ValueError(f"malformed YAML in policy file {policy}: {e}") from e
     return set(data.get("shared_model_aliases", []))
 
 

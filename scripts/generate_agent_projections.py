@@ -170,15 +170,17 @@ def write_all_projections(output_root: Path, agents: list[dict], policy: dict) -
     desired_codex = {f'{a["name"]}.toml' for a in agents}
 
     # Remove orphaned projection files (agent renamed or deleted since last run)
-    for fname in (output_root / "claude").glob("*.md"):
-        if fname.name not in desired_claude:
-            fname.unlink()
-    for fname in (output_root / "copilot").glob("*.md"):
-        if fname.name not in desired_copilot:
-            fname.unlink()
-    for fname in (output_root / "codex").glob("*.toml"):
-        if fname.name not in desired_codex:
-            fname.unlink()
+    # Only delete if we found agents to keep (guard against empty glob due to wrong cwd)
+    if desired_claude or desired_copilot or desired_codex:
+        for fname in (output_root / "claude").glob("*.md"):
+            if fname.name not in desired_claude:
+                fname.unlink()
+        for fname in (output_root / "copilot").glob("*.md"):
+            if fname.name not in desired_copilot:
+                fname.unlink()
+        for fname in (output_root / "codex").glob("*.toml"):
+            if fname.name not in desired_codex:
+                fname.unlink()
 
     for agent in agents:
         write_projection_set(output_root, agent, policy)
@@ -195,8 +197,17 @@ def main() -> None:
     args = parser.parse_args()
 
     agents_root = Path(args.agents_root)
+    if not agents_root.is_absolute():
+        agents_root = REPO_ROOT / agents_root
+    if not agents_root.exists():
+        raise ValueError(f"agents_root not found: {agents_root}")
     output_root = Path(args.output_root)
-    policy = load_projection_policy(Path(args.policy_path))
+    if not output_root.is_absolute():
+        output_root = REPO_ROOT / output_root
+    policy_path = Path(args.policy_path)
+    if not policy_path.is_absolute():
+        policy_path = REPO_ROOT / policy_path
+    policy = load_projection_policy(policy_path)
     agents = [load_agent(path) for path in sorted(agents_root.glob("*.md"))]
     write_all_projections(output_root, agents, policy)
 

@@ -82,7 +82,10 @@ def _load_lens_blocks(lens_dir, date, dimensions):
         m = _LENS_FILE_RE.search(os.path.basename(p))
         if not m:
             continue
-        data = json.loads(Path(p).read_text(encoding="utf-8"))
+        try:
+            data = json.loads(Path(p).read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"malformed JSON in lens file {p}: {e}") from e
         lens = data["lens"]
         if allowed is not None and not lens.startswith(allowed):
             continue  # stale out-of-dimension JSON — skip silently

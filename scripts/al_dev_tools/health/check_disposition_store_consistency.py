@@ -46,7 +46,13 @@ def run(events_root: Path) -> int:
     known_ids: set[str] = {str(e["event_id"]) for e in events}
     dangling: list[str] = []
     for event in events:
-        for ref in event.get("closes_event_ids", []):
+        closes_ids = event.get("closes_event_ids", [])
+        if not isinstance(closes_ids, list):
+            dangling.append(
+                f"event {event['event_id']} closes_event_ids is not a list: {type(closes_ids).__name__}"
+            )
+            continue
+        for ref in closes_ids:
             if str(ref) not in known_ids:
                 dangling.append(
                     f"event {event['event_id']} closes_event_ids references "

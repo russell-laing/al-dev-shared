@@ -13,6 +13,7 @@ from .maintainer_contracts import (
     STAGE_TITLES,
     WorkflowContract,
 )
+from .render_helpers import mermaid_block as _mermaid_block
 
 
 def _node_id(prefix: str, name: str) -> str:
@@ -37,10 +38,6 @@ def _short_label(template: str) -> str:
     if len(template) <= 30:
         return template
     return ".../" + trimmed.rsplit("/", 1)[-1]
-
-
-def _mermaid_block(lines: list[str]) -> str:
-    return "```mermaid\n" + "\n".join(lines).rstrip() + "\n```"
 
 
 def _assert_unique_artifact_ids(templates: list[str]) -> None:

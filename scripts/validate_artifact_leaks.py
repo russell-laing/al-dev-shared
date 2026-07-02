@@ -34,17 +34,13 @@ EXCLUDE = [
 
 def get_staged_files():
     """Return list of staged files in the current commit."""
-    try:
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        return result.stdout.strip().split("\n") if result.stdout.strip() else []
-    except subprocess.CalledProcessError as e:
-        print(f"Error getting staged files: {e}", file=sys.stderr)
-        return []
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout.strip().split("\n") if result.stdout.strip() else []
 
 
 def matches_pattern(path, patterns):

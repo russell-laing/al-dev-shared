@@ -20,6 +20,7 @@ from .map_inventory import (
     validate_inventory_skill_references,
 )
 from .map_markers import find_marker_spans, replace_marked_sections
+from .render_helpers import mermaid_block as _mermaid_block, wrap_generated_section as _wrap_generated_section
 
 
 TARGET_DOCS = (
@@ -100,12 +101,6 @@ def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _mermaid_block(lines: Iterable[str]) -> str:
-    return "```mermaid\n" + "\n".join(lines).rstrip() + "\n```"
-
-
-def _wrap_generated_section(key: str, body: str) -> str:
-    return f"<!-- BEGIN GENERATED: {key} -->\n{body.rstrip()}\n<!-- END GENERATED: {key} -->"
 
 
 def _format_overlay_title(key: str) -> str:

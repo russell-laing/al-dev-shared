@@ -37,8 +37,8 @@
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 894,
-      "open_accepted": 19
+      "current_rows": 905,
+      "open_accepted": 30
     },
     "split": {
       "current_rows": 4,
@@ -54,7 +54,7 @@
     }
   },
   "by_disposition": {
-    "accepted": 19,
+    "accepted": 30,
     "declined": 234,
     "fixed": 1024,
     "grandfathered": 71
@@ -65,8 +65,8 @@
       "open_accepted": 0
     },
     "plugin": {
-      "current_rows": 452,
-      "open_accepted": 18
+      "current_rows": 463,
+      "open_accepted": 29
     },
     "query": {
       "current_rows": 27,
@@ -81,10 +81,10 @@
       "open_accepted": 0
     }
   },
-  "current_rows": 1348,
-  "generated_at": "2026-07-02T11:35:28.594652+00:00",
+  "current_rows": 1359,
+  "generated_at": "2026-07-02T11:55:06.339202+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 19,
-  "source_hash": "3f05ad07d6120b23fa0244b1d6dc9286cc4497ffb8d6476449b6838eea459fd7",
-  "total_events": 2536
+  "open_accepted": 30,
+  "source_hash": "71e7c2e418e63dd0d129b488b2e72af780e408551cdb0e86a0fc58ebc96047f1",
+  "total_events": 2547
 }

@@ -34,10 +34,7 @@ from .maintainer_mermaid import (
     render_stage_detail,
 )
 from .maintainer_tables import SIGNAL_ORDER, STAGE_ARTIFACTS, render_gaps_table, render_skills_tables, render_stage_artifacts
-
-
-def _wrap(key: str, body: str) -> str:
-    return f"<!-- BEGIN GENERATED: {key} -->\n{body.rstrip()}\n<!-- END GENERATED: {key} -->"
+from .render_helpers import wrap_generated_section as _wrap
 
 
 def build_sections(

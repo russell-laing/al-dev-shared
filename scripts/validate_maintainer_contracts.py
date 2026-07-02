@@ -83,13 +83,19 @@ def has_markdown_heading(text: str, heading: str) -> bool:
 
 
 def check_coverage(skills_root: Path) -> list[str]:
+    if not skills_root.exists():
+        raise ValueError(f"SKILLS_ROOT not found: {skills_root}")
     violations: list[str] = []
     for skill_set, doc in REQUIREMENTS:
         for name in sorted(skill_set):
             skill_md = skills_root / name / "SKILL.md"
             if not skill_md.exists():
                 continue  # skill not present in this tree; not this gate's job
-            text = skill_md.read_text(encoding="utf-8")
+            try:
+                text = skill_md.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError) as e:
+                violations.append(f"{name}: cannot read SKILL.md ({type(e).__name__})")
+                continue
             # Enforce the relative-path link shape, not a bare-filename substring:
             # a contract is only "referenced" when linked as ../../knowledge/<doc>.
             ref = f"../../knowledge/{doc}"
@@ -99,7 +105,11 @@ def check_coverage(skills_root: Path) -> list[str]:
         skill_md = skills_root / name / "SKILL.md"
         if not skill_md.exists():
             continue
-        text = skill_md.read_text(encoding="utf-8")
+        try:
+            text = skill_md.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            violations.append(f"{name}: cannot read SKILL.md ({type(e).__name__})")
+            continue
         ref = f"../../knowledge/{FALSE_POSITIVE_CLASSES_DOC}"
         if ref not in text:
             violations.append(f"{name}: missing reference to {ref}")
@@ -107,21 +117,33 @@ def check_coverage(skills_root: Path) -> list[str]:
         skill_md = skills_root / name / "SKILL.md"
         if not skill_md.exists():
             continue
-        text = skill_md.read_text(encoding="utf-8")
+        try:
+            text = skill_md.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            violations.append(f"{name}: cannot read SKILL.md ({type(e).__name__})")
+            continue
         if "<!-- token-usage -->" not in text:
             violations.append(f"{name}: missing token-usage block contract")
     for name in sorted(PROCEDURE_LOG_SKILLS):
         skill_md = skills_root / name / "SKILL.md"
         if not skill_md.exists():
             continue
-        text = skill_md.read_text(encoding="utf-8")
+        try:
+            text = skill_md.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            violations.append(f"{name}: cannot read SKILL.md ({type(e).__name__})")
+            continue
         if PROCEDURE_LOG_PATH not in text:
             violations.append(f"{name}: missing reference to {PROCEDURE_LOG_PATH}")
     for name in sorted(DISPATCHING_SKILLS):
         skill_md = skills_root / name / "SKILL.md"
         if not skill_md.exists():
             continue
-        text = skill_md.read_text(encoding="utf-8")
+        try:
+            text = skill_md.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            violations.append(f"{name}: cannot read SKILL.md ({type(e).__name__})")
+            continue
         if not has_markdown_heading(text, MAINTAINER_CONTRACTS_HEADING):
             violations.append(
                 f"{name}: missing heading {MAINTAINER_CONTRACTS_HEADING}"
