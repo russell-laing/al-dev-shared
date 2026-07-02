@@ -276,7 +276,7 @@ def parse_findings_file(path: Path) -> list[dict[str, str]]:
         and not ln.startswith("| Event")
         and not ln.startswith("|---") and not ln.startswith("| ---")
     )
-    if total_data_lines > 0 and parsed_count < total_data_lines:
+    if total_data_lines > 0 and parsed_count != total_data_lines:
         print(
             f"[parse_findings_file] WARNING: parsed {parsed_count} items but found {total_data_lines} "
             f"table rows — some rows may have malformed format; check parsing against specification",

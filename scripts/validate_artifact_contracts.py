@@ -183,6 +183,8 @@ def parse_contract_matrix(text: str) -> list[dict[str, str]]:
             headers = cells
         elif len(cells) >= len(headers):
             rows.append(dict(zip(headers, cells)))
+        elif len(cells) > 0:
+            print(f"⚠ Skipping malformed table row with {len(cells)} cells (expected {len(headers)})")
 
     return rows
 
@@ -374,7 +376,7 @@ def run_runtime_artifact_rule(rule: RuntimeArtifactRule, repo_root: Path) -> boo
 
     latest_file = latest_runtime_artifact(repo_root, rule.pattern)
     if latest_file is None:
-        return True
+        return False
 
     try:
         content = latest_file.read_text(encoding="utf-8")

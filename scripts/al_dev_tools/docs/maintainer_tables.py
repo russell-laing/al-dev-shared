@@ -60,7 +60,7 @@ STAGE_ARTIFACTS: dict[str, tuple[tuple[str, str], ...]] = {
             "Keeps raw audit results and validated update artifacts separate from the canonical maps.",
         ),
         (
-            "docs/workflow_diagrams.md`, `docs/plugin_graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/",
+            "`docs/workflow_diagrams.md`, `docs/plugin_graph.md`, `docs/maintainer_tooling.md`, and `docs/maintainer_tooling/`",
             "Derived documentation regenerated only after the canonical maps are applied.",
         ),
         (

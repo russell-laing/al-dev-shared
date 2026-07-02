@@ -247,7 +247,7 @@ def parse_procedure_log(path: Path) -> list[dict[str, object]]:
     if not path.is_file():
         return []
     records: list[dict[str, object]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").split("\n"):
         stripped = line.strip()
         if not stripped:
             continue
@@ -333,7 +333,7 @@ def count_close_back(root: Path) -> int:
     if not events_root.is_dir():
         return total
     for shard in sorted(events_root.rglob("*.jsonl")):
-        for line in shard.read_text(encoding="utf-8").splitlines():
+        for line in shard.read_text(encoding="utf-8").split("\n"):
             line = line.strip()
             if not line:
                 continue

@@ -343,7 +343,9 @@ def validate_reference_path(root: Path, match: str | None = None) -> list[str]:
     """
 
     issues: list[str] = []
+    file_count = 0
     for file_path in _iter_markdown_files(root):
+        file_count += 1
         try:
             content = file_path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError) as e:
@@ -367,6 +369,8 @@ def validate_reference_path(root: Path, match: str | None = None) -> list[str]:
             if match is not None and match not in issue.issue:
                 continue
             issues.append(_format_issue(issue))
+    if file_count == 0:
+        issues.append(f"Error: No markdown files found in {root}")
     return issues
 
 
