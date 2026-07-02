@@ -85,6 +85,18 @@ Check the artifact itself for:
   `clean`, `ready`, or `closed`
 - stale references detectable from the artifact alone
 
+Use these minimum checks for the classified source:
+
+- `findings report`: findings list, severity or priority signal, evidence for
+  each consequential claim, and a next-action or recommendation section
+- `health dossier`: findings summary, ranked recommendations or decision
+  framing, supporting evidence, and any stated readiness or completion claims
+- `implementation plan`: stated goal, scoped tasks or steps, validation
+  commands or evidence expectations, and explicit non-goals or scope limits
+- `loop-state-adjacent report`: current state claim, source of that claim,
+  next-action basis, and any freshness cue such as timestamps, current-run
+  evidence, or referenced live artifacts
+
 This phase is text-only and deterministic. Do not start a fresh repo audit.
 
 ### 3. Promote only consequential claims to live verification
@@ -109,9 +121,9 @@ Examples of claims worth verifying:
 - the artifact says a finding is already fixed, validated, clean, ready, or
   closed
 - the next action depends on `.dev/health-loop-state.md`,
-  `docs/health/dispositions-open.md`, `docs/health/dispositions-current.md`,
-  `docs/health/dispositions-index.json`, or JSONL events under
-  `docs/health/dispositions-events/`
+  `docs/health/dispositions_open.md`, `docs/health/dispositions_current.md`,
+  `docs/health/dispositions_index.json`, or JSONL events under
+  `docs/health/dispositions_events/`
 - a priority ranking depends on live repo conditions rather than only on
   artifact-internal evidence
 
@@ -128,6 +140,9 @@ Write one report to:
 ```text
 .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 ```
+
+Use the source basename without its extension for `<source-slug>`. If the
+source came from pasted conversation content, use `conversation`.
 
 Use this exact structure:
 
@@ -197,8 +212,15 @@ Before saying the review is complete, run:
 
 ```bash
 test -s .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Date: [0-9]{4}-[0-9]{2}-[0-9]{2}$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Source: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Artifact class: (findings report|health dossier|implementation plan|loop-state-adjacent report)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Validation scope: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^## (Trust Recommendation|Findings|Verified Areas|Unverified Areas|Notes)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
-rg -n "Classification: (valid blocker|valid but lower priority|stale|unsupported|overstated)" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Classification: (valid blocker|valid but lower priority|stale|unsupported|overstated)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Evidence: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Impact: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^Required action: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^(trust|trust with caveats|rework before use)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 git diff --check -- .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 ```
