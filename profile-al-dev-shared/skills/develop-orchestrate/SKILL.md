@@ -1,10 +1,9 @@
 ---
 name: develop-orchestrate
 description: >-
-  Prepare implementation context, validate scope, partition work across developers,
-  and dispatch developers to implement AL code. Consumes a solution plan and orchestrates
-  parallel developer agents through pre-flight validation and implementation.
-  Produces Phase 4 handoff artifact for /review-develop (review orchestration).
+  Develops solution by dispatching task-by-task, then orchestrates
+  handoff to review by running preflight checks, static validation,
+  and dispatching review-develop with context.
   Requires a solution plan. Pass --autonomous to activate signature verification
   and static validation.
 argument-hint: "[--autonomous] [module or scope override]"
