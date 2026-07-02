@@ -8,7 +8,7 @@ model: sonnet
 tools: ["Bash", "Read", "Glob", "Grep", "Write"]
 ---
 
-# Agent: explore
+# Agent: codebase-explorer
 
 Specialized agent for quickly exploring and understanding codebases. Answers questions about code structure, finds files by patterns, searches for keywords and functions, and provides summaries of how code is organized.
 
