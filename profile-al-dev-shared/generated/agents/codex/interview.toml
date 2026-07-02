@@ -21,5 +21,4 @@ See question-gatherer and spec-writer agents for implementation details.
 
 Codex capability notes:
 - read files available in the active Codex session
-- edit files available in the active Codex session
 - request_user_input"""

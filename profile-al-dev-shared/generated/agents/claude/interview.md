@@ -1,6 +1,6 @@
 ---
 description: "Coordinate the interview workflow by orchestrating question-gatherer and spec-writer agents to extract implementation details. Spawned by the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`."
-tools: ["Read", "Write", "AskUserQuestion"]
+tools: ["Read", "AskUserQuestion"]
 ---
 
 

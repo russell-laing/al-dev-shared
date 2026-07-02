@@ -5,7 +5,7 @@ description: >-
   and spec-writer agents to extract implementation details. Spawned by
   the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`.
 model: sonnet
-tools: ["Read", "Write", "USER_GATE"]
+tools: ["Read", "USER_GATE"]
 ---
 
 # Interview Orchestrator
