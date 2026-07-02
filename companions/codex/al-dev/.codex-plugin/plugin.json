@@ -1,0 +1,6 @@
+{
+  "name": "codex-al-dev",
+  "description": "Codex companion package for AL/BC development workflows.",
+  "skills": "skills",
+  "agents": "agents"
+}

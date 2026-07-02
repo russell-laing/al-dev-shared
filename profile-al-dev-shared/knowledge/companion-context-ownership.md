@@ -19,6 +19,12 @@ capability is unavailable.
   where the capability lives, never as a required dependency of any single
   harness.)
 
+## Co-location Rule
+
+A companion package may live in this repo without being assumed installed. Shared
+workflows must continue to degrade to inferred context unless the active runtime
+explicitly proves the companion capability is present.
+
 ## Fallback Behavior — Degrade to Inferred Context
 
 `.dev/project-context.md` is optional. When it is absent:

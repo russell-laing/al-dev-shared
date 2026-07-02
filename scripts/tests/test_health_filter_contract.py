@@ -80,6 +80,30 @@ class HealthFilterContractFileTest(unittest.TestCase):
         self.assertIn("/audit-plugin-health --surface tooling --dimension quality", commands)
         self.assertIn("/audit-plugin-health --surface both --dimension naming", commands)
 
+    def test_health_filter_contract_mentions_companion_surfaces(self) -> None:
+        text = self.read(".claude/knowledge/health-filter-contract.md")
+        for needle in [
+            "companion-codex-al-dev",
+            "companion-claude-al-dev",
+            "companion-copilot-al-dev",
+            "`companions` = all canonical companion package surfaces",
+            "`both` = legacy alias for `plugin` + `tooling` only",
+        ]:
+            self.assertIn(needle, text)
+
+    def test_legacy_surface_token_is_preserved_verbatim(self) -> None:
+        # Guards the additive-not-destructive requirement: the legacy token must survive.
+        text = self.read(".claude/knowledge/health-filter-contract.md")
+        self.assertIn("`--surface plugin|tooling|both`", text)
+
+    def test_docs_include_companion_surface_examples(self) -> None:
+        commands = self.read("docs/development_commands.md")
+        self.assertIn("/audit-plugin-health --surface companions --dimension all", commands)
+        self.assertIn("/audit-plugin-health --surface companion-codex-al-dev --dimension quality", commands)
+        # And the pre-existing legacy examples must remain (guards append-not-replace):
+        self.assertIn("/audit-plugin-health --surface both --dimension naming", commands)
+        self.assertIn("/audit-plugin-health --surface tooling --dimension quality", commands)
+
 
 class HealthDispositionMigrationTest(unittest.TestCase):
     def test_migration_uses_exact_object_finding_date_key_and_preserves_order(self) -> None:

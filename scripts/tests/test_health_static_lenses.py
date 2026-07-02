@@ -341,6 +341,13 @@ def test_tool_hygiene_no_generic_zero_mention_false_positive():
         assert M.check_tool_hygiene([agent]) == []
 
 
+def test_surface_roots_include_companion_packages() -> None:
+    text = _SCRIPT.read_text(encoding="utf-8")
+    assert "companion-codex-al-dev" in text
+    assert "companion-claude-al-dev" in text
+    assert "companion-copilot-al-dev" in text
+
+
 def _run_all():
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

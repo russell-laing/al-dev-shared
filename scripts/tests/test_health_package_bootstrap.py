@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 from importlib import import_module
 from pathlib import Path
@@ -68,6 +69,32 @@ class HealthPackageBootstrapTest(unittest.TestCase):
             text = (REPO_ROOT / rel_path).read_text(encoding="utf-8")
             self.assertNotIn("importlib.util", text, rel_path)
             self.assertNotIn("sys.path.insert", text, rel_path)
+
+    def test_codex_companion_manifest_exists(self) -> None:
+        manifest = REPO_ROOT / "companions/codex/al-dev/.codex-plugin/plugin.json"
+        self.assertTrue(manifest.is_file())
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        self.assertEqual(data["name"], "codex-al-dev")
+
+    def test_in_scope_companion_readmes_exist(self) -> None:
+        for relative in [
+            "companions/README.md",
+            "companions/codex/al-dev/README.md",
+            "companions/claude/al-dev/README.md",
+            "companions/copilot/al-dev/README.md",
+        ]:
+            self.assertTrue((REPO_ROOT / relative).is_file(), relative)
+
+    def test_claude_and_copilot_companion_manifests_exist(self) -> None:
+        pairs = [
+            ("companions/claude/al-dev/.claude-plugin/plugin.json", "claude-al-dev"),
+            ("companions/copilot/al-dev/.plugin/plugin.json", "copilot-al-dev"),
+        ]
+        for relative, expected_name in pairs:
+            manifest = REPO_ROOT / relative
+            self.assertTrue(manifest.is_file(), relative)
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            self.assertEqual(data["name"], expected_name)
 
 
 if __name__ == "__main__":

@@ -101,6 +101,9 @@ Local HTML exports such as `docs/maintainer_tooling.html` are preview-only artif
 /audit-plugin-health --surface both --dimension naming
 /audit-plugin-health --surface tooling --dimension quality
 /audit-plugin-health --surface plugin --dimension design --resume
+/audit-plugin-health --surface companions --dimension all
+/audit-plugin-health --surface companion-codex-al-dev --dimension quality
+/audit-plugin-health --surface everything --dimension naming
 ```
 
 Dossiers are written to `docs/health/YYYY-MM-DD-<surface>-health.md` (the

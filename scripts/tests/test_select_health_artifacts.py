@@ -165,6 +165,15 @@ class SelectHealthArtifactsTest(unittest.TestCase):
         self.assertEqual(1, len(returned_paths), returned_paths)
 
 
+class SurfaceRootsTest(unittest.TestCase):
+    def test_surface_roots_include_companion_packages(self) -> None:
+        selector_module_path = REPO_ROOT / "scripts" / "al_dev_tools" / "health" / "select_health_artifacts.py"
+        text = selector_module_path.read_text(encoding="utf-8")
+        assert "companion-codex-al-dev" in text
+        assert "companion-claude-al-dev" in text
+        assert "companion-copilot-al-dev" in text
+
+
 class HealthArtifactSelectionContractTest(unittest.TestCase):
     def read(self, path: str) -> str:
         return (REPO_ROOT / path).read_text(encoding="utf-8")

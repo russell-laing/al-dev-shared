@@ -8,17 +8,18 @@ import re
 from datetime import date
 from pathlib import Path
 
+from ..companion_surface_contract import canonical_companion_surfaces
 
 ARTIFACT_PATTERN = re.compile(
     r"^(?P<date>\d{4}-\d{2}-\d{2})-"
-    r"(?P<surface>plugin|tooling)-"
+    r"(?P<surface>plugin|tooling|companion-codex-al-dev|companion-claude-al-dev|companion-copilot-al-dev)-"
     r"(?P<dimension>design|quality|naming)?-?"
     r"(?P<kind>findings|health)\.md$"
 )
 
 FRICTION_PATTERN = re.compile(
     r"^(?P<date>\d{4}-\d{2}-\d{2})-"
-    r"(?P<surface>plugin|tooling)-"
+    r"(?P<surface>plugin|tooling|companion-codex-al-dev|companion-claude-al-dev|companion-copilot-al-dev)-"
     r"friction-findings\.md$"
 )
 
@@ -88,7 +89,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--directory", type=Path, default=Path("docs/health"))
     parser.add_argument("--kind", choices=("findings", "health", "friction-findings"), required=True)
-    parser.add_argument("--surface", choices=("plugin", "tooling"), required=True)
+    parser.add_argument("--surface", choices=("plugin", "tooling", "companion-codex-al-dev", "companion-claude-al-dev", "companion-copilot-al-dev"), required=True)
     parser.add_argument("--dimension", choices=("design", "quality", "naming"), default=None)
     parser.add_argument("--limit", type=positive_int, default=1)
     parser.add_argument("--offset", type=non_negative_int, default=0)

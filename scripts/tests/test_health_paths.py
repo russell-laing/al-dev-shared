@@ -29,3 +29,11 @@ def test_health_paths_are_root_relative() -> None:
         dispositions_jsonl_migration_audit_path(root)
         == root / "docs" / "health" / "dispositions_jsonl_migration_audit.md"
     )
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_companion_contract_files_exist() -> None:
+    assert (REPO_ROOT / "docs/architecture/companion-monorepo-contract.md").is_file()
+    assert (REPO_ROOT / "companions/companion-packages.yaml").is_file()

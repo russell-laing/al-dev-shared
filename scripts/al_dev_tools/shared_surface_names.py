@@ -127,3 +127,10 @@ def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
     """Return explicit legacy aliases that validators may classify separately."""
 
     return _legacy_reference_aliases()
+
+
+from .companion_surface_contract import (
+    canonical_companion_surfaces,
+    legacy_surface_aliases as companion_legacy_surface_aliases,
+    surface_root_map as companion_surface_root_map,
+)
