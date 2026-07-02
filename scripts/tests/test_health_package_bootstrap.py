@@ -69,6 +69,15 @@ class HealthPackageBootstrapTest(unittest.TestCase):
             self.assertNotIn("importlib.util", text, rel_path)
             self.assertNotIn("sys.path.insert", text, rel_path)
 
+    def test_in_scope_companion_readmes_exist(self) -> None:
+        for relative in [
+            "companions/README.md",
+            "companions/codex/al-dev/README.md",
+            "companions/claude/al-dev/README.md",
+            "companions/copilot/al-dev/README.md",
+        ]:
+            self.assertTrue((REPO_ROOT / relative).is_file(), relative)
+
 
 if __name__ == "__main__":
     unittest.main()
