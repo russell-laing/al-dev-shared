@@ -22,6 +22,12 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:  # pragma: no cover
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from _entrypoint_bootstrap import bootstrap_repo
+
 from .check_ledger_staleness import load_rows_from_store, resolve_closures
 from .health_disposition_store import iter_event_rows, materialize_current_events
 from .paths import (
@@ -543,7 +549,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--limit", type=int, default=1, help="dossiers per surface")
     parser.add_argument("--format", choices=("json", "markdown"), default="json")
-    parser.add_argument("--root", type=Path, default=Path("."))
+    parser.add_argument("--root", type=Path, default=bootstrap_repo(__file__))
     return parser.parse_args(argv)
 
 

@@ -84,10 +84,14 @@ def iter_event_rows(events_root: Path) -> Iterator[dict[str, object]]:
 
 
 def append_event(events_root: Path, event: dict[str, object]) -> Path:
+    import fcntl
+
     errors = validate_event(event)
     if errors:
         raise ValueError("; ".join(errors))
     event_id = str(event["event_id"])
+
+    # Read all existing events globally (needed for closes_event_ids validation)
     existing_ids = {
         str(existing["event_id"])
         for existing in iter_event_rows(events_root)
@@ -108,10 +112,22 @@ def append_event(events_root: Path, event: dict[str, object]) -> Path:
 
     shard = events_root / event_shard_path_for_date(str(event["date"]))
     shard.parent.mkdir(parents=True, exist_ok=True)
+
+    # Atomically write to shard with exclusive file lock to prevent concurrent duplicates
     with shard.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
-        f.flush()
-        os.fsync(f.fileno())
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        try:
+            # Re-check for duplicates under lock before writing (stale check above could race)
+            f.seek(0)
+            shard_ids = {line.split("|")[0].strip('{"') for line in f if line.strip()}
+            if event_id in shard_ids:
+                raise ValueError(f"duplicate event_id under lock: {event_id}")
+            f.seek(0, 2)  # Seek to end
+            f.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        finally:
+            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
     return shard
 
 

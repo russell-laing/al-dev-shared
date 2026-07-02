@@ -126,6 +126,11 @@ def main(argv: list[str] | None = None) -> int:
 
     agent_count = len(list(AGENTS_DIR.glob("*.md")))
     skill_count = len(list(SKILLS_DIR.rglob("SKILL.md")))
+
+    if agent_count == 0 and skill_count == 0:
+        print(f"ERROR: No agents or skills found in {AGENTS_DIR} or {SKILLS_DIR}")
+        return 2
+
     print(f"OK: {agent_count} agents, {skill_count} skills — all clean.")
     return 0
 

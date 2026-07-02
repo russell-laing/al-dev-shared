@@ -114,13 +114,21 @@ def _format_finding(f: Finding) -> str:
 
 def iter_markdown_files(plugin_root: Path):
     """Yield markdown and yaml files from shared authored directories."""
+    scanned_any = False
     for directory in SCAN_DIRS:
         base = plugin_root / directory
         if not base.exists():
             continue
+        scanned_any = True
         for path in base.rglob("*"):
             if path.is_file() and path.suffix.lower() in SCAN_SUFFIXES:
                 yield path
+
+    if not scanned_any:
+        raise AssertionError(
+            f"No scan directories found under {plugin_root}. "
+            f"Expected at least one of: {', '.join(SCAN_DIRS)}"
+        )
 
 
 def should_skip(relative_path: str) -> bool:

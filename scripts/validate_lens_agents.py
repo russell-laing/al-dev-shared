@@ -40,13 +40,19 @@ def _get_lens_agents() -> list[str]:
     Filters for agents with 'lens' in their name (both individual and bundled
     multilens agents). Excludes archived subdirectories.
     """
+    if not AGENTS_DIR.exists() or not AGENTS_DIR.is_dir():
+        raise AssertionError(f"Lens agents directory not found: {AGENTS_DIR}")
+
     agents = []
-    if AGENTS_DIR.exists():
-        for item in sorted(AGENTS_DIR.iterdir()):
-            if item.is_dir() or item.name == "archived":
-                continue
-            if item.suffix == ".md" and "lens" in item.stem:
-                agents.append(item.stem)
+    for item in sorted(AGENTS_DIR.iterdir()):
+        if item.is_dir() or item.name == "archived":
+            continue
+        if item.suffix == ".md" and "lens" in item.stem:
+            agents.append(item.stem)
+
+    if not agents:
+        raise AssertionError(f"No lens agents found in {AGENTS_DIR}")
+
     return agents
 
 

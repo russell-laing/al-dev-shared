@@ -80,11 +80,10 @@ from scripts.al_dev_tools.companion_surface_contract import (
 )
 
 
-REPO = Path(__file__).resolve().parents[1]
-POLICY_PATH = REPO / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
+POLICY_PATH = REPO_ROOT / "profile-al-dev-shared/knowledge/agent-tool-projection-policy.md"
 
 # Surface → corpus roots (mirrors discover Phase 0/1; do not re-derive).
-SURFACE_ROOTS = surface_root_map(REPO)
+SURFACE_ROOTS = surface_root_map(REPO_ROOT)
 
 # Dimension membership for each converted lens.
 LENS_DIMENSION = {
@@ -178,12 +177,12 @@ def changed_paths(since_ref: str) -> set[Path]:
     repo_root = Path(
         subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            cwd=REPO, capture_output=True, text=True, check=True,
+            cwd=REPO_ROOT, capture_output=True, text=True, check=True,
         ).stdout.strip()
     )
     out = subprocess.run(
         ["git", "diff", "--name-only", since_ref],
-        cwd=REPO, capture_output=True, text=True, check=True,
+        cwd=REPO_ROOT, capture_output=True, text=True, check=True,
     ).stdout.splitlines()
     return {(repo_root / line.strip()).resolve() for line in out if line.strip()}
 
