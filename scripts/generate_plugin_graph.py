@@ -21,22 +21,18 @@ from scripts.al_dev_tools.docs.map_doc_sections import (
     mermaid_node_id,
     replace_marked_sections,
 )
+from scripts.al_dev_tools.shared_surface_names import SHARED_WORKFLOW_ORDER
 
 
 REPO = REPO_ROOT
 PLUGIN = REPO / "profile-al-dev-shared"
 OUTPUT = REPO / "docs" / "plugin_graph.md"
 
-# The three canonical workflow paths (from CLAUDE.md "Plugin Architecture").
+# The three canonical workflow paths (from SHARED_WORKFLOW_ORDER).
 WORKFLOW_PATHS = {
-    "Ticket / Support": ["ticket", "support-reply"],
-    "Development spine": [
-        "investigate",
-        "plan",
-        "develop-orchestrate",
-        "commit",
-    ],
-    "Direct fix": ["fix"],
+    "Ticket / Support": list(SHARED_WORKFLOW_ORDER.get("ticket-support", [])),
+    "Development spine": list(SHARED_WORKFLOW_ORDER.get("development-spine", [])),
+    "Direct fix": list(SHARED_WORKFLOW_ORDER.get("direct-fix", [])),
 }
 
 
