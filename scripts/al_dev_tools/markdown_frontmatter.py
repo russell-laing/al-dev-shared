@@ -6,7 +6,9 @@ import re
 import yaml
 
 
-_FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n?(.*)$", re.DOTALL)
+# Tolerate CRLF (\r\n) as well as LF: Windows-authored SKILL.md/agent files
+# would otherwise silently fail to parse in every downstream validator.
+_FRONTMATTER_RE = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n?(.*)$", re.DOTALL)
 _HEADING_RE = re.compile(r"^#{1,6}\s+(.*?)\s*$")
 
 
@@ -39,7 +41,9 @@ def parse_optional_frontmatter(text: str) -> tuple[dict[str, Any], str]:
 
 def find_markdown_heading(text: str, heading: str) -> bool:
     target = heading.strip()
-    target = target[1:].strip() if target.startswith("#") else target
+    # Strip ALL leading '#' so a caller passing "## Output Format" matches a
+    # heading at any level, which is the point of the level-insensitive compare.
+    target = target.lstrip("#").strip()
     in_fence = False
 
     for line in text.splitlines():

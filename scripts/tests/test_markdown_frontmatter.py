@@ -74,6 +74,20 @@ def test_find_markdown_heading_ignores_fences_and_quotes():
     assert mod.find_markdown_heading(text, "Visible heading") is True
 
 
+def test_crlf_frontmatter_parses():
+    mod = load_module()
+    text = "---\r\nname: sample\r\n---\r\nBody line.\r\n"
+    data, body = mod.parse_required_frontmatter(text)
+    assert data["name"] == "sample"
+    assert "Body line." in body
+
+
+def test_find_heading_is_level_insensitive():
+    mod = load_module()
+    text = "# Title\n\n### Output Format\n\nsome text\n"
+    assert mod.find_markdown_heading(text, "## Output Format") is True
+
+
 def _run(func):
     func()
 
