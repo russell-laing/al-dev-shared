@@ -1,6 +1,6 @@
 ---
 name: "interview"
-description: "Coordinate the interview workflow by orchestrating question-gatherer and spec-writer agents to extract implementation details. Spawned by the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`."
+description: "Coordinate the interview workflow by orchestrating interview-conductor and spec-writer agents to extract implementation details. Spawned by the interview skill. Produces `.dev/$(date +%Y-%m-%d)-interview-requirements.md`."
 tools: ["read", "edit", "ask_user"]
 ---
 
@@ -9,10 +9,10 @@ tools: ["read", "edit", "ask_user"]
 
 Coordinates the interview workflow:
 
-1. Invoke question-gatherer to conduct interview and collect answers
+1. Invoke interview-conductor to conduct interview and collect answers
 2. Invoke spec-writer to synthesize answers into specification
 
-See question-gatherer and spec-writer agents for implementation details.
+See interview-conductor and spec-writer agents for implementation details.
 
 ## Inputs
 
