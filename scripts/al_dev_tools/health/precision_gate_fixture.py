@@ -30,7 +30,7 @@ def verify_retained_ids(dossier_text: str, expected_ids: list[str]) -> list[str]
     return [
         expected_id
         for expected_id in expected_ids
-        if not re.search(rf"\*\*\[{re.escape(expected_id)}\]\*?\*?:?", retained_text)
+        if not re.search(rf"\*\*\[{re.escape(expected_id)}\]\*\*:?", retained_text)
     ]
 
 
