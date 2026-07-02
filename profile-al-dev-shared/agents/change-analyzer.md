@@ -26,6 +26,8 @@ for use by release-notes-writer.
 
 ## Outputs
 
+Return the following structure as YAML:
+
 ```yaml
 change_type: "bug-fix"
 scope: ["auth", "session-handling"]
