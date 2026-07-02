@@ -9,7 +9,7 @@
       "open_accepted": 0
     },
     "design": {
-      "current_rows": 175,
+      "current_rows": 176,
       "open_accepted": 4
     },
     "extract": {
@@ -37,8 +37,8 @@
       "open_accepted": 0
     },
     "quality": {
-      "current_rows": 964,
-      "open_accepted": 37
+      "current_rows": 963,
+      "open_accepted": 34
     },
     "split": {
       "current_rows": 4,
@@ -54,9 +54,9 @@
     }
   },
   "by_disposition": {
-    "accepted": 44,
+    "accepted": 41,
     "declined": 277,
-    "fixed": 1056,
+    "fixed": 1059,
     "grandfathered": 72
   },
   "by_surface": {
@@ -66,7 +66,7 @@
     },
     "plugin": {
       "current_rows": 510,
-      "open_accepted": 41
+      "open_accepted": 38
     },
     "query": {
       "current_rows": 27,
@@ -82,9 +82,9 @@
     }
   },
   "current_rows": 1449,
-  "generated_at": "2026-07-02T20:37:54.433380+00:00",
+  "generated_at": "2026-07-02T20:42:04.613340+00:00",
   "integrity_warnings": 0,
-  "open_accepted": 44,
-  "source_hash": "29cdcf6b0e191ba33580c65bbda713406e1e7db8b78bd078090af1fcf2a56e59",
-  "total_events": 2615
+  "open_accepted": 41,
+  "source_hash": "7009d490257b79f74dfac89e3e0e784531ad7795a5daea9ca2ee539dcadbe001",
+  "total_events": 2618
 }
