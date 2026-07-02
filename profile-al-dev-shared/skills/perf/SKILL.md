@@ -1,10 +1,8 @@
 ---
 name: perf
 description: >-
-  Analyze AL codeunits for performance anti-patterns; classifies codeunit
-  type (Entry Point, Batch Processor, Hot Path, Utility) and escalates
-  finding severity by one level (LOW→MEDIUM, MEDIUM→HIGH, HIGH→CRITICAL)
-  for Entry Point, Hot Path, or Batch Processor codeunits.
+  Analyze AL codeunits for performance anti-patterns and classify entry
+  points for severity prioritization.
 argument-hint: "[codeunit name, file path, or 'scan all']"
 ---
 
