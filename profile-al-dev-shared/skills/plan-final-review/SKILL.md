@@ -58,38 +58,13 @@ PLAN=$(ls .dev/*-plan-solution-plan.md 2>/dev/null \
 
 The script auto-detects files in the same directory.
 
-Fix any issues the validator reports before presenting to the
-user. Common issues:
+Read the written plan and cross-check against spec requirements.
 
-- Missing required sections (add them)
-- Duplicate object IDs (reconcile from architect merge):
-  1. Identify which architect introduced each duplicate by reviewing the
-     plan's architect sections or commit history.
-  2. Verify the duplicates serve different purposes (different tables,
-     different code paths, different business logic).
-  3. Rename the duplicate **object ID field** with an architect-sequence
-     suffix (e.g. `OBJ-001-A`, `OBJ-001-B`) — the object name itself is
-     unchanged.
-- **"No REQ tokens found" in validator output** (the requirements file
-  has no `### REQ-NNN:` headings; traceability cannot be checked):
-  1. Open the requirements file (`$REQ`)
-  2. Scan for numbered items — lines starting with `1.`, `2.`, etc.,
-     or headings using `### 1.` / `### 2.` style
-  3. If numbered items exist: add `### REQ-NNN:` prefixes to each item
-     in sequence, save the file, then re-run the validator
-  4. If the requirements file is absent, empty, or has no numbered
-     items: escalate to the user — the requirements file needs
-     structural repair before traceability can be verified
-- Untraced requirements (REQ-NNN tokens exist in the requirements file
-  but are not referenced in the plan): add `REQ-NNN` mentions to the
-  plan tasks whose description, acceptance criteria, or named BC objects
-  overlap with the requirement's subject text
+1. **Completeness check:** Does each spec requirement map to at least one task?
+2. **Uniqueness check:** Does each object (file path) appear in exactly one task?
+3. **Type consistency:** Do all function/method names match their definitions?
 
-If an issue cannot be auto-fixed, present it to the user (escalate to the
-architects for refinement, or approve with documented risk) before claiming the
-plan is ready. Escalate → re-dispatch the architects with feedback at the
-Phase 3 gate; or approve-with-risk → document the risk in the approval summary
-and continue to Phase 3.
+Reference validator fix patterns: See `knowledge/validator-fix-patterns.md` for recovery steps if validation fails (missing sections, duplicate objects, untraced requirements).
 
 ## Phase 2.5: Scenario-Coverage Probe
 
