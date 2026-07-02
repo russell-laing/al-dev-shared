@@ -66,6 +66,8 @@ to Phase 2.
 
 ### Resume modes
 
+Resume modes defined in `knowledge/preflight-context-schema.md`.
+
 **Mode A — `--resume-from=phase2` passed in $ARGUMENTS:**
 The caller is asserting preflight context is already finalized and
 wants to skip context gathering and go straight to architect debate.

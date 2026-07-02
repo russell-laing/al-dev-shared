@@ -38,3 +38,17 @@ context file — latest state wins.
 If a required field is missing when consuming the block, re-run the specific
 preflight step that produces it (or re-dispatch `/plan-preflight`)
 rather than proceeding with empty state.
+
+## Resume Modes
+
+The preflight context supports three resume modes when returning to Phase 2:
+
+**Mode A: `--resume-from=phase2` passed in $ARGUMENTS** — Resume directly from
+Phase 2; error if no preflight context exists to resume from.
+
+**Mode B: No `--resume-from`, but `.dev/preflight-context.md` exists** — Offer
+resume via USER_GATE (load context and jump to Phase 2, or run preflight fresh).
+
+**Mode C: Fresh run (no `--resume-from`, no existing context)** — Dispatch
+`/generic-preflight --context-type planning` to build preflight context, then
+proceed to Phase 2.
