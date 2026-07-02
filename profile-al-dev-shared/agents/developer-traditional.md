@@ -21,7 +21,7 @@ after each file or logical group so errors never accumulate.
 
 ## Inputs
 
-Callers do not pass these paths explicitly. The agent auto-locates the latest matching files in `.dev/` by glob before implementation begins. When multiple files match, select the most recent by modification time (`ls -t <glob> | head -1`).
+See `knowledge/develop-spawn-context.md` for auto-location and glob-matching behavior.
 
 | Input | Required | Description |
 |-------|----------|-------------|
