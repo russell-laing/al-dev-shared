@@ -19,6 +19,13 @@ Create complete documentation for implemented features:
 - You review for completeness and accuracy
 - Present final documentation to user
 
+**Scope Note:** This skill covers two functionally distinct modes:
+
+1. **Mode 1 (Primary):** Generate new documentation from implemented code
+2. **Mode 2 (Variant):** Format and enhance existing documentation
+
+Despite dual function, the name "document" reflects the primary mode. Mode 2 is invoked via explicit argument.
+
 ---
 
 ## Usage
