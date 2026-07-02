@@ -17,6 +17,13 @@ Generate an implementation plan, then dispatch 6 parallel critic agents (securit
 If you already have a plan file, provide it as the spec input — the skill will treat
 it as the starting specification rather than generating a competing plan.
 
+**vs. `/plan` and `/plan-final-review`:** `/plan` generates via a 2-3 architect
+debate — use it for the default planning path. `/plan-with-critics` generates
+the same way but adds a 6-critic red-team pass before approval — use it when
+the plan touches security, auth, or irreversible operations and warrants
+deeper adversarial review. `/plan-final-review` does not generate a plan at
+all; it validates and gates approval on a plan that already exists.
+
 ## Steps
 
 See ../../knowledge/critic-dispatch-template.md for the standard 6-critic batch pattern and deduplication rules.
