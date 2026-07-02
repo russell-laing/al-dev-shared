@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
 import json
 import sys
 import tempfile
@@ -209,6 +211,57 @@ class JsonlCurrentStateTest(unittest.TestCase):
         current = STORE.materialize_current_events(events)
 
         self.assertEqual(["disp_20260619_000002"], [e["event_id"] for e in current])
+
+    def test_grandfathered_ambiguous_object_leaves_events_open_and_warns(self) -> None:
+        events = [
+            {
+                "event_id": "disp_20260619_000001",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "report-plugin-health",
+                "finding": "First open finding.",
+                "disposition": "accepted",
+                "date": "2026-06-19",
+                "closes_event_ids": [],
+                "evidence": "queued",
+                "source": "test",
+            },
+            {
+                "event_id": "disp_20260619_000002",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "report-plugin-health",
+                "finding": "Second open finding.",
+                "disposition": "accepted",
+                "date": "2026-06-19",
+                "closes_event_ids": [],
+                "evidence": "queued",
+                "source": "test",
+            },
+            {
+                "event_id": "disp_20260619_000003",
+                "surface": "tooling",
+                "dimension": "quality",
+                "object": "report-plugin-health",
+                "finding": "Ambiguous grandfathered wording.",
+                "disposition": "grandfathered",
+                "date": "2026-06-19",
+                "closes_event_ids": [],
+                "evidence": "accepted risk",
+                "source": "test",
+            },
+        ]
+
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            current = STORE.materialize_current_events(events)
+
+        self.assertEqual(
+            {"disp_20260619_000001", "disp_20260619_000002", "disp_20260619_000003"},
+            {e["event_id"] for e in current},
+        )
+        self.assertIn("ambiguous close", stderr.getvalue())
+        self.assertIn("disp_20260619_000003", stderr.getvalue())
 
 
 class JsonlIndexTest(unittest.TestCase):

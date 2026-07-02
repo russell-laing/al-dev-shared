@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import Counter, defaultdict, OrderedDict
 from datetime import datetime, timezone
 from hashlib import sha256
@@ -170,11 +171,22 @@ def materialize_current_events(events: list[dict[str, object]]) -> list[dict[str
         if str(event["disposition"]) in ("declined", "grandfathered") and not event.get(
             "closes_event_ids"
         ):
-            for accepted in list(open_accepted):
-                if str(accepted["object"]).strip() == str(event["object"]).strip():
-                    closed_ids.add(str(accepted["event_id"]))
-                    open_accepted.remove(accepted)
-                    break
+            matches = [
+                accepted
+                for accepted in open_accepted
+                if str(accepted["object"]).strip() == str(event["object"]).strip()
+            ]
+            if len(matches) == 1:
+                closed_ids.add(str(matches[0]["event_id"]))
+                open_accepted.remove(matches[0])
+            elif len(matches) > 1:
+                print(
+                    f"[materialize_current_events] WARNING: ambiguous close for "
+                    f"object {event['object']!r} — {len(matches)} open accepted "
+                    f"events match; event {event['event_id']} needs an explicit "
+                    f"closes_event_ids entry",
+                    file=sys.stderr,
+                )
 
     latest: OrderedDict[tuple[str, str, str, str], dict[str, object]] = OrderedDict()
     for event in events:
