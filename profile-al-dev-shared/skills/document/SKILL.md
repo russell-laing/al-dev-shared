@@ -101,7 +101,7 @@ Verify the template exists. Replace `[AUDIENCE]` below with the value chosen
 above (`technical`, `functional`, `user`, or `executive`) before running:
 
 ```bash
-ls ~/al-dev-shared/profile-al-dev-shared/knowledge/doc-templates/"<AUDIENCE>".md 2>/dev/null \
+ls $AL_DEV_SHARED_PLUGIN_ROOT/profile-al-dev-shared/knowledge/doc-templates/"<AUDIENCE>".md 2>/dev/null \
   || echo "Template not found — docs-writer will use inline structure from Step 2"
 # Non-zero exit here is expected and normal — do not retry.
 ```
