@@ -59,6 +59,14 @@ If inline images are found, include them in the return block as `INLINE_IMAGES_C
 
 **Large image sets:** If more than 20 inline images are detected, report only the first 20 and set `INLINE_IMAGES_COUNT: 20+ (first 20 reported — further images omitted to avoid session bloat)`. Do not attempt to count beyond 20.
 
+### Fallback Handling
+
+If `knowledge/ticket-image-patterns.md` is unavailable:
+
+1. Fall back to basic detection: Look for `![]()` markdown syntax and base64 URIs
+2. Do NOT fail; treat as "no images found" and continue
+3. Report in agent summary: "Image detection degraded to basic patterns (knowledge file unavailable)"
+
 ### Step 2: Write Context File
 
 Create `.dev/$(date +%Y-%m-%d)-ticket-ticket-context.md` following the structure defined in `knowledge/ticket-context-output-format.md`.
