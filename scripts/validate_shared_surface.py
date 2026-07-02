@@ -88,6 +88,12 @@ def validate_all() -> dict[str, list[str]]:
         raise ValueError(f"AGENTS_DIR not found: {AGENTS_DIR}")
     if not SKILLS_DIR.exists():
         raise ValueError(f"SKILLS_DIR not found: {SKILLS_DIR}")
+    agent_count = len(list(AGENTS_DIR.glob("*.md")))
+    skill_count = len(list(SKILLS_DIR.rglob("SKILL.md")))
+    if agent_count == 0:
+        raise ValueError(f"No agents found in {AGENTS_DIR} — directory is empty")
+    if skill_count == 0:
+        raise ValueError(f"No skills found in {SKILLS_DIR} — directory is empty")
     results = {}
     for path in sorted(AGENTS_DIR.glob("*.md")):
         if path.name.endswith(".md"):

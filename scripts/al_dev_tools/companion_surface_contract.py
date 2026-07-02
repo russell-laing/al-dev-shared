@@ -52,7 +52,11 @@ def load_companion_inventory(repo_root: Path) -> dict:
     if not isinstance(packages, list):
         raise ValueError(f"Companion inventory 'packages' must be a list, got {type(packages).__name__}")
     for entry in packages:
+        if not isinstance(entry, dict):
+            raise ValueError(f"Each package entry must be a dict, got {type(entry).__name__}")
         for key in ("current_root", "current_registry"):
             if key in entry:
-                entry[key] = entry[key].replace("${AL_DEV_HARNESS_HOME}", harness_home)
+                value = entry[key]
+                if isinstance(value, str):
+                    entry[key] = value.replace("${AL_DEV_HARNESS_HOME}", harness_home)
     return data

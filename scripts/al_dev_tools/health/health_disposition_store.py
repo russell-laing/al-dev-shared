@@ -324,16 +324,20 @@ def main(argv: list[str] | None = None) -> int:
         if not events:
             print("sync_shard: no matching events found", file=sys.stderr)
             return 1
-        # Build set of existing row IDs to skip duplicates (re-check on each append)
-        existing_ids: set[str] = set()
-        for row in iter_history_rows(args.history_root):
-            existing_ids.add(row.get("id", ""))
         synced_shards: set[str] = set()
+        written_in_batch: set[str] = set()
         written = 0
         skipped = 0
         for ev in events:
             row_id = ev.get("legacy_id") or ev["event_id"]
-            # Skip if this ID already exists in history (re-check each iteration in case concurrent write)
+            # Skip if already written in this batch or existing in history
+            if row_id in written_in_batch:
+                skipped += 1
+                if args.verbose:
+                    print(f"sync_shard: skipped duplicate within batch for {ev['event_id']}")
+                continue
+            # Re-check the history file for each event to detect concurrent writes
+            existing_ids: set[str] = {row.get("id", "") for row in iter_history_rows(args.history_root)}
             if row_id in existing_ids:
                 skipped += 1
                 if args.verbose:
@@ -350,8 +354,8 @@ def main(argv: list[str] | None = None) -> int:
                 "note": ev.get("evidence", ""),
             }
             shard = append_row(args.history_root, row)
-            # Track this row as written so we don't write duplicates in the same batch
-            existing_ids.add(row_id)
+            # Track this row as written in this batch
+            written_in_batch.add(row_id)
             synced_shards.add(str(shard))
             written += 1
             if args.verbose:
