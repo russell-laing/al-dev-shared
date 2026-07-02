@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from .reference_contracts import (
     allowed_template_patterns as _allowed_template_patterns,
     canonical_artifact_patterns as _canonical_artifact_patterns,
@@ -142,7 +144,22 @@ def legacy_reference_aliases() -> dict[str, tuple[str, ...]]:
 
 
 from .companion_surface_contract import (
-    canonical_companion_surfaces,
-    legacy_surface_aliases as companion_legacy_surface_aliases,
-    surface_root_map as companion_surface_root_map,
+    canonical_companion_surfaces as _canonical_companion_surfaces,
+    legacy_surface_aliases as _companion_legacy_surface_aliases,
+    surface_root_map as _companion_surface_root_map,
 )
+
+
+def canonical_companion_surfaces_wrapper() -> tuple[str, ...]:
+    """Return canonical companion surface names."""
+    return _canonical_companion_surfaces()
+
+
+def legacy_surface_aliases_wrapper() -> dict[str, tuple[str, ...]]:
+    """Return legacy surface aliases for companion surfaces."""
+    return _companion_legacy_surface_aliases()
+
+
+def surface_root_map_wrapper(repo_root: Path) -> dict[str, Path]:
+    """Return surface root paths for companion surfaces."""
+    return _companion_surface_root_map(repo_root)

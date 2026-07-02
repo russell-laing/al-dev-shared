@@ -5,8 +5,15 @@ from __future__ import annotations
 
 import argparse
 import re
+import sys
 from datetime import date
 from pathlib import Path
+
+try:
+    from _entrypoint_bootstrap import bootstrap_repo
+except ModuleNotFoundError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from _entrypoint_bootstrap import bootstrap_repo
 
 from ..companion_surface_contract import canonical_companion_surfaces
 
@@ -87,7 +94,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Select docs/health artifacts by filename date.",
     )
-    parser.add_argument("--directory", type=Path, default=Path("docs/health"))
+    parser.add_argument("--directory", type=Path, default=bootstrap_repo(__file__) / "docs/health")
     parser.add_argument("--kind", choices=("findings", "health", "friction-findings"), required=True)
     parser.add_argument("--surface", choices=("plugin", "tooling", "companion-codex-al-dev", "companion-claude-al-dev", "companion-copilot-al-dev"), required=True)
     parser.add_argument("--dimension", choices=("design", "quality", "naming"), default=None)

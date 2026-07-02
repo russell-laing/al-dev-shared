@@ -265,10 +265,6 @@ def _stage_has_contract_shape(
     return True
 
 
-def _normalize_skill_alias(name: str) -> str:
-    return name.replace("-", "_")
-
-
 def render_overview(contracts: list[WorkflowContract]) -> tuple[str, int]:
     """Compact landing-page overview of the five-stage maintenance journey."""
     names = {contract.skill for contract in contracts}

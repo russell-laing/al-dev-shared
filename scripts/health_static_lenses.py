@@ -167,24 +167,29 @@ def skill_files(surface_root: Path) -> list[Path]:
     )
 
 
-def changed_paths(since_ref: str) -> set[Path]:
-    """Resolved-to-absolute set of files changed since ``since_ref``.
+def _git_changed_paths(repo_root: Path, since_ref: str) -> set[Path]:
+    """Canonical helper: resolve changed paths from git diff output.
 
-    Uses the SAME normalization Change A introduced into the discover SKILL:
+    This implementation is shared with the discover SKILL. Keep both in sync.
     ``git diff --name-only <ref>`` emits repo-root-relative paths; prepend the
     repo root so the intersection with absolute corpus paths is correct.
     """
-    repo_root = Path(
+    actual_root = Path(
         subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+            cwd=repo_root, capture_output=True, text=True, check=True,
         ).stdout.strip()
     )
     out = subprocess.run(
         ["git", "diff", "--name-only", since_ref],
-        cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+        cwd=repo_root, capture_output=True, text=True, check=True,
     ).stdout.splitlines()
-    return {(repo_root / line.strip()).resolve() for line in out if line.strip()}
+    return {(actual_root / line.strip()).resolve() for line in out if line.strip()}
+
+
+def changed_paths(since_ref: str) -> set[Path]:
+    """Resolved-to-absolute set of files changed since ``since_ref``."""
+    return _git_changed_paths(REPO_ROOT, since_ref)
 
 
 # ---------------------------------------------------------------------------

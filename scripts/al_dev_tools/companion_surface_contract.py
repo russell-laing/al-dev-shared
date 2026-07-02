@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import yaml
@@ -35,8 +36,6 @@ def surface_root_map(repo_root: Path) -> dict[str, Path]:
 
 
 def load_companion_inventory(repo_root: Path) -> dict:
-    import os
-
     inventory_path = repo_root / "companions/companion-packages.yaml"
     try:
         content = inventory_path.read_text(encoding="utf-8")
@@ -49,7 +48,10 @@ def load_companion_inventory(repo_root: Path) -> dict:
     if not isinstance(data, dict):
         raise ValueError(f"Companion inventory must be a YAML dict, got {type(data).__name__}")
     harness_home = os.environ.get("AL_DEV_HARNESS_HOME", str(Path.home()))
-    for entry in data.get("packages", []):
+    packages = data.get("packages", [])
+    if not isinstance(packages, list):
+        raise ValueError(f"Companion inventory 'packages' must be a list, got {type(packages).__name__}")
+    for entry in packages:
         for key in ("current_root", "current_registry"):
             if key in entry:
                 entry[key] = entry[key].replace("${AL_DEV_HARNESS_HOME}", harness_home)
