@@ -27,7 +27,7 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 | Output | Description |
 |--------|-------------|
-| `docs/` or `wiki/` | **Primary** - Documentation files |
+| `docs/` (preferred) or `wiki/` | **Primary** - Documentation files |
 | `docs/Features/[name].md` | Feature documentation with RTM references |
 | `docs/API/[name].md` | API reference (if public procedures) |
 | `CHANGELOG.md` | Updated changelog |
@@ -35,7 +35,10 @@ Create clear, accurate documentation that helps users understand, use, and maint
 
 ## Workflow
 
-1. **Detect documentation location** — Check for `wiki/` or `docs/`; create default `docs/` if neither exists
+1. **Detect documentation location** — Prefer `docs/`: use it if it exists, or if
+   neither `docs/` nor `wiki/` exists (create it as the default). Only write to
+   an existing `wiki/` when `docs/` is absent and `wiki/` is already the repo's
+   established documentation location.
 2. **Read implementation artifacts** — Load requirements, solution plan, source code, code review, test plan
 3. **Extract RTM data** — Parse `REQ:` and `ACC:` tokens from requirements file; infer status from which `.dev/` files exist, plus test results or explicit sign-off when present
 4. **Generate documentation:**
