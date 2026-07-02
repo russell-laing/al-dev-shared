@@ -141,8 +141,10 @@ Write one report to:
 .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 ```
 
-Use the source basename without its extension for `<source-slug>`. If the
-source came from pasted conversation content, use `conversation`.
+Use the source basename without its extension for `<source-slug>`, normalize it
+to lowercase, replace spaces with `-`, and strip punctuation that would make
+the filename awkward. If the source came from pasted conversation content, use
+`conversation`.
 
 Use this exact structure:
 
@@ -216,7 +218,11 @@ rg -n "^Date: [0-9]{4}-[0-9]{2}-[0-9]{2}$" .dev/YYYY-MM-DD-health-loop-second-op
 rg -n "^Source: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^Artifact class: (findings report|health dossier|implementation plan|loop-state-adjacent report)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^Validation scope: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
-rg -n "^## (Trust Recommendation|Findings|Verified Areas|Unverified Areas|Notes)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^## Trust Recommendation$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^## Findings$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^## Verified Areas$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^## Unverified Areas$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
+rg -n "^## Notes$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^Classification: (valid blocker|valid but lower priority|stale|unsupported|overstated)$" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^Evidence: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
 rg -n "^Impact: .+" .dev/YYYY-MM-DD-health-loop-second-opinion-<source-slug>.md
