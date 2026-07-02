@@ -3,7 +3,7 @@ name: diagnostics-classifier
 description: >-
   Classify lint rule violations by fix strategy. Decides whether each rule
   group requires human judgment (escalate) or can be auto-fixed.
-model: sonnet
+model: haiku
 tools:
   - Read
 ---
