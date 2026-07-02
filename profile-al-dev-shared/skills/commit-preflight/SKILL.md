@@ -157,6 +157,14 @@ without reading the actual success evidence required by
 
 ### 0.4 — Validate Against Code Review (NEW MANDATORY GATE)
 
+This phase classifies readiness. Three possible verdicts:
+
+- **READY:** No blocking issues; safe to commit
+- **BLOCKING:** Issues prevent commit; show user before proceeding
+- **DEFER:** Non-blocking suggestions; commit anyway if user confirms
+
+The following conditionals produce one of these verdicts:
+
 - [ ] **Step 0.4.1:** Check if code-review artifact exists
 
 Run: `ls -la .dev/*-develop-code-review.md 2>/dev/null | head -1`
