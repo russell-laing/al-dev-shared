@@ -59,8 +59,6 @@ If agent returns `classification: judgment-required`, skip fix and record the ru
 
 ### Step 3.6: If safe (per agent verdict), proceed with fix application
 
-#### 3b: Direct edit path
-
 For non-judgment-required rules:
 
 - **3+ occurrences:** Apply via Bash `sed` using a safe regex pattern (see `knowledge/bash-safe-patterns.md`). One `sed -E -i '' 's/pattern/replacement/' "$f"` command covers all instances in a file.
